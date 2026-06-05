@@ -1415,7 +1415,11 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            fileExtension: this.options.file.extension,
+            fileId: this.options.file.id,
+        });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
@@ -1890,8 +1894,25 @@ class DocBaseViewer extends BaseViewer {
 
     trackpadPinchToZoomHandler(event) {
         if (!event.ctrlKey) {
+            this.isTrackpadPinching = false;
             return;
         }
+
+        if (!this.isTrackpadPinching) {
+            this.isTrackpadPinching = true;
+            this.options.resin?.recordAction({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: event.deltaY > 0 ? 'zoomOut' : 'zoomIn',
+                fileId: this.options.file.id,
+                fileExtension: this.options.file.extension,
+            });
+        }
+
+        clearTimeout(this.trackpadPinchIdleTimer);
+        this.trackpadPinchIdleTimer = setTimeout(() => {
+            this.isTrackpadPinching = false;
+        }, 200);
 
         event.preventDefault();
 

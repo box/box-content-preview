@@ -3680,6 +3680,50 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.updateScale).toBeCalled();
             });
+
+            test('should call resin.recordAction on pinch start with zoomIn target', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.options.file = { id: '0', extension: 'pdf' };
+                docBase.isTrackpadPinching = false;
+
+                event.deltaY = -50; // zoom in
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.options.resin.recordAction).toBeCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'zoomIn',
+                    fileId: '0',
+                    fileExtension: 'pdf',
+                });
+            });
+
+            test('should call resin.recordAction on pinch start with zoomOut target', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.options.file = { id: '0', extension: 'pdf' };
+                docBase.isTrackpadPinching = false;
+                docBase.pdfViewer.currentScale = 2;
+
+                event.deltaY = 50; // zoom out
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.options.resin.recordAction).toBeCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'zoomOut',
+                    fileId: '0',
+                    fileExtension: 'pdf',
+                });
+            });
+
+            test('should not call resin.recordAction if already pinching', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.isTrackpadPinching = true;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.options.resin.recordAction).not.toBeCalled();
+            });
         });
 
         describe('getStartPage()', () => {
