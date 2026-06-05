@@ -49,7 +49,12 @@ module.exports = {
         filename: '[name].js',
         library: { type: 'module' },
         module: true,
-        environment: { module: true, dynamicImport: true },
+        // chunkLoading: false suppresses webpack's chunk-loading runtime. Without this,
+        // webpack emits an `import("./" + chunkId)` line that downstream webpack builds
+        // re-parse as a context module — sweeping in every file under dist/lib/, including
+        // .bin/.d.ts, and failing the consumer build.
+        environment: { module: true, dynamicImport: false },
+        chunkLoading: false,
         clean: true,
     },
     experiments: {
@@ -107,6 +112,10 @@ module.exports = {
     },
     optimization: {
         minimize: false,
+        // Inline all dynamic imports into the single lib bundle. Combined with
+        // chunkLoading: false above, this guarantees no chunk-loading runtime is emitted.
+        splitChunks: false,
+        runtimeChunk: false,
     },
     ignoreWarnings: [
         // pdfjs-dist contains an internal dynamic require that webpack flags as a critical
