@@ -19,19 +19,13 @@
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
-        "axios": "^0.24.0",
-        "pdfjs-dist": "6.0.227"
+        "axios": "^0.24.0"
     },
     "peerDependencies": {
         "@box/blueprint-web": "^14.32.1",
@@ -39,6 +33,7 @@
         "@box/react-virtualized": "9.22.3-rc-box.2",
         "box-annotations": "^5.2.1-beta.0",
         "box-ui-elements": "^20.0.0",
+        "pdfjs-dist": "^6.0.227",
         "react": "^18.0.0",
         "react-dom": "^18.0.0"
     },
@@ -111,6 +106,7 @@
         "mock-local-storage": "^1.1.15",
         "mojito-rb-gen": "^0.0.1",
         "npm-run-all": "^4.1.5",
+        "pdfjs-dist": "6.0.227",
         "postcss": "^8.5.3",
         "postcss-loader": "^8.1.1",
         "prettier": "^1.19.1",

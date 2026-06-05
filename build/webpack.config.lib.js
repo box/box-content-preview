@@ -70,6 +70,10 @@ module.exports = {
         /^@box\/blueprint-web(\/.*)?$/,
         /^@box\/blueprint-web-assets(\/.*)?$/,
         /^@box\/react-virtualized(\/.*)?$/,
+        // Externalize pdfjs JS entry points. Consumers install pdfjs-dist (peerDependency)
+        // and their webpack code-splits it. The CSS import (pdfjs-dist/web/pdf_viewer.css)
+        // is intentionally NOT externalized — it stays inlined into dist/lib/index.css.
+        /^pdfjs-dist\/.*\.m?js$/,
     ],
     externalsType: 'module',
     module: {
