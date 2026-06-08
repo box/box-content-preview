@@ -944,6 +944,12 @@ describe('lib/Preview', () => {
             expect(loadViewerAssetsStub).toHaveBeenCalledTimes(1);
             expect(prefetchStub).not.toHaveBeenCalled();
         });
+
+        test('forwards options to each viewer instance loadViewerAssets', () => {
+            const options = { useNpmPdfjs: true };
+            preview.loadViewers(['Document', 'MP4', 'IMAGE'], options);
+            expect(loadViewerAssetsStub).toHaveBeenCalledWith(options);
+        });
     });
 
     describe('disableViewers()', () => {

@@ -798,9 +798,10 @@ class Preview extends EventEmitter {
      *
      * @public
      * @param {string[]} [viewerNames] - Names of viewers to load assets for, defaults to none
+     * @param {Object} [options] - Options forwarded to the viewer's loadViewerAssets
      * @return {void}
      */
-    loadViewers(viewerNames = []) {
+    loadViewers(viewerNames = [], options = {}) {
         this.getViewers()
             .filter(viewer => viewerNames.includes(viewer.NAME))
             .forEach(viewer => {
@@ -811,7 +812,7 @@ class Preview extends EventEmitter {
                 );
 
                 if (typeof viewerInstance.loadViewerAssets === 'function') {
-                    viewerInstance.loadViewerAssets();
+                    viewerInstance.loadViewerAssets(options);
                 }
             });
     }
