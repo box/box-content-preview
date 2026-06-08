@@ -266,13 +266,11 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        // Clean up viewer and PDF document object
+        // Clean up viewer and PDF document object. Note: pdfjs >= 5.x removed
+        // PDFDocumentProxy.destroy(); the loading task above tears down the
+        // worker + transport, which is the only document-level cleanup needed.
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
-
-            if (this.pdfViewer.pdfDocument) {
-                this.pdfViewer.pdfDocument.destroy();
-            }
         }
 
         if (this.printPopup) {
