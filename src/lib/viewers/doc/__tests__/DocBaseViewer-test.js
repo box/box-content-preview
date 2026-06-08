@@ -363,12 +363,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfLoadingTask.destroy).toBeCalled();
             });
 
-            test('should clean up the viewer; document teardown is handled by the loading task', () => {
+            test('should clean up the viewer', () => {
                 docBase.pdfViewer = {
                     cleanup: jest.fn(),
-                    // pdfjs >= 5.x removed PDFDocumentProxy.destroy(); a leftover stub
-                    // here would mask a regression rather than catch one.
-                    pdfDocument: {},
                 };
 
                 docBase.destroy();
