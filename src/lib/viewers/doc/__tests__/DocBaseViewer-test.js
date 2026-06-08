@@ -1219,10 +1219,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(testDocBase.loadAssets).toHaveBeenNthCalledWith(2, PRELOAD_JS, []);
             });
 
-            test('warms the npm pdfjs chunks instead of CDN scripts when useNpmPdfjs is true', () => {
+            test('warms the npm pdfjs chunks instead of CDN scripts when isUseNpmPdfjsEnabled is true', () => {
                 const loadPdfjsFromNpmStub = jest.spyOn(testDocBase, 'loadPdfjsFromNpm').mockResolvedValue(undefined);
 
-                testDocBase.loadViewerAssets({ useNpmPdfjs: true });
+                testDocBase.loadViewerAssets({ isUseNpmPdfjsEnabled: true });
 
                 expect(testDocBase.loadAssets).toHaveBeenCalledTimes(1);
                 expect(testDocBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);

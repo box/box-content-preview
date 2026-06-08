@@ -512,13 +512,13 @@ class DocBaseViewer extends BaseViewer {
      * into memory eliminating the need to load them when a preview is clicked.
      *
      * @param {Object} [options]
-     * @param {boolean} [options.useNpmPdfjs] - Warm up the npm-bundled pdfjs
-     *   chunks instead of the legacy CDN scripts so this matches what `load()`
-     *   will use when the flag is on.
+     * @param {boolean} [options.isUseNpmPdfjsEnabled] - Warm up the npm-bundled
+     *   pdfjs chunks instead of the legacy CDN scripts so this matches what
+     *   `load()` will use when the flag is on.
      * @return {void}
      */
-    loadViewerAssets({ useNpmPdfjs = false } = {}) {
-        if (useNpmPdfjs) {
+    loadViewerAssets({ isUseNpmPdfjsEnabled = false } = {}) {
+        if (isUseNpmPdfjsEnabled) {
             this.loadAssets(EXIF_READER, []);
             // Kick off the dynamic imports so the pdfjs chunks land in cache
             // before per-file load() awaits them. Errors are swallowed; load()
