@@ -1120,6 +1120,9 @@ class Preview extends EventEmitter {
         this.options.preloadStatus = options.preloadStatus;
         this.options.clientName = options.clientName;
 
+        // Optional resin analytics instance for tracking user interactions
+        this.options.resin = options.resin;
+
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
 

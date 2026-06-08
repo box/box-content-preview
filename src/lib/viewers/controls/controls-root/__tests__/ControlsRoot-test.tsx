@@ -30,6 +30,13 @@ describe('ControlsRoot', () => {
             expect(instance.controlsEl).toHaveClass('bp-ControlsRoot');
             expect(instance.controlsEl).toHaveAttribute('data-resin-component', 'toolbar');
             expect(instance.controlsEl).toHaveAttribute('data-resin-fileid', '1');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileextension', '');
+        });
+
+        test('should set data-resin-fileextension when fileExtension is provided', () => {
+            const instance = getInstance({ fileExtension: 'pdf' });
+
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileextension', 'pdf');
         });
 
         test('should attach event handlers to the container element', () => {

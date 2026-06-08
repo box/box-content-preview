@@ -8,6 +8,7 @@ import './ControlsRoot.scss';
 export type Options = {
     className?: string;
     containerEl: HTMLElement;
+    fileExtension?: string;
     fileId: string;
     onHide?: () => void;
     onShow?: () => void;
@@ -30,12 +31,20 @@ export default class ControlsRoot {
 
     root: Root;
 
-    constructor({ className = 'bp-ControlsRoot', containerEl, fileId, onHide = noop, onShow = noop }: Options) {
+    constructor({
+        className = 'bp-ControlsRoot',
+        containerEl,
+        fileExtension,
+        fileId,
+        onHide = noop,
+        onShow = noop,
+    }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', className);
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
         this.controlsEl.setAttribute('data-resin-component', 'toolbar');
         this.controlsEl.setAttribute('data-resin-fileid', fileId);
+        this.controlsEl.setAttribute('data-resin-fileextension', fileExtension || '');
 
         this.containerEl = containerEl;
         this.containerEl.addEventListener('mousemove', this.handleMouseMove);

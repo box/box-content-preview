@@ -92,8 +92,25 @@ class TextBaseViewer extends BaseViewer {
     wheelZoomHandler(event) {
         const textEl = this.containerEl && this.containerEl.querySelector('.bp-text');
         if (!event.ctrlKey || !textEl) {
+            this.isPinching = false;
             return;
         }
+
+        if (!this.isPinching) {
+            this.isPinching = true;
+            this.options.resin?.recordAction({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: event.deltaY > 0 ? 'zoomOut' : 'zoomIn',
+                fileId: this.options.file.id,
+                fileExtension: this.options.file.extension,
+            });
+        }
+
+        clearTimeout(this.pinchIdleTimer);
+        this.pinchIdleTimer = setTimeout(() => {
+            this.isPinching = false;
+        }, 200);
 
         event.preventDefault();
 
@@ -222,7 +239,11 @@ class TextBaseViewer extends BaseViewer {
      * @protected
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            fileExtension: this.options.file.extension,
+            fileId: this.options.file.id,
+        });
         this.bindDOMListeners();
         this.renderUI();
     }

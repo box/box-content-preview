@@ -219,7 +219,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            fileExtension: this.options.file.extension,
+            fileId: this.options.file.id,
+        });
     }
 
     /**
@@ -372,6 +376,13 @@ class ImageBaseViewer extends BaseViewer {
                 return;
             }
             this.isPinching = true;
+            this.options.resin?.recordAction({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: event.deltaY > 0 ? 'zoomOut' : 'zoomIn',
+                fileId: this.options.file.id,
+                fileExtension: this.options.file.extension,
+            });
         }
 
         // Reset pinch session after a brief idle (no explicit "pinch end" event exists)
