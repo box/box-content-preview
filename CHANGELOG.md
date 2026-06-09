@@ -1,3 +1,10 @@
+## 3.43.0 (2026-06-09)
+
+* feat(resin): add tracking for pinch-to-zoom events (#1668) ([538a1aa](https://github.com/box/box-content-preview/commit/538a1aa)), closes [#1668](https://github.com/box/box-content-preview/issues/1668)
+* feat(viewers): forward loadViewers options to viewer loadViewerAssets (#1669) ([92a0cb1](https://github.com/box/box-content-preview/commit/92a0cb1)), closes [#1669](https://github.com/box/box-content-preview/issues/1669)
+
+
+
 ## 3.42.0 (2026-06-04)
 
 * chore(deps): bump pdfjs-dist to 6.0.227 (#1666) ([7e082b8](https://github.com/box/box-content-preview/commit/7e082b8)), closes [#1666](https://github.com/box/box-content-preview/issues/1666)
