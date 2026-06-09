@@ -310,6 +310,66 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             expect(textBase.scale).toBe(0.1);
         });
 
+        test('should call resin.recordAction on pinch start with zoomIn target', () => {
+            textBase.isPinching = false;
+            textBase.options.resin = { recordAction: jest.fn() };
+            textBase.options.file = { id: '0', extension: 'txt' };
+            const event = new WheelEvent('wheel', {
+                deltaY: -10,
+                ctrlKey: true,
+                clientX: 400,
+                clientY: 300,
+            });
+
+            textBase.wheelZoomHandler(event);
+
+            expect(textBase.options.resin.recordAction).toBeCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'zoomIn',
+                fileId: '0',
+                fileExtension: 'txt',
+            });
+        });
+
+        test('should call resin.recordAction on pinch start with zoomOut target', () => {
+            textBase.isPinching = false;
+            textBase.options.resin = { recordAction: jest.fn() };
+            textBase.options.file = { id: '0', extension: 'txt' };
+            const event = new WheelEvent('wheel', {
+                deltaY: 10,
+                ctrlKey: true,
+                clientX: 400,
+                clientY: 300,
+            });
+
+            textBase.wheelZoomHandler(event);
+
+            expect(textBase.options.resin.recordAction).toBeCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'zoomOut',
+                fileId: '0',
+                fileExtension: 'txt',
+            });
+        });
+
+        test('should not call resin.recordAction if already pinching', () => {
+            textBase.isPinching = true;
+            textBase.options.resin = { recordAction: jest.fn() };
+            textBase.options.file = { id: '0', extension: 'txt' };
+            const event = new WheelEvent('wheel', {
+                deltaY: -10,
+                ctrlKey: true,
+                clientX: 400,
+                clientY: 300,
+            });
+
+            textBase.wheelZoomHandler(event);
+
+            expect(textBase.options.resin.recordAction).not.toBeCalled();
+        });
+
         describe('caret-based scroll anchoring', () => {
             let originalCaretRangeFromPoint;
             let originalCaretPositionFromPoint;

@@ -631,6 +631,58 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.isPinching).toBe(true);
         });
 
+        test('should call resin.recordAction on pinch start with zoomIn target', () => {
+            imageBase.isPinching = false;
+            imageBase.options.resin = { recordAction: jest.fn() };
+            imageBase.options.file = { id: '1234', extension: 'png' };
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValueOnce({ left: 0, top: 0, right: 100, bottom: 100, width: 100, height: 100 })
+                .mockReturnValue({ left: 0, top: 0, right: 105, bottom: 105, width: 105, height: 105 });
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            expect(imageBase.options.resin.recordAction).toBeCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'zoomIn',
+                fileId: '1234',
+                fileExtension: 'png',
+            });
+        });
+
+        test('should call resin.recordAction on pinch start with zoomOut target', () => {
+            imageBase.isPinching = false;
+            imageBase.options.resin = { recordAction: jest.fn() };
+            imageBase.options.file = { id: '1234', extension: 'png' };
+            imageBase.imageEl.getBoundingClientRect = jest
+                .fn()
+                .mockReturnValueOnce({ left: 0, top: 0, right: 100, bottom: 100, width: 100, height: 100 })
+                .mockReturnValue({ left: 0, top: 0, right: 95, bottom: 95, width: 95, height: 95 });
+            const event = { clientX: 50, clientY: 50, ctrlKey: true, deltaY: 5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            expect(imageBase.options.resin.recordAction).toBeCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'zoomOut',
+                fileId: '1234',
+                fileExtension: 'png',
+            });
+        });
+
+        test('should not call resin.recordAction if already pinching', () => {
+            imageBase.isPinching = true;
+            imageBase.options.resin = { recordAction: jest.fn() };
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            expect(imageBase.options.resin.recordAction).not.toBeCalled();
+        });
+
         test('should preventDefault and apply proportional zoom on pinch in', () => {
             const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -5, preventDefault: jest.fn() };
 

@@ -507,9 +507,21 @@ class DocBaseViewer extends BaseViewer {
      * Loads the viewer assets as opposed to just prefetching them as a performance optimization. This means that the libraries will be loaded
      * into memory eliminating the need to load them when a preview is clicked.
      *
+     * @param {Object} [options]
+     * @param {boolean} [options.isUseNpmPdfjsEnabled] - Warm up the npm-bundled
+     *   pdfjs chunks instead of the legacy CDN scripts so this matches what
+     *   `load()` will use when the flag is on.
      * @return {void}
      */
-    loadViewerAssets() {
+    loadViewerAssets({ isUseNpmPdfjsEnabled = false } = {}) {
+        if (isUseNpmPdfjsEnabled) {
+            this.loadAssets(EXIF_READER, []);
+            // Kick off the dynamic imports so the pdfjs chunks land in cache
+            // before per-file load() awaits them. Errors are swallowed; load()
+            // will surface them later.
+            this.loadPdfjsFromNpm().catch(() => {});
+            return;
+        }
         const ASSETS = [...JS_NO_EXIF, ...EXIF_READER];
         this.loadAssets(ASSETS, CSS);
         this.loadAssets(PRELOAD_JS, []);
@@ -1399,7 +1411,11 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            fileExtension: this.options.file.extension,
+            fileId: this.options.file.id,
+        });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
@@ -1874,8 +1890,25 @@ class DocBaseViewer extends BaseViewer {
 
     trackpadPinchToZoomHandler(event) {
         if (!event.ctrlKey) {
+            this.isTrackpadPinching = false;
             return;
         }
+
+        if (!this.isTrackpadPinching) {
+            this.isTrackpadPinching = true;
+            this.options.resin?.recordAction({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: event.deltaY > 0 ? 'zoomOut' : 'zoomIn',
+                fileId: this.options.file.id,
+                fileExtension: this.options.file.extension,
+            });
+        }
+
+        clearTimeout(this.trackpadPinchIdleTimer);
+        this.trackpadPinchIdleTimer = setTimeout(() => {
+            this.isTrackpadPinching = false;
+        }, 200);
 
         event.preventDefault();
 
