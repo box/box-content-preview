@@ -266,13 +266,9 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        // Clean up viewer and PDF document object
+        // Clean up viewer
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
-
-            if (this.pdfViewer.pdfDocument) {
-                this.pdfViewer.pdfDocument.destroy();
-            }
         }
 
         if (this.printPopup) {
