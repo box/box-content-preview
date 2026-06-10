@@ -89,7 +89,16 @@ const SUPPORT_URL = 'https://support.box.com';
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+//
+// On the npm load path there is no preview.js script tag in the DOM, so
+// findScriptLocation throws. Fall back to an empty location object — npm
+// consumers supply staticBaseURI/version via show() options.
+let PREVIEW_LOCATION;
+try {
+    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+} catch (e) {
+    PREVIEW_LOCATION = {};
+}
 
 class Preview extends EventEmitter {
     /** @property {Api} - Previews Api instance used for XHR calls  */
@@ -1064,6 +1073,13 @@ class Preview extends EventEmitter {
 
         // Custom Box3D application definition
         this.options.box3dApplication = options.box3dApplication;
+
+        // Allow npm consumers to override PREVIEW_LOCATION (which falls back to {}
+        // when no preview.js script tag is present). Consumer should pass at minimum
+        // staticBaseURI and version so legacy viewers can build third-party asset URLs.
+        if (options.location) {
+            this.location = { ...this.location, ...options.location };
+        }
 
         // Custom BoxAnnotations definition
         this.options.boxAnnotations = options.boxAnnotations;

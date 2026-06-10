@@ -1235,9 +1235,14 @@ class DocBaseViewer extends BaseViewer {
      */
     setupPdfjs() {
         if (this.featureEnabled('useNpmPdfjs')) {
-            // eslint-disable-next-line global-require
-            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
-            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            // npm consumers may set GlobalWorkerOptions.workerSrc themselves (using
+            // their bundler's asset URL syntax — e.g. webpack's `?url`). Only fall
+            // back to the package-resolved URL if nothing's set.
+            if (!this.pdfjsLib.GlobalWorkerOptions.workerSrc) {
+                // eslint-disable-next-line global-require
+                const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
+                this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            }
             return;
         }
 
