@@ -13,3 +13,4 @@ src/i18n/json
 test/screenshots
 test/videos
 yarn-error.log
+.conduit/

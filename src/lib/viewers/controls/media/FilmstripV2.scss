@@ -1,0 +1,32 @@
+@import '../styles';
+
+.bp-FilmstripV2 {
+    position: absolute;
+    bottom: calc(100% + 14px);
+    padding: 12px;
+    padding-bottom: 8px;
+    background: $white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+    visibility: hidden;
+
+    &.bp-is-shown {
+        visibility: visible;
+    }
+}
+
+.bp-FilmstripV2-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.bp-FilmstripV2-time {
+    margin-top: 8px;
+    color: $black;
+    font-size: 13px;
+    line-height: 20px;
+    text-align: center;
+}
