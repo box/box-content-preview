@@ -89,7 +89,16 @@ const SUPPORT_URL = 'https://support.box.com';
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+//
+// On the npm load path there is no preview.js script tag in the DOM, so
+// findScriptLocation throws. Fall back to an empty object — npm consumers
+// must provide staticBaseURI/version via show() options.location.
+let PREVIEW_LOCATION;
+try {
+    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+} catch (e) {
+    PREVIEW_LOCATION = {};
+}
 
 class Preview extends EventEmitter {
     /** @property {Api} - Previews Api instance used for XHR calls  */
@@ -1064,6 +1073,17 @@ class Preview extends EventEmitter {
 
         // Custom Box3D application definition
         this.options.box3dApplication = options.box3dApplication;
+
+        // npm consumers override the (empty) PREVIEW_LOCATION so legacy viewers
+        // that build third-party asset URLs against staticBaseURI/version/locale
+        // resolve to the consumer's static host instead of `undefined`.
+        if (options.location) {
+            this.location = { ...this.location, ...options.location };
+        }
+
+        // npm consumers may pass pdfjs configuration (e.g. an explicit worker URL
+        // emitted by the consumer's bundler). DocBaseViewer.setupPdfjs reads this.
+        this.options.pdfjs = options.pdfjs;
 
         // Custom BoxAnnotations definition
         this.options.boxAnnotations = options.boxAnnotations;
