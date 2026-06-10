@@ -1,3 +1,9 @@
+## 3.44.0 (2026-06-10)
+
+* chore(doc): remove obsolete pdfDocument.destroy() call (#1670) ([840c448](https://github.com/box/box-content-preview/commit/840c448)), closes [#1670](https://github.com/box/box-content-preview/issues/1670)
+
+
+
 ## 3.43.0 (2026-06-09)
 
 * feat(resin): add tracking for pinch-to-zoom events (#1668) ([538a1aa](https://github.com/box/box-content-preview/commit/538a1aa)), closes [#1668](https://github.com/box/box-content-preview/issues/1668)
