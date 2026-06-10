@@ -1,5 +1,15 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+// pdfjs is bundled into box-content-preview's lib output (npm path). Statically
+// importing here means pdfjs lands inside BCP's single chunk, so webpack never
+// emits a chunk-loading runtime that downstream consumer builds would re-parse
+// as a context module. Trade-off: image-only previews load pdfjs they don't use
+// (~250 KB gz), but PDF previews are immediate (no second round-trip).
+// pdf.min.mjs assigns globalThis.pdfjsLib as a side effect; pdf_viewer.mjs reads
+// it at evaluation time, so order matters.
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.min.mjs';
+import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer.mjs';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
@@ -1252,17 +1262,17 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Loads pdfjs from the npm package via dynamic import, allowing webpack to code-split.
+     * Assigns pdfjs from the bundled static imports. Kept as a method (not inlined
+     * at the call site) so the `useNpmPdfjs ? loadPdfjsFromNpm() : Promise.resolve()`
+     * branch in setup() stays readable.
      *
      * @private
      * @return {Promise<void>}
      */
-    async loadPdfjsFromNpm() {
-        // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
-        // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
-        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
-        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
+    loadPdfjsFromNpm() {
+        this.pdfjsLib = pdfjsLib;
+        this.pdfjsViewer = pdfjsViewer;
+        return Promise.resolve();
     }
 
     /**
