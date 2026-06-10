@@ -1,5 +1,13 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+// Static-import pdfjs into the npm lib bundle. With chunkLoading: false in
+// webpack.config.lib.js, no chunk-loading runtime is emitted; pdfjs lands in the
+// single bundle so consumer webpack builds don't need any pdfjs-specific config.
+// pdf.min.mjs assigns globalThis.pdfjsLib as a side effect; pdf_viewer.mjs reads
+// it at evaluation time, so order matters.
+import * as pdfjsLib from 'pdfjs-dist/build/pdf.min.mjs';
+import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer.mjs';
+import 'pdfjs-dist/web/pdf_viewer.css';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
@@ -1235,9 +1243,14 @@ class DocBaseViewer extends BaseViewer {
      */
     setupPdfjs() {
         if (this.featureEnabled('useNpmPdfjs')) {
-            // eslint-disable-next-line global-require
-            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
-            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            // npm consumer must provide an explicit worker URL via show({ pdfjs: { workerSrc } }).
+            // The consumer's bundler emits the worker as an asset (e.g., webpack `?url`) and
+            // hands the URL through. Library-internal derivation via import.meta.url doesn't
+            // work reliably across consumer bundlers, so we don't try.
+            const consumerWorkerSrc = this.options.pdfjs && this.options.pdfjs.workerSrc;
+            if (consumerWorkerSrc) {
+                this.pdfjsLib.GlobalWorkerOptions.workerSrc = consumerWorkerSrc;
+            }
             return;
         }
 
@@ -1252,17 +1265,17 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Loads pdfjs from the npm package via dynamic import, allowing webpack to code-split.
+     * Assigns pdfjs from the bundled static imports. Synchronous; returns a resolved
+     * Promise so the existing call site (`useNpmPdfjs ? loadPdfjsFromNpm() : Promise.resolve()`)
+     * remains unchanged.
      *
      * @private
      * @return {Promise<void>}
      */
-    async loadPdfjsFromNpm() {
-        // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
-        // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
-        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
-        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
+    loadPdfjsFromNpm() {
+        this.pdfjsLib = pdfjsLib;
+        this.pdfjsViewer = pdfjsViewer;
+        return Promise.resolve();
     }
 
     /**

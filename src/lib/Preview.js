@@ -89,7 +89,18 @@ const SUPPORT_URL = 'https://support.box.com';
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+//
+// On the npm load path, no <script src="preview.js"> tag may exist when this
+// module evaluates (consumer's chunk loaded before any CDN warming). Fall back
+// to {} so the module doesn't throw at import time. Downstream viewers that
+// need staticBaseURI/version/locale will need consumer-supplied values; PDF
+// works without it because pdfjs is now bundled into this lib.
+let PREVIEW_LOCATION;
+try {
+    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+} catch (e) {
+    PREVIEW_LOCATION = {};
+}
 
 class Preview extends EventEmitter {
     /** @property {Api} - Previews Api instance used for XHR calls  */
@@ -234,6 +245,16 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     show(fileIdOrFile, token, options = {}) {
+        // npm builds always use the bundled pdfjs (DocBaseViewer.js statically imports it).
+        // __BCP_NPM_BUILD__ is defined by webpack.config.lib.js (true) and webpack.config.js
+        // (false). Doing this here instead of in src/index.ts avoids the harmony-export TDZ
+        // trap — index.ts must be a pure re-export with no body declarations.
+        // eslint-disable-next-line no-undef
+        if (typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__) {
+            // eslint-disable-next-line no-param-reassign
+            options = { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } };
+        }
+
         // Save a reference to the options to be re-used later.
         // Token should either be a function or a string.
         // Token can also be null or undefined for offline use case.
@@ -1064,6 +1085,16 @@ class Preview extends EventEmitter {
 
         // Custom Box3D application definition
         this.options.box3dApplication = options.box3dApplication;
+
+        // Consumer-supplied pdfjs config (e.g., workerSrc emitted by their bundler via
+        // ?url). DocBaseViewer.setupPdfjs reads this. Standard pdfjs-wrapper pattern.
+        this.options.pdfjs = options.pdfjs;
+
+        // npm consumers can override the (empty) PREVIEW_LOCATION via show({ location })
+        // so viewer code that reads staticBaseURI/version/locale gets real values.
+        if (options.location) {
+            this.location = { ...this.location, ...options.location };
+        }
 
         // Custom BoxAnnotations definition
         this.options.boxAnnotations = options.boxAnnotations;

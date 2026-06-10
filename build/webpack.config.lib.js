@@ -55,6 +55,12 @@ module.exports = {
         // .bin/.d.ts, and failing the consumer build.
         environment: { module: true, dynamicImport: false },
         chunkLoading: false,
+        // publicPath: 'auto' makes asset URLs (like the pdfjs worker emitted via
+        // `new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url)`) resolve
+        // relative to the chunk's runtime location instead of being baked-in at build
+        // time. Without this, downstream consumer builds inherit the build-machine's
+        // file:// path and fail to fetch the worker over HTTP.
+        publicPath: 'auto',
         clean: true,
     },
     experiments: {
@@ -70,10 +76,6 @@ module.exports = {
         /^@box\/blueprint-web(\/.*)?$/,
         /^@box\/blueprint-web-assets(\/.*)?$/,
         /^@box\/react-virtualized(\/.*)?$/,
-        // Externalize pdfjs JS entry points. Consumers install pdfjs-dist (peerDependency)
-        // and their webpack code-splits it. The CSS import (pdfjs-dist/web/pdf_viewer.css)
-        // is intentionally NOT externalized — it stays inlined into dist/lib/index.css.
-        /^pdfjs-dist\/.*\.m?js$/,
     ],
     externalsType: 'module',
     module: {
@@ -132,6 +134,9 @@ module.exports = {
             __LANGUAGE__: JSON.stringify(language),
             __NAME__: JSON.stringify(pkg.name),
             __VERSION__: JSON.stringify(pkg.version),
+            // Build-time flag so Preview.show() always sets useNpmPdfjs=true on the npm
+            // path. The CDN bundle (webpack.config.js) does not define this constant.
+            __BCP_NPM_BUILD__: JSON.stringify(true),
             'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV),
         }),
         new MiniCssExtractPlugin({ filename: '[name].css' }),

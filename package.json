@@ -25,7 +25,8 @@
         "access": "public"
     },
     "dependencies": {
-        "axios": "^0.24.0"
+        "axios": "^0.24.0",
+        "pdfjs-dist": "6.0.227"
     },
     "peerDependencies": {
         "@box/blueprint-web": "^14.32.1",
@@ -33,7 +34,6 @@
         "@box/react-virtualized": "9.22.3-rc-box.2",
         "box-annotations": "^5.2.1-beta.0",
         "box-ui-elements": "^20.0.0",
-        "pdfjs-dist": "^6.0.227",
         "react": "^18.0.0",
         "react-dom": "^18.0.0"
     },
