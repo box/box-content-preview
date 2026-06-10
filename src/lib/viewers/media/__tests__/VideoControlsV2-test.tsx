@@ -11,6 +11,7 @@ const defaultProps = {
     audioTracks: [],
     autoplay: false,
     isPlaying: false,
+    movePlayback: jest.fn(),
     onAnnotationColorChange: jest.fn(),
     onAnnotationModeClick: jest.fn(),
     onAnnotationModeEscape: jest.fn(),
@@ -48,10 +49,19 @@ describe('VideoControlsV2', () => {
             expect(screen.queryByTitle('Play')).not.toBeInTheDocument();
         });
 
-        test('should not render skip forward/backward buttons', () => {
-            render(<VideoControlsV2 {...defaultProps} />);
-            expect(screen.queryByTitle('Skip forward')).not.toBeInTheDocument();
-            expect(screen.queryByTitle('Skip backward')).not.toBeInTheDocument();
+        test('should render skip forward/backward buttons and respond to clicks', async () => {
+            const user = userEvent.setup();
+            const movePlayback = jest.fn();
+            render(<VideoControlsV2 {...defaultProps} movePlayback={movePlayback} />);
+
+            expect(screen.getByTitle('Skip forward')).toBeInTheDocument();
+            expect(screen.getByTitle('Skip backward')).toBeInTheDocument();
+
+            await user.click(screen.getByTitle('Skip forward'));
+            expect(movePlayback).toHaveBeenCalledWith(true, 5);
+
+            await user.click(screen.getByTitle('Skip backward'));
+            expect(movePlayback).toHaveBeenCalledWith(false, 5);
         });
 
         test('should not render fullscreen toggle', () => {

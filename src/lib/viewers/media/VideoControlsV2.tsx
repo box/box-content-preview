@@ -8,7 +8,9 @@ import TimeControlsV2, { Props as TimeControlsProps } from '../controls/media/Ti
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import IconPlay24 from '../controls/icons/IconPlay24';
 import IconPause24 from '../controls/icons/IconPause24';
-import { SUBTITLES_OFF } from '../../constants';
+import IconForward24 from '../controls/icons/IconArrowCurveForward24';
+import IconBack24 from '../controls/icons/IconArrowCurveBack24';
+import { MEDIA_PLAYBACK_SKIP_DURATION, SUBTITLES_OFF } from '../../constants';
 import { AnnotationMode } from '../../types/annotations';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
 import DrawingControls from '../controls/annotations/DrawingControls';
@@ -26,6 +28,7 @@ export type Props = DurationLabelsProps &
         hasRegion?: boolean;
         isPlaying?: boolean;
         isNarrowVideo?: boolean;
+        movePlayback: (isForward: boolean, duration: number) => void;
         onAnnotationModeClick: ({ mode }: { mode: AnnotationMode }) => void;
         onAnnotationModeEscape: () => void;
         onAnnotationColorChange: (color: string) => void | undefined;
@@ -51,6 +54,7 @@ export default function VideoControlsV2({
     isHDSupported,
     isPlaying,
     isNarrowVideo,
+    movePlayback,
     onAudioTrackChange,
     onAutoplayChange,
     onMuteChange,
@@ -75,6 +79,16 @@ export default function VideoControlsV2({
 }: Props): JSX.Element {
     const PlayPauseIcon = isPlaying ? IconPause24 : IconPlay24;
     const playPauseTitle = isPlaying ? __('media_pause') : __('media_play');
+    const skipForwardTitle = __('media_skip_forward');
+    const skipBackwardTitle = __('media_skip_backward');
+
+    const moveForward = (): void => {
+        movePlayback(true, MEDIA_PLAYBACK_SKIP_DURATION);
+    };
+
+    const moveBackward = (): void => {
+        movePlayback(false, MEDIA_PLAYBACK_SKIP_DURATION);
+    };
 
     const timeLabel = isNarrowVideo
         ? formatTime(currentTime)
@@ -103,6 +117,24 @@ export default function VideoControlsV2({
                     >
                         <PlayPauseIcon />
                     </MediaToggle>
+                    <div className="bp-VideoControlsV2-divider" />
+                    <MediaToggle
+                        className="bp-VideoControlsV2-skipBtn"
+                        data-resin-target="skipBackward"
+                        onClick={moveBackward}
+                        title={skipBackwardTitle}
+                    >
+                        <IconBack24 />
+                    </MediaToggle>
+                    <MediaToggle
+                        className="bp-VideoControlsV2-skipBtn"
+                        data-resin-target="skipForward"
+                        onClick={moveForward}
+                        title={skipForwardTitle}
+                    >
+                        <IconForward24 />
+                    </MediaToggle>
+                    <div className="bp-VideoControlsV2-divider" />
                     <span className="bp-VideoControlsV2-timestamp" data-testid="bp-VideoControlsV2-timestamp">
                         {timeLabel}
                     </span>
@@ -133,6 +165,7 @@ export default function VideoControlsV2({
                     />
                     {videoAnnotationsEnabled && (
                         <>
+                            <div className="bp-VideoControlsV2-divider" />
                             <AnnotationsControls
                                 annotationColor={annotationColor}
                                 annotationMode={annotationMode}

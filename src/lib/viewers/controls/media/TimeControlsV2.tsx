@@ -79,7 +79,7 @@ export default function TimeControlsV2({
                 onUpdate={onTimeChange}
                 step={fps ? 1 / fps : 5}
                 title={__('media_time_slider')}
-                track={`linear-gradient(to right, ${white} calc(${currentPercentage}% + 1px), transparent calc(${currentPercentage}% + 1px), transparent calc(${currentPercentage}% + 6px), ${bdlGray65} calc(${currentPercentage}% + 6px), ${bdlGray65} 100%)`}
+                track={`linear-gradient(to right, ${white} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${bdlGray65} calc(${currentPercentage}% + 2.5px), ${bdlGray65} 100%)`}
                 value={currentValue}
             />
         </div>

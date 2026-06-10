@@ -1244,6 +1244,7 @@ class DashViewer extends VideoBaseViewer {
             isNarrowVideo: this.isNarrowVideo,
             isPlaying: !this.mediaEl.paused,
             mediaEl: this.mediaEl,
+            movePlayback: this.movePlayback,
             onAnnotationColorChange: this.handleAnnotationColorChange,
             onAnnotationModeClick: this.handleAnnotationControlsClick,
             onAnnotationModeEscape: this.handleAnnotationControlsEscape,
@@ -1276,7 +1277,6 @@ class DashViewer extends VideoBaseViewer {
                 experiences={this.experiences}
                 hasHighlight={false}
                 isPlayingHD={this.isPlayingHD()}
-                movePlayback={this.movePlayback}
                 onFullscreenToggle={this.toggleFullscreen}
             />,
         );
