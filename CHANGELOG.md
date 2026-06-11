@@ -1,3 +1,10 @@
+## 3.45.0 (2026-06-11)
+
+* chore(build): scope pdfjs-dist pdf_viewer.css to .bp-doc (#1672) ([6c78a62](https://github.com/box/box-content-preview/commit/6c78a62)), closes [#1672](https://github.com/box/box-content-preview/issues/1672)
+* feat(video): add V2 controls bar with redesigned scrubber and filmstrip (#1671) ([3ef96c1](https://github.com/box/box-content-preview/commit/3ef96c1)), closes [#1671](https://github.com/box/box-content-preview/issues/1671)
+
+
+
 ## 3.44.0 (2026-06-10)
 
 * chore(doc): remove obsolete pdfDocument.destroy() call (#1670) ([840c448](https://github.com/box/box-content-preview/commit/840c448)), closes [#1670](https://github.com/box/box-content-preview/issues/1670)
