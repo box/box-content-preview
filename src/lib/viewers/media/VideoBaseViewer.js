@@ -105,6 +105,11 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
         }
 
+        if (this.featureEnabled('videoPlayerV2.enabled')) {
+            this.wrapperEl.classList.add('bp-media--v2');
+            this.mediaContainerEl.classList.add('bp-media-container--v2');
+        }
+
         this.lowerLights();
     }
 
@@ -388,9 +393,15 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadUIReact() {
         super.loadUIReact();
 
+        // For the V2 player, mount the controls on the wrapper (above the media container)
+        // so their width is constrained by the viewport rather than the video
+        const controlsContainerEl = this.featureEnabled('videoPlayerV2.enabled')
+            ? this.wrapperEl
+            : this.mediaContainerEl;
+
         this.controls = new ControlsRoot({
             className: 'bp-VideoControlsRoot',
-            containerEl: this.mediaContainerEl,
+            containerEl: controlsContainerEl,
             fileId: this.options.file.id,
             onHide: this.handleControlsHide,
             onShow: this.handleControlsShow,
@@ -612,10 +623,6 @@ class VideoBaseViewer extends MediaBaseViewer {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
         }
-
-        if (this.mediaContainerEl && this.mediaEl.style.width) {
-            this.mediaContainerEl.style.width = this.mediaEl.style.width;
-        }
     }
 
     /**
@@ -627,16 +634,18 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     handleNarrowVideoUI() {
         if (this.useReactControls()) {
-            const mediaElWidthNumber = parseInt(this.mediaEl.style.width, 10);
+            const widthNumber = this.featureEnabled('videoPlayerV2.enabled')
+                ? this.wrapperEl.clientWidth
+                : parseInt(this.mediaEl.style.width, 10);
 
-            if (!Number.isNaN(mediaElWidthNumber)) {
+            if (!Number.isNaN(widthNumber)) {
                 // check if play and seek buttons exist in the dom
-                if (this.playContainerEl && mediaElWidthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
+                if (this.playContainerEl && widthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
                     this.isNarrowVideo = false;
                     this.removePlayButtonWithSeekButtons();
                     this.preloader?.showPlayOverlay();
                     this.renderUI();
-                } else if (!this.playContainerEl && mediaElWidthNumber < SMALL_VIDEO_WIDTH_THRESHOLD) {
+                } else if (!this.playContainerEl && widthNumber < SMALL_VIDEO_WIDTH_THRESHOLD) {
                     this.buildPlayButtonWithSeekButtons();
                     this.preloader?.hidePlayOverlay();
                     this.isNarrowVideo = true;

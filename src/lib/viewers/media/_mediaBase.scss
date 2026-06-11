@@ -176,6 +176,35 @@
     width: 100%;
 }
 
+.bp-media--v2 {
+    background: radial-gradient(ellipse at center, #2a2a2a 0%, #000 100%);
+}
+
+.bp-media-container--v2 {
+    padding: 48px;
+
+    video {
+        border: 1px solid rgba($white, .12);
+    }
+
+    .bp-video-preload-wrapper {
+        padding: 48px;
+
+        .bp-preload {
+            position: relative;
+            transform: none;
+        }
+
+        .bp-preload-content {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 100%;
+            border: 1px solid rgba($white, .12);
+        }
+    }
+}
+
 .bp-video-360 {
     .bp-VideoControlsRoot {
         position: absolute;
