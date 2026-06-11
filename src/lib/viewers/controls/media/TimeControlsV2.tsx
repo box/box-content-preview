@@ -8,7 +8,6 @@ import './TimeControlsV2.scss';
 
 export type Props = {
     aspectRatio?: number;
-    bufferedRange?: TimeRanges;
     currentTime?: number;
     durationTime?: number;
     filmstripInterval?: number;
@@ -28,7 +27,6 @@ export const percent = (value1: number, value2: number): number => {
 
 export default function TimeControlsV2({
     aspectRatio,
-    bufferedRange,
     currentTime = 0,
     durationTime = 0,
     filmstripInterval,
@@ -44,8 +42,6 @@ export default function TimeControlsV2({
     const currentValue = isFinite(currentTime) ? currentTime : 0;
     const durationValue = isFinite(durationTime) ? durationTime : 0;
     const currentPercentage = percent(currentValue, durationValue);
-    const bufferedAmount = bufferedRange && bufferedRange.length ? bufferedRange.end(bufferedRange.length - 1) : 0;
-    const bufferedPercentage = percent(bufferedAmount, durationValue);
 
     const handleMouseMove = (newTime: number, newPosition: number, width: number): void => {
         setHoverPosition(newPosition);
