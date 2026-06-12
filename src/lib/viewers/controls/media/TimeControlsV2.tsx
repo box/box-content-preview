@@ -54,6 +54,7 @@ export default function TimeControlsV2({
             {!!filmstripInterval && (
                 <FilmstripV2
                     aspectRatio={aspectRatio}
+                    fps={fps}
                     imageUrl={filmstripUrl}
                     interval={filmstripInterval}
                     isShown={isSliderHovered}
