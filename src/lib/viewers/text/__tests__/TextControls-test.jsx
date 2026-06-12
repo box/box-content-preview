@@ -18,7 +18,7 @@ describe('TextControls', () => {
         test('should pass down props to FullscreenToggle', async () => {
             const onFullscreenToggle = jest.fn();
             getWrapper({ onFullscreenToggle });
-            const toggle = await screen.findByTitle(__('enter_fullscreen'));
+            const toggle = await screen.findByRole('button', { name: __('enter_fullscreen') });
 
             await userEvent.click(toggle);
 
@@ -29,8 +29,8 @@ describe('TextControls', () => {
             const onZoomIn = jest.fn();
             const onZoomOut = jest.fn();
             getWrapper({ onZoomIn, onZoomOut });
-            const zoomIn = await screen.findByTitle(__('zoom_in'));
-            const zoomOut = await screen.findByTitle(__('zoom_out'));
+            const zoomIn = await screen.findByRole('button', { name: __('zoom_in') });
+            const zoomOut = await screen.findByRole('button', { name: __('zoom_out') });
 
             await userEvent.click(zoomIn);
             await userEvent.click(zoomOut);

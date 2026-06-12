@@ -14,7 +14,7 @@ describe('lib/viewers/box3d/image360/Image360Controls', () => {
 
             expect(screen.queryByTitle('Toggle VR display')).not.toBeInTheDocument();
 
-            await user.click(screen.getByTitle('Enter fullscreen'));
+            await user.click(screen.getByRole('button', { name: 'Enter fullscreen' }));
 
             expect(onFullscreenToggle).toHaveBeenCalled();
         });
