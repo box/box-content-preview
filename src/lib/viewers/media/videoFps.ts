@@ -1,4 +1,4 @@
-const DEFAULT_FPS = 24;
+export const DEFAULT_FPS = 24;
 
 export type ShakaVariantTrack = {
     frameRate?: number;
