@@ -115,24 +115,28 @@ export default function VideoControlsV2({
                     >
                         <PlayPauseIcon />
                     </MediaToggle>
-                    <div className="bp-VideoControlsV2-divider" />
-                    <MediaToggle
-                        className="bp-VideoControlsV2-skipBtn"
-                        data-resin-target="skipBackward"
-                        onClick={moveBackward}
-                        title={skipBackwardTitle}
-                    >
-                        <IconBack24 />
-                    </MediaToggle>
-                    <MediaToggle
-                        className="bp-VideoControlsV2-skipBtn"
-                        data-resin-target="skipForward"
-                        onClick={moveForward}
-                        title={skipForwardTitle}
-                    >
-                        <IconForward24 />
-                    </MediaToggle>
-                    <div className="bp-VideoControlsV2-divider" />
+                    {!isNarrowVideo && (
+                        <>
+                            <div className="bp-VideoControlsV2-divider" />
+                            <MediaToggle
+                                className="bp-VideoControlsV2-skipBtn"
+                                data-resin-target="skipBackward"
+                                onClick={moveBackward}
+                                title={skipBackwardTitle}
+                            >
+                                <IconBack24 />
+                            </MediaToggle>
+                            <MediaToggle
+                                className="bp-VideoControlsV2-skipBtn"
+                                data-resin-target="skipForward"
+                                onClick={moveForward}
+                                title={skipForwardTitle}
+                            >
+                                <IconForward24 />
+                            </MediaToggle>
+                            <div className="bp-VideoControlsV2-divider" />
+                        </>
+                    )}
                     <span className="bp-VideoControlsV2-timestamp" data-testid="bp-VideoControlsV2-timestamp">
                         {timeLabel}
                     </span>

@@ -115,6 +115,58 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 value: lowerLights,
             });
         });
+
+        test('should add V2 classes when videoPlayerV2 feature is enabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBase.useReactControls = jest.fn().mockReturnValue(false);
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(true);
+            expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(true);
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should not add V2 classes when videoPlayerV2 feature is disabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBase.useReactControls = jest.fn().mockReturnValue(false);
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(false);
+            expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(false);
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
     });
 
     describe('destroy()', () => {
@@ -218,6 +270,26 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.controls.handleHide).toEqual(videoBase.handleControlsHide);
             expect(videoBase.controls.handleShow).toEqual(videoBase.handleControlsShow);
             expect(videoBase.renderUI).toBeCalled();
+        });
+
+        test('should mount controls on wrapperEl when videoPlayerV2 is enabled', () => {
+            videoBase.mediaContainerEl = document.createElement('div');
+            videoBase.wrapperEl = document.createElement('div');
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBase.loadUIReact();
+
+            expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
+            expect(videoBase.controls.containerEl).toEqual(videoBase.wrapperEl);
+        });
+
+        test('should mount controls on mediaContainerEl when videoPlayerV2 is disabled', () => {
+            videoBase.mediaContainerEl = document.createElement('div');
+            videoBase.wrapperEl = document.createElement('div');
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.loadUIReact();
+
+            expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
+            expect(videoBase.controls.containerEl).toEqual(videoBase.mediaContainerEl);
         });
     });
 
@@ -561,6 +633,25 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(mockBuildPlayButtonWithSeekButtons).not.toHaveBeenCalled();
             expect(mockRemovePlayButtonWithSeekButtons).not.toHaveBeenCalled();
             expect(mockRenderUI).not.toHaveBeenCalled();
+            expect(videoBaseViewer.isNarrowVideo).toBe(false);
+        });
+
+        test('should use wrapperEl.clientWidth when videoPlayerV2 is enabled', () => {
+            jest.spyOn(videoBaseViewer, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBaseViewer.wrapperEl = document.createElement('div');
+            Object.defineProperty(videoBaseViewer.wrapperEl, 'clientWidth', { value: 579 });
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(mockBuildPlayButtonWithSeekButtons).toHaveBeenCalled();
+            expect(videoBaseViewer.isNarrowVideo).toBe(true);
+        });
+
+        test('should use wrapperEl.clientWidth >= threshold when videoPlayerV2 is enabled', () => {
+            jest.spyOn(videoBaseViewer, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBaseViewer.wrapperEl = document.createElement('div');
+            Object.defineProperty(videoBaseViewer.wrapperEl, 'clientWidth', { value: 580 });
+            videoBaseViewer.playContainerEl = document.createElement('div');
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(mockRemovePlayButtonWithSeekButtons).toHaveBeenCalled();
             expect(videoBaseViewer.isNarrowVideo).toBe(false);
         });
     });

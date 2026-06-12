@@ -64,6 +64,12 @@ describe('VideoControlsV2', () => {
             expect(movePlayback).toHaveBeenCalledWith(false, 5);
         });
 
+        test('should not render skip buttons when isNarrowVideo is true', () => {
+            render(<VideoControlsV2 {...defaultProps} isNarrowVideo />);
+            expect(screen.queryByTitle('Skip forward')).not.toBeInTheDocument();
+            expect(screen.queryByTitle('Skip backward')).not.toBeInTheDocument();
+        });
+
         test('should not render fullscreen toggle', () => {
             render(<VideoControlsV2 {...defaultProps} />);
             expect(screen.queryByTitle('Enter fullscreen')).not.toBeInTheDocument();
