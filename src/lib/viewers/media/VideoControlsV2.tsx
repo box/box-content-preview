@@ -1,7 +1,8 @@
 import React from 'react';
-import { Props as DurationLabelsProps, formatTime } from '../controls/media/DurationLabels';
+import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
+import TimestampControl from '../controls/media/TimestampControl';
 import MediaToggle from '../controls/media/MediaToggle';
 import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/media/SubtitlesToggle';
 import TimeControlsV2, { Props as TimeControlsProps } from '../controls/media/TimeControlsV2';
@@ -89,10 +90,6 @@ export default function VideoControlsV2({
         movePlayback(false, MEDIA_PLAYBACK_SKIP_DURATION);
     };
 
-    const timeLabel = isNarrowVideo
-        ? formatTime(currentTime)
-        : `${formatTime(currentTime)} / ${formatTime(durationTime)}`;
-
     return (
         <div className="bp-VideoControlsV2" data-testid="media-controls-wrapper-v2">
             <TimeControlsV2
@@ -137,9 +134,13 @@ export default function VideoControlsV2({
                             <div className="bp-VideoControlsV2-divider" />
                         </>
                     )}
-                    <span className="bp-VideoControlsV2-timestamp" data-testid="bp-VideoControlsV2-timestamp">
-                        {timeLabel}
-                    </span>
+                    <TimestampControl
+                        currentTime={currentTime}
+                        durationTime={durationTime}
+                        fps={fps}
+                        isNarrowWidth={isNarrowVideo}
+                        mediaEl={mediaEl}
+                    />
                 </div>
                 <div className="bp-VideoControlsV2-group bp-VideoControlsV2-group--right">
                     <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />

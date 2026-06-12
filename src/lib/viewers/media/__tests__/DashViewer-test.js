@@ -1883,6 +1883,58 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('getFps()', () => {
+        test('should return manifest fps when videoPlayerV2 is enabled', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'videoPlayerV2.enabled');
+
+            expect(dash.getFps()).toBe(30);
+        });
+
+        test('should return 24fps fallback when videoPlayerV2 is enabled but manifest fps is unavailable', () => {
+            dash.player = {
+                getVariantTracks: () => [{ active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'videoPlayerV2.enabled');
+
+            expect(dash.getFps()).toBe(24);
+        });
+
+        test('should return manifest fps when only frameStep is enabled and fps is available', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'frameStep.enabled');
+
+            expect(dash.getFps()).toBe(30);
+        });
+
+        test('should return undefined when only frameStep is enabled and fps is unavailable', () => {
+            dash.player = {
+                getVariantTracks: () => [{ active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'frameStep.enabled');
+
+            expect(dash.getFps()).toBeUndefined();
+        });
+
+        test('should return undefined when neither feature is enabled', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+
+            expect(dash.getFps()).toBeUndefined();
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
         beforeEach(() => {

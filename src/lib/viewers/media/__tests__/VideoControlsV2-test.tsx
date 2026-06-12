@@ -79,15 +79,23 @@ describe('VideoControlsV2', () => {
     describe('timestamp', () => {
         test('should show current / total time when not narrow', () => {
             render(<VideoControlsV2 {...defaultProps} currentTime={65} durationTime={120} />);
-            const timestamp = screen.getByTestId('bp-VideoControlsV2-timestamp');
-            expect(timestamp).toHaveTextContent('1:05 / 2:00');
+            const timestamp = screen.getByTestId('bp-TimestampControl-button');
+            expect(timestamp).toHaveTextContent('1:05/2:00');
         });
 
         test('should show only current time when narrow', () => {
             render(<VideoControlsV2 {...defaultProps} currentTime={65} durationTime={120} isNarrowVideo />);
-            const timestamp = screen.getByTestId('bp-VideoControlsV2-timestamp');
+            const timestamp = screen.getByTestId('bp-TimestampControl-button');
             expect(timestamp).toHaveTextContent('1:05');
             expect(timestamp).not.toHaveTextContent('/');
+        });
+
+        test('should open the time format dropdown when timestamp is clicked', async () => {
+            const user = userEvent.setup();
+            render(<VideoControlsV2 {...defaultProps} currentTime={65} durationTime={120} />);
+
+            await user.click(screen.getByTestId('bp-TimestampControl-button'));
+            expect(screen.getByTestId('bp-TimestampControl-flyout')).toBeInTheDocument();
         });
     });
 
