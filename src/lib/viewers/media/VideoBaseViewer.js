@@ -623,6 +623,14 @@ class VideoBaseViewer extends MediaBaseViewer {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
         }
+
+        // Match the preload thumbnail's painted area to the video element so
+        // the thumbnail-to-video transition has no size shift. PR #1673 removed
+        // the line that synced container width to the video, which left the
+        // wrapper full-container-width while the video shrinks via max-height.
+        if (this.preloader?.wrapperEl && this.mediaEl.style.width) {
+            this.preloader.wrapperEl.style.width = this.mediaEl.style.width;
+        }
     }
 
     /**

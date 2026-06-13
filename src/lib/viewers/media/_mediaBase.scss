@@ -188,20 +188,20 @@
         border: 1px solid rgba($white, .12);
     }
 
+    // The <video> is flex-centered inside the container's content box. Match
+    // the preload wrapper's bounding box to the painted video: top/bottom inset
+    // by the container's 48px padding, width set in JS (VideoBaseViewer) to the
+    // painted video width, and `left: 50% / translateX(-50%)` to center it
+    // horizontally the same way flex centers the video.
     .bp-video-preload-wrapper {
-        padding: 48px;
+        top: 48px;
+        right: auto;
+        bottom: 48px;
+        left: 50%;
+        transform: translateX(-50%);
 
         .bp-preload {
-            position: relative;
             transform: none;
-        }
-
-        .bp-preload-content {
-            width: auto;
-            max-width: 100%;
-            height: auto;
-            max-height: 100%;
-            border: 1px solid rgba($white, .12);
         }
     }
 }
