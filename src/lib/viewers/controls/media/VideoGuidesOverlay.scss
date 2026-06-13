@@ -1,0 +1,28 @@
+.bp-VideoGuidesOverlay {
+    position: absolute;
+    pointer-events: none;
+}
+
+.bp-VideoGuidesOverlay-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible; // Strokes that touch the viewBox edge stay fully visible
+}
+
+// Two stacked rects per guide line, matching the designer's SMPTE/EBU/ARIB SVG spec:
+// dark casing drawn first, white line on top — legible on light or dark footage.
+.bp-VideoGuidesOverlay-cas {
+    fill: none;
+    stroke: #000;
+    stroke-opacity: .5;
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke;
+}
+
+.bp-VideoGuidesOverlay-ln {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.25;
+    vector-effect: non-scaling-stroke;
+}

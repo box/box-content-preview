@@ -1889,7 +1889,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 getVariantTracks: () => [{ frameRate: 30, active: true }],
                 destroy: jest.fn(),
             };
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'videoPlayerV2.enabled');
+            dash.isVideoPlayerV2 = true;
 
             expect(dash.getFps()).toBe(30);
         });
@@ -1899,7 +1899,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 getVariantTracks: () => [{ active: true }],
                 destroy: jest.fn(),
             };
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'videoPlayerV2.enabled');
+            dash.isVideoPlayerV2 = true;
 
             expect(dash.getFps()).toBe(24);
         });

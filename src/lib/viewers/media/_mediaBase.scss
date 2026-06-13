@@ -172,6 +172,7 @@
     right: auto;
     bottom: auto;
     left: auto;
+    z-index: 1; // Stack above sibling media container so settings menu paints over guides
     align-self: stretch;
     width: 100%;
 }
