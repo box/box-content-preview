@@ -73,6 +73,7 @@ export default function TimestampControl({
         };
 
         const startLoop = (): void => {
+            cancelAnimationFrame(rafIdRef.current);
             rafIdRef.current = requestAnimationFrame(tick);
         };
 
