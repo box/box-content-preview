@@ -72,10 +72,25 @@ export default function TimestampControl({
             rafIdRef.current = requestAnimationFrame(tick);
         };
 
-        rafIdRef.current = requestAnimationFrame(tick);
+        const startLoop = (): void => {
+            rafIdRef.current = requestAnimationFrame(tick);
+        };
+
+        const stopLoop = (): void => {
+            cancelAnimationFrame(rafIdRef.current);
+        };
+
+        if (!mediaEl.paused) {
+            startLoop();
+        }
+
+        mediaEl.addEventListener('play', startLoop);
+        mediaEl.addEventListener('pause', stopLoop);
 
         return () => {
-            cancelAnimationFrame(rafIdRef.current);
+            stopLoop();
+            mediaEl.removeEventListener('play', startLoop);
+            mediaEl.removeEventListener('pause', stopLoop);
         };
     }, [format, fps, mediaEl]);
 
