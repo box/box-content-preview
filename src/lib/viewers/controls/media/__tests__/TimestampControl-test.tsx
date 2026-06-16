@@ -4,8 +4,23 @@ import { userEvent } from '@testing-library/user-event';
 import TimestampControl from '../TimestampControl';
 
 describe('TimestampControl', () => {
+    let mediaContainer: HTMLDivElement;
+    let videoEl: HTMLVideoElement;
+
+    beforeEach(() => {
+        mediaContainer = document.createElement('div');
+        mediaContainer.className = 'bp-media-container';
+        videoEl = document.createElement('video');
+        mediaContainer.appendChild(videoEl);
+        document.body.appendChild(mediaContainer);
+    });
+
+    afterEach(() => {
+        mediaContainer.remove();
+    });
+
     const getWrapper = (props = {}) =>
-        render(<TimestampControl currentTime={65} durationTime={120} fps={24} {...props} />);
+        render(<TimestampControl currentTime={65} durationTime={120} fps={24} mediaEl={videoEl} {...props} />);
 
     const getButton = () => screen.getByTestId('bp-TimestampControl-button');
 
@@ -124,6 +139,40 @@ describe('TimestampControl', () => {
             await user.click(screen.getByRole('option', { name: 'Frame numbers' }));
 
             expect(getButton()).toHaveTextContent('Frame 120/600');
+        });
+    });
+
+    describe('data attributes', () => {
+        test('should set data-time-format on the media container when format changes', async () => {
+            const user = userEvent.setup();
+            getWrapper();
+
+            expect(mediaContainer.getAttribute('data-time-format')).toBe('standard');
+
+            await user.click(getButton());
+            await user.click(screen.getByRole('option', { name: 'Timecode' }));
+
+            expect(mediaContainer.getAttribute('data-time-format')).toBe('timecode');
+        });
+
+        test('should set data-fps on the media container', () => {
+            getWrapper({ fps: 30 });
+            expect(mediaContainer.getAttribute('data-fps')).toBe('30');
+        });
+
+        test('should update data-time-format to frames when selected', async () => {
+            const user = userEvent.setup();
+            getWrapper();
+
+            await user.click(getButton());
+            await user.click(screen.getByRole('option', { name: 'Frame numbers' }));
+
+            expect(mediaContainer.getAttribute('data-time-format')).toBe('frames');
+        });
+
+        test('should not set data attributes when mediaEl is not provided', () => {
+            render(<TimestampControl currentTime={65} durationTime={120} fps={24} />);
+            expect(mediaContainer.hasAttribute('data-time-format')).toBe(false);
         });
     });
 });

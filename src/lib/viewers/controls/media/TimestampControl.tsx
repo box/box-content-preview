@@ -59,6 +59,14 @@ export default function TimestampControl({
     useClickOutside(containerElRef, () => setIsOpen(false));
 
     React.useEffect(() => {
+        const container = mediaEl?.closest('.bp-media-container');
+        if (container) {
+            container.setAttribute('data-time-format', format);
+            container.setAttribute('data-fps', String(fps));
+        }
+    }, [format, fps, mediaEl]);
+
+    React.useEffect(() => {
         // Re-render via timeupdate events is too slow (~4Hz) for frame-accurate
         // formats, so update the current time text on animation frames instead
         if (format === TimeFormat.STANDARD || !mediaEl || !currentElRef.current) {
