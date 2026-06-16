@@ -116,7 +116,7 @@ describe('TimestampControl', () => {
             await user.click(getButton());
             await user.click(screen.getByRole('option', { name: 'Frame numbers' }));
 
-            expect(getButton()).toHaveTextContent('Frame 240/2880');
+            expect(getButton()).toHaveTextContent('240/2880');
         });
 
         test('should return to standard time format when selected', async () => {
@@ -138,7 +138,7 @@ describe('TimestampControl', () => {
             await user.click(getButton());
             await user.click(screen.getByRole('option', { name: 'Frame numbers' }));
 
-            expect(getButton()).toHaveTextContent('Frame 120/600');
+            expect(getButton()).toHaveTextContent('120/600');
         });
     });
 
