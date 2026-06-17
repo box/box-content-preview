@@ -1,3 +1,9 @@
+## 3.47.0 (2026-06-17)
+
+* feat(video): add time format dropdown to V2 player timestamp (#1674) ([754b1d6](https://github.com/box/box-content-preview/commit/754b1d6)), closes [#1674](https://github.com/box/box-content-preview/issues/1674)
+
+
+
 ## 3.46.0 (2026-06-13)
 
 * feat(video): update V2 player layout and narrow viewport handling (#1673) ([f14f428](https://github.com/box/box-content-preview/commit/f14f428)), closes [#1673](https://github.com/box/box-content-preview/issues/1673)
