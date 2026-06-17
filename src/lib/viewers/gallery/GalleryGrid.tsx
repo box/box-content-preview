@@ -115,8 +115,7 @@ export default function GalleryGrid({
         return nearbyUnloaded;
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const handleScroll = useCallback(
+    const handleScrollRef = useRef(
         throttle(() => {
             const nearbyUnloaded = getUnloadedNearViewport();
             if (nearbyUnloaded.length > 0) {
@@ -126,7 +125,6 @@ export default function GalleryGrid({
                 startProcessing();
             }
         }, SCROLL_THROTTLE_MS),
-        [],
     );
 
     useEffect(() => {
@@ -201,15 +199,6 @@ export default function GalleryGrid({
                 return;
             }
 
-            if (event.key === ' ') {
-                event.preventDefault();
-                const activePage = (document.activeElement as HTMLElement)?.dataset?.page;
-                if (activePage) {
-                    onPageNavigate(parseInt(activePage, 10));
-                }
-                return;
-            }
-
             if (event.key === 'Tab' && gridRef.current) {
                 const buttons = gridRef.current.querySelectorAll('button');
                 const first = buttons[0];
@@ -224,7 +213,7 @@ export default function GalleryGrid({
                 }
             }
         },
-        [onClose, onPageNavigate],
+        [onClose],
     );
 
     const tiles = [];
@@ -257,7 +246,7 @@ export default function GalleryGrid({
             className="bp-gallery-grid"
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
-            onScroll={handleScroll}
+            onScroll={handleScrollRef.current}
             tabIndex={-1}
         >
             {tiles}
