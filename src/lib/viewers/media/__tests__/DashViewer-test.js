@@ -135,6 +135,13 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setup();
             expect(dash.videoAnnotationsEnabled).toBe(true);
         });
+
+        test('should refetch timestamped comments when timestamped_comment_changed is emitted', () => {
+            jest.spyOn(dash, 'fetchTimestampedComments').mockImplementation();
+            dash.setup();
+            dash.emit('timestamped_comment_changed', { op: 'created' });
+            expect(dash.fetchTimestampedComments).toBeCalled();
+        });
     });
 
     describe('destroy()', () => {

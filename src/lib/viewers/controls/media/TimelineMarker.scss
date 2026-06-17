@@ -1,0 +1,104 @@
+@import '../styles';
+
+// Anchor the bottom of the tick at the slider's vertical midpoint and grow the
+// stack upward so the tick straddles the track and the avatar floats above.
+// 5px = half the tick height.
+.bp-TimelineMarker {
+    position: absolute;
+    bottom: calc(50% - 5px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+    cursor: pointer;
+    pointer-events: auto;
+
+    > .bp-BPAvatar {
+        margin-bottom: 2px;
+        border: 1px solid $white;
+        transform-origin: center bottom;
+        transition: transform 150ms ease-out;
+    }
+
+    &:hover > .bp-BPAvatar {
+        transform: scale(1.5);
+    }
+}
+
+// White core with a dark border so the tick stays legible over both the
+// played (white) and unplayed (gray) regions of the track.
+.bp-TimelineMarker-tick {
+    box-sizing: content-box;
+    width: 4px;
+    height: 10px;
+    background-color: $white;
+    border: 1px solid $twos;
+    border-radius: 2px;
+}
+
+.bp-TimelineMarker-bubble {
+    position: absolute;
+    bottom: calc(100% + 16px);
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 280px;
+    padding: 12px;
+    color: $twos;
+    text-align: left;
+    background-color: $white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+    transform: translateX(-50%);
+    pointer-events: auto;
+}
+
+// Invisible bridge across the gap between the avatar and the bubble so the
+// cursor can transit upward without leaving the marker's hover region.
+.bp-TimelineMarker-bubble::before {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    content: '';
+}
+
+.bp-TimelineMarker-bubbleHeader {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.bp-TimelineMarker-bubbleAuthor {
+    font-weight: bold;
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.bp-TimelineMarker-bubbleBody {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    line-height: 18px;
+    word-break: break-word;
+}
+
+.bp-TimelineMarker-bubbleTimestamp {
+    color: $box-blue;
+    font-weight: bold;
+}
+
+.bp-TimelineMarker-bubbleMessage {
+    white-space: pre-wrap;
+}
+
+.bp-TimelineMarker-bubbleFooter {
+    color: $sunset-grey;
+    font-size: 11px;
+    line-height: 14px;
+}

@@ -4,6 +4,7 @@ import noop from 'lodash/noop';
 import { bdlGray65, white } from 'box-ui-elements/es/styles/variables';
 import FilmstripV2 from './FilmstripV2';
 import SliderControl from '../slider';
+import TimelineMarkers, { TimestampedComment } from './TimelineMarkers';
 import './TimeControlsV2.scss';
 
 export type Props = {
@@ -15,6 +16,8 @@ export type Props = {
     fps?: number;
     mediaEl?: HTMLVideoElement | null;
     onTimeChange: (volume: number) => void;
+    onTimestampedCommentClick?: (comment: TimestampedComment) => void;
+    timestampedComments?: Array<TimestampedComment>;
 };
 
 export const round = (value: number): number => {
@@ -34,6 +37,8 @@ export default function TimeControlsV2({
     fps,
     mediaEl,
     onTimeChange,
+    onTimestampedCommentClick,
+    timestampedComments,
 }: Props): JSX.Element {
     const [isSliderHovered, setIsSliderHovered] = React.useState(false);
     const [hoverPosition, setHoverPosition] = React.useState(0);
@@ -61,6 +66,13 @@ export default function TimeControlsV2({
                     position={hoverPosition}
                     positionMax={hoverPositionMax}
                     time={hoverTime}
+                />
+            )}
+            {timestampedComments && timestampedComments.length > 0 && (
+                <TimelineMarkers
+                    comments={timestampedComments}
+                    durationTime={durationValue}
+                    onMarkerClick={onTimestampedCommentClick}
                 />
             )}
             <SliderControl

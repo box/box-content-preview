@@ -1,0 +1,17 @@
+@import '../styles';
+
+// Keep the controls visible while markers are mounted so they stay readable.
+// Scoped to videos that actually have timestamped comments.
+.bp-ControlsLayer:has(.bp-TimelineMarkers) {
+    opacity: 1;
+}
+
+.bp-TimelineMarkers {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1; // paint above the slider track
+    height: 100%;
+    pointer-events: none;
+}

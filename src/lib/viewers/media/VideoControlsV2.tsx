@@ -72,11 +72,13 @@ export default function VideoControlsV2({
     onSubtitleChange,
     onSubtitlesToggle,
     onTimeChange,
+    onTimestampedCommentClick,
     onVolumeChange,
     quality,
     rate,
     subtitle,
     subtitles = [],
+    timestampedComments,
     videoAnnotationsEnabled = false,
     volume,
 }: Props): JSX.Element {
@@ -104,6 +106,8 @@ export default function VideoControlsV2({
                 fps={fps}
                 mediaEl={mediaEl}
                 onTimeChange={onTimeChange}
+                onTimestampedCommentClick={onTimestampedCommentClick}
+                timestampedComments={timestampedComments}
             />
             <div className="bp-VideoControlsV2-bar">
                 <div className="bp-VideoControlsV2-group bp-VideoControlsV2-group--left">

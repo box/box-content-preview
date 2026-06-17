@@ -7,6 +7,7 @@ import getLanguageName from '../../lang';
 import PreviewError from '../../PreviewError';
 
 import Timer from '../../Timer';
+import TimestampedCommentsAPI from '../../timestampedCommentsAPI';
 import { appendQueryParams, getProp } from '../../util';
 import './Dash.scss';
 import { getVideoFps, isFpsAvailable } from './videoFps';
@@ -78,6 +79,20 @@ class DashViewer extends VideoBaseViewer {
         this.frameStep = this.frameStep.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
+        this.handleTimestampedCommentClick = this.handleTimestampedCommentClick.bind(this);
+    }
+
+    /**
+     * Pauses the video and forwards the click to host listeners so they can
+     * focus the matching comment in their UI.
+     *
+     * @private
+     * @param {Object} comment - The clicked comment
+     * @return {void}
+     */
+    handleTimestampedCommentClick(comment) {
+        this.pause(undefined, true);
+        this.emit('timestamped_comment_click', comment);
     }
 
     /**
@@ -105,6 +120,11 @@ class DashViewer extends VideoBaseViewer {
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
 
         this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
+
+        // Refresh the scrubber's timestamped-comment markers when the host
+        // reports a sidebar-side CRUD change. Refetch returns the canonical
+        // filtered list, so deletes + edit-and-strip-prefix handle themselves.
+        this.addListener('timestamped_comment_changed', () => this.fetchTimestampedComments());
     }
 
     /**
@@ -854,6 +874,8 @@ class DashViewer extends VideoBaseViewer {
             this.loadUI();
         }
 
+        this.fetchTimestampedComments();
+
         if (this.isAutoplayEnabled()) {
             this.autoplay();
         }
@@ -933,6 +955,40 @@ class DashViewer extends VideoBaseViewer {
         this.emit('guide_selected', { guide });
         this.renderUI();
     };
+
+    /**
+     * Fetches the file's timestamped comments and stores them on the viewer
+     * for the scrubber-marker overlay. Fire-and-forget; failures are
+     * swallowed so they never block playback.
+     *
+     * @private
+     * @return {void}
+     */
+    fetchTimestampedComments() {
+        if (!this.isVideoPlayerV2) {
+            return;
+        }
+        const { apiHost, token, sharedLink, sharedLinkPassword } = this.options;
+        const fileId = this.options.file && this.options.file.id;
+        if (!fileId || !token || !apiHost) {
+            return;
+        }
+        const client = new TimestampedCommentsAPI(this.api);
+        client
+            .getTimestampedComments(fileId, { apiHost, token, sharedLink, sharedLinkPassword })
+            .then(timestampedComments => {
+                if (this.isDestroyed()) {
+                    return;
+                }
+                this.timestampedComments = timestampedComments;
+                if (this.useReactControls()) {
+                    this.renderUI();
+                }
+            })
+            .catch(() => {
+                // Swallow — markers are an enhancement, not a hard requirement.
+            });
+    }
 
     /**
      * Loads the film strip
@@ -1321,7 +1377,13 @@ class DashViewer extends VideoBaseViewer {
         }
 
         if (this.isVideoPlayerV2) {
-            this.controls.render(<VideoControlsV2 {...sharedProps} />);
+            this.controls.render(
+                <VideoControlsV2
+                    {...sharedProps}
+                    onTimestampedCommentClick={this.handleTimestampedCommentClick}
+                    timestampedComments={this.timestampedComments}
+                />,
+            );
             return;
         }
 
