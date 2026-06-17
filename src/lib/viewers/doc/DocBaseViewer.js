@@ -1,10 +1,12 @@
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 import throttle from 'lodash/throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
+import GalleryGrid from '../gallery/GalleryGrid';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -121,6 +123,18 @@ class DocBaseViewer extends BaseViewer {
     /** @property {Thumbnail} - Thumbnail reference */
     advancedInsightsThumbs;
 
+    /** @property {number} - Page focused in gallery via Tab */
+    galleryFocusedPage = null;
+
+    /** @property {Thumbnail} - Dedicated gallery thumbnail instance (persists between opens) */
+    galleryThumbnail;
+
+    /** @property {boolean} - Whether gallery mode is active */
+    isGalleryOpen = false;
+
+    /** @property {boolean} - Whether sidebar was open before entering gallery */
+    sidebarWasOpen = false;
+
     /** @property {PageTracker} - PageTracker instance */
     pageTracker;
 
@@ -153,6 +167,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
+        this.handleGalleryNavigate = this.handleGalleryNavigate.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -167,6 +182,7 @@ class DocBaseViewer extends BaseViewer {
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
+        this.toggleGallery = this.toggleGallery.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
@@ -273,6 +289,21 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.printPopup) {
             this.printPopup.destroy();
+        }
+
+        if (this.galleryRoot) {
+            this.galleryRoot.unmount();
+            this.galleryRoot = null;
+        }
+
+        if (this.galleryEl) {
+            this.galleryEl.remove();
+            this.galleryEl = null;
+        }
+
+        if (this.galleryThumbnail) {
+            this.galleryThumbnail.destroy();
+            this.galleryThumbnail = null;
         }
 
         if (this.thumbnailsSidebar) {
@@ -881,6 +912,11 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebar.refresh();
         }
 
+        if (this.galleryThumbnail) {
+            this.galleryThumbnail.destroy();
+            this.galleryThumbnail = null;
+        }
+
         this.renderUI();
 
         // Emit scale with rotation angle so annotations transform to match rotated content
@@ -1449,6 +1485,11 @@ class DocBaseViewer extends BaseViewer {
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
+        const canGallery =
+            isFeatureEnabled(this.options.features, 'galleryView.enabled') &&
+            enableThumbnailsSidebar &&
+            this.pdfViewer.pagesCount > 1 &&
+            this.pdfViewer.pagesCount <= 200;
 
         this.controls.render(
             <DocControls
@@ -1458,6 +1499,7 @@ class DocBaseViewer extends BaseViewer {
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
+                isGalleryOpen={this.isGalleryOpen}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}
@@ -1466,6 +1508,7 @@ class DocBaseViewer extends BaseViewer {
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                 onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
                 onFullscreenToggle={this.toggleFullscreen}
+                onGalleryToggle={canGallery ? this.toggleGallery : undefined}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
@@ -1700,6 +1743,11 @@ class DocBaseViewer extends BaseViewer {
      */
     handleDocElKeydown(event) {
         const key = decodeKeydown(event);
+
+        if (key === 'Escape' && this.isGalleryOpen) {
+            this.toggleGallery();
+            return;
+        }
 
         if (event.altKey && key.includes('Arrow')) {
             event.stopPropagation(); // Prevent collection/page navigation for caret navigation users
@@ -2007,6 +2055,88 @@ class DocBaseViewer extends BaseViewer {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
         }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+    }
+
+    mountGalleryGrid() {
+        if (!this.galleryThumbnail) {
+            this.galleryThumbnail = new Thumbnail(this.pdfViewer, this.preloader);
+        }
+
+        this.galleryEl = document.createElement('div');
+        this.containerEl.appendChild(this.galleryEl);
+        this.galleryRoot = createRoot(this.galleryEl);
+        this.galleryFocusedPage = this.pdfViewer.currentPageNumber;
+        this.galleryRoot.render(
+            <GalleryGrid
+                currentPage={this.pdfViewer.currentPageNumber}
+                onClose={this.toggleGallery}
+                onFocusChange={pageNum => {
+                    this.galleryFocusedPage = pageNum;
+                }}
+                onPageNavigate={this.handleGalleryNavigate}
+                pageCount={this.pdfViewer.pagesCount}
+                thumbnail={this.galleryThumbnail}
+            />,
+        );
+    }
+
+    toggleGallery() {
+        this.isGalleryOpen = !this.isGalleryOpen;
+
+        if (this.isGalleryOpen) {
+            this.sidebarWasOpen = !!(this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen);
+
+            if (this.sidebarWasOpen) {
+                this.toggleThumbnails();
+                setTimeout(() => this.mountGalleryGrid(), THUMBNAILS_SIDEBAR_TRANSITION_TIME / 2);
+            } else {
+                this.mountGalleryGrid();
+            }
+        } else {
+            const navigateToPage =
+                this.galleryFocusedPage && this.galleryFocusedPage !== this.pdfViewer.currentPageNumber
+                    ? this.galleryFocusedPage
+                    : null;
+
+            if (this.galleryRoot) {
+                this.galleryRoot.unmount();
+                this.galleryRoot = null;
+            }
+
+            if (this.galleryEl) {
+                this.galleryEl.remove();
+                this.galleryEl = null;
+            }
+
+            this.galleryFocusedPage = null;
+
+            if (this.sidebarWasOpen && this.thumbnailsSidebar && !this.thumbnailsSidebar.isOpen) {
+                this.toggleThumbnails();
+            }
+
+            if (navigateToPage) {
+                this.setPage(navigateToPage);
+
+                if (this.sidebarWasOpen && this.thumbnailsSidebar) {
+                    setTimeout(() => {
+                        this.thumbnailsSidebar.setCurrentPage(navigateToPage);
+                    }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+                }
+            }
+        }
+
+        this.renderUI();
+    }
+
+    handleGalleryNavigate(pageNum) {
+        this.toggleGallery();
+        this.setPage(pageNum);
+
+        if (this.sidebarWasOpen && this.thumbnailsSidebar) {
+            setTimeout(() => {
+                this.thumbnailsSidebar.setCurrentPage(pageNum);
+            }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+        }
     }
 
     /**
