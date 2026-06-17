@@ -6,7 +6,7 @@ import IconChevronDownMedium24 from '../icons/IconChevronDownMedium24';
 import IconChevronUpMedium24 from '../icons/IconChevronUpMedium24';
 import useClickOutside from '../hooks/useClickOutside';
 import { DEFAULT_FPS } from '../../media/videoFps';
-import { decodeKeydown, replacePlaceholders } from '../../../util';
+import { decodeKeydown } from '../../../util';
 import { formatTime } from './DurationLabels';
 import './TimestampControl.scss';
 
@@ -29,7 +29,7 @@ export function formatLabel(time: number, format: TimeFormat, fps: number): stri
         case TimeFormat.TIMECODE:
             return formatTimecode(time, fps);
         case TimeFormat.FRAMES:
-            return replacePlaceholders(__('media_frame_number'), [Math.floor(time * fps).toString()]);
+            return Math.floor(time * fps).toString();
         case TimeFormat.STANDARD:
         default:
             return formatTime(time);
@@ -57,6 +57,14 @@ export default function TimestampControl({
     const rafIdRef = React.useRef<number>(0);
 
     useClickOutside(containerElRef, () => setIsOpen(false));
+
+    React.useEffect(() => {
+        const container = mediaEl?.closest('.bp-media-container');
+        if (container) {
+            container.setAttribute('data-time-format', format);
+            container.setAttribute('data-fps', String(fps));
+        }
+    }, [format, fps, mediaEl]);
 
     React.useEffect(() => {
         // Re-render via timeupdate events is too slow (~4Hz) for frame-accurate
