@@ -5,6 +5,7 @@ import DrawingControls, { Props as DrawingControlsProps } from '../controls/anno
 import ExperiencesProvider, { Props as ExperiencesProviderProps } from '../controls/experiences';
 import FindBarToggle, { Props as FindBarToggleProps } from '../controls/findbar';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../controls/fullscreen';
+import GalleryToggle, { Props as GalleryToggleProps } from '../controls/gallery';
 import PageControls, { Props as PageControlsProps } from '../controls/page';
 import RotateControl, { Props as RotateControlProps } from '../controls/rotate/RotateControl';
 import ThumbnailsToggle, { Props as ThumbnailsToggleProps } from '../controls/sidebar';
@@ -15,6 +16,7 @@ export type Props = AnnotationsControlsProps &
     ExperiencesProviderProps &
     FindBarToggleProps &
     FullscreenToggleProps &
+    GalleryToggleProps &
     PageControlsProps &
     Partial<RotateControlProps> &
     ThumbnailsToggleProps &
@@ -27,6 +29,7 @@ export default function DocControls({
     hasDrawing,
     hasHighlight,
     hasRegion,
+    isGalleryOpen,
     isThumbnailsOpen,
     maxScale,
     minScale,
@@ -35,6 +38,7 @@ export default function DocControls({
     onAnnotationModeEscape,
     onFindBarToggle,
     onFullscreenToggle,
+    onGalleryToggle,
     onPageChange,
     onPageSubmit,
     onRotateLeft,
@@ -45,6 +49,19 @@ export default function DocControls({
     pageNumber,
     scale,
 }: Props): JSX.Element {
+    if (isGalleryOpen) {
+        return (
+            <ExperiencesProvider experiences={experiences}>
+                <ControlsBar>
+                    <ControlsBarGroup>
+                        <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
+                        <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                    </ControlsBarGroup>
+                </ControlsBar>
+            </ExperiencesProvider>
+        );
+    }
+
     return (
         <ExperiencesProvider experiences={experiences}>
             <ControlsBar>
@@ -75,6 +92,7 @@ export default function DocControls({
                     </ControlsBarGroup>
                 )}
                 <ControlsBarGroup>
+                    <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
                     <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                     <AnnotationsControls
                         annotationColor={annotationColor}
