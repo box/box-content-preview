@@ -2,6 +2,11 @@ import React from 'react';
 import noop from 'lodash/noop';
 import MediaSettingsMenuAudioTracks, { addLabels, Props as AudioTracksProps } from './MediaSettingsAudioTracks';
 import MediaSettingsMenuAutoplay, { Props as AutoplayProps } from './MediaSettingsMenuAutoplay';
+import MediaSettingsMenuGuides, {
+    getLabel as getGuideLabel,
+    Guide,
+    Props as GuidesProps,
+} from './MediaSettingsMenuGuides';
 import MediaSettingsMenuQuality, {
     getLabel as getQualityLabel,
     Props as QualityProps,
@@ -11,11 +16,12 @@ import MediaSettingsMenuSubtitles, { getDisplayLanguage, Props as SubtitlesProps
 import Settings, { Menu, Props as SettingsProps } from '../settings';
 
 export type Props = Partial<AudioTracksProps> &
+    Partial<GuidesProps> &
     Partial<QualityProps> &
     Partial<SettingsProps> &
     Partial<SubtitlesProps> &
     AutoplayProps &
-    RateProps & { className?: string; isHDSupported?: boolean };
+    RateProps & { className?: string; isGuidesEnabled?: boolean; isHDSupported?: boolean };
 
 export default function MediaSettings({
     audioTrack,
@@ -23,9 +29,12 @@ export default function MediaSettings({
     autoplay,
     badge,
     className,
+    guide = Guide.OFF,
+    isGuidesEnabled,
     isHDSupported,
     onAudioTrackChange = noop,
     onAutoplayChange,
+    onGuideChange = noop,
     onQualityChange,
     onRateChange,
     onSubtitleChange,
@@ -84,11 +93,20 @@ export default function MediaSettings({
                         value={audioTrackLabel}
                     />
                 )}
+                {isGuidesEnabled && (
+                    <Settings.MenuItem
+                        data-testid="bp-media-settings-guides"
+                        label={__('media_guides')}
+                        target={Menu.GUIDES}
+                        value={getGuideLabel(guide)}
+                    />
+                )}
             </Settings.Menu>
 
             <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
             <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />
+            {isGuidesEnabled && <MediaSettingsMenuGuides guide={guide} onGuideChange={onGuideChange} />}
             <MediaSettingsMenuSubtitles onSubtitleChange={onSubtitleChange} subtitle={subtitle} subtitles={subtitles} />
             <MediaSettingsMenuAudioTracks
                 audioTrack={audioTrack}
