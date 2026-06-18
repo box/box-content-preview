@@ -1,3 +1,11 @@
+## 3.48.0 (2026-06-18)
+
+* feat(media): restyle V2 settings menu to match TimestampControl flyout (#1678) ([c078dab](https://github.com/box/box-content-preview/commit/c078dab)), closes [#1678](https://github.com/box/box-content-preview/issues/1678)
+* feat(video): add framing guides overlay for V2 player (PREVIEW-625) (#1675) ([d53734c](https://github.com/box/box-content-preview/commit/d53734c)), closes [#1675](https://github.com/box/box-content-preview/issues/1675) [#7](https://github.com/box/box-content-preview/issues/7)
+* feat(video): expose time format via data attributes on media container (#1677) ([50a2102](https://github.com/box/box-content-preview/commit/50a2102)), closes [#1677](https://github.com/box/box-content-preview/issues/1677)
+
+
+
 ## 3.47.0 (2026-06-17)
 
 * feat(video): add time format dropdown to V2 player timestamp (#1674) ([754b1d6](https://github.com/box/box-content-preview/commit/754b1d6)), closes [#1674](https://github.com/box/box-content-preview/issues/1674)
