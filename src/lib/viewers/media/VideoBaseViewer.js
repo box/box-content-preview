@@ -633,6 +633,10 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.preloader.wrapperEl.style.top = '50%';
             this.preloader.wrapperEl.style.transform = 'translate(-50%, -50%)';
         }
+
+        if (!this.featureEnabled('videoPlayerV2.enabled') && this.mediaContainerEl && this.mediaEl.style.width) {
+            this.mediaContainerEl.style.width = this.mediaEl.style.width;
+        }
     }
 
     /**
