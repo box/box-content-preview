@@ -744,6 +744,23 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 expect(videoBase.mediaEl.style.width).toBe('325px');
             });
         });
+
+        describe('mediaContainerEl width sync', () => {
+            test('should set mediaContainerEl width to match mediaEl width when V2 is disabled', () => {
+                jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+                videoBase.aspect = 1;
+                videoBase.setVideoDimensions();
+                expect(videoBase.mediaContainerEl.style.width).toBe(videoBase.mediaEl.style.width);
+            });
+
+            test('should reset mediaContainerEl width when V2 is enabled', () => {
+                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+                videoBase.aspect = 1;
+                videoBase.mediaContainerEl.style.width = '500px';
+                videoBase.setVideoDimensions();
+                expect(videoBase.mediaContainerEl.style.width).toBe('');
+            });
+        });
     });
 
     describe('allowNavigationArrows', () => {
