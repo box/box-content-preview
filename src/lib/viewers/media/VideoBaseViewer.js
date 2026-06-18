@@ -623,6 +623,16 @@ class VideoBaseViewer extends MediaBaseViewer {
                 this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
             }
         }
+
+        if (this.featureEnabled('videoPlayerV2.enabled') && this.preloader?.wrapperEl && this.mediaEl.style.width) {
+            const videoWidth = parseInt(this.mediaEl.style.width, 10);
+            const videoHeight = videoWidth / this.aspect;
+            this.preloader.wrapperEl.style.width = `${videoWidth}px`;
+            this.preloader.wrapperEl.style.height = `${videoHeight}px`;
+            this.preloader.wrapperEl.style.left = '50%';
+            this.preloader.wrapperEl.style.top = '50%';
+            this.preloader.wrapperEl.style.transform = 'translate(-50%, -50%)';
+        }
     }
 
     /**
