@@ -1,3 +1,9 @@
+## 3.49.0 (2026-06-19)
+
+* fix(video): restore media container width for v1 player (#1683) ([331b0f3](https://github.com/box/box-content-preview/commit/331b0f3)), closes [#1683](https://github.com/box/box-content-preview/issues/1683)
+
+
+
 ## 3.48.0 (2026-06-18)
 
 * feat(media): restyle V2 settings menu to match TimestampControl flyout (#1678) ([c078dab](https://github.com/box/box-content-preview/commit/c078dab)), closes [#1678](https://github.com/box/box-content-preview/issues/1678)
