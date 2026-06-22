@@ -144,6 +144,22 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('handleTimestampedCommentClick()', () => {
+        beforeEach(() => {
+            jest.spyOn(dash, 'pause').mockImplementation();
+            jest.spyOn(dash, 'emit').mockImplementation();
+        });
+
+        test('should pause and emit timestamped_comment_click', () => {
+            const comment = { id: '1' };
+
+            dash.handleTimestampedCommentClick(comment);
+
+            expect(dash.pause).toBeCalledWith(undefined, true);
+            expect(dash.emit).toBeCalledWith('timestamped_comment_click', comment);
+        });
+    });
+
     describe('destroy()', () => {
         test('should remove event listeners on the dash', () => {
             stubs.removeStats = jest.spyOn(dash, 'removeStats');

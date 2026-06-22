@@ -16,7 +16,7 @@ describe('timestampedCommentsAPI', () => {
             const url = TimestampedCommentsAPI.getURL('123', 'https://api.box.com');
             expect(url).toContain('https://api.box.com/2.0/file_activities');
             expect(url).toContain('file_id=123');
-            expect(url).toContain('activity_types=enhanced_annotation,enhanced_comment,task,versions');
+            expect(url).toContain('activity_types=enhanced_comment,task,versions');
             expect(url).toContain('enable_replies=true');
             expect(url).toContain('reply_limit=1000');
         });
@@ -57,6 +57,26 @@ describe('timestampedCommentsAPI', () => {
                     user: { avatarUrl: 'https://example.com/a.png', name: 'Alex Park' },
                 },
             ]);
+        });
+
+        test('Should drop resolved comments to mirror the sidebar filtered view', () => {
+            const response = {
+                entries: [
+                    {
+                        activity_type: 'enhanced_comment',
+                        source: {
+                            enhanced_comment: {
+                                created_by: { name: 'Alex Park' },
+                                id: '1',
+                                message: '#[timestamp:5000] body',
+                                status: 'resolved',
+                            },
+                        },
+                    },
+                ],
+            };
+
+            expect(TimestampedCommentsAPI.parseResponse(response)).toEqual([]);
         });
 
         test('Should accept comment entries without a versionId in the prefix', () => {

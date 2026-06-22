@@ -1,6 +1,6 @@
 import { getHeaders } from './util';
 
-const ACTIVITY_TYPES = ['enhanced_annotation', 'enhanced_comment', 'task', 'versions'];
+const ACTIVITY_TYPES = ['enhanced_comment', 'task', 'versions'];
 const REPLY_LIMIT = 1000;
 
 const TIMESTAMP_PREFIX_REGEX = /^#\[timestamp:(\d+)(?:,versionId:\d+)?\]\s*/;
@@ -25,7 +25,8 @@ export default class TimestampedCommentsAPI {
 
     /**
      * Filters the file_activities response down to comments with a timestamp
-     * prefix and reshapes them for the scrubber-marker overlay.
+     * prefix and reshapes them for the scrubber-marker overlay. Resolved
+     * comments are dropped to mirror the sidebar's filtered view.
      *
      * @param {Object} response - file_activities response payload
      * @return {Array<{id: string, time: number, message: string, createdAt: string, user: {name: string, avatarUrl?: string}}>}
@@ -41,6 +42,12 @@ export default class TimestampedCommentsAPI {
 
             const comment = entry.source.enhanced_comment || entry.source.comment;
             if (!comment) {
+                return acc;
+            }
+
+            // Resolved comments are hidden in the sidebar; mirror that on
+            // the scrubber so both views stay in sync.
+            if (comment.status === 'resolved') {
                 return acc;
             }
 
