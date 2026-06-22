@@ -17,6 +17,7 @@ const defaultProps = {
     onAnnotationModeEscape: jest.fn(),
     onAudioTrackChange: jest.fn(),
     onAutoplayChange: jest.fn(),
+    onFullscreenToggle: jest.fn(),
     onMuteChange: jest.fn(),
     onPlayPause: jest.fn(),
     onQualityChange: jest.fn(),
@@ -70,9 +71,9 @@ describe('VideoControlsV2', () => {
             expect(screen.queryByTitle('Skip backward')).not.toBeInTheDocument();
         });
 
-        test('should not render fullscreen toggle', () => {
+        test('should render fullscreen button', () => {
             render(<VideoControlsV2 {...defaultProps} />);
-            expect(screen.queryByTitle('Enter fullscreen')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-VideoFullscreenButton')).toBeInTheDocument();
         });
     });
 

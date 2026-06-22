@@ -1299,6 +1299,7 @@ class DashViewer extends VideoBaseViewer {
             onAnnotationModeEscape: this.handleAnnotationControlsEscape,
             onAudioTrackChange: this.setAudioTrack,
             onAutoplayChange: this.setAutoplay,
+            onFullscreenToggle: this.toggleFullscreen,
             onGuideChange: this.setGuide,
             onMuteChange: this.toggleMute,
             onPlayPause: this.handlePlayRequest,
@@ -1332,7 +1333,6 @@ class DashViewer extends VideoBaseViewer {
                 experiences={this.experiences}
                 hasHighlight={false}
                 isPlayingHD={this.isPlayingHD()}
-                onFullscreenToggle={this.toggleFullscreen}
             />,
         );
     }

@@ -70,8 +70,14 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         helpersRef.current.show();
     };
 
-    const handleMouseLeave = (): void => {
+    const handleMouseLeave = (event: React.MouseEvent): void => {
         hasCursorRef.current = false;
+
+        const layerEl = event.currentTarget as HTMLElement;
+        if (document.activeElement && layerEl.contains(document.activeElement)) {
+            (document.activeElement as HTMLElement).blur();
+        }
+
         helpersRef.current.hide();
     };
 

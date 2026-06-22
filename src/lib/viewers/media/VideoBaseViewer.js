@@ -707,6 +707,15 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.play().catch(this.pause);
     };
 
+    handleFullscreenEnter() {
+        super.handleFullscreenEnter();
+
+        if (this.controls?.controlsLayer?.reset) {
+            this.controls.controlsLayer.reset();
+            this.showAndHideReactControls();
+        }
+    }
+
     handleControlsHide = () => {
         this.mediaContainerEl.classList.remove('bp-media-controls-is-visible');
     };
