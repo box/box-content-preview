@@ -1487,7 +1487,6 @@ class DocBaseViewer extends BaseViewer {
         const canRotate = this.featureEnabled('rotate.enabled');
         const canGallery =
             isFeatureEnabled(this.options.features, 'galleryView.enabled') &&
-            enableThumbnailsSidebar &&
             this.pdfViewer.pagesCount > 1 &&
             this.pdfViewer.pagesCount <= 200;
 
@@ -2129,14 +2128,8 @@ class DocBaseViewer extends BaseViewer {
     }
 
     handleGalleryNavigate(pageNum) {
+        this.galleryFocusedPage = pageNum;
         this.toggleGallery();
-        this.setPage(pageNum);
-
-        if (this.sidebarWasOpen && this.thumbnailsSidebar) {
-            setTimeout(() => {
-                this.thumbnailsSidebar.setCurrentPage(pageNum);
-            }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
-        }
     }
 
     /**

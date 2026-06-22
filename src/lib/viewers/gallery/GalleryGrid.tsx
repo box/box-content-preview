@@ -7,14 +7,22 @@ const INITIAL_LOAD_BUFFER = 40;
 const CONCURRENT_LOADS = 4;
 const SCROLL_THROTTLE_MS = 200;
 
+interface GalleryThumbnail {
+    init: () => Promise<unknown>;
+    getImageFromCache: (itemIndex: number) => { image?: HTMLImageElement; inProgress: boolean } | null | undefined;
+    createThumbnailImage: (
+        itemIndex: number,
+        options: { createImgTag: boolean; thumbMaxWidth: number },
+    ) => Promise<HTMLImageElement | null>;
+}
+
 export type Props = {
     pageCount: number;
     currentPage: number;
     onFocusChange?: (pageNum: number) => void;
     onPageNavigate: (n: number) => void;
     onClose: () => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    thumbnail: any;
+    thumbnail: GalleryThumbnail;
 };
 
 export default function GalleryGrid({

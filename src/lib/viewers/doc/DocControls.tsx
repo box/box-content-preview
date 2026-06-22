@@ -49,69 +49,70 @@ export default function DocControls({
     pageNumber,
     scale,
 }: Props): JSX.Element {
-    if (isGalleryOpen) {
-        return (
-            <ExperiencesProvider experiences={experiences}>
+    return (
+        <ExperiencesProvider experiences={experiences}>
+            {isGalleryOpen ? (
                 <ControlsBar>
                     <ControlsBarGroup>
                         <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
                         <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
                     </ControlsBarGroup>
                 </ControlsBar>
-            </ExperiencesProvider>
-        );
-    }
-
-    return (
-        <ExperiencesProvider experiences={experiences}>
-            <ControlsBar>
-                <ControlsBarGroup>
-                    <ThumbnailsToggle isThumbnailsOpen={isThumbnailsOpen} onThumbnailsToggle={onThumbnailsToggle} />
-                    <FindBarToggle onFindBarToggle={onFindBarToggle} />
-                </ControlsBarGroup>
-                <ControlsBarGroup isDistinct>
-                    <PageControls
-                        onPageChange={onPageChange}
-                        onPageSubmit={onPageSubmit}
-                        pageCount={pageCount}
-                        pageNumber={pageNumber}
-                    />
-                </ControlsBarGroup>
-                <ControlsBarGroup isDistinct>
-                    <ZoomControls
-                        maxScale={maxScale}
-                        minScale={minScale}
-                        onZoomIn={onZoomIn}
-                        onZoomOut={onZoomOut}
-                        scale={scale}
-                    />
-                </ControlsBarGroup>
-                {onRotateLeft && (
-                    <ControlsBarGroup>
-                        <RotateControl onRotateLeft={onRotateLeft} />
-                    </ControlsBarGroup>
-                )}
-                <ControlsBarGroup>
-                    <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
-                    <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
-                    <AnnotationsControls
-                        annotationColor={annotationColor}
-                        annotationMode={annotationMode}
-                        hasDrawing={hasDrawing}
-                        hasHighlight={hasHighlight}
-                        hasRegion={hasRegion}
-                        onAnnotationModeClick={onAnnotationModeClick}
-                        onAnnotationModeEscape={onAnnotationModeEscape}
-                    />
-                </ControlsBarGroup>
-            </ControlsBar>
-            <ControlsBar>
-                <DrawingControls
-                    annotationColor={annotationColor}
-                    annotationMode={annotationMode}
-                    onAnnotationColorChange={onAnnotationColorChange}
-                />
-            </ControlsBar>
+            ) : (
+                <>
+                    <ControlsBar>
+                        <ControlsBarGroup>
+                            <ThumbnailsToggle
+                                isThumbnailsOpen={isThumbnailsOpen}
+                                onThumbnailsToggle={onThumbnailsToggle}
+                            />
+                            <FindBarToggle onFindBarToggle={onFindBarToggle} />
+                        </ControlsBarGroup>
+                        <ControlsBarGroup isDistinct>
+                            <PageControls
+                                onPageChange={onPageChange}
+                                onPageSubmit={onPageSubmit}
+                                pageCount={pageCount}
+                                pageNumber={pageNumber}
+                            />
+                        </ControlsBarGroup>
+                        <ControlsBarGroup isDistinct>
+                            <ZoomControls
+                                maxScale={maxScale}
+                                minScale={minScale}
+                                onZoomIn={onZoomIn}
+                                onZoomOut={onZoomOut}
+                                scale={scale}
+                            />
+                        </ControlsBarGroup>
+                        {onRotateLeft && (
+                            <ControlsBarGroup>
+                                <RotateControl onRotateLeft={onRotateLeft} />
+                            </ControlsBarGroup>
+                        )}
+                        <ControlsBarGroup>
+                            <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
+                            <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                            <AnnotationsControls
+                                annotationColor={annotationColor}
+                                annotationMode={annotationMode}
+                                hasDrawing={hasDrawing}
+                                hasHighlight={hasHighlight}
+                                hasRegion={hasRegion}
+                                onAnnotationModeClick={onAnnotationModeClick}
+                                onAnnotationModeEscape={onAnnotationModeEscape}
+                            />
+                        </ControlsBarGroup>
+                    </ControlsBar>
+                    <ControlsBar>
+                        <DrawingControls
+                            annotationColor={annotationColor}
+                            annotationMode={annotationMode}
+                            onAnnotationColorChange={onAnnotationColorChange}
+                        />
+                    </ControlsBar>
+                </>
+            )}
         </ExperiencesProvider>
     );
 }
