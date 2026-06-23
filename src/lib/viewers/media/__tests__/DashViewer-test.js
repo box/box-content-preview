@@ -135,6 +135,29 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.setup();
             expect(dash.videoAnnotationsEnabled).toBe(true);
         });
+
+        test('should refetch timestamped comments when timestamped_comment_changed is emitted', () => {
+            jest.spyOn(dash, 'fetchTimestampedComments').mockImplementation();
+            dash.setup();
+            dash.emit('timestamped_comment_changed', { op: 'created' });
+            expect(dash.fetchTimestampedComments).toBeCalled();
+        });
+    });
+
+    describe('handleTimestampedCommentClick()', () => {
+        beforeEach(() => {
+            jest.spyOn(dash, 'pause').mockImplementation();
+            jest.spyOn(dash, 'emit').mockImplementation();
+        });
+
+        test('should pause and emit timestamped_comment_click', () => {
+            const comment = { id: '1' };
+
+            dash.handleTimestampedCommentClick(comment);
+
+            expect(dash.pause).toBeCalledWith(undefined, true);
+            expect(dash.emit).toBeCalledWith('timestamped_comment_click', comment);
+        });
     });
 
     describe('destroy()', () => {
