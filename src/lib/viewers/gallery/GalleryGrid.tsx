@@ -38,11 +38,12 @@ export default function GalleryGrid({
     const gridRef = useRef<HTMLDivElement>(null);
     const queueRef = useRef<number[]>([]);
     const isProcessingRef = useRef(false);
+    const isMountedRef = useRef(true);
     const initialLoadDoneRef = useRef(false);
     const initialLoadCountRef = useRef(0);
 
     function processQueue() {
-        if (!thumbnail || queueRef.current.length === 0) {
+        if (!isMountedRef.current || !thumbnail || queueRef.current.length === 0) {
             isProcessingRef.current = false;
             return;
         }
@@ -52,7 +53,7 @@ export default function GalleryGrid({
         queueRef.current = queueRef.current.slice(batchSize);
 
         requestAnimationFrame(() => {
-            if (!thumbnail) {
+            if (!isMountedRef.current || !thumbnail) {
                 isProcessingRef.current = false;
                 return;
             }
@@ -62,6 +63,11 @@ export default function GalleryGrid({
             const onComplete = () => {
                 completed += 1;
                 if (completed < batch.length) return;
+
+                if (!isMountedRef.current) {
+                    isProcessingRef.current = false;
+                    return;
+                }
 
                 if (!initialLoadDoneRef.current) {
                     initialLoadCountRef.current += batch.length;
@@ -78,7 +84,7 @@ export default function GalleryGrid({
                 thumbnail
                     .createThumbnailImage(pageNum - 1, { createImgTag: true, thumbMaxWidth: GALLERY_THUMB_MAX_WIDTH })
                     .then((imageEl: HTMLImageElement | null) => {
-                        if (imageEl && imageEl.src) {
+                        if (isMountedRef.current && imageEl && imageEl.src) {
                             setLoadedImages(prev => ({ ...prev, [pageNum]: imageEl.src }));
                         }
                         onComplete();
@@ -111,7 +117,8 @@ export default function GalleryGrid({
 
         tiles.forEach(tile => {
             const el = tile as HTMLElement;
-            const pageNum = parseInt(el.dataset.page || '0', 10);
+            if (!el.dataset.page) return;
+            const pageNum = parseInt(el.dataset.page, 10);
             const tileTop = el.offsetTop;
             const tileBottom = tileTop + el.offsetHeight;
 
@@ -136,6 +143,8 @@ export default function GalleryGrid({
     );
 
     useEffect(() => {
+        const throttledScroll = handleScrollRef.current;
+
         if (gridRef.current) {
             const tile = gridRef.current.querySelector(`[data-page="${currentPage}"]`) as HTMLElement;
             if (tile) {
@@ -165,13 +174,16 @@ export default function GalleryGrid({
         queueRef.current = uncachedPages;
 
         thumbnail.init().then(() => {
+            if (!isMountedRef.current) return;
             isProcessingRef.current = true;
             processQueue();
         });
 
         return () => {
+            isMountedRef.current = false;
             queueRef.current = [];
             isProcessingRef.current = false;
+            throttledScroll.cancel();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

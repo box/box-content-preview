@@ -98,6 +98,7 @@ const RANGE_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_MINIMUM_SIZE = 26214400; // 25MB
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
+const GALLERY_MAX_PAGES = 200; // Hide gallery toggle for files above this page count, will increase in V2
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
@@ -125,6 +126,12 @@ class DocBaseViewer extends BaseViewer {
 
     /** @property {number} - Page focused in gallery via Tab */
     galleryFocusedPage = null;
+
+    /** @property {number} - Pending setTimeout ID for delayed gallery mount */
+    galleryMountTimeoutId = null;
+
+    /** @property {number} - Pending setTimeout ID for delayed sidebar setCurrentPage after gallery exit */
+    gallerySidebarTimeoutId = null;
 
     /** @property {Thumbnail} - Dedicated gallery thumbnail instance (persists between opens) */
     galleryThumbnail;
@@ -273,6 +280,31 @@ class DocBaseViewer extends BaseViewer {
             this.findBar.destroy();
         }
 
+        // Cancel any pending gallery setTimeouts so they don't fire after teardown
+        if (this.galleryMountTimeoutId !== null) {
+            clearTimeout(this.galleryMountTimeoutId);
+            this.galleryMountTimeoutId = null;
+        }
+        if (this.gallerySidebarTimeoutId !== null) {
+            clearTimeout(this.gallerySidebarTimeoutId);
+            this.gallerySidebarTimeoutId = null;
+        }
+
+        if (this.galleryRoot) {
+            this.galleryRoot.unmount();
+            this.galleryRoot = null;
+        }
+
+        if (this.galleryEl) {
+            this.galleryEl.remove();
+            this.galleryEl = null;
+        }
+
+        if (this.galleryThumbnail) {
+            this.galleryThumbnail.destroy();
+            this.galleryThumbnail = null;
+        }
+
         // Clean up PDF network requests
         if (this.pdfLoadingTask) {
             try {
@@ -289,21 +321,6 @@ class DocBaseViewer extends BaseViewer {
 
         if (this.printPopup) {
             this.printPopup.destroy();
-        }
-
-        if (this.galleryRoot) {
-            this.galleryRoot.unmount();
-            this.galleryRoot = null;
-        }
-
-        if (this.galleryEl) {
-            this.galleryEl.remove();
-            this.galleryEl = null;
-        }
-
-        if (this.galleryThumbnail) {
-            this.galleryThumbnail.destroy();
-            this.galleryThumbnail = null;
         }
 
         if (this.thumbnailsSidebar) {
@@ -1488,7 +1505,7 @@ class DocBaseViewer extends BaseViewer {
         const canGallery =
             isFeatureEnabled(this.options.features, 'galleryView.enabled') &&
             this.pdfViewer.pagesCount > 1 &&
-            this.pdfViewer.pagesCount <= 200;
+            this.pdfViewer.pagesCount <= GALLERY_MAX_PAGES;
 
         this.controls.render(
             <DocControls
@@ -2057,6 +2074,10 @@ class DocBaseViewer extends BaseViewer {
     }
 
     mountGalleryGrid() {
+        if (this.galleryRoot) {
+            return;
+        }
+
         if (!this.galleryThumbnail) {
             this.galleryThumbnail = new Thumbnail(this.pdfViewer, this.preloader);
         }
@@ -2083,15 +2104,28 @@ class DocBaseViewer extends BaseViewer {
         this.isGalleryOpen = !this.isGalleryOpen;
 
         if (this.isGalleryOpen) {
+            if (this.gallerySidebarTimeoutId !== null) {
+                clearTimeout(this.gallerySidebarTimeoutId);
+                this.gallerySidebarTimeoutId = null;
+            }
+
             this.sidebarWasOpen = !!(this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen);
 
             if (this.sidebarWasOpen) {
                 this.toggleThumbnails();
-                setTimeout(() => this.mountGalleryGrid(), THUMBNAILS_SIDEBAR_TRANSITION_TIME / 2);
+                this.galleryMountTimeoutId = setTimeout(() => {
+                    this.galleryMountTimeoutId = null;
+                    this.mountGalleryGrid();
+                }, THUMBNAILS_SIDEBAR_TRANSITION_TIME / 2);
             } else {
                 this.mountGalleryGrid();
             }
         } else {
+            if (this.galleryMountTimeoutId !== null) {
+                clearTimeout(this.galleryMountTimeoutId);
+                this.galleryMountTimeoutId = null;
+            }
+
             const navigateToPage =
                 this.galleryFocusedPage && this.galleryFocusedPage !== this.pdfViewer.currentPageNumber
                     ? this.galleryFocusedPage
@@ -2117,7 +2151,8 @@ class DocBaseViewer extends BaseViewer {
                 this.setPage(navigateToPage);
 
                 if (this.sidebarWasOpen && this.thumbnailsSidebar) {
-                    setTimeout(() => {
+                    this.gallerySidebarTimeoutId = setTimeout(() => {
+                        this.gallerySidebarTimeoutId = null;
                         this.thumbnailsSidebar.setCurrentPage(navigateToPage);
                     }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
                 }
