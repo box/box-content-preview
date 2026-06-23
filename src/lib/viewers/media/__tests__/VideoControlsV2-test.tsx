@@ -73,7 +73,7 @@ describe('VideoControlsV2', () => {
 
         test('should render fullscreen button', () => {
             render(<VideoControlsV2 {...defaultProps} />);
-            expect(screen.getByTestId('bp-VideoFullscreenButton')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /fullscreen/i })).toBeInTheDocument();
         });
     });
 
