@@ -2,13 +2,20 @@
 
 .bp-VideoControlsRoot:has(.bp-VideoControlsV2) {
     position: absolute;
+    top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     width: 100%;
+    pointer-events: none;
 
     .bp-ControlsLayer {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
         width: 100%;
+        height: 100%;
+        pointer-events: none;
     }
 }
 
@@ -16,6 +23,7 @@
     @include bp-VideoControls;
 
     padding: 30px 48px 20px 48px;
+    pointer-events: auto;
 }
 
 .bp-VideoControlsV2-bar {

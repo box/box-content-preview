@@ -888,6 +888,25 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
     });
 
+    describe('handleFullscreenEnter()', () => {
+        test('should reset controls layer and trigger show-then-hide cycle', () => {
+            videoBase.controls = {
+                controlsLayer: {
+                    reset: jest.fn(),
+                    show: jest.fn(),
+                    hide: jest.fn(),
+                },
+            };
+            videoBase.showAndHideReactControls = jest.fn();
+            jest.spyOn(BaseViewer.prototype, 'handleFullscreenEnter').mockImplementation(() => {});
+
+            videoBase.handleFullscreenEnter();
+
+            expect(videoBase.controls.controlsLayer.reset).toHaveBeenCalled();
+            expect(videoBase.showAndHideReactControls).toHaveBeenCalled();
+        });
+    });
+
     describe('scaleAnnotations()', () => {
         beforeEach(() => {
             videoBase.videoWidth = 1920;

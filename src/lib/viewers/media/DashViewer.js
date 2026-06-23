@@ -1281,6 +1281,7 @@ class DashViewer extends VideoBaseViewer {
             autoplay: this.isAutoplayEnabled(),
             currentTime: this.mediaEl.currentTime,
             durationTime: this.mediaEl.duration,
+            experiences: this.experiences,
             filmstripInterval: this.filmstripInterval,
             filmstripUrl: this.filmstripUrl,
             fps: this.getFps(),
@@ -1299,6 +1300,7 @@ class DashViewer extends VideoBaseViewer {
             onAnnotationModeEscape: this.handleAnnotationControlsEscape,
             onAudioTrackChange: this.setAudioTrack,
             onAutoplayChange: this.setAutoplay,
+            onFullscreenToggle: this.toggleFullscreen,
             onGuideChange: this.setGuide,
             onMuteChange: this.toggleMute,
             onPlayPause: this.handlePlayRequest,
@@ -1329,10 +1331,8 @@ class DashViewer extends VideoBaseViewer {
             <VideoControls
                 {...sharedProps}
                 bufferedRange={this.mediaEl.buffered}
-                experiences={this.experiences}
                 hasHighlight={false}
                 isPlayingHD={this.isPlayingHD()}
-                onFullscreenToggle={this.toggleFullscreen}
             />,
         );
     }

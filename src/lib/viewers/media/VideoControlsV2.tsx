@@ -7,6 +7,7 @@ import MediaToggle from '../controls/media/MediaToggle';
 import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/media/SubtitlesToggle';
 import TimeControlsV2, { Props as TimeControlsProps } from '../controls/media/TimeControlsV2';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
+import VideoFullscreenButton from '../controls/media/VideoFullscreenButton';
 import IconPlay24 from '../controls/icons/IconPlay24';
 import IconPause24 from '../controls/icons/IconPause24';
 import IconForward24 from '../controls/icons/IconArrowCurveForward24';
@@ -15,6 +16,8 @@ import { MEDIA_PLAYBACK_SKIP_DURATION, SUBTITLES_OFF } from '../../constants';
 import { AnnotationMode } from '../../types/annotations';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
 import DrawingControls from '../controls/annotations/DrawingControls';
+import ExperiencesProvider from '../controls/experiences';
+import { Experiences } from '../../types/targeting';
 import './VideoControlsV2.scss';
 
 export type Props = DurationLabelsProps &
@@ -25,11 +28,13 @@ export type Props = DurationLabelsProps &
         fps?: number;
         annotationColor?: string;
         annotationMode?: AnnotationMode;
+        experiences?: Experiences;
         hasDrawing?: boolean;
         hasRegion?: boolean;
         isPlaying?: boolean;
         isNarrowVideo?: boolean;
         movePlayback: (isForward: boolean, duration: number) => void;
+        onFullscreenToggle: (isFullscreen: boolean, toggleFullscreenEl: EventTarget | null) => void;
         onAnnotationModeClick: ({ mode }: { mode: AnnotationMode }) => void;
         onAnnotationModeEscape: () => void;
         onAnnotationColorChange: (color: string) => void;
@@ -46,6 +51,7 @@ export default function VideoControlsV2({
     autoplay,
     currentTime = 0,
     durationTime = 0,
+    experiences,
     filmstripInterval,
     filmstripUrl,
     fps,
@@ -59,6 +65,7 @@ export default function VideoControlsV2({
     isPlaying,
     mediaEl,
     movePlayback,
+    onFullscreenToggle,
     onAnnotationColorChange,
     onAnnotationModeClick,
     onAnnotationModeEscape,
@@ -94,105 +101,108 @@ export default function VideoControlsV2({
     };
 
     return (
-        <div className="bp-VideoControlsV2" data-testid="media-controls-wrapper-v2">
-            <TimeControlsV2
-                aspectRatio={aspectRatio}
-                currentTime={currentTime}
-                durationTime={durationTime}
-                filmstripInterval={filmstripInterval}
-                filmstripUrl={filmstripUrl}
-                fps={fps}
-                mediaEl={mediaEl}
-                onTimeChange={onTimeChange}
-            />
-            <div className="bp-VideoControlsV2-bar">
-                <div className="bp-VideoControlsV2-group bp-VideoControlsV2-group--left">
-                    <MediaToggle
-                        className="bp-VideoControlsV2-playPause"
-                        data-resin-target="playPause"
-                        onClick={() => onPlayPause(!isPlaying)}
-                        title={playPauseTitle}
-                    >
-                        <PlayPauseIcon />
-                    </MediaToggle>
-                    {!isNarrowVideo && (
-                        <>
-                            <div className="bp-VideoControlsV2-divider" />
-                            <MediaToggle
-                                className="bp-VideoControlsV2-skipBtn"
-                                data-resin-target="skipBackward"
-                                onClick={moveBackward}
-                                title={skipBackwardTitle}
-                            >
-                                <IconBack24 />
-                            </MediaToggle>
-                            <MediaToggle
-                                className="bp-VideoControlsV2-skipBtn"
-                                data-resin-target="skipForward"
-                                onClick={moveForward}
-                                title={skipForwardTitle}
-                            >
-                                <IconForward24 />
-                            </MediaToggle>
-                            <div className="bp-VideoControlsV2-divider" />
-                        </>
-                    )}
-                    <TimestampControl
-                        currentTime={currentTime}
-                        durationTime={durationTime}
-                        fps={fps}
-                        isNarrowWidth={isNarrowVideo}
-                        mediaEl={mediaEl}
-                    />
-                </div>
-                <div className="bp-VideoControlsV2-group bp-VideoControlsV2-group--right">
-                    <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />
-                    <SubtitlesToggle
-                        isAutoGeneratedSubtitles={isAutoGeneratedSubtitles}
-                        isShowingSubtitles={subtitle !== SUBTITLES_OFF}
-                        onSubtitlesToggle={onSubtitlesToggle}
-                        subtitles={subtitles}
-                    />
-                    <MediaSettings
-                        audioTrack={audioTrack}
-                        audioTracks={audioTracks}
-                        autoplay={autoplay}
-                        className="bp-VideoControls-settings"
-                        guide={guide}
-                        isGuidesEnabled={isGuidesEnabled}
-                        isHDSupported={isHDSupported}
-                        onAudioTrackChange={onAudioTrackChange}
-                        onAutoplayChange={onAutoplayChange}
-                        onGuideChange={onGuideChange}
-                        onQualityChange={onQualityChange}
-                        onRateChange={onRateChange}
-                        onSubtitleChange={onSubtitleChange}
-                        quality={quality}
-                        rate={rate}
-                        subtitle={subtitle}
-                        subtitles={subtitles}
-                    />
-                    {videoAnnotationsEnabled && (
-                        <>
-                            <div className="bp-VideoControlsV2-divider" />
-                            <AnnotationsControls
-                                annotationColor={annotationColor}
-                                annotationMode={annotationMode}
-                                hasDrawing={hasDrawing}
-                                hasRegion={hasRegion}
-                                isVideo
-                                onAnnotationModeClick={onAnnotationModeClick}
-                                onAnnotationModeEscape={onAnnotationModeEscape}
-                            />
-                            <DrawingControls
-                                annotationColor={annotationColor}
-                                annotationMode={annotationMode}
-                                onAnnotationColorChange={onAnnotationColorChange}
-                            />
-                        </>
-                    )}
+        <ExperiencesProvider experiences={experiences}>
+            <div className="bp-VideoControlsV2" data-testid="media-controls-wrapper-v2">
+                <VideoFullscreenButton mediaEl={mediaEl} onFullscreenToggle={onFullscreenToggle} />
+                <TimeControlsV2
+                    aspectRatio={aspectRatio}
+                    currentTime={currentTime}
+                    durationTime={durationTime}
+                    filmstripInterval={filmstripInterval}
+                    filmstripUrl={filmstripUrl}
+                    fps={fps}
+                    mediaEl={mediaEl}
+                    onTimeChange={onTimeChange}
+                />
+                <div className="bp-VideoControlsV2-bar">
+                    <div className="bp-VideoControlsV2-group bp-VideoControlsV2-group--left">
+                        <MediaToggle
+                            className="bp-VideoControlsV2-playPause"
+                            data-resin-target="playPause"
+                            onClick={() => onPlayPause(!isPlaying)}
+                            title={playPauseTitle}
+                        >
+                            <PlayPauseIcon />
+                        </MediaToggle>
+                        {!isNarrowVideo && (
+                            <>
+                                <div className="bp-VideoControlsV2-divider" />
+                                <MediaToggle
+                                    className="bp-VideoControlsV2-skipBtn"
+                                    data-resin-target="skipBackward"
+                                    onClick={moveBackward}
+                                    title={skipBackwardTitle}
+                                >
+                                    <IconBack24 />
+                                </MediaToggle>
+                                <MediaToggle
+                                    className="bp-VideoControlsV2-skipBtn"
+                                    data-resin-target="skipForward"
+                                    onClick={moveForward}
+                                    title={skipForwardTitle}
+                                >
+                                    <IconForward24 />
+                                </MediaToggle>
+                                <div className="bp-VideoControlsV2-divider" />
+                            </>
+                        )}
+                        <TimestampControl
+                            currentTime={currentTime}
+                            durationTime={durationTime}
+                            fps={fps}
+                            isNarrowWidth={isNarrowVideo}
+                            mediaEl={mediaEl}
+                        />
+                    </div>
+                    <div className="bp-VideoControlsV2-group bp-VideoControlsV2-group--right">
+                        <VolumeControls onMuteChange={onMuteChange} onVolumeChange={onVolumeChange} volume={volume} />
+                        <SubtitlesToggle
+                            isAutoGeneratedSubtitles={isAutoGeneratedSubtitles}
+                            isShowingSubtitles={subtitle !== SUBTITLES_OFF}
+                            onSubtitlesToggle={onSubtitlesToggle}
+                            subtitles={subtitles}
+                        />
+                        <MediaSettings
+                            audioTrack={audioTrack}
+                            audioTracks={audioTracks}
+                            autoplay={autoplay}
+                            className="bp-VideoControls-settings"
+                            guide={guide}
+                            isGuidesEnabled={isGuidesEnabled}
+                            isHDSupported={isHDSupported}
+                            onAudioTrackChange={onAudioTrackChange}
+                            onAutoplayChange={onAutoplayChange}
+                            onGuideChange={onGuideChange}
+                            onQualityChange={onQualityChange}
+                            onRateChange={onRateChange}
+                            onSubtitleChange={onSubtitleChange}
+                            quality={quality}
+                            rate={rate}
+                            subtitle={subtitle}
+                            subtitles={subtitles}
+                        />
+                        {videoAnnotationsEnabled && (
+                            <>
+                                <div className="bp-VideoControlsV2-divider" />
+                                <AnnotationsControls
+                                    annotationColor={annotationColor}
+                                    annotationMode={annotationMode}
+                                    hasDrawing={hasDrawing}
+                                    hasRegion={hasRegion}
+                                    isVideo
+                                    onAnnotationModeClick={onAnnotationModeClick}
+                                    onAnnotationModeEscape={onAnnotationModeEscape}
+                                />
+                                <DrawingControls
+                                    annotationColor={annotationColor}
+                                    annotationMode={annotationMode}
+                                    onAnnotationColorChange={onAnnotationColorChange}
+                                />
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </ExperiencesProvider>
     );
 }
