@@ -3,7 +3,7 @@ import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
 import { bdlGray65, white } from 'box-ui-elements/es/styles/variables';
 import FilmstripV2 from './FilmstripV2';
-import SliderControl from '../slider';
+import SliderControl, { Marker } from '../slider';
 import './TimeControlsV2.scss';
 
 export type Props = {
@@ -13,7 +13,9 @@ export type Props = {
     filmstripInterval?: number;
     filmstripUrl?: string;
     fps?: number;
+    markers?: Marker[];
     mediaEl?: HTMLVideoElement | null;
+    onMarkerClick?: (id: string) => void;
     onTimeChange: (volume: number) => void;
 };
 
@@ -32,7 +34,9 @@ export default function TimeControlsV2({
     filmstripInterval,
     filmstripUrl,
     fps,
+    markers,
     mediaEl,
+    onMarkerClick,
     onTimeChange,
 }: Props): JSX.Element {
     const [isSliderHovered, setIsSliderHovered] = React.useState(false);
@@ -66,10 +70,12 @@ export default function TimeControlsV2({
             <SliderControl
                 className="bp-TimeControlsV2-slider"
                 data-resin-target="timeScrubber"
+                markers={markers}
                 max={durationValue}
                 min={0}
                 onBlur={noop}
                 onFocus={noop}
+                onMarkerClick={onMarkerClick}
                 onMouseOut={(): void => setIsSliderHovered(false)}
                 onMouseOver={(): void => setIsSliderHovered(true)}
                 onMove={handleMouseMove}

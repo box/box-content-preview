@@ -1272,6 +1272,9 @@ class DashViewer extends VideoBaseViewer {
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
         const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
+        const markers = this.isVideoPlayerV2
+            ? this.timelineMarkers.map(({ id, timestampMs }) => ({ id, value: timestampMs / 1000 }))
+            : undefined;
         const sharedProps = {
             annotationColor: this.annotationModule.getColor(),
             annotationMode: this.annotationControlsFSM.getMode(),
@@ -1292,6 +1295,7 @@ class DashViewer extends VideoBaseViewer {
             isHDSupported: this.hdVideoId !== -1,
             isNarrowVideo: this.isNarrowVideo,
             isPlaying: !this.mediaEl.paused,
+            markers,
             mediaEl: this.mediaEl,
             movePlayback: this.movePlayback,
             onAnnotationColorChange: this.handleAnnotationColorChange,
@@ -1300,6 +1304,7 @@ class DashViewer extends VideoBaseViewer {
             onAudioTrackChange: this.setAudioTrack,
             onAutoplayChange: this.setAutoplay,
             onGuideChange: this.setGuide,
+            onMarkerClick: this.handleTimelineMarkerClick,
             onMuteChange: this.toggleMute,
             onPlayPause: this.handlePlayRequest,
             onQualityChange: this.setQuality,

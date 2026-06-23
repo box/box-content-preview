@@ -30,3 +30,39 @@
     margin: auto $bp-SliderControl-track-space; // Center and allow the thumb to fully dock to edge of the track
     background: transparent linear-gradient($white, $white) no-repeat center border-box;
 }
+
+.bp-SliderControl-markers {
+    position: absolute;
+    top: 0;
+    right: $bp-SliderControl-track-space;
+    bottom: 0;
+    left: $bp-SliderControl-track-space;
+    pointer-events: none;
+}
+
+.bp-SliderControl-marker {
+    position: absolute;
+    top: calc(50% - #{$bp-SliderControl-marker-height / 2});
+    width: $bp-SliderControl-marker-width;
+    height: $bp-SliderControl-marker-height;
+    margin-left: -#{$bp-SliderControl-marker-width / 2};
+    background: $white;
+    cursor: pointer;
+    transition: transform 100ms ease-out;
+    pointer-events: auto;
+
+    // Expand the hit target without changing the visible 2px line
+    &::before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: $bp-SliderControl-marker-hit-width;
+        height: $bp-SliderControl-marker-hit-height;
+        transform: translate(-50%, -50%);
+        content: '';
+    }
+
+    &:hover {
+        transform: scaleX(2);
+    }
+}

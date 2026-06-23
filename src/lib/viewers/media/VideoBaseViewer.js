@@ -39,6 +39,15 @@ class VideoBaseViewer extends MediaBaseViewer {
     preloader;
 
     /**
+     * Markers shown on the timeline. Hosts (e.g. box-ui-elements) push the list
+     * via a window-level CustomEvent rather than via a method call so the SDK
+     * does not have to expose a viewer reference.
+     *
+     * @property {Array<{id: string, timestampMs: number, type?: string}>}
+     */
+    timelineMarkers = [];
+
+    /**
      * @inheritdoc
      */
     constructor(options) {
@@ -48,6 +57,8 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.handleControlsHide = this.handleControlsHide.bind(this);
         this.handleControlsShow = this.handleControlsShow.bind(this);
         this.handlePlayRequest = this.handlePlayRequest.bind(this);
+        this.handleTimelineMarkerClick = this.handleTimelineMarkerClick.bind(this);
+        this.handleTimelineMarkersUpdateEvent = this.handleTimelineMarkersUpdateEvent.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.pointerHandler = this.pointerHandler.bind(this);
         this.waitingHandler = this.waitingHandler.bind(this);
@@ -63,6 +74,32 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
         this.annotationControlsFSM.subscribe(this.applyCursorFtux);
         this.annotationControlsFSM.subscribe(this.updateDiscoverabilityResinTag);
+    }
+
+    /**
+     * Receives marker pushes from any host listening on the window. Stores the
+     * list and re-renders the controls so the scrubber overlay matches.
+     *
+     * @private
+     * @param {CustomEvent} event - { detail: marker[] }
+     * @return {void}
+     */
+    handleTimelineMarkersUpdateEvent(event) {
+        const markers = event && event.detail;
+        this.timelineMarkers = Array.isArray(markers) ? markers : [];
+        this.renderUI();
+    }
+
+    handleTimelineMarkerClick(id) {
+        const marker = this.timelineMarkers.find(m => m.id === id);
+        const detail = {
+            id,
+            timestampMs: marker ? marker.timestampMs : undefined,
+            type: marker ? marker.type : undefined,
+        };
+        if (typeof window !== 'undefined' && typeof window.CustomEvent === 'function') {
+            window.dispatchEvent(new window.CustomEvent('bp:timeline_marker_click', { detail }));
+        }
     }
 
     /**
@@ -108,6 +145,17 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.featureEnabled('videoPlayerV2.enabled')) {
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
+        }
+
+        // Listen for host-pushed timeline markers. The host (e.g. box-ui-elements)
+        // dispatches `bp:timeline_markers_update` whenever the derived list
+        // changes; we re-broadcast a `bp:timeline_markers_ready` so the host can
+        // replay its current list now that the viewer is ready to receive it.
+        if (typeof window !== 'undefined') {
+            window.addEventListener('bp:timeline_markers_update', this.handleTimelineMarkersUpdateEvent);
+            if (typeof window.CustomEvent === 'function') {
+                window.dispatchEvent(new window.CustomEvent('bp:timeline_markers_ready'));
+            }
         }
 
         this.lowerLights();
@@ -342,6 +390,10 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
 
         this.bufferingSpinnerEl = null;
+
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('bp:timeline_markers_update', this.handleTimelineMarkersUpdateEvent);
+        }
 
         super.destroy();
     }

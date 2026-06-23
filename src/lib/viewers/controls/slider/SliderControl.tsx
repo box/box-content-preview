@@ -6,10 +6,17 @@ import './SliderControl.scss';
 
 export type Ref = HTMLDivElement;
 
+export type Marker = {
+    id: string;
+    value: number;
+};
+
 export type Props = React.HTMLAttributes<Ref> & {
     className?: string;
+    markers?: Marker[];
     max?: number;
     min?: number;
+    onMarkerClick?: (id: string) => void;
     onMove?: (value: number, position: number, width: number) => void;
     onUpdate?: (value: number) => void;
     step?: number;
@@ -20,8 +27,10 @@ export type Props = React.HTMLAttributes<Ref> & {
 
 export default function SliderControl({
     className,
+    markers,
     max = 100,
     min = 0,
+    onMarkerClick,
     onMove = noop,
     onUpdate = noop,
     step = 1,
@@ -139,6 +148,26 @@ export default function SliderControl({
                 data-testid="bp-slider-control-track"
                 style={{ backgroundImage: track }}
             />
+            {markers && max > 0 && (
+                <div className="bp-SliderControl-markers" data-testid="bp-slider-control-markers">
+                    {markers
+                        .filter(({ value: markerValue }) => markerValue >= min && markerValue <= max)
+                        .map(({ id, value: markerValue }) => (
+                            <div
+                                key={id}
+                                className="bp-SliderControl-marker"
+                                data-testid="bp-slider-control-marker"
+                                onClick={(event): void => {
+                                    event.stopPropagation();
+                                    if (onMarkerClick) onMarkerClick(id);
+                                }}
+                                onMouseDown={(event): void => event.stopPropagation()}
+                                role="presentation"
+                                style={{ left: `${(markerValue / max) * 100}%` }}
+                            />
+                        ))}
+                </div>
+            )}
             <div
                 className="bp-SliderControl-thumb"
                 data-testid="bp-slider-control-thumb"

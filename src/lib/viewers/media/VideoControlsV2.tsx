@@ -57,6 +57,7 @@ export default function VideoControlsV2({
     isHDSupported,
     isNarrowVideo,
     isPlaying,
+    markers,
     mediaEl,
     movePlayback,
     onAnnotationColorChange,
@@ -65,6 +66,7 @@ export default function VideoControlsV2({
     onAudioTrackChange,
     onAutoplayChange,
     onGuideChange,
+    onMarkerClick,
     onMuteChange,
     onPlayPause,
     onQualityChange,
@@ -102,7 +104,9 @@ export default function VideoControlsV2({
                 filmstripInterval={filmstripInterval}
                 filmstripUrl={filmstripUrl}
                 fps={fps}
+                markers={markers}
                 mediaEl={mediaEl}
+                onMarkerClick={onMarkerClick}
                 onTimeChange={onTimeChange}
             />
             <div className="bp-VideoControlsV2-bar">
