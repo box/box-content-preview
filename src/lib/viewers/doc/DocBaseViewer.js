@@ -1,10 +1,12 @@
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 import throttle from 'lodash/throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
+import GalleryGrid from '../gallery/GalleryGrid';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -96,6 +98,7 @@ const RANGE_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_MINIMUM_SIZE = 26214400; // 25MB
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
+const GALLERY_MAX_PAGES = 200; // Hide gallery toggle for files above this page count, will increase in V2
 const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // 301ms
 const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 
@@ -120,6 +123,24 @@ class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     /** @property {Thumbnail} - Thumbnail reference */
     advancedInsightsThumbs;
+
+    /** @property {number} - Page focused in gallery via Tab */
+    galleryFocusedPage = null;
+
+    /** @property {number} - Pending setTimeout ID for delayed gallery mount */
+    galleryMountTimeoutId = null;
+
+    /** @property {number} - Pending setTimeout ID for delayed sidebar setCurrentPage after gallery exit */
+    gallerySidebarTimeoutId = null;
+
+    /** @property {Thumbnail} - Dedicated gallery thumbnail instance (persists between opens) */
+    galleryThumbnail;
+
+    /** @property {boolean} - Whether gallery mode is active */
+    isGalleryOpen = false;
+
+    /** @property {boolean} - Whether sidebar was open before entering gallery */
+    sidebarWasOpen = false;
 
     /** @property {PageTracker} - PageTracker instance */
     pageTracker;
@@ -153,6 +174,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
+        this.handleGalleryNavigate = this.handleGalleryNavigate.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -167,6 +189,7 @@ class DocBaseViewer extends BaseViewer {
         this.setPage = this.setPage.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
         this.toggleFindBar = this.toggleFindBar.bind(this);
+        this.toggleGallery = this.toggleGallery.bind(this);
         this.toggleThumbnails = this.toggleThumbnails.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
         this.updateDiscoverabilityResinTag = this.updateDiscoverabilityResinTag.bind(this);
@@ -255,6 +278,31 @@ class DocBaseViewer extends BaseViewer {
         // Clean up the find bar
         if (this.findBar) {
             this.findBar.destroy();
+        }
+
+        // Cancel any pending gallery setTimeouts so they don't fire after teardown
+        if (this.galleryMountTimeoutId !== null) {
+            clearTimeout(this.galleryMountTimeoutId);
+            this.galleryMountTimeoutId = null;
+        }
+        if (this.gallerySidebarTimeoutId !== null) {
+            clearTimeout(this.gallerySidebarTimeoutId);
+            this.gallerySidebarTimeoutId = null;
+        }
+
+        if (this.galleryRoot) {
+            this.galleryRoot.unmount();
+            this.galleryRoot = null;
+        }
+
+        if (this.galleryEl) {
+            this.galleryEl.remove();
+            this.galleryEl = null;
+        }
+
+        if (this.galleryThumbnail) {
+            this.galleryThumbnail.destroy();
+            this.galleryThumbnail = null;
         }
 
         // Clean up PDF network requests
@@ -881,6 +929,11 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebar.refresh();
         }
 
+        if (this.galleryThumbnail) {
+            this.galleryThumbnail.destroy();
+            this.galleryThumbnail = null;
+        }
+
         this.renderUI();
 
         // Emit scale with rotation angle so annotations transform to match rotated content
@@ -1449,6 +1502,10 @@ class DocBaseViewer extends BaseViewer {
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
+        const canGallery =
+            isFeatureEnabled(this.options.features, 'galleryView.enabled') &&
+            this.pdfViewer.pagesCount > 1 &&
+            this.pdfViewer.pagesCount <= GALLERY_MAX_PAGES;
 
         this.controls.render(
             <DocControls
@@ -1458,6 +1515,7 @@ class DocBaseViewer extends BaseViewer {
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
+                isGalleryOpen={this.isGalleryOpen}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}
@@ -1466,6 +1524,7 @@ class DocBaseViewer extends BaseViewer {
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                 onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
                 onFullscreenToggle={this.toggleFullscreen}
+                onGalleryToggle={canGallery ? this.toggleGallery : undefined}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
@@ -1700,6 +1759,11 @@ class DocBaseViewer extends BaseViewer {
      */
     handleDocElKeydown(event) {
         const key = decodeKeydown(event);
+
+        if (key === 'Escape' && this.isGalleryOpen) {
+            this.toggleGallery();
+            return;
+        }
 
         if (event.altKey && key.includes('Arrow')) {
             event.stopPropagation(); // Prevent collection/page navigation for caret navigation users
@@ -2007,6 +2071,100 @@ class DocBaseViewer extends BaseViewer {
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE);
             this.rootEl.classList.remove(CLASS_BOX_PREVIEW_THUMBNAILS_OPEN_ACTIVE);
         }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+    }
+
+    mountGalleryGrid() {
+        if (this.galleryRoot) {
+            return;
+        }
+
+        if (!this.galleryThumbnail) {
+            this.galleryThumbnail = new Thumbnail(this.pdfViewer, this.preloader);
+        }
+
+        this.galleryEl = document.createElement('div');
+        this.containerEl.appendChild(this.galleryEl);
+        this.galleryRoot = createRoot(this.galleryEl);
+        this.galleryFocusedPage = this.pdfViewer.currentPageNumber;
+        this.galleryRoot.render(
+            <GalleryGrid
+                currentPage={this.pdfViewer.currentPageNumber}
+                onClose={this.toggleGallery}
+                onFocusChange={pageNum => {
+                    this.galleryFocusedPage = pageNum;
+                }}
+                onPageNavigate={this.handleGalleryNavigate}
+                pageCount={this.pdfViewer.pagesCount}
+                thumbnail={this.galleryThumbnail}
+            />,
+        );
+    }
+
+    toggleGallery() {
+        this.isGalleryOpen = !this.isGalleryOpen;
+
+        if (this.isGalleryOpen) {
+            if (this.gallerySidebarTimeoutId !== null) {
+                clearTimeout(this.gallerySidebarTimeoutId);
+                this.gallerySidebarTimeoutId = null;
+            }
+
+            this.sidebarWasOpen = !!(this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen);
+
+            if (this.sidebarWasOpen) {
+                this.toggleThumbnails();
+                this.galleryMountTimeoutId = setTimeout(() => {
+                    this.galleryMountTimeoutId = null;
+                    this.mountGalleryGrid();
+                }, THUMBNAILS_SIDEBAR_TRANSITION_TIME / 2);
+            } else {
+                this.mountGalleryGrid();
+            }
+        } else {
+            if (this.galleryMountTimeoutId !== null) {
+                clearTimeout(this.galleryMountTimeoutId);
+                this.galleryMountTimeoutId = null;
+            }
+
+            const navigateToPage =
+                this.galleryFocusedPage && this.galleryFocusedPage !== this.pdfViewer.currentPageNumber
+                    ? this.galleryFocusedPage
+                    : null;
+
+            if (this.galleryRoot) {
+                this.galleryRoot.unmount();
+                this.galleryRoot = null;
+            }
+
+            if (this.galleryEl) {
+                this.galleryEl.remove();
+                this.galleryEl = null;
+            }
+
+            this.galleryFocusedPage = null;
+
+            if (this.sidebarWasOpen && this.thumbnailsSidebar && !this.thumbnailsSidebar.isOpen) {
+                this.toggleThumbnails();
+            }
+
+            if (navigateToPage) {
+                this.setPage(navigateToPage);
+
+                if (this.sidebarWasOpen && this.thumbnailsSidebar) {
+                    this.gallerySidebarTimeoutId = setTimeout(() => {
+                        this.gallerySidebarTimeoutId = null;
+                        this.thumbnailsSidebar.setCurrentPage(navigateToPage);
+                    }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
+                }
+            }
+        }
+
+        this.renderUI();
+    }
+
+    handleGalleryNavigate(pageNum) {
+        this.galleryFocusedPage = pageNum;
+        this.toggleGallery();
     }
 
     /**

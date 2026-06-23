@@ -1,0 +1,88 @@
+@import '../../boxuiVariables';
+
+.bp-gallery-grid {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    align-items: start;
+    padding: 40px;
+    padding-bottom: 100px;
+    overflow-y: auto;
+    background-color: $white;
+}
+
+.bp-gallery-tile {
+    position: relative;
+    padding: 0;
+    background: $ffive;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 0 0 1px $off-white;
+    cursor: pointer;
+    transition: box-shadow .2s ease-in-out;
+
+    &:hover {
+        box-shadow: 0 0 0 3px $seventy-sixers, 0 4px 5px 0 rgba(0, 0, 0, .15);
+
+        .bp-gallery-tile-badge {
+            opacity: 1;
+        }
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+    }
+}
+
+.bp-gallery-tile--selected {
+    box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgba(0, 0, 0, .08);
+
+    &:hover,
+    &:focus {
+        box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgba(0, 0, 0, .08);
+    }
+
+    .bp-gallery-tile-badge {
+        background: $box-blue;
+        opacity: 1;
+    }
+}
+
+.bp-gallery-tile-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 24px;
+    padding: 0 4px;
+    color: $white;
+    font-size: 13px;
+    line-height: 1;
+    background: $seventy-sixers;
+    border-radius: 12px 0 12px 0;
+    opacity: 0;
+    transition: opacity .15s;
+}
+
+.bp-gallery-tile-placeholder {
+    display: block;
+    width: 100%;
+    padding-top: 129%;
+}
