@@ -1323,7 +1323,13 @@ class DashViewer extends VideoBaseViewer {
         }
 
         if (this.isVideoPlayerV2) {
-            this.controls.render(<VideoControlsV2 {...sharedProps} />);
+            this.controls.render(
+                <VideoControlsV2
+                    commentMarkers={this.commentMarkers}
+                    onCommentMarkerClick={this.handleCommentMarkerClick}
+                    {...sharedProps}
+                />,
+            );
             return;
         }
 

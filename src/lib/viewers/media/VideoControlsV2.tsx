@@ -49,6 +49,7 @@ export default function VideoControlsV2({
     audioTrack,
     audioTracks,
     autoplay,
+    commentMarkers,
     currentTime = 0,
     durationTime = 0,
     experiences,
@@ -65,6 +66,7 @@ export default function VideoControlsV2({
     isPlaying,
     mediaEl,
     movePlayback,
+    onCommentMarkerClick,
     onFullscreenToggle,
     onAnnotationColorChange,
     onAnnotationModeClick,
@@ -106,12 +108,14 @@ export default function VideoControlsV2({
                 <VideoFullscreenButton mediaEl={mediaEl} onFullscreenToggle={onFullscreenToggle} />
                 <TimeControlsV2
                     aspectRatio={aspectRatio}
+                    commentMarkers={commentMarkers}
                     currentTime={currentTime}
                     durationTime={durationTime}
                     filmstripInterval={filmstripInterval}
                     filmstripUrl={filmstripUrl}
                     fps={fps}
                     mediaEl={mediaEl}
+                    onCommentMarkerClick={onCommentMarkerClick}
                     onTimeChange={onTimeChange}
                 />
                 <div className="bp-VideoControlsV2-bar">

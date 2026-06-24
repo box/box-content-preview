@@ -1636,4 +1636,99 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(URL.revokeObjectURL).not.toHaveBeenCalled();
         });
     });
+
+    describe('handleCommentMarkersUpdated', () => {
+        beforeEach(() => {
+            videoBase.renderUI = jest.fn();
+        });
+
+        test('should set commentMarkers and call renderUI', () => {
+            const markers = [
+                { id: '1', time: 5 },
+                { id: '2', time: 10 },
+            ];
+            videoBase.handleCommentMarkersUpdated(markers);
+
+            expect(videoBase.commentMarkers).toBe(markers);
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+
+        test('should default to empty array when called with no argument', () => {
+            videoBase.handleCommentMarkersUpdated();
+
+            expect(videoBase.commentMarkers).toEqual([]);
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleCommentMarkerClick', () => {
+        beforeEach(() => {
+            videoBase.mediaEl = {
+                currentTime: 0,
+                removeEventListener: jest.fn(),
+            };
+            videoBase.annotator = {
+                emit: jest.fn(),
+            };
+            videoBase.renderUI = jest.fn();
+            jest.spyOn(videoBase, 'emit');
+        });
+
+        test('should seek video to marker time', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
+
+            expect(videoBase.mediaEl.currentTime).toBe(42);
+        });
+
+        test('should emit commentmarkerselect event', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
+
+            expect(videoBase.emit).toHaveBeenCalledWith('commentmarkerselect', { id: '1', time: 42 });
+        });
+
+        test('should call renderUI', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
+
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+
+        test('should activate annotation when marker type is annotation', () => {
+            videoBase.handleCommentMarkerClick({ id: 'ann-1', time: 15, type: 'annotation' });
+
+            expect(videoBase.annotator.emit).toHaveBeenCalledWith('annotations_active_set', 'ann-1');
+        });
+
+        test('should not activate annotation when marker type is comment', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 15, type: 'comment' });
+
+            expect(videoBase.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should not fail if annotator is missing for annotation type', () => {
+            videoBase.annotator = null;
+
+            expect(() =>
+                videoBase.handleCommentMarkerClick({ id: 'ann-1', time: 15, type: 'annotation' }),
+            ).not.toThrow();
+        });
+
+        test('should not fail if mediaEl is missing', () => {
+            videoBase.mediaEl = null;
+
+            expect(() => videoBase.handleCommentMarkerClick({ id: '1', time: 10, type: 'comment' })).not.toThrow();
+            expect(videoBase.emit).toHaveBeenCalledWith('commentmarkerselect', { id: '1', time: 10 });
+        });
+    });
+
+    describe('commentmarkers event listener', () => {
+        test('should register commentmarkers listener during loadUIReact', () => {
+            videoBase.addListener = jest.fn();
+            videoBase.featureEnabled = jest.fn().mockReturnValue(false);
+            videoBase.mediaContainerEl = document.createElement('div');
+
+            videoBase.loadUIReact();
+
+            expect(videoBase.addListener).toHaveBeenCalledWith('commentmarkers', videoBase.handleCommentMarkersUpdated);
+        });
+    });
 });
