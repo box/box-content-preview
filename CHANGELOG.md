@@ -1,3 +1,10 @@
+## 3.50.0 (2026-06-24)
+
+* feat(gallery): add gallery view with full-width page thumbnail grid (#1682) ([342a3a4](https://github.com/box/box-content-preview/commit/342a3a4)), closes [#1682](https://github.com/box/box-content-preview/issues/1682)
+* feat(video-player-v2): add fullscreen button and fix controls auto-hide (#1684) ([ca8dd41](https://github.com/box/box-content-preview/commit/ca8dd41)), closes [#1684](https://github.com/box/box-content-preview/issues/1684)
+
+
+
 ## 3.49.0 (2026-06-19)
 
 * fix(video): restore media container width for v1 player (#1683) ([331b0f3](https://github.com/box/box-content-preview/commit/331b0f3)), closes [#1683](https://github.com/box/box-content-preview/issues/1683)
