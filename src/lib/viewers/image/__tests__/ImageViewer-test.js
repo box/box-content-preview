@@ -38,6 +38,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             },
             viewer: {
                 NAME: 'Image',
+                REP: 'png',
                 ASSET: '1.png',
             },
             representation: {
@@ -110,6 +111,31 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.wrapperEl).toHaveClass('bp-image');
             expect(image.imageEl).toHaveClass('bp-is-invisible');
             expect(image.imageEl).toHaveAttribute('alt', 'tales.png');
+        });
+
+        test('should add shadow and transparent classes when imageDropShadow is enabled and rep is png', () => {
+            image.options.features = { imageDropShadow: true };
+            image.isSetup = false;
+            image.setup();
+            expect(image.wrapperEl).toHaveClass('bp-image--shadow');
+            expect(image.wrapperEl).toHaveClass('bp-image--transparent');
+        });
+
+        test('should add shadow class but not transparent for jpg rep', () => {
+            image.options.features = { imageDropShadow: true };
+            image.options.viewer.REP = 'jpg';
+            image.isSetup = false;
+            image.setup();
+            expect(image.wrapperEl).toHaveClass('bp-image--shadow');
+            expect(image.wrapperEl).not.toHaveClass('bp-image--transparent');
+        });
+
+        test('should not add shadow classes when imageDropShadow is disabled', () => {
+            image.options.features = { imageDropShadow: false };
+            image.isSetup = false;
+            image.setup();
+            expect(image.wrapperEl).not.toHaveClass('bp-image--shadow');
+            expect(image.wrapperEl).not.toHaveClass('bp-image--transparent');
         });
 
         test.each`

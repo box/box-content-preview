@@ -10,12 +10,15 @@ import {
     CLASS_PREFETCHED_IMAGE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
+    ORIGINAL_REP_NAME,
 } from '../../constants';
 import { LOAD_METRIC, FIRST_RENDER_METRIC } from '../../events';
 import Timer from '../../Timer';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
+const CSS_CLASS_IMAGE_SHADOW = 'bp-image--shadow';
+const CSS_CLASS_IMAGE_TRANSPARENT = 'bp-image--transparent';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
@@ -84,6 +87,15 @@ class ImageViewer extends ImageBaseViewer {
 
         this.wrapperEl = this.createViewer(document.createElement('div'));
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE);
+
+        if (this.featureEnabled('imageDropShadow')) {
+            this.wrapperEl.classList.add(CSS_CLASS_IMAGE_SHADOW);
+
+            const { REP } = this.options.viewer;
+            if (REP === 'png' || REP === ORIGINAL_REP_NAME) {
+                this.wrapperEl.classList.add(CSS_CLASS_IMAGE_TRANSPARENT);
+            }
+        }
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
         this.imageEl.setAttribute('data-page-number', 1);
