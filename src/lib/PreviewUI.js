@@ -341,6 +341,24 @@ class PreviewUI {
         }
     }
 
+    /**
+     * Sets the file name in the header
+     *
+     * @param {string} fileName - Name of the file
+     * @return {void}
+     */
+    showFileName(fileName) {
+        const headerContainerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_HEADER_CONTAINER);
+
+        const headerEl = headerContainerEl.firstElementChild;
+
+        const fileNameEl = headerEl.querySelector('.bp-file-name');
+        if (fileNameEl) {
+            fileNameEl.classList.remove(CLASS_HIDDEN);
+            fileNameEl.innerText = fileName;
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -368,6 +386,14 @@ class PreviewUI {
      * @return {void}
      */
     setupHeader(headerTheme, logoUrl) {
+        /*
+
+        NOTE: May have some setup that should be done in this function for showing file name
+
+        However, when this function is called, this.file in Preview.js does not yet know the file name. Therefore, can't
+        do everything in here for setting the file name
+        
+        */
         const headerContainerEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_HEADER_CONTAINER);
         headerContainerEl.classList.remove(CLASS_HIDDEN);
 
