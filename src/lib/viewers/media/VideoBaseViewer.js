@@ -819,6 +819,7 @@ class VideoBaseViewer extends MediaBaseViewer {
 
     handleCommentMarkerClick = marker => {
         if (this.mediaEl) {
+            this.mediaEl.pause();
             this.mediaEl.currentTime = marker.time;
         }
         if (marker.type === 'annotation' && this.annotator) {
