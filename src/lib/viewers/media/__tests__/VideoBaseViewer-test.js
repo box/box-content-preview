@@ -1665,6 +1665,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         beforeEach(() => {
             videoBase.mediaEl = {
                 currentTime: 0,
+                pause: jest.fn(),
                 removeEventListener: jest.fn(),
             };
             videoBase.annotator = {
@@ -1674,9 +1675,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             jest.spyOn(videoBase, 'emit');
         });
 
-        test('should seek video to marker time', () => {
+        test('should pause and seek video to marker time', () => {
             videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
 
+            expect(videoBase.mediaEl.pause).toHaveBeenCalled();
             expect(videoBase.mediaEl.currentTime).toBe(42);
         });
 
