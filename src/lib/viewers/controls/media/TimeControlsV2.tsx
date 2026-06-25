@@ -57,6 +57,7 @@ export default function TimeControlsV2({
     const durationValue = isFinite(durationTime) ? durationTime : 0;
     const currentPercentage = percent(currentValue, durationValue);
 
+    const markerTimesKey = commentMarkers.map(m => m.time).join('|');
     const trackMask = React.useMemo(() => {
         if (durationValue <= 0 || commentMarkers.length === 0) return undefined;
 
@@ -74,7 +75,8 @@ export default function TimeControlsV2({
         stops.push('black 100%');
 
         return `linear-gradient(to right, ${stops.join(', ')})`;
-    }, [commentMarkers, durationValue]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [markerTimesKey, durationValue]);
 
     const handleMouseMove = (newTime: number, newPosition: number, width: number): void => {
         setHoverPosition(newPosition);

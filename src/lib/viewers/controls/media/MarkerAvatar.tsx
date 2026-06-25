@@ -32,7 +32,8 @@ function AnonymousAvatarIcon(): JSX.Element {
 }
 
 export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial }: Props): JSX.Element {
-    const { bg: bgColor, fg: textColor } = AVATAR_PALETTE[colorIndex % AVATAR_PALETTE.length];
+    const safeIndex = Number.isFinite(colorIndex) ? Math.abs(colorIndex) % AVATAR_PALETTE.length : 0;
+    const { bg: bgColor, fg: textColor } = AVATAR_PALETTE[safeIndex];
 
     const [imgFailed, setImgFailed] = React.useState(false);
     const showImage = Boolean(avatarUrl) && !imgFailed;
