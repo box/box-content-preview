@@ -1682,10 +1682,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.currentTime).toBe(42);
         });
 
-        test('should emit commentmarkerselect event', () => {
+        test('should emit comment_marker_select event', () => {
             videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
 
-            expect(videoBase.emit).toHaveBeenCalledWith('commentmarkerselect', { id: '1', time: 42 });
+            expect(videoBase.emit).toHaveBeenCalledWith('comment_marker_select', { id: '1', time: 42 });
         });
 
         test('should call renderUI', () => {
@@ -1718,19 +1718,22 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.mediaEl = null;
 
             expect(() => videoBase.handleCommentMarkerClick({ id: '1', time: 10, type: 'comment' })).not.toThrow();
-            expect(videoBase.emit).toHaveBeenCalledWith('commentmarkerselect', { id: '1', time: 10 });
+            expect(videoBase.emit).toHaveBeenCalledWith('comment_marker_select', { id: '1', time: 10 });
         });
     });
 
-    describe('commentmarkers event listener', () => {
-        test('should register commentmarkers listener during loadUIReact', () => {
+    describe('comment_markers event listener', () => {
+        test('should register comment_markers listener during loadUIReact', () => {
             videoBase.addListener = jest.fn();
             videoBase.featureEnabled = jest.fn().mockReturnValue(false);
             videoBase.mediaContainerEl = document.createElement('div');
 
             videoBase.loadUIReact();
 
-            expect(videoBase.addListener).toHaveBeenCalledWith('commentmarkers', videoBase.handleCommentMarkersUpdated);
+            expect(videoBase.addListener).toHaveBeenCalledWith(
+                'comment_markers',
+                videoBase.handleCommentMarkersUpdated,
+            );
         });
     });
 });

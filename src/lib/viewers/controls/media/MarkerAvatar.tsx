@@ -1,20 +1,18 @@
 import React from 'react';
 import './MarkerAvatar.scss';
 
-const AVATAR_COLORS = [
-    '#7fb0ea',
-    '#003c84',
-    '#ffeb7f',
-    '#92e0c0',
-    '#fad98d',
-    '#91c2fd',
-    '#f69bab',
-    '#cf9ff6',
-    '#f8c08c',
-    '#a392e0',
+const AVATAR_PALETTE: ReadonlyArray<{ bg: string; fg: string }> = [
+    { bg: '#7fb0ea', fg: '#222' },
+    { bg: '#003c84', fg: '#fff' },
+    { bg: '#ffeb7f', fg: '#222' },
+    { bg: '#92e0c0', fg: '#222' },
+    { bg: '#fad98d', fg: '#222' },
+    { bg: '#91c2fd', fg: '#222' },
+    { bg: '#f69bab', fg: '#222' },
+    { bg: '#cf9ff6', fg: '#222' },
+    { bg: '#f8c08c', fg: '#222' },
+    { bg: '#a392e0', fg: '#222' },
 ];
-
-const DARK_COLOR_INDICES = new Set([1]);
 
 export type Props = {
     avatarUrl?: string;
@@ -34,9 +32,7 @@ function AnonymousAvatarIcon(): JSX.Element {
 }
 
 export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial }: Props): JSX.Element {
-    const index = colorIndex % AVATAR_COLORS.length;
-    const bgColor = AVATAR_COLORS[index];
-    const textColor = DARK_COLOR_INDICES.has(index) ? '#fff' : '#222';
+    const { bg: bgColor, fg: textColor } = AVATAR_PALETTE[colorIndex % AVATAR_PALETTE.length];
 
     const [imgFailed, setImgFailed] = React.useState(false);
     const showImage = Boolean(avatarUrl) && !imgFailed;

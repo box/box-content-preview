@@ -407,7 +407,7 @@ class VideoBaseViewer extends MediaBaseViewer {
             onShow: this.handleControlsShow,
         });
         this.addListener('annotator_create', () => this.renderUI());
-        this.addListener('commentmarkers', this.handleCommentMarkersUpdated);
+        this.addListener('comment_markers', this.handleCommentMarkersUpdated);
         this.renderUI();
     }
 
@@ -825,7 +825,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (marker.type === 'annotation' && this.annotator) {
             this.annotator.emit('annotations_active_set', marker.id);
         }
-        this.emit('commentmarkerselect', { id: marker.id, time: marker.time });
+        this.emit('comment_marker_select', { id: marker.id, time: marker.time });
         this.renderUI();
     };
 
