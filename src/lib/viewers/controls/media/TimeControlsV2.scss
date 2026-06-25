@@ -6,6 +6,10 @@
     margin-left: 10px;
 }
 
+.bp-TimeControlsV2-scrubber {
+    position: relative;
+}
+
 .bp-TimeControlsV2-slider {
     height: 20px;
 
@@ -14,6 +18,7 @@
         margin: auto 0;
         border-radius: 5px;
         backface-visibility: hidden;
+        mask-image: var(--bp-track-mask, none);
     }
 
     .bp-SliderControl-thumb {
@@ -26,5 +31,35 @@
         border-radius: 2px;
         transform: translateY(-50%);
         cursor: ew-resize;
+    }
+}
+
+.bp-TimeControlsV2-marker {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    width: 2px;
+    height: 8px;
+    padding: 0;
+    background: $white;
+    border: 0;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: transform 150ms;
+
+    &:hover,
+    &:focus-visible {
+        transform: translate(-50%, -50%) scale(1.7);
+
+        .bp-MarkerAvatar {
+            box-shadow: 0 0 0 2px $white;
+            transform: translate(-50%, calc(5px / 1.7));
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid $white;
+        outline-offset: 2px;
     }
 }

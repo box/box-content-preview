@@ -1,0 +1,44 @@
+@import '../styles';
+
+.bp-MarkerAvatar {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 $white;
+    transform: translate(-50%, 0);
+    transform-origin: bottom center;
+    transition: transform 150ms, box-shadow 150ms;
+
+    img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}
+
+.bp-MarkerAvatar-initial {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    font-size: 7px;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    place-items: center;
+}
+
+.bp-MarkerAvatar-anonymousIcon {
+    width: 100%;
+    height: 100%;
+    color: #222;
+}

@@ -407,6 +407,7 @@ class VideoBaseViewer extends MediaBaseViewer {
             onShow: this.handleControlsShow,
         });
         this.addListener('annotator_create', () => this.renderUI());
+        this.addListener('comment_markers', this.handleCommentMarkersUpdated);
         this.renderUI();
     }
 
@@ -776,6 +777,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
     }
 
+    handleCommentMarkersUpdated = (markers = []) => {
+        this.commentMarkers = markers;
+        this.renderUI();
+    };
+
     scaleAnnotations(width, height) {
         if (!width && !height) {
             return;
@@ -810,6 +816,18 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.annotator.emit('annotations_active_set', id);
         }
     }
+
+    handleCommentMarkerClick = marker => {
+        if (this.mediaEl) {
+            this.mediaEl.pause();
+            this.mediaEl.currentTime = marker.time;
+        }
+        if (marker.type === 'annotation' && this.annotator) {
+            this.annotator.emit('annotations_active_set', marker.id);
+        }
+        this.emit('comment_marker_select', { id: marker.id, time: marker.time });
+        this.renderUI();
+    };
 
     /**
      * Handles the 'scrolltoannotation' event and calls the annotator scroll method
