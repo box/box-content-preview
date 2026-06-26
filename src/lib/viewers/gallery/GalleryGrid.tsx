@@ -7,7 +7,7 @@ const INITIAL_LOAD_BUFFER = 40;
 const CONCURRENT_LOADS = 4;
 const SCROLL_THROTTLE_MS = 200;
 
-interface GalleryThumbnail {
+export interface GalleryThumbnail {
     init: () => Promise<unknown>;
     getImageFromCache: (itemIndex: number) => { image?: HTMLImageElement; inProgress: boolean } | null | undefined;
     createThumbnailImage: (
