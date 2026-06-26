@@ -149,6 +149,12 @@ function addOriginalRepresentation(file) {
 
     const queryParams = {
         preview: 'true',
+        // The /content?preview=true response is a 302 with a long-lived Cache-Control
+        // and a short-lived signed URL in the Location header. Once the signed URL
+        // expires, the browser can still replay the cached redirect on re-open and
+        // follow it to a dead URL. A unique query param per call forces the browser
+        // disk cache to miss, so each open fetches a fresh redirect with a fresh URL.
+        _bcs: Date.now().toString(36),
     };
 
     if (file.file_version) {
