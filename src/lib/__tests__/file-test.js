@@ -228,6 +228,22 @@ describe('lib/file', () => {
             expect(file.representations.entries[0].content.url_template).toContain('version=123');
         });
 
+        test('should tag the original rep content URL with a _bcs cache-buster param', () => {
+            const file = {
+                id: '0',
+                authenticated_download_url: 'https://dl.boxcloud.com/content',
+                representations: {
+                    entries: [],
+                },
+            };
+
+            cacheFile(cache, file);
+
+            // The value here is a fallback that createContentUrl() re-resolves to a fresh
+            // timestamp at request time; we only assert the _bcs param is present.
+            expect(file.representations.entries[0].content.url_template).toContain('_bcs=');
+        });
+
         test('should additionally cache file by file version ID if file version exists on file', () => {
             const file = {
                 id: '123',

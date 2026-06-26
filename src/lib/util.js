@@ -284,7 +284,9 @@ export function createContentUrl(template, asset) {
         // eslint-disable-next-line
         template = DownloadReachability.replaceDownloadHostWithDefault(template);
     }
-    return template.replace('{+asset_path}', asset || '');
+    // Re-resolve the _bcs cache-buster per request so a cached file object can't reuse
+    // a stale URL key, keeping every content fetch a unique disk-cache key.
+    return template.replace('{+asset_path}', asset || '').replace(/([?&]_bcs=)[^&]*/, `$1${Date.now().toString(36)}`);
 }
 
 /**
