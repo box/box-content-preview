@@ -1,3 +1,9 @@
+## 3.51.0 (2026-06-26)
+
+* feat(video-player-v2): add comment markers to scrubber bar (#1687) ([eff2106](https://github.com/box/box-content-preview/commit/eff2106)), closes [#1687](https://github.com/box/box-content-preview/issues/1687)
+
+
+
 ## 3.50.0 (2026-06-24)
 
 * feat(gallery): add gallery view with full-width page thumbnail grid (#1682) ([342a3a4](https://github.com/box/box-content-preview/commit/342a3a4)), closes [#1682](https://github.com/box/box-content-preview/issues/1682)
