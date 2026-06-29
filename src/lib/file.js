@@ -152,7 +152,7 @@ function addOriginalRepresentation(file) {
         // Cache-buster so a cached 302 redirect isn't replayed after its signed URL
         // expires. Re-resolved to a fresh value per request in createContentUrl(); the
         // value here is a fallback for any path that skips createContentUrl().
-        _bcs: Date.now().toString(36),
+        _cache_buster: Date.now().toString(36),
     };
 
     if (file.file_version) {

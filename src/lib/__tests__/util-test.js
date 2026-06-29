@@ -242,20 +242,20 @@ describe('lib/util', () => {
             expect(util.createContentUrl('https://dl6.boxcloud.com', 'bar')).toBe('https://dl.boxcloud.com');
         });
 
-        test('should resolve the _bcs cache-buster marker to a fresh value at request time', () => {
+        test('should resolve the _cache_buster marker to a fresh value at request time', () => {
             jest.spyOn(Date, 'now').mockReturnValue(0);
-            expect(util.createContentUrl('https://dl.boxcloud.com/content?preview=true&_bcs=0&version=9')).toBe(
-                'https://dl.boxcloud.com/content?preview=true&_bcs=0&version=9',
-            );
+            expect(
+                util.createContentUrl('https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9'),
+            ).toBe('https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9');
 
             jest.spyOn(Date, 'now').mockReturnValue(parseInt('zzz', 36));
-            expect(util.createContentUrl('https://dl.boxcloud.com/content?preview=true&_bcs=0&version=9')).toBe(
-                'https://dl.boxcloud.com/content?preview=true&_bcs=zzz&version=9',
-            );
+            expect(
+                util.createContentUrl('https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9'),
+            ).toBe('https://dl.boxcloud.com/content?preview=true&_cache_buster=zzz&version=9');
         });
 
-        test('should produce a different _bcs on each call so every request is a unique cache key', () => {
-            const template = 'https://dl.boxcloud.com/content?preview=true&_bcs=0';
+        test('should produce a different _cache_buster on each call so every request is a unique cache key', () => {
+            const template = 'https://dl.boxcloud.com/content?preview=true&_cache_buster=0';
 
             jest.spyOn(Date, 'now')
                 .mockReturnValueOnce(1)
@@ -266,15 +266,15 @@ describe('lib/util', () => {
             expect(first).not.toBe(second);
         });
 
-        test('should leave urls without a _bcs marker untouched', () => {
+        test('should leave urls without a _cache_buster marker untouched', () => {
             const url = 'https://dl.boxcloud.com/content?preview=true&version=9';
             expect(util.createContentUrl(url)).toBe(url);
         });
 
-        test('should resolve _bcs when it is the first query param', () => {
+        test('should resolve _cache_buster when it is the first query param', () => {
             jest.spyOn(Date, 'now').mockReturnValue(parseInt('abc', 36));
-            expect(util.createContentUrl('https://dl.boxcloud.com/content?_bcs=0&preview=true')).toBe(
-                'https://dl.boxcloud.com/content?_bcs=abc&preview=true',
+            expect(util.createContentUrl('https://dl.boxcloud.com/content?_cache_buster=0&preview=true')).toBe(
+                'https://dl.boxcloud.com/content?_cache_buster=abc&preview=true',
             );
         });
     });
