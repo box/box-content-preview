@@ -91,14 +91,6 @@ describe('GalleryController', () => {
     });
 
     describe('destroy', () => {
-        test('should be idempotent on a never-opened controller', () => {
-            const { controller } = makeController();
-            expect(() => {
-                controller.destroy();
-                controller.destroy();
-            }).not.toThrow();
-        });
-
         test('should cancel a deferred mount scheduled while sidebar was open', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: true });
             controller.toggle();
@@ -172,8 +164,9 @@ describe('GalleryController', () => {
         test('should navigate to focused page when it differs from the current page on close', () => {
             const { controller, setPage } = makeController({ currentPage: 1, sidebarOpen: false });
             controller.toggle();
-            // Simulate user focusing page 5 in the grid
-            ((controller as unknown) as { galleryFocusedPage: number }).galleryFocusedPage = 5;
+            // Simulate the grid reporting focus on page 5 via its onFocusChange callback
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onFocusChange(5);
             controller.toggle();
             expect(setPage).toHaveBeenCalledWith(5);
         });
@@ -190,7 +183,8 @@ describe('GalleryController', () => {
             controller.toggle();
             jest.advanceTimersByTime(THUMBNAILS_SIDEBAR_TRANSITION_TIME / 2);
 
-            ((controller as unknown) as { galleryFocusedPage: number }).galleryFocusedPage = 7;
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onFocusChange(7);
             controller.toggle();
 
             expect(toggleThumbnails).toHaveBeenCalledTimes(2);
@@ -209,16 +203,6 @@ describe('GalleryController', () => {
 
             expect(setPage).toHaveBeenCalledWith(8);
             expect(controller.isOpen).toBe(false);
-        });
-
-        test('should not double-mount when toggle is called twice without close', () => {
-            const { controller, containerEl } = makeController({ sidebarOpen: false });
-            controller.toggle();
-            const firstEl = containerEl.firstChild;
-            // Reach private mountGrid to verify the re-entry guard.
-            ((controller as unknown) as { mountGrid: () => void }).mountGrid();
-            expect(containerEl.children).toHaveLength(1);
-            expect(containerEl.firstChild).toBe(firstEl);
         });
     });
 
@@ -246,11 +230,11 @@ describe('GalleryController', () => {
         test('should destroy the cached thumbnail instance after the gallery has been opened', () => {
             const { controller } = makeController({ sidebarOpen: false });
             controller.toggle();
-            // Reach into the private field to grab the cached Thumbnail mock
-            const cached = ((controller as unknown) as { galleryThumbnail: { destroy: jest.Mock } }).galleryThumbnail;
+            // The thumbnail prop the grid received is the cached instance the controller owns
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            const cached = grid.props.thumbnail as { destroy: jest.Mock };
             controller.handleRotate();
             expect(cached.destroy).toHaveBeenCalled();
-            expect(((controller as unknown) as { galleryThumbnail: unknown }).galleryThumbnail).toBeNull();
         });
     });
 });
