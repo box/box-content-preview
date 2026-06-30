@@ -149,6 +149,9 @@ function addOriginalRepresentation(file) {
 
     const queryParams = {
         preview: 'true',
+        // Cache-buster marker; createContentUrl() re-resolves it per request when auth is
+        // header-based. Stamped unconditionally since the file is cached before that flag is known.
+        _cache_buster: Date.now().toString(36),
     };
 
     if (file.file_version) {

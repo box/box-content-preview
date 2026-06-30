@@ -228,6 +228,20 @@ describe('lib/file', () => {
             expect(file.representations.entries[0].content.url_template).toContain('version=123');
         });
 
+        test('should tag the original rep content URL with a _cache_buster param', () => {
+            const file = {
+                id: '0',
+                authenticated_download_url: 'https://dl.boxcloud.com/content',
+                representations: {
+                    entries: [],
+                },
+            };
+
+            cacheFile(cache, file);
+
+            expect(file.representations.entries[0].content.url_template).toContain('_cache_buster=');
+        });
+
         test('should additionally cache file by file version ID if file version exists on file', () => {
             const file = {
                 id: '123',

@@ -277,14 +277,23 @@ export function appendAuthParamsV2(url, sharedLink = '', password = '') {
  * @public
  * @param {string} template - URL template to attach param to
  * @param {string|void} [asset] - Optional asset name needed to access file
+ * @param {boolean} [resolveCacheBuster] - Re-resolve the _cache_buster marker per request
+ * (needed only when auth is header-based; the in-URL token otherwise varies the cache key).
  * @return {string} Content url
  */
-export function createContentUrl(template, asset) {
+export function createContentUrl(template, asset, resolveCacheBuster = false) {
     if (DownloadReachability.isDownloadHostBlocked()) {
         // eslint-disable-next-line
         template = DownloadReachability.replaceDownloadHostWithDefault(template);
     }
-    return template.replace('{+asset_path}', asset || '');
+
+    const url = template.replace('{+asset_path}', asset || '');
+
+    if (!resolveCacheBuster) {
+        return url;
+    }
+
+    return url.replace(/([?&]_cache_buster=)[^&]*/, `$1${Date.now().toString(36)}`);
 }
 
 /**
