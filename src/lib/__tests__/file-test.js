@@ -239,8 +239,7 @@ describe('lib/file', () => {
 
             cacheFile(cache, file);
 
-            // The value here is a fallback that createContentUrl() re-resolves to a fresh
-            // timestamp at request time; we only assert the _cache_buster param is present.
+            // Stamp is unconditional; createContentUrl() re-resolves it per request only when the flag is on.
             expect(file.representations.entries[0].content.url_template).toContain('_cache_buster=');
         });
 
