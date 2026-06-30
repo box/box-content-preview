@@ -149,9 +149,8 @@ function addOriginalRepresentation(file) {
 
     const queryParams = {
         preview: 'true',
-        // Cache-buster so a cached 302 redirect isn't replayed after its signed URL
-        // expires. Re-resolved to a fresh value per request in createContentUrl(); the
-        // value here is a fallback for any path that skips createContentUrl().
+        // Cache-buster marker; createContentUrl() re-resolves it per request when auth is
+        // header-based. Stamped unconditionally since the file is cached before that flag is known.
         _cache_buster: Date.now().toString(36),
     };
 

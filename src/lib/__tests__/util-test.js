@@ -242,15 +242,23 @@ describe('lib/util', () => {
             expect(util.createContentUrl('https://dl6.boxcloud.com', 'bar')).toBe('https://dl.boxcloud.com');
         });
 
-        test('should resolve the _cache_buster marker to a fresh value at request time', () => {
+        test('should resolve the _cache_buster marker to a fresh value at request time when enabled', () => {
             jest.spyOn(Date, 'now').mockReturnValue(0);
             expect(
-                util.createContentUrl('https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9'),
+                util.createContentUrl(
+                    'https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9',
+                    null,
+                    true,
+                ),
             ).toBe('https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9');
 
             jest.spyOn(Date, 'now').mockReturnValue(parseInt('zzz', 36));
             expect(
-                util.createContentUrl('https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9'),
+                util.createContentUrl(
+                    'https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9',
+                    null,
+                    true,
+                ),
             ).toBe('https://dl.boxcloud.com/content?preview=true&_cache_buster=zzz&version=9');
         });
 
@@ -260,22 +268,29 @@ describe('lib/util', () => {
             jest.spyOn(Date, 'now')
                 .mockReturnValueOnce(1)
                 .mockReturnValueOnce(2);
-            const first = util.createContentUrl(template);
-            const second = util.createContentUrl(template);
+            const first = util.createContentUrl(template, null, true);
+            const second = util.createContentUrl(template, null, true);
 
             expect(first).not.toBe(second);
         });
 
+        test('should leave the _cache_buster marker frozen when resolveCacheBuster is not set', () => {
+            jest.spyOn(Date, 'now').mockReturnValue(parseInt('zzz', 36));
+            const template = 'https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9';
+            // Flag off: the in-URL rotating token is the cache-buster, so the marker stays frozen.
+            expect(util.createContentUrl(template)).toBe(template);
+        });
+
         test('should leave urls without a _cache_buster marker untouched', () => {
             const url = 'https://dl.boxcloud.com/content?preview=true&version=9';
-            expect(util.createContentUrl(url)).toBe(url);
+            expect(util.createContentUrl(url, null, true)).toBe(url);
         });
 
         test('should resolve _cache_buster when it is the first query param', () => {
             jest.spyOn(Date, 'now').mockReturnValue(parseInt('abc', 36));
-            expect(util.createContentUrl('https://dl.boxcloud.com/content?_cache_buster=0&preview=true')).toBe(
-                'https://dl.boxcloud.com/content?_cache_buster=abc&preview=true',
-            );
+            expect(
+                util.createContentUrl('https://dl.boxcloud.com/content?_cache_buster=0&preview=true', null, true),
+            ).toBe('https://dl.boxcloud.com/content?_cache_buster=abc&preview=true');
         });
     });
 
