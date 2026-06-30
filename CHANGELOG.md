@@ -1,3 +1,9 @@
+## 3.52.0 (2026-06-30)
+
+* fix(file): cache-bust authenticated content URL per request (#1688) ([053e36b](https://github.com/box/box-content-preview/commit/053e36b)), closes [#1688](https://github.com/box/box-content-preview/issues/1688)
+
+
+
 ## 3.51.0 (2026-06-26)
 
 * feat(video-player-v2): add comment markers to scrubber bar (#1687) ([eff2106](https://github.com/box/box-content-preview/commit/eff2106)), closes [#1687](https://github.com/box/box-content-preview/issues/1687)
