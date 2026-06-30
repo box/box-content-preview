@@ -268,7 +268,6 @@ describe('lib/util', () => {
         test('should leave the _cache_buster marker frozen when disabled', () => {
             jest.spyOn(Date, 'now').mockReturnValue(parseInt('zzz', 36));
             const template = 'https://dl.boxcloud.com/content?preview=true&_cache_buster=0&version=9';
-            // Flag off: the in-URL rotating token is the cache-buster, so the marker stays frozen.
             expect(util.createContentUrl(template)).toBe(template);
         });
 

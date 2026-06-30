@@ -239,7 +239,6 @@ describe('lib/file', () => {
 
             cacheFile(cache, file);
 
-            // Stamp is unconditional; createContentUrl() re-resolves it per request only when the flag is on.
             expect(file.representations.entries[0].content.url_template).toContain('_cache_buster=');
         });
 

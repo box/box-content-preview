@@ -293,7 +293,6 @@ export function createContentUrl(template, asset, resolveCacheBuster = false) {
         return url;
     }
 
-    // Fresh value per request so a cached file object can't replay a stale URL key.
     return url.replace(/([?&]_cache_buster=)[^&]*/, `$1${Date.now().toString(36)}`);
 }
 
