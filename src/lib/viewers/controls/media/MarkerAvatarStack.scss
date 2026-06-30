@@ -12,6 +12,9 @@
 .bp-MarkerAvatarStack-item {
     position: relative;
     flex-shrink: 0;
+    padding: 0;
+    background: none;
+    border: 0;
     cursor: pointer;
     transition: margin 150ms;
 
