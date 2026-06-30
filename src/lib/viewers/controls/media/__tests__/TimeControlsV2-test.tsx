@@ -3,6 +3,21 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import TimeControlsV2, { CommentMarker } from '../TimeControlsV2';
 
+const mockResizeObserver = jest.fn().mockImplementation(() => ({
+    disconnect: jest.fn(),
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+}));
+((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+
+beforeAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 600 });
+});
+
+afterAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 0 });
+});
+
 describe('TimeControlsV2', () => {
     const defaultProps = {
         onTimeChange: jest.fn(),
@@ -70,6 +85,65 @@ describe('TimeControlsV2', () => {
             const markersWithInitial: CommentMarker[] = [{ id: 'marker-init', time: 20, initial: 'Z', colorIndex: 4 }];
             render(<TimeControlsV2 {...defaultProps} commentMarkers={markersWithInitial} durationTime={60} />);
             expect(screen.getByText('Z')).toBeInTheDocument();
+        });
+    });
+
+    describe('clustering', () => {
+        test('should render MarkerCluster for markers within 2px of each other', () => {
+            // trackWidth=600, duration=60 => 10px/s. Markers at 10s and 10.1s => 1px apart
+            const markers: CommentMarker[] = [
+                { id: 'm1', time: 10, initial: 'A', colorIndex: 0 },
+                { id: 'm2', time: 10.1, initial: 'B', colorIndex: 1 },
+            ];
+            const { container } = render(
+                <TimeControlsV2 {...defaultProps} commentMarkers={markers} durationTime={60} />,
+            );
+            expect(container.querySelector('.bp-MarkerCluster')).toBeInTheDocument();
+        });
+
+        test('should render grouped MarkerTick for markers at the same timestamp', () => {
+            const markers: CommentMarker[] = [
+                { id: 'm1', time: 10, initial: 'A', colorIndex: 0 },
+                { id: 'm2', time: 10, initial: 'B', colorIndex: 1 },
+            ];
+            const { container } = render(
+                <TimeControlsV2 {...defaultProps} commentMarkers={markers} durationTime={60} />,
+            );
+            expect(container.querySelector('.bp-TimeControlsV2-marker--group')).toBeInTheDocument();
+            expect(container.querySelector('.bp-MarkerAvatarStack')).toBeInTheDocument();
+        });
+
+        test('should render individual MarkerTicks for markers far apart', () => {
+            const markers: CommentMarker[] = [
+                { id: 'm1', time: 10, initial: 'A', colorIndex: 0 },
+                { id: 'm2', time: 30, initial: 'B', colorIndex: 1 },
+            ];
+            const { container } = render(
+                <TimeControlsV2 {...defaultProps} commentMarkers={markers} durationTime={60} />,
+            );
+            expect(screen.getAllByTestId('bp-time-controls-marker')).toHaveLength(2);
+            expect(container.querySelector('.bp-MarkerCluster')).not.toBeInTheDocument();
+            expect(container.querySelector('.bp-TimeControlsV2-marker--group')).not.toBeInTheDocument();
+        });
+
+        test('should call onCommentMarkerClick when a grouped marker tick is clicked', async () => {
+            const user = userEvent.setup();
+            const onCommentMarkerClick = jest.fn();
+            const markers: CommentMarker[] = [
+                { id: 'm1', time: 10, initial: 'A', colorIndex: 0 },
+                { id: 'm2', time: 10, initial: 'B', colorIndex: 1 },
+            ];
+            const { container } = render(
+                <TimeControlsV2
+                    {...defaultProps}
+                    commentMarkers={markers}
+                    durationTime={60}
+                    onCommentMarkerClick={onCommentMarkerClick}
+                />,
+            );
+            const groupTick = container.querySelector('.bp-TimeControlsV2-marker--group') as HTMLElement;
+            await user.click(groupTick);
+            expect(onCommentMarkerClick).toHaveBeenCalledWith(markers[0]);
         });
     });
 

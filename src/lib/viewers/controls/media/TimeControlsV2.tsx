@@ -2,8 +2,10 @@ import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
 import { bdlGray65, white } from 'box-ui-elements/es/styles/variables';
+import buildClusters from './buildClusters';
 import FilmstripV2 from './FilmstripV2';
-import MarkerAvatar from './MarkerAvatar';
+import MarkerCluster from './MarkerCluster';
+import MarkerTick from './MarkerTick';
 import SliderControl from '../slider';
 import './TimeControlsV2.scss';
 
@@ -53,30 +55,53 @@ export default function TimeControlsV2({
     const [hoverPosition, setHoverPosition] = React.useState(0);
     const [hoverPositionMax, setHoverPositionMax] = React.useState(0);
     const [hoverTime, setHoverTime] = React.useState(0);
+    const [trackWidth, setTrackWidth] = React.useState(0);
+    const scrubberRef = React.useRef<HTMLDivElement>(null);
     const currentValue = isFinite(currentTime) ? currentTime : 0;
     const durationValue = isFinite(durationTime) ? durationTime : 0;
     const currentPercentage = percent(currentValue, durationValue);
 
-    const markerTimesKey = commentMarkers.map(m => m.time).join('|');
+    React.useLayoutEffect(() => {
+        const el = scrubberRef.current;
+        if (!el) return undefined;
+
+        setTrackWidth(el.clientWidth);
+
+        const observer = new ResizeObserver(entries => {
+            entries.forEach(entry => {
+                setTrackWidth(entry.contentRect.width);
+            });
+        });
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
+    const clusters = React.useMemo(() => buildClusters(commentMarkers, durationValue, trackWidth), [
+        commentMarkers,
+        durationValue,
+        trackWidth,
+    ]);
+
     const trackMask = React.useMemo(() => {
-        if (durationValue <= 0 || commentMarkers.length === 0) return undefined;
+        if (durationValue <= 0 || clusters.length === 0) return undefined;
 
         const HALF_GAP = 2;
         const stops: string[] = [];
-        const sorted = commentMarkers.map(m => percent(m.time, durationValue)).sort((a, b) => a - b);
 
         stops.push('black 0%');
-        sorted.forEach(pos => {
-            stops.push(`black calc(${pos}% - ${HALF_GAP}px)`);
-            stops.push(`transparent calc(${pos}% - ${HALF_GAP}px)`);
-            stops.push(`transparent calc(${pos}% + ${HALF_GAP}px)`);
-            stops.push(`black calc(${pos}% + ${HALF_GAP}px)`);
+        clusters.forEach(({ leftPercent, rightPercent }) => {
+            const isRange = leftPercent !== rightPercent;
+            const leftPad = isRange ? HALF_GAP + 1 : HALF_GAP;
+            const rightPad = isRange ? HALF_GAP + 1 : HALF_GAP;
+            stops.push(`black calc(${leftPercent}% - ${leftPad}px)`);
+            stops.push(`transparent calc(${leftPercent}% - ${leftPad}px)`);
+            stops.push(`transparent calc(${rightPercent}% + ${rightPad}px)`);
+            stops.push(`black calc(${rightPercent}% + ${rightPad}px)`);
         });
         stops.push('black 100%');
 
         return `linear-gradient(to right, ${stops.join(', ')})`;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [markerTimesKey, durationValue]);
+    }, [durationValue, clusters]);
 
     const handleMouseMove = (newTime: number, newPosition: number, width: number): void => {
         setHoverPosition(newPosition);
@@ -99,6 +124,7 @@ export default function TimeControlsV2({
                 />
             )}
             <div
+                ref={scrubberRef}
                 className="bp-TimeControlsV2-scrubber"
                 style={trackMask ? ({ '--bp-track-mask': trackMask } as React.CSSProperties) : undefined}
             >
@@ -119,26 +145,18 @@ export default function TimeControlsV2({
                     value={currentValue}
                 />
                 {durationValue > 0 &&
-                    commentMarkers.map(marker => (
-                        <button
-                            key={marker.id}
-                            aria-label={__('media_comment_marker')}
-                            className="bp-TimeControlsV2-marker"
-                            data-testid="bp-time-controls-marker"
-                            onClick={(e): void => {
-                                e.stopPropagation();
-                                onCommentMarkerClick?.(marker);
-                            }}
-                            style={{ left: `${percent(marker.time, durationValue)}%` }}
-                            type="button"
-                        >
-                            <MarkerAvatar
-                                avatarUrl={marker.avatarUrl}
-                                colorIndex={marker.colorIndex}
-                                initial={marker.initial}
+                    clusters.map(cluster =>
+                        cluster.isSinglePoint ? (
+                            <MarkerTick
+                                key={cluster.id}
+                                markers={cluster.markers}
+                                onMarkerClick={onCommentMarkerClick}
+                                position={cluster.leftPercent}
                             />
-                        </button>
-                    ))}
+                        ) : (
+                            <MarkerCluster key={cluster.id} cluster={cluster} onMarkerClick={onCommentMarkerClick} />
+                        ),
+                    )}
             </div>
         </div>
     );

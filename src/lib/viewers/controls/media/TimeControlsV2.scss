@@ -50,9 +50,11 @@
 
     &:hover,
     &:focus-visible {
+        z-index: 2;
         transform: translate(-50%, -50%) scale(1.7);
 
-        .bp-MarkerAvatar {
+        > .bp-MarkerAvatar {
+            outline: 0 solid transparent;
             box-shadow: 0 0 0 2px $white;
             transform: translate(-50%, calc(5px / 1.7));
         }
@@ -61,5 +63,12 @@
     &:focus-visible {
         outline: 2px solid $white;
         outline-offset: 2px;
+    }
+
+    &--group {
+        &:hover,
+        &:focus-visible {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
     }
 }
