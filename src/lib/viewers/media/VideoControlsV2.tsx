@@ -114,7 +114,6 @@ export default function VideoControlsV2({
                     filmstripInterval={filmstripInterval}
                     filmstripUrl={filmstripUrl}
                     fps={fps}
-                    mediaEl={mediaEl}
                     onCommentMarkerClick={onCommentMarkerClick}
                     onTimeChange={onTimeChange}
                 />

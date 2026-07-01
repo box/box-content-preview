@@ -9,10 +9,11 @@
     overflow: hidden;
     border: 0;
     border-radius: 50%;
+    outline: 2px solid rgba(0, 0, 0, .5);
     box-shadow: 0 0 0 0 $white;
     transform: translate(-50%, 0);
     transform-origin: bottom center;
-    transition: transform 150ms, box-shadow 150ms;
+    transition: transform 150ms, box-shadow 150ms, outline 150ms;
 
     img {
         position: absolute;
