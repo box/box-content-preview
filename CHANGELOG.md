@@ -1,3 +1,9 @@
+## 3.53.0 (2026-07-01)
+
+* refactor(gallery): extract GalleryController from DocBaseViewer (#1689) ([db6f3b5](https://github.com/box/box-content-preview/commit/db6f3b5)), closes [#1689](https://github.com/box/box-content-preview/issues/1689)
+
+
+
 ## 3.52.0 (2026-06-30)
 
 * fix(file): cache-bust authenticated content URL per request (#1688) ([053e36b](https://github.com/box/box-content-preview/commit/053e36b)), closes [#1688](https://github.com/box/box-content-preview/issues/1688)
