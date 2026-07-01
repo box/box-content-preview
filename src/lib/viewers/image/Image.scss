@@ -25,6 +25,17 @@
         vertical-align: middle;
     }
 
+    &.bp-image--shadow img {
+        box-shadow: 0 4px 24px rgba(0, 0, 0, .2);
+    }
+
+    &.bp-image--shadow.bp-image--transparent img {
+        background-image: repeating-conic-gradient(#e8e8e8 0% 25%, #fff 0% 50%);
+        background-size: 16px 16px;
+        box-shadow: none;
+        filter: drop-shadow(0 4px 24px rgba(0, 0, 0, .2));
+    }
+
     .pannable,
     .panning {
         cursor: move;
