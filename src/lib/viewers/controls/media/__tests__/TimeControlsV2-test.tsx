@@ -1,7 +1,8 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import TimeControlsV2, { CommentMarker } from '../TimeControlsV2';
+import TimeControlsV2 from '../TimeControlsV2';
+import { CommentMarker } from '../types';
 
 const mockResizeObserver = jest.fn().mockImplementation(() => ({
     disconnect: jest.fn(),

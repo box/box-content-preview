@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import MarkerTick from '../MarkerTick';
-import { CommentMarker } from '../TimeControlsV2';
+import { CommentMarker } from '../types';
 
 describe('MarkerTick', () => {
     const singleMarker: CommentMarker[] = [{ id: 'm1', time: 10, initial: 'A', colorIndex: 0 }];

@@ -7,16 +7,9 @@ import FilmstripV2 from './FilmstripV2';
 import MarkerCluster from './MarkerCluster';
 import MarkerTick from './MarkerTick';
 import SliderControl from '../slider';
+import { CommentMarker } from './types';
+import { percent } from './utils';
 import './TimeControlsV2.scss';
-
-export type CommentMarker = {
-    avatarUrl?: string;
-    colorIndex?: number;
-    id: string;
-    initial?: string;
-    time: number;
-    type?: 'annotation' | 'comment';
-};
 
 export type Props = {
     aspectRatio?: number;
@@ -26,17 +19,8 @@ export type Props = {
     filmstripInterval?: number;
     filmstripUrl?: string;
     fps?: number;
-    mediaEl?: HTMLVideoElement | null;
     onCommentMarkerClick?: (marker: CommentMarker) => void;
     onTimeChange: (volume: number) => void;
-};
-
-export const round = (value: number): number => {
-    return +value.toFixed(4);
-};
-
-export const percent = (value1: number, value2: number): number => {
-    return round((value1 / value2) * 100);
 };
 
 export default function TimeControlsV2({
@@ -47,7 +31,6 @@ export default function TimeControlsV2({
     filmstripInterval,
     filmstripUrl,
     fps,
-    mediaEl,
     onCommentMarkerClick,
     onTimeChange,
 }: Props): JSX.Element {

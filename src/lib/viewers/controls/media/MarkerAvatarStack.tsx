@@ -1,6 +1,6 @@
 import React from 'react';
 import MarkerAvatar from './MarkerAvatar';
-import { CommentMarker } from './TimeControlsV2';
+import { CommentMarker } from './types';
 import './MarkerAvatarStack.scss';
 
 const MAX_VISIBLE_AVATARS = 4;

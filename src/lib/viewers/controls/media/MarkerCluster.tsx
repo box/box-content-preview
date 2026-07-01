@@ -1,15 +1,7 @@
 import React from 'react';
 import MarkerAvatarStack from './MarkerAvatarStack';
-import { CommentMarker } from './TimeControlsV2';
+import { ClusterData, CommentMarker } from './types';
 import './MarkerCluster.scss';
-
-export type ClusterData = {
-    id: string;
-    isSinglePoint: boolean;
-    leftPercent: number;
-    markers: CommentMarker[];
-    rightPercent: number;
-};
 
 export type Props = {
     cluster: ClusterData;

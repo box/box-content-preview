@@ -1,5 +1,5 @@
-import { ClusterData } from './MarkerCluster';
-import { CommentMarker, percent } from './TimeControlsV2';
+import { ClusterData, CommentMarker } from './types';
+import { percent } from './utils';
 
 /** Max pixel distance between adjacent markers (sorted by time) for them to be grouped into a single cluster. */
 const CLUSTER_THRESHOLD_PX = 2;

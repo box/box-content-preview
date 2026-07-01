@@ -1,5 +1,5 @@
 import buildClusters from '../buildClusters';
-import { CommentMarker } from '../TimeControlsV2';
+import { CommentMarker } from '../types';
 
 describe('buildClusters', () => {
     test('should return empty array when markers is empty', () => {

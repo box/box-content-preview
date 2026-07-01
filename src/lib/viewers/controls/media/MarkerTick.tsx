@@ -1,7 +1,7 @@
 import React from 'react';
 import MarkerAvatar from './MarkerAvatar';
 import MarkerAvatarStack from './MarkerAvatarStack';
-import { CommentMarker } from './TimeControlsV2';
+import { CommentMarker } from './types';
 
 export type Props = {
     markers: CommentMarker[];

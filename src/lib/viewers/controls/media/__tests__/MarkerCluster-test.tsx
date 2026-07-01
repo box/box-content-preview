@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import MarkerCluster, { ClusterData } from '../MarkerCluster';
-import { CommentMarker } from '../TimeControlsV2';
+import MarkerCluster from '../MarkerCluster';
+import { ClusterData, CommentMarker } from '../types';
 
 describe('MarkerCluster', () => {
     const markers: CommentMarker[] = [
