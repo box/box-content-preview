@@ -4272,7 +4272,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('handleGalleryToggle()', () => {
             let galleryToggle;
-            let toggleEl;
 
             beforeEach(() => {
                 galleryToggle = jest.fn(() => {
@@ -4289,11 +4288,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.annotationControlsFSM = {
                     transition: jest.fn().mockReturnValue(AnnotationMode.NONE),
                 };
-                toggleEl = { focus: jest.fn() };
             });
 
             test('should close find bar, reset annotation mode, and delegate to the controller on entry', () => {
-                docBase.handleGalleryToggle(toggleEl);
+                docBase.handleGalleryToggle();
 
                 expect(docBase.findBar.close).toBeCalled();
                 expect(docBase.annotationControlsFSM.transition).toBeCalledWith(AnnotationInput.RESET);
@@ -4305,7 +4303,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should skip resets when closing the gallery', () => {
                 docBase.galleryController.isOpen = true;
 
-                docBase.handleGalleryToggle(toggleEl);
+                docBase.handleGalleryToggle();
 
                 expect(docBase.findBar.close).not.toBeCalled();
                 expect(docBase.annotationControlsFSM.transition).not.toBeCalled();
@@ -4316,14 +4314,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should not throw if findBar is not initialized', () => {
                 docBase.findBar = undefined;
 
-                expect(() => docBase.handleGalleryToggle(toggleEl)).not.toThrow();
+                expect(() => docBase.handleGalleryToggle()).not.toThrow();
                 expect(galleryToggle).toBeCalled();
             });
 
             test('should not throw if annotator is not initialized', () => {
                 docBase.annotator = undefined;
 
-                expect(() => docBase.handleGalleryToggle(toggleEl)).not.toThrow();
+                expect(() => docBase.handleGalleryToggle()).not.toThrow();
                 expect(galleryToggle).toBeCalled();
             });
         });
