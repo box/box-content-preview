@@ -49,6 +49,7 @@ export default function VideoControlsV2({
     audioTrack,
     audioTracks,
     autoplay,
+    bufferedRange,
     commentMarkers,
     currentTime = 0,
     durationTime = 0,
@@ -108,6 +109,7 @@ export default function VideoControlsV2({
                 <VideoFullscreenButton mediaEl={mediaEl} onFullscreenToggle={onFullscreenToggle} />
                 <TimeControlsV2
                     aspectRatio={aspectRatio}
+                    bufferedRange={bufferedRange}
                     commentMarkers={commentMarkers}
                     currentTime={currentTime}
                     durationTime={durationTime}
