@@ -118,13 +118,26 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             expect(videoAsset.destroy).toBeCalled();
         });
 
-        test('should invoke .destroyControls() if it exists', () => {
+        test('should invoke .destroyControls() if video360Controls exists', () => {
             const destroyStub = jest.spyOn(viewer, 'destroyControls').mockImplementation();
 
-            viewer.controls = {};
+            viewer.video360Controls = {};
             viewer.destroy();
 
             expect(destroyStub).toBeCalled();
+        });
+
+        test('should not invoke .destroyControls() when only DashViewer React controls exist', () => {
+            const destroyStub = jest.spyOn(viewer, 'destroyControls').mockImplementation();
+
+            viewer.controls = {
+                destroy: jest.fn(),
+                render: jest.fn(),
+            };
+            viewer.destroy();
+
+            expect(destroyStub).not.toBeCalled();
+            expect(viewer.controls.destroy).toBeCalled();
         });
 
         describe('if renderer exists', () => {
@@ -282,12 +295,14 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         });
 
         afterEach(() => {
+            viewer.video360Controls = null;
             viewer.controls = null;
         });
 
         test('should create and store an instance of Video360Controls', () => {
             viewer.createControls();
-            expect(viewer.controls).toBeInstanceOf(Video360Controls);
+            expect(viewer.video360Controls).toBeInstanceOf(Video360Controls);
+            expect(viewer.controls).toBe(viewer.video360Controls);
         });
 
         test('should attach event handler for vr toggle by invoking .controls.on() with EVENT_TOGGLE_VR and .handleToggleVr()', () => {
@@ -319,7 +334,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
                 removeListener: jest.fn(),
                 destroy: jest.fn(),
             };
-            viewer.controls = controls;
+            viewer.video360Controls = controls;
             viewer.destroyControls();
             canvas = {
                 removeEventListener: jest.fn(),
@@ -336,14 +351,15 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         });
 
         afterEach(() => {
+            viewer.video360Controls = null;
             viewer.controls = null;
         });
 
-        test('should remove event handler for EVENT_TOGGLE_VR by invoking .controls.removeListener() with EVENT_TOGGLE_VR and .handleToggleVr()', () => {
+        test('should remove event handler for EVENT_TOGGLE_VR by invoking .video360Controls.removeListener() with EVENT_TOGGLE_VR and .handleToggleVr()', () => {
             expect(controls.removeListener).toBeCalledWith(EVENT_TOGGLE_VR, viewer.handleToggleVr);
         });
 
-        test('should invoke .controls.destroy()', () => {
+        test('should invoke .video360Controls.destroy()', () => {
             expect(controls.destroy).toBeCalled();
         });
 
@@ -552,14 +568,14 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
     });
 
     describe('handleShowVrButton()', () => {
-        test('should invoke .controls.showVrButton()', () => {
-            viewer.controls = {
+        test('should invoke .video360Controls.showVrButton()', () => {
+            viewer.video360Controls = {
                 showVrButton: jest.fn(),
             };
             viewer.handleShowVrButton();
-            expect(viewer.controls.showVrButton).toBeCalled();
+            expect(viewer.video360Controls.showVrButton).toBeCalled();
 
-            viewer.controls = null;
+            viewer.video360Controls = null;
         });
     });
 
