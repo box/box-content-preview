@@ -4270,6 +4270,63 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('handleGalleryEnter()', () => {
+            beforeEach(() => {
+                docBase.findBar = { close: jest.fn(), destroy: jest.fn() };
+                docBase.annotator = { toggleAnnotationMode: jest.fn() };
+                docBase.processAnnotationModeChange = jest.fn();
+                docBase.annotationControlsFSM = {
+                    transition: jest.fn().mockReturnValue(AnnotationMode.NONE),
+                };
+            });
+
+            test('should close find bar and reset annotation mode', () => {
+                docBase.handleGalleryEnter();
+
+                expect(docBase.findBar.close).toBeCalled();
+                expect(docBase.annotationControlsFSM.transition).toBeCalledWith(AnnotationInput.RESET);
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+            });
+
+            test('should not throw if findBar is not initialized', () => {
+                docBase.findBar = undefined;
+                expect(() => docBase.handleGalleryEnter()).not.toThrow();
+            });
+
+            test('should not throw if annotator is not initialized', () => {
+                docBase.annotator = undefined;
+                expect(() => docBase.handleGalleryEnter()).not.toThrow();
+            });
+        });
+
+        describe('handleGalleryExit()', () => {
+            beforeEach(() => {
+                docBase.annotator = { toggleAnnotationMode: jest.fn() };
+            });
+
+            test('should restore REGION mode when new annotations are enabled', () => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+
+                docBase.handleGalleryExit();
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            });
+
+            test('should not restore REGION mode when new annotations are disabled', () => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(false);
+
+                docBase.handleGalleryExit();
+
+                expect(docBase.annotator.toggleAnnotationMode).not.toBeCalled();
+            });
+
+            test('should not throw if annotator is not initialized', () => {
+                docBase.annotator = undefined;
+                expect(() => docBase.handleGalleryExit()).not.toThrow();
+            });
+        });
+
         describe('getInitialAnnotationMode()', () => {
             test.each`
                 enableAnnotationsDiscoverability | expectedMode
