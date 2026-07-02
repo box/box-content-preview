@@ -157,7 +157,6 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
-        this.handleGalleryToggle = this.handleGalleryToggle.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -251,6 +250,8 @@ class DocBaseViewer extends BaseViewer {
                     toggle.focus();
                 }
             },
+            onBeforeOpen: () => this.handleGalleryEnter(),
+            onAfterClose: () => this.handleGalleryExit(),
         });
     }
 
@@ -1499,7 +1500,7 @@ class DocBaseViewer extends BaseViewer {
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                 onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
                 onFullscreenToggle={this.toggleFullscreen}
-                onGalleryToggle={canGallery ? this.handleGalleryToggle : undefined}
+                onGalleryToggle={canGallery ? this.galleryController.toggle : undefined}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
@@ -2002,23 +2003,31 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Callback when the gallery toggle button is clicked. Closes the find bar and resets
-     * annotation mode before entering gallery, then delegates to the gallery controller.
+     * Called before the gallery opens. Closes the find bar and resets annotation mode.
      *
      * @protected
      * @return {void}
      */
-    handleGalleryToggle() {
-        if (!this.galleryController.isOpen) {
-            if (this.findBar) {
-                this.findBar.close();
-            }
-            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
-            if (this.annotator) {
-                this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
-            }
+    handleGalleryEnter() {
+        if (this.findBar) {
+            this.findBar.close();
         }
-        this.galleryController.toggle();
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        if (this.annotator) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        }
+    }
+
+    /**
+     * Called after the gallery closes. Restores REGION mode so the region-comment cursor is active.
+     *
+     * @protected
+     * @return {void}
+     */
+    handleGalleryExit() {
+        if (this.annotator && this.areNewAnnotationsEnabled()) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+        }
     }
 
     /**

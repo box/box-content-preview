@@ -33,6 +33,8 @@ interface Harness {
     toggleThumbnails: jest.Mock;
     requestUiUpdate: jest.Mock;
     focusToggle: jest.Mock;
+    onBeforeOpen: jest.Mock;
+    onAfterClose: jest.Mock;
 }
 
 function makeController(
@@ -59,6 +61,8 @@ function makeController(
     });
     const requestUiUpdate = jest.fn();
     const focusToggle = jest.fn();
+    const onBeforeOpen = jest.fn();
+    const onAfterClose = jest.fn();
 
     const opts: GalleryControllerOptions = {
         containerEl,
@@ -70,6 +74,8 @@ function makeController(
         toggleThumbnails,
         requestUiUpdate,
         focusToggle,
+        onBeforeOpen,
+        onAfterClose,
     };
 
     return {
@@ -81,6 +87,8 @@ function makeController(
         toggleThumbnails,
         requestUiUpdate,
         focusToggle,
+        onBeforeOpen,
+        onAfterClose,
     };
 }
 
@@ -153,6 +161,22 @@ describe('GalleryController', () => {
             expect(focusToggle).not.toHaveBeenCalled();
             controller.toggle();
             expect(focusToggle).toHaveBeenCalledTimes(1);
+        });
+
+        test('should call onBeforeOpen on open and not on close', () => {
+            const { controller, onBeforeOpen } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(onBeforeOpen).toHaveBeenCalledTimes(1);
+            controller.toggle();
+            expect(onBeforeOpen).toHaveBeenCalledTimes(1);
+        });
+
+        test('should call onAfterClose on close and not on open', () => {
+            const { controller, onAfterClose } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(onAfterClose).not.toHaveBeenCalled();
+            controller.toggle();
+            expect(onAfterClose).toHaveBeenCalledTimes(1);
         });
 
         test('should wire the correct props into GalleryGrid', () => {

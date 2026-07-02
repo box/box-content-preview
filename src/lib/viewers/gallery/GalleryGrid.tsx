@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import throttle from 'lodash/throttle';
-import { decodeKeydown } from '../../util';
+import { decodeKeydown, replacePlaceholders } from '../../util';
 import './GalleryGrid.scss';
 
 const GALLERY_THUMB_MAX_WIDTH = 440;
@@ -44,7 +44,7 @@ const GalleryTile = React.memo(function GalleryTile({
     return (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
-            aria-label={`Page ${pageNum}`}
+            aria-label={replacePlaceholders(__('page_gallery_tile'), [String(pageNum)])}
             aria-selected={isFocused}
             className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
             data-page={pageNum}
@@ -267,6 +267,7 @@ export default function GalleryGrid({
                     event.stopPropagation();
                     onClose();
                     return;
+                // Listbox is 1-D — arrows move ±1; row-aware nav comes with v2 grid role.
                 case 'ArrowUp':
                 case 'ArrowLeft':
                     if (focusedPage > 1) {

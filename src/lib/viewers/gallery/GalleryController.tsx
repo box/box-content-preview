@@ -41,6 +41,8 @@ export type GalleryControllerOptions = {
     toggleThumbnails: () => void;
     requestUiUpdate: () => void;
     focusToggle: () => void;
+    onBeforeOpen: () => void;
+    onAfterClose: () => void;
 };
 
 export default class GalleryController {
@@ -61,6 +63,10 @@ export default class GalleryController {
     private requestUiUpdate: () => void;
 
     private focusToggle: () => void;
+
+    private onBeforeOpen: () => void;
+
+    private onAfterClose: () => void;
 
     private galleryRoot: Root | null = null;
 
@@ -88,6 +94,8 @@ export default class GalleryController {
         this.toggleThumbnails = opts.toggleThumbnails;
         this.requestUiUpdate = opts.requestUiUpdate;
         this.focusToggle = opts.focusToggle;
+        this.onBeforeOpen = opts.onBeforeOpen;
+        this.onAfterClose = opts.onAfterClose;
     }
 
     get isOpen(): boolean {
@@ -104,6 +112,8 @@ export default class GalleryController {
         this.isGalleryOpen = !this.isGalleryOpen;
 
         if (this.isGalleryOpen) {
+            this.onBeforeOpen();
+
             if (this.gallerySidebarTimeoutId !== null) {
                 clearTimeout(this.gallerySidebarTimeoutId);
                 this.gallerySidebarTimeoutId = null;
@@ -165,6 +175,7 @@ export default class GalleryController {
         this.requestUiUpdate();
 
         if (!this.isGalleryOpen) {
+            this.onAfterClose();
             this.focusToggle();
         }
     };
