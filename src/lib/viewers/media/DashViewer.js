@@ -1279,6 +1279,7 @@ class DashViewer extends VideoBaseViewer {
             audioTrack: this.selectedAudioTrack,
             audioTracks: this.audioTracks,
             autoplay: this.isAutoplayEnabled(),
+            bufferedRange: this.mediaEl.buffered,
             currentTime: this.mediaEl.currentTime,
             durationTime: this.mediaEl.duration,
             experiences: this.experiences,
@@ -1333,14 +1334,7 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        this.controls.render(
-            <VideoControls
-                {...sharedProps}
-                bufferedRange={this.mediaEl.buffered}
-                hasHighlight={false}
-                isPlayingHD={this.isPlayingHD()}
-            />,
-        );
+        this.controls.render(<VideoControls {...sharedProps} hasHighlight={false} isPlayingHD={this.isPlayingHD()} />);
     }
 }
 
