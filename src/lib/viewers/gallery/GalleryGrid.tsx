@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import throttle from 'lodash/throttle';
+import { decodeKeydown } from '../../util';
 import './GalleryGrid.scss';
 
 const GALLERY_THUMB_MAX_WIDTH = 440;
@@ -24,6 +25,39 @@ export type Props = {
     onClose: () => void;
     thumbnail: GalleryThumbnail;
 };
+
+interface TileProps {
+    pageNum: number;
+    isFocused: boolean;
+    imageSrc?: string;
+    onClick: (pageNum: number) => void;
+    onFocus: (pageNum: number) => void;
+}
+
+const GalleryTile = React.memo(function GalleryTile({
+    pageNum,
+    isFocused,
+    imageSrc,
+    onClick,
+    onFocus,
+}: TileProps): JSX.Element {
+    return (
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+        <div
+            aria-label={`Page ${pageNum}`}
+            aria-selected={isFocused}
+            className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
+            data-page={pageNum}
+            onClick={() => onClick(pageNum)}
+            onFocus={() => onFocus(pageNum)}
+            role="option"
+            tabIndex={isFocused ? 0 : -1}
+        >
+            <span className="bp-gallery-tile-badge">{pageNum}</span>
+            {imageSrc ? <img alt="" src={imageSrc} /> : <span className="bp-gallery-tile-placeholder" />}
+        </div>
+    );
+});
 
 export default function GalleryGrid({
     pageCount,
@@ -188,6 +222,15 @@ export default function GalleryGrid({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const focusTile = useCallback((pageNum: number) => {
+        const grid = gridRef.current;
+        if (!grid) return;
+        const tile = grid.querySelector(`[data-page="${pageNum}"]`) as HTMLElement | null;
+        if (tile) {
+            tile.focus();
+        }
+    }, []);
+
     const handleTileFocus = useCallback(
         (pageNum: number) => {
             setFocusedPage(pageNum);
@@ -198,75 +241,88 @@ export default function GalleryGrid({
         [onFocusChange],
     );
 
+    const handleTileClick = useCallback(
+        (pageNum: number) => {
+            onPageNavigate(pageNum);
+        },
+        [onPageNavigate],
+    );
+
     const handleGridFocus = useCallback(
         (event: React.FocusEvent) => {
-            if (event.target === gridRef.current && gridRef.current) {
-                const tile = gridRef.current.querySelector(`[data-page="${focusedPage}"]`) as HTMLElement;
-                if (tile) {
-                    tile.focus();
-                }
+            if (event.target === gridRef.current) {
+                focusTile(focusedPage);
             }
         },
-        [focusedPage],
+        [focusedPage, focusTile],
     );
 
     const handleGridKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                event.preventDefault();
-                event.stopPropagation();
-                onClose();
-                return;
-            }
+            const key = decodeKeydown(event);
 
-            if (event.key === 'Tab' && gridRef.current) {
-                const buttons = gridRef.current.querySelectorAll('button');
-                const first = buttons[0];
-                const last = buttons[buttons.length - 1];
-
-                if (event.shiftKey && document.activeElement === first) {
+            switch (key) {
+                case 'Escape':
                     event.preventDefault();
-                    last.focus();
-                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.stopPropagation();
+                    onClose();
+                    return;
+                case 'ArrowUp':
+                case 'ArrowLeft':
+                    if (focusedPage > 1) {
+                        event.preventDefault();
+                        focusTile(focusedPage - 1);
+                    }
+                    return;
+                case 'ArrowDown':
+                case 'ArrowRight':
+                    if (focusedPage < pageCount) {
+                        event.preventDefault();
+                        focusTile(focusedPage + 1);
+                    }
+                    return;
+                case 'Home':
                     event.preventDefault();
-                    first.focus();
-                }
+                    focusTile(1);
+                    return;
+                case 'End':
+                    event.preventDefault();
+                    focusTile(pageCount);
+                    return;
+                case 'Enter':
+                case 'Space':
+                    event.preventDefault();
+                    onPageNavigate(focusedPage);
+                    break;
+                default:
             }
         },
-        [onClose],
+        [focusedPage, focusTile, onClose, onPageNavigate, pageCount],
     );
 
     const tiles = [];
     for (let i = 1; i <= pageCount; i += 1) {
-        const isFocused = i === focusedPage;
         tiles.push(
-            <button
+            <GalleryTile
                 key={i}
-                aria-label={`Page ${i}${isFocused ? ', current page' : ''}`}
-                className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
-                data-page={i}
-                onClick={() => onPageNavigate(i)}
-                onFocus={() => handleTileFocus(i)}
-                type="button"
-            >
-                <span className="bp-gallery-tile-badge">{i}</span>
-                {loadedImages[i] ? (
-                    <img alt={`Page ${i}`} src={loadedImages[i]} />
-                ) : (
-                    <span className="bp-gallery-tile-placeholder" />
-                )}
-            </button>,
+                imageSrc={loadedImages[i]}
+                isFocused={i === focusedPage}
+                onClick={handleTileClick}
+                onFocus={handleTileFocus}
+                pageNum={i}
+            />,
         );
     }
 
     return (
-        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <div
             ref={gridRef}
+            aria-label={__('page_gallery')}
             className="bp-gallery-grid"
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
             onScroll={handleScrollRef.current}
+            role="listbox"
             tabIndex={-1}
         >
             {tiles}

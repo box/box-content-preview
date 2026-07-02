@@ -157,6 +157,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
+        this.handleGalleryToggle = this.handleGalleryToggle.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -244,6 +245,12 @@ class DocBaseViewer extends BaseViewer {
             setPage: n => this.setPage(n),
             toggleThumbnails: () => this.toggleThumbnails(),
             requestUiUpdate: () => this.renderUI(),
+            focusToggle: () => {
+                const toggle = this.containerEl.querySelector('.bp-GalleryToggle');
+                if (toggle && toggle.focus) {
+                    toggle.focus();
+                }
+            },
         });
     }
 
@@ -1492,7 +1499,7 @@ class DocBaseViewer extends BaseViewer {
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                 onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
                 onFullscreenToggle={this.toggleFullscreen}
-                onGalleryToggle={canGallery ? this.galleryController.toggle : undefined}
+                onGalleryToggle={canGallery ? this.handleGalleryToggle : undefined}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
@@ -1992,6 +1999,26 @@ class DocBaseViewer extends BaseViewer {
     toggleFindBar(findBarToggleEl) {
         this.findBarToggleEl = findBarToggleEl;
         this.findBar.toggle();
+    }
+
+    /**
+     * Callback when the gallery toggle button is clicked. Closes the find bar and resets
+     * annotation mode before entering gallery, then delegates to the gallery controller.
+     *
+     * @protected
+     * @return {void}
+     */
+    handleGalleryToggle() {
+        if (!this.galleryController.isOpen) {
+            if (this.findBar) {
+                this.findBar.close();
+            }
+            this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+            if (this.annotator) {
+                this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+            }
+        }
+        this.galleryController.toggle();
     }
 
     /**

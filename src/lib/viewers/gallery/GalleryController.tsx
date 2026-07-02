@@ -40,6 +40,7 @@ export type GalleryControllerOptions = {
     setPage: (n: number) => void;
     toggleThumbnails: () => void;
     requestUiUpdate: () => void;
+    focusToggle: () => void;
 };
 
 export default class GalleryController {
@@ -58,6 +59,8 @@ export default class GalleryController {
     private toggleThumbnails: () => void;
 
     private requestUiUpdate: () => void;
+
+    private focusToggle: () => void;
 
     private galleryRoot: Root | null = null;
 
@@ -84,6 +87,7 @@ export default class GalleryController {
         this.setPage = opts.setPage;
         this.toggleThumbnails = opts.toggleThumbnails;
         this.requestUiUpdate = opts.requestUiUpdate;
+        this.focusToggle = opts.focusToggle;
     }
 
     get isOpen(): boolean {
@@ -159,6 +163,10 @@ export default class GalleryController {
         }
 
         this.requestUiUpdate();
+
+        if (!this.isGalleryOpen) {
+            this.focusToggle();
+        }
     };
 
     handleEscape(): boolean {

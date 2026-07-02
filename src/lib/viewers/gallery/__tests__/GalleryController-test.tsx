@@ -32,6 +32,7 @@ interface Harness {
     setPage: jest.Mock;
     toggleThumbnails: jest.Mock;
     requestUiUpdate: jest.Mock;
+    focusToggle: jest.Mock;
 }
 
 function makeController(
@@ -57,6 +58,7 @@ function makeController(
         if (sidebar) sidebar.isOpen = !sidebar.isOpen;
     });
     const requestUiUpdate = jest.fn();
+    const focusToggle = jest.fn();
 
     const opts: GalleryControllerOptions = {
         containerEl,
@@ -67,6 +69,7 @@ function makeController(
         setPage,
         toggleThumbnails,
         requestUiUpdate,
+        focusToggle,
     };
 
     return {
@@ -77,6 +80,7 @@ function makeController(
         setPage,
         toggleThumbnails,
         requestUiUpdate,
+        focusToggle,
     };
 }
 
@@ -135,6 +139,20 @@ describe('GalleryController', () => {
             expect(controller.isOpen).toBe(true);
             expect(containerEl.children).toHaveLength(1);
             expect(requestUiUpdate).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not call focusToggle on open', () => {
+            const { controller, focusToggle } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(focusToggle).not.toHaveBeenCalled();
+        });
+
+        test('should call focusToggle on close', () => {
+            const { controller, focusToggle } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(focusToggle).not.toHaveBeenCalled();
+            controller.toggle();
+            expect(focusToggle).toHaveBeenCalledTimes(1);
         });
 
         test('should wire the correct props into GalleryGrid', () => {

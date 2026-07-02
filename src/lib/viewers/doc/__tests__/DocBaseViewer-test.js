@@ -4270,6 +4270,64 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('handleGalleryToggle()', () => {
+            let galleryToggle;
+            let toggleEl;
+
+            beforeEach(() => {
+                galleryToggle = jest.fn(() => {
+                    docBase.galleryController.isOpen = !docBase.galleryController.isOpen;
+                });
+                docBase.galleryController = {
+                    isOpen: false,
+                    toggle: galleryToggle,
+                    destroy: jest.fn(),
+                };
+                docBase.findBar = { close: jest.fn(), destroy: jest.fn() };
+                docBase.annotator = { toggleAnnotationMode: jest.fn() };
+                docBase.processAnnotationModeChange = jest.fn();
+                docBase.annotationControlsFSM = {
+                    transition: jest.fn().mockReturnValue(AnnotationMode.NONE),
+                };
+                toggleEl = { focus: jest.fn() };
+            });
+
+            test('should close find bar, reset annotation mode, and delegate to the controller on entry', () => {
+                docBase.handleGalleryToggle(toggleEl);
+
+                expect(docBase.findBar.close).toBeCalled();
+                expect(docBase.annotationControlsFSM.transition).toBeCalledWith(AnnotationInput.RESET);
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+                expect(galleryToggle).toBeCalled();
+            });
+
+            test('should skip resets when closing the gallery', () => {
+                docBase.galleryController.isOpen = true;
+
+                docBase.handleGalleryToggle(toggleEl);
+
+                expect(docBase.findBar.close).not.toBeCalled();
+                expect(docBase.annotationControlsFSM.transition).not.toBeCalled();
+                expect(docBase.annotator.toggleAnnotationMode).not.toBeCalled();
+                expect(galleryToggle).toBeCalled();
+            });
+
+            test('should not throw if findBar is not initialized', () => {
+                docBase.findBar = undefined;
+
+                expect(() => docBase.handleGalleryToggle(toggleEl)).not.toThrow();
+                expect(galleryToggle).toBeCalled();
+            });
+
+            test('should not throw if annotator is not initialized', () => {
+                docBase.annotator = undefined;
+
+                expect(() => docBase.handleGalleryToggle(toggleEl)).not.toThrow();
+                expect(galleryToggle).toBeCalled();
+            });
+        });
+
         describe('getInitialAnnotationMode()', () => {
             test.each`
                 enableAnnotationsDiscoverability | expectedMode
