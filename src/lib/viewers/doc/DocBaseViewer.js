@@ -244,6 +244,14 @@ class DocBaseViewer extends BaseViewer {
             setPage: n => this.setPage(n),
             toggleThumbnails: () => this.toggleThumbnails(),
             requestUiUpdate: () => this.renderUI(),
+            focusToggle: () => {
+                const toggle = this.containerEl.querySelector('.bp-GalleryToggle');
+                if (toggle && toggle.focus) {
+                    toggle.focus();
+                }
+            },
+            onBeforeOpen: () => this.handleGalleryEnter(),
+            onAfterClose: () => this.handleGalleryExit(),
         });
     }
 
@@ -1992,6 +2000,34 @@ class DocBaseViewer extends BaseViewer {
     toggleFindBar(findBarToggleEl) {
         this.findBarToggleEl = findBarToggleEl;
         this.findBar.toggle();
+    }
+
+    /**
+     * Called before the gallery opens. Closes the find bar and resets annotation mode.
+     *
+     * @protected
+     * @return {void}
+     */
+    handleGalleryEnter() {
+        if (this.findBar) {
+            this.findBar.close();
+        }
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        if (this.annotator) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        }
+    }
+
+    /**
+     * Called after the gallery closes. Restores REGION mode so the region-comment cursor is active.
+     *
+     * @protected
+     * @return {void}
+     */
+    handleGalleryExit() {
+        if (this.annotator && this.areNewAnnotationsEnabled()) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+        }
     }
 
     /**

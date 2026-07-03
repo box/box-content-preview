@@ -28,21 +28,23 @@ describe('GalleryGrid', () => {
     const getWrapper = (props = {}) => render(<GalleryGrid {...defaultProps} {...props} />);
 
     describe('render', () => {
-        test('should render the gallery grid container', () => {
+        test('should render the gallery grid container with listbox role', () => {
             getWrapper();
-            expect(document.querySelector('.bp-gallery-grid')).toBeInTheDocument();
+            const grid = screen.getByRole('listbox');
+            expect(grid).toHaveClass('bp-gallery-grid');
+            expect(grid).toHaveAttribute('aria-label', 'Page gallery');
         });
 
-        test('should render a button for each page', () => {
+        test('should render an option for each page', () => {
             getWrapper();
-            const buttons = screen.getAllByRole('button');
-            expect(buttons).toHaveLength(10);
+            const options = screen.getAllByRole('option');
+            expect(options).toHaveLength(10);
         });
 
         test('should set aria-label on each tile', () => {
             getWrapper();
             expect(screen.getByLabelText('Page 1')).toBeInTheDocument();
-            expect(screen.getByLabelText('Page 3, current page')).toBeInTheDocument();
+            expect(screen.getByLabelText('Page 3')).toBeInTheDocument();
             expect(screen.getByLabelText('Page 10')).toBeInTheDocument();
         });
     });
@@ -50,19 +52,25 @@ describe('GalleryGrid', () => {
     describe('current page highlight', () => {
         test('should apply selected class to current page tile', () => {
             getWrapper();
-            const tile = screen.getByLabelText('Page 3, current page');
+            const tile = screen.getByLabelText('Page 3');
             expect(tile).toHaveClass('bp-gallery-tile--selected');
         });
 
-        test('should not apply selected class to other tiles', () => {
+        test('should set aria-selected on current page tile only', () => {
             getWrapper();
-            const tile = screen.getByLabelText('Page 1');
-            expect(tile).not.toHaveClass('bp-gallery-tile--selected');
+            expect(screen.getByLabelText('Page 3')).toHaveAttribute('aria-selected', 'true');
+            expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-selected', 'false');
+        });
+
+        test('should give current page tile tabIndex 0 and others -1 (roving tabindex)', () => {
+            getWrapper();
+            expect(screen.getByLabelText('Page 3')).toHaveAttribute('tabIndex', '0');
+            expect(screen.getByLabelText('Page 1')).toHaveAttribute('tabIndex', '-1');
         });
 
         test('should render badge on every tile', () => {
             getWrapper();
-            const allTiles = screen.getAllByRole('button');
+            const allTiles = screen.getAllByRole('option');
             allTiles.forEach(tile => {
                 expect(tile.querySelector('.bp-gallery-tile-badge')).toBeInTheDocument();
             });
@@ -81,40 +89,112 @@ describe('GalleryGrid', () => {
             await userEvent.click(screen.getByLabelText('Page 5'));
             expect(onPageNavigate).toHaveBeenCalledWith(5);
         });
+
+        test('should still allow click navigation when thumbnail render failed (fallback tile)', async () => {
+            const failingThumbnail = {
+                ...mockThumbnail,
+                createThumbnailImage: jest.fn().mockRejectedValue(new Error('render failed')),
+            };
+            const onPageNavigate = jest.fn();
+            getWrapper({ onPageNavigate, thumbnail: failingThumbnail });
+
+            const tile = screen.getByLabelText('Page 7');
+            expect(tile.querySelector('.bp-gallery-tile-badge')).toBeInTheDocument();
+            expect(tile.querySelector('.bp-gallery-tile-placeholder')).toBeInTheDocument();
+
+            await userEvent.click(tile);
+            expect(onPageNavigate).toHaveBeenCalledWith(7);
+        });
     });
 
     describe('keyboard', () => {
         test('should call onClose on Escape', async () => {
             const onClose = jest.fn();
             getWrapper({ onClose });
-            const grid = document.querySelector('.bp-gallery-grid') as HTMLElement;
-            grid.focus();
+            screen.getByLabelText('Page 3').focus();
             await userEvent.keyboard('{Escape}');
             expect(onClose).toHaveBeenCalled();
         });
 
-        test('should wrap focus from last tile to first on Tab', async () => {
+        test('should move focus to next tile on ArrowDown', async () => {
             getWrapper();
-            const buttons = screen.getAllByRole('button');
-            const lastButton = buttons[buttons.length - 1];
-            lastButton.focus();
-            await userEvent.tab();
-            expect(buttons[0]).toHaveFocus();
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{ArrowDown}');
+            expect(screen.getByLabelText('Page 4')).toHaveFocus();
         });
 
-        test('should wrap focus from first tile to last on Shift+Tab', async () => {
+        test('should move focus to next tile on ArrowRight', async () => {
             getWrapper();
-            const buttons = screen.getAllByRole('button');
-            buttons[0].focus();
-            await userEvent.tab({ shift: true });
-            expect(buttons[buttons.length - 1]).toHaveFocus();
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{ArrowRight}');
+            expect(screen.getByLabelText('Page 4')).toHaveFocus();
+        });
+
+        test('should move focus to previous tile on ArrowUp', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{ArrowUp}');
+            expect(screen.getByLabelText('Page 2')).toHaveFocus();
+        });
+
+        test('should move focus to previous tile on ArrowLeft', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{ArrowLeft}');
+            expect(screen.getByLabelText('Page 2')).toHaveFocus();
+        });
+
+        test('should not move past first tile on ArrowUp', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            screen.getByLabelText('Page 1').focus();
+            await userEvent.keyboard('{ArrowUp}');
+            expect(screen.getByLabelText('Page 1')).toHaveFocus();
+        });
+
+        test('should not move past last tile on ArrowDown', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            screen.getByLabelText('Page 10').focus();
+            await userEvent.keyboard('{ArrowDown}');
+            expect(screen.getByLabelText('Page 10')).toHaveFocus();
+        });
+
+        test('should jump to first tile on Home', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{Home}');
+            expect(screen.getByLabelText('Page 1')).toHaveFocus();
+        });
+
+        test('should jump to last tile on End', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{End}');
+            expect(screen.getByLabelText('Page 10')).toHaveFocus();
+        });
+
+        test('should call onPageNavigate on Enter', async () => {
+            const onPageNavigate = jest.fn();
+            getWrapper({ onPageNavigate });
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard('{Enter}');
+            expect(onPageNavigate).toHaveBeenCalledWith(3);
+        });
+
+        test('should call onPageNavigate on Space', async () => {
+            const onPageNavigate = jest.fn();
+            getWrapper({ onPageNavigate });
+            screen.getByLabelText('Page 3').focus();
+            await userEvent.keyboard(' ');
+            expect(onPageNavigate).toHaveBeenCalledWith(3);
         });
     });
 
     describe('focus management', () => {
         test('should focus current page tile on mount', () => {
             getWrapper();
-            const tile = screen.getByLabelText('Page 3, current page');
+            const tile = screen.getByLabelText('Page 3');
             expect(tile).toHaveFocus();
         });
 
@@ -141,13 +221,11 @@ describe('GalleryGrid', () => {
 
         test('should redirect focus to focused tile when grid container is clicked', async () => {
             getWrapper();
-            const grid = document.querySelector('.bp-gallery-grid') as HTMLElement;
-            // Simulate clicking empty area — focus goes to grid container
+            const grid = screen.getByRole('listbox');
             grid.focus();
 
             await waitFor(() => {
-                // Focus should redirect to the focused page tile
-                const focusedTile = screen.getByLabelText('Page 3, current page');
+                const focusedTile = screen.getByLabelText('Page 3');
                 expect(focusedTile).toHaveFocus();
             });
         });
@@ -178,7 +256,7 @@ describe('GalleryGrid', () => {
             };
             getWrapper({ thumbnail: cachedThumbnail });
 
-            const tile3 = screen.getByLabelText('Page 3, current page');
+            const tile3 = screen.getByLabelText('Page 3');
             const img = tile3.querySelector('img');
             expect(img).toBeInTheDocument();
             expect(img).toHaveAttribute('src', 'data:image/png;cached-page-3');

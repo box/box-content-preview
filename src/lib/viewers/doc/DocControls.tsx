@@ -51,16 +51,9 @@ export default function DocControls({
 }: Props): JSX.Element {
     return (
         <ExperiencesProvider experiences={experiences}>
-            {isGalleryOpen ? (
-                <ControlsBar>
-                    <ControlsBarGroup>
-                        <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
-                        <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
-                    </ControlsBarGroup>
-                </ControlsBar>
-            ) : (
-                <>
-                    <ControlsBar>
+            <ControlsBar>
+                {!isGalleryOpen && (
+                    <>
                         <ControlsBarGroup>
                             <ThumbnailsToggle
                                 isThumbnailsOpen={isThumbnailsOpen}
@@ -90,28 +83,32 @@ export default function DocControls({
                                 <RotateControl onRotateLeft={onRotateLeft} />
                             </ControlsBarGroup>
                         )}
-                        <ControlsBarGroup>
-                            <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
-                            <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
-                            <AnnotationsControls
-                                annotationColor={annotationColor}
-                                annotationMode={annotationMode}
-                                hasDrawing={hasDrawing}
-                                hasHighlight={hasHighlight}
-                                hasRegion={hasRegion}
-                                onAnnotationModeClick={onAnnotationModeClick}
-                                onAnnotationModeEscape={onAnnotationModeEscape}
-                            />
-                        </ControlsBarGroup>
-                    </ControlsBar>
-                    <ControlsBar>
-                        <DrawingControls
+                    </>
+                )}
+                <ControlsBarGroup>
+                    <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
+                    <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                    {!isGalleryOpen && (
+                        <AnnotationsControls
                             annotationColor={annotationColor}
                             annotationMode={annotationMode}
-                            onAnnotationColorChange={onAnnotationColorChange}
+                            hasDrawing={hasDrawing}
+                            hasHighlight={hasHighlight}
+                            hasRegion={hasRegion}
+                            onAnnotationModeClick={onAnnotationModeClick}
+                            onAnnotationModeEscape={onAnnotationModeEscape}
                         />
-                    </ControlsBar>
-                </>
+                    )}
+                </ControlsBarGroup>
+            </ControlsBar>
+            {!isGalleryOpen && (
+                <ControlsBar>
+                    <DrawingControls
+                        annotationColor={annotationColor}
+                        annotationMode={annotationMode}
+                        onAnnotationColorChange={onAnnotationColorChange}
+                    />
+                </ControlsBar>
             )}
         </ExperiencesProvider>
     );

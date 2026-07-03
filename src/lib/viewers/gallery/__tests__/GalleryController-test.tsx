@@ -32,6 +32,9 @@ interface Harness {
     setPage: jest.Mock;
     toggleThumbnails: jest.Mock;
     requestUiUpdate: jest.Mock;
+    focusToggle: jest.Mock;
+    onBeforeOpen: jest.Mock;
+    onAfterClose: jest.Mock;
 }
 
 function makeController(
@@ -57,6 +60,9 @@ function makeController(
         if (sidebar) sidebar.isOpen = !sidebar.isOpen;
     });
     const requestUiUpdate = jest.fn();
+    const focusToggle = jest.fn();
+    const onBeforeOpen = jest.fn();
+    const onAfterClose = jest.fn();
 
     const opts: GalleryControllerOptions = {
         containerEl,
@@ -67,6 +73,9 @@ function makeController(
         setPage,
         toggleThumbnails,
         requestUiUpdate,
+        focusToggle,
+        onBeforeOpen,
+        onAfterClose,
     };
 
     return {
@@ -77,6 +86,9 @@ function makeController(
         setPage,
         toggleThumbnails,
         requestUiUpdate,
+        focusToggle,
+        onBeforeOpen,
+        onAfterClose,
     };
 }
 
@@ -135,6 +147,36 @@ describe('GalleryController', () => {
             expect(controller.isOpen).toBe(true);
             expect(containerEl.children).toHaveLength(1);
             expect(requestUiUpdate).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not call focusToggle on open', () => {
+            const { controller, focusToggle } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(focusToggle).not.toHaveBeenCalled();
+        });
+
+        test('should call focusToggle on close', () => {
+            const { controller, focusToggle } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(focusToggle).not.toHaveBeenCalled();
+            controller.toggle();
+            expect(focusToggle).toHaveBeenCalledTimes(1);
+        });
+
+        test('should call onBeforeOpen on open and not on close', () => {
+            const { controller, onBeforeOpen } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(onBeforeOpen).toHaveBeenCalledTimes(1);
+            controller.toggle();
+            expect(onBeforeOpen).toHaveBeenCalledTimes(1);
+        });
+
+        test('should call onAfterClose on close and not on open', () => {
+            const { controller, onAfterClose } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            expect(onAfterClose).not.toHaveBeenCalled();
+            controller.toggle();
+            expect(onAfterClose).toHaveBeenCalledTimes(1);
         });
 
         test('should wire the correct props into GalleryGrid', () => {
