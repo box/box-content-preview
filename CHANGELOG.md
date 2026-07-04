@@ -1,3 +1,9 @@
+## 3.55.0 (2026-07-04)
+
+* feat(gallery): a11y polish, entry-state reset, focus return (#1691) ([c447d50](https://github.com/box/box-content-preview/commit/c447d50)), closes [#1691](https://github.com/box/box-content-preview/issues/1691)
+
+
+
 ## 3.54.0 (2026-07-02)
 
 * feat(video-player-v2): add clustering for comment markers in scrubber bar (#1690) ([eda82b1](https://github.com/box/box-content-preview/commit/eda82b1)), closes [#1690](https://github.com/box/box-content-preview/issues/1690)
