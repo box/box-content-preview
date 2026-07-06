@@ -958,6 +958,9 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('loadTranscription()', () => {
         beforeEach(() => {
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature => feature === 'ai_transcription_for_video_subtitles_enabled',
+            );
             dash.options = {
                 file: {
                     representations: {
@@ -975,6 +978,12 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.createUrl = jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue('authed-url');
             stubs.loadSubtitles = jest.spyOn(dash, 'loadSubtitles').mockImplementation();
             jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
+        });
+
+        test('should do nothing when ai transcription for video subtitles feature is disabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            dash.loadTranscription();
+            expect(stubs.createUrl).not.toBeCalled();
         });
 
         test('should do nothing if the extracted_text representation does not exist', () => {
@@ -1177,7 +1186,11 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should use createContentUrlV2 when migrateAccessTokenToHeader is enabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature =>
+                    feature === 'ai_transcription_for_video_subtitles_enabled' ||
+                    feature === 'migrateAccessTokenToHeader',
+            );
             const createUrlV2 = jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('v2-url');
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
                 destroy: jest.fn(),
@@ -1191,7 +1204,9 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader is disabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature => feature === 'ai_transcription_for_video_subtitles_enabled',
+            );
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
                 destroy: jest.fn(),
                 getPromise: () => Promise.resolve(),
@@ -1238,6 +1253,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should pass through unrecognized codes', () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
             const russian = { language: 'rus', id: 3 };
             const foo = { language: 'foo', id: 4 };
             const und = { language: 'und', id: 5 };
@@ -1248,11 +1264,24 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
             stubs.mockControls
                 .expects('initSubtitles')
-                .withArgs(['Russian', 'foo', __('auto_generated'), '', 'doesntmatter', '0'], 'English');
+                .withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
 
             dash.loadSubtitles();
 
             expect(dash.textTracks).toEqual([russian, foo, und, empty, doesntmatter, zero]);
+        });
+
+        test('should map und to Auto-Generated when ai transcription for video subtitles is enabled', () => {
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature => feature === 'ai_transcription_for_video_subtitles_enabled',
+            );
+            const und = { language: 'und', id: 5 };
+            stubs.mockPlayer.expects('getTextTracks').returns([und]);
+            stubs.mockControls.expects('initSubtitles').withArgs([__('auto_generated')], 'English');
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).toEqual([und]);
         });
 
         describe('With React controls', () => {

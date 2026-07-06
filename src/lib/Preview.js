@@ -52,7 +52,9 @@ import {
     X_REP_HINT_DOC_THUMBNAIL,
     X_REP_HINT_IMAGE,
     X_REP_HINT_VIDEO_DASH,
+    X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT,
     X_REP_HINT_VIDEO_MP4,
+    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -1938,8 +1940,13 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHint =
-            Browser.canPlayDash() && !this.disabledViewers.Dash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
+        const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
+        let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
+
+        if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED)) {
+            videoHint += X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT;
+        }
+
         const headers = {
             'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`,
         };
