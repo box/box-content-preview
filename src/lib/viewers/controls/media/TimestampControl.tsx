@@ -20,6 +20,7 @@ export type Props = {
     currentTime?: number;
     durationTime?: number;
     fps?: number;
+    canChangeTimeFormat?: boolean;
     isNarrowWidth?: boolean;
     mediaEl?: HTMLVideoElement | null;
 };
@@ -46,6 +47,7 @@ export default function TimestampControl({
     currentTime = 0,
     durationTime = 0,
     fps = DEFAULT_FPS,
+    canChangeTimeFormat = false,
     isNarrowWidth = false,
     mediaEl,
 }: Props): JSX.Element {
@@ -137,6 +139,22 @@ export default function TimestampControl({
         event.stopPropagation();
         handleSelect(selectedFormat);
     };
+
+    if (!canChangeTimeFormat) {
+        return (
+            <div className="bp-TimestampControl" data-testid="bp-TimestampControl">
+                <span className="bp-TimestampControl-static" data-testid="bp-TimestampControl-static">
+                    <span className="bp-TimestampControl-current">{formatTime(currentTime)}</span>
+                    {!isNarrowWidth && (
+                        <>
+                            <span className="bp-TimestampControl-separator">/</span>
+                            <span className="bp-TimestampControl-duration">{formatTime(durationTime)}</span>
+                        </>
+                    )}
+                </span>
+            </div>
+        );
+    }
 
     return (
         <div ref={containerElRef} className="bp-TimestampControl" data-testid="bp-TimestampControl">

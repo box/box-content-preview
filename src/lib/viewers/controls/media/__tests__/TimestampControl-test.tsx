@@ -20,7 +20,16 @@ describe('TimestampControl', () => {
     });
 
     const getWrapper = (props = {}) =>
-        render(<TimestampControl currentTime={65} durationTime={120} fps={24} mediaEl={videoEl} {...props} />);
+        render(
+            <TimestampControl
+                canChangeTimeFormat
+                currentTime={65}
+                durationTime={120}
+                fps={24}
+                mediaEl={videoEl}
+                {...props}
+            />,
+        );
 
     const getButton = () => screen.getByTestId('bp-TimestampControl-button');
 
@@ -40,6 +49,23 @@ describe('TimestampControl', () => {
         test('should not render the flyout by default', () => {
             getWrapper();
             expect(screen.queryByTestId('bp-TimestampControl-flyout')).not.toBeInTheDocument();
+        });
+    });
+
+    describe('when canChangeTimeFormat is false', () => {
+        test('should render static standard time without a dropdown', () => {
+            render(<TimestampControl currentTime={65} durationTime={120} fps={24} mediaEl={videoEl} />);
+
+            expect(screen.getByTestId('bp-TimestampControl-static')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('1:05/2:00');
+            expect(screen.queryByTestId('bp-TimestampControl-button')).not.toBeInTheDocument();
+        });
+
+        test('should render only current time when isNarrowWidth is true', () => {
+            render(<TimestampControl currentTime={65} durationTime={120} fps={24} isNarrowWidth mediaEl={videoEl} />);
+
+            expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('1:05');
+            expect(screen.getByTestId('bp-TimestampControl-static')).not.toHaveTextContent('/');
         });
     });
 

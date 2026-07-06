@@ -1884,27 +1884,7 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('getFps()', () => {
-        test('should return manifest fps when videoPlayerV2 is enabled', () => {
-            dash.player = {
-                getVariantTracks: () => [{ frameRate: 30, active: true }],
-                destroy: jest.fn(),
-            };
-            dash.isVideoPlayerV2 = true;
-
-            expect(dash.getFps()).toBe(30);
-        });
-
-        test('should return 24fps fallback when videoPlayerV2 is enabled but manifest fps is unavailable', () => {
-            dash.player = {
-                getVariantTracks: () => [{ active: true }],
-                destroy: jest.fn(),
-            };
-            dash.isVideoPlayerV2 = true;
-
-            expect(dash.getFps()).toBe(24);
-        });
-
-        test('should return manifest fps when only frameStep is enabled and fps is available', () => {
+        test('should return manifest fps when frameStep is enabled and fps is available', () => {
             dash.player = {
                 getVariantTracks: () => [{ frameRate: 30, active: true }],
                 destroy: jest.fn(),
@@ -1914,7 +1894,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.getFps()).toBe(30);
         });
 
-        test('should return undefined when only frameStep is enabled and fps is unavailable', () => {
+        test('should return undefined when frameStep is enabled but fps is unavailable', () => {
             dash.player = {
                 getVariantTracks: () => [{ active: true }],
                 destroy: jest.fn(),
@@ -1924,7 +1904,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.getFps()).toBeUndefined();
         });
 
-        test('should return undefined when neither feature is enabled', () => {
+        test('should return undefined when frameStep is not enabled', () => {
             dash.player = {
                 getVariantTracks: () => [{ frameRate: 30, active: true }],
                 destroy: jest.fn(),

@@ -84,14 +84,29 @@ describe('VideoControlsV2', () => {
     });
 
     describe('timestamp', () => {
-        test('should show current / total time when not narrow', () => {
+        test('should show static standard time when canChangeTimeFormat is false', () => {
             render(<VideoControlsV2 {...defaultProps} currentTime={65} durationTime={120} />);
+            const timestamp = screen.getByTestId('bp-TimestampControl-static');
+            expect(timestamp).toHaveTextContent('1:05/2:00');
+            expect(screen.queryByTestId('bp-TimestampControl-button')).not.toBeInTheDocument();
+        });
+
+        test('should show current / total time when not narrow', () => {
+            render(<VideoControlsV2 {...defaultProps} canChangeTimeFormat currentTime={65} durationTime={120} />);
             const timestamp = screen.getByTestId('bp-TimestampControl-button');
             expect(timestamp).toHaveTextContent('1:05/2:00');
         });
 
         test('should show only current time when narrow', () => {
-            render(<VideoControlsV2 {...defaultProps} currentTime={65} durationTime={120} isNarrowVideo />);
+            render(
+                <VideoControlsV2
+                    {...defaultProps}
+                    canChangeTimeFormat
+                    currentTime={65}
+                    durationTime={120}
+                    isNarrowVideo
+                />,
+            );
             const timestamp = screen.getByTestId('bp-TimestampControl-button');
             expect(timestamp).toHaveTextContent('1:05');
             expect(timestamp).not.toHaveTextContent('/');
@@ -99,7 +114,7 @@ describe('VideoControlsV2', () => {
 
         test('should open the time format dropdown when timestamp is clicked', async () => {
             const user = userEvent.setup();
-            render(<VideoControlsV2 {...defaultProps} currentTime={65} durationTime={120} />);
+            render(<VideoControlsV2 {...defaultProps} canChangeTimeFormat currentTime={65} durationTime={120} />);
 
             await user.click(screen.getByTestId('bp-TimestampControl-button'));
             expect(screen.getByTestId('bp-TimestampControl-flyout')).toBeInTheDocument();

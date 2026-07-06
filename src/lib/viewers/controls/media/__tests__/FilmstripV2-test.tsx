@@ -55,17 +55,23 @@ describe('FilmstripV2', () => {
         });
     });
 
-    describe('timecode', () => {
-        test('should display formatted time', () => {
+    describe('time display', () => {
+        test('should display standard time when fps is not provided', () => {
             render(<FilmstripV2 time={65} />);
             const timeEl = screen.getByTestId('bp-FilmstripV2-time');
             expect(timeEl).toHaveTextContent('1:05');
         });
 
-        test('should display 0:00 for time 0', () => {
+        test('should display 0:00 for time 0 when fps is not provided', () => {
             render(<FilmstripV2 time={0} />);
             const timeEl = screen.getByTestId('bp-FilmstripV2-time');
             expect(timeEl).toHaveTextContent('0:00');
+        });
+
+        test('should display timecode when fps is provided', () => {
+            render(<FilmstripV2 fps={30} time={61.5} />);
+            const timeEl = screen.getByTestId('bp-FilmstripV2-time');
+            expect(timeEl).toHaveTextContent('00:01:01:15');
         });
     });
 

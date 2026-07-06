@@ -1214,16 +1214,11 @@ class DashViewer extends VideoBaseViewer {
 
     /**
      * Returns the FPS to use for frame-based UI (timecode/frame formats, scrubber step).
-     * V2 player always has an FPS (manifest value or 24fps fallback); the V1 player
-     * only exposes it when frame stepping is enabled and the manifest provides it.
+     * Only exposes FPS when frame stepping is enabled and the manifest provides it.
      *
      * @return {number|undefined} Frames per second
      */
     getFps() {
-        if (this.isVideoPlayerV2) {
-            return getVideoFps(this.player);
-        }
-
         return this.featureEnabled('frameStep.enabled') && isFpsAvailable(this.player)
             ? getVideoFps(this.player)
             : undefined;
@@ -1280,6 +1275,7 @@ class DashViewer extends VideoBaseViewer {
             audioTracks: this.audioTracks,
             autoplay: this.isAutoplayEnabled(),
             bufferedRange: this.mediaEl.buffered,
+            canChangeTimeFormat: this.featureEnabled('frameStep.enabled'),
             currentTime: this.mediaEl.currentTime,
             durationTime: this.mediaEl.duration,
             experiences: this.experiences,
