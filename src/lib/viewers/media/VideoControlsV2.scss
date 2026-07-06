@@ -23,6 +23,7 @@
     @include bp-VideoControls;
 
     padding: 30px 48px 20px 48px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
     pointer-events: auto;
 }
 

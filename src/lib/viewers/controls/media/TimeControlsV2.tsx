@@ -1,7 +1,7 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
-import { bdlGray65, white } from 'box-ui-elements/es/styles/variables';
+import { white } from 'box-ui-elements/es/styles/variables';
 import buildClusters from './buildClusters';
 import FilmstripV2 from './FilmstripV2';
 import MarkerCluster from './MarkerCluster';
@@ -11,8 +11,12 @@ import { CommentMarker } from './types';
 import { percent } from './utils';
 import './TimeControlsV2.scss';
 
+const TRACK_COLOR_BUFFERED = 'rgb(127, 127, 127)';
+const TRACK_COLOR_UNPLAYED = 'rgb(85, 85, 85)';
+
 export type Props = {
     aspectRatio?: number;
+    bufferedRange?: TimeRanges;
     commentMarkers?: CommentMarker[];
     currentTime?: number;
     durationTime?: number;
@@ -25,6 +29,7 @@ export type Props = {
 
 export default function TimeControlsV2({
     aspectRatio,
+    bufferedRange,
     commentMarkers = [],
     currentTime = 0,
     durationTime = 0,
@@ -43,6 +48,8 @@ export default function TimeControlsV2({
     const currentValue = isFinite(currentTime) ? currentTime : 0;
     const durationValue = isFinite(durationTime) ? durationTime : 0;
     const currentPercentage = percent(currentValue, durationValue);
+    const bufferedAmount = bufferedRange && bufferedRange.length ? bufferedRange.end(bufferedRange.length - 1) : 0;
+    const bufferedPercentage = percent(bufferedAmount, durationValue);
 
     React.useLayoutEffect(() => {
         const el = scrubberRef.current;
@@ -124,7 +131,7 @@ export default function TimeControlsV2({
                     onUpdate={onTimeChange}
                     step={fps ? 1 / fps : 5}
                     title={__('media_time_slider')}
-                    track={`linear-gradient(to right, ${white} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${bdlGray65} calc(${currentPercentage}% + 2.5px), ${bdlGray65} 100%)`}
+                    track={`linear-gradient(to right, ${white} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} 100%)`}
                     value={currentValue}
                 />
                 {durationValue > 0 &&

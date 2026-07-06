@@ -2,7 +2,20 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import TimeControlsV2 from '../TimeControlsV2';
+import SliderControl from '../../slider/SliderControl';
 import { CommentMarker } from '../types';
+
+jest.mock('../../slider/SliderControl', () => {
+    return jest.fn(props => (
+        <div data-testid="bp-slider-control-mock" data-track={props.track}>
+            <div
+                className="bp-SliderControl-track"
+                data-testid="bp-slider-control-track"
+                style={{ backgroundImage: props.track }}
+            />
+        </div>
+    ));
+});
 
 const mockResizeObserver = jest.fn().mockImplementation(() => ({
     disconnect: jest.fn(),
@@ -145,6 +158,36 @@ describe('TimeControlsV2', () => {
             const groupTick = container.querySelector('.bp-TimeControlsV2-marker--group') as HTMLElement;
             await user.click(groupTick);
             expect(onCommentMarkerClick).toHaveBeenCalledWith(markers[0]);
+        });
+    });
+
+    describe('buffered range', () => {
+        const createMockBufferedRange = (end: number): TimeRanges => ({
+            length: 1,
+            start: () => 0,
+            end: () => end,
+        });
+
+        test('should render buffered and unplayed colors in track gradient', () => {
+            render(
+                <TimeControlsV2
+                    {...defaultProps}
+                    bufferedRange={createMockBufferedRange(30)}
+                    currentTime={10}
+                    durationTime={60}
+                />,
+            );
+            const trackProp = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
+            expect(trackProp).toContain('rgb(127, 127, 127)');
+            expect(trackProp).toContain('rgb(85, 85, 85)');
+            expect(trackProp).toContain('50%');
+        });
+
+        test('should default to 0% buffered when bufferedRange is undefined', () => {
+            render(<TimeControlsV2 {...defaultProps} currentTime={10} durationTime={60} />);
+            const trackProp = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
+            expect(trackProp).toContain('rgb(127, 127, 127)');
+            expect(trackProp).toContain('rgb(85, 85, 85)');
         });
     });
 
