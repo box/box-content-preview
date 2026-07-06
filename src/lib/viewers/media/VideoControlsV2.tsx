@@ -26,6 +26,7 @@ export type Props = DurationLabelsProps &
     TimeControlsProps &
     VolumeControlsProps & {
         fps?: number;
+        canChangeTimeFormat?: boolean;
         annotationColor?: string;
         annotationMode?: AnnotationMode;
         experiences?: Experiences;
@@ -57,6 +58,7 @@ export default function VideoControlsV2({
     filmstripInterval,
     filmstripUrl,
     fps,
+    canChangeTimeFormat,
     guide,
     hasDrawing,
     hasRegion,
@@ -152,6 +154,7 @@ export default function VideoControlsV2({
                             </>
                         )}
                         <TimestampControl
+                            canChangeTimeFormat={canChangeTimeFormat}
                             currentTime={currentTime}
                             durationTime={durationTime}
                             fps={fps}

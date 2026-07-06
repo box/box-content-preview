@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import formatTimecode from '../../media/formatTimecode';
-import { DEFAULT_FPS } from '../../media/videoFps';
+import { formatTime } from './DurationLabels';
 import './FilmstripV2.scss';
 
 const FILMSTRIP_FRAMES_PER_ROW = 100;
@@ -22,7 +22,7 @@ export type Props = {
 
 export default function FilmstripV2({
     aspectRatio = 0,
-    fps = DEFAULT_FPS,
+    fps,
     imageUrl = '',
     interval = 1,
     isShown,
@@ -84,7 +84,7 @@ export default function FilmstripV2({
                 )}
             </div>
             <div className="bp-FilmstripV2-time" data-testid="bp-FilmstripV2-time">
-                {formatTimecode(time, fps)}
+                {fps ? formatTimecode(time, fps) : formatTime(time)}
             </div>
         </div>
     );

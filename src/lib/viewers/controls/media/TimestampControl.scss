@@ -6,14 +6,11 @@
     align-items: center;
 }
 
-.bp-TimestampControl-button {
-    @include bp-Control--fade;
-    @include bp-Control--outline;
-
+.bp-TimestampControl-button,
+.bp-TimestampControl-static {
     display: flex;
     gap: 4px;
     align-items: center;
-    margin: 0;
     padding: 6px 12px;
     color: $white;
     font-weight: normal;
@@ -22,11 +19,18 @@
     line-height: 20px;
     letter-spacing: .3px;
     white-space: nowrap;
+    user-select: none;
+}
+
+.bp-TimestampControl-button {
+    @include bp-Control--fade;
+    @include bp-Control--outline;
+
+    margin: 0;
     background: transparent;
     border: 0;
     border-radius: $bp-controls-button-radius;
     cursor: pointer;
-    user-select: none;
 
     &:focus:not(:disabled),
     &.bp-is-open {
