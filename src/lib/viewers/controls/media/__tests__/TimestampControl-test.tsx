@@ -54,7 +54,7 @@ describe('TimestampControl', () => {
 
     describe('when canChangeTimeFormat is false', () => {
         test('should render static standard time without a dropdown', () => {
-            render(<TimestampControl currentTime={65} durationTime={120} fps={24} mediaEl={videoEl} />);
+            getWrapper({ canChangeTimeFormat: false });
 
             expect(screen.getByTestId('bp-TimestampControl-static')).toBeInTheDocument();
             expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('1:05/2:00');
@@ -62,7 +62,7 @@ describe('TimestampControl', () => {
         });
 
         test('should render only current time when isNarrowWidth is true', () => {
-            render(<TimestampControl currentTime={65} durationTime={120} fps={24} isNarrowWidth mediaEl={videoEl} />);
+            getWrapper({ canChangeTimeFormat: false, isNarrowWidth: true });
 
             expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('1:05');
             expect(screen.getByTestId('bp-TimestampControl-static')).not.toHaveTextContent('/');
