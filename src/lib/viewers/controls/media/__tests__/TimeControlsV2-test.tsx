@@ -148,6 +148,37 @@ describe('TimeControlsV2', () => {
         });
     });
 
+    describe('buffered range', () => {
+        const createMockBufferedRange = (end: number): TimeRanges => ({
+            length: 1,
+            start: () => 0,
+            end: () => end,
+        });
+
+        test('should render buffered and unplayed colors in track gradient', () => {
+            const { container } = render(
+                <TimeControlsV2
+                    {...defaultProps}
+                    bufferedRange={createMockBufferedRange(30)}
+                    currentTime={10}
+                    durationTime={60}
+                />,
+            );
+            const track = container.querySelector('[data-testid="bp-slider-control-track"]') as HTMLElement;
+            const { backgroundImage } = track.style;
+            expect(backgroundImage).toContain('rgb(127, 127, 127)');
+            expect(backgroundImage).toContain('rgb(85, 85, 85)');
+        });
+
+        test('should default to 0% buffered when bufferedRange is undefined', () => {
+            const { container } = render(<TimeControlsV2 {...defaultProps} currentTime={10} durationTime={60} />);
+            const track = container.querySelector('[data-testid="bp-slider-control-track"]') as HTMLElement;
+            const { backgroundImage } = track.style;
+            expect(backgroundImage).toContain('rgb(127, 127, 127)');
+            expect(backgroundImage).toContain('rgb(85, 85, 85)');
+        });
+    });
+
     describe('track mask', () => {
         test('should not set --bp-track-mask when there are no markers', () => {
             const { container } = render(<TimeControlsV2 {...defaultProps} durationTime={60} />);
