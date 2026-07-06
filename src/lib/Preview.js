@@ -54,7 +54,7 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT,
     X_REP_HINT_VIDEO_MP4,
-    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED,
+    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -1943,7 +1943,7 @@ class Preview extends EventEmitter {
         const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
         let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
 
-        if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED)) {
+        if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
             videoHint += X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT;
         }
 

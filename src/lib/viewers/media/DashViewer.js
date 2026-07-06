@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     CLASS_INVISIBLE,
-    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED,
+    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
     MEDIA_STATIC_ASSETS_VERSION,
     PRELOAD_REP_NAME,
     SUBTITLES_OFF,
@@ -654,7 +654,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {string} Localized language name or the raw language code
      */
     getTrackDisplayLanguage(track) {
-        if (this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED) && track.language === 'und') {
+        if (this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) && track.language === 'und') {
             return __('auto_generated');
         }
 
@@ -959,7 +959,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     async loadTranscription() {
-        if (!this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES_ENABLED)) {
+        if (!this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
             return;
         }
 

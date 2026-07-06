@@ -3139,7 +3139,7 @@ describe('lib/Preview', () => {
             expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
             expect(isFeatureEnabled).toHaveBeenCalledWith(
                 preview.options.features,
-                'ai_transcription_for_video_subtitles_enabled',
+                'ai_transcription_for_video_subtitles',
             );
         });
 
