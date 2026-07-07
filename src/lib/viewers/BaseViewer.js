@@ -28,6 +28,7 @@ import {
     CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_ANNOTATIONS_ONLY_CONTROLS,
     CLASS_BOX_PREVIEW_MOBILE,
+    FILE_OPTION_PRELOAD_URLS,
     FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
@@ -542,6 +543,25 @@ class BaseViewer extends EventEmitter {
             const blob = data instanceof Blob ? data : new Blob([data]);
             return URL.createObjectURL(blob);
         });
+    }
+
+    /**
+     * Host-supplied preload image URLs for this file, low-res→high-res order.
+     *
+     * Hosts that warm preload images ahead of the SDK (e.g. a server-side warm
+     * script) can pass the exact URLs via fileOptions so the preloader requests
+     * the same bytes back from HTTP cache instead of re-deriving the URL from
+     * representations — re-derivation must match the warmed URL byte-for-byte
+     * or the cache silently misses. Opt-in; absent means viewers keep the
+     * derive-from-reps path.
+     *
+     * @protected
+     * @return {Array<string>} URLs, possibly empty
+     */
+    getHostPreloadUrls() {
+        const { file } = this.options;
+        const urls = getProp(this.options, `fileOptions.${file?.id}.${FILE_OPTION_PRELOAD_URLS}`, []);
+        return Array.isArray(urls) ? urls.filter(url => typeof url === 'string' && url) : [];
     }
 
     /**

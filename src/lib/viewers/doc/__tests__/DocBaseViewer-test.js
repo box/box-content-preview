@@ -1033,6 +1033,38 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.preloader.showPreload).toHaveBeenCalledWith('url-with-token', containerEl, {});
             });
 
+            test('should prefer the highest-res host-supplied preload url over deriving from the rep', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
+                jest.spyOn(docBase, 'createContentUrlV2');
+                jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue({});
+                jest.spyOn(docBase, 'getHostPreloadUrls').mockReturnValue([
+                    'https://host.example/320.jpg',
+                    'https://host.example/1024.jpg',
+                ]);
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+
+                docBase.showPreload();
+
+                expect(docBase.createContentUrlV2).not.toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'https://host.example/1024.jpg',
+                    containerEl,
+                    { headers: {} },
+                );
+            });
+
+            test('should derive the preload url from the rep when no host urls are supplied', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue('derived-url');
+                jest.spyOn(docBase, 'getHostPreloadUrls').mockReturnValue([]);
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+
+                docBase.showPreload();
+
+                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalled();
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith('derived-url', containerEl, {});
+            });
+
             test('should use createContentUrlV2 for paged preload when migrateAccessTokenToHeader flag is on', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
                 jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);

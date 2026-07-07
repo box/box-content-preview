@@ -467,6 +467,60 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('getHostPreloadUrls()', () => {
+        test('should return the urls from fileOptions for the current file', () => {
+            base.options.fileOptions = {
+                '0': {
+                    preload: {
+                        urls: ['https://example.com/320.jpg', 'https://example.com/1024.jpg'],
+                    },
+                },
+            };
+
+            expect(base.getHostPreloadUrls()).toEqual(['https://example.com/320.jpg', 'https://example.com/1024.jpg']);
+        });
+
+        test('should return an empty array when no preload urls are set', () => {
+            expect(base.getHostPreloadUrls()).toEqual([]);
+        });
+
+        test('should return an empty array when the option is not an array', () => {
+            base.options.fileOptions = {
+                '0': {
+                    preload: {
+                        urls: 'https://example.com/1024.jpg',
+                    },
+                },
+            };
+
+            expect(base.getHostPreloadUrls()).toEqual([]);
+        });
+
+        test('should filter out non-string and empty entries', () => {
+            base.options.fileOptions = {
+                '0': {
+                    preload: {
+                        urls: ['', null, 42, 'https://example.com/1024.jpg'],
+                    },
+                },
+            };
+
+            expect(base.getHostPreloadUrls()).toEqual(['https://example.com/1024.jpg']);
+        });
+
+        test('should return an empty array when urls belong to a different file', () => {
+            base.options.fileOptions = {
+                '999': {
+                    preload: {
+                        urls: ['https://example.com/1024.jpg'],
+                    },
+                },
+            };
+
+            expect(base.getHostPreloadUrls()).toEqual([]);
+        });
+    });
+
     describe('addCommonListeners()', () => {
         beforeEach(() => {
             stubs.fullscreenAddListener = jest.spyOn(fullscreen, 'addListener');

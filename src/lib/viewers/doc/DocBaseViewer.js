@@ -588,9 +588,15 @@ class DocBaseViewer extends BaseViewer {
 
         const { url_template: template = '' } = preloadRep?.content || {};
         const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
-        const preloadUrl = useHeaders
-            ? this.createContentUrlV2(template)
-            : this.createContentUrlWithAuthParams(template);
+        // Host-supplied preload URLs (fileOptions[id].preload.urls) take precedence for the
+        // single-page jpg path: the host already warmed those exact URLs, so requesting them
+        // again is a guaranteed cache hit — no byte-parity re-derivation risk. The paged-webp
+        // staggered path below still derives (the host warm covers page 1 only).
+        const hostPreloadUrls = this.getHostPreloadUrls();
+        const hostJpgUrl = hostPreloadUrls.length ? hostPreloadUrls[hostPreloadUrls.length - 1] : null;
+        const preloadUrl =
+            hostJpgUrl ||
+            (useHeaders ? this.createContentUrlV2(template) : this.createContentUrlWithAuthParams(template));
         const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
 
         if (!this.docFirstPagesEnabled) {

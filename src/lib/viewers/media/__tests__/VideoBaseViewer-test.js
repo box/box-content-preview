@@ -1558,6 +1558,39 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 expect.any(Object),
             );
         });
+
+        test('should prefer the highest-res host-supplied preload url as the poster when flag is enabled', () => {
+            const blobUrl = 'blob:http://localhost/host-poster';
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(videoBase, 'createContentUrlV2');
+            jest.spyOn(videoBase, 'getHostPreloadUrls').mockReturnValue([
+                'https://host.example/320.jpg',
+                'https://host.example/1024.jpg',
+            ]);
+            jest.spyOn(videoBase, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(videoBase.createContentUrlV2).not.toHaveBeenCalled();
+            expect(videoBase.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://host.example/1024.jpg');
+        });
+
+        test('should prefer the highest-res host-supplied preload url as the poster when flag is disabled', () => {
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(videoBase, 'createContentUrlWithAuthParams');
+            jest.spyOn(videoBase, 'getHostPreloadUrls').mockReturnValue(['https://host.example/1024.jpg']);
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(videoBase.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+            expect(VideoPreloader.prototype.showPreload).toHaveBeenCalledWith(
+                'https://host.example/1024.jpg',
+                videoBase.mediaContainerEl,
+                expect.any(Object),
+            );
+        });
     });
 
     describe('prefetch() with migrateAccessTokenToHeader', () => {

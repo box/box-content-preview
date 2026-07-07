@@ -117,6 +117,7 @@ export const TEXT_STATIC_ASSETS_VERSION = '2.65.0';
 export const PREVIEW_SCRIPT_NAME = 'preview.js';
 
 export const FILE_OPTION_FILE_VERSION_ID = 'fileVersionId';
+export const FILE_OPTION_PRELOAD_URLS = 'preload.urls';
 export const FILE_OPTION_START = 'startAt';
 
 export const ANNOTATOR_EVENT = {

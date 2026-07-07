@@ -198,8 +198,15 @@ class VideoBaseViewer extends MediaBaseViewer {
             };
         }
 
+        // Host-supplied preload URLs (fileOptions[id].preload.urls) take precedence:
+        // the host already warmed those exact URLs, so requesting them again is a
+        // guaranteed cache hit — no byte-parity re-derivation risk. The highest-res
+        // entry is the poster; lower-res rungs are prefetched by the host itself.
+        const hostPreloadUrls = this.getHostPreloadUrls();
+        const posterUrl = hostPreloadUrls.length ? hostPreloadUrls[hostPreloadUrls.length - 1] : null;
+
         if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            const contentUrl = this.createContentUrlV2(template);
+            const contentUrl = posterUrl || this.createContentUrlV2(template);
             if (this.preloadBlobUrl) {
                 URL.revokeObjectURL(this.preloadBlobUrl);
             }
@@ -210,7 +217,7 @@ class VideoBaseViewer extends MediaBaseViewer {
                 })
                 .catch(this.handleAssetError);
         } else {
-            const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+            const preloadUrlWithAuth = posterUrl || this.createContentUrlWithAuthParams(template);
             this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl, options);
         }
         this.mediaEl.classList.add(CLASS_INVISIBLE);
