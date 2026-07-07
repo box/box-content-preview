@@ -1,3 +1,11 @@
+## 3.56.0 (2026-07-07)
+
+* refactor(video-player-v2): gate time view dropdown behind split (#1695) ([ed6eb50](https://github.com/box/box-content-preview/commit/ed6eb50)), closes [#1695](https://github.com/box/box-content-preview/issues/1695)
+* feat(video-player-v2): add buffered range visual and style gradient to scrub bar (#1693) ([b84fd34](https://github.com/box/box-content-preview/commit/b84fd34)), closes [#1693](https://github.com/box/box-content-preview/issues/1693)
+* fix(doc): restore PDF link clicks (#1694) ([18fec52](https://github.com/box/box-content-preview/commit/18fec52)), closes [#1694](https://github.com/box/box-content-preview/issues/1694)
+
+
+
 ## 3.55.0 (2026-07-04)
 
 * feat(gallery): a11y polish, entry-state reset, focus return (#1691) ([c447d50](https://github.com/box/box-content-preview/commit/c447d50)), closes [#1691](https://github.com/box/box-content-preview/issues/1691)
