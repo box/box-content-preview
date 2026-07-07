@@ -4,6 +4,7 @@ module.exports = {
     extends: [eslintrc],
     globals: {
         __: false,
+        __BCP_NPM_BUILD__: false,
         __I18N__: false,
         __NAME__: false,
         __VERSION__: false,

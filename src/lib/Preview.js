@@ -89,7 +89,14 @@ const SUPPORT_URL = 'https://support.box.com';
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+// findScriptLocation throws when there is no preview.js <script> tag in the DOM;
+// npm consumers have no such tag and populate this via Preview.show({ location }).
+let PREVIEW_LOCATION;
+try {
+    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+} catch (e) {
+    PREVIEW_LOCATION = {};
+}
 
 class Preview extends EventEmitter {
     /** @property {Api} - Previews Api instance used for XHR calls  */
@@ -239,7 +246,12 @@ class Preview extends EventEmitter {
         // Token can also be null or undefined for offline use case.
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
-            this.previewOptions = { ...options, token };
+            // npm consumers have no CDN-served pdfjs at runtime; force the bundled npm pdfjs path.
+            const finalOptions =
+                typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__
+                    ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
+                    : options;
+            this.previewOptions = { ...finalOptions, token };
         } else {
             throw new Error('Bad access token!');
         }
@@ -1142,6 +1154,14 @@ class Preview extends EventEmitter {
         // This makes features available everywhere that features is passed in, which includes
         // all of the viewers for different files
         this.options.features = options.features || {};
+
+        // npm consumers supply staticBaseURI / version / locale here since there is no
+        // preview.js <script> tag for findScriptLocation to read.
+        if (options.location) {
+            this.location = { ...this.location, ...options.location };
+        }
+
+        this.options.pdfjs = options.pdfjs || {};
 
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {

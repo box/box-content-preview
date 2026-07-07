@@ -1705,6 +1705,39 @@ describe('lib/Preview', () => {
                 'Bad annotatorToken!',
             );
         });
+
+        test('should merge options.location into this.location', () => {
+            preview.location = { baseURI: 'preserved/' };
+            preview.parseOptions({
+                ...preview.previewOptions,
+                location: { staticBaseURI: 'static/', locale: 'en-US', version: '1.2.3' },
+            });
+            expect(preview.location).toEqual({
+                baseURI: 'preserved/',
+                staticBaseURI: 'static/',
+                locale: 'en-US',
+                version: '1.2.3',
+            });
+        });
+
+        test('should leave this.location unchanged when options.location is omitted', () => {
+            preview.location = { baseURI: 'preserved/' };
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.location).toEqual({ baseURI: 'preserved/' });
+        });
+
+        test('should stash options.pdfjs on this.options.pdfjs', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                pdfjs: { workerSrc: 'https://cdn.example/pdf.worker.mjs' },
+            });
+            expect(preview.options.pdfjs).toEqual({ workerSrc: 'https://cdn.example/pdf.worker.mjs' });
+        });
+
+        test('should default this.options.pdfjs to an empty object when omitted', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.pdfjs).toEqual({});
+        });
     });
 
     describe('createViewerOptions()', () => {
