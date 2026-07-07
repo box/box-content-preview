@@ -22,7 +22,7 @@ class Video360Viewer extends DashViewer {
     renderer;
 
     /** @property {Video360Controls} - Instance of the Video360Controls */
-    controls;
+    video360Controls;
 
     /** @property {Box3D.Texture2DAsset} - Asset for the skybox texture */
     textureAsset;
@@ -65,6 +65,14 @@ class Video360Viewer extends DashViewer {
 
     /** @inheritdoc */
     destroy() {
+        // Tear down 360 controls before super.destroy(), which destroys this.controls
+        // (DashViewer's React ControlsRoot when createControls() has not run yet).
+        if (this.video360Controls) {
+            this.destroyControls();
+            this.video360Controls = null;
+            this.controls = null;
+        }
+
         super.destroy();
 
         if (this.skybox) {
@@ -80,11 +88,6 @@ class Video360Viewer extends DashViewer {
         if (this.videoAsset) {
             this.videoAsset.destroy();
             this.videoAsset = null;
-        }
-
-        if (this.controls) {
-            this.destroyControls();
-            this.controls = null;
         }
 
         if (this.renderer) {
@@ -137,8 +140,10 @@ class Video360Viewer extends DashViewer {
      * @return {void}
      */
     createControls() {
-        this.controls = new Video360Controls(this.mediaContainerEl);
-        this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
+        this.video360Controls = new Video360Controls(this.mediaContainerEl);
+        // Overwrite this.controls so DashViewer.renderUI() skips React controls.
+        this.controls = this.video360Controls;
+        this.video360Controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
 
         // Add listeners to hide and show controls
         if (!this.renderer || !this.renderer.getBox3D()) {
@@ -163,8 +168,12 @@ class Video360Viewer extends DashViewer {
      * @return {void}
      */
     destroyControls() {
-        this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
-        this.controls.destroy();
+        if (!this.video360Controls) {
+            return;
+        }
+
+        this.video360Controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
+        this.video360Controls.destroy();
 
         // Remove listeners to hide and show controls
         if (!this.renderer || !this.renderer.getBox3D()) {
@@ -250,7 +259,9 @@ class Video360Viewer extends DashViewer {
      * @return {void}
      */
     handleShowVrButton() {
-        this.controls.showVrButton();
+        if (this.video360Controls) {
+            this.video360Controls.showVrButton();
+        }
     }
 
     /**
