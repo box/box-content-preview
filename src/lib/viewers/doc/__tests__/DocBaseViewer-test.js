@@ -1090,6 +1090,49 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     { headers: mockHeaders },
                 );
             });
+
+            test('should pass the host preload url and isHostPreload into the paged docFirstPages path', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
+                jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue('paged-url-without-token');
+                jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue({});
+                jest.spyOn(docBase, 'getHostPreloadUrls').mockReturnValue([
+                    'https://host.example/320.jpg',
+                    'https://host.example/1024.jpg',
+                ]);
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+
+                docBase.showPreload();
+
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'https://host.example/1024.jpg',
+                    containerEl,
+                    'paged-url-without-token',
+                    4,
+                    docBase,
+                    { headers: {}, isHostPreload: true },
+                );
+            });
+
+            test('should pass isHostPreload on the single-page docFirstPages path when host url exists', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue('derived-url');
+                jest.spyOn(docBase, 'getHostPreloadUrls').mockReturnValue(['https://host.example/1024.jpg']);
+                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
+                docBase.docFirstPagesEnabled = true;
+                webpRep.status.state = 'pending'; // paged rep not ready -> single-page path
+
+                docBase.showPreload();
+
+                expect(docBase.preloader.showPreload).toHaveBeenCalledWith(
+                    'https://host.example/1024.jpg',
+                    containerEl,
+                    null,
+                    1,
+                    docBase,
+                    { isHostPreload: true },
+                );
+            });
         });
 
         describe('hidePreload', () => {

@@ -200,7 +200,11 @@ class DocFirstPreloader extends EventEmitter {
             return;
         }
 
-        this.fetchOptions = options;
+        // isHostPreload marks preloadUrlWithAuth as a host-warmed URL (fileOptions preload.urls):
+        // a guaranteed cache hit, so it is painted even where a derived URL would be skipped.
+        // It must not leak into fetchOptions, which is spread into api.get calls.
+        const { isHostPreload = false, ...fetchOptions } = options;
+        this.fetchOptions = fetchOptions;
         this.hidePreviewMask();
         try {
             this.numPages = pages;
@@ -209,17 +213,52 @@ class DocFirstPreloader extends EventEmitter {
 
             const useStaggered = this.isStaggeredLoadingEnabled();
 
+            // Host-warmed first page paints in parallel with the webp batch — it's already in
+            // HTTP cache so it lands first and kills the loading state; the webp flow then only
+            // adds pages 2+ (renderFirstPage skips page 1 once painted).
+            const instantFirstPagePromise =
+                isHostPreload && preloadUrlWithAuth && pagedPreLoadUrlWithAuth
+                    ? this.showInstantFirstPage(preloadUrlWithAuth, docBaseViewer)
+                    : Promise.resolve();
+
             if (pagedPreLoadUrlWithAuth && useStaggered) {
                 await this.showPreloadStaggered(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
             } else if (pagedPreLoadUrlWithAuth) {
                 await this.showPreloadAll(preloadUrlWithAuth, pagedPreLoadUrlWithAuth, pages, docBaseViewer);
-            } else if (preloadUrlWithAuth && this.config.showPreloadForNonPaged) {
+            } else if (preloadUrlWithAuth && (this.config.showPreloadForNonPaged || isHostPreload)) {
                 await this.showPreloadSingleImage(preloadUrlWithAuth, pages, docBaseViewer);
             } else {
                 this.showPreviewMask();
             }
+
+            await instantFirstPagePromise;
         } catch (error) {
             this.showPreviewMask();
+        }
+    }
+
+    /**
+     * Paints the host-warmed first-page jpg immediately (guaranteed cache hit) while the
+     * paged webp batch is still fetching. Best-effort: on any failure the paged flow renders
+     * page 1 from the webp batch as before. The preloadedImages[1] claim is synchronous inside
+     * renderFirstPage, so whichever source resolves first wins and the other skips.
+     *
+     * @private
+     * @param {string} preloadUrlWithAuth - Host-supplied first-page image URL
+     * @param {Object} docBaseViewer - Document viewer instance
+     * @return {Promise} Promise that resolves when the instant page is painted (or skipped)
+     */
+    async showInstantFirstPage(preloadUrlWithAuth, docBaseViewer) {
+        try {
+            const response = await this.api.get(preloadUrlWithAuth, { type: 'blob', ...this.fetchOptions });
+            const blob = await handleRepresentationBlobFetch(response);
+            if (this.preloadedImages[1] || this.pdfJsDocLoadComplete()) {
+                return;
+            }
+            this.wrapperEl.appendChild(this.preloadEl);
+            await this.renderFirstPage(blob, docBaseViewer);
+        } catch (error) {
+            // best-effort only
         }
     }
 
@@ -308,6 +347,14 @@ class DocFirstPreloader extends EventEmitter {
      * @return {Promise<boolean>} True if successful, false otherwise
      */
     async renderFirstPage(blob, docBaseViewer) {
+        // Page 1 may already be painted by the host-warmed instant path (or vice versa) —
+        // first source to get here wins, the other reports success so its flow continues
+        // with the remaining pages (checked before blob validity so a failed webp page-1
+        // fetch can't re-show the mask over an already-painted instant page).
+        if (this.preloadedImages[1]) {
+            return true;
+        }
+
         if (!blob || blob instanceof Error || this.pdfJsDocLoadComplete()) {
             return false;
         }

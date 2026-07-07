@@ -192,6 +192,56 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.hidePreviewMask).toHaveBeenCalled();
         });
 
+        it('should call showPreloadSingleImage for a host preload url even when showPreloadForNonPaged is disabled', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            preloader.config = { showPreloadForNonPaged: false };
+
+            await preloader.showPreload('host-url', mockContainer, null, 5, mockDocBaseViewer, {
+                isHostPreload: true,
+            });
+
+            expect(preloader.showPreloadSingleImage).toHaveBeenCalledWith('host-url', 5, mockDocBaseViewer);
+            expect(preloader.showPreviewMask).not.toHaveBeenCalled();
+        });
+
+        it('should not leak isHostPreload into fetchOptions', async () => {
+            jest.spyOn(preloader, 'showPreloadSingleImage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(false);
+            const headers = { Authorization: 'Bearer token' };
+
+            await preloader.showPreload('host-url', mockContainer, null, 5, mockDocBaseViewer, {
+                isHostPreload: true,
+                headers,
+            });
+
+            expect(preloader.fetchOptions).toEqual({ headers });
+        });
+
+        it('should paint the host-warmed first page in parallel with the staggered webp flow', async () => {
+            jest.spyOn(preloader, 'showPreloadStaggered').mockResolvedValue();
+            jest.spyOn(preloader, 'showInstantFirstPage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(true);
+
+            await preloader.showPreload('host-url', mockContainer, 'paged-url', 10, mockDocBaseViewer, {
+                isHostPreload: true,
+            });
+
+            expect(preloader.showInstantFirstPage).toHaveBeenCalledWith('host-url', mockDocBaseViewer);
+            expect(preloader.showPreloadStaggered).toHaveBeenCalledWith('host-url', 'paged-url', 10, mockDocBaseViewer);
+        });
+
+        it('should not start the instant first page when the url is not host-supplied', async () => {
+            jest.spyOn(preloader, 'showPreloadStaggered').mockResolvedValue();
+            jest.spyOn(preloader, 'showInstantFirstPage').mockResolvedValue();
+            jest.spyOn(preloader, 'isStaggeredLoadingEnabled').mockReturnValue(true);
+
+            await preloader.showPreload('derived-url', mockContainer, 'paged-url', 10, mockDocBaseViewer, {});
+
+            expect(preloader.showInstantFirstPage).not.toHaveBeenCalled();
+            expect(preloader.showPreloadStaggered).toHaveBeenCalled();
+        });
+
         it('should set isWebp to true if pagedPreLoadUrlWithAuth is provided', async () => {
             jest.spyOn(util, 'getPreloadImageRequestPromises').mockReturnValue([]);
             await preloader.showPreload(null, mockContainer, 'mock-paged-image-url', 1, mockDocBaseViewer);
@@ -1628,6 +1678,70 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
 
             expect(mockDocBaseViewer.thumbnailsSidebar.renderNextThumbnailImage).toHaveBeenCalled();
+        });
+
+        it('should return true without re-rendering when page 1 was already painted', async () => {
+            preloader.preloadedImages = { 1: 'already-painted-url' };
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+
+            const result = await preloader.renderFirstPage(mockBlob, mockDocBaseViewer);
+
+            expect(result).toBe(true);
+            expect(preloader.loadImage).not.toHaveBeenCalled();
+            expect(preloader.preloadedImages[1]).toBe('already-painted-url');
+            expect(preloader.emit).not.toHaveBeenCalledWith('firstRender');
+        });
+
+        it('should return true when page 1 is painted even for a null blob (failed webp fetch)', async () => {
+            preloader.preloadedImages = { 1: 'already-painted-url' };
+
+            const result = await preloader.renderFirstPage(null, mockDocBaseViewer);
+
+            expect(result).toBe(true);
+        });
+    });
+
+    describe('showInstantFirstPage()', () => {
+        beforeEach(() => {
+            preloader.preloadEl = document.createElement('div');
+            preloader.wrapperEl = document.createElement('div');
+            preloader.preloadedImages = {};
+            preloader.fetchOptions = { headers: { Authorization: 'Bearer token' } };
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+        });
+
+        it('should fetch the host url and render it as the first page', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
+            jest.spyOn(mockApi, 'get').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+
+            await preloader.showInstantFirstPage('host-url', mockDocBaseViewer);
+
+            expect(mockApi.get).toHaveBeenCalledWith('host-url', {
+                type: 'blob',
+                headers: { Authorization: 'Bearer token' },
+            });
+            expect(preloader.renderFirstPage).toHaveBeenCalledWith(mockBlob, mockDocBaseViewer);
+            expect(preloader.wrapperEl.contains(preloader.preloadEl)).toBe(true);
+        });
+
+        it('should skip rendering when the webp flow already painted page 1', async () => {
+            const mockBlob = new Blob(['test'], { type: 'image/jpeg' });
+            jest.spyOn(mockApi, 'get').mockResolvedValue(mockBlob);
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+            preloader.preloadedImages = { 1: 'webp-page-1' };
+
+            await preloader.showInstantFirstPage('host-url', mockDocBaseViewer);
+
+            expect(preloader.renderFirstPage).not.toHaveBeenCalled();
+        });
+
+        it('should swallow fetch errors (best-effort)', async () => {
+            jest.spyOn(mockApi, 'get').mockRejectedValue(new Error('network'));
+            jest.spyOn(preloader, 'renderFirstPage').mockResolvedValue(true);
+
+            await expect(preloader.showInstantFirstPage('host-url', mockDocBaseViewer)).resolves.toBeUndefined();
+            expect(preloader.renderFirstPage).not.toHaveBeenCalled();
         });
     });
 

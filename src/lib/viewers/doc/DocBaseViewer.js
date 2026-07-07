@@ -590,14 +590,16 @@ class DocBaseViewer extends BaseViewer {
         const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
         // Host-supplied preload URLs (fileOptions[id].preload.urls) take precedence for the
         // single-page jpg path: the host already warmed those exact URLs, so requesting them
-        // again is a guaranteed cache hit — no byte-parity re-derivation risk. The paged-webp
-        // staggered path below still derives (the host warm covers page 1 only).
+        // again is a guaranteed cache hit — no byte-parity re-derivation risk. On the paged-webp
+        // path the host URL is handed to the preloader as an instant first-page paint while the
+        // unwarmed webp pages fetch (the host warm covers page 1 only).
         const hostPreloadUrls = this.getHostPreloadUrls();
         const hostJpgUrl = hostPreloadUrls.length ? hostPreloadUrls[hostPreloadUrls.length - 1] : null;
         const preloadUrl =
             hostJpgUrl ||
             (useHeaders ? this.createContentUrlV2(template) : this.createContentUrlWithAuthParams(template));
         const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
+        const docFirstOptions = hostJpgUrl ? { ...headersOption, isHostPreload: true } : headersOption;
 
         if (!this.docFirstPagesEnabled) {
             this.startPreloadTimer();
@@ -613,7 +615,7 @@ class DocBaseViewer extends BaseViewer {
             }
             this.startPreloadTimer();
             if (!pagedWebpRepReady) {
-                this.preloader.showPreload(preloadUrl, this.containerEl, null, 1, this, headersOption);
+                this.preloader.showPreload(preloadUrl, this.containerEl, null, 1, this, docFirstOptions);
             } else {
                 const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
                 const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
@@ -621,7 +623,14 @@ class DocBaseViewer extends BaseViewer {
                 const pagedPreLoadUrl = useHeaders
                     ? this.createContentUrlV2(newPagedUrlTemplate)
                     : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
-                this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrl, pageCount, this, headersOption);
+                this.preloader.showPreload(
+                    hostJpgUrl,
+                    this.containerEl,
+                    pagedPreLoadUrl,
+                    pageCount,
+                    this,
+                    docFirstOptions,
+                );
             }
         }
     }
