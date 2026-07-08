@@ -1279,6 +1279,21 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.options.boxAnnotations.determineAnnotator).toBeCalled();
         });
 
+        test('should default the fallback BoxAnnotations to the threaded, modernized UI', () => {
+            const constructorSpy = jest.fn(function BoxAnnotations() {
+                this.determineAnnotator = jest.fn(() => conf);
+                this.getAnnotationsOptions = jest.fn(() => annotationsOptions);
+            });
+            window.BoxAnnotations = constructorSpy;
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+
+            base.createAnnotator();
+
+            expect(constructorSpy).toBeCalledWith(expect.any(Object), {
+                features: { isThreadedAnnotation: true, modernization: true },
+            });
+        });
+
         test('should call createAnnotatorOptions with locale, language, and messages from options', () => {
             const createOptionsArg = {
                 ...annotationsOptions,

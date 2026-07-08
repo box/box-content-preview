@@ -1079,7 +1079,11 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        const boxAnnotations = this.options.boxAnnotations || new global.BoxAnnotations(viewerOptions);
+        const boxAnnotations =
+            this.options.boxAnnotations ||
+            new global.BoxAnnotations(viewerOptions, {
+                features: { isThreadedAnnotation: true, modernization: true },
+            });
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (!this.annotatorConf) {
