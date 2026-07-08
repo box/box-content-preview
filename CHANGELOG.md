@@ -1,3 +1,9 @@
+## 3.58.0 (2026-07-08)
+
+* fix(gallery): stop propagation on handled keys (#1696) ([5490f68](https://github.com/box/box-content-preview/commit/5490f68)), closes [#1696](https://github.com/box/box-content-preview/issues/1696)
+
+
+
 ## 3.57.0 (2026-07-08)
 
 * fix(video360): prevent teardown crash when closing 360 video preview (#1692) ([b03ddc7](https://github.com/box/box-content-preview/commit/b03ddc7)), closes [#1692](https://github.com/box/box-content-preview/issues/1692)
