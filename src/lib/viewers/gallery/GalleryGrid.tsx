@@ -270,29 +270,34 @@ export default function GalleryGrid({
                 // Listbox is 1-D — arrows move ±1; row-aware nav comes with v2 grid role.
                 case 'ArrowUp':
                 case 'ArrowLeft':
+                    event.preventDefault();
+                    event.stopPropagation();
                     if (focusedPage > 1) {
-                        event.preventDefault();
                         focusTile(focusedPage - 1);
                     }
                     return;
                 case 'ArrowDown':
                 case 'ArrowRight':
+                    event.preventDefault();
+                    event.stopPropagation();
                     if (focusedPage < pageCount) {
-                        event.preventDefault();
                         focusTile(focusedPage + 1);
                     }
                     return;
                 case 'Home':
                     event.preventDefault();
+                    event.stopPropagation();
                     focusTile(1);
                     return;
                 case 'End':
                     event.preventDefault();
+                    event.stopPropagation();
                     focusTile(pageCount);
                     return;
                 case 'Enter':
                 case 'Space':
                     event.preventDefault();
+                    event.stopPropagation();
                     onPageNavigate(focusedPage);
                     break;
                 default:
