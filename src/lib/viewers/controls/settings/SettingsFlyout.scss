@@ -33,6 +33,7 @@
 // V2 video player flyout — restyled to match the TimestampControl flyout
 .bp-media--v2 {
     .bp-SettingsFlyout {
+        z-index: 10;
         min-width: 250px;
         color: $black;
         font-size: 16px;
