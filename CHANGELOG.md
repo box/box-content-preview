@@ -1,3 +1,9 @@
+## 3.57.0 (2026-07-08)
+
+* fix(video360): prevent teardown crash when closing 360 video preview (#1692) ([b03ddc7](https://github.com/box/box-content-preview/commit/b03ddc7)), closes [#1692](https://github.com/box/box-content-preview/issues/1692)
+
+
+
 ## 3.56.0 (2026-07-07)
 
 * refactor(video-player-v2): gate time view dropdown behind split (#1695) ([ed6eb50](https://github.com/box/box-content-preview/commit/ed6eb50)), closes [#1695](https://github.com/box/box-content-preview/issues/1695)
