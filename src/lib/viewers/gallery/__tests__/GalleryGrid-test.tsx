@@ -189,6 +189,28 @@ describe('GalleryGrid', () => {
             await userEvent.keyboard(' ');
             expect(onPageNavigate).toHaveBeenCalledWith(3);
         });
+
+        test.each([
+            '{ArrowUp}',
+            '{ArrowDown}',
+            '{ArrowLeft}',
+            '{ArrowRight}',
+            '{Home}',
+            '{End}',
+            '{Enter}',
+            ' ',
+            '{Escape}',
+        ])('should stop propagation on %s so parent handlers do not fire', async keyString => {
+            const parentHandler = jest.fn();
+            document.addEventListener('keydown', parentHandler);
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+
+            await userEvent.keyboard(keyString);
+
+            expect(parentHandler).not.toHaveBeenCalled();
+            document.removeEventListener('keydown', parentHandler);
+        });
     });
 
     describe('focus management', () => {
