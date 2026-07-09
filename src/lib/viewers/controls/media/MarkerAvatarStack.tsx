@@ -20,6 +20,7 @@ export default function MarkerAvatarStack({ markers, onMarkerClick }: Props): JS
                 <button
                     key={marker.id}
                     className="bp-MarkerAvatarStack-item"
+                    data-resin-target="commentMarkerStackAvatar"
                     onClick={(e): void => {
                         e.stopPropagation();
                         onMarkerClick?.(marker);
@@ -36,6 +37,7 @@ export default function MarkerAvatarStack({ markers, onMarkerClick }: Props): JS
             {hasOverflow && (
                 <button
                     className="bp-MarkerAvatarStack-item bp-MarkerAvatarStack-overflow"
+                    data-resin-target="commentMarkerStackAvatarOverflow"
                     onClick={(e): void => {
                         e.stopPropagation();
                         onMarkerClick?.(markers[MAX_VISIBLE_AVATARS - 1]);
