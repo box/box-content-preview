@@ -113,6 +113,7 @@ export default class GalleryController {
 
         if (this.isGalleryOpen) {
             this.onBeforeOpen();
+            this.applyGalleryOpenState();
 
             if (this.gallerySidebarTimeoutId !== null) {
                 clearTimeout(this.gallerySidebarTimeoutId);
@@ -147,6 +148,8 @@ export default class GalleryController {
                 this.galleryRoot.unmount();
                 this.galleryRoot = null;
             }
+
+            this.clearGalleryOpenState();
 
             if (this.galleryEl) {
                 this.galleryEl.remove();
@@ -203,6 +206,8 @@ export default class GalleryController {
             this.gallerySidebarTimeoutId = null;
         }
 
+        this.clearGalleryOpenState();
+
         if (this.galleryRoot) {
             this.galleryRoot.unmount();
             this.galleryRoot = null;
@@ -223,6 +228,51 @@ export default class GalleryController {
         this.sidebarWasOpen = false;
         this.galleryFocusedPage = null;
     }
+
+    private applyGalleryOpenState(): void {
+        this.containerEl.classList.add('bp-is-gallery-open');
+        this.containerEl.querySelector('.bp-doc')?.setAttribute('inert', '');
+        this.containerEl.addEventListener('keydown', this.handleContainerKeyDown);
+    }
+
+    private clearGalleryOpenState(): void {
+        this.containerEl.classList.remove('bp-is-gallery-open');
+        this.containerEl.querySelector('.bp-doc')?.removeAttribute('inert');
+        this.containerEl.removeEventListener('keydown', this.handleContainerKeyDown);
+    }
+
+    // Keeps gallery keystrokes contained: Tab cycles tile/toggle/fullscreen; Escape closes the gallery.
+    private handleContainerKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            event.stopPropagation();
+            this.toggle();
+            return;
+        }
+        // Page-nav keys that bubble here originate outside the grid (the grid consumes its
+        // own with stopPropagation). Swallow them so they can't flip the doc page underneath
+        // the gallery (ArrowLeft/Right, [, ]) or escape to the host page (ArrowUp/Down).
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'].includes(event.key)) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+        if (event.key !== 'Tab') return;
+        const tile = this.galleryEl?.querySelector<HTMLElement>('[role="option"][tabindex="0"]') ?? null;
+        const toggle = this.containerEl.querySelector<HTMLElement>('.bp-GalleryToggle');
+        const fullscreen = this.containerEl.querySelector<HTMLElement>('.bp-FullscreenToggle');
+        const cycle: HTMLElement[] = [tile, toggle, fullscreen].filter((el): el is HTMLElement => el !== null);
+        if (cycle.length === 0) return;
+
+        const currentIndex = cycle.indexOf(document.activeElement as HTMLElement);
+        if (currentIndex === -1) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        const step = event.shiftKey ? -1 : 1;
+        const nextIndex = (currentIndex + step + cycle.length) % cycle.length;
+        cycle[nextIndex].focus();
+    };
 
     private handleGalleryNavigate = (pageNum: number): void => {
         this.galleryFocusedPage = pageNum;

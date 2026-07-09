@@ -93,3 +93,11 @@
 .bp-container:has(.bp-gallery-grid) .ba-PopupPortal {
     display: none;
 }
+
+// Stop the underlying doc from scrolling when arrow keys are pressed and focus isn't on a tile.
+// `.bp` prefix bumps specificity above Document.scss `.bp .bp-doc.bp-doc-document { overflow-y: scroll }`.
+.bp .bp-is-gallery-open .bp-doc.bp-doc-document,
+.bp .bp-is-gallery-open .bp-doc.bp-is-scrollable {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
