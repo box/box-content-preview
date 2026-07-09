@@ -836,7 +836,7 @@ class Preview extends EventEmitter {
         this.open = true;
 
         // Init performance logging
-        this.logger = new Logger(this.location.locale, this.browserInfo);
+        this.logger = new Logger(this.location.locale, this.browserInfo, this.options.clientName);
         this.loadMetricsEmitted = false;
 
         // Clear any existing retry timeouts

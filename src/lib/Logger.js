@@ -9,16 +9,17 @@ class Logger {
      *
      * @param {string} locale - Locale
      * @param {Object} browser - Browser information
+     * @param {string} [clientName] - Host-supplied client name; overrides the package default so metrics attribute to the host
      * @return {Logger} Logger instance
      */
-    constructor(locale, browser) {
+    constructor(locale, browser, clientName) {
         this.start = Date.now();
         this.log = {
             locale,
             event: 'preview',
             browser,
             client: {
-                name: CLIENT_NAME,
+                name: clientName || CLIENT_NAME,
                 version: CLIENT_VERSION,
             },
             converted: true,
