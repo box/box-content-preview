@@ -363,12 +363,6 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .annotationLayer {
-        // pdf.js 6 inserts its layers before the box-annotations layers, so the
-        // region creation overlay (pointer-events: auto) paints above the link
-        // annotations and swallows their clicks. Lift the annotation layer above
-        // the overlay but below the region/highlight targets (z-index: 3).
-        z-index: 2;
-
         h1,
         h2,
         h3,
