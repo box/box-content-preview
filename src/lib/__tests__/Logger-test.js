@@ -35,6 +35,21 @@ describe('lib/Logger', () => {
         expect(log.client.version).toBe(__VERSION__);
     });
 
+    test('should use the host-supplied client name when provided', () => {
+        logger = new Logger('FOO', {}, 'preview-client');
+        const log = logger.done();
+
+        expect(log.client.name).toBe('preview-client');
+        expect(log.client.version).toBe(__VERSION__);
+    });
+
+    test('should fall back to the package name when client name is empty', () => {
+        logger = new Logger('FOO', {}, '');
+        const log = logger.done();
+
+        expect(log.client.name).toBe(__NAME__);
+    });
+
     test('should set and get correctly', () => {
         dateNowStub.mockReturnValue(0);
         logger.setCached();
