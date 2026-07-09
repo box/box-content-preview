@@ -27,3 +27,32 @@
 .bp-SettingsMenuBack-label {
     @include bp-SettingsRow-label;
 }
+
+// V2 video player back button — match the TimestampControl flyout typography
+.bp-media--v2 {
+    .bp-SettingsMenuBack {
+        gap: 16px;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $bdl-gray-05;
+            border-radius: 8px;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+    }
+
+    .bp-SettingsMenuBack-label {
+        padding: 6px 14px;
+        color: $bdl-gray-62;
+        font-weight: bold;
+        font-size: 14px;
+        font-family: Lato, Arial, sans-serif;
+        line-height: 20px;
+        letter-spacing: .3px;
+        text-transform: none;
+        user-select: none;
+    }
+}

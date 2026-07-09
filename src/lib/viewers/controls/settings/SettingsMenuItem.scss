@@ -46,3 +46,37 @@
         display: block;
     }
 }
+
+// V2 video player menu items — modern typography to match TimestampControl
+.bp-media--v2 {
+    .bp-SettingsMenuItem {
+        gap: 16px;
+        padding: 6px 14px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $bdl-gray-05;
+            border-radius: 8px;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+    }
+
+    .bp-SettingsMenuItem-label {
+        padding: 0 8px;
+        color: $black;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 24px;
+        text-transform: none;
+    }
+
+    .bp-SettingsMenuItem-value {
+        padding: 0 8px;
+        color: $bdl-gray-62;
+        font-size: 16px;
+        line-height: 24px;
+    }
+}

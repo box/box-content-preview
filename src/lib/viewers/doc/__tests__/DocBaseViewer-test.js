@@ -40,7 +40,7 @@ import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, 
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
-import { EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
+import { EXIF, EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
@@ -363,17 +363,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfLoadingTask.destroy).toBeCalled();
             });
 
-            test('should clean up the viewer and the document object', () => {
+            test('should clean up the viewer', () => {
                 docBase.pdfViewer = {
                     cleanup: jest.fn(),
-                    pdfDocument: {
-                        destroy: jest.fn(),
-                    },
                 };
 
                 docBase.destroy();
                 expect(docBase.pdfViewer.cleanup).toBeCalled();
-                expect(docBase.pdfViewer.pdfDocument.destroy).toBeCalled();
             });
 
             test('should clean up the thumbnails sidebar instance and DOM element', () => {
@@ -1103,6 +1099,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
                 jest.spyOn(docBase, 'loadAssets').mockResolvedValue();
                 jest.spyOn(docBase, 'loadBoxAnnotations').mockImplementation();
+                jest.spyOn(docBase, 'loadPdfjsFromNpm').mockResolvedValue();
             });
 
             afterEach(() => {
@@ -1147,6 +1144,35 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
                 });
             });
+
+            test('should load pdfjs from npm and skip vendored JS/CSS when useNpmPdfjs flag is on', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.load().then(() => {
+                    expect(docBase.loadPdfjsFromNpm).toHaveBeenCalled();
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF, []);
+                    expect(docBase.loadAssets).not.toHaveBeenCalledWith(JS, CSS);
+                    expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
+                });
+            });
+
+            test('should load EXIF_READER from vendored when useNpmPdfjs and docfirst pages are both on', () => {
+                docBase.docFirstPagesEnabled = true;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.load().then(() => {
+                    expect(docBase.loadPdfjsFromNpm).toHaveBeenCalled();
+                    expect(docBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                });
+            });
+
+            test('should not call loadPdfjsFromNpm when useNpmPdfjs flag is off', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                return docBase.load().then(() => {
+                    expect(docBase.loadPdfjsFromNpm).not.toHaveBeenCalled();
+                });
+            });
         });
 
         describe('loadViewerAssets()', () => {
@@ -1187,6 +1213,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(testDocBase.loadAssets).toHaveBeenCalledTimes(2);
                 expect(testDocBase.loadAssets).toHaveBeenNthCalledWith(1, [...JS_NO_EXIF, ...EXIF_READER], CSS);
                 expect(testDocBase.loadAssets).toHaveBeenNthCalledWith(2, PRELOAD_JS, []);
+            });
+
+            test('warms the npm pdfjs chunks instead of CDN scripts when isUseNpmPdfjsEnabled is true', () => {
+                const loadPdfjsFromNpmStub = jest.spyOn(testDocBase, 'loadPdfjsFromNpm').mockResolvedValue(undefined);
+
+                testDocBase.loadViewerAssets({ isUseNpmPdfjsEnabled: true });
+
+                expect(testDocBase.loadAssets).toHaveBeenCalledTimes(1);
+                expect(testDocBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                expect(loadPdfjsFromNpmStub).toHaveBeenCalledTimes(1);
             });
         });
 
@@ -2408,6 +2444,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('asset');
             });
+
+            test('should set workerSrc from npm worker module when useNpmPdfjs flag is on', () => {
+                jest.doMock('../pdfjsNpmWorker', () => ({ default: () => 'npm-worker-src' }));
+                docBase.pdfjsLib = { GlobalWorkerOptions: {} };
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                docBase.setupPdfjs();
+
+                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('npm-worker-src');
+                jest.dontMock('../pdfjsNpmWorker');
+            });
         });
 
         describe('initPrint()', () => {
@@ -2830,6 +2877,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
                 expect(stubs.addEventListener).toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
+
+            test('should add wheel listener when pinchToZoom.enabled feature flag is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler, {
+                    passive: false,
+                });
+            });
+
+            test('should not add wheel listener when pinchToZoom.enabled feature flag is false', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).not.toBeCalledWith(
+                    'wheel',
+                    docBase.trackpadPinchToZoomHandler,
+                    expect.anything(),
+                );
+            });
         });
 
         describe('unbindDOMListeners()', () => {
@@ -2871,6 +2938,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.removeEventListener).not.toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
                 expect(stubs.removeEventListener).not.toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
                 expect(stubs.removeEventListener).not.toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
+            });
+
+            test('should remove wheel listener when pinchToZoom.enabled feature flag is true', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.unbindDOMListeners();
+
+                expect(stubs.removeEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler);
             });
         });
 
@@ -3483,6 +3557,171 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('trackpadPinchToZoomHandler()', () => {
+            let event;
+            let pageEl;
+
+            beforeEach(() => {
+                docBase.pdfViewer = {
+                    currentScaleValue: 1,
+                    currentScale: 1,
+                    update: jest.fn(),
+                };
+
+                docBase.updateScale = jest.fn();
+
+                docBase.docEl.getBoundingClientRect = jest.fn().mockReturnValue({
+                    left: 0,
+                    top: 0,
+                });
+                Object.defineProperty(docBase.docEl, 'scrollLeft', { value: 0, writable: true });
+                Object.defineProperty(docBase.docEl, 'scrollTop', { value: 0, writable: true });
+
+                // Create a mock page element
+                pageEl = document.createElement('div');
+                pageEl.classList.add('page');
+                pageEl.getBoundingClientRect = jest.fn().mockReturnValue({
+                    left: 100,
+                    top: 50,
+                    width: 600,
+                    height: 800,
+                });
+
+                document.elementFromPoint = jest.fn().mockReturnValue(pageEl);
+
+                event = {
+                    ctrlKey: true,
+                    deltaY: -50,
+                    clientX: 400,
+                    clientY: 300,
+                    preventDefault: jest.fn(),
+                };
+            });
+
+            afterEach(() => {
+                delete document.elementFromPoint;
+            });
+
+            test('should do nothing if ctrlKey is false', () => {
+                event.ctrlKey = false;
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(event.preventDefault).not.toBeCalled();
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should call preventDefault when ctrlKey is true', () => {
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(event.preventDefault).toBeCalled();
+            });
+
+            test('should zoom in with cursor anchoring when above initial scale', () => {
+                docBase.pdfViewer.currentScale = 1;
+
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(1.5);
+            });
+
+            test('should zoom out with cursor anchoring', () => {
+                docBase.pdfViewer.currentScale = 0.5;
+
+                event.deltaY = 100; // zoom out
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(0.1);
+                expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+            });
+
+            test('should not exceed MAX_SCALE', () => {
+                docBase.pdfViewer.currentScale = 5.0;
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should not go below MIN_SCALE', () => {
+                docBase.pdfViewer.currentScale = 0.1;
+                event.deltaY = 50; // zoom out
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).not.toBeCalled();
+            });
+
+            test('should use page-relative anchoring when a page element is found', () => {
+                docBase.pdfViewer.currentScale = 1.5;
+
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+                expect(docBase.updateScale).toBeCalled();
+            });
+
+            test('should fall back to content-based anchoring when no page element is found', () => {
+                document.elementFromPoint.mockReturnValue(null);
+                docBase.pdfViewer.currentScale = 1.5;
+
+                event.deltaY = -50; // zoom in
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalled();
+            });
+
+            test('should call resin.recordAction on pinch start with zoomIn target', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.options.file = { id: '0', extension: 'pdf' };
+                docBase.isTrackpadPinching = false;
+
+                event.deltaY = -50; // zoom in
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.options.resin.recordAction).toBeCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'zoomIn',
+                    fileId: '0',
+                    fileExtension: 'pdf',
+                });
+            });
+
+            test('should call resin.recordAction on pinch start with zoomOut target', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.options.file = { id: '0', extension: 'pdf' };
+                docBase.isTrackpadPinching = false;
+                docBase.pdfViewer.currentScale = 2;
+
+                event.deltaY = 50; // zoom out
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.options.resin.recordAction).toBeCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'zoomOut',
+                    fileId: '0',
+                    fileExtension: 'pdf',
+                });
+            });
+
+            test('should not call resin.recordAction if already pinching', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.isTrackpadPinching = true;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.options.resin.recordAction).not.toBeCalled();
+            });
+        });
+
         describe('getStartPage()', () => {
             test('should return the start page as a number', () => {
                 const startAt = {
@@ -4028,6 +4267,63 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
+            });
+        });
+
+        describe('handleGalleryEnter()', () => {
+            beforeEach(() => {
+                docBase.findBar = { close: jest.fn(), destroy: jest.fn() };
+                docBase.annotator = { toggleAnnotationMode: jest.fn() };
+                docBase.processAnnotationModeChange = jest.fn();
+                docBase.annotationControlsFSM = {
+                    transition: jest.fn().mockReturnValue(AnnotationMode.NONE),
+                };
+            });
+
+            test('should close find bar and reset annotation mode', () => {
+                docBase.handleGalleryEnter();
+
+                expect(docBase.findBar.close).toBeCalled();
+                expect(docBase.annotationControlsFSM.transition).toBeCalledWith(AnnotationInput.RESET);
+                expect(docBase.processAnnotationModeChange).toBeCalledWith(AnnotationMode.NONE);
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+            });
+
+            test('should not throw if findBar is not initialized', () => {
+                docBase.findBar = undefined;
+                expect(() => docBase.handleGalleryEnter()).not.toThrow();
+            });
+
+            test('should not throw if annotator is not initialized', () => {
+                docBase.annotator = undefined;
+                expect(() => docBase.handleGalleryEnter()).not.toThrow();
+            });
+        });
+
+        describe('handleGalleryExit()', () => {
+            beforeEach(() => {
+                docBase.annotator = { toggleAnnotationMode: jest.fn() };
+            });
+
+            test('should restore REGION mode when new annotations are enabled', () => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+
+                docBase.handleGalleryExit();
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+            });
+
+            test('should not restore REGION mode when new annotations are disabled', () => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(false);
+
+                docBase.handleGalleryExit();
+
+                expect(docBase.annotator.toggleAnnotationMode).not.toBeCalled();
+            });
+
+            test('should not throw if annotator is not initialized', () => {
+                docBase.annotator = undefined;
+                expect(() => docBase.handleGalleryExit()).not.toThrow();
             });
         });
 

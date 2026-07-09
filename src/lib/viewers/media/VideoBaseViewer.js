@@ -105,6 +105,11 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
         }
 
+        if (this.featureEnabled('videoPlayerV2.enabled')) {
+            this.wrapperEl.classList.add('bp-media--v2');
+            this.mediaContainerEl.classList.add('bp-media-container--v2');
+        }
+
         this.lowerLights();
     }
 
@@ -173,6 +178,11 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.preloader.once('preload', () => {
                 this.emitFirstRenderMetric();
                 this.emit(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
+
+                // If the narrow play/seek cluster was already built, the thumbnail overlay is redundant.
+                if (this.playContainerEl) {
+                    this.preloader.hidePlayOverlay();
+                }
             });
         }
 
@@ -383,13 +393,21 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadUIReact() {
         super.loadUIReact();
 
+        // For the V2 player, mount the controls on the wrapper (above the media container)
+        // so their width is constrained by the viewport rather than the video
+        const controlsContainerEl = this.featureEnabled('videoPlayerV2.enabled')
+            ? this.wrapperEl
+            : this.mediaContainerEl;
+
         this.controls = new ControlsRoot({
             className: 'bp-VideoControlsRoot',
-            containerEl: this.mediaContainerEl,
+            containerEl: controlsContainerEl,
             fileId: this.options.file.id,
             onHide: this.handleControlsHide,
             onShow: this.handleControlsShow,
         });
+        this.addListener('annotator_create', () => this.renderUI());
+        this.addListener('comment_markers', this.handleCommentMarkersUpdated);
         this.renderUI();
     }
 
@@ -610,6 +628,20 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.mediaContainerEl && this.mediaEl.style.width) {
             this.mediaContainerEl.style.width = this.mediaEl.style.width;
         }
+
+        if (this.featureEnabled('videoPlayerV2.enabled')) {
+            this.mediaContainerEl.style.width = '';
+
+            if (this.preloader?.wrapperEl && this.mediaEl.style.width) {
+                const videoWidth = parseInt(this.mediaEl.style.width, 10);
+                const videoHeight = videoWidth / this.aspect;
+                this.preloader.wrapperEl.style.width = `${videoWidth}px`;
+                this.preloader.wrapperEl.style.height = `${videoHeight}px`;
+                this.preloader.wrapperEl.style.left = '50%';
+                this.preloader.wrapperEl.style.top = '50%';
+                this.preloader.wrapperEl.style.transform = 'translate(-50%, -50%)';
+            }
+        }
     }
 
     /**
@@ -621,16 +653,20 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     handleNarrowVideoUI() {
         if (this.useReactControls()) {
-            const mediaElWidthNumber = parseInt(this.mediaEl.style.width, 10);
+            const widthNumber = this.featureEnabled('videoPlayerV2.enabled')
+                ? this.wrapperEl.clientWidth
+                : parseInt(this.mediaEl.style.width, 10);
 
-            if (!Number.isNaN(mediaElWidthNumber)) {
+            if (!Number.isNaN(widthNumber)) {
                 // check if play and seek buttons exist in the dom
-                if (this.playContainerEl && mediaElWidthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
+                if (this.playContainerEl && widthNumber >= SMALL_VIDEO_WIDTH_THRESHOLD) {
                     this.isNarrowVideo = false;
                     this.removePlayButtonWithSeekButtons();
+                    this.preloader?.showPlayOverlay();
                     this.renderUI();
-                } else if (!this.playContainerEl && mediaElWidthNumber < SMALL_VIDEO_WIDTH_THRESHOLD) {
+                } else if (!this.playContainerEl && widthNumber < SMALL_VIDEO_WIDTH_THRESHOLD) {
                     this.buildPlayButtonWithSeekButtons();
+                    this.preloader?.hidePlayOverlay();
                     this.isNarrowVideo = true;
                     this.renderUI();
                 }
@@ -671,6 +707,15 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.setVolume(0);
         this.play().catch(this.pause);
     };
+
+    handleFullscreenEnter() {
+        super.handleFullscreenEnter();
+
+        if (this.controls?.controlsLayer?.reset) {
+            this.controls.controlsLayer.reset();
+            this.showAndHideReactControls();
+        }
+    }
 
     handleControlsHide = () => {
         this.mediaContainerEl.classList.remove('bp-media-controls-is-visible');
@@ -732,6 +777,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
     }
 
+    handleCommentMarkersUpdated = (markers = []) => {
+        this.commentMarkers = markers;
+        this.renderUI();
+    };
+
     scaleAnnotations(width, height) {
         if (!width && !height) {
             return;
@@ -766,6 +816,18 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.annotator.emit('annotations_active_set', id);
         }
     }
+
+    handleCommentMarkerClick = marker => {
+        if (this.mediaEl) {
+            this.mediaEl.pause();
+            this.mediaEl.currentTime = marker.time;
+        }
+        if (marker.type === 'annotation' && this.annotator) {
+            this.annotator.emit('annotations_active_set', marker.id);
+        }
+        this.emit('comment_marker_select', { id: marker.id, time: marker.time });
+        this.renderUI();
+    };
 
     /**
      * Handles the 'scrolltoannotation' event and calls the annotator scroll method

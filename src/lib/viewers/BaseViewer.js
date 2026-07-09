@@ -474,9 +474,13 @@ class BaseViewer extends EventEmitter {
             template = this.api.reachability.constructor.replaceDownloadHostWithDefault(template);
         }
 
+        // Cache-buster only needed when auth is header-based; the in-URL token otherwise
+        // varies the cache key on its own.
+        const resolveCacheBuster = this.featureEnabled('migrateAccessTokenToHeader');
+
         // Append optional query params
         const { queryParams } = this.options;
-        return appendQueryParams(createContentUrl(template, asset), queryParams);
+        return appendQueryParams(createContentUrl(template, asset, resolveCacheBuster), queryParams);
     }
 
     /**
@@ -519,8 +523,8 @@ class BaseViewer extends EventEmitter {
      * @return {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
-        const { token, sharedLink, sharedLinkPassword } = this.options;
-        return getHeaders(headers, token, sharedLink, sharedLinkPassword);
+        const { token } = this.options;
+        return getHeaders(headers, token);
     }
 
     /**
@@ -1447,6 +1451,7 @@ class BaseViewer extends EventEmitter {
             isMobile: this.isMobile,
             locale: this.options.location.locale,
             localizedStrings,
+            token: this.options.annotatorToken !== undefined ? this.options.annotatorToken : this.options.token,
         });
     }
 

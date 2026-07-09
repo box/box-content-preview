@@ -16,3 +16,22 @@ $bp-SettingsCheckboxItem-spacing: 6px;
 .bp-SettingsCheckboxItem-input {
     margin: $bp-SettingsCheckboxItem-spacing 0;
 }
+
+// V2 video player checkbox item — match the TimestampControl flyout typography
+.bp-media--v2 {
+    .bp-SettingsCheckboxItem {
+        padding: 6px 14px;
+        color: $black;
+        border-radius: 8px;
+
+        &:hover {
+            background-color: $bdl-gray-05;
+        }
+    }
+
+    .bp-SettingsCheckboxItem-label {
+        padding: 0 8px;
+        font-size: 16px;
+        line-height: 24px;
+    }
+}

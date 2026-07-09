@@ -1,5 +1,4 @@
 const path = require('path');
-const I18nPlugin = require('i18n-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('webpack');
 const license = require('./license');
@@ -18,7 +17,13 @@ module.exports = language => {
             rules: [
                 {
                     test: /\.(js|ts|tsx)$/,
-                    loader: 'babel-loader',
+                    use: [
+                        { loader: 'babel-loader' },
+                        {
+                            loader: path.resolve('build/i18n-loader.js'),
+                            options: { translations: langJson },
+                        },
+                    ],
                     include: [path.resolve('src/lib')],
                 },
                 {
@@ -28,19 +33,20 @@ module.exports = language => {
                         path.resolve('src/lib'),
                         path.resolve('node_modules/box-annotations'),
                         path.resolve('node_modules/box-ui-elements'),
+                        path.resolve('node_modules/pdfjs-dist'),
                     ],
                 },
                 {
                     test: /\.(svg|html)$/,
-                    loader: 'raw-loader',
+                    type: 'asset/source',
                     include: [path.resolve('src/lib')],
                 },
                 {
                     test: /\.(jpe?g|png|gif|woff2|woff)$/,
-                    loader: 'file-loader',
+                    type: 'asset/resource',
                     include: [path.resolve('src/lib')],
-                    options: {
-                        name: '[name].[ext]',
+                    generator: {
+                        filename: '[name][ext]',
                     },
                 },
             ],
@@ -51,12 +57,8 @@ module.exports = language => {
                 __LANGUAGE__: JSON.stringify(language),
                 __NAME__: JSON.stringify(pkg.name),
                 __VERSION__: JSON.stringify(pkg.version),
-                'process.env': {
-                    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-                    BABEL_ENV: JSON.stringify(process.env.BABEL_ENV),
-                },
+                'process.env.BABEL_ENV': JSON.stringify(process.env.BABEL_ENV),
             }),
-            new I18nPlugin(langJson),
             new MiniCssExtractPlugin({
                 filename: '[name].css',
             }),

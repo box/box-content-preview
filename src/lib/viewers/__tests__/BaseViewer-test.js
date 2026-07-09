@@ -358,7 +358,20 @@ describe('lib/viewers/BaseViewer', () => {
 
             const result = base.createContentUrl(url, '');
             expect(result).toBe('url');
-            expect(util.createContentUrl).toBeCalledWith(url, '');
+            expect(util.createContentUrl).toBeCalledWith(url, '', false);
+        });
+
+        test('should resolve the cache-buster only when migrateAccessTokenToHeader is enabled', () => {
+            const url = 'url{+asset_path}';
+            jest.spyOn(util, 'createContentUrl');
+
+            base.options.features = {};
+            base.createContentUrl(url, '');
+            expect(util.createContentUrl).toBeCalledWith(url, '', false);
+
+            base.options.features = { migrateAccessTokenToHeader: true };
+            base.createContentUrl(url, '');
+            expect(util.createContentUrl).toBeCalledWith(url, '', true);
         });
 
         test('should return content url with asset path from args', () => {
@@ -375,7 +388,7 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(util, 'createContentUrl');
             const result = base.createContentUrl(url, 'bar');
             expect(result).toBe('urlbar');
-            expect(util.createContentUrl).toBeCalledWith(url, 'bar');
+            expect(util.createContentUrl).toBeCalledWith(url, 'bar', false);
         });
 
         test('should fallback to the default host if we have retried', () => {
@@ -394,7 +407,7 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(base, 'appendAuthParams').mockReturnValue('bar');
             const result = base.createContentUrlWithAuthParams('boo', 'hoo');
             expect(result).toBe('bar');
-            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo');
+            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo', false);
             expect(base.appendAuthParams).toBeCalledWith('foo');
         });
     });
@@ -407,7 +420,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.sharedLinkPassword = 'pass';
             const result = base.createContentUrlV2('boo', 'hoo');
             expect(result).toBe('bar');
-            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo');
+            expect(util.createContentUrl).toBeCalledWith('boo', 'hoo', false);
             expect(util.appendAuthParamsV2).toBeCalledWith('foo', 'https://app.box.com/s/HASH', 'pass');
         });
     });
@@ -432,7 +445,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             const result = base.appendAuthHeader(headers);
             expect(result).toBe(headers);
-            expect(util.getHeaders).toBeCalledWith(headers, token, sharedLink, sharedLinkPassword);
+            expect(util.getHeaders).toBeCalledWith(headers, token);
         });
     });
 
@@ -1794,6 +1807,31 @@ describe('lib/viewers/BaseViewer', () => {
             expect(combinedOptions.location).toEqual({ locale: 'en-US' });
             expect(combinedOptions.randomOption).toBe('derp');
             expect(combinedOptions.localizedStrings).toBeDefined();
+        });
+
+        test('should forward annotatorToken to the annotator when provided', () => {
+            const annotatorToken = jest.fn();
+            base.options = {
+                annotatorToken,
+                file: { id: 1 },
+                location: { locale: 'en-US' },
+                token: 'read-token',
+            };
+
+            const combinedOptions = base.createAnnotatorOptions({});
+            expect(combinedOptions.token).toBe(annotatorToken);
+        });
+
+        test('should fall back to the read token when annotatorToken is undefined', () => {
+            base.options = {
+                annotatorToken: undefined,
+                file: { id: 1 },
+                location: { locale: 'en-US' },
+                token: 'read-token',
+            };
+
+            const combinedOptions = base.createAnnotatorOptions({});
+            expect(combinedOptions.token).toBe('read-token');
         });
     });
 

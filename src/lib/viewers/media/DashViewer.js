@@ -1,4 +1,5 @@
 import React from 'react';
+import { createRoot } from 'react-dom/client';
 import {
     CLASS_INVISIBLE,
     AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
@@ -15,7 +16,10 @@ import Timer from '../../Timer';
 import { appendQueryParams, getProp } from '../../util';
 import './Dash.scss';
 import { getVideoFps, isFpsAvailable } from './videoFps';
+import { Guide } from '../controls/media/MediaSettingsMenuGuides';
 import VideoControls from './VideoControls';
+import VideoControlsV2 from './VideoControlsV2';
+import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import VideoBaseViewer from './VideoBaseViewer';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -108,6 +112,8 @@ class DashViewer extends VideoBaseViewer {
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
+
+        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
     }
 
     /**
@@ -132,6 +138,11 @@ class DashViewer extends VideoBaseViewer {
             this.transcriptionStatus.destroy();
         }
 
+        // Release blob: URL allocated for the filmstrip when migrateAccessTokenToHeader is on
+        if (this.filmstripUrl && this.filmstripUrl.startsWith('blob:')) {
+            URL.revokeObjectURL(this.filmstripUrl);
+        }
+
         clearInterval(this.statsIntervalId);
         if (this.player) {
             this.player.destroy();
@@ -141,6 +152,14 @@ class DashViewer extends VideoBaseViewer {
             this.mediaControls.removeListener('qualitychange', this.handleQuality);
             this.mediaControls.removeListener('subtitlechange', this.handleSubtitle);
             this.mediaControls.removeListener('audiochange', this.handleAudioTrack);
+        }
+        if (this.guidesRoot) {
+            this.guidesRoot.unmount();
+            this.guidesRoot = undefined;
+        }
+        if (this.guidesEl && this.guidesEl.parentNode) {
+            this.guidesEl.parentNode.removeChild(this.guidesEl);
+            this.guidesEl = undefined;
         }
         this.removeStats();
         super.destroy();
@@ -921,7 +940,28 @@ class DashViewer extends VideoBaseViewer {
         const isHDSupported = this.hdVideoId !== -1;
         this.selectedQuality = isHDSupported ? this.cache.get('media-quality') || 'auto' : 'sd';
         this.setQuality(this.selectedQuality, false);
+
+        // Per AC #7: guide selection is per-session and not persisted across navigation
+        this.selectedGuide = Guide.OFF;
+
+        if (this.isVideoPlayerV2) {
+            this.guidesEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+            this.guidesEl.className = 'bp-VideoGuidesRoot';
+            this.guidesRoot = createRoot(this.guidesEl);
+        }
     }
+
+    /**
+     * Sets the active guide overlay and re-renders.
+     *
+     * @param {string} guide - One of Guide enum values (e.g. '16x9', 'off')
+     * @return {void}
+     */
+    setGuide = guide => {
+        this.selectedGuide = guide;
+        this.emit('guide_selected', { guide });
+        this.renderUI();
+    };
 
     /**
      * Loads the film strip
@@ -934,21 +974,56 @@ class DashViewer extends VideoBaseViewer {
         const filmstripInterval = filmstrip && filmstrip.metadata && filmstrip.metadata.interval;
 
         if (filmstripInterval > 0) {
-            const url = this.featureEnabled('migrateAccessTokenToHeader')
+            const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
+            const useReactControls = this.useReactControls();
+            const url = useHeaders
                 ? this.createContentUrlV2(filmstrip.content.url_template)
                 : this.createContentUrlWithAuthParams(filmstrip.content.url_template);
 
             this.filmstripInterval = filmstripInterval;
             this.filmstripStatus = this.getRepStatus(filmstrip);
-            this.filmstripUrl = url;
+            // When useHeaders is on, the URL has no token and would 401 if rendered as <img src>.
+            // Defer setting filmstripUrl until the blob: URL is ready below.
+            this.filmstripUrl = useHeaders ? null : url;
 
-            if (this.useReactControls()) {
-                this.filmstripStatus.getPromise().then(() => {
-                    this.renderUI(); // Render once the filmstrip is ready
-                });
-            } else {
+            // Legacy controls have a synchronous init path when the URL already carries a token.
+            if (!useHeaders && !useReactControls) {
                 this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstripInterval);
+                return;
             }
+
+            this.filmstripStatus
+                .getPromise()
+                .then(() => (useHeaders ? this.fetchContentAsBlobUrl(url) : url))
+                .then(filmstripUrl => {
+                    // <img src> can't carry an Authorization header, so when the access-token has
+                    // been migrated out of the URL we expose the rep as a blob: URL instead.
+                    // If the viewer was destroyed while we were fetching, release the blob now —
+                    // destroy() can't see it because filmstripUrl was still null when it ran.
+                    if (this.destroyed) {
+                        if (useHeaders) {
+                            URL.revokeObjectURL(filmstripUrl);
+                        }
+                        return;
+                    }
+                    this.filmstripUrl = filmstripUrl;
+                    if (useReactControls) {
+                        this.renderUI();
+                    } else {
+                        this.mediaControls.initFilmstrip(
+                            filmstripUrl,
+                            this.filmstripStatus,
+                            this.aspect,
+                            filmstripInterval,
+                        );
+                    }
+                })
+                // Filmstrip is a non-critical scrubbing-preview enhancement, so any failure
+                // (rep status reject, blob fetch reject) is swallowed rather than failing
+                // the whole viewer. Warn so prod 401s leave a breadcrumb in DevTools.
+                .catch(err => {
+                    console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
+                });
         }
     }
 
@@ -1240,6 +1315,18 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Returns the FPS to use for frame-based UI (timecode/frame formats, scrubber step).
+     * Only exposes FPS when frame stepping is enabled and the manifest provides it.
+     *
+     * @return {number|undefined} Frames per second
+     */
+    getFps() {
+        return this.featureEnabled('frameStep.enabled') && isFpsAvailable(this.player)
+            ? getVideoFps(this.player)
+            : undefined;
+    }
+
+    /**
      * Steps one frame forward or backward. Pauses video if playing.
      */
     frameStep(direction) {
@@ -1282,57 +1369,70 @@ class DashViewer extends VideoBaseViewer {
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
         const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
-        this.controls.render(
-            <VideoControls
-                annotationColor={this.annotationModule.getColor()}
-                annotationMode={this.annotationControlsFSM.getMode()}
-                aspectRatio={this.aspect}
-                audioTrack={this.selectedAudioTrack}
-                audioTracks={this.audioTracks}
-                autoplay={this.isAutoplayEnabled()}
-                bufferedRange={this.mediaEl.buffered}
-                currentTime={this.mediaEl.currentTime}
-                durationTime={this.mediaEl.duration}
-                experiences={this.experiences}
-                filmstripInterval={this.filmstripInterval}
-                filmstripUrl={this.filmstripUrl}
-                fps={
-                    this.featureEnabled('frameStep.enabled') && isFpsAvailable(this.player)
-                        ? getVideoFps(this.player)
-                        : undefined
-                }
-                hasDrawing={canDraw}
-                hasHighlight={false}
-                hasRegion={canAnnotate}
-                isAutoGeneratedSubtitles={!!this.autoCaptionDisplayer}
-                isHDSupported={this.hdVideoId !== -1}
-                isNarrowVideo={this.isNarrowVideo}
-                isPlaying={!this.mediaEl.paused}
-                isPlayingHD={this.isPlayingHD()}
-                mediaEl={this.mediaEl}
-                movePlayback={this.movePlayback}
-                onAnnotationColorChange={this.handleAnnotationColorChange}
-                onAnnotationModeClick={this.handleAnnotationControlsClick}
-                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                onAudioTrackChange={this.setAudioTrack}
-                onAutoplayChange={this.setAutoplay}
-                onFullscreenToggle={this.toggleFullscreen}
-                onMuteChange={this.toggleMute}
-                onPlayPause={this.handlePlayRequest}
-                onQualityChange={this.setQuality}
-                onRateChange={this.setRate}
-                onSubtitleChange={this.setSubtitle}
-                onSubtitlesToggle={this.toggleSubtitles}
-                onTimeChange={this.handleTimeupdateFromMediaControls}
-                onVolumeChange={this.setVolume}
-                quality={this.selectedQuality}
-                rate={this.getRate()}
-                subtitle={this.getSubtitleId()}
-                subtitles={this.textTracks}
-                videoAnnotationsEnabled={annotationsEnabled}
-                volume={this.mediaEl.volume}
-            />,
-        );
+        const sharedProps = {
+            annotationColor: this.annotationModule.getColor(),
+            annotationMode: this.annotationControlsFSM.getMode(),
+            aspectRatio: this.aspect,
+            audioTrack: this.selectedAudioTrack,
+            audioTracks: this.audioTracks,
+            autoplay: this.isAutoplayEnabled(),
+            bufferedRange: this.mediaEl.buffered,
+            canChangeTimeFormat: this.featureEnabled('frameStep.enabled'),
+            currentTime: this.mediaEl.currentTime,
+            durationTime: this.mediaEl.duration,
+            experiences: this.experiences,
+            filmstripInterval: this.filmstripInterval,
+            filmstripUrl: this.filmstripUrl,
+            fps: this.getFps(),
+            guide: this.selectedGuide,
+            isGuidesEnabled: this.isVideoPlayerV2,
+            hasDrawing: canDraw,
+            hasRegion: canAnnotate,
+            isAutoGeneratedSubtitles: !!this.autoCaptionDisplayer,
+            isHDSupported: this.hdVideoId !== -1,
+            isNarrowVideo: this.isNarrowVideo,
+            isPlaying: !this.mediaEl.paused,
+            mediaEl: this.mediaEl,
+            movePlayback: this.movePlayback,
+            onAnnotationColorChange: this.handleAnnotationColorChange,
+            onAnnotationModeClick: this.handleAnnotationControlsClick,
+            onAnnotationModeEscape: this.handleAnnotationControlsEscape,
+            onAudioTrackChange: this.setAudioTrack,
+            onAutoplayChange: this.setAutoplay,
+            onFullscreenToggle: this.toggleFullscreen,
+            onGuideChange: this.setGuide,
+            onMuteChange: this.toggleMute,
+            onPlayPause: this.handlePlayRequest,
+            onQualityChange: this.setQuality,
+            onRateChange: this.setRate,
+            onSubtitleChange: this.setSubtitle,
+            onSubtitlesToggle: this.toggleSubtitles,
+            onTimeChange: this.handleTimeupdateFromMediaControls,
+            onVolumeChange: this.setVolume,
+            quality: this.selectedQuality,
+            rate: this.getRate(),
+            subtitle: this.getSubtitleId(),
+            subtitles: this.textTracks,
+            videoAnnotationsEnabled: annotationsEnabled,
+            volume: this.mediaEl.volume,
+        };
+
+        if (this.isVideoPlayerV2 && this.guidesRoot) {
+            this.guidesRoot.render(<VideoGuidesOverlay guide={this.selectedGuide} mediaEl={this.mediaEl} />);
+        }
+
+        if (this.isVideoPlayerV2) {
+            this.controls.render(
+                <VideoControlsV2
+                    commentMarkers={this.commentMarkers}
+                    onCommentMarkerClick={this.handleCommentMarkerClick}
+                    {...sharedProps}
+                />,
+            );
+            return;
+        }
+
+        this.controls.render(<VideoControls {...sharedProps} hasHighlight={false} isPlayingHD={this.isPlayingHD()} />);
     }
 }
 

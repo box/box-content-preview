@@ -172,8 +172,37 @@
     right: auto;
     bottom: auto;
     left: auto;
+    z-index: 1; // Stack above sibling media container so settings menu paints over guides
     align-self: stretch;
     width: 100%;
+}
+
+.bp-media--v2 {
+    background: radial-gradient(ellipse at center, #2a2a2a 0%, #000 100%);
+}
+
+.bp-media-container--v2 {
+    padding: 48px;
+
+    video {
+        border: 1px solid rgba($white, .12);
+    }
+
+    .bp-video-preload-wrapper {
+        top: 48px;
+        right: auto;
+        bottom: 48px;
+        left: 50%;
+        transform: translateX(-50%);
+
+        .bp-preload {
+            transform: none;
+        }
+
+        .bp-preload-content {
+            border: 1px solid rgba($white, .12);
+        }
+    }
 }
 
 .bp-video-360 {

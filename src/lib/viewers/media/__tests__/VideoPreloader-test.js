@@ -222,6 +222,34 @@ describe('lib/viewers/media/VideoPreloader', () => {
         });
     });
 
+    describe('hidePlayOverlay() / showPlayOverlay()', () => {
+        let overlay;
+
+        beforeEach(() => {
+            videoPreloader.wrapperEl = document.createElement('div');
+            overlay = document.createElement('div');
+            overlay.classList.add(CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY);
+            videoPreloader.wrapperEl.appendChild(overlay);
+        });
+
+        test('hidePlayOverlay() should add the hidden class to the overlay', () => {
+            videoPreloader.hidePlayOverlay();
+            expect(overlay).toHaveClass('bp-is-hidden');
+        });
+
+        test('showPlayOverlay() should remove the hidden class from the overlay', () => {
+            overlay.classList.add('bp-is-hidden');
+            videoPreloader.showPlayOverlay();
+            expect(overlay).not.toHaveClass('bp-is-hidden');
+        });
+
+        test('should not throw when wrapperEl is undefined', () => {
+            videoPreloader.wrapperEl = undefined;
+            expect(() => videoPreloader.hidePlayOverlay()).not.toThrow();
+            expect(() => videoPreloader.showPlayOverlay()).not.toThrow();
+        });
+    });
+
     describe('loadHandler()', () => {
         beforeEach(() => {
             videoPreloader.preloadEl = document.createElement('div');

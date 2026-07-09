@@ -70,9 +70,8 @@ class RepStatus extends EventEmitter {
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
         if (migrateAccessTokenToHeader) {
-            // Send auth via headers only — no access_token in URL
             this.infoUrl = repInfo ? appendAuthParamsV2(repInfo.url, sharedLink, sharedLinkPassword) : '';
-            this.headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
+            this.headers = getHeaders({}, token);
         } else {
             this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
         }

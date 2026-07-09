@@ -1,10 +1,10 @@
 import get from 'lodash/get';
 
-type FeatureOptions = {
+export type FeatureOptions = {
     [key: string]: NonNullable<unknown>;
 };
 
-type FeatureConfig = {
+export type FeatureConfig = {
     [key: string]: FeatureOptions;
 };
 

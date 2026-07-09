@@ -34,6 +34,14 @@ module.exports = {
                 '@typescript-eslint/no-non-null-assertion': 'off',
             },
         },
+        {
+            files: ['src/components/**/*.{ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/types/**/*.{ts,tsx}'],
+            rules: {
+                '@typescript-eslint/no-unused-vars': 'error',
+                'react-hooks/rules-of-hooks': 'error',
+                'react-hooks/exhaustive-deps': 'error',
+            },
+        },
     ],
     parser: '@typescript-eslint/parser',
     rules: {

@@ -138,6 +138,38 @@ class VideoPreloader extends EventEmitter {
     }
 
     /**
+     * Hides the play overlay on the preload thumbnail. Used for narrow videos where the
+     * player renders its own play/seek cluster, so the thumbnail overlay would be redundant.
+     *
+     * @return {void}
+     */
+    hidePlayOverlay() {
+        if (!this.wrapperEl) {
+            return;
+        }
+        const overlay = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+        if (overlay) {
+            overlay.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Shows the play overlay on the preload thumbnail. Used when a video is no longer narrow
+     * and the player's play/seek cluster is removed.
+     *
+     * @return {void}
+     */
+    showPlayOverlay() {
+        if (!this.wrapperEl) {
+            return;
+        }
+        const overlay = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+        if (overlay) {
+            overlay.classList.remove(CLASS_HIDDEN);
+        }
+    }
+
+    /**
      * Swaps the play overlay for a loading spinner on the preload image.
      * Called when the user clicks play so they get immediate visual feedback
      * while the video buffers.

@@ -47,3 +47,50 @@
 .bp-SettingsRadioItem-value {
     @include bp-SettingsRow-value;
 }
+
+// V2 video player radio item — match the TimestampControl flyout typography
+.bp-media--v2 {
+    .bp-SettingsRadioItem {
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $bdl-gray-05;
+            border-radius: 8px;
+            box-shadow: none;
+            backdrop-filter: none;
+
+            .bp-SettingsRadioItem-check-icon {
+                fill: $black;
+            }
+
+            .bp-SettingsRadioItem-value {
+                color: $black;
+            }
+        }
+
+        &.bp-is-selected {
+            .bp-SettingsRadioItem-value {
+                color: $black;
+            }
+
+            .bp-SettingsRadioItem-check-icon {
+                fill: $black;
+            }
+        }
+    }
+
+    .bp-SettingsRadioItem-value {
+        padding: 0;
+        color: $black;
+        font-size: 16px;
+        line-height: 24px;
+        text-align: left;
+    }
+}

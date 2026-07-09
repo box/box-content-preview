@@ -33,16 +33,23 @@ describe('formatTimecode', () => {
     });
 
     describe('edge cases', () => {
-        test('should handle NaN', () => {
+        test('should handle NaN seconds', () => {
             expect(formatTimecode(NaN, 30)).toBe('00:00:00:00');
         });
 
-        test('should handle Infinity', () => {
+        test('should handle Infinity seconds', () => {
             expect(formatTimecode(Infinity, 30)).toBe('00:00:00:00');
         });
 
-        test('should handle negative values', () => {
+        test('should handle negative seconds', () => {
             expect(formatTimecode(-5, 30)).toBe('00:00:00:00');
+        });
+
+        test('should fall back to 24fps when fps is invalid', () => {
+            expect(formatTimecode(1, 0)).toBe('00:00:01:00');
+            expect(formatTimecode(1, -1)).toBe('00:00:01:00');
+            expect(formatTimecode(1, NaN)).toBe('00:00:01:00');
+            expect(formatTimecode(1, Infinity)).toBe('00:00:01:00');
         });
     });
 });

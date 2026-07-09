@@ -1,956 +1,845 @@
+## 3.58.0 (2026-07-08)
+
+- fix(gallery): stop propagation on handled keys (#1696) ([5490f68](https://github.com/box/box-content-preview/commit/5490f68)), closes [#1696](https://github.com/box/box-content-preview/issues/1696)
+
+## 3.57.0 (2026-07-08)
+
+- fix(video360): prevent teardown crash when closing 360 video preview (#1692) ([b03ddc7](https://github.com/box/box-content-preview/commit/b03ddc7)), closes [#1692](https://github.com/box/box-content-preview/issues/1692)
+
+## 3.56.0 (2026-07-07)
+
+- refactor(video-player-v2): gate time view dropdown behind split (#1695) ([ed6eb50](https://github.com/box/box-content-preview/commit/ed6eb50)), closes [#1695](https://github.com/box/box-content-preview/issues/1695)
+- feat(video-player-v2): add buffered range visual and style gradient to scrub bar (#1693) ([b84fd34](https://github.com/box/box-content-preview/commit/b84fd34)), closes [#1693](https://github.com/box/box-content-preview/issues/1693)
+- fix(doc): restore PDF link clicks (#1694) ([18fec52](https://github.com/box/box-content-preview/commit/18fec52)), closes [#1694](https://github.com/box/box-content-preview/issues/1694)
+
+## 3.55.0 (2026-07-04)
+
+- feat(gallery): a11y polish, entry-state reset, focus return (#1691) ([c447d50](https://github.com/box/box-content-preview/commit/c447d50)), closes [#1691](https://github.com/box/box-content-preview/issues/1691)
+
+## 3.54.0 (2026-07-02)
+
+- feat(video-player-v2): add clustering for comment markers in scrubber bar (#1690) ([eda82b1](https://github.com/box/box-content-preview/commit/eda82b1)), closes [#1690](https://github.com/box/box-content-preview/issues/1690)
+
+## 3.53.0 (2026-07-01)
+
+- refactor(gallery): extract GalleryController from DocBaseViewer (#1689) ([db6f3b5](https://github.com/box/box-content-preview/commit/db6f3b5)), closes [#1689](https://github.com/box/box-content-preview/issues/1689)
+
+## 3.52.0 (2026-06-30)
+
+- fix(file): cache-bust authenticated content URL per request (#1688) ([053e36b](https://github.com/box/box-content-preview/commit/053e36b)), closes [#1688](https://github.com/box/box-content-preview/issues/1688)
+
+## 3.51.0 (2026-06-26)
+
+- feat(video-player-v2): add comment markers to scrubber bar (#1687) ([eff2106](https://github.com/box/box-content-preview/commit/eff2106)), closes [#1687](https://github.com/box/box-content-preview/issues/1687)
+
+## 3.50.0 (2026-06-24)
+
+- feat(gallery): add gallery view with full-width page thumbnail grid (#1682) ([342a3a4](https://github.com/box/box-content-preview/commit/342a3a4)), closes [#1682](https://github.com/box/box-content-preview/issues/1682)
+- feat(video-player-v2): add fullscreen button and fix controls auto-hide (#1684) ([ca8dd41](https://github.com/box/box-content-preview/commit/ca8dd41)), closes [#1684](https://github.com/box/box-content-preview/issues/1684)
+
+## 3.49.0 (2026-06-19)
+
+- fix(video): restore media container width for v1 player (#1683) ([331b0f3](https://github.com/box/box-content-preview/commit/331b0f3)), closes [#1683](https://github.com/box/box-content-preview/issues/1683)
+
+## 3.48.0 (2026-06-18)
+
+- feat(media): restyle V2 settings menu to match TimestampControl flyout (#1678) ([c078dab](https://github.com/box/box-content-preview/commit/c078dab)), closes [#1678](https://github.com/box/box-content-preview/issues/1678)
+- feat(video): add framing guides overlay for V2 player (PREVIEW-625) (#1675) ([d53734c](https://github.com/box/box-content-preview/commit/d53734c)), closes [#1675](https://github.com/box/box-content-preview/issues/1675) [#7](https://github.com/box/box-content-preview/issues/7)
+- feat(video): expose time format via data attributes on media container (#1677) ([50a2102](https://github.com/box/box-content-preview/commit/50a2102)), closes [#1677](https://github.com/box/box-content-preview/issues/1677)
+
+## 3.47.0 (2026-06-17)
+
+- feat(video): add time format dropdown to V2 player timestamp (#1674) ([754b1d6](https://github.com/box/box-content-preview/commit/754b1d6)), closes [#1674](https://github.com/box/box-content-preview/issues/1674)
+
+## 3.46.0 (2026-06-13)
+
+- feat(video): update V2 player layout and narrow viewport handling (#1673) ([f14f428](https://github.com/box/box-content-preview/commit/f14f428)), closes [#1673](https://github.com/box/box-content-preview/issues/1673)
+
+## 3.45.0 (2026-06-11)
+
+- chore(build): scope pdfjs-dist pdf_viewer.css to .bp-doc (#1672) ([6c78a62](https://github.com/box/box-content-preview/commit/6c78a62)), closes [#1672](https://github.com/box/box-content-preview/issues/1672)
+- feat(video): add V2 controls bar with redesigned scrubber and filmstrip (#1671) ([3ef96c1](https://github.com/box/box-content-preview/commit/3ef96c1)), closes [#1671](https://github.com/box/box-content-preview/issues/1671)
+
+## 3.44.0 (2026-06-10)
+
+- chore(doc): remove obsolete pdfDocument.destroy() call (#1670) ([840c448](https://github.com/box/box-content-preview/commit/840c448)), closes [#1670](https://github.com/box/box-content-preview/issues/1670)
+
+## 3.43.0 (2026-06-09)
+
+- feat(resin): add tracking for pinch-to-zoom events (#1668) ([538a1aa](https://github.com/box/box-content-preview/commit/538a1aa)), closes [#1668](https://github.com/box/box-content-preview/issues/1668)
+- feat(viewers): forward loadViewers options to viewer loadViewerAssets (#1669) ([92a0cb1](https://github.com/box/box-content-preview/commit/92a0cb1)), closes [#1669](https://github.com/box/box-content-preview/issues/1669)
+
+## 3.42.0 (2026-06-04)
+
+- chore(deps): bump pdfjs-dist to 6.0.227 (#1666) ([7e082b8](https://github.com/box/box-content-preview/commit/7e082b8)), closes [#1666](https://github.com/box/box-content-preview/issues/1666)
+
+## 3.41.0 (2026-06-03)
+
+- feat(zoom): add pinch to zoom support for txt files (#1661) ([e703e20](https://github.com/box/box-content-preview/commit/e703e20)), closes [#1661](https://github.com/box/box-content-preview/issues/1661)
+
+## 3.40.0 (2026-06-01)
+
+- fix(build): cap MultiCompiler parallelism to prevent CI OOM (#1665) ([f4aca6b](https://github.com/box/box-content-preview/commit/f4aca6b)), closes [#1665](https://github.com/box/box-content-preview/issues/1665)
+
+## 3.39.0 (2026-06-01)
+
+- fix(build): cap minify parallelism to prevent CI OOM (#1664) ([82429b5](https://github.com/box/box-content-preview/commit/82429b5)), closes [#1664](https://github.com/box/box-content-preview/issues/1664)
+- fix(media): dedupe play button on narrow videos (#1662) ([b049109](https://github.com/box/box-content-preview/commit/b049109)), closes [#1662](https://github.com/box/box-content-preview/issues/1662)
+- feat(build): ship legacy Preview class as npm package (#1658) ([16ee9b1](https://github.com/box/box-content-preview/commit/16ee9b1)), closes [#1658](https://github.com/box/box-content-preview/issues/1658)
+
+## 3.38.0 (2026-05-30)
+
+- fix(media): load filmstrip via blob URL when access-token is in header (#1655) ([5bbe86c](https://github.com/box/box-content-preview/commit/5bbe86c)), closes [#1655](https://github.com/box/box-content-preview/issues/1655)
+- feat(annotations): add annotatorToken option for write tokens (#1659) ([d4238a0](https://github.com/box/box-content-preview/commit/d4238a0)), closes [#1659](https://github.com/box/box-content-preview/issues/1659)
+- feat(doc): add feature-flagged npm pdfjs path in DocBaseViewer (#1654) ([295e32e](https://github.com/box/box-content-preview/commit/295e32e)), closes [#1654](https://github.com/box/box-content-preview/issues/1654)
+- feat(zoom): add trackpad pinch-to-zoom for docs (#1656) ([d651bfd](https://github.com/box/box-content-preview/commit/d651bfd)), closes [#1656](https://github.com/box/box-content-preview/issues/1656)
+- feat(zoom): add trackpad pinch-to-zoom for images (#1652) ([0e6b314](https://github.com/box/box-content-preview/commit/0e6b314)), closes [#1652](https://github.com/box/box-content-preview/issues/1652)
+
+## 3.37.0 (2026-05-29)
+
+- feat(build): add ESM lib build for npm publishing (#1653) ([bb17d6a](https://github.com/box/box-content-preview/commit/bb17d6a)), closes [#1653](https://github.com/box/box-content-preview/issues/1653)
+
+## 3.36.0 (2026-05-28)
+
+- chore(build): upgrade webpack 4 to webpack 5 (#1651) ([98696d6](https://github.com/box/box-content-preview/commit/98696d6)), closes [#1651](https://github.com/box/box-content-preview/issues/1651)
+
+## 3.35.0 (2026-05-27)
+
+- feat(preview): emit client_name dimension on every event (#1650) ([04b8878](https://github.com/box/box-content-preview/commit/04b8878)), closes [#1650](https://github.com/box/box-content-preview/issues/1650) [#1639](https://github.com/box/box-content-preview/issues/1639)
+
+## 3.34.0 (2026-05-22)
+
+- fix(auth): stop sending shared_link in both URL and BoxApi header (#1649) ([d136d93](https://github.com/box/box-content-preview/commit/d136d93)), closes [#1649](https://github.com/box/box-content-preview/issues/1649)
+
 ## 3.33.0 (2026-05-19)
 
-* feat(annotations): enable highlight annotataions on rotated docs (#1648) ([94c310f](https://github.com/box/box-content-preview/commit/94c310f)), closes [#1648](https://github.com/box/box-content-preview/issues/1648)
-* feat(doc): add subtle hover animation to PDF thumbnail sidebar (#1647) ([46313ed](https://github.com/box/box-content-preview/commit/46313ed)), closes [#1647](https://github.com/box/box-content-preview/issues/1647)
-
-
+- feat(annotations): enable highlight annotataions on rotated docs (#1648) ([94c310f](https://github.com/box/box-content-preview/commit/94c310f)), closes [#1648](https://github.com/box/box-content-preview/issues/1648)
+- feat(doc): add subtle hover animation to PDF thumbnail sidebar (#1647) ([46313ed](https://github.com/box/box-content-preview/commit/46313ed)), closes [#1647](https://github.com/box/box-content-preview/issues/1647)
 
 ## 3.32.0 (2026-05-16)
 
-* feat(annotations): Enable drawing/region annotations on rotated files (#1644) ([bd81be1](https://github.com/box/box-content-preview/commit/bd81be1)), closes [#1644](https://github.com/box/box-content-preview/issues/1644)
-* feat(annotations): forward onCopyLink option to annotator (#1646) ([7555499](https://github.com/box/box-content-preview/commit/7555499)), closes [#1646](https://github.com/box/box-content-preview/issues/1646)
-
-
+- feat(annotations): Enable drawing/region annotations on rotated files (#1644) ([bd81be1](https://github.com/box/box-content-preview/commit/bd81be1)), closes [#1644](https://github.com/box/box-content-preview/issues/1644)
+- feat(annotations): forward onCopyLink option to annotator (#1646) ([7555499](https://github.com/box/box-content-preview/commit/7555499)), closes [#1646](https://github.com/box/box-content-preview/issues/1646)
 
 ## 3.31.0 (2026-05-15)
 
-* feat(auth): accept optional features in prefetch() (#1645) ([a42f600](https://github.com/box/box-content-preview/commit/a42f600)), closes [#1645](https://github.com/box/box-content-preview/issues/1645)
-* feat(preview): add monitoring dimensions + preload outcome (#1639) ([0287989](https://github.com/box/box-content-preview/commit/0287989)), closes [#1639](https://github.com/box/box-content-preview/issues/1639)
-
-
+- feat(auth): accept optional features in prefetch() (#1645) ([a42f600](https://github.com/box/box-content-preview/commit/a42f600)), closes [#1645](https://github.com/box/box-content-preview/issues/1645)
+- feat(preview): add monitoring dimensions + preload outcome (#1639) ([0287989](https://github.com/box/box-content-preview/commit/0287989)), closes [#1639](https://github.com/box/box-content-preview/issues/1639)
 
 ## 3.30.0 (2026-05-12)
 
-* feat(media): add frame-by-frame video navigation (#1641) ([a3a51c7](https://github.com/box/box-content-preview/commit/a3a51c7)), closes [#1641](https://github.com/box/box-content-preview/issues/1641)
-* fix(doc): extend too-many-ops check to xlsx files (#1642) ([72e0902](https://github.com/box/box-content-preview/commit/72e0902)), closes [#1642](https://github.com/box/box-content-preview/issues/1642)
-
-
+- feat(media): add frame-by-frame video navigation (#1641) ([a3a51c7](https://github.com/box/box-content-preview/commit/a3a51c7)), closes [#1641](https://github.com/box/box-content-preview/issues/1641)
+- fix(doc): extend too-many-ops check to xlsx files (#1642) ([72e0902](https://github.com/box/box-content-preview/commit/72e0902)), closes [#1642](https://github.com/box/box-content-preview/issues/1642)
 
 ## 3.29.0 (2026-05-09)
 
-* feat(controls): add resin tagging to toolbar elements (#1640) ([420a532](https://github.com/box/box-content-preview/commit/420a532)), closes [#1640](https://github.com/box/box-content-preview/issues/1640)
-
-
+- feat(controls): add resin tagging to toolbar elements (#1640) ([420a532](https://github.com/box/box-content-preview/commit/420a532)), closes [#1640](https://github.com/box/box-content-preview/issues/1640)
 
 ## 3.28.0 (2026-05-05)
 
-* fix(doc): improve PDF rotation behavior for annotations (#1638) ([81785b3](https://github.com/box/box-content-preview/commit/81785b3)), closes [#1638](https://github.com/box/box-content-preview/issues/1638)
-* fix(media): derive filmestrip frame width from actual image dimensions (#1626) ([bff9bfe](https://github.com/box/box-content-preview/commit/bff9bfe)), closes [#1626](https://github.com/box/box-content-preview/issues/1626)
-* feat(auth): add createContentUrlV2 to BaseViewer (WEBAPP-55833) (#1625) ([faecd56](https://github.com/box/box-content-preview/commit/faecd56)), closes [#1625](https://github.com/box/box-content-preview/issues/1625)
-* feat(auth): migrate archive viewer to use Authorization header (#1627) ([7de5bb5](https://github.com/box/box-content-preview/commit/7de5bb5)), closes [#1627](https://github.com/box/box-content-preview/issues/1627)
-* feat(auth): migrate doc viewers to use Authorization header (#1630) ([a1b7c2d](https://github.com/box/box-content-preview/commit/a1b7c2d)), closes [#1630](https://github.com/box/box-content-preview/issues/1630)
-* feat(auth): migrate image viewers to use Authorization header (#1631) ([8394d4c](https://github.com/box/box-content-preview/commit/8394d4c)), closes [#1631](https://github.com/box/box-content-preview/issues/1631)
-* feat(auth): migrate media viewers to use Authorization header (#1632) ([9214b8d](https://github.com/box/box-content-preview/commit/9214b8d)), closes [#1632](https://github.com/box/box-content-preview/issues/1632)
-* feat(auth): migrate text viewers to use Authorization header (#1629) ([750b33b](https://github.com/box/box-content-preview/commit/750b33b)), closes [#1629](https://github.com/box/box-content-preview/issues/1629)
-* feat(doc): add PDF rotation support (#1637) ([531a493](https://github.com/box/box-content-preview/commit/531a493)), closes [#1637](https://github.com/box/box-content-preview/issues/1637)
-* feat(eml to pdf): add eml to doc formats (#1597) ([47688d8](https://github.com/box/box-content-preview/commit/47688d8)), closes [#1597](https://github.com/box/box-content-preview/issues/1597)
-* feat(media): enable video previews for mxf filetypes (#1634) ([290dece](https://github.com/box/box-content-preview/commit/290dece)), closes [#1634](https://github.com/box/box-content-preview/issues/1634)
-
-
+- fix(doc): improve PDF rotation behavior for annotations (#1638) ([81785b3](https://github.com/box/box-content-preview/commit/81785b3)), closes [#1638](https://github.com/box/box-content-preview/issues/1638)
+- fix(media): derive filmestrip frame width from actual image dimensions (#1626) ([bff9bfe](https://github.com/box/box-content-preview/commit/bff9bfe)), closes [#1626](https://github.com/box/box-content-preview/issues/1626)
+- feat(auth): add createContentUrlV2 to BaseViewer (WEBAPP-55833) (#1625) ([faecd56](https://github.com/box/box-content-preview/commit/faecd56)), closes [#1625](https://github.com/box/box-content-preview/issues/1625)
+- feat(auth): migrate archive viewer to use Authorization header (#1627) ([7de5bb5](https://github.com/box/box-content-preview/commit/7de5bb5)), closes [#1627](https://github.com/box/box-content-preview/issues/1627)
+- feat(auth): migrate doc viewers to use Authorization header (#1630) ([a1b7c2d](https://github.com/box/box-content-preview/commit/a1b7c2d)), closes [#1630](https://github.com/box/box-content-preview/issues/1630)
+- feat(auth): migrate image viewers to use Authorization header (#1631) ([8394d4c](https://github.com/box/box-content-preview/commit/8394d4c)), closes [#1631](https://github.com/box/box-content-preview/issues/1631)
+- feat(auth): migrate media viewers to use Authorization header (#1632) ([9214b8d](https://github.com/box/box-content-preview/commit/9214b8d)), closes [#1632](https://github.com/box/box-content-preview/issues/1632)
+- feat(auth): migrate text viewers to use Authorization header (#1629) ([750b33b](https://github.com/box/box-content-preview/commit/750b33b)), closes [#1629](https://github.com/box/box-content-preview/issues/1629)
+- feat(doc): add PDF rotation support (#1637) ([531a493](https://github.com/box/box-content-preview/commit/531a493)), closes [#1637](https://github.com/box/box-content-preview/issues/1637)
+- feat(eml to pdf): add eml to doc formats (#1597) ([47688d8](https://github.com/box/box-content-preview/commit/47688d8)), closes [#1597](https://github.com/box/box-content-preview/issues/1597)
+- feat(media): enable video previews for mxf filetypes (#1634) ([290dece](https://github.com/box/box-content-preview/commit/290dece)), closes [#1634](https://github.com/box/box-content-preview/issues/1634)
 
 ## 3.27.0 (2026-04-07)
 
-* feat(auth): gate access_token removal behind feature flag (#1619) ([86927e6](https://github.com/box/box-content-preview/commit/86927e6)), closes [#1619](https://github.com/box/box-content-preview/issues/1619)
-
-
+- feat(auth): gate access_token removal behind feature flag (#1619) ([86927e6](https://github.com/box/box-content-preview/commit/86927e6)), closes [#1619](https://github.com/box/box-content-preview/issues/1619)
 
 ## 3.26.0 (2026-03-27)
 
-* feat(bounding-box): support for rendering bounding boxes (#1617) ([62d34d6](https://github.com/box/box-content-preview/commit/62d34d6)), closes [#1617](https://github.com/box/box-content-preview/issues/1617)
-
-
+- feat(bounding-box): support for rendering bounding boxes (#1617) ([62d34d6](https://github.com/box/box-content-preview/commit/62d34d6)), closes [#1617](https://github.com/box/box-content-preview/issues/1617)
 
 ## 3.25.0 (2026-03-16)
 
-* feat: upgrade shaka player to 4.16 (#1616) ([d4050b5](https://github.com/box/box-content-preview/commit/d4050b5)), closes [#1616](https://github.com/box/box-content-preview/issues/1616)
-
-
+- feat: upgrade shaka player to 4.16 (#1616) ([d4050b5](https://github.com/box/box-content-preview/commit/d4050b5)), closes [#1616](https://github.com/box/box-content-preview/issues/1616)
 
 ## 3.24.0 (2026-03-12)
 
-* fix(annotations): Guard escape handler against destroyed viewer (#1615) ([9cd2f92](https://github.com/box/box-content-preview/commit/9cd2f92)), closes [#1615](https://github.com/box/box-content-preview/issues/1615)
-
-
+- fix(annotations): Guard escape handler against destroyed viewer (#1615) ([9cd2f92](https://github.com/box/box-content-preview/commit/9cd2f92)), closes [#1615](https://github.com/box/box-content-preview/issues/1615)
 
 ## 3.23.0 (2026-02-23)
 
-* feat(media): add first_render_time metric to video viewers (#1613) ([e32b892](https://github.com/box/box-content-preview/commit/e32b892)), closes [#1613](https://github.com/box/box-content-preview/issues/1613)
-
-
+- feat(media): add first_render_time metric to video viewers (#1613) ([e32b892](https://github.com/box/box-content-preview/commit/e32b892)), closes [#1613](https://github.com/box/box-content-preview/issues/1613)
 
 ## 3.22.0 (2026-02-12)
 
-* feat(preview): add play button overlay on video preload thumbnail (#1611) ([d964bad](https://github.com/box/box-content-preview/commit/d964bad)), closes [#1611](https://github.com/box/box-content-preview/issues/1611)
-
-
+- feat(preview): add play button overlay on video preload thumbnail (#1611) ([d964bad](https://github.com/box/box-content-preview/commit/d964bad)), closes [#1611](https://github.com/box/box-content-preview/issues/1611)
 
 ## 3.21.0 (2026-02-11)
 
-* fix: fix first_render_time metric for document viewers (#1612) ([a6baeca](https://github.com/box/box-content-preview/commit/a6baeca)), closes [#1612](https://github.com/box/box-content-preview/issues/1612)
-* fix: fix sidebar gutter for stagger load (#1609) ([b80452c](https://github.com/box/box-content-preview/commit/b80452c)), closes [#1609](https://github.com/box/box-content-preview/issues/1609)
-* fix(doc-preview): prevent thumbnail getPage race before PDF ready (#1610) ([9369e26](https://github.com/box/box-content-preview/commit/9369e26)), closes [#1610](https://github.com/box/box-content-preview/issues/1610)
-* feat: small docs jpeg first without exif data (#1608) ([827ab81](https://github.com/box/box-content-preview/commit/827ab81)), closes [#1608](https://github.com/box/box-content-preview/issues/1608)
-* feat: support preload for documents with non paged representations (#1604) ([4e0bd75](https://github.com/box/box-content-preview/commit/4e0bd75)), closes [#1604](https://github.com/box/box-content-preview/issues/1604)
-* feat(media): add fullscreen keyboard shortcut to React controls #1605 (#1606) ([7c6ebf4](https://github.com/box/box-content-preview/commit/7c6ebf4)), closes [#1605](https://github.com/box/box-content-preview/issues/1605) [#1606](https://github.com/box/box-content-preview/issues/1606)
-
-
+- fix: fix first_render_time metric for document viewers (#1612) ([a6baeca](https://github.com/box/box-content-preview/commit/a6baeca)), closes [#1612](https://github.com/box/box-content-preview/issues/1612)
+- fix: fix sidebar gutter for stagger load (#1609) ([b80452c](https://github.com/box/box-content-preview/commit/b80452c)), closes [#1609](https://github.com/box/box-content-preview/issues/1609)
+- fix(doc-preview): prevent thumbnail getPage race before PDF ready (#1610) ([9369e26](https://github.com/box/box-content-preview/commit/9369e26)), closes [#1610](https://github.com/box/box-content-preview/issues/1610)
+- feat: small docs jpeg first without exif data (#1608) ([827ab81](https://github.com/box/box-content-preview/commit/827ab81)), closes [#1608](https://github.com/box/box-content-preview/issues/1608)
+- feat: support preload for documents with non paged representations (#1604) ([4e0bd75](https://github.com/box/box-content-preview/commit/4e0bd75)), closes [#1604](https://github.com/box/box-content-preview/issues/1604)
+- feat(media): add fullscreen keyboard shortcut to React controls #1605 (#1606) ([7c6ebf4](https://github.com/box/box-content-preview/commit/7c6ebf4)), closes [#1605](https://github.com/box/box-content-preview/issues/1605) [#1606](https://github.com/box/box-content-preview/issues/1606)
 
 ## 3.20.0 (2026-02-06)
 
-* fix: doc preloader not finding Class variable import (#1607) ([a36bd0c](https://github.com/box/box-content-preview/commit/a36bd0c)), closes [#1607](https://github.com/box/box-content-preview/issues/1607)
-* feat(video-preload): Preload image reps for videos (#1603) ([fbecad4](https://github.com/box/box-content-preview/commit/fbecad4)), closes [#1603](https://github.com/box/box-content-preview/issues/1603)
-
-
+- fix: doc preloader not finding Class variable import (#1607) ([a36bd0c](https://github.com/box/box-content-preview/commit/a36bd0c)), closes [#1607](https://github.com/box/box-content-preview/issues/1607)
+- feat(video-preload): Preload image reps for videos (#1603) ([fbecad4](https://github.com/box/box-content-preview/commit/fbecad4)), closes [#1603](https://github.com/box/box-content-preview/issues/1603)
 
 ## 3.19.0 (2026-02-02)
 
-* feat(doc-preview): implement configurable staggered loading for docfirst (#1601) ([d6817c5](https://github.com/box/box-content-preview/commit/d6817c5)), closes [#1601](https://github.com/box/box-content-preview/issues/1601)
-
-
+- feat(doc-preview): implement configurable staggered loading for docfirst (#1601) ([d6817c5](https://github.com/box/box-content-preview/commit/d6817c5)), closes [#1601](https://github.com/box/box-content-preview/issues/1601)
 
 ## 3.18.0 (2026-01-27)
 
-* feat: first render metric for preview loaders (#1600) ([5bdf556](https://github.com/box/box-content-preview/commit/5bdf556)), closes [#1600](https://github.com/box/box-content-preview/issues/1600)
-* feat(video-prefetch): Prefetch image representation for videos (#1599) ([f2c35a5](https://github.com/box/box-content-preview/commit/f2c35a5)), closes [#1599](https://github.com/box/box-content-preview/issues/1599)
-* feat(video-preview): Show image preview for video files (#1598) ([73b38a1](https://github.com/box/box-content-preview/commit/73b38a1)), closes [#1598](https://github.com/box/box-content-preview/issues/1598)
-
-
+- feat: first render metric for preview loaders (#1600) ([5bdf556](https://github.com/box/box-content-preview/commit/5bdf556)), closes [#1600](https://github.com/box/box-content-preview/issues/1600)
+- feat(video-prefetch): Prefetch image representation for videos (#1599) ([f2c35a5](https://github.com/box/box-content-preview/commit/f2c35a5)), closes [#1599](https://github.com/box/box-content-preview/issues/1599)
+- feat(video-preview): Show image preview for video files (#1598) ([73b38a1](https://github.com/box/box-content-preview/commit/73b38a1)), closes [#1598](https://github.com/box/box-content-preview/issues/1598)
 
 ## 3.17.0 (2025-12-29)
 
-* test(video-ui): updating e2e tests to test for new react controls (#1594) ([7aa3945](https://github.com/box/box-content-preview/commit/7aa3945)), closes [#1594](https://github.com/box/box-content-preview/issues/1594)
-* feat(video-player-ui): adding mp4 viewer support (#1593) ([b013502](https://github.com/box/box-content-preview/commit/b013502)), closes [#1593](https://github.com/box/box-content-preview/issues/1593)
-
-
+- test(video-ui): updating e2e tests to test for new react controls (#1594) ([7aa3945](https://github.com/box/box-content-preview/commit/7aa3945)), closes [#1594](https://github.com/box/box-content-preview/issues/1594)
+- feat(video-player-ui): adding mp4 viewer support (#1593) ([b013502](https://github.com/box/box-content-preview/commit/b013502)), closes [#1593](https://github.com/box/box-content-preview/issues/1593)
 
 ## 3.16.0 (2025-12-11)
 
-* feat(nodejs): update to node 22 (#1590) ([6fc65f5](https://github.com/box/box-content-preview/commit/6fc65f5)), closes [#1590](https://github.com/box/box-content-preview/issues/1590)
-* feat(preview-modernization): Remove border from thumbnail container (#1589) ([ca24377](https://github.com/box/box-content-preview/commit/ca24377)), closes [#1589](https://github.com/box/box-content-preview/issues/1589)
-* feat(preview-modernization): Update Control bar (#1588) ([0baac75](https://github.com/box/box-content-preview/commit/0baac75)), closes [#1588](https://github.com/box/box-content-preview/issues/1588)
-* feat(video-annotations): add default annotation location (#1592) ([d802717](https://github.com/box/box-content-preview/commit/d802717)), closes [#1592](https://github.com/box/box-content-preview/issues/1592)
-* chore(i18n): Update Translations (#1587) ([c3d171f](https://github.com/box/box-content-preview/commit/c3d171f)), closes [#1587](https://github.com/box/box-content-preview/issues/1587)
-* fix(dash-controls): fix alignment when the annotations button is clicked (#1591) ([f4f6a44](https://github.com/box/box-content-preview/commit/f4f6a44)), closes [#1591](https://github.com/box/box-content-preview/issues/1591)
-
-
+- feat(nodejs): update to node 22 (#1590) ([6fc65f5](https://github.com/box/box-content-preview/commit/6fc65f5)), closes [#1590](https://github.com/box/box-content-preview/issues/1590)
+- feat(preview-modernization): Remove border from thumbnail container (#1589) ([ca24377](https://github.com/box/box-content-preview/commit/ca24377)), closes [#1589](https://github.com/box/box-content-preview/issues/1589)
+- feat(preview-modernization): Update Control bar (#1588) ([0baac75](https://github.com/box/box-content-preview/commit/0baac75)), closes [#1588](https://github.com/box/box-content-preview/issues/1588)
+- feat(video-annotations): add default annotation location (#1592) ([d802717](https://github.com/box/box-content-preview/commit/d802717)), closes [#1592](https://github.com/box/box-content-preview/issues/1592)
+- chore(i18n): Update Translations (#1587) ([c3d171f](https://github.com/box/box-content-preview/commit/c3d171f)), closes [#1587](https://github.com/box/box-content-preview/issues/1587)
+- fix(dash-controls): fix alignment when the annotations button is clicked (#1591) ([f4f6a44](https://github.com/box/box-content-preview/commit/f4f6a44)), closes [#1591](https://github.com/box/box-content-preview/issues/1591)
 
 ## 3.15.0 (2025-10-20)
 
-* feat(video-ui-update): hiding and showing control over video based on video width and fixing seek ic ([67696ea](https://github.com/box/box-content-preview/commit/67696ea)), closes [#1585](https://github.com/box/box-content-preview/issues/1585)
-
-
+- feat(video-ui-update): hiding and showing control over video based on video width and fixing seek ic ([67696ea](https://github.com/box/box-content-preview/commit/67696ea)), closes [#1585](https://github.com/box/box-content-preview/issues/1585)
 
 ## 3.14.0 (2025-10-20)
 
-* fix(video-annotations): fix  video annotation tooltip handling for regions (#1586) ([a5899e5](https://github.com/box/box-content-preview/commit/a5899e5)), closes [#1586](https://github.com/box/box-content-preview/issues/1586)
-* chore(i18n): Update Translations (#1579) ([2b31d8a](https://github.com/box/box-content-preview/commit/2b31d8a)), closes [#1579](https://github.com/box/box-content-preview/issues/1579)
-* chore(i18n): Update Translations (#1583) ([a72de99](https://github.com/box/box-content-preview/commit/a72de99)), closes [#1583](https://github.com/box/box-content-preview/issues/1583)
-
-
+- fix(video-annotations): fix video annotation tooltip handling for regions (#1586) ([a5899e5](https://github.com/box/box-content-preview/commit/a5899e5)), closes [#1586](https://github.com/box/box-content-preview/issues/1586)
+- chore(i18n): Update Translations (#1579) ([2b31d8a](https://github.com/box/box-content-preview/commit/2b31d8a)), closes [#1579](https://github.com/box/box-content-preview/issues/1579)
+- chore(i18n): Update Translations (#1583) ([a72de99](https://github.com/box/box-content-preview/commit/a72de99)), closes [#1583](https://github.com/box/box-content-preview/issues/1583)
 
 ## 3.13.0 (2025-10-01)
 
-* feat(video_ui_updatess): adding seek forward seek backward support (#1578) ([7291522](https://github.com/box/box-content-preview/commit/7291522)), closes [#1578](https://github.com/box/box-content-preview/issues/1578)
-* feat(video-annotations): enabling video annotations for preview (#1582) ([03b05d5](https://github.com/box/box-content-preview/commit/03b05d5)), closes [#1582](https://github.com/box/box-content-preview/issues/1582)
-* feat(video-ui-upates): settings menu restyling (#1580) ([be32e3f](https://github.com/box/box-content-preview/commit/be32e3f)), closes [#1580](https://github.com/box/box-content-preview/issues/1580)
-* feat(video-ui-updates): adding vertical media volume controls. (#1581) ([cf8d91c](https://github.com/box/box-content-preview/commit/cf8d91c)), closes [#1581](https://github.com/box/box-content-preview/issues/1581)
-* feat(video-ui-updates): new video player ui initial PR (#1577) ([197bf28](https://github.com/box/box-content-preview/commit/197bf28)), closes [#1577](https://github.com/box/box-content-preview/issues/1577)
-
-
+- feat(video_ui_updatess): adding seek forward seek backward support (#1578) ([7291522](https://github.com/box/box-content-preview/commit/7291522)), closes [#1578](https://github.com/box/box-content-preview/issues/1578)
+- feat(video-annotations): enabling video annotations for preview (#1582) ([03b05d5](https://github.com/box/box-content-preview/commit/03b05d5)), closes [#1582](https://github.com/box/box-content-preview/issues/1582)
+- feat(video-ui-upates): settings menu restyling (#1580) ([be32e3f](https://github.com/box/box-content-preview/commit/be32e3f)), closes [#1580](https://github.com/box/box-content-preview/issues/1580)
+- feat(video-ui-updates): adding vertical media volume controls. (#1581) ([cf8d91c](https://github.com/box/box-content-preview/commit/cf8d91c)), closes [#1581](https://github.com/box/box-content-preview/issues/1581)
+- feat(video-ui-updates): new video player ui initial PR (#1577) ([197bf28](https://github.com/box/box-content-preview/commit/197bf28)), closes [#1577](https://github.com/box/box-content-preview/issues/1577)
 
 ## 3.12.0 (2025-08-29)
 
-* chore(i18n): Update Translations (#1574) ([7d5354a](https://github.com/box/box-content-preview/commit/7d5354a)), closes [#1574](https://github.com/box/box-content-preview/issues/1574)
-* feat(imageviewer): optimizations to prefetch (#1575) ([c741457](https://github.com/box/box-content-preview/commit/c741457)), closes [#1575](https://github.com/box/box-content-preview/issues/1575)
-
-
+- chore(i18n): Update Translations (#1574) ([7d5354a](https://github.com/box/box-content-preview/commit/7d5354a)), closes [#1574](https://github.com/box/box-content-preview/issues/1574)
+- feat(imageviewer): optimizations to prefetch (#1575) ([c741457](https://github.com/box/box-content-preview/commit/c741457)), closes [#1575](https://github.com/box/box-content-preview/issues/1575)
 
 ## 3.11.0 (2025-08-11)
 
-* fix(pdfjs-preload): removing doc first pages check (#1573) ([1e921be](https://github.com/box/box-content-preview/commit/1e921be)), closes [#1573](https://github.com/box/box-content-preview/issues/1573)
-
-
+- fix(pdfjs-preload): removing doc first pages check (#1573) ([1e921be](https://github.com/box/box-content-preview/commit/1e921be)), closes [#1573](https://github.com/box/box-content-preview/issues/1573)
 
 ## 3.10.0 (2025-08-11)
 
-* fix(pdfjs-preleloader): adding exif reader to preload (#1571) ([e50dc33](https://github.com/box/box-content-preview/commit/e50dc33)), closes [#1571](https://github.com/box/box-content-preview/issues/1571)
-* fix(pdfjs-preload): adding null check to emmitter function (#1570) ([58fcecf](https://github.com/box/box-content-preview/commit/58fcecf)), closes [#1570](https://github.com/box/box-content-preview/issues/1570)
-* chore(i18n): Update Translations (#1567) ([f2281ed](https://github.com/box/box-content-preview/commit/f2281ed)), closes [#1567](https://github.com/box/box-content-preview/issues/1567)
-* chore(i18n): Update Translations (#1572) ([c0d6d6e](https://github.com/box/box-content-preview/commit/c0d6d6e)), closes [#1572](https://github.com/box/box-content-preview/issues/1572)
-* Surface file size, page number, and total pages metrics (#1568) ([c6ce6d8](https://github.com/box/box-content-preview/commit/c6ce6d8)), closes [#1568](https://github.com/box/box-content-preview/issues/1568)
-* feat(preview): throw error when there are too many operations (#1566) ([c00b497](https://github.com/box/box-content-preview/commit/c00b497)), closes [#1566](https://github.com/box/box-content-preview/issues/1566)
-
-
+- fix(pdfjs-preleloader): adding exif reader to preload (#1571) ([e50dc33](https://github.com/box/box-content-preview/commit/e50dc33)), closes [#1571](https://github.com/box/box-content-preview/issues/1571)
+- fix(pdfjs-preload): adding null check to emmitter function (#1570) ([58fcecf](https://github.com/box/box-content-preview/commit/58fcecf)), closes [#1570](https://github.com/box/box-content-preview/issues/1570)
+- chore(i18n): Update Translations (#1567) ([f2281ed](https://github.com/box/box-content-preview/commit/f2281ed)), closes [#1567](https://github.com/box/box-content-preview/issues/1567)
+- chore(i18n): Update Translations (#1572) ([c0d6d6e](https://github.com/box/box-content-preview/commit/c0d6d6e)), closes [#1572](https://github.com/box/box-content-preview/issues/1572)
+- Surface file size, page number, and total pages metrics (#1568) ([c6ce6d8](https://github.com/box/box-content-preview/commit/c6ce6d8)), closes [#1568](https://github.com/box/box-content-preview/issues/1568)
+- feat(preview): throw error when there are too many operations (#1566) ([c00b497](https://github.com/box/box-content-preview/commit/c00b497)), closes [#1566](https://github.com/box/box-content-preview/issues/1566)
 
 ## 3.9.0 (2025-07-28)
 
-* feat(pdfjs-preloading): add function to preload pdfjs assets (#1565) ([4c6f142](https://github.com/box/box-content-preview/commit/4c6f142)), closes [#1565](https://github.com/box/box-content-preview/issues/1565)
-
-
+- feat(pdfjs-preloading): add function to preload pdfjs assets (#1565) ([4c6f142](https://github.com/box/box-content-preview/commit/4c6f142)), closes [#1565](https://github.com/box/box-content-preview/issues/1565)
 
 ## 3.8.0 (2025-07-12)
 
-* fix(doc-first): fixing ui issues (#1562) ([2c08f33](https://github.com/box/box-content-preview/commit/2c08f33)), closes [#1562](https://github.com/box/box-content-preview/issues/1562)
-* Update .mergify.yml ([45b4b01](https://github.com/box/box-content-preview/commit/45b4b01))
-
-
+- fix(doc-first): fixing ui issues (#1562) ([2c08f33](https://github.com/box/box-content-preview/commit/2c08f33)), closes [#1562](https://github.com/box/box-content-preview/issues/1562)
+- Update .mergify.yml ([45b4b01](https://github.com/box/box-content-preview/commit/45b4b01))
 
 ## 3.7.0 (2025-06-04)
 
-* feat(prefetch-images): prefetch images updates (#1560) ([fbdae40](https://github.com/box/box-content-preview/commit/fbdae40)), closes [#1560](https://github.com/box/box-content-preview/issues/1560)
-
-
+- feat(prefetch-images): prefetch images updates (#1560) ([fbdae40](https://github.com/box/box-content-preview/commit/fbdae40)), closes [#1560](https://github.com/box/box-content-preview/issues/1560)
 
 ## 3.6.0 (2025-05-09)
 
-* feat(doc-first): removing spinner (#1557) ([1c50761](https://github.com/box/box-content-preview/commit/1c50761)), closes [#1557](https://github.com/box/box-content-preview/issues/1557)
-
-
+- feat(doc-first): removing spinner (#1557) ([1c50761](https://github.com/box/box-content-preview/commit/1c50761)), closes [#1557](https://github.com/box/box-content-preview/issues/1557)
 
 ## 3.5.0 (2025-05-08)
 
-* feat(doc-first): adding doc first behavior to presentations (#1556) ([e7014e7](https://github.com/box/box-content-preview/commit/e7014e7)), closes [#1556](https://github.com/box/box-content-preview/issues/1556)
-* fix(virtualscroller): accurately remove scrolled-out elements (#1554) ([fa5b0c6](https://github.com/box/box-content-preview/commit/fa5b0c6)), closes [#1554](https://github.com/box/box-content-preview/issues/1554)
-
-
+- feat(doc-first): adding doc first behavior to presentations (#1556) ([e7014e7](https://github.com/box/box-content-preview/commit/e7014e7)), closes [#1556](https://github.com/box/box-content-preview/issues/1556)
+- fix(virtualscroller): accurately remove scrolled-out elements (#1554) ([fa5b0c6](https://github.com/box/box-content-preview/commit/fa5b0c6)), closes [#1554](https://github.com/box/box-content-preview/issues/1554)
 
 ## 3.4.0 (2025-04-30)
 
-* fix(doc-first): adding test coverage (#1553) ([c4907e5](https://github.com/box/box-content-preview/commit/c4907e5)), closes [#1553](https://github.com/box/box-content-preview/issues/1553)
-* fix(doc-first): code udpates (#1555) ([809f03a](https://github.com/box/box-content-preview/commit/809f03a)), closes [#1555](https://github.com/box/box-content-preview/issues/1555)
-
-
+- fix(doc-first): adding test coverage (#1553) ([c4907e5](https://github.com/box/box-content-preview/commit/c4907e5)), closes [#1553](https://github.com/box/box-content-preview/issues/1553)
+- fix(doc-first): code udpates (#1555) ([809f03a](https://github.com/box/box-content-preview/commit/809f03a)), closes [#1555](https://github.com/box/box-content-preview/issues/1555)
 
 ## 3.3.0 (2025-04-23)
 
-* fix(doc-first): webp rep is not marked as success bug (#1552) ([650e691](https://github.com/box/box-content-preview/commit/650e691)), closes [#1552](https://github.com/box/box-content-preview/issues/1552)
-
-
+- fix(doc-first): webp rep is not marked as success bug (#1552) ([650e691](https://github.com/box/box-content-preview/commit/650e691)), closes [#1552](https://github.com/box/box-content-preview/issues/1552)
 
 ## 3.2.0 (2025-04-22)
 
-* feat(doc-first-pages): implementing doc first pages (#1546) ([8d7ea5e](https://github.com/box/box-content-preview/commit/8d7ea5e)), closes [#1546](https://github.com/box/box-content-preview/issues/1546)
-* feat(doc-first): fixing bug with non webp documents (#1550) ([c7bdf13](https://github.com/box/box-content-preview/commit/c7bdf13)), closes [#1550](https://github.com/box/box-content-preview/issues/1550)
-* feat(doc-first): new exif implementation (#1549) ([3406c18](https://github.com/box/box-content-preview/commit/3406c18)), closes [#1549](https://github.com/box/box-content-preview/issues/1549)
-* feat(doc-first): reverting version bump (#1551) ([baa3acd](https://github.com/box/box-content-preview/commit/baa3acd)), closes [#1551](https://github.com/box/box-content-preview/issues/1551)
-* Add thumbnail click functionality (#1547) ([272fed8](https://github.com/box/box-content-preview/commit/272fed8)), closes [#1547](https://github.com/box/box-content-preview/issues/1547)
-* adding spinner logic (#1548) ([6bc52f4](https://github.com/box/box-content-preview/commit/6bc52f4)), closes [#1548](https://github.com/box/box-content-preview/issues/1548)
-
-
+- feat(doc-first-pages): implementing doc first pages (#1546) ([8d7ea5e](https://github.com/box/box-content-preview/commit/8d7ea5e)), closes [#1546](https://github.com/box/box-content-preview/issues/1546)
+- feat(doc-first): fixing bug with non webp documents (#1550) ([c7bdf13](https://github.com/box/box-content-preview/commit/c7bdf13)), closes [#1550](https://github.com/box/box-content-preview/issues/1550)
+- feat(doc-first): new exif implementation (#1549) ([3406c18](https://github.com/box/box-content-preview/commit/3406c18)), closes [#1549](https://github.com/box/box-content-preview/issues/1549)
+- feat(doc-first): reverting version bump (#1551) ([baa3acd](https://github.com/box/box-content-preview/commit/baa3acd)), closes [#1551](https://github.com/box/box-content-preview/issues/1551)
+- Add thumbnail click functionality (#1547) ([272fed8](https://github.com/box/box-content-preview/commit/272fed8)), closes [#1547](https://github.com/box/box-content-preview/issues/1547)
+- adding spinner logic (#1548) ([6bc52f4](https://github.com/box/box-content-preview/commit/6bc52f4)), closes [#1548](https://github.com/box/box-content-preview/issues/1548)
 
 ## 3.1.0 (2025-03-06)
 
-* feat(nodejs20): WEBAPP-30462 Node updated to 20 (+4 squashed commits) (#1545) ([37e7504](https://github.com/box/box-content-preview/commit/37e7504)), closes [#1545](https://github.com/box/box-content-preview/issues/1545)
-* fix: correct yarn build command syntax (#1543) ([970a96c](https://github.com/box/box-content-preview/commit/970a96c)), closes [#1543](https://github.com/box/box-content-preview/issues/1543)
-
-
+- feat(nodejs20): WEBAPP-30462 Node updated to 20 (+4 squashed commits) (#1545) ([37e7504](https://github.com/box/box-content-preview/commit/37e7504)), closes [#1545](https://github.com/box/box-content-preview/issues/1545)
+- fix: correct yarn build command syntax (#1543) ([970a96c](https://github.com/box/box-content-preview/commit/970a96c)), closes [#1543](https://github.com/box/box-content-preview/issues/1543)
 
 ## 3.0.0 (2024-11-26)
 
-* feat(react): React 18 upgrade (#1538) ([ebb2768](https://github.com/box/box-content-preview/commit/ebb2768)), closes [#1538](https://github.com/box/box-content-preview/issues/1538)
-
-
+- feat(react): React 18 upgrade (#1538) ([ebb2768](https://github.com/box/box-content-preview/commit/ebb2768)), closes [#1538](https://github.com/box/box-content-preview/issues/1538)
 
 ## 2.112.0 (2024-11-26)
 
-* feat: STORCLIENT-2331 Added WebP support to ImageLoaders (#1539) ([9c8887c](https://github.com/box/box-content-preview/commit/9c8887c)), closes [#1539](https://github.com/box/box-content-preview/issues/1539)
-
-
+- feat: STORCLIENT-2331 Added WebP support to ImageLoaders (#1539) ([9c8887c](https://github.com/box/box-content-preview/commit/9c8887c)), closes [#1539](https://github.com/box/box-content-preview/issues/1539)
 
 ## 2.111.0 (2024-11-20)
 
-* fix(docs): Remove gzip encoding query param (#1537) ([a77524d](https://github.com/box/box-content-preview/commit/a77524d)), closes [#1537](https://github.com/box/box-content-preview/issues/1537)
-
-
+- fix(docs): Remove gzip encoding query param (#1537) ([a77524d](https://github.com/box/box-content-preview/commit/a77524d)), closes [#1537](https://github.com/box/box-content-preview/issues/1537)
 
 ## 2.110.0 (2024-10-07)
 
-* feat(preview-error): Display file icon based on extension for errors (#1536) ([d0b10cb](https://github.com/box/box-content-preview/commit/d0b10cb)), closes [#1536](https://github.com/box/box-content-preview/issues/1536) [/github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts#L183](https://github.com//github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts/issues/L183)
-* chore(docs): remove polyfill.io from README (#1532) ([ac1a091](https://github.com/box/box-content-preview/commit/ac1a091)), closes [#1532](https://github.com/box/box-content-preview/issues/1532)
-* chore(i18n): Update Translations (#1530) ([ea172c1](https://github.com/box/box-content-preview/commit/ea172c1)), closes [#1530](https://github.com/box/box-content-preview/issues/1530)
-* chore(i18n): Update Translations (#1534) ([0cdea26](https://github.com/box/box-content-preview/commit/0cdea26)), closes [#1534](https://github.com/box/box-content-preview/issues/1534)
-* chore(tests): Migrate from Enzyme to RTL (1st batch) (#1535) ([9a2ed15](https://github.com/box/box-content-preview/commit/9a2ed15)), closes [#1535](https://github.com/box/box-content-preview/issues/1535)
-
-
+- feat(preview-error): Display file icon based on extension for errors (#1536) ([d0b10cb](https://github.com/box/box-content-preview/commit/d0b10cb)), closes [#1536](https://github.com/box/box-content-preview/issues/1536) [/github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts#L183](https://github.com//github.com/box/box-ui-elements/blob/1850977829e4888139462a6f65794b1cffc52a08/src/components/preview/previewIcons.ts/issues/L183)
+- chore(docs): remove polyfill.io from README (#1532) ([ac1a091](https://github.com/box/box-content-preview/commit/ac1a091)), closes [#1532](https://github.com/box/box-content-preview/issues/1532)
+- chore(i18n): Update Translations (#1530) ([ea172c1](https://github.com/box/box-content-preview/commit/ea172c1)), closes [#1530](https://github.com/box/box-content-preview/issues/1530)
+- chore(i18n): Update Translations (#1534) ([0cdea26](https://github.com/box/box-content-preview/commit/0cdea26)), closes [#1534](https://github.com/box/box-content-preview/issues/1534)
+- chore(tests): Migrate from Enzyme to RTL (1st batch) (#1535) ([9a2ed15](https://github.com/box/box-content-preview/commit/9a2ed15)), closes [#1535](https://github.com/box/box-content-preview/issues/1535)
 
 ## 2.109.0 (2024-07-01)
 
-* fix(error-messages): Fix bracket in notification message (#1526) ([e0b4f52](https://github.com/box/box-content-preview/commit/e0b4f52)), closes [#1526](https://github.com/box/box-content-preview/issues/1526)
-* fix(preview): Fix highlighting text when performing click and drag (#1531) ([2a3459d](https://github.com/box/box-content-preview/commit/2a3459d)), closes [#1531](https://github.com/box/box-content-preview/issues/1531)
-* chore(i18n): Update Translations (#1525) ([9659c47](https://github.com/box/box-content-preview/commit/9659c47)), closes [#1525](https://github.com/box/box-content-preview/issues/1525)
-* chore(i18n): Update Translations (#1527) ([c8a71cc](https://github.com/box/box-content-preview/commit/c8a71cc)), closes [#1527](https://github.com/box/box-content-preview/issues/1527)
-* chore(i18n): Update Translations (#1528) ([acb8faa](https://github.com/box/box-content-preview/commit/acb8faa)), closes [#1528](https://github.com/box/box-content-preview/issues/1528)
-* chore(i18n): Update Translations (#1529) ([585d367](https://github.com/box/box-content-preview/commit/585d367)), closes [#1529](https://github.com/box/box-content-preview/issues/1529)
-* feat: update to react-intl 6 (#1524) ([26a073f](https://github.com/box/box-content-preview/commit/26a073f)), closes [#1524](https://github.com/box/box-content-preview/issues/1524)
-
-
+- fix(error-messages): Fix bracket in notification message (#1526) ([e0b4f52](https://github.com/box/box-content-preview/commit/e0b4f52)), closes [#1526](https://github.com/box/box-content-preview/issues/1526)
+- fix(preview): Fix highlighting text when performing click and drag (#1531) ([2a3459d](https://github.com/box/box-content-preview/commit/2a3459d)), closes [#1531](https://github.com/box/box-content-preview/issues/1531)
+- chore(i18n): Update Translations (#1525) ([9659c47](https://github.com/box/box-content-preview/commit/9659c47)), closes [#1525](https://github.com/box/box-content-preview/issues/1525)
+- chore(i18n): Update Translations (#1527) ([c8a71cc](https://github.com/box/box-content-preview/commit/c8a71cc)), closes [#1527](https://github.com/box/box-content-preview/issues/1527)
+- chore(i18n): Update Translations (#1528) ([acb8faa](https://github.com/box/box-content-preview/commit/acb8faa)), closes [#1528](https://github.com/box/box-content-preview/issues/1528)
+- chore(i18n): Update Translations (#1529) ([585d367](https://github.com/box/box-content-preview/commit/585d367)), closes [#1529](https://github.com/box/box-content-preview/issues/1529)
+- feat: update to react-intl 6 (#1524) ([26a073f](https://github.com/box/box-content-preview/commit/26a073f)), closes [#1524](https://github.com/box/box-content-preview/issues/1524)
 
 ## 2.108.0 (2024-06-10)
 
-* chore(i18n): Update Translations (#1523) ([6e3a86d](https://github.com/box/box-content-preview/commit/6e3a86d)), closes [#1523](https://github.com/box/box-content-preview/issues/1523)
-* feat(pdfjs): upgrade pdf.js to 4.3.136 (#1517) ([87d1b17](https://github.com/box/box-content-preview/commit/87d1b17)), closes [#1517](https://github.com/box/box-content-preview/issues/1517)
-
-
+- chore(i18n): Update Translations (#1523) ([6e3a86d](https://github.com/box/box-content-preview/commit/6e3a86d)), closes [#1523](https://github.com/box/box-content-preview/issues/1523)
+- feat(pdfjs): upgrade pdf.js to 4.3.136 (#1517) ([87d1b17](https://github.com/box/box-content-preview/commit/87d1b17)), closes [#1517](https://github.com/box/box-content-preview/issues/1517)
 
 ## 2.107.0 (2024-05-31)
 
-* fix(annotations): Fix annotation region in mobile (#1521) ([d281190](https://github.com/box/box-content-preview/commit/d281190)), closes [#1521](https://github.com/box/box-content-preview/issues/1521)
-* chore(i18n): Update Translations (#1520) ([6af703f](https://github.com/box/box-content-preview/commit/6af703f)), closes [#1520](https://github.com/box/box-content-preview/issues/1520)
-* chore(i18n): Update Translations (#1522) ([9eb6adc](https://github.com/box/box-content-preview/commit/9eb6adc)), closes [#1522](https://github.com/box/box-content-preview/issues/1522)
-* feat(error-messages): Update error messages in preview (#1519) ([89fa483](https://github.com/box/box-content-preview/commit/89fa483)), closes [#1519](https://github.com/box/box-content-preview/issues/1519)
-
-
+- fix(annotations): Fix annotation region in mobile (#1521) ([d281190](https://github.com/box/box-content-preview/commit/d281190)), closes [#1521](https://github.com/box/box-content-preview/issues/1521)
+- chore(i18n): Update Translations (#1520) ([6af703f](https://github.com/box/box-content-preview/commit/6af703f)), closes [#1520](https://github.com/box/box-content-preview/issues/1520)
+- chore(i18n): Update Translations (#1522) ([9eb6adc](https://github.com/box/box-content-preview/commit/9eb6adc)), closes [#1522](https://github.com/box/box-content-preview/issues/1522)
+- feat(error-messages): Update error messages in preview (#1519) ([89fa483](https://github.com/box/box-content-preview/commit/89fa483)), closes [#1519](https://github.com/box/box-content-preview/issues/1519)
 
 ## 2.106.0 (2024-05-20)
 
-* feat(preview): Disable eval support for documents by default (#1518) ([2005b3e](https://github.com/box/box-content-preview/commit/2005b3e)), closes [#1518](https://github.com/box/box-content-preview/issues/1518)
-
-
+- feat(preview): Disable eval support for documents by default (#1518) ([2005b3e](https://github.com/box/box-content-preview/commit/2005b3e)), closes [#1518](https://github.com/box/box-content-preview/issues/1518)
 
 ## 2.105.0 (2024-05-14)
 
-* chore(readme): Update link to supported filetypes (#1516) ([dced77d](https://github.com/box/box-content-preview/commit/dced77d)), closes [#1516](https://github.com/box/box-content-preview/issues/1516)
-* fix(polyfill): Remove IE11 polyfills (#1515) ([978aadd](https://github.com/box/box-content-preview/commit/978aadd)), closes [#1515](https://github.com/box/box-content-preview/issues/1515)
-
-
+- chore(readme): Update link to supported filetypes (#1516) ([dced77d](https://github.com/box/box-content-preview/commit/dced77d)), closes [#1516](https://github.com/box/box-content-preview/issues/1516)
+- fix(polyfill): Remove IE11 polyfills (#1515) ([978aadd](https://github.com/box/box-content-preview/commit/978aadd)), closes [#1515](https://github.com/box/box-content-preview/issues/1515)
 
 ## 2.104.0 (2024-04-22)
 
-* chore(i18n): Update Translations (#1512) ([a1aae25](https://github.com/box/box-content-preview/commit/a1aae25)), closes [#1512](https://github.com/box/box-content-preview/issues/1512)
-* fix(build): Update package json build params (#1513) ([e4e8733](https://github.com/box/box-content-preview/commit/e4e8733)), closes [#1513](https://github.com/box/box-content-preview/issues/1513)
-
-
+- chore(i18n): Update Translations (#1512) ([a1aae25](https://github.com/box/box-content-preview/commit/a1aae25)), closes [#1512](https://github.com/box/box-content-preview/issues/1512)
+- fix(build): Update package json build params (#1513) ([e4e8733](https://github.com/box/box-content-preview/commit/e4e8733)), closes [#1513](https://github.com/box/box-content-preview/issues/1513)
 
 ## 2.103.0 (2023-12-15)
 
-* chore(i18n): Update Translations (#1465) ([1dc284e](https://github.com/box/box-content-preview/commit/1dc284e)), closes [#1465](https://github.com/box/box-content-preview/issues/1465)
-* feat(aci): use feature check for aci (#1508) ([4616da7](https://github.com/box/box-content-preview/commit/4616da7)), closes [#1508](https://github.com/box/box-content-preview/issues/1508)
-* feat(error-codes): Add additional conversion error codes (#1511) ([7bb420f](https://github.com/box/box-content-preview/commit/7bb420f)), closes [#1511](https://github.com/box/box-content-preview/issues/1511)
-* feat(remote-sync): Enable remote syncing based on an API response (#1506) ([11cfaa7](https://github.com/box/box-content-preview/commit/11cfaa7)), closes [#1506](https://github.com/box/box-content-preview/issues/1506)
-* fix(preview): remove overriding style (#1483) ([01fb40a](https://github.com/box/box-content-preview/commit/01fb40a)), closes [#1483](https://github.com/box/box-content-preview/issues/1483)
-
-
+- chore(i18n): Update Translations (#1465) ([1dc284e](https://github.com/box/box-content-preview/commit/1dc284e)), closes [#1465](https://github.com/box/box-content-preview/issues/1465)
+- feat(aci): use feature check for aci (#1508) ([4616da7](https://github.com/box/box-content-preview/commit/4616da7)), closes [#1508](https://github.com/box/box-content-preview/issues/1508)
+- feat(error-codes): Add additional conversion error codes (#1511) ([7bb420f](https://github.com/box/box-content-preview/commit/7bb420f)), closes [#1511](https://github.com/box/box-content-preview/issues/1511)
+- feat(remote-sync): Enable remote syncing based on an API response (#1506) ([11cfaa7](https://github.com/box/box-content-preview/commit/11cfaa7)), closes [#1506](https://github.com/box/box-content-preview/issues/1506)
+- fix(preview): remove overriding style (#1483) ([01fb40a](https://github.com/box/box-content-preview/commit/01fb40a)), closes [#1483](https://github.com/box/box-content-preview/issues/1483)
 
 ## 2.102.0 (2023-09-01)
 
-* fix(pdf): override css missing asset (#1505) ([bca54e1](https://github.com/box/box-content-preview/commit/bca54e1)), closes [#1505](https://github.com/box/box-content-preview/issues/1505)
-
-
+- fix(pdf): override css missing asset (#1505) ([bca54e1](https://github.com/box/box-content-preview/commit/bca54e1)), closes [#1505](https://github.com/box/box-content-preview/issues/1505)
 
 ## 2.101.0 (2023-08-31)
 
-* fix(pdf): fix disappearing form data (#1503) ([401c8f4](https://github.com/box/box-content-preview/commit/401c8f4)), closes [#1503](https://github.com/box/box-content-preview/issues/1503)
-* fix(preview): license readme updates (#1504) ([b687e16](https://github.com/box/box-content-preview/commit/b687e16)), closes [#1504](https://github.com/box/box-content-preview/issues/1504)
-* feat(node-18-upgrade): Node 18 Upgrade (#1500) ([e763af9](https://github.com/box/box-content-preview/commit/e763af9)), closes [#1500](https://github.com/box/box-content-preview/issues/1500)
-
-
+- fix(pdf): fix disappearing form data (#1503) ([401c8f4](https://github.com/box/box-content-preview/commit/401c8f4)), closes [#1503](https://github.com/box/box-content-preview/issues/1503)
+- fix(preview): license readme updates (#1504) ([b687e16](https://github.com/box/box-content-preview/commit/b687e16)), closes [#1504](https://github.com/box/box-content-preview/issues/1504)
+- feat(node-18-upgrade): Node 18 Upgrade (#1500) ([e763af9](https://github.com/box/box-content-preview/commit/e763af9)), closes [#1500](https://github.com/box/box-content-preview/issues/1500)
 
 ## 2.100.0 (2023-08-04)
 
-* fix(a11y): screen reader support for view only file preview (#1495) ([9a0b4ab](https://github.com/box/box-content-preview/commit/9a0b4ab)), closes [#1495](https://github.com/box/box-content-preview/issues/1495)
-* fix(pdf): Move controls layer above popup layer (#1499) ([9598097](https://github.com/box/box-content-preview/commit/9598097)), closes [#1499](https://github.com/box/box-content-preview/issues/1499)
-
-
+- fix(a11y): screen reader support for view only file preview (#1495) ([9a0b4ab](https://github.com/box/box-content-preview/commit/9a0b4ab)), closes [#1495](https://github.com/box/box-content-preview/issues/1495)
+- fix(pdf): Move controls layer above popup layer (#1499) ([9598097](https://github.com/box/box-content-preview/commit/9598097)), closes [#1499](https://github.com/box/box-content-preview/issues/1499)
 
 ## 2.99.0 (2023-08-02)
 
-* feat(pdf): Move annotation marker styling back to sdk (#1498) ([a6821cf](https://github.com/box/box-content-preview/commit/a6821cf)), closes [#1498](https://github.com/box/box-content-preview/issues/1498)
-* feat(pdf): Move annotation styling to box-annotations (#1497) ([07fccf2](https://github.com/box/box-content-preview/commit/07fccf2)), closes [#1497](https://github.com/box/box-content-preview/issues/1497)
-
-
+- feat(pdf): Move annotation marker styling back to sdk (#1498) ([a6821cf](https://github.com/box/box-content-preview/commit/a6821cf)), closes [#1498](https://github.com/box/box-content-preview/issues/1498)
+- feat(pdf): Move annotation styling to box-annotations (#1497) ([07fccf2](https://github.com/box/box-content-preview/commit/07fccf2)), closes [#1497](https://github.com/box/box-content-preview/issues/1497)
 
 ## 2.98.0 (2023-07-31)
 
-* feat(node-18-upgrade): Node 18 Upgrade (#1491) ([05f31b8](https://github.com/box/box-content-preview/commit/05f31b8)), closes [#1491](https://github.com/box/box-content-preview/issues/1491)
-* feat(pdf): Fix commenting on expiring embed links (#1493) ([b3c8b6f](https://github.com/box/box-content-preview/commit/b3c8b6f)), closes [#1493](https://github.com/box/box-content-preview/issues/1493)
-* Revert "feat(node-18-upgrade): Node 18 Upgrade (#1491)" (#1494) ([df8a3d5](https://github.com/box/box-content-preview/commit/df8a3d5)), closes [#1491](https://github.com/box/box-content-preview/issues/1491) [#1494](https://github.com/box/box-content-preview/issues/1494)
-* fix(preview): fix auto scroll issue with embed preview (#1492) ([58f278f](https://github.com/box/box-content-preview/commit/58f278f)), closes [#1492](https://github.com/box/box-content-preview/issues/1492)
-
-
+- feat(node-18-upgrade): Node 18 Upgrade (#1491) ([05f31b8](https://github.com/box/box-content-preview/commit/05f31b8)), closes [#1491](https://github.com/box/box-content-preview/issues/1491)
+- feat(pdf): Fix commenting on expiring embed links (#1493) ([b3c8b6f](https://github.com/box/box-content-preview/commit/b3c8b6f)), closes [#1493](https://github.com/box/box-content-preview/issues/1493)
+- Revert "feat(node-18-upgrade): Node 18 Upgrade (#1491)" (#1494) ([df8a3d5](https://github.com/box/box-content-preview/commit/df8a3d5)), closes [#1491](https://github.com/box/box-content-preview/issues/1491) [#1494](https://github.com/box/box-content-preview/issues/1494)
+- fix(preview): fix auto scroll issue with embed preview (#1492) ([58f278f](https://github.com/box/box-content-preview/commit/58f278f)), closes [#1492](https://github.com/box/box-content-preview/issues/1492)
 
 ## 2.97.0 (2023-07-24)
 
-* fix(a11y): replace instructions (#1488) ([50ff7bb](https://github.com/box/box-content-preview/commit/50ff7bb)), closes [#1488](https://github.com/box/box-content-preview/issues/1488)
-* fix(a11y): video player thumbnail has no text alternative (#1486) ([bd3935b](https://github.com/box/box-content-preview/commit/bd3935b)), closes [#1486](https://github.com/box/box-content-preview/issues/1486)
-* fix(copy-paste-issue): PDFJS copy paste fix (#1489) ([9625e46](https://github.com/box/box-content-preview/commit/9625e46)), closes [#1489](https://github.com/box/box-content-preview/issues/1489)
-* feat(pdf): Fix search and highlight + comment tooltip (#1490) ([f937052](https://github.com/box/box-content-preview/commit/f937052)), closes [#1490](https://github.com/box/box-content-preview/issues/1490)
-
-
+- fix(a11y): replace instructions (#1488) ([50ff7bb](https://github.com/box/box-content-preview/commit/50ff7bb)), closes [#1488](https://github.com/box/box-content-preview/issues/1488)
+- fix(a11y): video player thumbnail has no text alternative (#1486) ([bd3935b](https://github.com/box/box-content-preview/commit/bd3935b)), closes [#1486](https://github.com/box/box-content-preview/issues/1486)
+- fix(copy-paste-issue): PDFJS copy paste fix (#1489) ([9625e46](https://github.com/box/box-content-preview/commit/9625e46)), closes [#1489](https://github.com/box/box-content-preview/issues/1489)
+- feat(pdf): Fix search and highlight + comment tooltip (#1490) ([f937052](https://github.com/box/box-content-preview/commit/f937052)), closes [#1490](https://github.com/box/box-content-preview/issues/1490)
 
 ## 2.96.0 (2023-07-05)
 
-* feat(pdf): Upgrade Cypress for PDFjs update (#1482) ([92758e6](https://github.com/box/box-content-preview/commit/92758e6)), closes [#1482](https://github.com/box/box-content-preview/issues/1482)
-* feat(pdf): Upgrade PDFjs version (#1485) ([d81771d](https://github.com/box/box-content-preview/commit/d81771d)), closes [#1485](https://github.com/box/box-content-preview/issues/1485)
-* fix(e2e-tests): fixing hd video player test (#1484) ([42a9eb8](https://github.com/box/box-content-preview/commit/42a9eb8)), closes [#1484](https://github.com/box/box-content-preview/issues/1484)
-
-
+- feat(pdf): Upgrade Cypress for PDFjs update (#1482) ([92758e6](https://github.com/box/box-content-preview/commit/92758e6)), closes [#1482](https://github.com/box/box-content-preview/issues/1482)
+- feat(pdf): Upgrade PDFjs version (#1485) ([d81771d](https://github.com/box/box-content-preview/commit/d81771d)), closes [#1485](https://github.com/box/box-content-preview/issues/1485)
+- fix(e2e-tests): fixing hd video player test (#1484) ([42a9eb8](https://github.com/box/box-content-preview/commit/42a9eb8)), closes [#1484](https://github.com/box/box-content-preview/issues/1484)
 
 ## 2.95.0 (2023-06-08)
 
-* chore(sass): replace node-sass with sass (#1479) ([46c63e9](https://github.com/box/box-content-preview/commit/46c63e9)), closes [#1479](https://github.com/box/box-content-preview/issues/1479)
-* feat(feature-toggles): Add feature object to standardize feature toggles (#1477) ([27792bb](https://github.com/box/box-content-preview/commit/27792bb)), closes [#1477](https://github.com/box/box-content-preview/issues/1477)
-* fix(e2e-tests): Update doc assets to 2.90 (#1478) ([0f172a8](https://github.com/box/box-content-preview/commit/0f172a8)), closes [#1478](https://github.com/box/box-content-preview/issues/1478)
-
-
+- chore(sass): replace node-sass with sass (#1479) ([46c63e9](https://github.com/box/box-content-preview/commit/46c63e9)), closes [#1479](https://github.com/box/box-content-preview/issues/1479)
+- feat(feature-toggles): Add feature object to standardize feature toggles (#1477) ([27792bb](https://github.com/box/box-content-preview/commit/27792bb)), closes [#1477](https://github.com/box/box-content-preview/issues/1477)
+- fix(e2e-tests): Update doc assets to 2.90 (#1478) ([0f172a8](https://github.com/box/box-content-preview/commit/0f172a8)), closes [#1478](https://github.com/box/box-content-preview/issues/1478)
 
 ## 2.94.0 (2023-05-26)
 
-* fix(pdf): upgrade pdfjs to 3.6.172 (#1476) ([118ec64](https://github.com/box/box-content-preview/commit/118ec64)), closes [#1476](https://github.com/box/box-content-preview/issues/1476)
-
-
+- fix(pdf): upgrade pdfjs to 3.6.172 (#1476) ([118ec64](https://github.com/box/box-content-preview/commit/118ec64)), closes [#1476](https://github.com/box/box-content-preview/issues/1476)
 
 ## 2.93.0 (2023-05-05)
 
-* fix(media): upgrade shaka player version (#1473) ([6d07ebb](https://github.com/box/box-content-preview/commit/6d07ebb)), closes [#1473](https://github.com/box/box-content-preview/issues/1473)
-
-
+- fix(media): upgrade shaka player version (#1473) ([6d07ebb](https://github.com/box/box-content-preview/commit/6d07ebb)), closes [#1473](https://github.com/box/box-content-preview/issues/1473)
 
 ## 2.92.0 (2023-04-26)
 
-* fix(content-insights): events recurrent request issue (#1472) ([7797b3e](https://github.com/box/box-content-preview/commit/7797b3e)), closes [#1472](https://github.com/box/box-content-preview/issues/1472)
-* fix(version): revert package.json version (#1471) ([5d01bb4](https://github.com/box/box-content-preview/commit/5d01bb4)), closes [#1471](https://github.com/box/box-content-preview/issues/1471)
-* chore(release): 2.91.0 ([fd503db](https://github.com/box/box-content-preview/commit/fd503db))
-
-
+- fix(content-insights): events recurrent request issue (#1472) ([7797b3e](https://github.com/box/box-content-preview/commit/7797b3e)), closes [#1472](https://github.com/box/box-content-preview/issues/1472)
+- fix(version): revert package.json version (#1471) ([5d01bb4](https://github.com/box/box-content-preview/commit/5d01bb4)), closes [#1471](https://github.com/box/box-content-preview/issues/1471)
+- chore(release): 2.91.0 ([fd503db](https://github.com/box/box-content-preview/commit/fd503db))
 
 ## 2.91.0 (2023-03-24)
 
-* feat(content-insights): Added ACI support to track per page time spent (#1455) ([a05e504](https://github.com/box/box-content-preview/commit/a05e504)), closes [#1455](https://github.com/box/box-content-preview/issues/1455)
-
-
+- feat(content-insights): Added ACI support to track per page time spent (#1455) ([a05e504](https://github.com/box/box-content-preview/commit/a05e504)), closes [#1455](https://github.com/box/box-content-preview/issues/1455)
 
 ## 2.90.0 (2023-01-25)
 
-* revert package.json change (#1469) ([96b9198](https://github.com/box/box-content-preview/commit/96b9198)), closes [#1469](https://github.com/box/box-content-preview/issues/1469)
-* fix(pdf): fix for blurry/pixelated images (#1466) ([b749108](https://github.com/box/box-content-preview/commit/b749108)), closes [#1466](https://github.com/box/box-content-preview/issues/1466)
-
-
+- revert package.json change (#1469) ([96b9198](https://github.com/box/box-content-preview/commit/96b9198)), closes [#1469](https://github.com/box/box-content-preview/issues/1469)
+- fix(pdf): fix for blurry/pixelated images (#1466) ([b749108](https://github.com/box/box-content-preview/commit/b749108)), closes [#1466](https://github.com/box/box-content-preview/issues/1466)
 
 ## 2.89.0 (2023-01-10)
 
-* fix(iframe): Allow hyperlinks to be opened (#1464) ([7c07e57](https://github.com/box/box-content-preview/commit/7c07e57)), closes [#1464](https://github.com/box/box-content-preview/issues/1464)
-
-
+- fix(iframe): Allow hyperlinks to be opened (#1464) ([7c07e57](https://github.com/box/box-content-preview/commit/7c07e57)), closes [#1464](https://github.com/box/box-content-preview/issues/1464)
 
 ## 2.88.0 (2022-10-13)
 
-* feat(annotations): Allow annotations for editable shared links (#1462) ([96306c9](https://github.com/box/box-content-preview/commit/96306c9)), closes [#1462](https://github.com/box/box-content-preview/issues/1462)
-
-
+- feat(annotations): Allow annotations for editable shared links (#1462) ([96306c9](https://github.com/box/box-content-preview/commit/96306c9)), closes [#1462](https://github.com/box/box-content-preview/issues/1462)
 
 ## 2.87.0 (2022-08-02)
 
-* fix(document): Re-enable DocBaseViewer tests (#1461) ([24b7967](https://github.com/box/box-content-preview/commit/24b7967)), closes [#1461](https://github.com/box/box-content-preview/issues/1461)
-
-
+- fix(document): Re-enable DocBaseViewer tests (#1461) ([24b7967](https://github.com/box/box-content-preview/commit/24b7967)), closes [#1461](https://github.com/box/box-content-preview/issues/1461)
 
 ## 2.86.0 (2022-07-13)
 
-* feat(viewer): Upgrade pdf.js to latest for modern browsers (#1441) ([18eed4f](https://github.com/box/box-content-preview/commit/18eed4f)), closes [#1441](https://github.com/box/box-content-preview/issues/1441)
-
-
+- feat(viewer): Upgrade pdf.js to latest for modern browsers (#1441) ([18eed4f](https://github.com/box/box-content-preview/commit/18eed4f)), closes [#1441](https://github.com/box/box-content-preview/issues/1441)
 
 ## 2.85.0 (2022-07-06)
 
-* chore(i18n): Update Translations (#1447) ([b111cf2](https://github.com/box/box-content-preview/commit/b111cf2)), closes [#1447](https://github.com/box/box-content-preview/issues/1447)
-* chore(i18n): Update Translations (#1454) ([7ebcd4e](https://github.com/box/box-content-preview/commit/7ebcd4e)), closes [#1454](https://github.com/box/box-content-preview/issues/1454)
-* feat(annotations): Add annotations-only controls (#1446) ([5150b0c](https://github.com/box/box-content-preview/commit/5150b0c)), closes [#1446](https://github.com/box/box-content-preview/issues/1446)
-* feat(annotations): hide page steppers on small-medium widths (#1450) ([fb500bd](https://github.com/box/box-content-preview/commit/fb500bd)), closes [#1450](https://github.com/box/box-content-preview/issues/1450)
-* feat(annotations): remove thumbnail toggle on small modalities (#1449) ([952a7bf](https://github.com/box/box-content-preview/commit/952a7bf)), closes [#1449](https://github.com/box/box-content-preview/issues/1449)
-* feat(annotations): remove zoom ctrls on mobile (#1451) ([7e92795](https://github.com/box/box-content-preview/commit/7e92795)), closes [#1451](https://github.com/box/box-content-preview/issues/1451)
-* feat(annotations): responsive media queries for annotations-only ctrls (#1448) ([4385fbc](https://github.com/box/box-content-preview/commit/4385fbc)), closes [#1448](https://github.com/box/box-content-preview/issues/1448)
-* feat(pdf): Update closure compiler to Babel (#1458) ([9d35e22](https://github.com/box/box-content-preview/commit/9d35e22)), closes [#1458](https://github.com/box/box-content-preview/issues/1458)
-* fix(fullscreen): fix fullscreen mode for ios/iphone combo (#1453) ([8345f7b](https://github.com/box/box-content-preview/commit/8345f7b)), closes [#1453](https://github.com/box/box-content-preview/issues/1453)
-
-
+- chore(i18n): Update Translations (#1447) ([b111cf2](https://github.com/box/box-content-preview/commit/b111cf2)), closes [#1447](https://github.com/box/box-content-preview/issues/1447)
+- chore(i18n): Update Translations (#1454) ([7ebcd4e](https://github.com/box/box-content-preview/commit/7ebcd4e)), closes [#1454](https://github.com/box/box-content-preview/issues/1454)
+- feat(annotations): Add annotations-only controls (#1446) ([5150b0c](https://github.com/box/box-content-preview/commit/5150b0c)), closes [#1446](https://github.com/box/box-content-preview/issues/1446)
+- feat(annotations): hide page steppers on small-medium widths (#1450) ([fb500bd](https://github.com/box/box-content-preview/commit/fb500bd)), closes [#1450](https://github.com/box/box-content-preview/issues/1450)
+- feat(annotations): remove thumbnail toggle on small modalities (#1449) ([952a7bf](https://github.com/box/box-content-preview/commit/952a7bf)), closes [#1449](https://github.com/box/box-content-preview/issues/1449)
+- feat(annotations): remove zoom ctrls on mobile (#1451) ([7e92795](https://github.com/box/box-content-preview/commit/7e92795)), closes [#1451](https://github.com/box/box-content-preview/issues/1451)
+- feat(annotations): responsive media queries for annotations-only ctrls (#1448) ([4385fbc](https://github.com/box/box-content-preview/commit/4385fbc)), closes [#1448](https://github.com/box/box-content-preview/issues/1448)
+- feat(pdf): Update closure compiler to Babel (#1458) ([9d35e22](https://github.com/box/box-content-preview/commit/9d35e22)), closes [#1458](https://github.com/box/box-content-preview/issues/1458)
+- fix(fullscreen): fix fullscreen mode for ios/iphone combo (#1453) ([8345f7b](https://github.com/box/box-content-preview/commit/8345f7b)), closes [#1453](https://github.com/box/box-content-preview/issues/1453)
 
 ## 2.84.0 (2022-03-24)
 
-* feat(docuworks): Add support for docuworks file types (#1444) ([61a1713](https://github.com/box/box-content-preview/commit/61a1713)), closes [#1444](https://github.com/box/box-content-preview/issues/1444)
-
-
+- feat(docuworks): Add support for docuworks file types (#1444) ([61a1713](https://github.com/box/box-content-preview/commit/61a1713)), closes [#1444](https://github.com/box/box-content-preview/issues/1444)
 
 ## 2.83.0 (2022-02-18)
 
-* feat(viewer): remove traces of boxdicom support (#1438) ([6c39352](https://github.com/box/box-content-preview/commit/6c39352)), closes [#1438](https://github.com/box/box-content-preview/issues/1438)
-* chore: Remove deprecated strict merge rules from mergify config (#1442) ([1edbfff](https://github.com/box/box-content-preview/commit/1edbfff)), closes [#1442](https://github.com/box/box-content-preview/issues/1442)
-
-
+- feat(viewer): remove traces of boxdicom support (#1438) ([6c39352](https://github.com/box/box-content-preview/commit/6c39352)), closes [#1438](https://github.com/box/box-content-preview/issues/1438)
+- chore: Remove deprecated strict merge rules from mergify config (#1442) ([1edbfff](https://github.com/box/box-content-preview/commit/1edbfff)), closes [#1442](https://github.com/box/box-content-preview/issues/1442)
 
 ## 2.82.0 (2021-12-16)
 
-* feat(viewer): Add focus trap for fullscreen (#1439) ([b09b349](https://github.com/box/box-content-preview/commit/b09b349)), closes [#1439](https://github.com/box/box-content-preview/issues/1439)
-
-
+- feat(viewer): Add focus trap for fullscreen (#1439) ([b09b349](https://github.com/box/box-content-preview/commit/b09b349)), closes [#1439](https://github.com/box/box-content-preview/issues/1439)
 
 ## 2.81.0 (2021-11-29)
 
-* feat(viewer): Add support for disabling .boxdicom file type (#1436) ([8b9a4a8](https://github.com/box/box-content-preview/commit/8b9a4a8)), closes [#1436](https://github.com/box/box-content-preview/issues/1436)
-* feat(viewer): use unsupported file type error message for .boxdicom (#1437) ([7af11c4](https://github.com/box/box-content-preview/commit/7af11c4)), closes [#1437](https://github.com/box/box-content-preview/issues/1437)
-* fix(a11y): wrong focus selection on toggleFullscreen method (#1431) ([8153de6](https://github.com/box/box-content-preview/commit/8153de6)), closes [#1431](https://github.com/box/box-content-preview/issues/1431)
-* fix(preview): Close color palette when tabbed out of the palette focus (#1435) ([0a2b990](https://github.com/box/box-content-preview/commit/0a2b990)), closes [#1435](https://github.com/box/box-content-preview/issues/1435)
-* fix(security): Upgrade axios to address security issues (#1433) ([542243a](https://github.com/box/box-content-preview/commit/542243a)), closes [#1433](https://github.com/box/box-content-preview/issues/1433)
-* fix(security): Upgrade webpack-dev-server to address security issues (#1434) ([681624b](https://github.com/box/box-content-preview/commit/681624b)), closes [#1434](https://github.com/box/box-content-preview/issues/1434)
-* chore(i18n): Update Translations (#1432) ([3b22630](https://github.com/box/box-content-preview/commit/3b22630)), closes [#1432](https://github.com/box/box-content-preview/issues/1432)
-
-
+- feat(viewer): Add support for disabling .boxdicom file type (#1436) ([8b9a4a8](https://github.com/box/box-content-preview/commit/8b9a4a8)), closes [#1436](https://github.com/box/box-content-preview/issues/1436)
+- feat(viewer): use unsupported file type error message for .boxdicom (#1437) ([7af11c4](https://github.com/box/box-content-preview/commit/7af11c4)), closes [#1437](https://github.com/box/box-content-preview/issues/1437)
+- fix(a11y): wrong focus selection on toggleFullscreen method (#1431) ([8153de6](https://github.com/box/box-content-preview/commit/8153de6)), closes [#1431](https://github.com/box/box-content-preview/issues/1431)
+- fix(preview): Close color palette when tabbed out of the palette focus (#1435) ([0a2b990](https://github.com/box/box-content-preview/commit/0a2b990)), closes [#1435](https://github.com/box/box-content-preview/issues/1435)
+- fix(security): Upgrade axios to address security issues (#1433) ([542243a](https://github.com/box/box-content-preview/commit/542243a)), closes [#1433](https://github.com/box/box-content-preview/issues/1433)
+- fix(security): Upgrade webpack-dev-server to address security issues (#1434) ([681624b](https://github.com/box/box-content-preview/commit/681624b)), closes [#1434](https://github.com/box/box-content-preview/issues/1434)
+- chore(i18n): Update Translations (#1432) ([3b22630](https://github.com/box/box-content-preview/commit/3b22630)), closes [#1432](https://github.com/box/box-content-preview/issues/1432)
 
 ## 2.80.0 (2021-09-21)
 
-* ci(mergify): Add check for pull request title (#1430) ([8964227](https://github.com/box/box-content-preview/commit/8964227)), closes [#1430](https://github.com/box/box-content-preview/issues/1430)
-* Wrong focus on close findbar (#1429) ([8b6aff7](https://github.com/box/box-content-preview/commit/8b6aff7)), closes [#1429](https://github.com/box/box-content-preview/issues/1429)
-* build(env): Upgrade node to v14 and yarn to v1.22 (#1427) ([88c55d8](https://github.com/box/box-content-preview/commit/88c55d8)), closes [#1427](https://github.com/box/box-content-preview/issues/1427)
-* fix(preview): Update supported indesign extensions (#1426) ([9758340](https://github.com/box/box-content-preview/commit/9758340)), closes [#1426](https://github.com/box/box-content-preview/issues/1426)
-
-
+- ci(mergify): Add check for pull request title (#1430) ([8964227](https://github.com/box/box-content-preview/commit/8964227)), closes [#1430](https://github.com/box/box-content-preview/issues/1430)
+- Wrong focus on close findbar (#1429) ([8b6aff7](https://github.com/box/box-content-preview/commit/8b6aff7)), closes [#1429](https://github.com/box/box-content-preview/issues/1429)
+- build(env): Upgrade node to v14 and yarn to v1.22 (#1427) ([88c55d8](https://github.com/box/box-content-preview/commit/88c55d8)), closes [#1427](https://github.com/box/box-content-preview/issues/1427)
+- fix(preview): Update supported indesign extensions (#1426) ([9758340](https://github.com/box/box-content-preview/commit/9758340)), closes [#1426](https://github.com/box/box-content-preview/issues/1426)
 
 ## 2.79.0 (2021-09-08)
 
-* chore(i18n): Update Translations (#1423) ([59bbd40](https://github.com/box/box-content-preview/commit/59bbd40)), closes [#1423](https://github.com/box/box-content-preview/issues/1423)
-* chore(i18n): Update Translations (#1424) ([a210418](https://github.com/box/box-content-preview/commit/a210418)), closes [#1424](https://github.com/box/box-content-preview/issues/1424)
-* chore(i18n): Update Translations (#1425) ([6f11969](https://github.com/box/box-content-preview/commit/6f11969)), closes [#1425](https://github.com/box/box-content-preview/issues/1425)
-* fix: add descriptive attributes (#1421) ([01b497b](https://github.com/box/box-content-preview/commit/01b497b)), closes [#1421](https://github.com/box/box-content-preview/issues/1421)
-* fix(a11y): Add keyboard support for highlight comment flow (#1422) ([5df2dd2](https://github.com/box/box-content-preview/commit/5df2dd2)), closes [#1422](https://github.com/box/box-content-preview/issues/1422)
-* fix(doc): Show IE11 banner for office online exts (#1420) ([55df0a0](https://github.com/box/box-content-preview/commit/55df0a0)), closes [#1420](https://github.com/box/box-content-preview/issues/1420)
-
-
+- chore(i18n): Update Translations (#1423) ([59bbd40](https://github.com/box/box-content-preview/commit/59bbd40)), closes [#1423](https://github.com/box/box-content-preview/issues/1423)
+- chore(i18n): Update Translations (#1424) ([a210418](https://github.com/box/box-content-preview/commit/a210418)), closes [#1424](https://github.com/box/box-content-preview/issues/1424)
+- chore(i18n): Update Translations (#1425) ([6f11969](https://github.com/box/box-content-preview/commit/6f11969)), closes [#1425](https://github.com/box/box-content-preview/issues/1425)
+- fix: add descriptive attributes (#1421) ([01b497b](https://github.com/box/box-content-preview/commit/01b497b)), closes [#1421](https://github.com/box/box-content-preview/issues/1421)
+- fix(a11y): Add keyboard support for highlight comment flow (#1422) ([5df2dd2](https://github.com/box/box-content-preview/commit/5df2dd2)), closes [#1422](https://github.com/box/box-content-preview/issues/1422)
+- fix(doc): Show IE11 banner for office online exts (#1420) ([55df0a0](https://github.com/box/box-content-preview/commit/55df0a0)), closes [#1420](https://github.com/box/box-content-preview/issues/1420)
 
 ## 2.78.0 (2021-08-11)
 
-* chore(i18n): Update Translations (#1418) ([0c37748](https://github.com/box/box-content-preview/commit/0c37748)), closes [#1418](https://github.com/box/box-content-preview/issues/1418)
-* feat(office): Preview PDF rep if using internet explorer (#1416) ([c104cd2](https://github.com/box/box-content-preview/commit/c104cd2)), closes [#1416](https://github.com/box/box-content-preview/issues/1416)
-* fix(ThumbnailsSidebar): A11Y - add aria-current to ThumbnailsSidebar (#1417) ([75ede5e](https://github.com/box/box-content-preview/commit/75ede5e)), closes [#1417](https://github.com/box/box-content-preview/issues/1417)
-
-
+- chore(i18n): Update Translations (#1418) ([0c37748](https://github.com/box/box-content-preview/commit/0c37748)), closes [#1418](https://github.com/box/box-content-preview/issues/1418)
+- feat(office): Preview PDF rep if using internet explorer (#1416) ([c104cd2](https://github.com/box/box-content-preview/commit/c104cd2)), closes [#1416](https://github.com/box/box-content-preview/issues/1416)
+- fix(ThumbnailsSidebar): A11Y - add aria-current to ThumbnailsSidebar (#1417) ([75ede5e](https://github.com/box/box-content-preview/commit/75ede5e)), closes [#1417](https://github.com/box/box-content-preview/issues/1417)
 
 ## 2.77.0 (2021-07-29)
 
-* docs(pdfjs): Adding comment to upgrade script (#1415) ([5c83224](https://github.com/box/box-content-preview/commit/5c83224)), closes [#1415](https://github.com/box/box-content-preview/issues/1415)
-* fix(pdfjs): Use allowlist for exporting font data (#1414) ([8dea22e](https://github.com/box/box-content-preview/commit/8dea22e)), closes [#1414](https://github.com/box/box-content-preview/issues/1414)
-* refactor(pdfjs): Copy assets from 2.16.0 to 2.76.0 (#1413) ([ea95b91](https://github.com/box/box-content-preview/commit/ea95b91)), closes [#1413](https://github.com/box/box-content-preview/issues/1413)
-
-
+- docs(pdfjs): Adding comment to upgrade script (#1415) ([5c83224](https://github.com/box/box-content-preview/commit/5c83224)), closes [#1415](https://github.com/box/box-content-preview/issues/1415)
+- fix(pdfjs): Use allowlist for exporting font data (#1414) ([8dea22e](https://github.com/box/box-content-preview/commit/8dea22e)), closes [#1414](https://github.com/box/box-content-preview/issues/1414)
+- refactor(pdfjs): Copy assets from 2.16.0 to 2.76.0 (#1413) ([ea95b91](https://github.com/box/box-content-preview/commit/ea95b91)), closes [#1413](https://github.com/box/box-content-preview/issues/1413)
 
 ## 2.76.0 (2021-07-19)
 
-* feat(dash): Add react version of filmstrip controls (#1408) ([7fc29a3](https://github.com/box/box-content-preview/commit/7fc29a3)), closes [#1408](https://github.com/box/box-content-preview/issues/1408)
-* feat(preview): Add preview support for indesign file extensions (#1411) ([762ac35](https://github.com/box/box-content-preview/commit/762ac35)), closes [#1411](https://github.com/box/box-content-preview/issues/1411)
-* feat(slider): Migrate to custom slider due to range input limitations (#1410) ([19722e6](https://github.com/box/box-content-preview/commit/19722e6)), closes [#1410](https://github.com/box/box-content-preview/issues/1410)
-* chore(i18n): Update Translations (#1409) ([e1d5280](https://github.com/box/box-content-preview/commit/e1d5280)), closes [#1409](https://github.com/box/box-content-preview/issues/1409)
-* fix(controls): Add aria-expanded to sidebar toggle button (#1407) ([9187577](https://github.com/box/box-content-preview/commit/9187577)), closes [#1407](https://github.com/box/box-content-preview/issues/1407)
-
-
+- feat(dash): Add react version of filmstrip controls (#1408) ([7fc29a3](https://github.com/box/box-content-preview/commit/7fc29a3)), closes [#1408](https://github.com/box/box-content-preview/issues/1408)
+- feat(preview): Add preview support for indesign file extensions (#1411) ([762ac35](https://github.com/box/box-content-preview/commit/762ac35)), closes [#1411](https://github.com/box/box-content-preview/issues/1411)
+- feat(slider): Migrate to custom slider due to range input limitations (#1410) ([19722e6](https://github.com/box/box-content-preview/commit/19722e6)), closes [#1410](https://github.com/box/box-content-preview/issues/1410)
+- chore(i18n): Update Translations (#1409) ([e1d5280](https://github.com/box/box-content-preview/commit/e1d5280)), closes [#1409](https://github.com/box/box-content-preview/issues/1409)
+- fix(controls): Add aria-expanded to sidebar toggle button (#1407) ([9187577](https://github.com/box/box-content-preview/commit/9187577)), closes [#1407](https://github.com/box/box-content-preview/issues/1407)
 
 ## 2.75.0 (2021-06-29)
 
-* fix(controls): color correction on contols (#1402) ([6291777](https://github.com/box/box-content-preview/commit/6291777)), closes [#1402](https://github.com/box/box-content-preview/issues/1402)
-* fix(controls): Default to show CC (#1405) ([68f8502](https://github.com/box/box-content-preview/commit/68f8502)), closes [#1405](https://github.com/box/box-content-preview/issues/1405)
-* fix(controls): Make badge part of SettingsToggle button (#1403) ([ff7dbfb](https://github.com/box/box-content-preview/commit/ff7dbfb)), closes [#1403](https://github.com/box/box-content-preview/issues/1403)
-* fix(dash): Disable Settings menu when HD is not available (#1406) ([778e455](https://github.com/box/box-content-preview/commit/778e455)), closes [#1406](https://github.com/box/box-content-preview/issues/1406)
-* feat(controls): Add Subtitles menu for Dash (#1400) ([6d04ebc](https://github.com/box/box-content-preview/commit/6d04ebc)), closes [#1400](https://github.com/box/box-content-preview/issues/1400)
-* feat(controls): Add support for autogenerated captions (#1404) ([7c59cb1](https://github.com/box/box-content-preview/commit/7c59cb1)), closes [#1404](https://github.com/box/box-content-preview/issues/1404)
-* perf(presentation): Improve presentation rendering performance in Safari (#1401) ([2ffb42e](https://github.com/box/box-content-preview/commit/2ffb42e)), closes [#1401](https://github.com/box/box-content-preview/issues/1401)
-* test(e2e): Add more media settings tests for dash (#1399) ([6be9662](https://github.com/box/box-content-preview/commit/6be9662)), closes [#1399](https://github.com/box/box-content-preview/issues/1399)
-* test(e2e): Add tests for basic Media Settings (#1398) ([05db195](https://github.com/box/box-content-preview/commit/05db195)), closes [#1398](https://github.com/box/box-content-preview/issues/1398)
-* chore: Add support for collections for start:dev (#1397) ([4fa91c8](https://github.com/box/box-content-preview/commit/4fa91c8)), closes [#1397](https://github.com/box/box-content-preview/issues/1397)
-* chore(i18n): Update Translations (#1394) ([8eb0597](https://github.com/box/box-content-preview/commit/8eb0597)), closes [#1394](https://github.com/box/box-content-preview/issues/1394)
-
-
+- fix(controls): color correction on contols (#1402) ([6291777](https://github.com/box/box-content-preview/commit/6291777)), closes [#1402](https://github.com/box/box-content-preview/issues/1402)
+- fix(controls): Default to show CC (#1405) ([68f8502](https://github.com/box/box-content-preview/commit/68f8502)), closes [#1405](https://github.com/box/box-content-preview/issues/1405)
+- fix(controls): Make badge part of SettingsToggle button (#1403) ([ff7dbfb](https://github.com/box/box-content-preview/commit/ff7dbfb)), closes [#1403](https://github.com/box/box-content-preview/issues/1403)
+- fix(dash): Disable Settings menu when HD is not available (#1406) ([778e455](https://github.com/box/box-content-preview/commit/778e455)), closes [#1406](https://github.com/box/box-content-preview/issues/1406)
+- feat(controls): Add Subtitles menu for Dash (#1400) ([6d04ebc](https://github.com/box/box-content-preview/commit/6d04ebc)), closes [#1400](https://github.com/box/box-content-preview/issues/1400)
+- feat(controls): Add support for autogenerated captions (#1404) ([7c59cb1](https://github.com/box/box-content-preview/commit/7c59cb1)), closes [#1404](https://github.com/box/box-content-preview/issues/1404)
+- perf(presentation): Improve presentation rendering performance in Safari (#1401) ([2ffb42e](https://github.com/box/box-content-preview/commit/2ffb42e)), closes [#1401](https://github.com/box/box-content-preview/issues/1401)
+- test(e2e): Add more media settings tests for dash (#1399) ([6be9662](https://github.com/box/box-content-preview/commit/6be9662)), closes [#1399](https://github.com/box/box-content-preview/issues/1399)
+- test(e2e): Add tests for basic Media Settings (#1398) ([05db195](https://github.com/box/box-content-preview/commit/05db195)), closes [#1398](https://github.com/box/box-content-preview/issues/1398)
+- chore: Add support for collections for start:dev (#1397) ([4fa91c8](https://github.com/box/box-content-preview/commit/4fa91c8)), closes [#1397](https://github.com/box/box-content-preview/issues/1397)
+- chore(i18n): Update Translations (#1394) ([8eb0597](https://github.com/box/box-content-preview/commit/8eb0597)), closes [#1394](https://github.com/box/box-content-preview/issues/1394)
 
 ## 2.74.0 (2021-05-27)
 
-* fix(model3d): Save defaults returned from metadata (#1392) ([d027f10](https://github.com/box/box-content-preview/commit/d027f10)), closes [#1392](https://github.com/box/box-content-preview/issues/1392)
-* feat(annotations tooltip): Close on click outside to avoid UI issues (#1387) ([9d76b1e](https://github.com/box/box-content-preview/commit/9d76b1e)), closes [#1387](https://github.com/box/box-content-preview/issues/1387)
-* feat(controls): Add React controls for Image360 (#1388) ([09fadfa](https://github.com/box/box-content-preview/commit/09fadfa)), closes [#1388](https://github.com/box/box-content-preview/issues/1388)
-* feat(controls): Audio tracks menu for Dash viewer (#1391) ([688aa03](https://github.com/box/box-content-preview/commit/688aa03)), closes [#1391](https://github.com/box/box-content-preview/issues/1391)
-* feat(controls): Base React controls for Dash (#1390) ([6954be0](https://github.com/box/box-content-preview/commit/6954be0)), closes [#1390](https://github.com/box/box-content-preview/issues/1390)
-* refactor(controls): Rename controls model3d -> box3d (#1389) ([9604879](https://github.com/box/box-content-preview/commit/9604879)), closes [#1389](https://github.com/box/box-content-preview/issues/1389)
-* chore(i18n): Update Translations (#1386) ([725ae47](https://github.com/box/box-content-preview/commit/725ae47)), closes [#1386](https://github.com/box/box-content-preview/issues/1386)
-
-
+- fix(model3d): Save defaults returned from metadata (#1392) ([d027f10](https://github.com/box/box-content-preview/commit/d027f10)), closes [#1392](https://github.com/box/box-content-preview/issues/1392)
+- feat(annotations tooltip): Close on click outside to avoid UI issues (#1387) ([9d76b1e](https://github.com/box/box-content-preview/commit/9d76b1e)), closes [#1387](https://github.com/box/box-content-preview/issues/1387)
+- feat(controls): Add React controls for Image360 (#1388) ([09fadfa](https://github.com/box/box-content-preview/commit/09fadfa)), closes [#1388](https://github.com/box/box-content-preview/issues/1388)
+- feat(controls): Audio tracks menu for Dash viewer (#1391) ([688aa03](https://github.com/box/box-content-preview/commit/688aa03)), closes [#1391](https://github.com/box/box-content-preview/issues/1391)
+- feat(controls): Base React controls for Dash (#1390) ([6954be0](https://github.com/box/box-content-preview/commit/6954be0)), closes [#1390](https://github.com/box/box-content-preview/issues/1390)
+- refactor(controls): Rename controls model3d -> box3d (#1389) ([9604879](https://github.com/box/box-content-preview/commit/9604879)), closes [#1389](https://github.com/box/box-content-preview/issues/1389)
+- chore(i18n): Update Translations (#1386) ([725ae47](https://github.com/box/box-content-preview/commit/725ae47)), closes [#1386](https://github.com/box/box-content-preview/issues/1386)
 
 ## 2.73.0 (2021-05-18)
 
-* feat(annotations tooltip): Add class for specific styles to element (#1385) ([fd74923](https://github.com/box/box-content-preview/commit/fd74923)), closes [#1385](https://github.com/box/box-content-preview/issues/1385)
-* feat(annotations): fix annotations tooltip (#1383) ([87e36b3](https://github.com/box/box-content-preview/commit/87e36b3)), closes [#1383](https://github.com/box/box-content-preview/issues/1383)
-* feat(annotations): tooltip (#1364) ([d030fe3](https://github.com/box/box-content-preview/commit/d030fe3)), closes [#1364](https://github.com/box/box-content-preview/issues/1364)
-* feat(annotations): update mode if necessary for experiences (#1375) ([a3eb40c](https://github.com/box/box-content-preview/commit/a3eb40c)), closes [#1375](https://github.com/box/box-content-preview/issues/1375)
-* feat(controls): Add Checkbox component for settings (#1376) ([b103cd5](https://github.com/box/box-content-preview/commit/b103cd5)), closes [#1376](https://github.com/box/box-content-preview/issues/1376)
-* feat(controls): Add react controls for mp4 viewer (#1374) ([29a6487](https://github.com/box/box-content-preview/commit/29a6487)), closes [#1374](https://github.com/box/box-content-preview/issues/1374)
-* feat(controls): Add Settings menu to Model3D (#1377) ([e37e30b](https://github.com/box/box-content-preview/commit/e37e30b)), closes [#1377](https://github.com/box/box-content-preview/issues/1377)
-* feat(controls): Add VR button to Model3D controls (#1379) ([d84e12d](https://github.com/box/box-content-preview/commit/d84e12d)), closes [#1379](https://github.com/box/box-content-preview/issues/1379)
-* feat(model3d): Add flyout for animation clips (#1369) ([09eefd9](https://github.com/box/box-content-preview/commit/09eefd9)), closes [#1369](https://github.com/box/box-content-preview/issues/1369)
-* feat(model3d): Basic React controls (#1368) ([528b065](https://github.com/box/box-content-preview/commit/528b065)), closes [#1368](https://github.com/box/box-content-preview/issues/1368)
-* feat(settings): Add Dropdown component (#1373) ([8b2044d](https://github.com/box/box-content-preview/commit/8b2044d)), closes [#1373](https://github.com/box/box-content-preview/issues/1373)
-* fix(controls): Add forwardRef to Dropdown and Checkbox (#1381) ([79fbd40](https://github.com/box/box-content-preview/commit/79fbd40)), closes [#1381](https://github.com/box/box-content-preview/issues/1381)
-* fix(loading): Fix presentation performance issues in Big Sur Safari (#1382) ([b6dd0da](https://github.com/box/box-content-preview/commit/b6dd0da)), closes [#1382](https://github.com/box/box-content-preview/issues/1382)
-* fix(model3d): Fix react controls to reset to defaults (#1384) ([f305ea7](https://github.com/box/box-content-preview/commit/f305ea7)), closes [#1384](https://github.com/box/box-content-preview/issues/1384)
-* chore(deps): Upgarde box-ui-elements to latest available version (#1380) ([1bc9f6f](https://github.com/box/box-content-preview/commit/1bc9f6f)), closes [#1380](https://github.com/box/box-content-preview/issues/1380)
-* chore(i18n): Update Translations (#1370) ([8a83f34](https://github.com/box/box-content-preview/commit/8a83f34)), closes [#1370](https://github.com/box/box-content-preview/issues/1370)
-* chore(i18n): Update Translations (#1372) ([16a1dc4](https://github.com/box/box-content-preview/commit/16a1dc4)), closes [#1372](https://github.com/box/box-content-preview/issues/1372)
-* chore(i18n): Update Translations (#1378) ([179decb](https://github.com/box/box-content-preview/commit/179decb)), closes [#1378](https://github.com/box/box-content-preview/issues/1378)
-* refactor(media): Renaming MediaSetting to Settings (#1371) ([3164ac3](https://github.com/box/box-content-preview/commit/3164ac3)), closes [#1371](https://github.com/box/box-content-preview/issues/1371)
-
-
+- feat(annotations tooltip): Add class for specific styles to element (#1385) ([fd74923](https://github.com/box/box-content-preview/commit/fd74923)), closes [#1385](https://github.com/box/box-content-preview/issues/1385)
+- feat(annotations): fix annotations tooltip (#1383) ([87e36b3](https://github.com/box/box-content-preview/commit/87e36b3)), closes [#1383](https://github.com/box/box-content-preview/issues/1383)
+- feat(annotations): tooltip (#1364) ([d030fe3](https://github.com/box/box-content-preview/commit/d030fe3)), closes [#1364](https://github.com/box/box-content-preview/issues/1364)
+- feat(annotations): update mode if necessary for experiences (#1375) ([a3eb40c](https://github.com/box/box-content-preview/commit/a3eb40c)), closes [#1375](https://github.com/box/box-content-preview/issues/1375)
+- feat(controls): Add Checkbox component for settings (#1376) ([b103cd5](https://github.com/box/box-content-preview/commit/b103cd5)), closes [#1376](https://github.com/box/box-content-preview/issues/1376)
+- feat(controls): Add react controls for mp4 viewer (#1374) ([29a6487](https://github.com/box/box-content-preview/commit/29a6487)), closes [#1374](https://github.com/box/box-content-preview/issues/1374)
+- feat(controls): Add Settings menu to Model3D (#1377) ([e37e30b](https://github.com/box/box-content-preview/commit/e37e30b)), closes [#1377](https://github.com/box/box-content-preview/issues/1377)
+- feat(controls): Add VR button to Model3D controls (#1379) ([d84e12d](https://github.com/box/box-content-preview/commit/d84e12d)), closes [#1379](https://github.com/box/box-content-preview/issues/1379)
+- feat(model3d): Add flyout for animation clips (#1369) ([09eefd9](https://github.com/box/box-content-preview/commit/09eefd9)), closes [#1369](https://github.com/box/box-content-preview/issues/1369)
+- feat(model3d): Basic React controls (#1368) ([528b065](https://github.com/box/box-content-preview/commit/528b065)), closes [#1368](https://github.com/box/box-content-preview/issues/1368)
+- feat(settings): Add Dropdown component (#1373) ([8b2044d](https://github.com/box/box-content-preview/commit/8b2044d)), closes [#1373](https://github.com/box/box-content-preview/issues/1373)
+- fix(controls): Add forwardRef to Dropdown and Checkbox (#1381) ([79fbd40](https://github.com/box/box-content-preview/commit/79fbd40)), closes [#1381](https://github.com/box/box-content-preview/issues/1381)
+- fix(loading): Fix presentation performance issues in Big Sur Safari (#1382) ([b6dd0da](https://github.com/box/box-content-preview/commit/b6dd0da)), closes [#1382](https://github.com/box/box-content-preview/issues/1382)
+- fix(model3d): Fix react controls to reset to defaults (#1384) ([f305ea7](https://github.com/box/box-content-preview/commit/f305ea7)), closes [#1384](https://github.com/box/box-content-preview/issues/1384)
+- chore(deps): Upgarde box-ui-elements to latest available version (#1380) ([1bc9f6f](https://github.com/box/box-content-preview/commit/1bc9f6f)), closes [#1380](https://github.com/box/box-content-preview/issues/1380)
+- chore(i18n): Update Translations (#1370) ([8a83f34](https://github.com/box/box-content-preview/commit/8a83f34)), closes [#1370](https://github.com/box/box-content-preview/issues/1370)
+- chore(i18n): Update Translations (#1372) ([16a1dc4](https://github.com/box/box-content-preview/commit/16a1dc4)), closes [#1372](https://github.com/box/box-content-preview/issues/1372)
+- chore(i18n): Update Translations (#1378) ([179decb](https://github.com/box/box-content-preview/commit/179decb)), closes [#1378](https://github.com/box/box-content-preview/issues/1378)
+- refactor(media): Renaming MediaSetting to Settings (#1371) ([3164ac3](https://github.com/box/box-content-preview/commit/3164ac3)), closes [#1371](https://github.com/box/box-content-preview/issues/1371)
 
 ## 2.72.0 (2021-04-29)
 
-* feat(documents): Add drop shadow for document pages and placeholders (#1367) ([0a8f089](https://github.com/box/box-content-preview/commit/0a8f089)), closes [#1367](https://github.com/box/box-content-preview/issues/1367)
-* fix(controls): Avoid showing focus styles for disabled controls (#1365) ([f8e8b8b](https://github.com/box/box-content-preview/commit/f8e8b8b)), closes [#1365](https://github.com/box/box-content-preview/issues/1365)
-* fix(thumbnails): Fix position of ContentPreview navigate button (#1366) ([086752a](https://github.com/box/box-content-preview/commit/086752a)), closes [#1366](https://github.com/box/box-content-preview/issues/1366)
-
-
+- feat(documents): Add drop shadow for document pages and placeholders (#1367) ([0a8f089](https://github.com/box/box-content-preview/commit/0a8f089)), closes [#1367](https://github.com/box/box-content-preview/issues/1367)
+- fix(controls): Avoid showing focus styles for disabled controls (#1365) ([f8e8b8b](https://github.com/box/box-content-preview/commit/f8e8b8b)), closes [#1365](https://github.com/box/box-content-preview/issues/1365)
+- fix(thumbnails): Fix position of ContentPreview navigate button (#1366) ([086752a](https://github.com/box/box-content-preview/commit/086752a)), closes [#1366](https://github.com/box/box-content-preview/issues/1366)
 
 ## 2.71.0 (2021-04-22)
 
-* chore(i18n): Update Translations (#1359) ([91ce7e1](https://github.com/box/box-content-preview/commit/91ce7e1)), closes [#1359](https://github.com/box/box-content-preview/issues/1359)
-* chore(i18n): Update Translations (#1360) ([0849f6e](https://github.com/box/box-content-preview/commit/0849f6e)), closes [#1360](https://github.com/box/box-content-preview/issues/1360)
-* fix(thumbnails): Fix thumbnail widths in IE11 (#1361) ([36fba31](https://github.com/box/box-content-preview/commit/36fba31)), closes [#1361](https://github.com/box/box-content-preview/issues/1361)
-* feat(loading): Update loading ux for pages, thumbnails, preloaders (#1355) ([fa5dd30](https://github.com/box/box-content-preview/commit/fa5dd30)), closes [#1355](https://github.com/box/box-content-preview/issues/1355)
-* feat(thumbnails): Update document thumbnails to latest designs (#1357) ([5e35537](https://github.com/box/box-content-preview/commit/5e35537)), closes [#1357](https://github.com/box/box-content-preview/issues/1357)
-* feat(toolbar): Update control toolbars to latest design (#1358) ([b7ba972](https://github.com/box/box-content-preview/commit/b7ba972)), closes [#1358](https://github.com/box/box-content-preview/issues/1358)
-
-
+- chore(i18n): Update Translations (#1359) ([91ce7e1](https://github.com/box/box-content-preview/commit/91ce7e1)), closes [#1359](https://github.com/box/box-content-preview/issues/1359)
+- chore(i18n): Update Translations (#1360) ([0849f6e](https://github.com/box/box-content-preview/commit/0849f6e)), closes [#1360](https://github.com/box/box-content-preview/issues/1360)
+- fix(thumbnails): Fix thumbnail widths in IE11 (#1361) ([36fba31](https://github.com/box/box-content-preview/commit/36fba31)), closes [#1361](https://github.com/box/box-content-preview/issues/1361)
+- feat(loading): Update loading ux for pages, thumbnails, preloaders (#1355) ([fa5dd30](https://github.com/box/box-content-preview/commit/fa5dd30)), closes [#1355](https://github.com/box/box-content-preview/issues/1355)
+- feat(thumbnails): Update document thumbnails to latest designs (#1357) ([5e35537](https://github.com/box/box-content-preview/commit/5e35537)), closes [#1357](https://github.com/box/box-content-preview/issues/1357)
+- feat(toolbar): Update control toolbars to latest design (#1358) ([b7ba972](https://github.com/box/box-content-preview/commit/b7ba972)), closes [#1358](https://github.com/box/box-content-preview/issues/1358)
 
 ## 2.70.0 (2021-04-15)
 
-* chore(deps): Remove unused dependencies (#1346) ([dc46a48](https://github.com/box/box-content-preview/commit/dc46a48)), closes [#1346](https://github.com/box/box-content-preview/issues/1346)
-* chore(deps): Upgarde box-ui-elements to latest available version (#1347) ([910b8a3](https://github.com/box/box-content-preview/commit/910b8a3)), closes [#1347](https://github.com/box/box-content-preview/issues/1347)
-* chore(i18n): Update Translations (#1351) ([a80ab58](https://github.com/box/box-content-preview/commit/a80ab58)), closes [#1351](https://github.com/box/box-content-preview/issues/1351)
-* chore(i18n): Update Translations (#1356) ([9e5dc5d](https://github.com/box/box-content-preview/commit/9e5dc5d)), closes [#1356](https://github.com/box/box-content-preview/issues/1356)
-* chore(loading): Remove sub-header progress bar experience (#1348) ([c40435e](https://github.com/box/box-content-preview/commit/c40435e)), closes [#1348](https://github.com/box/box-content-preview/issues/1348)
-* fix(a11y): Add aria-label to DocFindBar input field (#1350) ([e1ce28b](https://github.com/box/box-content-preview/commit/e1ce28b)), closes [#1350](https://github.com/box/box-content-preview/issues/1350)
-* fix(a11y): Add meaningful alt text to custom logo (#1352) ([4e11fbe](https://github.com/box/box-content-preview/commit/4e11fbe)), closes [#1352](https://github.com/box/box-content-preview/issues/1352)
-* fix(a11y): Add meaningful alt text to image viewer (#1349) ([fc9c662](https://github.com/box/box-content-preview/commit/fc9c662)), closes [#1349](https://github.com/box/box-content-preview/issues/1349)
-* feat(loading): Update loading experience to latest designs (#1345) ([5d248d5](https://github.com/box/box-content-preview/commit/5d248d5)), closes [#1345](https://github.com/box/box-content-preview/issues/1345)
-
-
+- chore(deps): Remove unused dependencies (#1346) ([dc46a48](https://github.com/box/box-content-preview/commit/dc46a48)), closes [#1346](https://github.com/box/box-content-preview/issues/1346)
+- chore(deps): Upgarde box-ui-elements to latest available version (#1347) ([910b8a3](https://github.com/box/box-content-preview/commit/910b8a3)), closes [#1347](https://github.com/box/box-content-preview/issues/1347)
+- chore(i18n): Update Translations (#1351) ([a80ab58](https://github.com/box/box-content-preview/commit/a80ab58)), closes [#1351](https://github.com/box/box-content-preview/issues/1351)
+- chore(i18n): Update Translations (#1356) ([9e5dc5d](https://github.com/box/box-content-preview/commit/9e5dc5d)), closes [#1356](https://github.com/box/box-content-preview/issues/1356)
+- chore(loading): Remove sub-header progress bar experience (#1348) ([c40435e](https://github.com/box/box-content-preview/commit/c40435e)), closes [#1348](https://github.com/box/box-content-preview/issues/1348)
+- fix(a11y): Add aria-label to DocFindBar input field (#1350) ([e1ce28b](https://github.com/box/box-content-preview/commit/e1ce28b)), closes [#1350](https://github.com/box/box-content-preview/issues/1350)
+- fix(a11y): Add meaningful alt text to custom logo (#1352) ([4e11fbe](https://github.com/box/box-content-preview/commit/4e11fbe)), closes [#1352](https://github.com/box/box-content-preview/issues/1352)
+- fix(a11y): Add meaningful alt text to image viewer (#1349) ([fc9c662](https://github.com/box/box-content-preview/commit/fc9c662)), closes [#1349](https://github.com/box/box-content-preview/issues/1349)
+- feat(loading): Update loading experience to latest designs (#1345) ([5d248d5](https://github.com/box/box-content-preview/commit/5d248d5)), closes [#1345](https://github.com/box/box-content-preview/issues/1345)
 
 ## 2.69.0 (2021-03-29)
 
-* feat(loading): Add options for loading icon and progress bar (#1344) ([99e3f92](https://github.com/box/box-content-preview/commit/99e3f92)), closes [#1344](https://github.com/box/box-content-preview/issues/1344)
-
-
+- feat(loading): Add options for loading icon and progress bar (#1344) ([99e3f92](https://github.com/box/box-content-preview/commit/99e3f92)), closes [#1344](https://github.com/box/box-content-preview/issues/1344)
 
 ## 2.68.0 (2021-03-17)
 
-* feat(controls): Add core media settings control components (#1340) ([1d26190](https://github.com/box/box-content-preview/commit/1d26190)), closes [#1340](https://github.com/box/box-content-preview/issues/1340)
-* feat(controls): Add media settings control item components (#1341) ([81ae0c4](https://github.com/box/box-content-preview/commit/81ae0c4)), closes [#1341](https://github.com/box/box-content-preview/issues/1341)
-* feat(controls): Add MP3 settings controls (#1343) ([76f6e1a](https://github.com/box/box-content-preview/commit/76f6e1a)), closes [#1343](https://github.com/box/box-content-preview/issues/1343)
-* fix(dash): Mock shaka.polyfill.installAll (#1342) ([fcbca02](https://github.com/box/box-content-preview/commit/fcbca02)), closes [#1342](https://github.com/box/box-content-preview/issues/1342)
-* chore(deps): Upgrade React dependencies to v17 (#1334) ([5de1252](https://github.com/box/box-content-preview/commit/5de1252)), closes [#1334](https://github.com/box/box-content-preview/issues/1334)
-
-
+- feat(controls): Add core media settings control components (#1340) ([1d26190](https://github.com/box/box-content-preview/commit/1d26190)), closes [#1340](https://github.com/box/box-content-preview/issues/1340)
+- feat(controls): Add media settings control item components (#1341) ([81ae0c4](https://github.com/box/box-content-preview/commit/81ae0c4)), closes [#1341](https://github.com/box/box-content-preview/issues/1341)
+- feat(controls): Add MP3 settings controls (#1343) ([76f6e1a](https://github.com/box/box-content-preview/commit/76f6e1a)), closes [#1343](https://github.com/box/box-content-preview/issues/1343)
+- fix(dash): Mock shaka.polyfill.installAll (#1342) ([fcbca02](https://github.com/box/box-content-preview/commit/fcbca02)), closes [#1342](https://github.com/box/box-content-preview/issues/1342)
+- chore(deps): Upgrade React dependencies to v17 (#1334) ([5de1252](https://github.com/box/box-content-preview/commit/5de1252)), closes [#1334](https://github.com/box/box-content-preview/issues/1334)
 
 ## 2.67.0 (2021-03-10)
 
-* chore(deps): Move shaka-player update to 2.66.0 folder (#1337) ([4153bbc](https://github.com/box/box-content-preview/commit/4153bbc)), closes [#1337](https://github.com/box/box-content-preview/issues/1337)
-* chore(deps): Upgrade Shake Player to 3.0.8 (#1335) ([68ec8b8](https://github.com/box/box-content-preview/commit/68ec8b8)), closes [#1335](https://github.com/box/box-content-preview/issues/1335)
-
-
+- chore(deps): Move shaka-player update to 2.66.0 folder (#1337) ([4153bbc](https://github.com/box/box-content-preview/commit/4153bbc)), closes [#1337](https://github.com/box/box-content-preview/issues/1337)
+- chore(deps): Upgrade Shake Player to 3.0.8 (#1335) ([68ec8b8](https://github.com/box/box-content-preview/commit/68ec8b8)), closes [#1335](https://github.com/box/box-content-preview/issues/1335)
 
 ## 2.66.0 (2021-03-03)
 
-* feat(controls): Add Settings Controls icons (#1333) ([46dc15a](https://github.com/box/box-content-preview/commit/46dc15a)), closes [#1333](https://github.com/box/box-content-preview/issues/1333)
-* build(deps): Upgrade highlightjs to 9.18.1 (#1328) ([4f70945](https://github.com/box/box-content-preview/commit/4f70945)), closes [#1328](https://github.com/box/box-content-preview/issues/1328)
-* build(deps): Upgrade Papaparse to 5.0.0 (#1330) ([9e66b55](https://github.com/box/box-content-preview/commit/9e66b55)), closes [#1330](https://github.com/box/box-content-preview/issues/1330)
-* build(deps): Upgrade remarkable to 2.0.1 (#1329) ([df692c4](https://github.com/box/box-content-preview/commit/df692c4)), closes [#1329](https://github.com/box/box-content-preview/issues/1329)
-
-
+- feat(controls): Add Settings Controls icons (#1333) ([46dc15a](https://github.com/box/box-content-preview/commit/46dc15a)), closes [#1333](https://github.com/box/box-content-preview/issues/1333)
+- build(deps): Upgrade highlightjs to 9.18.1 (#1328) ([4f70945](https://github.com/box/box-content-preview/commit/4f70945)), closes [#1328](https://github.com/box/box-content-preview/issues/1328)
+- build(deps): Upgrade Papaparse to 5.0.0 (#1330) ([9e66b55](https://github.com/box/box-content-preview/commit/9e66b55)), closes [#1330](https://github.com/box/box-content-preview/issues/1330)
+- build(deps): Upgrade remarkable to 2.0.1 (#1329) ([df692c4](https://github.com/box/box-content-preview/commit/df692c4)), closes [#1329](https://github.com/box/box-content-preview/issues/1329)
 
 ## 2.65.0 (2021-02-16)
 
-* fix(headers): Add support for case-insensitive http response headers (#1327) ([5ec964e](https://github.com/box/box-content-preview/commit/5ec964e)), closes [#1327](https://github.com/box/box-content-preview/issues/1327)
-* build: add manifest.json in third-party folders (#1325) ([b2e64d8](https://github.com/box/box-content-preview/commit/b2e64d8)), closes [#1325](https://github.com/box/box-content-preview/issues/1325)
-* build: Add upgrade scripts for text assets (#1326) ([95dd3f3](https://github.com/box/box-content-preview/commit/95dd3f3)), closes [#1326](https://github.com/box/box-content-preview/issues/1326)
-* build(highlightjs): Add upgrade script for highlightjs (#1324) ([2fcae6a](https://github.com/box/box-content-preview/commit/2fcae6a)), closes [#1324](https://github.com/box/box-content-preview/issues/1324)
-* feat(controls): Add react version of mp3 controls behind option (#1302) ([e437b13](https://github.com/box/box-content-preview/commit/e437b13)), closes [#1302](https://github.com/box/box-content-preview/issues/1302)
-
-
+- fix(headers): Add support for case-insensitive http response headers (#1327) ([5ec964e](https://github.com/box/box-content-preview/commit/5ec964e)), closes [#1327](https://github.com/box/box-content-preview/issues/1327)
+- build: add manifest.json in third-party folders (#1325) ([b2e64d8](https://github.com/box/box-content-preview/commit/b2e64d8)), closes [#1325](https://github.com/box/box-content-preview/issues/1325)
+- build: Add upgrade scripts for text assets (#1326) ([95dd3f3](https://github.com/box/box-content-preview/commit/95dd3f3)), closes [#1326](https://github.com/box/box-content-preview/issues/1326)
+- build(highlightjs): Add upgrade script for highlightjs (#1324) ([2fcae6a](https://github.com/box/box-content-preview/commit/2fcae6a)), closes [#1324](https://github.com/box/box-content-preview/issues/1324)
+- feat(controls): Add react version of mp3 controls behind option (#1302) ([e437b13](https://github.com/box/box-content-preview/commit/e437b13)), closes [#1302](https://github.com/box/box-content-preview/issues/1302)
 
 ## 2.64.0 (2021-02-02)
 
-* fix(controls): Center thumbnail toggle icon when visible (#1320) ([4c33de0](https://github.com/box/box-content-preview/commit/4c33de0)), closes [#1320](https://github.com/box/box-content-preview/issues/1320)
-* fix(drawing): Fix Safari doesn't focus and blur color picker button (#1321) ([bd66999](https://github.com/box/box-content-preview/commit/bd66999)), closes [#1321](https://github.com/box/box-content-preview/issues/1321)
-* fix(thumbnails): Replace remove method that is unsupported in IE11 (#1323) ([3c37b79](https://github.com/box/box-content-preview/commit/3c37b79)), closes [#1323](https://github.com/box/box-content-preview/issues/1323)
-
-
+- fix(controls): Center thumbnail toggle icon when visible (#1320) ([4c33de0](https://github.com/box/box-content-preview/commit/4c33de0)), closes [#1320](https://github.com/box/box-content-preview/issues/1320)
+- fix(drawing): Fix Safari doesn't focus and blur color picker button (#1321) ([bd66999](https://github.com/box/box-content-preview/commit/bd66999)), closes [#1321](https://github.com/box/box-content-preview/issues/1321)
+- fix(thumbnails): Replace remove method that is unsupported in IE11 (#1323) ([3c37b79](https://github.com/box/box-content-preview/commit/3c37b79)), closes [#1323](https://github.com/box/box-content-preview/issues/1323)
 
 ## 2.63.0 (2021-01-19)
 
-* fix(annotations): Fix user cannot tab to color picker (#1319) ([e25ab79](https://github.com/box/box-content-preview/commit/e25ab79)), closes [#1319](https://github.com/box/box-content-preview/issues/1319)
-* fix(drawing): show sub-shadow in color picker control button (#1318) ([63f555c](https://github.com/box/box-content-preview/commit/63f555c)), closes [#1318](https://github.com/box/box-content-preview/issues/1318)
-
-
+- fix(annotations): Fix user cannot tab to color picker (#1319) ([e25ab79](https://github.com/box/box-content-preview/commit/e25ab79)), closes [#1319](https://github.com/box/box-content-preview/issues/1319)
+- fix(drawing): show sub-shadow in color picker control button (#1318) ([63f555c](https://github.com/box/box-content-preview/commit/63f555c)), closes [#1318](https://github.com/box/box-content-preview/issues/1318)
 
 ## 2.62.0 (2021-01-13)
 
-* fix(annotations): Fix Palette doesn't close when blurred (#1317) ([bd6413b](https://github.com/box/box-content-preview/commit/bd6413b)), closes [#1317](https://github.com/box/box-content-preview/issues/1317)
-* fix(controls): Hide thumbnails toggle on small screens and fullscreen (#1313) ([e34ee42](https://github.com/box/box-content-preview/commit/e34ee42)), closes [#1313](https://github.com/box/box-content-preview/issues/1313)
-* fix(controls): Prevent controls from hiding when already unmounted (#1316) ([c695342](https://github.com/box/box-content-preview/commit/c695342)), closes [#1316](https://github.com/box/box-content-preview/issues/1316)
-* fix(drawing): emit color event when color picker is opened (#1315) ([39bff92](https://github.com/box/box-content-preview/commit/39bff92)), closes [#1315](https://github.com/box/box-content-preview/issues/1315)
-* feat(controls): Add react versions of time and volume scrubbers (#1314) ([800971a](https://github.com/box/box-content-preview/commit/800971a)), closes [#1314](https://github.com/box/box-content-preview/issues/1314)
-* feat(controls): Cleanup legacy controls from non-media viewers (#1312) ([e8a3c57](https://github.com/box/box-content-preview/commit/e8a3c57)), closes [#1312](https://github.com/box/box-content-preview/issues/1312)
-
-
+- fix(annotations): Fix Palette doesn't close when blurred (#1317) ([bd6413b](https://github.com/box/box-content-preview/commit/bd6413b)), closes [#1317](https://github.com/box/box-content-preview/issues/1317)
+- fix(controls): Hide thumbnails toggle on small screens and fullscreen (#1313) ([e34ee42](https://github.com/box/box-content-preview/commit/e34ee42)), closes [#1313](https://github.com/box/box-content-preview/issues/1313)
+- fix(controls): Prevent controls from hiding when already unmounted (#1316) ([c695342](https://github.com/box/box-content-preview/commit/c695342)), closes [#1316](https://github.com/box/box-content-preview/issues/1316)
+- fix(drawing): emit color event when color picker is opened (#1315) ([39bff92](https://github.com/box/box-content-preview/commit/39bff92)), closes [#1315](https://github.com/box/box-content-preview/issues/1315)
+- feat(controls): Add react versions of time and volume scrubbers (#1314) ([800971a](https://github.com/box/box-content-preview/commit/800971a)), closes [#1314](https://github.com/box/box-content-preview/issues/1314)
+- feat(controls): Cleanup legacy controls from non-media viewers (#1312) ([e8a3c57](https://github.com/box/box-content-preview/commit/e8a3c57)), closes [#1312](https://github.com/box/box-content-preview/issues/1312)
 
 ## 2.61.0 (2021-01-05)
 
-* fix(controls): Hide find and thumbnail toggles if options are disabled (#1311) ([46df6e4](https://github.com/box/box-content-preview/commit/46df6e4)), closes [#1311](https://github.com/box/box-content-preview/issues/1311)
-* fix(drawing): fix accessibility for color picker components (#1310) ([97b18c6](https://github.com/box/box-content-preview/commit/97b18c6)), closes [#1310](https://github.com/box/box-content-preview/issues/1310)
-* feat(annotations): Emit annotations color (#1309) ([d1a9e08](https://github.com/box/box-content-preview/commit/d1a9e08)), closes [#1309](https://github.com/box/box-content-preview/issues/1309)
-* feat(controls): Add react versions of core media controls (#1308) ([4adb425](https://github.com/box/box-content-preview/commit/4adb425)), closes [#1308](https://github.com/box/box-content-preview/issues/1308)
-* feat(drawing): add ColorPickerControl for images (#1307) ([0f8d7d9](https://github.com/box/box-content-preview/commit/0f8d7d9)), closes [#1307](https://github.com/box/box-content-preview/issues/1307)
-
-
+- fix(controls): Hide find and thumbnail toggles if options are disabled (#1311) ([46df6e4](https://github.com/box/box-content-preview/commit/46df6e4)), closes [#1311](https://github.com/box/box-content-preview/issues/1311)
+- fix(drawing): fix accessibility for color picker components (#1310) ([97b18c6](https://github.com/box/box-content-preview/commit/97b18c6)), closes [#1310](https://github.com/box/box-content-preview/issues/1310)
+- feat(annotations): Emit annotations color (#1309) ([d1a9e08](https://github.com/box/box-content-preview/commit/d1a9e08)), closes [#1309](https://github.com/box/box-content-preview/issues/1309)
+- feat(controls): Add react versions of core media controls (#1308) ([4adb425](https://github.com/box/box-content-preview/commit/4adb425)), closes [#1308](https://github.com/box/box-content-preview/issues/1308)
+- feat(drawing): add ColorPickerControl for images (#1307) ([0f8d7d9](https://github.com/box/box-content-preview/commit/0f8d7d9)), closes [#1307](https://github.com/box/box-content-preview/issues/1307)
 
 ## 2.60.0 (2020-12-09)
 
-* Add annotation module (#1305) ([3d2149e](https://github.com/box/box-content-preview/commit/3d2149e)), closes [#1305](https://github.com/box/box-content-preview/issues/1305)
-* feat(controls): Add option for react controls to CSV viewer (#1306) ([e34cc02](https://github.com/box/box-content-preview/commit/e34cc02)), closes [#1306](https://github.com/box/box-content-preview/issues/1306)
-* feat(controls): Add react versions of existing media control icons (#1301) ([3fc73a8](https://github.com/box/box-content-preview/commit/3fc73a8)), closes [#1301](https://github.com/box/box-content-preview/issues/1301)
-* feat(drawing): add color picker component (#1300) ([30090ec](https://github.com/box/box-content-preview/commit/30090ec)), closes [#1300](https://github.com/box/box-content-preview/issues/1300)
-* test(cypress): Change access token for annotations access (#1303) ([93f9e9e](https://github.com/box/box-content-preview/commit/93f9e9e)), closes [#1303](https://github.com/box/box-content-preview/issues/1303)
-* test(cypress): Change to new primary token (#1304) ([f9b07fd](https://github.com/box/box-content-preview/commit/f9b07fd)), closes [#1304](https://github.com/box/box-content-preview/issues/1304)
-
-
+- Add annotation module (#1305) ([3d2149e](https://github.com/box/box-content-preview/commit/3d2149e)), closes [#1305](https://github.com/box/box-content-preview/issues/1305)
+- feat(controls): Add option for react controls to CSV viewer (#1306) ([e34cc02](https://github.com/box/box-content-preview/commit/e34cc02)), closes [#1306](https://github.com/box/box-content-preview/issues/1306)
+- feat(controls): Add react versions of existing media control icons (#1301) ([3fc73a8](https://github.com/box/box-content-preview/commit/3fc73a8)), closes [#1301](https://github.com/box/box-content-preview/issues/1301)
+- feat(drawing): add color picker component (#1300) ([30090ec](https://github.com/box/box-content-preview/commit/30090ec)), closes [#1300](https://github.com/box/box-content-preview/issues/1300)
+- test(cypress): Change access token for annotations access (#1303) ([93f9e9e](https://github.com/box/box-content-preview/commit/93f9e9e)), closes [#1303](https://github.com/box/box-content-preview/issues/1303)
+- test(cypress): Change to new primary token (#1304) ([f9b07fd](https://github.com/box/box-content-preview/commit/f9b07fd)), closes [#1304](https://github.com/box/box-content-preview/issues/1304)
 
 ## 2.59.0 (2020-12-01)
 
-* chore(annotations): Remove highlight text option (#1294) ([5ea6b2b](https://github.com/box/box-content-preview/commit/5ea6b2b)), closes [#1294](https://github.com/box/box-content-preview/issues/1294)
-* chore(build): Add prepush script to run jest tests on push (#1297) ([b88a215](https://github.com/box/box-content-preview/commit/b88a215)), closes [#1297](https://github.com/box/box-content-preview/issues/1297)
-* chore(i18n): Update Translations (#1298) ([e582a2b](https://github.com/box/box-content-preview/commit/e582a2b)), closes [#1298](https://github.com/box/box-content-preview/issues/1298)
-* chore(i18n): Update Translations (#1299) ([8980493](https://github.com/box/box-content-preview/commit/8980493)), closes [#1299](https://github.com/box/box-content-preview/issues/1299)
-* feat(annotations): add drawing button to preview controls (#1296) ([f88ba0e](https://github.com/box/box-content-preview/commit/f88ba0e)), closes [#1296](https://github.com/box/box-content-preview/issues/1296)
-* fix(annotations): remove bp prefix from region cursor keys (#1295) ([5856512](https://github.com/box/box-content-preview/commit/5856512)), closes [#1295](https://github.com/box/box-content-preview/issues/1295)
-
-
+- chore(annotations): Remove highlight text option (#1294) ([5ea6b2b](https://github.com/box/box-content-preview/commit/5ea6b2b)), closes [#1294](https://github.com/box/box-content-preview/issues/1294)
+- chore(build): Add prepush script to run jest tests on push (#1297) ([b88a215](https://github.com/box/box-content-preview/commit/b88a215)), closes [#1297](https://github.com/box/box-content-preview/issues/1297)
+- chore(i18n): Update Translations (#1298) ([e582a2b](https://github.com/box/box-content-preview/commit/e582a2b)), closes [#1298](https://github.com/box/box-content-preview/issues/1298)
+- chore(i18n): Update Translations (#1299) ([8980493](https://github.com/box/box-content-preview/commit/8980493)), closes [#1299](https://github.com/box/box-content-preview/issues/1299)
+- feat(annotations): add drawing button to preview controls (#1296) ([f88ba0e](https://github.com/box/box-content-preview/commit/f88ba0e)), closes [#1296](https://github.com/box/box-content-preview/issues/1296)
+- fix(annotations): remove bp prefix from region cursor keys (#1295) ([5856512](https://github.com/box/box-content-preview/commit/5856512)), closes [#1295](https://github.com/box/box-content-preview/issues/1295)
 
 ## 2.58.0 (2020-11-18)
 
-* feat(annotations): add ftux cursor logic (#1281) ([b1a47b4](https://github.com/box/box-content-preview/commit/b1a47b4)), closes [#1281](https://github.com/box/box-content-preview/issues/1281)
-* feat(annotations): Update CSS pointer-events for drawing (#1293) ([39eec82](https://github.com/box/box-content-preview/commit/39eec82)), closes [#1293](https://github.com/box/box-content-preview/issues/1293)
-* feat(controls): Add react version of annotations controls (#1291) ([06c9084](https://github.com/box/box-content-preview/commit/06c9084)), closes [#1291](https://github.com/box/box-content-preview/issues/1291)
-* feat(controls): Add react versions of findbar and sidebar controls (#1288) ([9426404](https://github.com/box/box-content-preview/commit/9426404)), closes [#1288](https://github.com/box/box-content-preview/issues/1288)
-* feat(controls): Create new rotate control + add to image viewer (#1286) ([17eac90](https://github.com/box/box-content-preview/commit/17eac90)), closes [#1286](https://github.com/box/box-content-preview/issues/1286)
-* feat(controls): Create react core controls for image viewers (#1285) ([ede8e42](https://github.com/box/box-content-preview/commit/ede8e42)), closes [#1285](https://github.com/box/box-content-preview/issues/1285)
-* feat(controls): Create react version of page controls (#1292) ([20739ec](https://github.com/box/box-content-preview/commit/20739ec)), closes [#1292](https://github.com/box/box-content-preview/issues/1292)
-* fix(annotations): Fix AnnotationControlsFSM reset when fullscreen enter (#1287) ([65763fe](https://github.com/box/box-content-preview/commit/65763fe)), closes [#1287](https://github.com/box/box-content-preview/issues/1287)
-* fix(zoom): Round scale before comparing against max and min values (#1290) ([0dc7e65](https://github.com/box/box-content-preview/commit/0dc7e65)), closes [#1290](https://github.com/box/box-content-preview/issues/1290)
-* chore(settings): enable typescript format and validation (#1289) ([e8ec68a](https://github.com/box/box-content-preview/commit/e8ec68a)), closes [#1289](https://github.com/box/box-content-preview/issues/1289)
-
-
+- feat(annotations): add ftux cursor logic (#1281) ([b1a47b4](https://github.com/box/box-content-preview/commit/b1a47b4)), closes [#1281](https://github.com/box/box-content-preview/issues/1281)
+- feat(annotations): Update CSS pointer-events for drawing (#1293) ([39eec82](https://github.com/box/box-content-preview/commit/39eec82)), closes [#1293](https://github.com/box/box-content-preview/issues/1293)
+- feat(controls): Add react version of annotations controls (#1291) ([06c9084](https://github.com/box/box-content-preview/commit/06c9084)), closes [#1291](https://github.com/box/box-content-preview/issues/1291)
+- feat(controls): Add react versions of findbar and sidebar controls (#1288) ([9426404](https://github.com/box/box-content-preview/commit/9426404)), closes [#1288](https://github.com/box/box-content-preview/issues/1288)
+- feat(controls): Create new rotate control + add to image viewer (#1286) ([17eac90](https://github.com/box/box-content-preview/commit/17eac90)), closes [#1286](https://github.com/box/box-content-preview/issues/1286)
+- feat(controls): Create react core controls for image viewers (#1285) ([ede8e42](https://github.com/box/box-content-preview/commit/ede8e42)), closes [#1285](https://github.com/box/box-content-preview/issues/1285)
+- feat(controls): Create react version of page controls (#1292) ([20739ec](https://github.com/box/box-content-preview/commit/20739ec)), closes [#1292](https://github.com/box/box-content-preview/issues/1292)
+- fix(annotations): Fix AnnotationControlsFSM reset when fullscreen enter (#1287) ([65763fe](https://github.com/box/box-content-preview/commit/65763fe)), closes [#1287](https://github.com/box/box-content-preview/issues/1287)
+- fix(zoom): Round scale before comparing against max and min values (#1290) ([0dc7e65](https://github.com/box/box-content-preview/commit/0dc7e65)), closes [#1290](https://github.com/box/box-content-preview/issues/1290)
+- chore(settings): enable typescript format and validation (#1289) ([e8ec68a](https://github.com/box/box-content-preview/commit/e8ec68a)), closes [#1289](https://github.com/box/box-content-preview/issues/1289)
 
 ## 2.57.0 (2020-11-04)
 
-* feat(controls): Add react versions of core control components (#1282) ([d00879d](https://github.com/box/box-content-preview/commit/d00879d)), closes [#1282](https://github.com/box/box-content-preview/issues/1282)
-* feat(controls): Add react versions of existing control icons (#1280) ([43fe1d5](https://github.com/box/box-content-preview/commit/43fe1d5)), closes [#1280](https://github.com/box/box-content-preview/issues/1280)
-* feat(controls): Add react versions of fullscreen and zoom controls (#1283) ([443746e](https://github.com/box/box-content-preview/commit/443746e)), closes [#1283](https://github.com/box/box-content-preview/issues/1283)
-* feat(controls): Add react versions of text viewer controls (#1284) ([3d9ef91](https://github.com/box/box-content-preview/commit/3d9ef91)), closes [#1284](https://github.com/box/box-content-preview/issues/1284)
-* feat(discoverability): Add instrumentation for annotation creation (#1275) ([480a90d](https://github.com/box/box-content-preview/commit/480a90d)), closes [#1275](https://github.com/box/box-content-preview/issues/1275)
-* feat(react): Upgrade react and react-dom to ^16.9.0 (#1278) ([0cbc74d](https://github.com/box/box-content-preview/commit/0cbc74d)), closes [#1278](https://github.com/box/box-content-preview/issues/1278)
-* fix(annotations): Select newly created annotation (#1276) ([7f11114](https://github.com/box/box-content-preview/commit/7f11114)), closes [#1276](https://github.com/box/box-content-preview/issues/1276)
-* fix(office): Allow download of files via embedded links in Chrome (#1277) ([281b9ab](https://github.com/box/box-content-preview/commit/281b9ab)), closes [#1277](https://github.com/box/box-content-preview/issues/1277)
-* fix(pdf): Revert pdf.js to v2.2.228 due to font rendering issue (#1274) ([741da26](https://github.com/box/box-content-preview/commit/741da26)), closes [#1274](https://github.com/box/box-content-preview/issues/1274)
-
-
+- feat(controls): Add react versions of core control components (#1282) ([d00879d](https://github.com/box/box-content-preview/commit/d00879d)), closes [#1282](https://github.com/box/box-content-preview/issues/1282)
+- feat(controls): Add react versions of existing control icons (#1280) ([43fe1d5](https://github.com/box/box-content-preview/commit/43fe1d5)), closes [#1280](https://github.com/box/box-content-preview/issues/1280)
+- feat(controls): Add react versions of fullscreen and zoom controls (#1283) ([443746e](https://github.com/box/box-content-preview/commit/443746e)), closes [#1283](https://github.com/box/box-content-preview/issues/1283)
+- feat(controls): Add react versions of text viewer controls (#1284) ([3d9ef91](https://github.com/box/box-content-preview/commit/3d9ef91)), closes [#1284](https://github.com/box/box-content-preview/issues/1284)
+- feat(discoverability): Add instrumentation for annotation creation (#1275) ([480a90d](https://github.com/box/box-content-preview/commit/480a90d)), closes [#1275](https://github.com/box/box-content-preview/issues/1275)
+- feat(react): Upgrade react and react-dom to ^16.9.0 (#1278) ([0cbc74d](https://github.com/box/box-content-preview/commit/0cbc74d)), closes [#1278](https://github.com/box/box-content-preview/issues/1278)
+- fix(annotations): Select newly created annotation (#1276) ([7f11114](https://github.com/box/box-content-preview/commit/7f11114)), closes [#1276](https://github.com/box/box-content-preview/issues/1276)
+- fix(office): Allow download of files via embedded links in Chrome (#1277) ([281b9ab](https://github.com/box/box-content-preview/commit/281b9ab)), closes [#1277](https://github.com/box/box-content-preview/issues/1277)
+- fix(pdf): Revert pdf.js to v2.2.228 due to font rendering issue (#1274) ([741da26](https://github.com/box/box-content-preview/commit/741da26)), closes [#1274](https://github.com/box/box-content-preview/issues/1274)
 
 ## 2.56.0 (2020-10-21)
 
-* fix(discoverability): add getInitialAnnotationMode override (#1273) ([b64d8fc](https://github.com/box/box-content-preview/commit/b64d8fc)), closes [#1273](https://github.com/box/box-content-preview/issues/1273)
-* feat(discoverability): add image cursor experience (#1270) ([b42768a](https://github.com/box/box-content-preview/commit/b42768a)), closes [#1270](https://github.com/box/box-content-preview/issues/1270)
-
-
+- fix(discoverability): add getInitialAnnotationMode override (#1273) ([b64d8fc](https://github.com/box/box-content-preview/commit/b64d8fc)), closes [#1273](https://github.com/box/box-content-preview/issues/1273)
+- feat(discoverability): add image cursor experience (#1270) ([b42768a](https://github.com/box/box-content-preview/commit/b42768a)), closes [#1270](https://github.com/box/box-content-preview/issues/1270)
 
 ## 2.55.0 (2020-10-19)
 
-* fix(annotations): Fix text blocked by old highlight selection background (#1272) ([ce69954](https://github.com/box/box-content-preview/commit/ce69954)), closes [#1272](https://github.com/box/box-content-preview/issues/1272)
-* fix(annotations): move discoverability changes into DocBaseViewer (#1271) ([cb26355](https://github.com/box/box-content-preview/commit/cb26355)), closes [#1271](https://github.com/box/box-content-preview/issues/1271)
-
-
+- fix(annotations): Fix text blocked by old highlight selection background (#1272) ([ce69954](https://github.com/box/box-content-preview/commit/ce69954)), closes [#1272](https://github.com/box/box-content-preview/issues/1272)
+- fix(annotations): move discoverability changes into DocBaseViewer (#1271) ([cb26355](https://github.com/box/box-content-preview/commit/cb26355)), closes [#1271](https://github.com/box/box-content-preview/issues/1271)
 
 ## 2.54.0 (2020-10-07)
 
-* fix(image): Remove unsupported svs file extension from image loaders (#1269) ([24fd78d](https://github.com/box/box-content-preview/commit/24fd78d)), closes [#1269](https://github.com/box/box-content-preview/issues/1269)
-* feat(pdf): Upgrade pdf.js to v2.6.347 and closure compiler to v20200719 (#1252) ([296f23b](https://github.com/box/box-content-preview/commit/296f23b)), closes [#1252](https://github.com/box/box-content-preview/issues/1252)
-* test(jest): Convert the remaining 3D viewer unit tests to Jest (#1267) ([907661d](https://github.com/box/box-content-preview/commit/907661d)), closes [#1267](https://github.com/box/box-content-preview/issues/1267)
-
-
+- fix(image): Remove unsupported svs file extension from image loaders (#1269) ([24fd78d](https://github.com/box/box-content-preview/commit/24fd78d)), closes [#1269](https://github.com/box/box-content-preview/issues/1269)
+- feat(pdf): Upgrade pdf.js to v2.6.347 and closure compiler to v20200719 (#1252) ([296f23b](https://github.com/box/box-content-preview/commit/296f23b)), closes [#1252](https://github.com/box/box-content-preview/issues/1252)
+- test(jest): Convert the remaining 3D viewer unit tests to Jest (#1267) ([907661d](https://github.com/box/box-content-preview/commit/907661d)), closes [#1267](https://github.com/box/box-content-preview/issues/1267)
 
 ## 2.53.0 (2020-09-24)
 
-* test(jest): Migrate all unit tests from Karma to Jest (#1264) ([09e8d31](https://github.com/box/box-content-preview/commit/09e8d31)), closes [#1264](https://github.com/box/box-content-preview/issues/1264)
-* fix(discoverability): set mode to REGION on escape key press (#1263) ([e72a7c7](https://github.com/box/box-content-preview/commit/e72a7c7)), closes [#1263](https://github.com/box/box-content-preview/issues/1263)
-* chore(i18n): Update Translations (#1265) ([9a81ad3](https://github.com/box/box-content-preview/commit/9a81ad3)), closes [#1265](https://github.com/box/box-content-preview/issues/1265)
-
-
+- test(jest): Migrate all unit tests from Karma to Jest (#1264) ([09e8d31](https://github.com/box/box-content-preview/commit/09e8d31)), closes [#1264](https://github.com/box/box-content-preview/issues/1264)
+- fix(discoverability): set mode to REGION on escape key press (#1263) ([e72a7c7](https://github.com/box/box-content-preview/commit/e72a7c7)), closes [#1263](https://github.com/box/box-content-preview/issues/1263)
+- chore(i18n): Update Translations (#1265) ([9a81ad3](https://github.com/box/box-content-preview/commit/9a81ad3)), closes [#1265](https://github.com/box/box-content-preview/issues/1265)
 
 ## 2.52.0 (2020-09-22)
 
-* feat(annotations): Disable highlight button if no download permission (#1253) ([b3a72d6](https://github.com/box/box-content-preview/commit/b3a72d6)), closes [#1253](https://github.com/box/box-content-preview/issues/1253)
-* feat(annotations): Disable target pointer-events when explicit creation (#1262) ([b2dcd45](https://github.com/box/box-content-preview/commit/b2dcd45)), closes [#1262](https://github.com/box/box-content-preview/issues/1262)
-* feat(annotations): Handle annotations creator status change event (#1254) ([46aad4f](https://github.com/box/box-content-preview/commit/46aad4f)), closes [#1254](https://github.com/box/box-content-preview/issues/1254)
-* feat(annotations): Hide PopupCursor in discovery default mode (#1259) ([bf5bf17](https://github.com/box/box-content-preview/commit/bf5bf17)), closes [#1259](https://github.com/box/box-content-preview/issues/1259)
-* feat(annotations): Set region as default mode if discover FF is on (#1255) ([9311be8](https://github.com/box/box-content-preview/commit/9311be8)), closes [#1255](https://github.com/box/box-content-preview/issues/1255)
-* feat(discoverability): add class to bp-content if FF is enabled (#1256) ([c6e3379](https://github.com/box/box-content-preview/commit/c6e3379)), closes [#1256](https://github.com/box/box-content-preview/issues/1256)
-* fix(annotations): Fix cursor when drawing region in default mode (#1261) ([6b4f76d](https://github.com/box/box-content-preview/commit/6b4f76d)), closes [#1261](https://github.com/box/box-content-preview/issues/1261)
-* fix(discoverability): set mode to REGION instead of NONE (#1260) ([6ccbb55](https://github.com/box/box-content-preview/commit/6ccbb55)), closes [#1260](https://github.com/box/box-content-preview/issues/1260)
-* chore(i18n): Update Translations (#1257) ([b88eedc](https://github.com/box/box-content-preview/commit/b88eedc)), closes [#1257](https://github.com/box/box-content-preview/issues/1257)
-
-
+- feat(annotations): Disable highlight button if no download permission (#1253) ([b3a72d6](https://github.com/box/box-content-preview/commit/b3a72d6)), closes [#1253](https://github.com/box/box-content-preview/issues/1253)
+- feat(annotations): Disable target pointer-events when explicit creation (#1262) ([b2dcd45](https://github.com/box/box-content-preview/commit/b2dcd45)), closes [#1262](https://github.com/box/box-content-preview/issues/1262)
+- feat(annotations): Handle annotations creator status change event (#1254) ([46aad4f](https://github.com/box/box-content-preview/commit/46aad4f)), closes [#1254](https://github.com/box/box-content-preview/issues/1254)
+- feat(annotations): Hide PopupCursor in discovery default mode (#1259) ([bf5bf17](https://github.com/box/box-content-preview/commit/bf5bf17)), closes [#1259](https://github.com/box/box-content-preview/issues/1259)
+- feat(annotations): Set region as default mode if discover FF is on (#1255) ([9311be8](https://github.com/box/box-content-preview/commit/9311be8)), closes [#1255](https://github.com/box/box-content-preview/issues/1255)
+- feat(discoverability): add class to bp-content if FF is enabled (#1256) ([c6e3379](https://github.com/box/box-content-preview/commit/c6e3379)), closes [#1256](https://github.com/box/box-content-preview/issues/1256)
+- fix(annotations): Fix cursor when drawing region in default mode (#1261) ([6b4f76d](https://github.com/box/box-content-preview/commit/6b4f76d)), closes [#1261](https://github.com/box/box-content-preview/issues/1261)
+- fix(discoverability): set mode to REGION instead of NONE (#1260) ([6ccbb55](https://github.com/box/box-content-preview/commit/6ccbb55)), closes [#1260](https://github.com/box/box-content-preview/issues/1260)
+- chore(i18n): Update Translations (#1257) ([b88eedc](https://github.com/box/box-content-preview/commit/b88eedc)), closes [#1257](https://github.com/box/box-content-preview/issues/1257)
 
 ## 2.51.0 (2020-09-10)
 
-* feat(annotations): Handle annotations staged change event (#1247) ([37e7003](https://github.com/box/box-content-preview/commit/37e7003)), closes [#1247](https://github.com/box/box-content-preview/issues/1247)
-* feat(doc): Updated text selection color (#1245) ([6ab482e](https://github.com/box/box-content-preview/commit/6ab482e)), closes [#1245](https://github.com/box/box-content-preview/issues/1245)
-* feat(perf): Add support for document viewer performance options (#1249) ([4047402](https://github.com/box/box-content-preview/commit/4047402)), closes [#1249](https://github.com/box/box-content-preview/issues/1249)
-* chore(annotations): remove annotations_mode_change handling (#1251) ([aa7f6f6](https://github.com/box/box-content-preview/commit/aa7f6f6)), closes [#1251](https://github.com/box/box-content-preview/issues/1251)
-
-
+- feat(annotations): Handle annotations staged change event (#1247) ([37e7003](https://github.com/box/box-content-preview/commit/37e7003)), closes [#1247](https://github.com/box/box-content-preview/issues/1247)
+- feat(doc): Updated text selection color (#1245) ([6ab482e](https://github.com/box/box-content-preview/commit/6ab482e)), closes [#1245](https://github.com/box/box-content-preview/issues/1245)
+- feat(perf): Add support for document viewer performance options (#1249) ([4047402](https://github.com/box/box-content-preview/commit/4047402)), closes [#1249](https://github.com/box/box-content-preview/issues/1249)
+- chore(annotations): remove annotations_mode_change handling (#1251) ([aa7f6f6](https://github.com/box/box-content-preview/commit/aa7f6f6)), closes [#1251](https://github.com/box/box-content-preview/issues/1251)
 
 ## 2.50.0 (2020-08-25)
 
-* feat(annotations): Handle mode change events (#1244) ([bf74f86](https://github.com/box/box-content-preview/commit/bf74f86)), closes [#1244](https://github.com/box/box-content-preview/issues/1244)
-* fix(office): Pass viewer options to loaders (#1243) ([1e63d6c](https://github.com/box/box-content-preview/commit/1e63d6c)), closes [#1243](https://github.com/box/box-content-preview/issues/1243)
-
-
+- feat(annotations): Handle mode change events (#1244) ([bf74f86](https://github.com/box/box-content-preview/commit/bf74f86)), closes [#1244](https://github.com/box/box-content-preview/issues/1244)
+- fix(office): Pass viewer options to loaders (#1243) ([1e63d6c](https://github.com/box/box-content-preview/commit/1e63d6c)), closes [#1243](https://github.com/box/box-content-preview/issues/1243)
 
 ## 2.49.0 (2020-08-19)
 
-* chore: get features from BoxAnnotations (#1241) ([033668b](https://github.com/box/box-content-preview/commit/033668b)), closes [#1241](https://github.com/box/box-content-preview/issues/1241)
-* chore(i18n): Update Translations (#1237) ([3b134b4](https://github.com/box/box-content-preview/commit/3b134b4)), closes [#1237](https://github.com/box/box-content-preview/issues/1237)
-* chore(i18n): Update Translations (#1238) ([c8f8ba2](https://github.com/box/box-content-preview/commit/c8f8ba2)), closes [#1238](https://github.com/box/box-content-preview/issues/1238)
-* feat(annotations): Add Highlight Text button in toolbar (#1236) ([c0869fe](https://github.com/box/box-content-preview/commit/c0869fe)), closes [#1236](https://github.com/box/box-content-preview/issues/1236)
-* feat(office): Add viewer option for max file size (#1235) ([96942d6](https://github.com/box/box-content-preview/commit/96942d6)), closes [#1235](https://github.com/box/box-content-preview/issues/1235)
-
-
+- chore: get features from BoxAnnotations (#1241) ([033668b](https://github.com/box/box-content-preview/commit/033668b)), closes [#1241](https://github.com/box/box-content-preview/issues/1241)
+- chore(i18n): Update Translations (#1237) ([3b134b4](https://github.com/box/box-content-preview/commit/3b134b4)), closes [#1237](https://github.com/box/box-content-preview/issues/1237)
+- chore(i18n): Update Translations (#1238) ([c8f8ba2](https://github.com/box/box-content-preview/commit/c8f8ba2)), closes [#1238](https://github.com/box/box-content-preview/issues/1238)
+- feat(annotations): Add Highlight Text button in toolbar (#1236) ([c0869fe](https://github.com/box/box-content-preview/commit/c0869fe)), closes [#1236](https://github.com/box/box-content-preview/issues/1236)
+- feat(office): Add viewer option for max file size (#1235) ([96942d6](https://github.com/box/box-content-preview/commit/96942d6)), closes [#1235](https://github.com/box/box-content-preview/issues/1235)
 
 ## 2.48.0 (2020-07-14)
 
-* chore(log): Add log for image zoom click (#1234) ([c29dddc](https://github.com/box/box-content-preview/commit/c29dddc)), closes [#1234](https://github.com/box/box-content-preview/issues/1234)
-
-
+- chore(log): Add log for image zoom click (#1234) ([c29dddc](https://github.com/box/box-content-preview/commit/c29dddc)), closes [#1234](https://github.com/box/box-content-preview/issues/1234)
 
 ## 2.47.0 (2020-07-07)
 
-* fix(image): Disallow creation of annotations on rotated images (#1232) ([2e99220](https://github.com/box/box-content-preview/commit/2e99220)), closes [#1232](https://github.com/box/box-content-preview/issues/1232)
-* fix(image): Fix zoom for rotated image when annotations is enabled (#1231) ([a9edcd4](https://github.com/box/box-content-preview/commit/a9edcd4)), closes [#1231](https://github.com/box/box-content-preview/issues/1231)
-
-
+- fix(image): Disallow creation of annotations on rotated images (#1232) ([2e99220](https://github.com/box/box-content-preview/commit/2e99220)), closes [#1232](https://github.com/box/box-content-preview/issues/1232)
+- fix(image): Fix zoom for rotated image when annotations is enabled (#1231) ([a9edcd4](https://github.com/box/box-content-preview/commit/a9edcd4)), closes [#1231](https://github.com/box/box-content-preview/issues/1231)
 
 ## 2.46.0 (2020-06-30)
 
-* chore(resin): Add annotations resin tags (#1230) ([6312e28](https://github.com/box/box-content-preview/commit/6312e28)), closes [#1230](https://github.com/box/box-content-preview/issues/1230)
-* fix(annotations): Fix region toggle button does not exit region mode (#1228) ([e8b3cbb](https://github.com/box/box-content-preview/commit/e8b3cbb)), closes [#1228](https://github.com/box/box-content-preview/issues/1228)
-* fix(controls): Fix background color position for region toggle button (#1229) ([70747eb](https://github.com/box/box-content-preview/commit/70747eb)), closes [#1229](https://github.com/box/box-content-preview/issues/1229)
-
-
+- chore(resin): Add annotations resin tags (#1230) ([6312e28](https://github.com/box/box-content-preview/commit/6312e28)), closes [#1230](https://github.com/box/box-content-preview/issues/1230)
+- fix(annotations): Fix region toggle button does not exit region mode (#1228) ([e8b3cbb](https://github.com/box/box-content-preview/commit/e8b3cbb)), closes [#1228](https://github.com/box/box-content-preview/issues/1228)
+- fix(controls): Fix background color position for region toggle button (#1229) ([70747eb](https://github.com/box/box-content-preview/commit/70747eb)), closes [#1229](https://github.com/box/box-content-preview/issues/1229)
 
 ## 2.45.0 (2020-06-18)
 
-* feat(annotations): Add support for image annotations (#1221) ([94d52f5](https://github.com/box/box-content-preview/commit/94d52f5)), closes [#1221](https://github.com/box/box-content-preview/issues/1221)
-* feat(annotations): Enable annotations for non-spreadsheet iWork files (#1227) ([0b58d4d](https://github.com/box/box-content-preview/commit/0b58d4d)), closes [#1227](https://github.com/box/box-content-preview/issues/1227)
-* feat(annotations): Press Esc to exit annotations mode (#1226) ([96786d5](https://github.com/box/box-content-preview/commit/96786d5)), closes [#1226](https://github.com/box/box-content-preview/issues/1226)
-
-
+- feat(annotations): Add support for image annotations (#1221) ([94d52f5](https://github.com/box/box-content-preview/commit/94d52f5)), closes [#1221](https://github.com/box/box-content-preview/issues/1221)
+- feat(annotations): Enable annotations for non-spreadsheet iWork files (#1227) ([0b58d4d](https://github.com/box/box-content-preview/commit/0b58d4d)), closes [#1227](https://github.com/box/box-content-preview/issues/1227)
+- feat(annotations): Press Esc to exit annotations mode (#1226) ([96786d5](https://github.com/box/box-content-preview/commit/96786d5)), closes [#1226](https://github.com/box/box-content-preview/issues/1226)
 
 ## 2.44.0 (2020-06-16)
 
-* feat(annotations): Add annotator create event (#1219) ([e9d21a0](https://github.com/box/box-content-preview/commit/e9d21a0)), closes [#1219](https://github.com/box/box-content-preview/issues/1219)
-* feat(annotations): scroll to annotation on load (#1224) ([dd4195f](https://github.com/box/box-content-preview/commit/dd4195f)), closes [#1224](https://github.com/box/box-content-preview/issues/1224)
-* fix(annotations): Scroll to presentation page only when necessary (#1223) ([4b6ef6a](https://github.com/box/box-content-preview/commit/4b6ef6a)), closes [#1223](https://github.com/box/box-content-preview/issues/1223)
-* chore(i18n): Update Translations (#1218) ([178f245](https://github.com/box/box-content-preview/commit/178f245)), closes [#1218](https://github.com/box/box-content-preview/issues/1218)
-
-
+- feat(annotations): Add annotator create event (#1219) ([e9d21a0](https://github.com/box/box-content-preview/commit/e9d21a0)), closes [#1219](https://github.com/box/box-content-preview/issues/1219)
+- feat(annotations): scroll to annotation on load (#1224) ([dd4195f](https://github.com/box/box-content-preview/commit/dd4195f)), closes [#1224](https://github.com/box/box-content-preview/issues/1224)
+- fix(annotations): Scroll to presentation page only when necessary (#1223) ([4b6ef6a](https://github.com/box/box-content-preview/commit/4b6ef6a)), closes [#1223](https://github.com/box/box-content-preview/issues/1223)
+- chore(i18n): Update Translations (#1218) ([178f245](https://github.com/box/box-content-preview/commit/178f245)), closes [#1218](https://github.com/box/box-content-preview/issues/1218)
 
 ## 2.43.0 (2020-06-02)
 
-* chore(i18n): Update Translations (#1216) ([d7a066e](https://github.com/box/box-content-preview/commit/d7a066e)), closes [#1216](https://github.com/box/box-content-preview/issues/1216)
-* fix(annotations): handle scrollToAnnotation in Preview (#1214) ([ea523ae](https://github.com/box/box-content-preview/commit/ea523ae)), closes [#1214](https://github.com/box/box-content-preview/issues/1214)
-* fix(annotator): Fail silently if annotator destroy call fails (#1215) ([841cd5a](https://github.com/box/box-content-preview/commit/841cd5a)), closes [#1215](https://github.com/box/box-content-preview/issues/1215)
-* fix(controls): stop event propagation from controls (#1210) ([bd51261](https://github.com/box/box-content-preview/commit/bd51261)), closes [#1210](https://github.com/box/box-content-preview/issues/1210)
-* fix(controls): update region annotation icon (#1212) ([699e859](https://github.com/box/box-content-preview/commit/699e859)), closes [#1212](https://github.com/box/box-content-preview/issues/1212)
-
-
+- chore(i18n): Update Translations (#1216) ([d7a066e](https://github.com/box/box-content-preview/commit/d7a066e)), closes [#1216](https://github.com/box/box-content-preview/issues/1216)
+- fix(annotations): handle scrollToAnnotation in Preview (#1214) ([ea523ae](https://github.com/box/box-content-preview/commit/ea523ae)), closes [#1214](https://github.com/box/box-content-preview/issues/1214)
+- fix(annotator): Fail silently if annotator destroy call fails (#1215) ([841cd5a](https://github.com/box/box-content-preview/commit/841cd5a)), closes [#1215](https://github.com/box/box-content-preview/issues/1215)
+- fix(controls): stop event propagation from controls (#1210) ([bd51261](https://github.com/box/box-content-preview/commit/bd51261)), closes [#1210](https://github.com/box/box-content-preview/issues/1210)
+- fix(controls): update region annotation icon (#1212) ([699e859](https://github.com/box/box-content-preview/commit/699e859)), closes [#1212](https://github.com/box/box-content-preview/issues/1212)
 
 ## 2.42.0 (2020-05-13)
 
-* fix(annotations): Fix annotations control shows if no create permission (#1209) ([57d9bb4](https://github.com/box/box-content-preview/commit/57d9bb4)), closes [#1209](https://github.com/box/box-content-preview/issues/1209)
-* fix(annotations): Fix annotations control shows if no permission (#1204) ([4a97878](https://github.com/box/box-content-preview/commit/4a97878)), closes [#1204](https://github.com/box/box-content-preview/issues/1204)
-* fix(annotations): Sync set visibility event name (#1205) ([b0c4a62](https://github.com/box/box-content-preview/commit/b0c4a62)), closes [#1205](https://github.com/box/box-content-preview/issues/1205)
-* fix(documents): Fix specificity issues with page styles in webapp (#1208) ([19675be](https://github.com/box/box-content-preview/commit/19675be)), closes [#1208](https://github.com/box/box-content-preview/issues/1208)
-* feat(annotations): add support for passed annotations options (#1206) ([213f46d](https://github.com/box/box-content-preview/commit/213f46d)), closes [#1206](https://github.com/box/box-content-preview/issues/1206)
-* feat(permissions): Add checks for new permission values on file object (#1207) ([1f7cda6](https://github.com/box/box-content-preview/commit/1f7cda6)), closes [#1207](https://github.com/box/box-content-preview/issues/1207)
-
-
+- fix(annotations): Fix annotations control shows if no create permission (#1209) ([57d9bb4](https://github.com/box/box-content-preview/commit/57d9bb4)), closes [#1209](https://github.com/box/box-content-preview/issues/1209)
+- fix(annotations): Fix annotations control shows if no permission (#1204) ([4a97878](https://github.com/box/box-content-preview/commit/4a97878)), closes [#1204](https://github.com/box/box-content-preview/issues/1204)
+- fix(annotations): Sync set visibility event name (#1205) ([b0c4a62](https://github.com/box/box-content-preview/commit/b0c4a62)), closes [#1205](https://github.com/box/box-content-preview/issues/1205)
+- fix(documents): Fix specificity issues with page styles in webapp (#1208) ([19675be](https://github.com/box/box-content-preview/commit/19675be)), closes [#1208](https://github.com/box/box-content-preview/issues/1208)
+- feat(annotations): add support for passed annotations options (#1206) ([213f46d](https://github.com/box/box-content-preview/commit/213f46d)), closes [#1206](https://github.com/box/box-content-preview/issues/1206)
+- feat(permissions): Add checks for new permission values on file object (#1207) ([1f7cda6](https://github.com/box/box-content-preview/commit/1f7cda6)), closes [#1207](https://github.com/box/box-content-preview/issues/1207)
 
 ## 2.41.0 (2020-05-06)
 
-* feat(annotations): Disable annotations for excel and iWork formats (#1202) ([05d665e](https://github.com/box/box-content-preview/commit/05d665e)), closes [#1202](https://github.com/box/box-content-preview/issues/1202)
-* feat(annotations): Support multiple annotations at a time (#1201) ([976fa7b](https://github.com/box/box-content-preview/commit/976fa7b)), closes [#1201](https://github.com/box/box-content-preview/issues/1201)
-* chore(tests): Add data-testid attribute to region toggle button (#1203) ([5e79571](https://github.com/box/box-content-preview/commit/5e79571)), closes [#1203](https://github.com/box/box-content-preview/issues/1203)
-
-
+- feat(annotations): Disable annotations for excel and iWork formats (#1202) ([05d665e](https://github.com/box/box-content-preview/commit/05d665e)), closes [#1202](https://github.com/box/box-content-preview/issues/1202)
+- feat(annotations): Support multiple annotations at a time (#1201) ([976fa7b](https://github.com/box/box-content-preview/commit/976fa7b)), closes [#1201](https://github.com/box/box-content-preview/issues/1201)
+- chore(tests): Add data-testid attribute to region toggle button (#1203) ([5e79571](https://github.com/box/box-content-preview/commit/5e79571)), closes [#1203](https://github.com/box/box-content-preview/issues/1203)
 
 ## 2.40.0 (2020-04-21)
 
-* feat(annotation): handle create event (#1199) ([888b4ae](https://github.com/box/box-content-preview/commit/888b4ae)), closes [#1199](https://github.com/box/box-content-preview/issues/1199)
-* feat(images): support multi-page jpg reps for tif files (#1197) ([206350e](https://github.com/box/box-content-preview/commit/206350e)), closes [#1197](https://github.com/box/box-content-preview/issues/1197)
-* chore(testing): allow data-testid in production (#1200) ([f9f2c6b](https://github.com/box/box-content-preview/commit/f9f2c6b)), closes [#1200](https://github.com/box/box-content-preview/issues/1200)
-
-
+- feat(annotation): handle create event (#1199) ([888b4ae](https://github.com/box/box-content-preview/commit/888b4ae)), closes [#1199](https://github.com/box/box-content-preview/issues/1199)
+- feat(images): support multi-page jpg reps for tif files (#1197) ([206350e](https://github.com/box/box-content-preview/commit/206350e)), closes [#1197](https://github.com/box/box-content-preview/issues/1197)
+- chore(testing): allow data-testid in production (#1200) ([f9f2c6b](https://github.com/box/box-content-preview/commit/f9f2c6b)), closes [#1200](https://github.com/box/box-content-preview/issues/1200)
 
 ## 2.39.0 (2020-04-14)
 
-* feat(annotations): Add region comment button in toolbar (#1183) ([04ea830](https://github.com/box/box-content-preview/commit/04ea830)), closes [#1183](https://github.com/box/box-content-preview/issues/1183)
-* feat(annotations): Exit annotations mode when enter fullscreen (#1196) ([c689e42](https://github.com/box/box-content-preview/commit/c689e42)), closes [#1196](https://github.com/box/box-content-preview/issues/1196)
-* feat(annotations): Hide annotation controls when fullscreen is active (#1188) ([8b5126e](https://github.com/box/box-content-preview/commit/8b5126e)), closes [#1188](https://github.com/box/box-content-preview/issues/1188)
-* feat(annotations): Hide annotations when fullscreen is active (#1195) ([72471f6](https://github.com/box/box-content-preview/commit/72471f6)), closes [#1195](https://github.com/box/box-content-preview/issues/1195)
-* feat(annotations): Toggle region annotation mode (#1192) ([a0c0827](https://github.com/box/box-content-preview/commit/a0c0827)), closes [#1192](https://github.com/box/box-content-preview/issues/1192)
-* chore: enable annotations sourcemaps while linked (#1184) ([45f92a5](https://github.com/box/box-content-preview/commit/45f92a5)), closes [#1184](https://github.com/box/box-content-preview/issues/1184)
-* chore(i18n): Update Translations (#1186) ([04970ee](https://github.com/box/box-content-preview/commit/04970ee)), closes [#1186](https://github.com/box/box-content-preview/issues/1186)
-* chore(i18n): Update Translations (#1191) ([ff45da5](https://github.com/box/box-content-preview/commit/ff45da5)), closes [#1191](https://github.com/box/box-content-preview/issues/1191)
-* chore(typescript): Fix wrong rootDir in tsconfig (#1194) ([5c3f64b](https://github.com/box/box-content-preview/commit/5c3f64b)), closes [#1194](https://github.com/box/box-content-preview/issues/1194)
-* docs(license): Update license link to Box CLA (#1189) ([7d925bb](https://github.com/box/box-content-preview/commit/7d925bb)), closes [#1189](https://github.com/box/box-content-preview/issues/1189)
-* fix(controls): Remove controls wrapper (#1185) ([14ed545](https://github.com/box/box-content-preview/commit/14ed545)), closes [#1185](https://github.com/box/box-content-preview/issues/1185)
-
-
+- feat(annotations): Add region comment button in toolbar (#1183) ([04ea830](https://github.com/box/box-content-preview/commit/04ea830)), closes [#1183](https://github.com/box/box-content-preview/issues/1183)
+- feat(annotations): Exit annotations mode when enter fullscreen (#1196) ([c689e42](https://github.com/box/box-content-preview/commit/c689e42)), closes [#1196](https://github.com/box/box-content-preview/issues/1196)
+- feat(annotations): Hide annotation controls when fullscreen is active (#1188) ([8b5126e](https://github.com/box/box-content-preview/commit/8b5126e)), closes [#1188](https://github.com/box/box-content-preview/issues/1188)
+- feat(annotations): Hide annotations when fullscreen is active (#1195) ([72471f6](https://github.com/box/box-content-preview/commit/72471f6)), closes [#1195](https://github.com/box/box-content-preview/issues/1195)
+- feat(annotations): Toggle region annotation mode (#1192) ([a0c0827](https://github.com/box/box-content-preview/commit/a0c0827)), closes [#1192](https://github.com/box/box-content-preview/issues/1192)
+- chore: enable annotations sourcemaps while linked (#1184) ([45f92a5](https://github.com/box/box-content-preview/commit/45f92a5)), closes [#1184](https://github.com/box/box-content-preview/issues/1184)
+- chore(i18n): Update Translations (#1186) ([04970ee](https://github.com/box/box-content-preview/commit/04970ee)), closes [#1186](https://github.com/box/box-content-preview/issues/1186)
+- chore(i18n): Update Translations (#1191) ([ff45da5](https://github.com/box/box-content-preview/commit/ff45da5)), closes [#1191](https://github.com/box/box-content-preview/issues/1191)
+- chore(typescript): Fix wrong rootDir in tsconfig (#1194) ([5c3f64b](https://github.com/box/box-content-preview/commit/5c3f64b)), closes [#1194](https://github.com/box/box-content-preview/issues/1194)
+- docs(license): Update license link to Box CLA (#1189) ([7d925bb](https://github.com/box/box-content-preview/commit/7d925bb)), closes [#1189](https://github.com/box/box-content-preview/issues/1189)
+- fix(controls): Remove controls wrapper (#1185) ([14ed545](https://github.com/box/box-content-preview/commit/14ed545)), closes [#1185](https://github.com/box/box-content-preview/issues/1185)
 
 ## 2.38.0 (2020-03-17)
 
-* chore(deps): Upgrade minimist to ^1.2.2 to address security issue (#1181) ([c9b05aa](https://github.com/box/box-content-preview/commit/c9b05aa)), closes [#1181](https://github.com/box/box-content-preview/issues/1181)
-* chore(i18n): Update Translations (#1178) ([31f65e5](https://github.com/box/box-content-preview/commit/31f65e5)), closes [#1178](https://github.com/box/box-content-preview/issues/1178)
-* fix(log): Fix log not getting serialized properly (#1180) ([e9b0c8e](https://github.com/box/box-content-preview/commit/e9b0c8e)), closes [#1180](https://github.com/box/box-content-preview/issues/1180)
-* test(e2e): Remove the line checking error message in Thumbnails e2e test (#1179) ([c3471f0](https://github.com/box/box-content-preview/commit/c3471f0)), closes [#1179](https://github.com/box/box-content-preview/issues/1179)
-
-
+- chore(deps): Upgrade minimist to ^1.2.2 to address security issue (#1181) ([c9b05aa](https://github.com/box/box-content-preview/commit/c9b05aa)), closes [#1181](https://github.com/box/box-content-preview/issues/1181)
+- chore(i18n): Update Translations (#1178) ([31f65e5](https://github.com/box/box-content-preview/commit/31f65e5)), closes [#1178](https://github.com/box/box-content-preview/issues/1178)
+- fix(log): Fix log not getting serialized properly (#1180) ([e9b0c8e](https://github.com/box/box-content-preview/commit/e9b0c8e)), closes [#1180](https://github.com/box/box-content-preview/issues/1180)
+- test(e2e): Remove the line checking error message in Thumbnails e2e test (#1179) ([c3471f0](https://github.com/box/box-content-preview/commit/c3471f0)), closes [#1179](https://github.com/box/box-content-preview/issues/1179)
 
 ## 2.37.0 (2020-03-03)
 
-* feat(print): add check to see if printing is available (#1177) ([4a19c53](https://github.com/box/box-content-preview/commit/4a19c53)), closes [#1177](https://github.com/box/box-content-preview/issues/1177)
-
-
+- feat(print): add check to see if printing is available (#1177) ([4a19c53](https://github.com/box/box-content-preview/commit/4a19c53)), closes [#1177](https://github.com/box/box-content-preview/issues/1177)
 
 ## 2.36.0 (2020-02-11)
 
-* chore(codeowners): Update codeowners to reflect new groups (#1175) ([03f2fc2](https://github.com/box/box-content-preview/commit/03f2fc2)), closes [#1175](https://github.com/box/box-content-preview/issues/1175)
-* feat(annotations): Send react-intl strings to annotations (#1174) ([715d77e](https://github.com/box/box-content-preview/commit/715d77e)), closes [#1174](https://github.com/box/box-content-preview/issues/1174)
-* fix(archive): Folders come before files when sorting (#1171) ([4a618fe](https://github.com/box/box-content-preview/commit/4a618fe)), closes [#1171](https://github.com/box/box-content-preview/issues/1171)
-* fix(archive): Reset vertical scroll when navigating folders (#1172) ([b072491](https://github.com/box/box-content-preview/commit/b072491)), closes [#1172](https://github.com/box/box-content-preview/issues/1172)
-
-
+- chore(codeowners): Update codeowners to reflect new groups (#1175) ([03f2fc2](https://github.com/box/box-content-preview/commit/03f2fc2)), closes [#1175](https://github.com/box/box-content-preview/issues/1175)
+- feat(annotations): Send react-intl strings to annotations (#1174) ([715d77e](https://github.com/box/box-content-preview/commit/715d77e)), closes [#1174](https://github.com/box/box-content-preview/issues/1174)
+- fix(archive): Folders come before files when sorting (#1171) ([4a618fe](https://github.com/box/box-content-preview/commit/4a618fe)), closes [#1171](https://github.com/box/box-content-preview/issues/1171)
+- fix(archive): Reset vertical scroll when navigating folders (#1172) ([b072491](https://github.com/box/box-content-preview/commit/b072491)), closes [#1172](https://github.com/box/box-content-preview/issues/1172)
 
 ## 2.35.0 (2020-02-04)
 
-* fix(archive): Fix inconsistent search bar style on mobile devices (#1165) ([e058a8e](https://github.com/box/box-content-preview/commit/e058a8e)), closes [#1165](https://github.com/box/box-content-preview/issues/1165)
-* fix(archive): Fix truncated breadcrumb when file name is too long (#1166) ([13fe306](https://github.com/box/box-content-preview/commit/13fe306)), closes [#1166](https://github.com/box/box-content-preview/issues/1166)
-* fix(build): fix cmd to return correct codes (#1164) ([7d9f4c8](https://github.com/box/box-content-preview/commit/7d9f4c8)), closes [#1164](https://github.com/box/box-content-preview/issues/1164)
-* fix(build): guard for removing readme file (#1169) ([245bab7](https://github.com/box/box-content-preview/commit/245bab7)), closes [#1169](https://github.com/box/box-content-preview/issues/1169)
-* fix(doc): Remove unnecessary http header for iOS (#1167) ([664b73f](https://github.com/box/box-content-preview/commit/664b73f)), closes [#1167](https://github.com/box/box-content-preview/issues/1167)
-* fix(test): Fix archive e2e test due to default sort by Name (#1168) ([041dd89](https://github.com/box/box-content-preview/commit/041dd89)), closes [#1168](https://github.com/box/box-content-preview/issues/1168)
-* chore(deps): Upgrade node and yarn version requirements (#1163) ([da4c4ff](https://github.com/box/box-content-preview/commit/da4c4ff)), closes [#1163](https://github.com/box/box-content-preview/issues/1163)
-
-
+- fix(archive): Fix inconsistent search bar style on mobile devices (#1165) ([e058a8e](https://github.com/box/box-content-preview/commit/e058a8e)), closes [#1165](https://github.com/box/box-content-preview/issues/1165)
+- fix(archive): Fix truncated breadcrumb when file name is too long (#1166) ([13fe306](https://github.com/box/box-content-preview/commit/13fe306)), closes [#1166](https://github.com/box/box-content-preview/issues/1166)
+- fix(build): fix cmd to return correct codes (#1164) ([7d9f4c8](https://github.com/box/box-content-preview/commit/7d9f4c8)), closes [#1164](https://github.com/box/box-content-preview/issues/1164)
+- fix(build): guard for removing readme file (#1169) ([245bab7](https://github.com/box/box-content-preview/commit/245bab7)), closes [#1169](https://github.com/box/box-content-preview/issues/1169)
+- fix(doc): Remove unnecessary http header for iOS (#1167) ([664b73f](https://github.com/box/box-content-preview/commit/664b73f)), closes [#1167](https://github.com/box/box-content-preview/issues/1167)
+- fix(test): Fix archive e2e test due to default sort by Name (#1168) ([041dd89](https://github.com/box/box-content-preview/commit/041dd89)), closes [#1168](https://github.com/box/box-content-preview/issues/1168)
+- chore(deps): Upgrade node and yarn version requirements (#1163) ([da4c4ff](https://github.com/box/box-content-preview/commit/da4c4ff)), closes [#1163](https://github.com/box/box-content-preview/issues/1163)
 
 ## 2.34.0 (2020-01-28)
 

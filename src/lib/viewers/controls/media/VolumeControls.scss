@@ -21,6 +21,10 @@
         display: block;
         overflow: visible;
     }
+
+    .bp-media--v2 & {
+        z-index: 10;
+    }
 }
 
 .bp-VolumeControls-slider {

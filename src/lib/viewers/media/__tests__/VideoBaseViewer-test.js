@@ -115,6 +115,58 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 value: lowerLights,
             });
         });
+
+        test('should add V2 classes when videoPlayerV2 feature is enabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBase.useReactControls = jest.fn().mockReturnValue(false);
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(true);
+            expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(true);
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should not add V2 classes when videoPlayerV2 feature is disabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBase.useReactControls = jest.fn().mockReturnValue(false);
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(false);
+            expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(false);
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
     });
 
     describe('destroy()', () => {
@@ -218,6 +270,26 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.controls.handleHide).toEqual(videoBase.handleControlsHide);
             expect(videoBase.controls.handleShow).toEqual(videoBase.handleControlsShow);
             expect(videoBase.renderUI).toBeCalled();
+        });
+
+        test('should mount controls on wrapperEl when videoPlayerV2 is enabled', () => {
+            videoBase.mediaContainerEl = document.createElement('div');
+            videoBase.wrapperEl = document.createElement('div');
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBase.loadUIReact();
+
+            expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
+            expect(videoBase.controls.containerEl).toEqual(videoBase.wrapperEl);
+        });
+
+        test('should mount controls on mediaContainerEl when videoPlayerV2 is disabled', () => {
+            videoBase.mediaContainerEl = document.createElement('div');
+            videoBase.wrapperEl = document.createElement('div');
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.loadUIReact();
+
+            expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
+            expect(videoBase.controls.containerEl).toEqual(videoBase.mediaContainerEl);
         });
     });
 
@@ -512,6 +584,14 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBaseViewer.isNarrowVideo).toBe(true);
         });
 
+        test('should hide the preload play overlay when building the narrow cluster', () => {
+            videoBaseViewer.preloader = { hidePlayOverlay: jest.fn(), showPlayOverlay: jest.fn() };
+            videoBaseViewer.mediaEl.style.width = '579px';
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(videoBaseViewer.preloader.hidePlayOverlay).toHaveBeenCalled();
+            expect(videoBaseViewer.preloader.showPlayOverlay).not.toHaveBeenCalled();
+        });
+
         test('should not add play button controls if video width is less than 580px and playContainerEl is present', () => {
             videoBaseViewer.mediaEl.style.width = '579px';
             videoBaseViewer.playContainerEl = document.createElement('div');
@@ -530,6 +610,15 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBaseViewer.isNarrowVideo).toBe(false);
         });
 
+        test('should restore the preload play overlay when removing the narrow cluster', () => {
+            videoBaseViewer.preloader = { hidePlayOverlay: jest.fn(), showPlayOverlay: jest.fn() };
+            videoBaseViewer.mediaEl.style.width = '580px';
+            videoBaseViewer.playContainerEl = document.createElement('div');
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(videoBaseViewer.preloader.showPlayOverlay).toHaveBeenCalled();
+            expect(videoBaseViewer.preloader.hidePlayOverlay).not.toHaveBeenCalled();
+        });
+
         test('should not call removePLayButtonWithSeekButtons if playContainerEl is not present', () => {
             videoBaseViewer.mediaEl.style.width = '580px';
             videoBaseViewer.handleNarrowVideoUI();
@@ -544,6 +633,25 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(mockBuildPlayButtonWithSeekButtons).not.toHaveBeenCalled();
             expect(mockRemovePlayButtonWithSeekButtons).not.toHaveBeenCalled();
             expect(mockRenderUI).not.toHaveBeenCalled();
+            expect(videoBaseViewer.isNarrowVideo).toBe(false);
+        });
+
+        test('should use wrapperEl.clientWidth when videoPlayerV2 is enabled', () => {
+            jest.spyOn(videoBaseViewer, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBaseViewer.wrapperEl = document.createElement('div');
+            Object.defineProperty(videoBaseViewer.wrapperEl, 'clientWidth', { value: 579 });
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(mockBuildPlayButtonWithSeekButtons).toHaveBeenCalled();
+            expect(videoBaseViewer.isNarrowVideo).toBe(true);
+        });
+
+        test('should use wrapperEl.clientWidth >= threshold when videoPlayerV2 is enabled', () => {
+            jest.spyOn(videoBaseViewer, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBaseViewer.wrapperEl = document.createElement('div');
+            Object.defineProperty(videoBaseViewer.wrapperEl, 'clientWidth', { value: 580 });
+            videoBaseViewer.playContainerEl = document.createElement('div');
+            videoBaseViewer.handleNarrowVideoUI();
+            expect(mockRemovePlayButtonWithSeekButtons).toHaveBeenCalled();
             expect(videoBaseViewer.isNarrowVideo).toBe(false);
         });
     });
@@ -634,6 +742,23 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 videoBase.aspect = 0.5;
                 videoBase.setVideoDimensions();
                 expect(videoBase.mediaEl.style.width).toBe('325px');
+            });
+        });
+
+        describe('mediaContainerEl width sync', () => {
+            test('should set mediaContainerEl width to match mediaEl width when V2 is disabled', () => {
+                jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+                videoBase.aspect = 1;
+                videoBase.setVideoDimensions();
+                expect(videoBase.mediaContainerEl.style.width).toBe(videoBase.mediaEl.style.width);
+            });
+
+            test('should reset mediaContainerEl width when V2 is enabled', () => {
+                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+                videoBase.aspect = 1;
+                videoBase.mediaContainerEl.style.width = '500px';
+                videoBase.setVideoDimensions();
+                expect(videoBase.mediaContainerEl.style.width).toBe('');
             });
         });
     });
@@ -760,6 +885,25 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.handleControlsShow();
 
             expect(videoBase.mediaContainerEl.classList).toContain('bp-media-controls-is-visible');
+        });
+    });
+
+    describe('handleFullscreenEnter()', () => {
+        test('should reset controls layer and trigger show-then-hide cycle', () => {
+            videoBase.controls = {
+                controlsLayer: {
+                    reset: jest.fn(),
+                    show: jest.fn(),
+                    hide: jest.fn(),
+                },
+            };
+            videoBase.showAndHideReactControls = jest.fn();
+            jest.spyOn(BaseViewer.prototype, 'handleFullscreenEnter').mockImplementation(() => {});
+
+            videoBase.handleFullscreenEnter();
+
+            expect(videoBase.controls.controlsLayer.reset).toHaveBeenCalled();
+            expect(videoBase.showAndHideReactControls).toHaveBeenCalled();
         });
     });
 
@@ -1490,6 +1634,106 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.destroy();
 
             expect(URL.revokeObjectURL).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('handleCommentMarkersUpdated', () => {
+        beforeEach(() => {
+            videoBase.renderUI = jest.fn();
+        });
+
+        test('should set commentMarkers and call renderUI', () => {
+            const markers = [
+                { id: '1', time: 5 },
+                { id: '2', time: 10 },
+            ];
+            videoBase.handleCommentMarkersUpdated(markers);
+
+            expect(videoBase.commentMarkers).toBe(markers);
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+
+        test('should default to empty array when called with no argument', () => {
+            videoBase.handleCommentMarkersUpdated();
+
+            expect(videoBase.commentMarkers).toEqual([]);
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+    });
+
+    describe('handleCommentMarkerClick', () => {
+        beforeEach(() => {
+            videoBase.mediaEl = {
+                currentTime: 0,
+                pause: jest.fn(),
+                removeEventListener: jest.fn(),
+            };
+            videoBase.annotator = {
+                emit: jest.fn(),
+            };
+            videoBase.renderUI = jest.fn();
+            jest.spyOn(videoBase, 'emit');
+        });
+
+        test('should pause and seek video to marker time', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
+
+            expect(videoBase.mediaEl.pause).toHaveBeenCalled();
+            expect(videoBase.mediaEl.currentTime).toBe(42);
+        });
+
+        test('should emit comment_marker_select event', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
+
+            expect(videoBase.emit).toHaveBeenCalledWith('comment_marker_select', { id: '1', time: 42 });
+        });
+
+        test('should call renderUI', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
+
+            expect(videoBase.renderUI).toHaveBeenCalled();
+        });
+
+        test('should activate annotation when marker type is annotation', () => {
+            videoBase.handleCommentMarkerClick({ id: 'ann-1', time: 15, type: 'annotation' });
+
+            expect(videoBase.annotator.emit).toHaveBeenCalledWith('annotations_active_set', 'ann-1');
+        });
+
+        test('should not activate annotation when marker type is comment', () => {
+            videoBase.handleCommentMarkerClick({ id: '1', time: 15, type: 'comment' });
+
+            expect(videoBase.annotator.emit).not.toHaveBeenCalled();
+        });
+
+        test('should not fail if annotator is missing for annotation type', () => {
+            videoBase.annotator = null;
+
+            expect(() =>
+                videoBase.handleCommentMarkerClick({ id: 'ann-1', time: 15, type: 'annotation' }),
+            ).not.toThrow();
+        });
+
+        test('should not fail if mediaEl is missing', () => {
+            videoBase.mediaEl = null;
+
+            expect(() => videoBase.handleCommentMarkerClick({ id: '1', time: 10, type: 'comment' })).not.toThrow();
+            expect(videoBase.emit).toHaveBeenCalledWith('comment_marker_select', { id: '1', time: 10 });
+        });
+    });
+
+    describe('comment_markers event listener', () => {
+        test('should register comment_markers listener during loadUIReact', () => {
+            videoBase.addListener = jest.fn();
+            videoBase.featureEnabled = jest.fn().mockReturnValue(false);
+            videoBase.mediaContainerEl = document.createElement('div');
+
+            videoBase.loadUIReact();
+
+            expect(videoBase.addListener).toHaveBeenCalledWith(
+                'comment_markers',
+                videoBase.handleCommentMarkersUpdated,
+            );
         });
     });
 });

@@ -1,0 +1,60 @@
+@import '../styles';
+
+.bp-MarkerAvatarStack {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    display: flex;
+    align-items: center;
+    transform: translateX(-50%);
+}
+
+.bp-MarkerAvatarStack-item {
+    position: relative;
+    flex-shrink: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    transition: margin 150ms;
+
+    &:not(:first-child) {
+        margin-left: -6px;
+    }
+
+    .bp-MarkerAvatar {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        display: block;
+        transform: none;
+    }
+
+    &:hover,
+    &:focus-visible {
+        z-index: 1;
+
+        .bp-MarkerAvatar {
+            outline: 0 solid transparent;
+            box-shadow: 0 0 0 2px $white;
+        }
+    }
+}
+
+// Expand avatars when parent container is hovered or focused
+.bp-TimeControlsV2-marker--group:hover,
+.bp-TimeControlsV2-marker--group:focus-visible,
+.bp-MarkerCluster:hover,
+.bp-MarkerCluster:focus-within {
+    .bp-MarkerAvatarStack-item:not(:first-child) {
+        margin-left: 2px;
+    }
+}
+
+.bp-MarkerAvatarStack-overflow {
+    cursor: pointer;
+}
+
+.bp-MarkerAvatarStack-overflowBadge {
+    background-color: $bdl-gray-65;
+}

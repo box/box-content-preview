@@ -29,3 +29,20 @@
         overflow-y: hidden; // Hide scrollbar during menu -> submenu transition
     }
 }
+
+// V2 video player flyout — restyled to match the TimestampControl flyout
+.bp-media--v2 {
+    .bp-SettingsFlyout {
+        z-index: 10;
+        min-width: 250px;
+        color: $black;
+        font-size: 16px;
+        font-family: Lato, Arial, sans-serif;
+        line-height: 24px;
+        background: $white;
+        border: 0;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .15);
+        backdrop-filter: none;
+    }
+}

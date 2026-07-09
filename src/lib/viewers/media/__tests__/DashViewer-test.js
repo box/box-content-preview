@@ -16,6 +16,8 @@ const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const sandbox = sinon.createSandbox();
 
+const flushPromises = () => new Promise(resolve => process.nextTick(resolve));
+
 let dash;
 let stubs = {};
 
@@ -932,13 +934,11 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.createUrl).toBeCalled();
         });
 
-        test('should render the controls again after the filmstrip is ready', done => {
-            const mockPromise = Promise.resolve();
-
+        test('should render the controls again after the filmstrip is ready', async () => {
             jest.spyOn(dash, 'getViewerOption').mockReturnValueOnce(true);
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
                 destroy: jest.fn(),
-                getPromise: () => mockPromise,
+                getPromise: () => Promise.resolve(),
             });
 
             dash.options.file.representations.entries[1] = {
@@ -948,11 +948,9 @@ describe('lib/viewers/media/DashViewer', () => {
                 status: { state: 'ready' },
             };
             dash.loadFilmStrip();
+            await flushPromises();
 
-            mockPromise.then(() => {
-                expect(stubs.renderUI).toBeCalled();
-                done();
-            });
+            expect(stubs.renderUI).toBeCalled();
         });
     });
 
@@ -2181,6 +2179,38 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('getFps()', () => {
+        test('should return manifest fps when frameStep is enabled and fps is available', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'frameStep.enabled');
+
+            expect(dash.getFps()).toBe(30);
+        });
+
+        test('should return undefined when frameStep is enabled but fps is unavailable', () => {
+            dash.player = {
+                getVariantTracks: () => [{ active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'frameStep.enabled');
+
+            expect(dash.getFps()).toBeUndefined();
+        });
+
+        test('should return undefined when frameStep is not enabled', () => {
+            dash.player = {
+                getVariantTracks: () => [{ frameRate: 30, active: true }],
+                destroy: jest.fn(),
+            };
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+
+            expect(dash.getFps()).toBeUndefined();
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
         beforeEach(() => {
@@ -2365,6 +2395,13 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('loadFilmStrip() with migrateAccessTokenToHeader', () => {
+        const FILMSTRIP_TEMPLATE = 'www.box.com/filmstrip.jpg';
+        const FILMSTRIP_URL = 'http://localhost/filmstrip.jpg';
+        const FILMSTRIP_BLOB = 'blob:http://localhost/abc';
+        const FILMSTRIP_TOKEN_URL = 'http://localhost/filmstrip.jpg?token=abc';
+        const ASPECT = 1.78;
+        const INTERVAL = 2;
+
         beforeEach(() => {
             dash.options.file = {
                 id: 123,
@@ -2372,45 +2409,129 @@ describe('lib/viewers/media/DashViewer', () => {
                     entries: [
                         {
                             representation: 'filmstrip',
-                            content: {
-                                url_template: 'www.box.com/filmstrip.jpg',
-                            },
-                            metadata: {
-                                interval: 2,
-                            },
+                            content: { url_template: FILMSTRIP_TEMPLATE },
+                            metadata: { interval: INTERVAL },
                         },
                     ],
                 },
             };
-            dash.aspect = 1.78;
+            dash.aspect = ASPECT;
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({
                 getPromise: () => Promise.resolve(),
                 destroy: jest.fn(),
             });
+            jest.spyOn(dash.mediaControls, 'initFilmstrip').mockImplementation();
         });
 
-        test('should use createContentUrlV2 when flag is enabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
-            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('http://localhost/filmstrip.jpg');
-            jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
+        describe('with flag enabled, legacy controls', () => {
+            let revokeSpy;
 
-            dash.loadFilmStrip();
+            beforeEach(() => {
+                jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+                jest.spyOn(dash, 'createContentUrlV2').mockReturnValue(FILMSTRIP_URL);
+                jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
+                revokeSpy = jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            });
 
-            expect(dash.createContentUrlV2).toHaveBeenCalledWith('www.box.com/filmstrip.jpg');
-            expect(dash.filmstripUrl).toBe('http://localhost/filmstrip.jpg');
+            afterEach(() => {
+                revokeSpy.mockRestore();
+            });
+
+            test('should fetch the filmstrip as a blob URL via headers', async () => {
+                jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
+
+                dash.loadFilmStrip();
+                // Drain the chained promise queue: getPromise().then() → fetchContentAsBlobUrl().then() → handleBlobUrl
+                await flushPromises();
+
+                expect(dash.createContentUrlV2).toHaveBeenCalledWith(FILMSTRIP_TEMPLATE);
+                expect(dash.fetchContentAsBlobUrl).toHaveBeenCalledWith(FILMSTRIP_URL);
+                expect(dash.filmstripUrl).toBe(FILMSTRIP_BLOB);
+                expect(dash.mediaControls.initFilmstrip).toHaveBeenCalledWith(
+                    FILMSTRIP_BLOB,
+                    expect.any(Object),
+                    ASPECT,
+                    INTERVAL,
+                );
+            });
+
+            test('should revoke the blob URL on destroy', async () => {
+                jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
+
+                dash.loadFilmStrip();
+                await flushPromises();
+                expect(dash.filmstripUrl).toBe(FILMSTRIP_BLOB);
+
+                dash.destroy();
+
+                expect(revokeSpy).toHaveBeenCalledWith(FILMSTRIP_BLOB);
+            });
+
+            test('should release the blob URL if the viewer is destroyed mid-fetch', async () => {
+                let resolveFetch;
+                jest.spyOn(dash, 'fetchContentAsBlobUrl').mockReturnValue(
+                    new Promise(resolve => {
+                        resolveFetch = resolve;
+                    }),
+                );
+
+                dash.loadFilmStrip();
+                await flushPromises(); // getPromise().then resolved; fetch is pending
+
+                dash.destroy();
+                resolveFetch('blob:http://localhost/late');
+                await flushPromises();
+
+                expect(revokeSpy).toHaveBeenCalledWith('blob:http://localhost/late');
+            });
+
+            test('should swallow a fetchContentAsBlobUrl rejection without breaking the viewer', async () => {
+                jest.spyOn(dash, 'fetchContentAsBlobUrl').mockRejectedValue(new Error('boom'));
+                const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+                dash.loadFilmStrip();
+                await flushPromises();
+
+                expect(dash.filmstripUrl).toBeNull();
+                expect(dash.mediaControls.initFilmstrip).not.toHaveBeenCalled();
+                expect(warnSpy).toHaveBeenCalledWith('Filmstrip load failed', expect.any(Error));
+                warnSpy.mockRestore();
+            });
         });
 
-        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
+        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
             jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue(
-                'http://localhost/filmstrip.jpg?token=abc',
-            );
+            jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue(FILMSTRIP_TOKEN_URL);
+            jest.spyOn(dash, 'fetchContentAsBlobUrl');
             jest.spyOn(dash, 'useReactControls').mockReturnValue(false);
 
+            // Flag-off path is fully synchronous: no awaits needed.
             dash.loadFilmStrip();
 
-            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/filmstrip.jpg');
-            expect(dash.filmstripUrl).toBe('http://localhost/filmstrip.jpg?token=abc');
+            expect(dash.createContentUrlWithAuthParams).toHaveBeenCalledWith(FILMSTRIP_TEMPLATE);
+            expect(dash.fetchContentAsBlobUrl).not.toHaveBeenCalled();
+            expect(dash.filmstripUrl).toBe(FILMSTRIP_TOKEN_URL);
+            expect(dash.mediaControls.initFilmstrip).toHaveBeenCalledWith(
+                FILMSTRIP_TOKEN_URL,
+                expect.any(Object),
+                ASPECT,
+                INTERVAL,
+            );
+        });
+
+        test('should fetch as blob and re-render with React controls when flag is enabled', async () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(true);
+            jest.spyOn(dash, 'createContentUrlV2').mockReturnValue(FILMSTRIP_URL);
+            jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
+            jest.spyOn(dash, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(dash, 'renderUI').mockImplementation();
+
+            dash.loadFilmStrip();
+            await flushPromises();
+
+            expect(dash.fetchContentAsBlobUrl).toHaveBeenCalledWith(FILMSTRIP_URL);
+            expect(dash.filmstripUrl).toBe(FILMSTRIP_BLOB);
+            expect(dash.renderUI).toHaveBeenCalled();
         });
     });
 });

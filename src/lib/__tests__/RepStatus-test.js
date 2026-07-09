@@ -109,6 +109,7 @@ describe('lib/RepStatus', () => {
             });
 
             expect(util.appendAuthParamsV2).toBeCalledWith(rep.info.url, 'sharedLink', 'password');
+            expect(util.getHeaders).toBeCalledWith({}, 'token');
             expect(repStatus.infoUrl).toBe(v2Url);
             expect(repStatus.headers).toEqual({ Authorization: 'Bearer token' });
         });

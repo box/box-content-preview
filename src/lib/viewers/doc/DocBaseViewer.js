@@ -5,6 +5,7 @@ import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
+import GalleryController from '../gallery/GalleryController';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -41,7 +42,7 @@ import {
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
-import { CMAP, CSS, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
+import { CMAP, CSS, EXIF, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
 import {
     ERROR_CODE,
     LOAD_METRIC,
@@ -87,6 +88,8 @@ const PDFJS_TEXT_LAYER_MODE = {
 };
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const WHEEL_ZOOM_MAX_SCALE = 5.0;
+const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -118,6 +121,9 @@ class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     /** @property {Thumbnail} - Thumbnail reference */
     advancedInsightsThumbs;
+
+    /** @property {GalleryController} - Owns gallery-view state, lifecycle, and toolbar gating */
+    galleryController;
 
     /** @property {PageTracker} - PageTracker instance */
     pageTracker;
@@ -159,6 +165,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.trackpadPinchToZoomHandler = this.trackpadPinchToZoomHandler.bind(this);
         this.print = this.print.bind(this);
         this.rotateLeft = this.rotateLeft.bind(this);
         this.setPage = this.setPage.bind(this);
@@ -227,6 +234,25 @@ class DocBaseViewer extends BaseViewer {
         if (isFeatureEnabled(this.options.features, 'advancedContentInsights.enabled')) {
             this.pageTracker = new PageTracker(advancedContentInsightsConfig, this.options.file);
         }
+
+        this.galleryController = new GalleryController({
+            containerEl: this.containerEl,
+            features: this.options.features,
+            getPdfViewer: () => this.pdfViewer,
+            getPreloader: () => this.preloader,
+            getThumbnailsSidebar: () => this.thumbnailsSidebar,
+            setPage: n => this.setPage(n),
+            toggleThumbnails: () => this.toggleThumbnails(),
+            requestUiUpdate: () => this.renderUI(),
+            focusToggle: () => {
+                const toggle = this.containerEl.querySelector('.bp-GalleryToggle');
+                if (toggle && toggle.focus) {
+                    toggle.focus();
+                }
+            },
+            onBeforeOpen: () => this.handleGalleryEnter(),
+            onAfterClose: () => this.handleGalleryExit(),
+        });
     }
 
     /**
@@ -254,6 +280,11 @@ class DocBaseViewer extends BaseViewer {
             this.findBar.destroy();
         }
 
+        // Must run before pdfViewer teardown — galleryController holds Thumbnail render promises against pdfViewer
+        if (this.galleryController) {
+            this.galleryController.destroy();
+        }
+
         // Clean up PDF network requests
         if (this.pdfLoadingTask) {
             try {
@@ -263,13 +294,9 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        // Clean up viewer and PDF document object
+        // Clean up viewer
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
-
-            if (this.pdfViewer.pdfDocument) {
-                this.pdfViewer.pdfDocument.destroy();
-            }
         }
 
         if (this.printPopup) {
@@ -465,9 +492,13 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
-            this.prefetchAssets(ASSETS, CSS);
-            this.prefetchAssets(PRELOAD_JS, [], true);
+            if (this.featureEnabled('useNpmPdfjs')) {
+                this.prefetchAssets(EXIF_READER, CSS);
+            } else {
+                const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
+                this.prefetchAssets(ASSETS, CSS);
+                this.prefetchAssets(PRELOAD_JS, [], true);
+            }
         }
 
         if (preload && !isWatermarked) {
@@ -504,9 +535,21 @@ class DocBaseViewer extends BaseViewer {
      * Loads the viewer assets as opposed to just prefetching them as a performance optimization. This means that the libraries will be loaded
      * into memory eliminating the need to load them when a preview is clicked.
      *
+     * @param {Object} [options]
+     * @param {boolean} [options.isUseNpmPdfjsEnabled] - Warm up the npm-bundled
+     *   pdfjs chunks instead of the legacy CDN scripts so this matches what
+     *   `load()` will use when the flag is on.
      * @return {void}
      */
-    loadViewerAssets() {
+    loadViewerAssets({ isUseNpmPdfjsEnabled = false } = {}) {
+        if (isUseNpmPdfjsEnabled) {
+            this.loadAssets(EXIF_READER, []);
+            // Kick off the dynamic imports so the pdfjs chunks land in cache
+            // before per-file load() awaits them. Errors are swallowed; load()
+            // will surface them later.
+            this.loadPdfjsFromNpm().catch(() => {});
+            return;
+        }
         const ASSETS = [...JS_NO_EXIF, ...EXIF_READER];
         this.loadAssets(ASSETS, CSS);
         this.loadAssets(PRELOAD_JS, []);
@@ -618,8 +661,18 @@ class DocBaseViewer extends BaseViewer {
         } else {
             this.pdfUrl = this.createContentUrlWithAuthParams(template);
         }
-        const jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
-        return Promise.all([this.loadAssets(jsAssets, CSS), this.getRepStatus().getPromise()])
+        let jsAssets;
+        let cssAssets;
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        if (useNpmPdfjs) {
+            jsAssets = this.docFirstPagesEnabled ? EXIF_READER : EXIF;
+            cssAssets = []; // pdfjs CSS comes from npm via loadPdfjsFromNpm
+        } else {
+            jsAssets = this.docFirstPagesEnabled ? JS_NO_EXIF : JS;
+            cssAssets = CSS;
+        }
+        const pdfjsNpmPromise = useNpmPdfjs ? this.loadPdfjsFromNpm() : Promise.resolve();
+        return Promise.all([this.loadAssets(jsAssets, cssAssets), this.getRepStatus().getPromise(), pdfjsNpmPromise])
             .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
@@ -856,6 +909,10 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebar.refresh();
         }
 
+        if (this.galleryController) {
+            this.galleryController.handleRotate();
+        }
+
         this.renderUI();
 
         // Emit scale with rotation angle so annotations transform to match rotated content
@@ -974,9 +1031,10 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
+        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
-            cMapUrl: assetUrlCreator(CMAP),
+            cMapUrl,
             disableCreateObjectURL,
             disableFontFace,
             disableRange,
@@ -1216,6 +1274,13 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     setupPdfjs() {
+        if (this.featureEnabled('useNpmPdfjs')) {
+            // eslint-disable-next-line global-require
+            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
+            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            return;
+        }
+
         this.pdfjsLib = window.pdfjsLib;
         this.pdfjsViewer = window.pdfjsViewer;
 
@@ -1224,6 +1289,20 @@ class DocBaseViewer extends BaseViewer {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
+    }
+
+    /**
+     * Loads pdfjs from the npm package via dynamic import, allowing webpack to code-split.
+     *
+     * @private
+     * @return {Promise<void>}
+     */
+    async loadPdfjsFromNpm() {
+        // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
+        // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
     }
 
     /**
@@ -1364,7 +1443,11 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({ containerEl: this.containerEl, fileId: this.options.file.id });
+        this.controls = new ControlsRoot({
+            containerEl: this.containerEl,
+            fileExtension: this.options.file.extension,
+            fileId: this.options.file.id,
+        });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();
     }
@@ -1398,6 +1481,7 @@ class DocBaseViewer extends BaseViewer {
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
+        const canGallery = this.galleryController.canRender(this.pdfViewer.pagesCount);
 
         this.controls.render(
             <DocControls
@@ -1407,6 +1491,7 @@ class DocBaseViewer extends BaseViewer {
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
+                isGalleryOpen={this.galleryController.isOpen}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
                 maxScale={MAX_SCALE}
                 minScale={MIN_SCALE}
@@ -1415,6 +1500,7 @@ class DocBaseViewer extends BaseViewer {
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
                 onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
                 onFullscreenToggle={this.toggleFullscreen}
+                onGalleryToggle={canGallery ? this.galleryController.toggle : undefined}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
@@ -1447,6 +1533,10 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
+
+        if (this.featureEnabled('pinchToZoom.enabled')) {
+            this.docEl.addEventListener('wheel', this.trackpadPinchToZoomHandler, { passive: false });
+        }
     }
 
     /**
@@ -1464,6 +1554,10 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchstart', this.pinchToZoomStartHandler);
                 this.docEl.removeEventListener('touchmove', this.pinchToZoomChangeHandler);
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
+            }
+
+            if (this.featureEnabled('pinchToZoom.enabled')) {
+                this.docEl.removeEventListener('wheel', this.trackpadPinchToZoomHandler);
             }
         }
     }
@@ -1641,6 +1735,10 @@ class DocBaseViewer extends BaseViewer {
      */
     handleDocElKeydown(event) {
         const key = decodeKeydown(event);
+
+        if (key === 'Escape' && this.galleryController.handleEscape()) {
+            return;
+        }
 
         if (event.altKey && key.includes('Arrow')) {
             event.stopPropagation(); // Prevent collection/page navigation for caret navigation users
@@ -1829,9 +1927,107 @@ class DocBaseViewer extends BaseViewer {
         this.pinchPage = null;
     }
 
+    trackpadPinchToZoomHandler(event) {
+        if (!event.ctrlKey) {
+            this.isTrackpadPinching = false;
+            return;
+        }
+
+        if (!this.isTrackpadPinching) {
+            this.isTrackpadPinching = true;
+            this.options.resin?.recordAction({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: event.deltaY > 0 ? 'zoomOut' : 'zoomIn',
+                fileId: this.options.file.id,
+                fileExtension: this.options.file.extension,
+            });
+        }
+
+        clearTimeout(this.trackpadPinchIdleTimer);
+        this.trackpadPinchIdleTimer = setTimeout(() => {
+            this.isTrackpadPinching = false;
+        }, 200);
+
+        event.preventDefault();
+
+        const { currentScale } = this.pdfViewer;
+        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const newScale = Math.min(WHEEL_ZOOM_MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
+
+        if (newScale === currentScale) {
+            return;
+        }
+
+        const rect = this.docEl.getBoundingClientRect();
+        const cursorX = event.clientX - rect.left;
+        const cursorY = event.clientY - rect.top;
+
+        // Find the page element under the cursor
+        const pageEl = document.elementFromPoint(event.clientX, event.clientY)?.closest('.page');
+
+        if (pageEl) {
+            // Calculate cursor position as a fraction of the page dimensions
+            const pageRect = pageEl.getBoundingClientRect();
+            const fracX = (event.clientX - pageRect.left) / pageRect.width;
+            const fracY = (event.clientY - pageRect.top) / pageRect.height;
+
+            // Apply zoom
+            this.updateScale(newScale);
+
+            // After zoom, find where that fractional position on the page is now
+            const newPageRect = pageEl.getBoundingClientRect();
+            const newRect = this.docEl.getBoundingClientRect();
+            const newPointX = newPageRect.left - newRect.left + fracX * newPageRect.width;
+            const newPointY = newPageRect.top - newRect.top + fracY * newPageRect.height;
+
+            // Adjust scroll so cursor stays over the same point
+            this.docEl.scrollLeft += newPointX - cursorX;
+            this.docEl.scrollTop += newPointY - cursorY;
+        } else {
+            // Fallback when no page element found
+            const contentX = this.docEl.scrollLeft + cursorX;
+            const contentY = this.docEl.scrollTop + cursorY;
+
+            this.updateScale(newScale);
+
+            const scaleFactor = newScale / currentScale;
+            this.docEl.scrollLeft = contentX * scaleFactor - cursorX;
+            this.docEl.scrollTop = contentY * scaleFactor - cursorY;
+        }
+    }
+
     toggleFindBar(findBarToggleEl) {
         this.findBarToggleEl = findBarToggleEl;
         this.findBar.toggle();
+    }
+
+    /**
+     * Called before the gallery opens. Closes the find bar and resets annotation mode.
+     *
+     * @protected
+     * @return {void}
+     */
+    handleGalleryEnter() {
+        if (this.findBar) {
+            this.findBar.close();
+        }
+        this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));
+        if (this.annotator) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
+        }
+    }
+
+    /**
+     * Called after the gallery closes. Restores REGION mode so the region-comment cursor is active.
+     *
+     * @protected
+     * @return {void}
+     */
+    handleGalleryExit() {
+        if (this.annotator && this.areNewAnnotationsEnabled()) {
+            this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
+        }
     }
 
     /**

@@ -49,16 +49,48 @@ describe('ControlsLayer', () => {
             },
         );
 
-        test('should always show the controls if they have focus', async () => {
-            getWrapper();
+        test('should blur focused element inside layer on mouseLeave', async () => {
+            render(
+                <ControlsLayer>
+                    <button data-testid="inner-button" type="button">
+                        Play
+                    </button>
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+            const button = screen.getByTestId('inner-button');
+
+            button.focus();
+            fireEvent.mouseEnter(element);
+
+            expect(document.activeElement).toBe(button);
+
+            fireEvent.mouseLeave(element);
+
+            expect(document.activeElement).not.toBe(button);
+
+            await waitFor(
+                async () => {
+                    expect(element).not.toHaveClass(SHOW_CLASSNAME);
+                },
+                { timeout: HIDE_DELAY_MS + 1000 },
+            );
+        });
+
+        test('should keep controls visible for keyboard users with focus', async () => {
+            render(
+                <ControlsLayer>
+                    <button data-testid="inner-button" type="button">
+                        Play
+                    </button>
+                </ControlsLayer>,
+            );
             const element = await getElement();
 
             fireEvent.focus(element);
-            fireEvent.mouseEnter(element);
 
             expect(element).toHaveClass(SHOW_CLASSNAME);
 
-            fireEvent.mouseLeave(element);
             jest.advanceTimersByTime(HIDE_DELAY_MS);
 
             expect(element).toHaveClass(SHOW_CLASSNAME);
