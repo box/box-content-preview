@@ -16,6 +16,7 @@ export default function MarkerTick({ markers, onMarkerClick, position }: Props):
         <button
             aria-label={__('media_comment_marker')}
             className={`bp-TimeControlsV2-marker${isGroup ? ' bp-TimeControlsV2-marker--group' : ''}`}
+            data-resin-target="commentMarker"
             data-testid="bp-time-controls-marker"
             onClick={(e): void => {
                 e.stopPropagation();

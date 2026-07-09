@@ -21,6 +21,7 @@ export default function MarkerCluster({ cluster, onMarkerClick }: Props): JSX.El
             <button
                 aria-label={__('media_comment_marker')}
                 className="bp-MarkerCluster-tick"
+                data-resin-target="commentMarkerCluster"
                 onClick={(e): void => {
                     e.stopPropagation();
                     onMarkerClick?.(markers[0]);

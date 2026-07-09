@@ -203,6 +203,7 @@ export default function TimestampControl({
                             key={value}
                             aria-selected={format === value}
                             className="bp-TimestampControl-listitem"
+                            data-resin-target={`timeFormat-${value}`}
                             onClick={(): void => handleSelect(value)}
                             onKeyDown={createKeyDownHandler(value)}
                             role="option"
