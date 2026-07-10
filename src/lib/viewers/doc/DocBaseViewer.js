@@ -941,8 +941,10 @@ class DocBaseViewer extends BaseViewer {
             }
 
             // Swallow page-nav keys so they can't flip the doc page underneath the gallery
-            // or trigger the host's collection navigation.
+            // or trigger the host's collection navigation. Arrows pressed outside the grid
+            // are redirected into it so the first press navigates the tiles.
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'].includes(key)) {
+                this.galleryController.handleArrowKey(key, event && event.target);
                 return true;
             }
         }

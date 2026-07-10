@@ -229,6 +229,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         test('should defer to the gallery key policy instead of paging or zooming while the gallery is open', () => {
             doc.galleryController = {
                 isOpen: true,
+                handleArrowKey: jest.fn(),
                 handleEscape: jest.fn(),
                 destroy: jest.fn(),
             };

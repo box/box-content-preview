@@ -205,6 +205,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         test('should defer arrows to the gallery key policy instead of paging while the gallery is open', () => {
             presentation.galleryController = {
                 isOpen: true,
+                handleArrowKey: jest.fn(),
                 handleEscape: jest.fn(),
                 destroy: jest.fn(),
             };

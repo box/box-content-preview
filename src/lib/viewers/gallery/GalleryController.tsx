@@ -189,6 +189,25 @@ export default class GalleryController {
         return true;
     }
 
+    /**
+     * Redirects an arrow key pressed outside the grid (e.g. focus parked on a toggle after
+     * toggling fullscreen) back into it: refocuses the selected tile and replays the key so
+     * the first press navigates, like the thumbnail sidebar. The contains() check makes the
+     * replayed event (which lands inside the grid) a no-op, preventing re-entry.
+     */
+    handleArrowKey(key: string, target: EventTarget | null): void {
+        if (!this.isGalleryOpen || !key.startsWith('Arrow')) return;
+
+        const grid = this.galleryEl;
+        if (!grid || grid.contains(target as Node)) return;
+
+        const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"]');
+        if (tile) {
+            tile.focus();
+            tile.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+        }
+    }
+
     handleRotate(): void {
         if (this.galleryThumbnail) {
             this.galleryThumbnail.destroy();

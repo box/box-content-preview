@@ -1670,6 +1670,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 beforeEach(() => {
                     docBase.galleryController = {
                         isOpen: true,
+                        handleArrowKey: jest.fn(),
                         handleEscape: jest.fn().mockReturnValue(true),
                         destroy: jest.fn(),
                     };
@@ -1685,10 +1686,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'])(
                     'should swallow %s without paging',
                     key => {
-                        const consumed = docBase.onKeydown(key, { defaultPrevented: false });
+                        const target = document.createElement('button');
+                        const consumed = docBase.onKeydown(key, { defaultPrevented: false, target });
 
                         expect(stubs.previousPage).not.toBeCalled();
                         expect(stubs.nextPage).not.toBeCalled();
+                        expect(docBase.galleryController.handleArrowKey).toBeCalledWith(key, target);
                         expect(consumed).toBe(true);
                     },
                 );

@@ -69,6 +69,8 @@ export default function GalleryGrid({
 }: Props): JSX.Element {
     const [loadedImages, setLoadedImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
+    // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
+    const anchorPageRef = useRef(currentPage);
     const gridRef = useRef<HTMLDivElement>(null);
     const queueRef = useRef<number[]>([]);
     const isProcessingRef = useRef(false);
@@ -176,6 +178,24 @@ export default function GalleryGrid({
         }, SCROLL_THROTTLE_MS),
     );
 
+    // Unthrottled so the anchor is accurate the instant a reflow (e.g. fullscreen) happens.
+    const handleScroll = useCallback(() => {
+        const grid = gridRef.current;
+        if (grid) {
+            const tiles = grid.querySelectorAll<HTMLElement>('[data-page]');
+            for (let i = 0; i < tiles.length; i += 1) {
+                if (tiles[i].offsetTop + tiles[i].offsetHeight > grid.scrollTop) {
+                    const { page } = tiles[i].dataset;
+                    if (page) {
+                        anchorPageRef.current = parseInt(page, 10);
+                    }
+                    break;
+                }
+            }
+        }
+        handleScrollRef.current();
+    }, []);
+
     useEffect(() => {
         const throttledScroll = handleScrollRef.current;
 
@@ -220,6 +240,28 @@ export default function GalleryGrid({
             throttledScroll.cancel();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Keep the viewed area in place when the grid reflows (fullscreen enter/exit, window resize):
+    // the scroll offset is preserved while tile positions shift, drifting the view otherwise.
+    useEffect(() => {
+        const grid = gridRef.current;
+        if (!grid) return undefined;
+
+        let isFirstObservation = true;
+        const observer = new ResizeObserver(() => {
+            if (isFirstObservation) {
+                isFirstObservation = false; // ResizeObserver always fires once on observe()
+                return;
+            }
+            const tile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
+            if (tile) {
+                tile.scrollIntoView({ block: 'start' });
+            }
+        });
+        observer.observe(grid);
+
+        return () => observer.disconnect();
     }, []);
 
     const focusTile = useCallback((pageNum: number) => {
@@ -327,7 +369,7 @@ export default function GalleryGrid({
             className="bp-gallery-grid"
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
-            onScroll={handleScrollRef.current}
+            onScroll={handleScroll}
             role="listbox"
             tabIndex={-1}
         >

@@ -344,6 +344,75 @@ describe('GalleryController', () => {
         });
     });
 
+    describe('handleArrowKey', () => {
+        // Adds the selected tile to the gallery root (mounted before .bp-ControlsRoot; with no
+        // controls seeded it lands as containerEl's last child).
+        function seedSelectedTile(containerEl: HTMLElement): HTMLElement {
+            const galleryEl = containerEl.lastElementChild as HTMLElement;
+            const tile = document.createElement('div');
+            tile.setAttribute('role', 'option');
+            tile.setAttribute('tabindex', '0');
+            galleryEl.appendChild(tile);
+            return tile;
+        }
+
+        function seedToggle(containerEl: HTMLElement): HTMLElement {
+            const toggle = document.createElement('button');
+            toggle.className = 'bp-GalleryToggle';
+            containerEl.appendChild(toggle);
+            return toggle;
+        }
+
+        test('should refocus the selected tile and replay the arrow into the grid when target is outside it', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl);
+            const tileKeydown = jest.fn();
+            tile.addEventListener('keydown', tileKeydown);
+
+            controller.handleArrowKey('ArrowDown', toggle);
+
+            expect(document.activeElement).toBe(tile);
+            expect(tileKeydown).toHaveBeenCalledTimes(1);
+            expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
+        });
+
+        test('should not redirect focus for non-arrow keys', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            seedSelectedTile(containerEl);
+
+            toggle.focus();
+            controller.handleArrowKey('[', toggle);
+
+            expect(document.activeElement).toBe(toggle);
+        });
+
+        test('should not redirect when the target is already inside the grid (no re-entry)', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl);
+            const tileKeydown = jest.fn();
+            tile.addEventListener('keydown', tileKeydown);
+
+            controller.handleArrowKey('ArrowDown', tile);
+
+            expect(tileKeydown).not.toHaveBeenCalled();
+        });
+
+        test('should be a no-op when the gallery is closed', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown', toggle);
+
+            expect(document.activeElement).toBe(toggle);
+        });
+    });
+
     describe('handleRotate', () => {
         test('should be a no-op when gallery has never been opened', () => {
             const { controller } = makeController();

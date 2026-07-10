@@ -1,7 +1,17 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import GalleryGrid from '../GalleryGrid';
+
+const observeMock = jest.fn();
+const disconnectMock = jest.fn();
+let resizeCallback: () => void;
+((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = jest
+    .fn()
+    .mockImplementation((callback: () => void) => {
+        resizeCallback = callback;
+        return { observe: observeMock, disconnect: disconnectMock };
+    });
 
 describe('GalleryGrid', () => {
     const mockThumbnail = {
@@ -250,6 +260,59 @@ describe('GalleryGrid', () => {
                 const focusedTile = screen.getByLabelText('Page 3');
                 expect(focusedTile).toHaveFocus();
             });
+        });
+    });
+
+    describe('resize handling', () => {
+        test('should restore the current page tile to the top when the grid resizes before any scroll', () => {
+            getWrapper();
+            expect(observeMock).toHaveBeenCalled();
+
+            const otherTilesSpy = jest.fn();
+            const tile3Spy = jest.fn();
+            screen.getAllByRole('option').forEach(tile => {
+                tile.scrollIntoView = tile === screen.getByLabelText('Page 3') ? tile3Spy : otherTilesSpy;
+            });
+
+            resizeCallback(); // initial fire on observe() is skipped
+            expect(tile3Spy).not.toHaveBeenCalled();
+
+            resizeCallback();
+            expect(tile3Spy).toHaveBeenCalledWith({ block: 'start' });
+            expect(otherTilesSpy).not.toHaveBeenCalled();
+        });
+
+        test('should anchor to the topmost visible tile after a scroll so resize restores the viewed area', () => {
+            getWrapper();
+            const grid = screen.getByRole('listbox');
+            const tiles = screen.getAllByRole('option');
+
+            // Simulate a layout where each tile is 100px tall and the grid is scrolled to 620px,
+            // making page 7 (offsetTop 600–700) the topmost visible tile.
+            tiles.forEach((tile, index) => {
+                Object.defineProperty(tile, 'offsetTop', { configurable: true, value: index * 100 });
+                Object.defineProperty(tile, 'offsetHeight', { configurable: true, value: 100 });
+            });
+            Object.defineProperty(grid, 'scrollTop', { configurable: true, value: 620 });
+            fireEvent.scroll(grid);
+
+            const otherTilesSpy = jest.fn();
+            const tile7Spy = jest.fn();
+            tiles.forEach(tile => {
+                tile.scrollIntoView = tile === screen.getByLabelText('Page 7') ? tile7Spy : otherTilesSpy;
+            });
+
+            resizeCallback(); // skipped initial fire
+            resizeCallback();
+
+            expect(tile7Spy).toHaveBeenCalledWith({ block: 'start' });
+            expect(otherTilesSpy).not.toHaveBeenCalled();
+        });
+
+        test('should disconnect the observer on unmount', () => {
+            const { unmount } = getWrapper();
+            unmount();
+            expect(disconnectMock).toHaveBeenCalled();
         });
     });
 
