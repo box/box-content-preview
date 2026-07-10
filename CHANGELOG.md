@@ -1,3 +1,11 @@
+## 3.59.0 (2026-07-10)
+
+* revert(deps): pdfjs-dist back to 4.3.136 (#1697) ([fa5605f](https://github.com/box/box-content-preview/commit/fa5605f)), closes [#1697](https://github.com/box/box-content-preview/issues/1697) [#1666](https://github.com/box/box-content-preview/issues/1666) [#1694](https://github.com/box/box-content-preview/issues/1694)
+* fix(metrics): attribute preview apdex client_name to the host (#1701) ([21f3c08](https://github.com/box/box-content-preview/commit/21f3c08)), closes [#1701](https://github.com/box/box-content-preview/issues/1701)
+* feat(video-player-v2): add resin tags and fix flyout z-index (#1699) ([e1d3050](https://github.com/box/box-content-preview/commit/e1d3050)), closes [#1699](https://github.com/box/box-content-preview/issues/1699)
+
+
+
 ## 3.58.0 (2026-07-08)
 
 * fix(gallery): stop propagation on handled keys (#1696) ([5490f68](https://github.com/box/box-content-preview/commit/5490f68)), closes [#1696](https://github.com/box/box-content-preview/issues/1696)
