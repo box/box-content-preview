@@ -1,3 +1,9 @@
+## 3.60.0 (2026-07-11)
+
+* fix(doc): correct text layer offset when using npm pdfjs (#1702) ([a27a7cf](https://github.com/box/box-content-preview/commit/a27a7cf)), closes [#1702](https://github.com/box/box-content-preview/issues/1702)
+
+
+
 ## 3.59.0 (2026-07-10)
 
 * revert(deps): pdfjs-dist back to 4.3.136 (#1697) ([fa5605f](https://github.com/box/box-content-preview/commit/fa5605f)), closes [#1697](https://github.com/box/box-content-preview/issues/1697) [#1666](https://github.com/box/box-content-preview/issues/1666) [#1694](https://github.com/box/box-content-preview/issues/1694)
