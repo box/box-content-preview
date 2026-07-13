@@ -53,6 +53,11 @@ class Video360Viewer extends DashViewer {
         // Call super() to set up common layout
         super.setup();
 
+        // 360 videos do not support v2 video player yet, so remove the v2 classes
+        this.isVideoPlayerV2 = false;
+        this.wrapperEl.classList.remove('bp-media--v2');
+        this.mediaContainerEl.classList.remove('bp-media-container--v2');
+
         this.destroyed = false;
 
         // Hide video element

@@ -3,6 +3,7 @@ import { CLASS_INVISIBLE, DEFAULT_VIDEO_FPS, PRELOAD_REP_NAME } from '../../cons
 import { VIEWER_EVENT } from '../../events';
 import VideoBaseViewer from './VideoBaseViewer';
 import VideoControls from './VideoControls';
+import VideoControlsV2 from './VideoControlsV2';
 import './MP4.scss';
 
 const CSS_CLASS_MP4 = 'bp-media-mp4';
@@ -18,6 +19,8 @@ class MP4Viewer extends VideoBaseViewer {
 
         // Call super() first to set up common layout
         super.setup();
+
+        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
 
         // mp4 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP4);
@@ -115,38 +118,43 @@ class MP4Viewer extends VideoBaseViewer {
             this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission() && this.videoAnnotationsEnabled;
 
         const annotationsEnabled = !!this.annotator && this.videoAnnotationsEnabled;
-        this.controls.render(
-            <VideoControls
-                annotationColor={this.annotationModule.getColor()}
-                annotationMode={this.annotationControlsFSM.getMode()}
-                autoplay={this.isAutoplayEnabled()}
-                bufferedRange={this.mediaEl.buffered}
-                currentTime={this.mediaEl.currentTime}
-                durationTime={this.mediaEl.duration}
-                experiences={this.experiences}
-                fps={this.featureEnabled('frameStep.enabled') ? DEFAULT_VIDEO_FPS : undefined}
-                hasDrawing={canDraw}
-                hasHighlight={false}
-                hasRegion={canAnnotate}
-                isNarrowVideo={this.isNarrowVideo}
-                isPlaying={!this.mediaEl.paused}
-                mediaEl={this.mediaEl}
-                movePlayback={this.movePlayback}
-                onAnnotationColorChange={this.handleAnnotationColorChange}
-                onAnnotationModeClick={this.handleAnnotationControlsClick}
-                onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                onAutoplayChange={this.setAutoplay}
-                onFullscreenToggle={this.toggleFullscreen}
-                onMuteChange={this.toggleMute}
-                onPlayPause={this.handlePlayRequest}
-                onRateChange={this.setRate}
-                onTimeChange={this.handleTimeupdateFromMediaControls}
-                onVolumeChange={this.setVolume}
-                rate={this.getRate()}
-                videoAnnotationsEnabled={annotationsEnabled}
-                volume={this.mediaEl.volume}
-            />,
-        );
+        const sharedProps = {
+            annotationColor: this.annotationModule.getColor(),
+            annotationMode: this.annotationControlsFSM.getMode(),
+            aspectRatio: this.aspect,
+            autoplay: this.isAutoplayEnabled(),
+            bufferedRange: this.mediaEl.buffered,
+            currentTime: this.mediaEl.currentTime,
+            durationTime: this.mediaEl.duration,
+            experiences: this.experiences,
+            fps: this.featureEnabled('frameStep.enabled') ? DEFAULT_VIDEO_FPS : undefined,
+            hasDrawing: canDraw,
+            hasRegion: canAnnotate,
+            isNarrowVideo: this.isNarrowVideo,
+            isPlaying: !this.mediaEl.paused,
+            mediaEl: this.mediaEl,
+            movePlayback: this.movePlayback,
+            onAnnotationColorChange: this.handleAnnotationColorChange,
+            onAnnotationModeClick: this.handleAnnotationControlsClick,
+            onAnnotationModeEscape: this.handleAnnotationControlsEscape,
+            onAutoplayChange: this.setAutoplay,
+            onFullscreenToggle: this.toggleFullscreen,
+            onMuteChange: this.toggleMute,
+            onPlayPause: this.handlePlayRequest,
+            onRateChange: this.setRate,
+            onTimeChange: this.handleTimeupdateFromMediaControls,
+            onVolumeChange: this.setVolume,
+            rate: this.getRate(),
+            videoAnnotationsEnabled: annotationsEnabled,
+            volume: this.mediaEl.volume,
+        };
+
+        if (this.isVideoPlayerV2) {
+            this.controls.render(<VideoControlsV2 {...sharedProps} />);
+            return;
+        }
+
+        this.controls.render(<VideoControls {...sharedProps} hasHighlight={false} />);
     }
 
     calculateVideoDimensions() {
