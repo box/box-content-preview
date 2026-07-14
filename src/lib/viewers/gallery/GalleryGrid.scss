@@ -94,6 +94,13 @@
     display: none;
 }
 
+// Hide prev/next-file arrows while the gallery is open. They would otherwise stay in the tab order
+// underneath the grid.
+.bcpr-container:has(.bp-is-gallery-open) .bcpr-navigate-left,
+.bcpr-container:has(.bp-is-gallery-open) .bcpr-navigate-right {
+    display: none;
+}
+
 // Stop the underlying doc from scrolling when arrow keys are pressed and focus isn't on a tile.
 // `.bp` prefix bumps specificity above Document.scss `.bp .bp-doc.bp-doc-document { overflow-y: scroll }`.
 .bp .bp-is-gallery-open .bp-doc.bp-doc-document,

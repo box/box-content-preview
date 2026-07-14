@@ -3,6 +3,8 @@ export const VIEWER_EVENT = {
     default: 'viewerevent', // The default viewer event.
     download: 'download', // Begin downloading the file.
     error: 'error', // When an error occurs.
+    galleryClose: 'galleryClose', // When gallery view closes
+    galleryOpen: 'galleryOpen', // When gallery view opens
     load: 'load', // Preview is finished loading.
     mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
     metric: 'viewermetric', // A viewer metric.

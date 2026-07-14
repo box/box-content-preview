@@ -234,164 +234,30 @@ describe('GalleryController', () => {
             });
         });
 
-        describe('tab cycle', () => {
-            function seedToolbarAndTile(containerEl: HTMLElement) {
-                const toggle = document.createElement('button');
-                toggle.className = 'bp-GalleryToggle';
-                const fullscreen = document.createElement('button');
-                fullscreen.className = 'bp-FullscreenToggle';
-                containerEl.appendChild(toggle);
-                containerEl.appendChild(fullscreen);
-                return { toggle, fullscreen };
-            }
+        // Tab is intentionally not trapped: with .bp-doc inert, natural tab order flows from
+        // the gallery controls out to the host's sidebar/header. Verify keys pressed inside
+        // the container bubble freely so DocBaseViewer.onKeydown (via the host) can own the
+        // gallery-wide Escape/arrow policy.
+        test('should not intercept keydown events on containerEl while the gallery is open', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = document.createElement('button');
+            toggle.className = 'bp-GalleryToggle';
+            containerEl.appendChild(toggle);
+            controller.toggle();
 
-            // Must be called AFTER controller.toggle(): the controller appends the gallery
-            // root element (galleryEl) to containerEl as its last child during mount.
-            function seedTile(containerEl: HTMLElement): HTMLElement {
-                const galleryEl = containerEl.lastElementChild as HTMLElement;
-                const tile = document.createElement('div');
-                tile.setAttribute('role', 'option');
-                tile.setAttribute('tabindex', '0');
-                galleryEl.appendChild(tile);
-                return tile;
-            }
-
-            function makeTabEvent(shiftKey = false): KeyboardEvent {
-                return new KeyboardEvent('keydown', { key: 'Tab', shiftKey, bubbles: true, cancelable: true });
-            }
-
-            test('should Tab forward from Gallery toggle to Fullscreen toggle', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const { toggle, fullscreen } = seedToolbarAndTile(containerEl);
-                controller.toggle();
-
-                toggle.focus();
-                containerEl.dispatchEvent(makeTabEvent(false));
-
-                expect(document.activeElement).toBe(fullscreen);
-            });
-
-            test('should Shift+Tab backward from Fullscreen toggle to Gallery toggle', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const { toggle, fullscreen } = seedToolbarAndTile(containerEl);
-                controller.toggle();
-
-                fullscreen.focus();
-                containerEl.dispatchEvent(makeTabEvent(true));
-
-                expect(document.activeElement).toBe(toggle);
-            });
-
-            test('should ignore keys other than Tab and Escape', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const { toggle } = seedToolbarAndTile(containerEl);
-                controller.toggle();
-
-                toggle.focus();
-                containerEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-
-                expect(document.activeElement).toBe(toggle);
-            });
-
-            test('should close the gallery when Escape is pressed on containerEl', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                seedToolbarAndTile(containerEl);
-                controller.toggle();
-                expect(controller.isOpen).toBe(true);
-
-                containerEl.dispatchEvent(
-                    new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }),
-                );
-
-                expect(controller.isOpen).toBe(false);
-            });
-
-            test('should Tab forward from the tile to the Gallery toggle', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const { toggle } = seedToolbarAndTile(containerEl);
-                controller.toggle();
-                const tile = seedTile(containerEl);
-
-                tile.focus();
-                containerEl.dispatchEvent(makeTabEvent(false));
-
-                expect(document.activeElement).toBe(toggle);
-            });
-
-            test('should Shift+Tab backward from the tile to the Fullscreen toggle (wraparound)', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const { fullscreen } = seedToolbarAndTile(containerEl);
-                controller.toggle();
-                const tile = seedTile(containerEl);
-
-                tile.focus();
-                containerEl.dispatchEvent(makeTabEvent(true));
-
-                expect(document.activeElement).toBe(fullscreen);
-            });
-
-            test('should Tab forward from the Fullscreen toggle to the tile (wraparound)', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const { fullscreen } = seedToolbarAndTile(containerEl);
-                controller.toggle();
-                const tile = seedTile(containerEl);
-
-                fullscreen.focus();
-                containerEl.dispatchEvent(makeTabEvent(false));
-
-                expect(document.activeElement).toBe(tile);
-            });
-        });
-
-        describe('nav key containment', () => {
-            function seedToggle(containerEl: HTMLElement): HTMLElement {
-                const toggle = document.createElement('button');
-                toggle.className = 'bp-GalleryToggle';
-                containerEl.appendChild(toggle);
-                return toggle;
-            }
-
-            test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'])(
-                'should swallow %s pressed outside the grid while gallery is open',
-                key => {
-                    const { controller, containerEl } = makeController({ sidebarOpen: false });
-                    const toggle = seedToggle(containerEl);
-                    controller.toggle();
-
-                    const documentSpy = jest.fn();
-                    document.addEventListener('keydown', documentSpy);
-                    try {
-                        toggle.focus();
-                        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
-                        toggle.dispatchEvent(event);
-
-                        expect(event.defaultPrevented).toBe(true);
-                        expect(documentSpy).not.toHaveBeenCalled();
-                    } finally {
-                        document.removeEventListener('keydown', documentSpy);
-                    }
-                },
-            );
-
-            test('should let arrow keys propagate again after the gallery closes', () => {
-                const { controller, containerEl } = makeController({ sidebarOpen: false });
-                const toggle = seedToggle(containerEl);
-                controller.toggle();
-                controller.toggle();
-
-                const documentSpy = jest.fn();
-                document.addEventListener('keydown', documentSpy);
-                try {
-                    toggle.focus();
-                    const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
+            const documentSpy = jest.fn();
+            document.addEventListener('keydown', documentSpy);
+            try {
+                ['Tab', 'Escape', 'ArrowDown', '['].forEach(key => {
+                    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
                     toggle.dispatchEvent(event);
-
                     expect(event.defaultPrevented).toBe(false);
-                    expect(documentSpy).toHaveBeenCalledTimes(1);
-                } finally {
-                    document.removeEventListener('keydown', documentSpy);
-                }
-            });
+                });
+                expect(documentSpy).toHaveBeenCalledTimes(4);
+                expect(controller.isOpen).toBe(true);
+            } finally {
+                document.removeEventListener('keydown', documentSpy);
+            }
         });
 
         test('should wire the correct props into GalleryGrid', () => {

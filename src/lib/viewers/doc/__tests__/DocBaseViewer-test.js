@@ -1665,6 +1665,48 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.nextPage).not.toBeCalled();
                 expect(arrowLeft).toBe(false);
             });
+
+            describe('while the gallery is open', () => {
+                beforeEach(() => {
+                    docBase.galleryController = {
+                        isOpen: true,
+                        handleEscape: jest.fn().mockReturnValue(true),
+                        destroy: jest.fn(),
+                    };
+                });
+
+                test('should close the gallery and consume Escape', () => {
+                    const consumed = docBase.onKeydown('Escape', { defaultPrevented: false });
+
+                    expect(docBase.galleryController.handleEscape).toBeCalledTimes(1);
+                    expect(consumed).toBe(true);
+                });
+
+                test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'])(
+                    'should swallow %s without paging',
+                    key => {
+                        const consumed = docBase.onKeydown(key, { defaultPrevented: false });
+
+                        expect(stubs.previousPage).not.toBeCalled();
+                        expect(stubs.nextPage).not.toBeCalled();
+                        expect(consumed).toBe(true);
+                    },
+                );
+
+                test('should not act on Escape already handled by a descendant (defaultPrevented)', () => {
+                    const consumed = docBase.onKeydown('Escape', { defaultPrevented: true });
+
+                    expect(docBase.galleryController.handleEscape).not.toBeCalled();
+                    expect(consumed).toBe(false);
+                });
+
+                test('should not consume unrelated keys', () => {
+                    const consumed = docBase.onKeydown('Enter', { defaultPrevented: false });
+
+                    expect(docBase.galleryController.handleEscape).not.toBeCalled();
+                    expect(consumed).toBe(false);
+                });
+            });
         });
 
         describe('initViewer()', () => {
@@ -4300,6 +4342,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
             });
 
+            test('should emit galleryOpen', () => {
+                const emitSpy = jest.spyOn(docBase, 'emit');
+
+                docBase.handleGalleryEnter();
+
+                expect(emitSpy).toBeCalledWith(VIEWER_EVENT.galleryOpen);
+            });
+
             test('should not throw if findBar is not initialized', () => {
                 docBase.findBar = undefined;
                 expect(() => docBase.handleGalleryEnter()).not.toThrow();
@@ -4332,9 +4382,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.annotator.toggleAnnotationMode).not.toBeCalled();
             });
 
+            test('should emit galleryClose', () => {
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(false);
+                const emitSpy = jest.spyOn(docBase, 'emit');
+
+                docBase.handleGalleryExit();
+
+                expect(emitSpy).toBeCalledWith(VIEWER_EVENT.galleryClose);
+            });
+
             test('should not throw if annotator is not initialized', () => {
                 docBase.annotator = undefined;
                 expect(() => docBase.handleGalleryExit()).not.toThrow();
+            });
+        });
+
+        describe('closeGallery()', () => {
+            test('should delegate to galleryController.handleEscape and return its result', () => {
+                docBase.galleryController = {
+                    handleEscape: jest.fn().mockReturnValue(true),
+                    destroy: jest.fn(),
+                };
+
+                expect(docBase.closeGallery()).toBe(true);
+                expect(docBase.galleryController.handleEscape).toBeCalledTimes(1);
             });
         });
 
