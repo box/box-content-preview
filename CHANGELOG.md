@@ -1,3 +1,9 @@
+## 3.61.0 (2026-07-14)
+
+* feat(video): add v2 controls to MP4Viewer and disable for 360 videos (#1703) ([36e077f](https://github.com/box/box-content-preview/commit/36e077f)), closes [#1703](https://github.com/box/box-content-preview/issues/1703)
+
+
+
 ## 3.60.0 (2026-07-11)
 
 * fix(doc): correct text layer offset when using npm pdfjs (#1702) ([a27a7cf](https://github.com/box/box-content-preview/commit/a27a7cf)), closes [#1702](https://github.com/box/box-content-preview/issues/1702)
