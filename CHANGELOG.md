@@ -1,3 +1,9 @@
+## 3.62.0 (2026-07-14)
+
+* feat(npm): accept location and pdfjs workerSrc options for npm consumers (#1704) ([ec7fa4d](https://github.com/box/box-content-preview/commit/ec7fa4d)), closes [#1704](https://github.com/box/box-content-preview/issues/1704)
+
+
+
 ## 3.61.0 (2026-07-14)
 
 * feat(video): add v2 controls to MP4Viewer and disable for 360 videos (#1703) ([36e077f](https://github.com/box/box-content-preview/commit/36e077f)), closes [#1703](https://github.com/box/box-content-preview/issues/1703)
