@@ -14,18 +14,14 @@
     "exports": {
         ".": {
             "types": "./dist/lib/index.d.ts",
-            "import": "./dist/lib/index.js"
+            "import": "./dist/lib/index.js",
+            "default": "./dist/lib/index.js"
         },
         "./styles.css": "./dist/lib/index.css",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
