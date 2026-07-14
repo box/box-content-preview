@@ -167,6 +167,56 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 value: lowerLights,
             });
         });
+
+        test('should not shift buffering spinner when videoPlayerV2 is enabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            jest.spyOn(videoBase, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('');
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should shift buffering spinner when useReactControls is true but videoPlayerV2 is disabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            jest.spyOn(videoBase, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('-100px');
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
     });
 
     describe('destroy()', () => {
