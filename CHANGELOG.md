@@ -1,3 +1,9 @@
+## <small>3.62.1 (2026-07-14)</small>
+
+* fix(npm): add default export condition for CJS resolvers (#1706) ([6b679cf](https://github.com/box/box-content-preview/commit/6b679cf)), closes [#1706](https://github.com/box/box-content-preview/issues/1706)
+
+
+
 ## 3.62.0 (2026-07-14)
 
 * feat(npm): accept location and pdfjs workerSrc options for npm consumers (#1704) ([ec7fa4d](https://github.com/box/box-content-preview/commit/ec7fa4d)), closes [#1704](https://github.com/box/box-content-preview/issues/1704)
