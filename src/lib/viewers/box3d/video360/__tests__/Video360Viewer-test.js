@@ -62,6 +62,16 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             viewer.setup();
         });
 
+        test('should disable v2 video player regardless of feature flag', () => {
+            viewer.destroy();
+            jest.spyOn(viewer, 'featureEnabled').mockImplementation(feature => feature === 'videoPlayerV2.enabled');
+            viewer.isSetup = false;
+            viewer.setup();
+            expect(viewer.isVideoPlayerV2).toBe(false);
+            expect(viewer.wrapperEl).not.toHaveClass('bp-media--v2');
+            expect(viewer.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
+        });
+
         test('should create .destroyed property of false', () => {
             expect(viewer.destroyed).toBe(false);
         });
