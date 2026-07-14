@@ -100,7 +100,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
-        if (this.useReactControls()) {
+        if (this.useReactControls() && !this.featureEnabled('videoPlayerV2.enabled')) {
             // Shift up by half the control bar + half the spinner to visually center above the controls
             this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
         }
