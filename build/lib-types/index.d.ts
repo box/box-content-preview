@@ -43,8 +43,10 @@ export interface PreviewOptions {
     fixDependencies?: boolean;
     header?: 'light' | 'dark' | 'none';
     headerElement?: HTMLElement;
+    location?: { staticBaseURI?: string; version?: string; locale?: string };
     logoUrl?: string;
     pauseRequireJS?: boolean;
+    pdfjs?: { workerSrc?: string };
     previewWMPref?: string;
     requestInterceptor?: (config: unknown) => unknown;
     responseInterceptor?: (response: unknown) => unknown;

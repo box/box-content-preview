@@ -2445,14 +2445,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('asset');
             });
 
-            test('should set workerSrc from npm worker module when useNpmPdfjs flag is on', () => {
-                jest.doMock('../pdfjsNpmWorker', () => ({ default: () => 'npm-worker-src' }));
+            test('should set workerSrc from consumer-supplied options.pdfjs.workerSrc when useNpmPdfjs flag is on', () => {
                 docBase.pdfjsLib = { GlobalWorkerOptions: {} };
+                docBase.options = { pdfjs: { workerSrc: 'consumer-worker-src' } };
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
 
                 docBase.setupPdfjs();
 
-                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('npm-worker-src');
+                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('consumer-worker-src');
+            });
+
+            test('should fall back to the derived npm worker url when useNpmPdfjs flag is on but consumer omits workerSrc', () => {
+                jest.doMock('../pdfjsNpmWorker', () => ({ default: () => 'derived-worker-src' }));
+                docBase.pdfjsLib = { GlobalWorkerOptions: {} };
+                docBase.options = { pdfjs: {} };
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                docBase.setupPdfjs();
+
+                expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('derived-worker-src');
                 jest.dontMock('../pdfjsNpmWorker');
             });
         });

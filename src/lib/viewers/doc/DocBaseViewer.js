@@ -1275,9 +1275,12 @@ class DocBaseViewer extends BaseViewer {
      */
     setupPdfjs() {
         if (this.featureEnabled('useNpmPdfjs')) {
+            // npm consumers supply the worker URL via show({ pdfjs: { workerSrc } }) because their
+            // bundler emits the worker as an asset (e.g. webpack `?url`). CDN builds derive it from
+            // import.meta.url, which resolves against this bundle's own emitted assets.
+            const consumerWorkerSrc = this.options.pdfjs && this.options.pdfjs.workerSrc;
             // eslint-disable-next-line global-require
-            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
-            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            this.pdfjsLib.GlobalWorkerOptions.workerSrc = consumerWorkerSrc || require('./pdfjsNpmWorker').default();
             return;
         }
 
