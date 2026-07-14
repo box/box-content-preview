@@ -29,4 +29,19 @@ if (match) {
     process.exit(1);
 }
 
-console.log('verifyLibBundle: OK, no chunk-loading runtime in dist/lib/index.js');
+// Resolves the package by its own name (Node self-reference goes through the exports
+// map exactly like a consumer would). A CJS context matches the "default" condition;
+// without it, jest, Vitest in CJS mode, and require.resolve all fail with
+// "Cannot find module 'box-content-preview'".
+try {
+    require.resolve('box-content-preview');
+} catch (error) {
+    console.error('verifyLibBundle: require.resolve("box-content-preview") failed from a CJS context.');
+    console.error(
+        'The exports map needs a "default" condition so CJS resolvers (jest, require.resolve) can resolve the package.',
+    );
+    console.error(error.message);
+    process.exit(1);
+}
+
+console.log('verifyLibBundle: OK, no chunk-loading runtime in dist/lib/index.js and CJS resolution works');
