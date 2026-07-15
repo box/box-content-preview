@@ -1,3 +1,10 @@
+## 3.63.0 (2026-07-15)
+
+* fix(npm): add default export condition for CJS resolvers (#1706) ([6b679cf](https://github.com/box/box-content-preview/commit/6b679cf)), closes [#1706](https://github.com/box/box-content-preview/issues/1706)
+* fix(video): center buffering spinner correctly in v2 player (#1707) ([406ce73](https://github.com/box/box-content-preview/commit/406ce73)), closes [#1707](https://github.com/box/box-content-preview/issues/1707)
+
+
+
 ## 3.62.0 (2026-07-14)
 
 * feat(npm): accept location and pdfjs workerSrc options for npm consumers (#1704) ([ec7fa4d](https://github.com/box/box-content-preview/commit/ec7fa4d)), closes [#1704](https://github.com/box/box-content-preview/issues/1704)
