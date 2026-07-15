@@ -201,6 +201,19 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             expect(result2).toBe(false);
         });
+
+        test('should defer arrows to the gallery key policy instead of paging while the gallery is open', () => {
+            presentation.galleryController = {
+                isOpen: true,
+                handleEscape: jest.fn(),
+                destroy: jest.fn(),
+            };
+
+            const result = presentation.onKeydown('ArrowUp', { defaultPrevented: false });
+
+            expect(stubs.previousPage).not.toBeCalled();
+            expect(result).toBe(true);
+        });
     });
 
     describe('checkOverflow()', () => {

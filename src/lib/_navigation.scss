@@ -1,6 +1,7 @@
 $navigationBtnWidth: 50px;
 
-.bp-is-fullscreen .bp-navigate {
+.bp-is-fullscreen .bp-navigate,
+.bp-is-gallery-open .bp-navigate {
     display: none;
 }
 

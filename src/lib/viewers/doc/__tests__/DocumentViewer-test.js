@@ -225,6 +225,22 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
             expect(docbaseStub).toBeCalledTimes(2);
         });
+
+        test('should defer to the gallery key policy instead of paging or zooming while the gallery is open', () => {
+            doc.galleryController = {
+                isOpen: true,
+                handleEscape: jest.fn(),
+                destroy: jest.fn(),
+            };
+
+            const arrowResult = doc.onKeydown('ArrowUp', { defaultPrevented: false });
+            expect(stubs.previousPage).not.toBeCalled();
+            expect(arrowResult).toBe(true);
+
+            const zoomResult = doc.onKeydown('Shift++', { defaultPrevented: false });
+            expect(stubs.zoomIn).not.toBeCalled();
+            expect(zoomResult).toBe(false);
+        });
     });
 
     describe('handleFirstRender()', () => {

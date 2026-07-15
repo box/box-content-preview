@@ -8,8 +8,9 @@ const FOCUSABLE_ELEMENT_SELECTORS = [
     'input[type="radio"]',
     'input[type="checkbox"]',
     'select',
+    '[role="option"][tabindex="0"]',
 ];
-const EXCLUDED_SELECTOR_ATTRIBUTES = ['disabled', 'tabindex="-1"', 'aria-disabled="true"'];
+const EXCLUDED_SELECTOR_ATTRIBUTES = ['disabled', 'tabindex="-1"', 'aria-disabled="true"', 'aria-hidden="true"'];
 const FOCUSABLE_ELEMENTS_SELECTOR = FOCUSABLE_ELEMENT_SELECTORS.map(element => {
     let selector = element;
     EXCLUDED_SELECTOR_ATTRIBUTES.forEach(attribute => {
@@ -75,8 +76,11 @@ class FocusTrap {
     getFocusableElements = (): Array<HTMLElement> => {
         // Look for focusable elements
         const foundElements = this.element.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS_SELECTOR);
-        // Filter out the buttons that are invisible (in case display: 'none' is used for hidden buttons)
-        return Array.from(foundElements).filter(el => (isButton(el) && isVisible(el)) || !isButton(el));
+        // Filter out elements in inert subtrees (e.g. the doc while the gallery is open) and
+        // buttons that are invisible (in case display: 'none' is used for hidden buttons)
+        return Array.from(foundElements).filter(
+            el => !el.closest('[inert]') && ((isButton(el) && isVisible(el)) || !isButton(el)),
+        );
     };
 
     handleTrapKeydown = (event: KeyboardEvent): void => {

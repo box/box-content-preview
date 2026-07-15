@@ -930,6 +930,23 @@ class DocBaseViewer extends BaseViewer {
      * @return {boolean} consumed or not
      */
     onKeydown(key, event) {
+        if (this.galleryController && this.galleryController.isOpen) {
+            if (event && event.defaultPrevented) {
+                return false;
+            }
+
+            if (key === 'Escape') {
+                this.galleryController.handleEscape();
+                return true;
+            }
+
+            // Swallow page-nav keys so they can't flip the doc page underneath the gallery
+            // or trigger the host's collection navigation.
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'].includes(key)) {
+                return true;
+            }
+        }
+
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
@@ -1739,10 +1756,6 @@ class DocBaseViewer extends BaseViewer {
     handleDocElKeydown(event) {
         const key = decodeKeydown(event);
 
-        if (key === 'Escape' && this.galleryController.handleEscape()) {
-            return;
-        }
-
         if (event.altKey && key.includes('Arrow')) {
             event.stopPropagation(); // Prevent collection/page navigation for caret navigation users
         }
@@ -2009,6 +2022,7 @@ class DocBaseViewer extends BaseViewer {
      * Called before the gallery opens. Closes the find bar and resets annotation mode.
      *
      * @protected
+     * @emits galleryOpen
      * @return {void}
      */
     handleGalleryEnter() {
@@ -2019,18 +2033,32 @@ class DocBaseViewer extends BaseViewer {
         if (this.annotator) {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
+        this.emit(VIEWER_EVENT.galleryOpen);
     }
 
     /**
      * Called after the gallery closes. Restores REGION mode so the region-comment cursor is active.
      *
      * @protected
+     * @emits galleryClose
      * @return {void}
      */
     handleGalleryExit() {
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
+        this.emit(VIEWER_EVENT.galleryClose);
+    }
+
+    /**
+     * Closes the gallery view if it is open. Exposed for host applications (e.g. the
+     * preview header's Escape hotkey) that see keys the viewer's own handlers cannot.
+     *
+     * @public
+     * @return {boolean} Whether the gallery was open and has been closed
+     */
+    closeGallery() {
+        return this.galleryController ? this.galleryController.handleEscape() : false;
     }
 
     /**

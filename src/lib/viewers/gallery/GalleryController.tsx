@@ -113,6 +113,7 @@ export default class GalleryController {
 
         if (this.isGalleryOpen) {
             this.onBeforeOpen();
+            this.applyGalleryOpenState();
 
             if (this.gallerySidebarTimeoutId !== null) {
                 clearTimeout(this.gallerySidebarTimeoutId);
@@ -147,6 +148,8 @@ export default class GalleryController {
                 this.galleryRoot.unmount();
                 this.galleryRoot = null;
             }
+
+            this.clearGalleryOpenState();
 
             if (this.galleryEl) {
                 this.galleryEl.remove();
@@ -203,6 +206,8 @@ export default class GalleryController {
             this.gallerySidebarTimeoutId = null;
         }
 
+        this.clearGalleryOpenState();
+
         if (this.galleryRoot) {
             this.galleryRoot.unmount();
             this.galleryRoot = null;
@@ -222,6 +227,16 @@ export default class GalleryController {
         this.isGalleryOpen = false;
         this.sidebarWasOpen = false;
         this.galleryFocusedPage = null;
+    }
+
+    private applyGalleryOpenState(): void {
+        this.containerEl.classList.add('bp-is-gallery-open');
+        this.containerEl.querySelector('.bp-doc')?.setAttribute('inert', '');
+    }
+
+    private clearGalleryOpenState(): void {
+        this.containerEl.classList.remove('bp-is-gallery-open');
+        this.containerEl.querySelector('.bp-doc')?.removeAttribute('inert');
     }
 
     private handleGalleryNavigate = (pageNum: number): void => {
@@ -250,7 +265,7 @@ export default class GalleryController {
 
         const thumbnail = this.galleryThumbnail;
         this.galleryEl = document.createElement('div');
-        this.containerEl.appendChild(this.galleryEl);
+        this.containerEl.insertBefore(this.galleryEl, this.containerEl.querySelector('.bp-ControlsRoot'));
         this.galleryRoot = createRoot(this.galleryEl);
         this.galleryFocusedPage = pdfViewer.currentPageNumber;
         this.galleryRoot.render(

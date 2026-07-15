@@ -179,6 +179,87 @@ describe('GalleryController', () => {
             expect(onAfterClose).toHaveBeenCalledTimes(1);
         });
 
+        describe('gallery open state', () => {
+            function seedDoc(containerEl: HTMLElement) {
+                const doc = document.createElement('div');
+                doc.className = 'bp-doc';
+                containerEl.appendChild(doc);
+                return doc;
+            }
+
+            test('should add the container class and mark bp-doc inert on open', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: false });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(true);
+                expect(doc.hasAttribute('inert')).toBe(true);
+            });
+
+            test('should clear the container class and bp-doc inert on close', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: false });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+                controller.toggle();
+
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(false);
+                expect(doc.hasAttribute('inert')).toBe(false);
+            });
+
+            test('should clear the container class and bp-doc inert on destroy while gallery is open', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: false });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(true);
+                expect(doc.hasAttribute('inert')).toBe(true);
+
+                controller.destroy();
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(false);
+                expect(doc.hasAttribute('inert')).toBe(false);
+            });
+
+            test('should apply the open state immediately even when grid mount is deferred behind the sidebar', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: true });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+
+                // Grid mount is deferred (only the seeded .bp-doc is present), but the open state applies right away
+                expect(containerEl.children).toHaveLength(1);
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(true);
+                expect(doc.hasAttribute('inert')).toBe(true);
+            });
+        });
+
+        // Tab is intentionally not trapped: with .bp-doc inert, natural tab order flows from
+        // the gallery controls out to the host's sidebar/header. Verify keys pressed inside
+        // the container bubble freely so DocBaseViewer.onKeydown (via the host) can own the
+        // gallery-wide Escape/arrow policy.
+        test('should not intercept keydown events on containerEl while the gallery is open', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = document.createElement('button');
+            toggle.className = 'bp-GalleryToggle';
+            containerEl.appendChild(toggle);
+            controller.toggle();
+
+            const documentSpy = jest.fn();
+            document.addEventListener('keydown', documentSpy);
+            try {
+                ['Tab', 'Escape', 'ArrowDown', '['].forEach(key => {
+                    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+                    toggle.dispatchEvent(event);
+                    expect(event.defaultPrevented).toBe(false);
+                });
+                expect(documentSpy).toHaveBeenCalledTimes(4);
+                expect(controller.isOpen).toBe(true);
+            } finally {
+                document.removeEventListener('keydown', documentSpy);
+            }
+        });
+
         test('should wire the correct props into GalleryGrid', () => {
             const { controller } = makeController({ currentPage: 3, pageCount: 25, sidebarOpen: false });
             controller.toggle();
