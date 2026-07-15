@@ -187,10 +187,11 @@
         }
     },
     "resolutions": {
-        "mojito-rb-gen/merge": "1.2.1",
         "**/react-intl/**/@types/react": "18.3.1",
-        "cheerio": "1.0.0-rc.12",
+        "@types/node": "^22.5.4",
         "acorn": "8.14.0",
-        "canvas": "^3.2.3"
+        "canvas": "^3.2.3",
+        "cheerio": "1.0.0-rc.12",
+        "mojito-rb-gen/merge": "1.2.1"
     }
 }
