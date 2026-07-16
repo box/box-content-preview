@@ -2906,6 +2906,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('bindDOMListeners()', () => {
+            const originalLocation = window.location;
+
             beforeEach(() => {
                 stubs.addEventListener = jest.spyOn(docBase.docEl, 'addEventListener').mockImplementation();
                 stubs.addListener = jest.spyOn(fullscreen, 'addListener').mockImplementation();
@@ -2950,9 +2952,43 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect.anything(),
                 );
             });
+
+            test('should not add wheel listener on mobile when disableMobileWheelZoom query param is present', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.isMobile = true;
+                delete window.location;
+                window.location = { search: '?disableMobileWheelZoom' };
+
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).not.toBeCalledWith(
+                    'wheel',
+                    docBase.trackpadPinchToZoomHandler,
+                    expect.anything(),
+                );
+
+                window.location = originalLocation;
+            });
+
+            test('should still add wheel listener on mobile when disableMobileWheelZoom query param is absent', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.isMobile = true;
+                delete window.location;
+                window.location = { search: '' };
+
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler, {
+                    passive: false,
+                });
+
+                window.location = originalLocation;
+            });
         });
 
         describe('unbindDOMListeners()', () => {
+            const originalLocation = window.location;
+
             beforeEach(() => {
                 stubs.removeEventListener = jest.spyOn(docBase.docEl, 'removeEventListener').mockImplementation();
                 stubs.removeFullscreenListener = jest.spyOn(fullscreen, 'removeListener').mockImplementation();
@@ -2998,6 +3034,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.unbindDOMListeners();
 
                 expect(stubs.removeEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler);
+            });
+
+            test('should not remove wheel listener on mobile when disableMobileWheelZoom query param is present', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
+                docBase.isMobile = true;
+                delete window.location;
+                window.location = { search: '?disableMobileWheelZoom' };
+
+                docBase.unbindDOMListeners();
+
+                expect(stubs.removeEventListener).not.toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler);
+
+                window.location = originalLocation;
             });
         });
 

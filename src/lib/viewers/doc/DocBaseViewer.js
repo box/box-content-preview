@@ -1554,7 +1554,8 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
 
-        if (this.featureEnabled('pinchToZoom.enabled')) {
+        const disableMobileWheelZoom = new URLSearchParams(window.location.search).has('disableMobileWheelZoom');
+        if (this.featureEnabled('pinchToZoom.enabled') && !(this.isMobile && disableMobileWheelZoom)) {
             this.docEl.addEventListener('wheel', this.trackpadPinchToZoomHandler, { passive: false });
         }
     }
@@ -1576,7 +1577,8 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
             }
 
-            if (this.featureEnabled('pinchToZoom.enabled')) {
+            const disableMobileWheelZoom = new URLSearchParams(window.location.search).has('disableMobileWheelZoom');
+            if (this.featureEnabled('pinchToZoom.enabled') && !(this.isMobile && disableMobileWheelZoom)) {
                 this.docEl.removeEventListener('wheel', this.trackpadPinchToZoomHandler);
             }
         }
