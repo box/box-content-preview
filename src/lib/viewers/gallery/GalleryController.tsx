@@ -20,6 +20,9 @@ const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // ms
 interface PdfViewerLike {
     currentPageNumber: number;
     pagesCount: number;
+    // PDF.js PDFViewer API. pdfPage is only set once the page's metadata has been fetched;
+    // before that, viewport holds the first page's default dimensions.
+    getPageView?: (index: number) => { pdfPage?: unknown; viewport?: { width: number; height: number } } | undefined;
 }
 
 interface ThumbnailsSidebarLike {
@@ -267,6 +270,20 @@ export default class GalleryController {
         this.galleryFocusedPage = pageNum;
     };
 
+    // Per-page width:height ratio from PDF.js page metadata; null until the page's metadata
+    // is fetched (see PdfViewerLike.getPageView), which matters for mixed-size docs.
+    private getPageRatio = (pageNum: number): number | null => {
+        const pdfViewer = this.getPdfViewer();
+        const pageView = pdfViewer.getPageView && pdfViewer.getPageView(pageNum - 1);
+
+        if (!pageView || !pageView.pdfPage || !pageView.viewport) {
+            return null;
+        }
+
+        const { width, height } = pageView.viewport;
+        return width > 0 && height > 0 ? width / height : null;
+    };
+
     private mountGrid(): void {
         if (this.galleryRoot) {
             return;
@@ -290,6 +307,7 @@ export default class GalleryController {
         this.galleryRoot.render(
             <GalleryGrid
                 currentPage={pdfViewer.currentPageNumber}
+                getPageRatio={this.getPageRatio}
                 onClose={this.toggle}
                 onFocusChange={this.handleFocusChange}
                 onPageNavigate={this.handleGalleryNavigate}

@@ -4,7 +4,6 @@ import { decodeKeydown, replacePlaceholders } from '../../util';
 import './GalleryGrid.scss';
 
 const GALLERY_THUMB_MAX_WIDTH = 440;
-const INITIAL_LOAD_BUFFER = 40;
 const CONCURRENT_LOADS = 4;
 const SCROLL_THROTTLE_MS = 200;
 
@@ -15,11 +14,15 @@ export interface GalleryThumbnail {
         itemIndex: number,
         options: { createImgTag: boolean; thumbMaxWidth: number },
     ) => Promise<HTMLImageElement | null>;
+    /** First-page width:height ratio, populated by init(). Used to size placeholders to the real page shape. */
+    pageRatio?: number;
 }
 
 export type Props = {
     pageCount: number;
     currentPage: number;
+    /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
+    getPageRatio?: (pageNum: number) => number | null;
     onFocusChange?: (pageNum: number) => void;
     onPageNavigate: (n: number) => void;
     onClose: () => void;
@@ -32,6 +35,7 @@ interface TileProps {
     imageSrc?: string;
     onClick: (pageNum: number) => void;
     onFocus: (pageNum: number) => void;
+    pageRatio?: number | null;
 }
 
 const GalleryTile = React.memo(function GalleryTile({
@@ -40,7 +44,11 @@ const GalleryTile = React.memo(function GalleryTile({
     imageSrc,
     onClick,
     onFocus,
+    pageRatio,
 }: TileProps): JSX.Element {
+    // Match the placeholder to the real page shape so tiles don't resize (reflow/jitter) as images arrive
+    const placeholderStyle = pageRatio ? { paddingTop: `${100 / pageRatio}%` } : undefined;
+
     return (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
@@ -54,7 +62,11 @@ const GalleryTile = React.memo(function GalleryTile({
             tabIndex={isFocused ? 0 : -1}
         >
             <span className="bp-gallery-tile-badge">{pageNum}</span>
-            {imageSrc ? <img alt="" src={imageSrc} /> : <span className="bp-gallery-tile-placeholder" />}
+            {imageSrc ? (
+                <img alt="" src={imageSrc} />
+            ) : (
+                <span className="bp-gallery-tile-placeholder" style={placeholderStyle} />
+            )}
         </div>
     );
 });
@@ -62,6 +74,7 @@ const GalleryTile = React.memo(function GalleryTile({
 export default function GalleryGrid({
     pageCount,
     currentPage,
+    getPageRatio,
     onClose,
     onFocusChange,
     onPageNavigate,
@@ -69,14 +82,50 @@ export default function GalleryGrid({
 }: Props): JSX.Element {
     const [loadedImages, setLoadedImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
+    const [pageRatio, setPageRatio] = useState<number | null>(null);
     // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
     const anchorPageRef = useRef(currentPage);
     const gridRef = useRef<HTMLDivElement>(null);
     const queueRef = useRef<number[]>([]);
     const isProcessingRef = useRef(false);
     const isMountedRef = useRef(true);
-    const initialLoadDoneRef = useRef(false);
-    const initialLoadCountRef = useRef(0);
+    const inFlightRef = useRef<Set<number>>(new Set());
+
+    const byDistanceFromAnchor = (a: number, b: number): number =>
+        Math.abs(a - anchorPageRef.current) - Math.abs(b - anchorPageRef.current);
+
+    // Unloaded tiles within viewport + buffer, on-screen tiles first so the user never
+    // watches a visible hole while off-screen pages load. Pages already being rendered
+    // (in flight) are excluded so re-derives can't waste loader slots on them.
+    function getUnloadedNearViewport(): number[] {
+        const grid = gridRef.current;
+        if (!grid) return [];
+
+        const { scrollTop, clientHeight } = grid;
+        const bufferZone = clientHeight * 3;
+        const viewportBottom = scrollTop + clientHeight;
+
+        const visibleUnloaded: number[] = [];
+        const bufferedUnloaded: number[] = [];
+        const tiles = grid.querySelectorAll('[data-page]');
+
+        tiles.forEach(tile => {
+            const el = tile as HTMLElement;
+            if (!el.dataset.page) return;
+            const pageNum = parseInt(el.dataset.page, 10);
+            if (inFlightRef.current.has(pageNum) || el.querySelector('img')) return;
+            const tileTop = el.offsetTop;
+            const tileBottom = tileTop + el.offsetHeight;
+
+            if (tileBottom > scrollTop && tileTop < viewportBottom) {
+                visibleUnloaded.push(pageNum);
+            } else if (tileBottom > scrollTop - bufferZone && tileTop < viewportBottom + bufferZone) {
+                bufferedUnloaded.push(pageNum);
+            }
+        });
+
+        return [...visibleUnloaded.sort(byDistanceFromAnchor), ...bufferedUnloaded.sort(byDistanceFromAnchor)];
+    }
 
     function processQueue() {
         if (!isMountedRef.current || !thumbnail || queueRef.current.length === 0) {
@@ -84,9 +133,8 @@ export default function GalleryGrid({
             return;
         }
 
-        const batchSize = initialLoadDoneRef.current ? CONCURRENT_LOADS : 1;
-        const batch = queueRef.current.slice(0, batchSize);
-        queueRef.current = queueRef.current.slice(batchSize);
+        const batch = queueRef.current.slice(0, CONCURRENT_LOADS);
+        queueRef.current = queueRef.current.slice(CONCURRENT_LOADS);
 
         requestAnimationFrame(() => {
             if (!isMountedRef.current || !thumbnail) {
@@ -105,27 +153,31 @@ export default function GalleryGrid({
                     return;
                 }
 
-                if (!initialLoadDoneRef.current) {
-                    initialLoadCountRef.current += batch.length;
-                    if (initialLoadCountRef.current >= INITIAL_LOAD_BUFFER) {
-                        initialLoadDoneRef.current = true;
-                        isProcessingRef.current = false;
-                        return;
-                    }
+                // Keep only what the viewport + buffer still needs, then go idle. This prune is
+                // what makes loading lazy (the mount queue starts as the whole document); the
+                // scroll/resize handlers re-derive what to load on demand after that.
+                const remaining = new Set(queueRef.current);
+                queueRef.current = getUnloadedNearViewport().filter(p => remaining.has(p));
+                if (queueRef.current.length === 0) {
+                    isProcessingRef.current = false;
+                    return;
                 }
                 processQueue();
             };
 
             batch.forEach(pageNum => {
+                inFlightRef.current.add(pageNum);
                 thumbnail
                     .createThumbnailImage(pageNum - 1, { createImgTag: true, thumbMaxWidth: GALLERY_THUMB_MAX_WIDTH })
                     .then((imageEl: HTMLImageElement | null) => {
+                        inFlightRef.current.delete(pageNum);
                         if (isMountedRef.current && imageEl && imageEl.src) {
                             setLoadedImages(prev => ({ ...prev, [pageNum]: imageEl.src }));
                         }
                         onComplete();
                     })
                     .catch(() => {
+                        inFlightRef.current.delete(pageNum);
                         onComplete();
                     });
             });
@@ -139,40 +191,13 @@ export default function GalleryGrid({
         }
     }
 
-    function getUnloadedNearViewport(): number[] {
-        const grid = gridRef.current;
-        if (!grid) return [];
-
-        const { scrollTop, clientHeight } = grid;
-        const bufferZone = clientHeight * 3;
-        const viewportTop = scrollTop - bufferZone;
-        const viewportBottom = scrollTop + clientHeight + bufferZone;
-
-        const nearbyUnloaded: number[] = [];
-        const tiles = grid.querySelectorAll('[data-page]');
-
-        tiles.forEach(tile => {
-            const el = tile as HTMLElement;
-            if (!el.dataset.page) return;
-            const pageNum = parseInt(el.dataset.page, 10);
-            const tileTop = el.offsetTop;
-            const tileBottom = tileTop + el.offsetHeight;
-
-            if (tileBottom > viewportTop && tileTop < viewportBottom && !el.querySelector('img')) {
-                nearbyUnloaded.push(pageNum);
-            }
-        });
-
-        return nearbyUnloaded;
-    }
-
     const handleScrollRef = useRef(
         throttle(() => {
             const nearbyUnloaded = getUnloadedNearViewport();
             if (nearbyUnloaded.length > 0) {
-                const currentQueue = queueRef.current;
-                const toAdd = nearbyUnloaded.filter(p => !currentQueue.includes(p));
-                queueRef.current = [...toAdd, ...currentQueue];
+                const currentQueue = new Set(queueRef.current);
+                const toAdd = nearbyUnloaded.filter(p => !currentQueue.has(p));
+                queueRef.current = [...toAdd, ...queueRef.current];
                 startProcessing();
             }
         }, SCROLL_THROTTLE_MS),
@@ -214,7 +239,6 @@ export default function GalleryGrid({
             const cached = thumbnail.getImageFromCache(i - 1);
             if (cached && cached.image && cached.image.src) {
                 initialImages[i] = cached.image.src;
-                initialLoadCountRef.current += 1;
             } else {
                 uncachedPages.push(i);
             }
@@ -229,8 +253,12 @@ export default function GalleryGrid({
 
         thumbnail.init().then(() => {
             if (!isMountedRef.current) return;
-            isProcessingRef.current = true;
-            processQueue();
+            if (typeof thumbnail.pageRatio === 'number' && thumbnail.pageRatio > 0) {
+                setPageRatio(thumbnail.pageRatio);
+            }
+            // Guarded start: the mount scrollIntoView can fire the scroll handler first, and a
+            // second unguarded pump would double the concurrent thumbnail renders.
+            startProcessing();
         });
 
         return () => {
@@ -258,6 +286,9 @@ export default function GalleryGrid({
             if (tile) {
                 tile.scrollIntoView({ block: 'start' });
             }
+            // A larger viewport (fullscreen enter, window resize) can reveal unloaded tiles
+            // without any scroll event, so run the same catch-up the scroll handler does.
+            handleScrollRef.current();
         });
         observer.observe(grid);
 
@@ -358,6 +389,7 @@ export default function GalleryGrid({
                 onClick={handleTileClick}
                 onFocus={handleTileFocus}
                 pageNum={i}
+                pageRatio={(getPageRatio && getPageRatio(i)) || pageRatio}
             />,
         );
     }

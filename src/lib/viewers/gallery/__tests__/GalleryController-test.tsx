@@ -272,6 +272,44 @@ describe('GalleryController', () => {
             expect(grid.props.onClose).toBe(controller.toggle);
             expect(typeof grid.props.onPageNavigate).toBe('function');
             expect(typeof grid.props.onFocusChange).toBe('function');
+            expect(typeof grid.props.getPageRatio).toBe('function');
+        });
+
+        describe('getPageRatio prop', () => {
+            function getGridGetPageRatio(controller: GalleryController): (pageNum: number) => number | null {
+                controller.toggle();
+                return mockLastRoot.render.mock.calls[0][0].props.getPageRatio;
+            }
+
+            test('should return the page ratio from fetched PDF.js page metadata', () => {
+                const { controller, pdfViewer } = makeController({ sidebarOpen: false });
+                (pdfViewer as { getPageView?: unknown }).getPageView = (index: number) =>
+                    index === 1 ? { pdfPage: {}, viewport: { width: 1600, height: 900 } } : undefined;
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(2)).toBeCloseTo(16 / 9);
+            });
+
+            test('should return null while the page metadata has not been fetched', () => {
+                const { controller, pdfViewer } = makeController({ sidebarOpen: false });
+                // pdfPage missing: the view still carries the first page's default viewport
+                (pdfViewer as { getPageView?: unknown }).getPageView = () => ({
+                    viewport: { width: 800, height: 600 },
+                });
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(2)).toBeNull();
+            });
+
+            test('should return null when the viewer does not expose getPageView', () => {
+                const { controller } = makeController({ sidebarOpen: false });
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(1)).toBeNull();
+            });
         });
 
         test('should close sidebar first and defer grid mount by half the transition time when sidebar is open', () => {

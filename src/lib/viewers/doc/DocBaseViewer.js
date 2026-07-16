@@ -1779,6 +1779,13 @@ class DocBaseViewer extends BaseViewer {
         if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
+
+        // Restore focus to the toggle, mirroring BaseViewer.handleFullscreenEnter — the browser
+        // otherwise drops focus to the body on exit, and keyboard input (e.g. gallery arrow
+        // keys) no longer reaches the viewer.
+        if (this.fullscreenToggleEl && this.fullscreenToggleEl.focus) {
+            this.fullscreenToggleEl.focus();
+        }
     }
 
     /**
