@@ -1,3 +1,9 @@
+## 3.64.0 (2026-07-16)
+
+* fix(gallery): trap keys while open (#1700) ([38948a5](https://github.com/box/box-content-preview/commit/38948a5)), closes [#1700](https://github.com/box/box-content-preview/issues/1700)
+
+
+
 ## 3.63.0 (2026-07-15)
 
 * fix(npm): add default export condition for CJS resolvers (#1706) ([6b679cf](https://github.com/box/box-content-preview/commit/6b679cf)), closes [#1706](https://github.com/box/box-content-preview/issues/1706)
