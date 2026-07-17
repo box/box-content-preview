@@ -1,3 +1,9 @@
+## 3.65.0 (2026-07-17)
+
+* fix(doc): disable wheel zoom handler on mobile behind query param gate (#1710) ([3098c27](https://github.com/box/box-content-preview/commit/3098c27)), closes [#1710](https://github.com/box/box-content-preview/issues/1710)
+
+
+
 ## 3.64.0 (2026-07-16)
 
 * fix(gallery): trap keys while open (#1700) ([38948a5](https://github.com/box/box-content-preview/commit/38948a5)), closes [#1700](https://github.com/box/box-content-preview/issues/1700)
