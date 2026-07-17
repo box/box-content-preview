@@ -2770,6 +2770,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
+            test.each([true, false])('should enable or disable the gallery toggle based on mobile', isMobile => {
+                docBase.isMobile = isMobile;
+                jest.spyOn(docBase.galleryController, 'canRender').mockReturnValue(true);
+                docBase.renderUI();
+
+                expect(getProps(docBase)).toMatchObject({
+                    onGalleryToggle: isMobile ? undefined : docBase.galleryController.toggle,
+                });
+            });
+
             test('should hide annotation create controls when in bounding box mode', () => {
                 docBase.currentAnnotatorViewMode = 'boundingBoxes';
                 docBase.options.showAnnotationsDrawingCreate = true;

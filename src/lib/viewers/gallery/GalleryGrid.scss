@@ -27,10 +27,11 @@
     border-radius: 12px;
     box-shadow: 0 0 0 1px $off-white;
     cursor: pointer;
-    transition: box-shadow .2s ease-in-out;
+    transition: box-shadow .2s ease-in-out, transform .2s ease-in-out;
 
     &:hover {
         box-shadow: 0 0 0 3px $seventy-sixers, 0 4px 5px 0 rgba(0, 0, 0, .15);
+        transform: translateY(-1px) scale(1.02);
 
         .bp-gallery-tile-badge {
             opacity: 1;
