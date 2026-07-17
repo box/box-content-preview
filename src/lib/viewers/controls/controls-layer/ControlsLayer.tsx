@@ -89,15 +89,18 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
     // Destroy timeouts on unmount
     React.useEffect(() => helpersRef.current.clean, []);
 
+    // Keep a stable identity so consumers can safely depend on it (e.g. ColorPickerControl pins the layer
+    // from an effect keyed on this function). An inline value here handed down a fresh function every render,
+    // which retriggered that effect's cleanup and instantly un-pinned the layer — the palette faded out the
+    // moment the cursor left it.
+    const setIsForcedWithReset = React.useCallback((value: boolean): void => {
+        helpersRef.current.reset();
+        setIsForced(value);
+    }, []);
+    const contextValue = React.useMemo(() => ({ setIsForced: setIsForcedWithReset }), [setIsForcedWithReset]);
+
     return (
-        <ControlsLayerContext.Provider
-            value={{
-                setIsForced: (value): void => {
-                    helpersRef.current.reset();
-                    setIsForced(value);
-                },
-            }}
-        >
+        <ControlsLayerContext.Provider value={contextValue}>
             <div
                 className={`bp-ControlsLayer ${isShown || isForced ? SHOW_CLASSNAME : ''}`}
                 data-testid="bp-ControlsLayer"

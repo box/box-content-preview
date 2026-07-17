@@ -112,7 +112,7 @@ export default function AnnotationsControls({
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                <IconPencilScribbleMedium24 />
+                <IconPencilScribbleMedium24 style={{ color: annotationColor }} />
             </AnnotationsButton>
             <AnnotationsTargetedTooltip isEnabled={showRegion}>
                 <AnnotationsButton

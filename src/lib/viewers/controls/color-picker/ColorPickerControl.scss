@@ -27,14 +27,22 @@
 
 .bp-ColorPickerControl-palette {
     $arrow-height: 12px;
+    $palette-ease: cubic-bezier(.23, 1, .32, 1);
+    $palette-duration: 160ms;
 
     position: absolute;
     top: -#{$arrow-height};
     left: 50%;
     z-index: 1;
-    display: none;
     padding-bottom: 10px;
-    transform: translate(-50%, -100%);
+    // display can't be transitioned, so hide via visibility+opacity and delay visibility on close
+    // until the fade-out finishes.
+    transform: translate(-50%, -100%) scale(.95);
+    // Popover sits above its trigger, so scale in from the bottom-center, not its own center.
+    transform-origin: bottom center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity $palette-duration $palette-ease, transform $palette-duration $palette-ease, visibility 0s linear $palette-duration;
 
     &::after {
         position: absolute;
@@ -48,7 +56,21 @@
     }
 
     &.bp-is-open {
-        display: block;
+        transform: translate(-50%, -100%) scale(1);
+        visibility: visible;
+        opacity: 1;
+        transition: opacity $palette-duration $palette-ease, transform $palette-duration $palette-ease, visibility 0s linear 0s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        // Keep the opacity fade; drop the scale so nothing moves.
+        transform: translate(-50%, -100%);
+        transition: opacity $palette-duration linear, visibility 0s linear $palette-duration;
+
+        &.bp-is-open {
+            transform: translate(-50%, -100%);
+            transition: opacity $palette-duration linear, visibility 0s linear 0s;
+        }
     }
 }
 
