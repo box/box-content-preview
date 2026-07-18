@@ -944,7 +944,7 @@ class DocBaseViewer extends BaseViewer {
             // or trigger the host's collection navigation. Arrows pressed outside the grid
             // are redirected into it so the first press navigates the tiles.
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'].includes(key)) {
-                this.galleryController.handleArrowKey(key, event && event.target);
+                this.galleryController.handleArrowKey(key);
                 return true;
             }
         }
@@ -1780,12 +1780,9 @@ class DocBaseViewer extends BaseViewer {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
 
-        // Restore focus to the toggle, mirroring BaseViewer.handleFullscreenEnter — the browser
-        // otherwise drops focus to the body on exit, and keyboard input (e.g. gallery arrow
-        // keys) no longer reaches the viewer.
-        if (this.fullscreenToggleEl && this.fullscreenToggleEl.focus) {
-            this.fullscreenToggleEl.focus();
-        }
+        // Restore focus to the toggle, the browser otherwise drops focus to the body on exit,
+        // and keyboard input (e.g. gallery arrow keys) no longer reach the viewer
+        this.fullscreenToggleEl?.focus?.();
     }
 
     /**

@@ -195,14 +195,14 @@ export default class GalleryController {
     /**
      * Redirects an arrow key pressed outside the grid (e.g. focus parked on a toggle after
      * toggling fullscreen) back into it: refocuses the selected tile and replays the key so
-     * the first press navigates, like the thumbnail sidebar. The contains() check makes the
-     * replayed event (which lands inside the grid) a no-op, preventing re-entry.
+     * the first press navigates, like the thumbnail sidebar. Keys pressed inside the grid
+     * never arrive here — GalleryGrid stops propagation on every arrow it handles.
      */
-    handleArrowKey(key: string, target: EventTarget | null): void {
+    handleArrowKey(key: string): void {
         if (!this.isGalleryOpen || !key.startsWith('Arrow')) return;
 
         const grid = this.galleryEl;
-        if (!grid || grid.contains(target as Node)) return;
+        if (!grid) return;
 
         const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"]');
         if (tile) {

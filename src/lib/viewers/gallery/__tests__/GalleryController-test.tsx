@@ -401,7 +401,7 @@ describe('GalleryController', () => {
             return toggle;
         }
 
-        test('should refocus the selected tile and replay the arrow into the grid when target is outside it', () => {
+        test('should refocus the selected tile and replay the arrow into the grid', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
             const toggle = seedToggle(containerEl);
             controller.toggle();
@@ -409,7 +409,8 @@ describe('GalleryController', () => {
             const tileKeydown = jest.fn();
             tile.addEventListener('keydown', tileKeydown);
 
-            controller.handleArrowKey('ArrowDown', toggle);
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
 
             expect(document.activeElement).toBe(tile);
             expect(tileKeydown).toHaveBeenCalledTimes(1);
@@ -423,21 +424,9 @@ describe('GalleryController', () => {
             seedSelectedTile(containerEl);
 
             toggle.focus();
-            controller.handleArrowKey('[', toggle);
+            controller.handleArrowKey('[');
 
             expect(document.activeElement).toBe(toggle);
-        });
-
-        test('should not redirect when the target is already inside the grid (no re-entry)', () => {
-            const { controller, containerEl } = makeController({ sidebarOpen: false });
-            controller.toggle();
-            const tile = seedSelectedTile(containerEl);
-            const tileKeydown = jest.fn();
-            tile.addEventListener('keydown', tileKeydown);
-
-            controller.handleArrowKey('ArrowDown', tile);
-
-            expect(tileKeydown).not.toHaveBeenCalled();
         });
 
         test('should be a no-op when the gallery is closed', () => {
@@ -445,7 +434,7 @@ describe('GalleryController', () => {
             const toggle = seedToggle(containerEl);
 
             toggle.focus();
-            controller.handleArrowKey('ArrowDown', toggle);
+            controller.handleArrowKey('ArrowDown');
 
             expect(document.activeElement).toBe(toggle);
         });

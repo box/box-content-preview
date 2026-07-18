@@ -1686,12 +1686,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'])(
                     'should swallow %s without paging',
                     key => {
-                        const target = document.createElement('button');
-                        const consumed = docBase.onKeydown(key, { defaultPrevented: false, target });
+                        const consumed = docBase.onKeydown(key, { defaultPrevented: false });
 
                         expect(stubs.previousPage).not.toBeCalled();
                         expect(stubs.nextPage).not.toBeCalled();
-                        expect(docBase.galleryController.handleArrowKey).toBeCalledWith(key, target);
+                        expect(docBase.galleryController.handleArrowKey).toBeCalledWith(key);
                         expect(consumed).toBe(true);
                     },
                 );
