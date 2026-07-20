@@ -1,6 +1,7 @@
 import React from 'react';
-import { EventType, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, EventType, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import ControlsLayer, { Helpers, HIDE_DELAY_MS, SHOW_CLASSNAME } from '../ControlsLayer';
+import ControlsLayerContext from '../ControlsLayerContext';
 
 describe('ControlsLayer', () => {
     const children = <div className="TestControls">Controls</div>;
@@ -107,6 +108,64 @@ describe('ControlsLayer', () => {
 
             fireEvent.blur(element);
             jest.advanceTimersByTime(HIDE_DELAY_MS);
+
+            expect(element).toHaveClass(SHOW_CLASSNAME);
+        });
+    });
+
+    describe('setIsForced context', () => {
+        // ColorPickerControl pins the layer with setIsForced(true) from an effect keyed on
+        // the function identity. If that identity changed every render the effect's cleanup refired and
+        // instantly un-pinned the layer, so these two contracts must hold.
+        const seen: Array<(value: boolean) => void> = [];
+
+        const ForcedConsumer = (): JSX.Element => {
+            const { setIsForced } = React.useContext(ControlsLayerContext);
+            seen.push(setIsForced);
+            return (
+                <button data-testid="force-open" onClick={(): void => setIsForced(true)} type="button">
+                    force
+                </button>
+            );
+        };
+
+        beforeEach(() => {
+            seen.length = 0;
+        });
+
+        test('should hand down a stable setIsForced identity across re-renders', async () => {
+            const { rerender } = render(
+                <ControlsLayer>
+                    <ForcedConsumer />
+                </ControlsLayer>,
+            );
+            rerender(
+                <ControlsLayer onShow={jest.fn()}>
+                    <ForcedConsumer />
+                </ControlsLayer>,
+            );
+
+            expect(seen.length).toBeGreaterThan(1);
+            expect(seen.every(fn => fn === seen[0])).toBe(true);
+        });
+
+        test('should keep the controls visible through a mouse-leave while forced open', async () => {
+            render(
+                <ControlsLayer>
+                    <ForcedConsumer />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+
+            fireEvent.click(screen.getByTestId('force-open'));
+            expect(element).toHaveClass(SHOW_CLASSNAME);
+
+            fireEvent.mouseLeave(element);
+            // The hide timer fires and flips isShown → false, but isForced keeps the layer visible. Wrap the
+            // timer flush in act() since that state update happens outside an event handler.
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
 
             expect(element).toHaveClass(SHOW_CLASSNAME);
         });

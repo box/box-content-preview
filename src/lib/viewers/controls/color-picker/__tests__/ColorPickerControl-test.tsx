@@ -2,26 +2,31 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ColorPickerControl from '../ColorPickerControl';
+import { ControlsLayerContext } from '../../controls-layer';
 
 describe('ColorPickerControl', () => {
     const defaultColor = '#fff';
 
-    const getWrapper = (props = {}) =>
-        render(<ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />);
+    const getWrapper = (props = {}, setIsForced = jest.fn()) =>
+        render(
+            <ControlsLayerContext.Provider value={{ setIsForced }}>
+                <ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />
+            </ControlsLayerContext.Provider>,
+        );
 
     const getColorPickerPalette = async () => screen.findByTestId('bp-ColorPickerControl-palette');
 
     const getToggleButton = async () => screen.findByTestId('bp-ColorPickerControl-toggle');
 
     describe('render', () => {
-        test('should not render ColorPickerPalette when the component is first mounted', async () => {
+        test('should not render ColorPickerPalette open when the component is first mounted', async () => {
             getWrapper();
 
             const colorPickerPalette = await getColorPickerPalette();
             expect(colorPickerPalette).not.toHaveClass('bp-is-open');
         });
 
-        test('should render ColorPickerPalette when the toggle button is clicked', async () => {
+        test('should open ColorPickerPalette when the toggle button is clicked', async () => {
             getWrapper();
 
             const toggleButton = await getToggleButton();
@@ -30,57 +35,51 @@ describe('ColorPickerControl', () => {
             await userEvent.click(toggleButton);
             const colorPickerPalette = await getColorPickerPalette();
             expect(colorPickerPalette).toHaveClass('bp-is-open');
+            expect(toggleButton).toHaveClass('bp-is-active');
             expect(chevronIcon).not.toBeInTheDocument();
             expect(screen.getByTestId('IconChevronUpMedium24')).toBeVisible();
         });
 
-        test('should apply toggle background when the toggle button is clicked and remove the background when the button is blurred', async () => {
+        test('should toggle the palette closed when the toggle button is clicked again', async () => {
             getWrapper();
 
             const toggleButton = await getToggleButton();
-            await userEvent.click(toggleButton);
-            expect(toggleButton).toHaveClass('bp-is-active');
+            const colorPickerPalette = await getColorPickerPalette();
 
-            // tab twice to navigate through color palette buttons
-            await userEvent.tab();
-            await userEvent.tab();
+            await userEvent.click(toggleButton);
+            expect(colorPickerPalette).toHaveClass('bp-is-open');
+
+            await userEvent.click(toggleButton);
+            expect(colorPickerPalette).not.toHaveClass('bp-is-open');
             expect(toggleButton).not.toHaveClass('bp-is-active');
         });
+    });
 
-        test('should close the palette when button is blurred', async () => {
+    // Explicit intent closes the palette — an outside click or Escape. A mere focus change or mouse-leave
+    // must NOT (mouse-leave is kept open by the ControlsLayer pin, covered in ControlsLayer-test).
+    describe('close behavior', () => {
+        test('should close the palette when clicking outside the control', async () => {
             getWrapper();
-            const toggleButton = await getToggleButton();
 
+            const toggleButton = await getToggleButton();
             await userEvent.click(toggleButton);
             const colorPickerPalette = await getColorPickerPalette();
             expect(colorPickerPalette).toHaveClass('bp-is-open');
 
-            // tab twice to navigate through color palette buttons
-            await userEvent.tab();
-            await userEvent.tab();
+            await userEvent.click(document.body);
             expect(colorPickerPalette).not.toHaveClass('bp-is-open');
         });
 
-        test('should not close the palette when palette is active', async () => {
-            const wrapper = getWrapper();
-
-            const toggleButton = await getToggleButton();
-            const colorPickerPalette = await getColorPickerPalette();
-            await userEvent.click(toggleButton);
-            expect(colorPickerPalette).toHaveClass('bp-is-open');
-
-            // focus on color picker button
-            await userEvent.tab();
-            expect(colorPickerPalette).toHaveClass('bp-is-open');
-        });
-
-        test('should call focus and stop propagation when mouse down', async () => {
+        test('should close the palette when Escape is pressed', async () => {
             getWrapper();
 
             const toggleButton = await getToggleButton();
             await userEvent.click(toggleButton);
+            const colorPickerPalette = await getColorPickerPalette();
+            expect(colorPickerPalette).toHaveClass('bp-is-open');
 
-            expect(toggleButton).toHaveFocus();
+            await userEvent.keyboard('{Escape}');
+            expect(colorPickerPalette).not.toHaveClass('bp-is-open');
         });
     });
 
@@ -99,6 +98,22 @@ describe('ColorPickerControl', () => {
             const colorPickerPalette = await getColorPickerPalette();
             expect(colorPickerPalette).not.toHaveClass('bp-is-open');
             expect(onColorSelect).toHaveBeenCalledWith(defaultColor);
+        });
+    });
+
+    describe('controls layer pinning', () => {
+        // The palette lives inside the auto-hiding ControlsLayer, so it pins the layer open
+        // while up (moving the cursor off the swatches must not tear the toolbar down) and releases on close.
+        test('should pin the controls layer open while open and release it on close', async () => {
+            const setIsForced = jest.fn();
+            getWrapper({}, setIsForced);
+
+            const toggleButton = await getToggleButton();
+            await userEvent.click(toggleButton);
+            expect(setIsForced).toHaveBeenLastCalledWith(true);
+
+            await userEvent.click(toggleButton);
+            expect(setIsForced).toHaveBeenLastCalledWith(false);
         });
     });
 });
