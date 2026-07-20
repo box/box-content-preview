@@ -31,14 +31,14 @@ const VIEWERS = [
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'jpg',
-        EXT: ['jpeg', 'jpg', 'cr2', 'crw', 'dng', 'nef', 'raf', 'raw'],
+        EXT: ['jpeg', 'jpg', 'cr2', 'cr3', 'crw', 'dng', 'nef', 'raf', 'raw'],
         ASSET: '1.jpg',
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'png',
-        EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'heic', 'png', 'ps', 'psd', 'tga', 'tif', 'tiff', 'webp'],
+        EXT: ['ai', 'avif', 'bmp', 'dcm', 'eps', 'gif', 'heic', 'png', 'ps', 'psd', 'tga', 'tif', 'tiff', 'webp'],
         ASSET: '1.png',
     },
 ];
