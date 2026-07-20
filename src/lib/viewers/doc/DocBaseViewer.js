@@ -941,8 +941,10 @@ class DocBaseViewer extends BaseViewer {
             }
 
             // Swallow page-nav keys so they can't flip the doc page underneath the gallery
-            // or trigger the host's collection navigation.
+            // or trigger the host's collection navigation. Arrows pressed outside the grid
+            // are redirected into it so the first press navigates the tiles.
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'].includes(key)) {
+                this.galleryController.handleArrowKey(key);
                 return true;
             }
         }
@@ -1777,6 +1779,10 @@ class DocBaseViewer extends BaseViewer {
         if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
+
+        // Restore focus to the toggle, the browser otherwise drops focus to the body on exit,
+        // and keyboard input (e.g. gallery arrow keys) no longer reach the viewer
+        this.fullscreenToggleEl?.focus?.();
     }
 
     /**

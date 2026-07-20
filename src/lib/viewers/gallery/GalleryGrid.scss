@@ -9,6 +9,7 @@
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
     display: grid;
+    grid-auto-rows: min-content;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
     align-items: start;

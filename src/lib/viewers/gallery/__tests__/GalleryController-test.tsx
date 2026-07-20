@@ -272,6 +272,44 @@ describe('GalleryController', () => {
             expect(grid.props.onClose).toBe(controller.toggle);
             expect(typeof grid.props.onPageNavigate).toBe('function');
             expect(typeof grid.props.onFocusChange).toBe('function');
+            expect(typeof grid.props.getPageRatio).toBe('function');
+        });
+
+        describe('getPageRatio prop', () => {
+            function getGridGetPageRatio(controller: GalleryController): (pageNum: number) => number | null {
+                controller.toggle();
+                return mockLastRoot.render.mock.calls[0][0].props.getPageRatio;
+            }
+
+            test('should return the page ratio from fetched PDF.js page metadata', () => {
+                const { controller, pdfViewer } = makeController({ sidebarOpen: false });
+                (pdfViewer as { getPageView?: unknown }).getPageView = (index: number) =>
+                    index === 1 ? { pdfPage: {}, viewport: { width: 1600, height: 900 } } : undefined;
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(2)).toBeCloseTo(16 / 9);
+            });
+
+            test('should return null while the page metadata has not been fetched', () => {
+                const { controller, pdfViewer } = makeController({ sidebarOpen: false });
+                // pdfPage missing: the view still carries the first page's default viewport
+                (pdfViewer as { getPageView?: unknown }).getPageView = () => ({
+                    viewport: { width: 800, height: 600 },
+                });
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(2)).toBeNull();
+            });
+
+            test('should return null when the viewer does not expose getPageView', () => {
+                const { controller } = makeController({ sidebarOpen: false });
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(1)).toBeNull();
+            });
         });
 
         test('should close sidebar first and defer grid mount by half the transition time when sidebar is open', () => {
@@ -341,6 +379,64 @@ describe('GalleryController', () => {
             controller.toggle();
             expect(controller.handleEscape()).toBe(true);
             expect(controller.isOpen).toBe(false);
+        });
+    });
+
+    describe('handleArrowKey', () => {
+        // Adds the selected tile to the gallery root (mounted before .bp-ControlsRoot; with no
+        // controls seeded it lands as containerEl's last child).
+        function seedSelectedTile(containerEl: HTMLElement): HTMLElement {
+            const galleryEl = containerEl.lastElementChild as HTMLElement;
+            const tile = document.createElement('div');
+            tile.setAttribute('role', 'option');
+            tile.setAttribute('tabindex', '0');
+            galleryEl.appendChild(tile);
+            return tile;
+        }
+
+        function seedToggle(containerEl: HTMLElement): HTMLElement {
+            const toggle = document.createElement('button');
+            toggle.className = 'bp-GalleryToggle';
+            containerEl.appendChild(toggle);
+            return toggle;
+        }
+
+        test('should refocus the selected tile and replay the arrow into the grid', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl);
+            const tileKeydown = jest.fn();
+            tile.addEventListener('keydown', tileKeydown);
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
+
+            expect(document.activeElement).toBe(tile);
+            expect(tileKeydown).toHaveBeenCalledTimes(1);
+            expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
+        });
+
+        test('should not redirect focus for non-arrow keys', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            seedSelectedTile(containerEl);
+
+            toggle.focus();
+            controller.handleArrowKey('[');
+
+            expect(document.activeElement).toBe(toggle);
+        });
+
+        test('should be a no-op when the gallery is closed', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
+
+            expect(document.activeElement).toBe(toggle);
         });
     });
 

@@ -1670,6 +1670,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 beforeEach(() => {
                     docBase.galleryController = {
                         isOpen: true,
+                        handleArrowKey: jest.fn(),
                         handleEscape: jest.fn().mockReturnValue(true),
                         destroy: jest.fn(),
                     };
@@ -1689,6 +1690,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                         expect(stubs.previousPage).not.toBeCalled();
                         expect(stubs.nextPage).not.toBeCalled();
+                        expect(docBase.galleryController.handleArrowKey).toBeCalledWith(key);
                         expect(consumed).toBe(true);
                     },
                 );
@@ -4465,6 +4467,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.closeGallery()).toBe(true);
                 expect(docBase.galleryController.handleEscape).toBeCalledTimes(1);
+            });
+        });
+
+        describe('handleFullscreenExit()', () => {
+            beforeEach(() => {
+                docBase.pdfViewer = { currentScaleValue: 'page-fit' };
+                jest.spyOn(docBase, 'resize').mockImplementation();
+            });
+
+            test('should restore focus to the fullscreen toggle, mirroring fullscreen enter', () => {
+                docBase.fullscreenToggleEl = { focus: jest.fn() };
+
+                docBase.handleFullscreenExit();
+
+                expect(docBase.fullscreenToggleEl.focus).toBeCalled();
+            });
+
+            test('should not throw when no fullscreen toggle element is set', () => {
+                docBase.fullscreenToggleEl = null;
+
+                expect(() => docBase.handleFullscreenExit()).not.toThrow();
             });
         });
 

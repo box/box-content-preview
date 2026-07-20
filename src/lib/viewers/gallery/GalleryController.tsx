@@ -20,6 +20,9 @@ const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // ms
 interface PdfViewerLike {
     currentPageNumber: number;
     pagesCount: number;
+    // PDF.js PDFViewer API. pdfPage is only set once the page's metadata has been fetched;
+    // before that, viewport holds the first page's default dimensions.
+    getPageView?: (index: number) => { pdfPage?: unknown; viewport?: { width: number; height: number } } | undefined;
 }
 
 interface ThumbnailsSidebarLike {
@@ -189,6 +192,25 @@ export default class GalleryController {
         return true;
     }
 
+    /**
+     * Redirects an arrow key pressed outside the grid (e.g. focus parked on a toggle after
+     * toggling fullscreen) back into it: refocuses the selected tile and replays the key so
+     * the first press navigates, like the thumbnail sidebar. Keys pressed inside the grid
+     * never arrive here — GalleryGrid stops propagation on every arrow it handles.
+     */
+    handleArrowKey(key: string): void {
+        if (!this.isGalleryOpen || !key.startsWith('Arrow')) return;
+
+        const grid = this.galleryEl;
+        if (!grid) return;
+
+        const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"]');
+        if (tile) {
+            tile.focus();
+            tile.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+        }
+    }
+
     handleRotate(): void {
         if (this.galleryThumbnail) {
             this.galleryThumbnail.destroy();
@@ -248,6 +270,20 @@ export default class GalleryController {
         this.galleryFocusedPage = pageNum;
     };
 
+    // Per-page width:height ratio from PDF.js page metadata; null until the page's metadata
+    // is fetched (see PdfViewerLike.getPageView), which matters for mixed-size docs.
+    private getPageRatio = (pageNum: number): number | null => {
+        const pdfViewer = this.getPdfViewer();
+        const pageView = pdfViewer.getPageView && pdfViewer.getPageView(pageNum - 1);
+
+        if (!pageView || !pageView.pdfPage || !pageView.viewport) {
+            return null;
+        }
+
+        const { width, height } = pageView.viewport;
+        return width > 0 && height > 0 ? width / height : null;
+    };
+
     private mountGrid(): void {
         if (this.galleryRoot) {
             return;
@@ -271,6 +307,7 @@ export default class GalleryController {
         this.galleryRoot.render(
             <GalleryGrid
                 currentPage={pdfViewer.currentPageNumber}
+                getPageRatio={this.getPageRatio}
                 onClose={this.toggle}
                 onFocusChange={this.handleFocusChange}
                 onPageNavigate={this.handleGalleryNavigate}
