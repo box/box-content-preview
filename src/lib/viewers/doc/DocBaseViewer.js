@@ -2125,6 +2125,10 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
+        if (this.cancelStagedAnnotation()) {
+            return;
+        }
+
         if (this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
             this.processAnnotationModeChange(this.annotationControlsFSM.transition(AnnotationInput.RESET));

@@ -4214,6 +4214,45 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.processAnnotationModeChange).not.toBeCalled();
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('false');
             });
+
+            test('should stay in the current mode and only cancel the staged annotation if a creation popup is open', () => {
+                docBase.annotator = {
+                    emit: jest.fn(),
+                    toggleAnnotationMode: jest.fn(),
+                };
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                docBase.annotationControlsFSM.transition(AnnotationInput.CLICK, AnnotationMode.HIGHLIGHT);
+
+                const popupEl = document.createElement('div');
+                popupEl.className = 'ba-ReplyForm';
+                docBase.containerEl.appendChild(popupEl);
+
+                docBase.handleAnnotationControlsEscape();
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.HIGHLIGHT);
+                expect(docBase.annotator.toggleAnnotationMode).not.toBeCalledWith(AnnotationMode.NONE);
+                expect(docBase.annotationControlsFSM.getMode()).toBe(AnnotationMode.HIGHLIGHT);
+            });
+
+            test('should cancel a temp-state staged annotation and return to REGION when discoverability is enabled', () => {
+                docBase.annotator = {
+                    emit: jest.fn(),
+                    toggleAnnotationMode: jest.fn(),
+                };
+                jest.spyOn(docBase, 'areNewAnnotationsEnabled').mockReturnValue(true);
+                docBase.options.enableAnnotationsDiscoverability = true;
+                // Highlight staged via discoverability (no explicit mode click)
+                docBase.annotationControlsFSM.transition(AnnotationInput.CREATE, AnnotationMode.HIGHLIGHT);
+
+                const popupEl = document.createElement('div');
+                popupEl.className = 'ba-ReplyForm';
+                docBase.containerEl.appendChild(popupEl);
+
+                docBase.handleAnnotationControlsEscape();
+
+                expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+                expect(docBase.annotationControlsFSM.getMode()).toBe(AnnotationMode.NONE);
+            });
         });
 
         describe('handleAnnotationColorChange', () => {

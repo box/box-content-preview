@@ -29,6 +29,7 @@ import {
     CLASS_ANNOTATIONS_ONLY_CONTROLS,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
+    SELECTOR_ANNOTATIONS_CREATE_POPUP,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_CONTENT,
@@ -1197,14 +1198,44 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * If an annotation-creation popup is open, cancels the in-progress annotation
+     * while keeping the current annotation mode active. Re-toggling the current mode
+     * resets box-annotations' creator state, which dismisses the popup and discards
+     * the staged annotation.
+     *
+     * @protected
+     * @return {boolean} Whether an in-progress annotation was cancelled
+     */
+    cancelStagedAnnotation() {
+        if (!this.containerEl || !this.containerEl.querySelector(SELECTOR_ANNOTATIONS_CREATE_POPUP)) {
+            return false;
+        }
+
+        const nextMode = this.annotationControlsFSM.transition(
+            AnnotationInput.CANCEL,
+            this.annotationControlsFSM.getMode(),
+        );
+        this.annotator.toggleAnnotationMode(
+            nextMode === AnnotationMode.NONE ? this.getInitialAnnotationMode() : nextMode,
+        );
+        this.processAnnotationModeChange(nextMode);
+        return true;
+    }
+
+    /**
      * Handler for annotation toolbar button reset. No-op if the viewer
-     * has been destroyed or no annotator is attached.
+     * has been destroyed or no annotator is attached. If an annotation is
+     * mid-creation, only cancels that creation and stays in the current mode.
      *
      * @private
      * @return {void}
      */
     handleAnnotationControlsEscape() {
         if (!this.canHandleAnnotationControls()) {
+            return;
+        }
+
+        if (this.cancelStagedAnnotation()) {
             return;
         }
 
