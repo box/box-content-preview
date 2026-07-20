@@ -1501,7 +1501,7 @@ class DocBaseViewer extends BaseViewer {
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
-        const canGallery = this.galleryController.canRender(this.pdfViewer.pagesCount);
+        const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
 
         this.controls.render(
             <DocControls
