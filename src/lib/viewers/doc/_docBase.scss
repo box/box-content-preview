@@ -336,6 +336,14 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             user-select: text;
         }
 
+        // The rule above outranks pdf.js's `.textLayer .endOfContent { user-select: none; }`
+        // (endOfContent is the layer's only remaining div child since text items became
+        // spans in pdf.js 2.14). It must stay non-selectable: the browser skipping over
+        // it is what snaps an in-progress selection to line boundaries.
+        > .endOfContent {
+            user-select: none;
+        }
+
         .highlight {
             display: inline-block;
             background-color: fade-out($pdfjs-highlight, .8);
@@ -424,6 +432,21 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             pointer-events: none;
 
             span {
+                pointer-events: auto;
+            }
+
+            // pdf.js appends an .endOfContent div to the text layer and, while the
+            // primary button is down, expands it behind the text spans and moves it
+            // next to the selection focus on every selectionchange. The browser's
+            // native selection uses it as the hit target for pointer positions that
+            // are not directly over text, which is what makes dragging past a line
+            // end select to the end of the line and lets a selection shrink when
+            // dragging back up. It is a div, not a span, so the rules above leave it
+            // with inherited pointer-events: none, disabling that mechanism and
+            // causing mid-word cutoffs and erratic jumps when the drag leaves the
+            // text. While inactive it has zero height, so restoring pointer events
+            // does not affect clicks or region creation on blank areas.
+            .endOfContent {
                 pointer-events: auto;
             }
         }
