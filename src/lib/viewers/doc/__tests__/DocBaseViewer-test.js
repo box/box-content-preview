@@ -2965,10 +2965,34 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            test('should add touch listeners with passive false when disableNativePinchToZoom query param is present', () => {
+            test('should set touch-action to pan-x pan-y when disableNativePinchToZoom query param is present', () => {
                 docBase.hasTouch = true;
                 delete window.location;
                 window.location = { search: '?disableNativePinchToZoom' };
+
+                docBase.bindDOMListeners();
+
+                expect(docBase.docEl.style.touchAction).toBe('pan-x pan-y');
+
+                window.location = originalLocation;
+            });
+
+            test('should not set touch-action when disableNativePinchToZoom query param is absent', () => {
+                docBase.hasTouch = true;
+                delete window.location;
+                window.location = { search: '' };
+
+                docBase.bindDOMListeners();
+
+                expect(docBase.docEl.style.touchAction).not.toBe('pan-x pan-y');
+
+                window.location = originalLocation;
+            });
+
+            test('should add touch listeners with passive false when forceNonPassiveTouchListeners query param is present', () => {
+                docBase.hasTouch = true;
+                delete window.location;
+                window.location = { search: '?forceNonPassiveTouchListeners' };
 
                 docBase.bindDOMListeners();
 
@@ -2982,7 +3006,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 window.location = originalLocation;
             });
 
-            test('should add touch listeners without passive false when disableNativePinchToZoom query param is absent', () => {
+            test('should add touch listeners without passive false when forceNonPassiveTouchListeners query param is absent', () => {
                 docBase.hasTouch = true;
                 delete window.location;
                 window.location = { search: '' };

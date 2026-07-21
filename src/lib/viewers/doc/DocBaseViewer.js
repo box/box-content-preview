@@ -1551,10 +1551,15 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
         if (this.hasTouch) {
-            const disableNativePinchToZoom = new URLSearchParams(window.location.search).has(
-                'disableNativePinchToZoom',
-            );
-            const passiveOption = disableNativePinchToZoom ? { passive: false } : undefined;
+            const searchParams = new URLSearchParams(window.location.search);
+            const disableNativePinchToZoom = searchParams.has('disableNativePinchToZoom');
+            const forceNonPassiveTouchListeners = searchParams.has('forceNonPassiveTouchListeners');
+
+            if (disableNativePinchToZoom) {
+                this.docEl.style.touchAction = 'pan-x pan-y';
+            }
+
+            const passiveOption = forceNonPassiveTouchListeners ? { passive: false } : undefined;
             this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler, passiveOption);
             this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler, passiveOption);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
