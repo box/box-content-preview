@@ -957,7 +957,7 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('loadTranscription()', () => {
         beforeEach(() => {
             jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'ai_transcription_for_video_subtitles',
+                feature => feature === 'aiTranscriptionForVideoSubtitles',
             );
             dash.options = {
                 file: {
@@ -1185,8 +1185,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         test('should use createContentUrlV2 when migrateAccessTokenToHeader is enabled', () => {
             jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature =>
-                    feature === 'ai_transcription_for_video_subtitles' || feature === 'migrateAccessTokenToHeader',
+                feature => feature === 'aiTranscriptionForVideoSubtitles' || feature === 'migrateAccessTokenToHeader',
             );
             const createUrlV2 = jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('v2-url');
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
@@ -1202,7 +1201,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader is disabled', () => {
             jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'ai_transcription_for_video_subtitles',
+                feature => feature === 'aiTranscriptionForVideoSubtitles',
             );
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
                 destroy: jest.fn(),
@@ -1270,7 +1269,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
         test('should map und to Auto-Generated when ai transcription for video subtitles is enabled', () => {
             jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'ai_transcription_for_video_subtitles',
+                feature => feature === 'aiTranscriptionForVideoSubtitles',
             );
             const und = { language: 'und', id: 5 };
             stubs.mockPlayer.expects('getTextTracks').returns([und]);
