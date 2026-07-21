@@ -1553,9 +1553,12 @@ class DocBaseViewer extends BaseViewer {
         if (this.hasTouch) {
             const searchParams = new URLSearchParams(window.location.search);
             const disableNativePinchToZoom = searchParams.has('disableNativePinchToZoom');
+            const disableAllTouchActions = searchParams.has('disableAllTouchActions');
             const forceNonPassiveTouchListeners = searchParams.has('forceNonPassiveTouchListeners');
 
-            if (disableNativePinchToZoom) {
+            if (disableAllTouchActions) {
+                this.docEl.style.touchAction = 'none';
+            } else if (disableNativePinchToZoom) {
                 this.docEl.style.touchAction = 'pan-x pan-y';
             }
 

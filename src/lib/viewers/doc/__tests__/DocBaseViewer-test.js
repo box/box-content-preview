@@ -2977,6 +2977,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 window.location = originalLocation;
             });
 
+            test('should set touch-action to none when disableAllTouchActions query param is present', () => {
+                docBase.hasTouch = true;
+                delete window.location;
+                window.location = { search: '?disableAllTouchActions' };
+
+                docBase.bindDOMListeners();
+
+                expect(docBase.docEl.style.touchAction).toBe('none');
+
+                window.location = originalLocation;
+            });
+
             test('should not set touch-action when disableNativePinchToZoom query param is absent', () => {
                 docBase.hasTouch = true;
                 delete window.location;
