@@ -2940,8 +2940,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.hasTouch = true;
                 docBase.bindDOMListeners();
 
-                expect(stubs.addEventListener).toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler);
-                expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler);
+                expect(stubs.addEventListener).toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler, undefined);
+                expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler, undefined);
                 expect(stubs.addEventListener).toBeCalledWith('touchend', docBase.pinchToZoomEndHandler);
             });
 
@@ -2965,42 +2965,38 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            test('should not add wheel listener on mobile when disableMobileWheelZoom query param is present', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
-                docBase.isMobile = true;
+            test('should add touch listeners with passive false when disableNativePinchToZoom query param is present', () => {
+                docBase.hasTouch = true;
                 delete window.location;
-                window.location = { search: '?disableMobileWheelZoom' };
+                window.location = { search: '?disableNativePinchToZoom' };
 
                 docBase.bindDOMListeners();
 
-                expect(stubs.addEventListener).not.toBeCalledWith(
-                    'wheel',
-                    docBase.trackpadPinchToZoomHandler,
-                    expect.anything(),
-                );
+                expect(stubs.addEventListener).toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler, {
+                    passive: false,
+                });
+                expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler, {
+                    passive: false,
+                });
 
                 window.location = originalLocation;
             });
 
-            test('should still add wheel listener on mobile when disableMobileWheelZoom query param is absent', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
-                docBase.isMobile = true;
+            test('should add touch listeners without passive false when disableNativePinchToZoom query param is absent', () => {
+                docBase.hasTouch = true;
                 delete window.location;
                 window.location = { search: '' };
 
                 docBase.bindDOMListeners();
 
-                expect(stubs.addEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler, {
-                    passive: false,
-                });
+                expect(stubs.addEventListener).toBeCalledWith('touchstart', docBase.pinchToZoomStartHandler, undefined);
+                expect(stubs.addEventListener).toBeCalledWith('touchmove', docBase.pinchToZoomChangeHandler, undefined);
 
                 window.location = originalLocation;
             });
         });
 
         describe('unbindDOMListeners()', () => {
-            const originalLocation = window.location;
-
             beforeEach(() => {
                 stubs.removeEventListener = jest.spyOn(docBase.docEl, 'removeEventListener').mockImplementation();
                 stubs.removeFullscreenListener = jest.spyOn(fullscreen, 'removeListener').mockImplementation();
@@ -3046,19 +3042,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.unbindDOMListeners();
 
                 expect(stubs.removeEventListener).toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler);
-            });
-
-            test('should not remove wheel listener on mobile when disableMobileWheelZoom query param is present', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature => feature === 'pinchToZoom.enabled');
-                docBase.isMobile = true;
-                delete window.location;
-                window.location = { search: '?disableMobileWheelZoom' };
-
-                docBase.unbindDOMListeners();
-
-                expect(stubs.removeEventListener).not.toBeCalledWith('wheel', docBase.trackpadPinchToZoomHandler);
-
-                window.location = originalLocation;
             });
         });
 

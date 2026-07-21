@@ -1551,13 +1551,16 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
         if (this.hasTouch) {
-            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler);
-            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
+            const disableNativePinchToZoom = new URLSearchParams(window.location.search).has(
+                'disableNativePinchToZoom',
+            );
+            const passiveOption = disableNativePinchToZoom ? { passive: false } : undefined;
+            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler, passiveOption);
+            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler, passiveOption);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
 
-        const disableMobileWheelZoom = new URLSearchParams(window.location.search).has('disableMobileWheelZoom');
-        if (this.featureEnabled('pinchToZoom.enabled') && !(this.isMobile && disableMobileWheelZoom)) {
+        if (this.featureEnabled('pinchToZoom.enabled')) {
             this.docEl.addEventListener('wheel', this.trackpadPinchToZoomHandler, { passive: false });
         }
     }
@@ -1579,8 +1582,7 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
             }
 
-            const disableMobileWheelZoom = new URLSearchParams(window.location.search).has('disableMobileWheelZoom');
-            if (this.featureEnabled('pinchToZoom.enabled') && !(this.isMobile && disableMobileWheelZoom)) {
+            if (this.featureEnabled('pinchToZoom.enabled')) {
                 this.docEl.removeEventListener('wheel', this.trackpadPinchToZoomHandler);
             }
         }
