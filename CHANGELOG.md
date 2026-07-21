@@ -1,3 +1,11 @@
+## 3.66.0 (2026-07-21)
+
+* fix(color-picker): resolve blur-close race and tint pencil scribble (#1705) ([352e824](https://github.com/box/box-content-preview/commit/352e824)), closes [#1705](https://github.com/box/box-content-preview/issues/1705)
+* fix(gallery): gallery row spacing, scrollbar fixes, and loading updates (#1708) ([cbfa8fa](https://github.com/box/box-content-preview/commit/cbfa8fa)), closes [#1708](https://github.com/box/box-content-preview/issues/1708)
+* fix(gallery): refine UX (#1711) ([6cd1233](https://github.com/box/box-content-preview/commit/6cd1233)), closes [#1711](https://github.com/box/box-content-preview/issues/1711)
+
+
+
 ## 3.65.0 (2026-07-17)
 
 * fix(doc): disable wheel zoom handler on mobile behind query param gate (#1710) ([3098c27](https://github.com/box/box-content-preview/commit/3098c27)), closes [#1710](https://github.com/box/box-content-preview/issues/1710)
