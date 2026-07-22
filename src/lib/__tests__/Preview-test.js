@@ -3193,6 +3193,25 @@ describe('lib/Preview', () => {
             expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
         });
 
+        test('should add extracted_text hint when ai transcription for video subtitles is enabled', () => {
+            stubs.canPlayDash.mockReturnValue(true);
+            isFeatureEnabled.mockReturnValue(true);
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip][extracted_text]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(isFeatureEnabled).toHaveBeenCalledWith(preview.options.features, 'aiTranscriptionForVideoSubtitles');
+        });
+
+        test('should not add extracted_text hint when ai transcription for video subtitles is disabled', () => {
+            stubs.canPlayDash.mockReturnValue(true);
+            isFeatureEnabled.mockReturnValue(false);
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
         test('should not add dash hints if the browser supports dash but dash is disabled', () => {
             stubs.canPlayDash.mockReturnValue(true);
             preview.disabledViewers.Dash = 1;
