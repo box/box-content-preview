@@ -1551,13 +1551,24 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
         if (this.hasTouch) {
-            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler);
-            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
+            const searchParams = new URLSearchParams(window.location.search);
+            const disableNativePinchToZoom = searchParams.has('disableNativePinchToZoom');
+            const disableAllTouchActions = searchParams.has('disableAllTouchActions');
+            const forceNonPassiveTouchListeners = searchParams.has('forceNonPassiveTouchListeners');
+
+            if (disableAllTouchActions) {
+                this.docEl.style.touchAction = 'none';
+            } else if (disableNativePinchToZoom) {
+                this.docEl.style.touchAction = 'pan-x pan-y';
+            }
+
+            const passiveOption = forceNonPassiveTouchListeners ? { passive: false } : undefined;
+            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler, passiveOption);
+            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler, passiveOption);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
 
-        const disableMobileWheelZoom = new URLSearchParams(window.location.search).has('disableMobileWheelZoom');
-        if (this.featureEnabled('pinchToZoom.enabled') && !(this.isMobile && disableMobileWheelZoom)) {
+        if (this.featureEnabled('pinchToZoom.enabled')) {
             this.docEl.addEventListener('wheel', this.trackpadPinchToZoomHandler, { passive: false });
         }
     }
@@ -1579,8 +1590,7 @@ class DocBaseViewer extends BaseViewer {
                 this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
             }
 
-            const disableMobileWheelZoom = new URLSearchParams(window.location.search).has('disableMobileWheelZoom');
-            if (this.featureEnabled('pinchToZoom.enabled') && !(this.isMobile && disableMobileWheelZoom)) {
+            if (this.featureEnabled('pinchToZoom.enabled')) {
                 this.docEl.removeEventListener('wheel', this.trackpadPinchToZoomHandler);
             }
         }
