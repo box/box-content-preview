@@ -1,6 +1,6 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
+import { bdlBoxBlue, white } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import IconPencilScribbleMedium24 from '../icons/IconPencilScribbleMedium24';
@@ -112,7 +112,7 @@ export default function AnnotationsControls({
                 onClick={handleModeClick}
                 title={__('drawing_comment')}
             >
-                <IconPencilScribbleMedium24 style={{ color: annotationColor }} />
+                <IconPencilScribbleMedium24 style={{ color: isDrawingActive ? annotationColor : white }} />
             </AnnotationsButton>
             <AnnotationsTargetedTooltip isEnabled={showRegion}>
                 <AnnotationsButton
