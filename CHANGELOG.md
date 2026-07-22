@@ -1,3 +1,9 @@
+## 3.67.0 (2026-07-22)
+
+* test(gallery): add e2e tests (#1714) ([6dd90cf](https://github.com/box/box-content-preview/commit/6dd90cf)), closes [#1714](https://github.com/box/box-content-preview/issues/1714)
+
+
+
 ## 3.66.0 (2026-07-21)
 
 * fix(color-picker): resolve blur-close race and tint pencil scribble (#1705) ([352e824](https://github.com/box/box-content-preview/commit/352e824)), closes [#1705](https://github.com/box/box-content-preview/issues/1705)
