@@ -1,3 +1,10 @@
+## 3.68.0 (2026-07-23)
+
+* fix(annotations): tint pencil scribble only while drawing mode is active (#1717) ([a4d90d4](https://github.com/box/box-content-preview/commit/a4d90d4)), closes [#1717](https://github.com/box/box-content-preview/issues/1717) [#1705](https://github.com/box/box-content-preview/issues/1705)
+* fix(doc): disable native pinch-to-zoom on touch devices via passive false (#1716) ([4b9d460](https://github.com/box/box-content-preview/commit/4b9d460)), closes [#1716](https://github.com/box/box-content-preview/issues/1716)
+
+
+
 ## 3.67.0 (2026-07-22)
 
 * test(gallery): add e2e tests (#1714) ([6dd90cf](https://github.com/box/box-content-preview/commit/6dd90cf)), closes [#1714](https://github.com/box/box-content-preview/issues/1714)
