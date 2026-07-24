@@ -11,6 +11,7 @@ import intl from '../../i18n';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
+import { AnnotationInput } from '../../AnnotationControlsFSM';
 import { AnnotationMode } from '../../types';
 import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
@@ -2006,6 +2007,81 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotationControlsEscape();
 
             expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.NONE);
+        });
+
+        test('should stay in the current mode and only cancel the staged annotation if a creation popup is open', () => {
+            base.annotator = {
+                emit: jest.fn(),
+                toggleAnnotationMode: jest.fn(),
+            };
+            base.annotationModule.cache = { get: jest.fn().mockReturnValue('#000') };
+            base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+            base.annotationControlsFSM.transition(AnnotationInput.CLICK, AnnotationMode.DRAWING);
+
+            const popupEl = document.createElement('div');
+            popupEl.className = 'ba-PopupDrawingToolbar';
+            base.containerEl.appendChild(popupEl);
+
+            base.handleAnnotationControlsEscape();
+
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.DRAWING);
+            expect(base.annotator.toggleAnnotationMode).not.toBeCalledWith(AnnotationMode.NONE);
+            expect(base.annotationControlsFSM.getMode()).toBe(AnnotationMode.DRAWING);
+        });
+    });
+
+    describe('cancelStagedAnnotation()', () => {
+        beforeEach(() => {
+            base.annotator = {
+                emit: jest.fn(),
+                toggleAnnotationMode: jest.fn(),
+            };
+            base.annotationModule.cache = { get: jest.fn().mockReturnValue('#000') };
+            base.containerEl = document.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTENT);
+            jest.spyOn(base, 'areNewAnnotationsEnabled').mockReturnValue(true);
+        });
+
+        test('should return false if no creation popup is open', () => {
+            expect(base.cancelStagedAnnotation()).toBe(false);
+            expect(base.annotator.toggleAnnotationMode).not.toBeCalled();
+        });
+
+        test.each(['ba-PopupDrawingToolbar', 'ba-ReplyForm'])(
+            'should cancel the staged annotation and keep the current mode if a %s popup is open',
+            className => {
+                base.annotationControlsFSM.transition(AnnotationInput.CLICK, AnnotationMode.REGION);
+
+                const popupEl = document.createElement('div');
+                popupEl.className = className;
+                base.containerEl.appendChild(popupEl);
+
+                expect(base.cancelStagedAnnotation()).toBe(true);
+                expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
+                expect(base.annotationControlsFSM.getMode()).toBe(AnnotationMode.REGION);
+            },
+        );
+
+        test('should cancel the staged annotation if a creation PopupV2 is open', () => {
+            base.annotationControlsFSM.transition(AnnotationInput.CLICK, AnnotationMode.HIGHLIGHT);
+
+            const popupEl = document.createElement('div');
+            popupEl.className = 'ba-PopupV2';
+            popupEl.setAttribute('data-resin-component', 'popupReplyV2');
+            base.containerEl.appendChild(popupEl);
+
+            expect(base.cancelStagedAnnotation()).toBe(true);
+            expect(base.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.HIGHLIGHT);
+        });
+
+        test('should ignore a PopupV2 that is viewing an existing thread', () => {
+            const popupEl = document.createElement('div');
+            popupEl.className = 'ba-PopupV2';
+            popupEl.setAttribute('data-resin-component', 'popupThreadV2');
+            base.containerEl.appendChild(popupEl);
+
+            expect(base.cancelStagedAnnotation()).toBe(false);
+            expect(base.annotator.toggleAnnotationMode).not.toBeCalled();
         });
     });
 

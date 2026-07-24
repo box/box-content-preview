@@ -64,6 +64,13 @@ export const CLASS_PREFETCHED_IMAGE = 'bp-prefetched-image';
 
 export const DISCOVERABILITY_ATTRIBUTE = 'data-resin-discoverability';
 
+// Annotation-creation popups rendered by box-annotations. While one is open, Escape
+// should cancel the in-progress annotation instead of exiting the annotation mode.
+// popupReplyV2 is the creation variant of PopupV2; popupThreadV2 (viewing an existing
+// thread) is intentionally excluded.
+export const SELECTOR_ANNOTATIONS_CREATE_POPUP =
+    '.ba-PopupDrawingToolbar, .ba-PopupV2[data-resin-component="popupReplyV2"], .ba-ReplyForm';
+
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
 export const SELECTOR_BOX_PREVIEW_CONTENT = `.${CLASS_BOX_PREVIEW_CONTENT}`;
