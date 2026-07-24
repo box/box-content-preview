@@ -147,6 +147,7 @@ class ThumbnailsSidebar {
         this.currentPage = null;
         this.preloader = null;
         this.anchorEl.removeEventListener('click', this.thumbnailClickHandler);
+        this.anchorEl.removeEventListener('keydown', this.onKeydown);
     }
 
     /**

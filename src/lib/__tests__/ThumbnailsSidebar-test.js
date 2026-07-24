@@ -98,6 +98,15 @@ describe('ThumbnailsSidebar', () => {
             expect(thumbnailsSidebar.preloader).toBeNull();
         });
 
+        test('should remove event listeners from the anchor element', () => {
+            const removeEventListener = jest.spyOn(anchorEl, 'removeEventListener');
+
+            thumbnailsSidebar.destroy();
+
+            expect(removeEventListener).toBeCalledWith('click', thumbnailsSidebar.thumbnailClickHandler);
+            expect(removeEventListener).toBeCalledWith('keydown', thumbnailsSidebar.onKeydown);
+        });
+
         test('should destroy virtualScroller if it exists', () => {
             thumbnailsSidebar.virtualScroller = virtualScroller;
             thumbnailsSidebar.destroy();
