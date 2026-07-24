@@ -597,6 +597,7 @@ class ImageViewer extends ImageBaseViewer {
      */
     handleOrientationChange() {
         this.adjustImageZoomPadding();
+        this.recalculateInitialRect();
 
         this.scale = this.imageEl.clientWidth / this.imageEl.getAttribute('originalWidth');
         this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
@@ -604,6 +605,64 @@ class ImageViewer extends ImageBaseViewer {
             scale: this.scale,
             rotationAngle: this.rotationAngle,
         });
+    }
+
+    /**
+     * Recomputes initialWidth and initialRect for the current rotation by
+     * temporarily sizing the image to its fit-to-viewport dimensions.
+     *
+     * @private
+     * @return {void}
+     */
+    recalculateInitialRect() {
+        const savedWidth = this.imageEl.style.width;
+        const savedHeight = this.imageEl.style.height;
+        const savedLeft = this.imageEl.style.left;
+        const savedTop = this.imageEl.style.top;
+        const savedScrollLeft = this.wrapperEl.scrollLeft;
+        const savedScrollTop = this.wrapperEl.scrollTop;
+
+        const isRotated = this.isRotated();
+        const origHeight = parseInt(this.imageEl.getAttribute('originalHeight'), 10);
+        const origWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
+        const { width, height } = this.getTransformWidthAndHeight(origWidth, origHeight, isRotated);
+        const modifyWidthInsteadOfHeight = width >= height;
+        const viewport = this.getViewportDimensions();
+
+        let resetWidth;
+        let resetHeight;
+        if (width > viewport.width || height > viewport.height) {
+            const ratio = Math.min(viewport.width / width, viewport.height / height);
+            if (modifyWidthInsteadOfHeight) {
+                resetWidth = width * ratio;
+            } else {
+                resetHeight = height * ratio;
+            }
+        } else if (modifyWidthInsteadOfHeight) {
+            resetWidth = Math.min(viewport.width, origWidth);
+        } else {
+            resetHeight = Math.min(viewport.height, origHeight);
+        }
+
+        if (isRotated) {
+            const temp = resetWidth;
+            resetWidth = resetHeight;
+            resetHeight = temp;
+        }
+
+        this.imageEl.style.width = resetWidth ? `${resetWidth}px` : '';
+        this.imageEl.style.height = resetHeight ? `${resetHeight}px` : '';
+        this.adjustImageZoomPadding();
+
+        this.initialWidth = this.imageEl.offsetWidth;
+        this.initialRect = this.getInitialImageRect();
+
+        this.imageEl.style.width = savedWidth;
+        this.imageEl.style.height = savedHeight;
+        this.imageEl.style.left = savedLeft;
+        this.imageEl.style.top = savedTop;
+        this.wrapperEl.scrollLeft = savedScrollLeft;
+        this.wrapperEl.scrollTop = savedScrollTop;
     }
 
     handleAnnotationColorChange(color) {
