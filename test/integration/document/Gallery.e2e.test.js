@@ -8,6 +8,7 @@ describe('Preview Document Gallery', () => {
     const THUMBNAIL_SELECTED_CLASS = 'bp-thumbnail-is-selected';
 
     const showDocumentPreview = ({
+        collection,
         enableThumbnailsSidebar = false,
         galleryEnabled = true,
         targetFileId = fileId,
@@ -24,6 +25,9 @@ describe('Preview Document Gallery', () => {
         if (enableThumbnailsSidebar) {
             options.enableThumbnailsSidebar = true;
         }
+        if (collection) {
+            options.collection = collection;
+        }
 
         cy.showPreview(token, targetFileId, options);
         cy.getPreviewPage(1);
@@ -36,6 +40,23 @@ describe('Preview Document Gallery', () => {
             .click();
 
         cy.get('.bp-gallery-grid').should('be.visible');
+    };
+
+    const showGalleryWithRenderedThumbnails = (options = {}) => {
+        showDocumentPreview({ ...options, enableThumbnailsSidebar: true });
+        cy.get('.bp-thumbnail[data-bp-page-num="1"] .bp-thumbnail-image').should('exist');
+        openGallery();
+        cy.get('.bp-gallery-tile img').should('have.length', 2);
+    };
+
+    const expectReleasedResources = viewer => {
+        expect(viewer.destroyed).to.be.true;
+        expect(viewer.pdfViewer.pdfDocument).to.be.null;
+        // PDF.js private state is asserted intentionally: this retained page-view array caused the regression.
+        expect(viewer.pdfViewer._pages).to.be.empty;
+        expect(viewer.pdfLinkService.pdfDocument).to.be.null;
+        expect(viewer.galleryController.galleryThumbnail).to.be.null;
+        expect(viewer.thumbnailsSidebar.thumbnail).to.be.null;
     };
 
     beforeEach(() => {
@@ -147,5 +168,52 @@ describe('Preview Document Gallery', () => {
             .should('have.class', THUMBNAIL_SELECTED_CLASS)
             .find('.bp-thumbnail-image')
             .should('exist');
+    });
+
+    it('Should release document and thumbnail resources when Preview is destroyed', () => {
+        showGalleryWithRenderedThumbnails();
+
+        cy.window().then(win => {
+            const viewer = win.preview.getCurrentViewer();
+
+            expect(viewer.pdfViewer.pdfDocument).to.exist;
+            expect(viewer.pdfViewer._pages).to.have.length(2);
+            expect(viewer.galleryController.galleryThumbnail).to.exist;
+            expect(viewer.thumbnailsSidebar.thumbnail).to.exist;
+
+            win.preview.hide();
+
+            expectReleasedResources(viewer);
+        });
+    });
+
+    it('Should release previous document resources when Preview reloads', () => {
+        showGalleryWithRenderedThumbnails();
+
+        cy.window().then(win => {
+            const viewer = win.preview.getCurrentViewer();
+            win.preview.reload(true);
+            expectReleasedResources(viewer);
+        });
+
+        cy.getPreviewPage(1).should('be.visible');
+    });
+
+    it('Should release previous document resources when navigating to the next file', () => {
+        showGalleryWithRenderedThumbnails({ collection: [fileId, singlePageFileId] });
+        cy.get('[role="option"][aria-label="Page 1"]').type('{esc}');
+        cy.showControls();
+
+        cy.window().then(win => {
+            cy.wrap(win.preview.getCurrentViewer()).as('previousViewer');
+        });
+        cy.getByTitle('Next file').click();
+        cy.get('@previousViewer').then(viewer => {
+            expectReleasedResources(viewer);
+        });
+
+        cy.window()
+            .its('preview.file.id')
+            .should('equal', singlePageFileId);
     });
 });

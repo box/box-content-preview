@@ -38,6 +38,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         doc.pdfViewer = {
             currentPageNumber: 0,
             cleanup: jest.fn(),
+            setDocument: jest.fn(),
         };
         doc.controls = {
             add: jest.fn(),

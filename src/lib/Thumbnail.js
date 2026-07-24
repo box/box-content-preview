@@ -65,6 +65,10 @@ class Thumbnail {
         }
 
         return pdfDocument.getPage(1).then(page => {
+            if (!this.thumbnailImageCache) {
+                return null;
+            }
+
             const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
             const viewport = page.getViewport({ scale: 1, rotation });
             if (!viewport) {
@@ -120,6 +124,10 @@ class Thumbnail {
      * @return {Promise} - promise reolves with the image HTMLElement or null if generation is in progress
      */
     createThumbnailImage(itemIndex, thumbOptions) {
+        if (!this.thumbnailImageCache) {
+            return Promise.resolve(null);
+        }
+
         const cacheEntry = this.getImageFromCache(itemIndex);
         // If this thumbnail has already been cached, use it
         if (cacheEntry && cacheEntry.image) {
@@ -135,15 +143,21 @@ class Thumbnail {
         this.thumbnailImageCache.set(itemIndex, { ...cacheEntry, inProgress: true });
         return this.getThumbnailDataURL(itemIndex + 1, thumbOptions)
             .then(dataUrl => {
-                return this.createImageEl(dataUrl, thumbOptions);
-            })
-            .then(imageEl => {
+                if (!this.thumbnailImageCache) {
+                    return null;
+                }
+
+                const imageEl = this.createImageEl(dataUrl, thumbOptions);
                 // Cache this image element for future use
                 this.thumbnailImageCache.set(itemIndex, { inProgress: false, image: imageEl });
 
                 return imageEl;
             })
             .catch(() => {
+                if (!this.thumbnailImageCache) {
+                    return null;
+                }
+
                 this.thumbnailImageCache.set(itemIndex, { ...this.getImageFromCache(itemIndex), inProgress: false });
                 throw new Error('Thumbnail generation failed');
             });
@@ -156,7 +170,7 @@ class Thumbnail {
      * @return {Promise} - promise reolves with the image HTMLElement or null if generation is in progress
      */
     getImageFromCache(itemIndex) {
-        return this.thumbnailImageCache.get(itemIndex);
+        return this.thumbnailImageCache?.get(itemIndex) || null;
     }
 
     /**
@@ -181,6 +195,10 @@ class Thumbnail {
         return pdfDocument
             .getPage(pageNum)
             .then(page => {
+                if (!this.thumbnailImageCache) {
+                    return null;
+                }
+
                 const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
                 const viewport = page.getViewport({ scale: 1, rotation });
                 if (!viewport || !isFinite(viewport.width) || !isFinite(viewport.height)) {

@@ -285,6 +285,10 @@ class DocBaseViewer extends BaseViewer {
             this.galleryController.destroy();
         }
 
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.destroy();
+        }
+
         // Clean up PDF network requests
         if (this.pdfLoadingTask) {
             try {
@@ -294,17 +298,19 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        // Clean up viewer
+        // Clean up and detach the PDF.js document so retained viewer instances
+        // do not keep page views and document resources alive.
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
+            this.pdfViewer.setDocument(null);
+        }
+
+        if (this.pdfLinkService) {
+            this.pdfLinkService.setDocument(null);
         }
 
         if (this.printPopup) {
             this.printPopup.destroy();
-        }
-
-        if (this.thumbnailsSidebar) {
-            this.thumbnailsSidebar.destroy();
         }
 
         if (this.thumbnailsSidebarEl) {
@@ -1076,6 +1082,10 @@ class DocBaseViewer extends BaseViewer {
 
         return this.pdfLoadingTask.promise
             .then(doc => {
+                if (this.isDestroyed()) {
+                    return null;
+                }
+
                 // Only check operations for .numbers and .xlsx files
                 if (file.extension === 'numbers' || file.extension === 'xlsx') {
                     return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
@@ -1088,6 +1098,10 @@ class DocBaseViewer extends BaseViewer {
                 return doc;
             })
             .then(doc => {
+                if (this.isDestroyed()) {
+                    return;
+                }
+
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
                 if (this.shouldThumbnailsBeToggled()) {
@@ -1099,6 +1113,10 @@ class DocBaseViewer extends BaseViewer {
                 this.doc = doc;
             })
             .catch(err => {
+                if (this.isDestroyed()) {
+                    return;
+                }
+
                 console.error(err); // eslint-disable-line
 
                 // pdf.js gives us the status code in their error message
