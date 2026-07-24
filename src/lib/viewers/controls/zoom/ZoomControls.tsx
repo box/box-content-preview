@@ -1,7 +1,8 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
-import IconMinusMedium24 from '../icons/IconMinusMedium24';
-import IconPlusMedium24 from '../icons/IconPlusMedium24';
+import { IconButton } from '@box/blueprint-web';
+import Minus from '@box/blueprint-web-assets/icons/Fill/Minus';
+import Plus from '@box/blueprint-web-assets/icons/Fill/Plus';
 import './ZoomControls.scss';
 
 export type Props = {
@@ -28,33 +29,29 @@ export default function ZoomControls({
 
     return (
         <div className="bp-ZoomControls">
-            <button
+            <IconButton
+                aria-label={__('zoom_out')}
                 className="bp-ZoomControls-button"
                 data-resin-target="zoomOut"
                 data-testid="bp-ZoomControls-out"
                 disabled={currentScale <= minScaleValue}
+                icon={Minus}
                 onClick={onZoomOut}
-                title={__('zoom_out')}
-                type="button"
-            >
-                <IconMinusMedium24 />
-            </button>
+            />
             <div
                 className="bp-ZoomControls-current"
                 data-testid="bp-ZoomControls-current"
                 title={__('zoom_current_scale')}
             >{`${Math.round(currentScale * 100)}%`}</div>
-            <button
+            <IconButton
+                aria-label={__('zoom_in')}
                 className="bp-ZoomControls-button"
                 data-resin-target="zoomIn"
                 data-testid="bp-ZoomControls-in"
                 disabled={currentScale >= maxScaleValue}
+                icon={Plus}
                 onClick={onZoomIn}
-                title={__('zoom_in')}
-                type="button"
-            >
-                <IconPlusMedium24 />
-            </button>
+            />
         </div>
     );
 }

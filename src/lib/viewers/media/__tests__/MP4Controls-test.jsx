@@ -32,7 +32,7 @@ describe('MP4Controls', () => {
             const onFullscreenToggle = jest.fn();
             getWrapper({ onFullscreenToggle });
 
-            const toggle = await screen.findByTitle(__('enter_fullscreen'));
+            const toggle = await screen.findByRole('button', { name: __('enter_fullscreen') });
 
             await userEvent.click(toggle);
 
