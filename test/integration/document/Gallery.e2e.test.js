@@ -55,6 +55,7 @@ describe('Preview Document Gallery', () => {
         // PDF.js private state is asserted intentionally: this retained page-view array caused the regression.
         expect(viewer.pdfViewer._pages).to.be.empty;
         expect(viewer.pdfLinkService.pdfDocument).to.be.null;
+        expect(viewer.doc).to.be.null;
         expect(viewer.galleryController.galleryThumbnail).to.be.null;
         expect(viewer.thumbnailsSidebar.thumbnail).to.be.null;
     };

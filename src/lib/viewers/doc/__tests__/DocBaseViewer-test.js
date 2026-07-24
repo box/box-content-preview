@@ -383,6 +383,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfLinkService.setDocument).toBeCalledWith(null);
             });
 
+            test('should release the stored PDF document', () => {
+                docBase.doc = {};
+
+                docBase.destroy();
+
+                expect(docBase.doc).toBeNull();
+            });
+
             test('should safely handle repeated destruction', () => {
                 docBase.pdfViewer = {
                     cleanup: jest.fn(),
@@ -408,6 +416,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.thumbnailsSidebar.destroy).toBeCalled();
                 expect(docBase.rootEl.removeChild).toBeCalled();
                 expect(stubs.classListRemove).toBeCalled();
+            });
+
+            test('should clean up the advanced insights thumbnails', () => {
+                const advancedInsightsThumbs = {
+                    destroy: jest.fn(),
+                };
+                docBase.advancedInsightsThumbs = advancedInsightsThumbs;
+
+                docBase.destroy();
+
+                expect(advancedInsightsThumbs.destroy).toBeCalled();
+                expect(docBase.advancedInsightsThumbs).toBeNull();
             });
 
             test('should destroy the page tracker object', () => {
@@ -4726,9 +4746,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('getThumbnail()', () => {
             beforeEach(() => {
                 docBase.pdfViewer = {
+                    cleanup: jest.fn(),
                     pdfDocument: {
                         getPage: jest.fn(),
                     },
+                    setDocument: jest.fn(),
                 };
                 stubs.promiseResolve = Promise.resolve({
                     getViewport: jest.fn().mockReturnValue({ width: 0, height: 0 }),
@@ -4750,6 +4772,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.advancedInsightsThumbs).toBe(undefined);
                 docBase.getThumbnail();
                 expect(docBase.advancedInsightsThumbs).toBeInstanceOf(Thumbnail);
+            });
+
+            test('should not create a new Thumbnail after being destroyed', async () => {
+                docBase.advancedInsightsThumbs = {
+                    destroy: jest.fn(),
+                };
+                docBase.destroy();
+
+                await expect(docBase.getThumbnail(1)).resolves.toBeNull();
+                expect(docBase.advancedInsightsThumbs).toBeNull();
             });
         });
 

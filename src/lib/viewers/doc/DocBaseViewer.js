@@ -289,6 +289,11 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebar.destroy();
         }
 
+        if (this.advancedInsightsThumbs) {
+            this.advancedInsightsThumbs.destroy();
+            this.advancedInsightsThumbs = null;
+        }
+
         // Clean up PDF network requests
         if (this.pdfLoadingTask) {
             try {
@@ -308,6 +313,8 @@ class DocBaseViewer extends BaseViewer {
         if (this.pdfLinkService) {
             this.pdfLinkService.setDocument(null);
         }
+
+        this.doc = null;
 
         if (this.printPopup) {
             this.printPopup.destroy();
@@ -2330,9 +2337,13 @@ class DocBaseViewer extends BaseViewer {
      * Get a thumbnail image element
      *
      * @param {number} pageNumber - the page number
-     * @return {Promise} - promise resolves with the image HTMLElement or null if generation is in progress
+     * @return {Promise} - promise resolves with the image HTMLElement or null if unavailable or in progress
      */
     getThumbnail(pageNumber) {
+        if (this.isDestroyed()) {
+            return Promise.resolve(null);
+        }
+
         if (!this.advancedInsightsThumbs) {
             this.advancedInsightsThumbs = new Thumbnail(this.pdfViewer);
         }
