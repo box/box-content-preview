@@ -128,6 +128,49 @@ describe('Thumbnail', () => {
         test('should clean up the instance properties', () => {
             thumbnail.destroy();
             expect(thumbnail.thumbnailImageCache).toBeNull();
+            expect(thumbnail.pdfViewer).toBeNull();
+            expect(thumbnail.preloader).toBeNull();
+        });
+
+        test('should safely handle repeated calls', () => {
+            thumbnail.destroy();
+            expect(() => thumbnail.destroy()).not.toThrow();
+        });
+
+        test('should not initialize after being destroyed', async () => {
+            thumbnail.destroy();
+
+            await expect(thumbnail.init()).resolves.toBeNull();
+            expect(stubs.getPage).not.toBeCalled();
+        });
+
+        test('should ignore an in-flight initialization after being destroyed', async () => {
+            let resolvePage;
+            pagePromise = new Promise(resolve => {
+                resolvePage = resolve;
+            });
+
+            const initPromise = thumbnail.init();
+            thumbnail.destroy();
+            resolvePage(page);
+
+            await expect(initPromise).resolves.toBeNull();
+            expect(stubs.getViewport).not.toBeCalled();
+        });
+
+        test('should ignore an in-flight thumbnail render after being destroyed', async () => {
+            let resolvePage;
+            pagePromise = new Promise(resolve => {
+                resolvePage = resolve;
+            });
+
+            const dataUrlPromise = thumbnail.getThumbnailDataURL(1);
+            thumbnail.destroy();
+            resolvePage(page);
+            await dataUrlPromise;
+
+            expect(stubs.getViewport).not.toBeCalled();
+            expect(stubs.render).not.toBeCalled();
         });
     });
 
@@ -183,6 +226,31 @@ describe('Thumbnail', () => {
                 expect(stubs.createImageEl).not.toBeCalled();
                 expect(imageEl).toBeNull();
             });
+        });
+
+        test('should resolve with null after being destroyed', async () => {
+            thumbnail.destroy();
+
+            await expect(thumbnail.createThumbnailImage(0)).resolves.toBeNull();
+            expect(stubs.getThumbnailDataURL).not.toBeCalled();
+        });
+
+        test('should ignore an in-flight image after being destroyed', async () => {
+            let resolveDataUrl;
+            stubs.getThumbnailDataURL.mockReturnValue(
+                new Promise(resolve => {
+                    resolveDataUrl = resolve;
+                }),
+            );
+
+            const imagePromise = thumbnail.createThumbnailImage(0);
+            thumbnail.destroy();
+            stubs.setCacheEntry.mockClear();
+            resolveDataUrl('image');
+
+            await expect(imagePromise).resolves.toBeNull();
+            expect(stubs.createImageEl).not.toBeCalled();
+            expect(stubs.setCacheEntry).not.toBeCalled();
         });
     });
 

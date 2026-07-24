@@ -84,12 +84,27 @@ describe('ThumbnailsSidebar', () => {
 
     describe('destroy()', () => {
         test('should clean up the instance properties', () => {
+            const thumbnailDestroy = jest.spyOn(thumbnailsSidebar.thumbnail, 'destroy');
+
             thumbnailsSidebar.destroy();
+
+            expect(thumbnailDestroy).toBeCalled();
+            expect(thumbnailsSidebar.thumbnail).toBeNull();
             expect(thumbnailsSidebar.pdfViewer).toBeNull();
+
             const preloader = { retrievedPagesCount: 3 };
             thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, pdfViewer, preloader);
             thumbnailsSidebar.destroy();
             expect(thumbnailsSidebar.preloader).toBeNull();
+        });
+
+        test('should remove event listeners from the anchor element', () => {
+            const removeEventListener = jest.spyOn(anchorEl, 'removeEventListener');
+
+            thumbnailsSidebar.destroy();
+
+            expect(removeEventListener).toBeCalledWith('click', thumbnailsSidebar.thumbnailClickHandler);
+            expect(removeEventListener).toBeCalledWith('keydown', thumbnailsSidebar.onKeydown);
         });
 
         test('should destroy virtualScroller if it exists', () => {
@@ -99,6 +114,33 @@ describe('ThumbnailsSidebar', () => {
             expect(stubs.vsDestroy).toBeCalled();
             expect(thumbnailsSidebar.virtualScroller).toBeNull();
             expect(thumbnailsSidebar.pdfViewer).toBeNull();
+        });
+
+        test('should safely handle repeated calls and delayed rendering', () => {
+            thumbnailsSidebar.destroy();
+
+            expect(() => thumbnailsSidebar.destroy()).not.toThrow();
+            expect(() => thumbnailsSidebar.renderNextThumbnailImage()).not.toThrow();
+            expect(() => thumbnailsSidebar.requestThumbnailImage(0, document.createElement('div'))).not.toThrow();
+        });
+
+        test('should ignore an in-flight refresh after being destroyed', async () => {
+            let resolveThumbnailHeight;
+            thumbnailsSidebar.virtualScroller = virtualScroller;
+            jest.spyOn(thumbnailsSidebar.thumbnail, 'init').mockReturnValue(
+                new Promise(resolve => {
+                    resolveThumbnailHeight = resolve;
+                }),
+            );
+
+            const refreshPromise = thumbnailsSidebar.refresh();
+            const refreshedScroller = thumbnailsSidebar.virtualScroller;
+            const refreshedScrollerInit = jest.spyOn(refreshedScroller, 'init');
+            thumbnailsSidebar.destroy();
+            resolveThumbnailHeight(100);
+
+            await expect(refreshPromise).resolves.toBeUndefined();
+            expect(refreshedScrollerInit).not.toBeCalled();
         });
     });
 

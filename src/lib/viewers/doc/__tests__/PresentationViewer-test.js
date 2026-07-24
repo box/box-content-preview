@@ -42,6 +42,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             currentPageNumber: 1,
             update: jest.fn(),
             cleanup: jest.fn(),
+            setDocument: jest.fn(),
         };
 
         presentation.controls = {
@@ -111,6 +112,19 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 removeAllListeners: jest.fn(),
             };
             presentation.destroy();
+            presentation = null; // Don't call destroy again during cleanup
+        });
+
+        test('should detach the PDF document when destroyed', () => {
+            presentation.pdfLinkService = {
+                setDocument: jest.fn(),
+            };
+
+            presentation.destroy();
+
+            expect(presentation.pdfViewer.cleanup).toBeCalled();
+            expect(presentation.pdfViewer.setDocument).toBeCalledWith(null);
+            expect(presentation.pdfLinkService.setDocument).toBeCalledWith(null);
             presentation = null; // Don't call destroy again during cleanup
         });
     });

@@ -366,10 +366,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should clean up the viewer', () => {
                 docBase.pdfViewer = {
                     cleanup: jest.fn(),
+                    setDocument: jest.fn(),
                 };
 
                 docBase.destroy();
                 expect(docBase.pdfViewer.cleanup).toBeCalled();
+                expect(docBase.pdfViewer.setDocument).toBeCalledWith(null);
+            });
+
+            test('should detach the document from the link service', () => {
+                docBase.pdfLinkService = {
+                    setDocument: jest.fn(),
+                };
+
+                docBase.destroy();
+                expect(docBase.pdfLinkService.setDocument).toBeCalledWith(null);
+            });
+
+            test('should release the stored PDF document', () => {
+                docBase.doc = {};
+
+                docBase.destroy();
+
+                expect(docBase.doc).toBeNull();
+            });
+
+            test('should safely handle repeated destruction', () => {
+                docBase.pdfViewer = {
+                    cleanup: jest.fn(),
+                    setDocument: jest.fn(),
+                };
+                docBase.pdfLinkService = {
+                    setDocument: jest.fn(),
+                };
+
+                expect(() => {
+                    docBase.destroy();
+                    docBase.destroy();
+                }).not.toThrow();
             });
 
             test('should clean up the thumbnails sidebar instance and DOM element', () => {
@@ -382,6 +416,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.thumbnailsSidebar.destroy).toBeCalled();
                 expect(docBase.rootEl.removeChild).toBeCalled();
                 expect(stubs.classListRemove).toBeCalled();
+            });
+
+            test('should clean up the advanced insights thumbnails', () => {
+                const advancedInsightsThumbs = {
+                    destroy: jest.fn(),
+                };
+                docBase.advancedInsightsThumbs = advancedInsightsThumbs;
+
+                docBase.destroy();
+
+                expect(advancedInsightsThumbs.destroy).toBeCalled();
+                expect(docBase.advancedInsightsThumbs).toBeNull();
             });
 
             test('should destroy the page tracker object', () => {
@@ -1725,6 +1771,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     on: jest.fn(),
                 };
                 stubs.pdfViewer = {
+                    cleanup: jest.fn(),
                     setDocument: jest.fn(),
                 };
                 stubs.pdfViewerClass = jest.fn(() => stubs.pdfViewer);
@@ -1756,6 +1803,85 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     })),
                     PDFViewer: stubs.pdfViewerClass,
                 };
+            });
+
+            test('should not attach a PDF document after the viewer is destroyed', async () => {
+                let resolveDocument;
+                const pdfDocument = {
+                    numPages: 1,
+                    getPage: jest.fn(),
+                };
+                docBase.options.file.extension = 'xlsx';
+                stubs.getDocument.mockReturnValue({
+                    destroy: jest.fn(),
+                    promise: new Promise(resolve => {
+                        resolveDocument = resolve;
+                    }),
+                });
+
+                const initPromise = docBase.initViewer('');
+                docBase.destroy();
+                resolveDocument(pdfDocument);
+                await initPromise;
+
+                expect(stubs.pdfViewer.setDocument).toBeCalledWith(null);
+                expect(stubs.pdfViewer.setDocument).not.toBeCalledWith(pdfDocument);
+                expect(docBase.pdfLinkService.setDocument).toBeCalledWith(null);
+                expect(docBase.pdfLinkService.setDocument).not.toBeCalledWith(pdfDocument, expect.anything());
+                expect(pdfDocument.getPage).not.toBeCalled();
+            });
+
+            test('should not attach a PDF document if destroyed while counting operations', async () => {
+                let resolveOperatorList;
+                let signalOperatorList;
+                const operatorListCalled = new Promise(resolve => {
+                    signalOperatorList = resolve;
+                });
+                const getOperatorList = jest.fn(() => {
+                    signalOperatorList();
+                    return new Promise(resolve => {
+                        resolveOperatorList = resolve;
+                    });
+                });
+                const pdfDocument = {
+                    numPages: 1,
+                    getPage: jest.fn().mockResolvedValue({ getOperatorList }),
+                };
+                docBase.options.file.extension = 'xlsx';
+                stubs.getDocument.mockReturnValue({
+                    destroy: jest.fn(),
+                    promise: Promise.resolve(pdfDocument),
+                });
+
+                const initPromise = docBase.initViewer('');
+                await operatorListCalled;
+
+                docBase.destroy();
+                resolveOperatorList({ fnArray: [] });
+                await initPromise;
+
+                expect(stubs.pdfViewer.setDocument).not.toBeCalledWith(pdfDocument);
+                expect(docBase.pdfLinkService.setDocument).not.toBeCalledWith(pdfDocument, expect.anything());
+            });
+
+            test('should ignore PDF load errors after the viewer is destroyed', async () => {
+                let rejectDocument;
+                stubs.getDocument.mockReturnValue({
+                    destroy: jest.fn(),
+                    promise: new Promise((resolve, reject) => {
+                        rejectDocument = reject;
+                    }),
+                });
+                stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
+                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+
+                const initPromise = docBase.initViewer('');
+                docBase.destroy();
+                rejectDocument(new Error('PDF load aborted'));
+                await initPromise;
+
+                expect(stubs.consoleError).not.toBeCalled();
+                expect(stubs.handleDownloadError).not.toBeCalled();
             });
 
             test('should create an event bus and subscribe to relevant events', () => {
@@ -4620,9 +4746,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         describe('getThumbnail()', () => {
             beforeEach(() => {
                 docBase.pdfViewer = {
+                    cleanup: jest.fn(),
                     pdfDocument: {
                         getPage: jest.fn(),
                     },
+                    setDocument: jest.fn(),
                 };
                 stubs.promiseResolve = Promise.resolve({
                     getViewport: jest.fn().mockReturnValue({ width: 0, height: 0 }),
@@ -4644,6 +4772,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.advancedInsightsThumbs).toBe(undefined);
                 docBase.getThumbnail();
                 expect(docBase.advancedInsightsThumbs).toBeInstanceOf(Thumbnail);
+            });
+
+            test('should not create a new Thumbnail after being destroyed', async () => {
+                docBase.advancedInsightsThumbs = {
+                    destroy: jest.fn(),
+                };
+                docBase.destroy();
+
+                await expect(docBase.getThumbnail(1)).resolves.toBeNull();
+                expect(docBase.advancedInsightsThumbs).toBeNull();
             });
         });
 
