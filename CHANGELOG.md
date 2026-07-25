@@ -1,3 +1,10 @@
+## 3.69.0 (2026-07-25)
+
+* chore(i18n): update translations (#1676) ([1b88851](https://github.com/box/box-content-preview/commit/1b88851)), closes [#1676](https://github.com/box/box-content-preview/issues/1676)
+* fix(preview): release PDF memory (#1718) ([fa852ca](https://github.com/box/box-content-preview/commit/fa852ca)), closes [#1718](https://github.com/box/box-content-preview/issues/1718)
+
+
+
 ## 3.68.0 (2026-07-23)
 
 * fix(annotations): tint pencil scribble only while drawing mode is active (#1717) ([a4d90d4](https://github.com/box/box-content-preview/commit/a4d90d4)), closes [#1717](https://github.com/box/box-content-preview/issues/1717) [#1705](https://github.com/box/box-content-preview/issues/1705)
