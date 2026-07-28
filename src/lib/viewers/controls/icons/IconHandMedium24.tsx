@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-// Simple 4-way "pan/move" glyph (cross of arrows) — used for the spacebar-drag pan tool.
-// Built from primitive shapes rather than a hand-drawn path so its geometry is easy to verify.
+// "Grab" hand glyph (Material pan_tool) — used for the spacebar-drag pan tool.
 function IconHandMedium24({ ...rest }: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg
@@ -14,7 +13,10 @@ function IconHandMedium24({ ...rest }: React.SVGProps<SVGSVGElement>): JSX.Eleme
             width="1em"
             {...rest}
         >
-            <path d="M12 2 9 5h2v4H7V7l-3 3 3 3v-2h4v4H9l3 3 3-3h-2v-4h4v2l3-3-3-3v2h-4V5h2L12 2Z" fill="#fff" />
+            <path
+                d="M23 5.5V20c0 2.2-1.8 4-4 4h-7.3c-1.08 0-2.1-.43-2.85-1.19L1 14.83s1.26-1.23 1.3-1.25c.22-.19.49-.29.79-.29.22 0 .42.06.6.16.04.01 4.31 2.46 4.31 2.46V4c0-.83.67-1.5 1.5-1.5S12 3.17 12 4v7h1V1.5c0-.83.67-1.5 1.5-1.5S16 .67 16 1.5V11h1V2.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5V11h1V5.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5z"
+                fill="#fff"
+            />
         </svg>
     );
 }

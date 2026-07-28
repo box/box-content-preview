@@ -78,6 +78,12 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Whether the pan (spacebar-drag) mode is active (demo) */
     isPanModeActive = false;
 
+    /** @property {number} - Current zoom scale (1 = fit-to-view). Zoom % = fitDistance / orbitDistance. */
+    zoomScale = 1;
+
+    /** @property {number} - Orbit distance at fit-to-view, captured on reset; the 100% baseline. */
+    fitOrbitDistance = null;
+
     /** @inheritdoc */
     constructor(option) {
         super(option);
@@ -95,6 +101,8 @@ class Model3DViewer extends Box3DViewer {
         this.handleCommentToggle = this.handleCommentToggle.bind(this);
         this.handleDrawToggle = this.handleDrawToggle.bind(this);
         this.handlePanToggle = this.handlePanToggle.bind(this);
+        this.handleZoomIn = this.handleZoomIn.bind(this);
+        this.handleZoomOut = this.handleZoomOut.bind(this);
         this.initViewer = this.initViewer.bind(this);
 
         this.onMetadataError = this.onMetadataError.bind(this);
@@ -340,6 +348,73 @@ class Model3DViewer extends Box3DViewer {
     }
 
     /**
+     * Get the orbit_camera controller for the current camera, or null.
+     *
+     * @private
+     * @return {Object|null} Orbit controller component
+     */
+    getOrbitController() {
+        const camera = this.renderer && this.renderer.getCamera();
+        return camera ? camera.getComponentByScriptId('orbit_camera') : null;
+    }
+
+    /**
+     * Recompute zoom scale from the live orbit distance and re-render the UI.
+     * Zoom % is defined relative to the fit-to-view distance (100% = fitted);
+     * getting closer (smaller orbit distance) increases the percentage.
+     *
+     * @private
+     * @return {void}
+     */
+    syncZoomScale() {
+        const orbit = this.getOrbitController();
+        if (!orbit) {
+            return;
+        }
+
+        const distance = orbit.getOrbitDistance();
+        if (this.fitOrbitDistance == null && distance) {
+            this.fitOrbitDistance = distance;
+        }
+
+        this.zoomScale = this.fitOrbitDistance && distance ? this.fitOrbitDistance / distance : 1;
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
+    }
+
+    /**
+     * Zoom the camera by scaling its orbit distance. `direction` > 0 zooms in
+     * (smaller distance), < 0 zooms out.
+     *
+     * @private
+     * @param {number} direction - +1 to zoom in, -1 to zoom out
+     * @return {void}
+     */
+    handleZoom(direction) {
+        const orbit = this.getOrbitController();
+        if (!orbit) {
+            return;
+        }
+
+        const distance = orbit.getOrbitDistance();
+        // 15% closer / farther per click.
+        const factor = direction > 0 ? 1 / 1.15 : 1.15;
+        orbit.setOrbitDistance(distance * factor);
+        this.renderer.box3d.needsRender = true;
+        this.syncZoomScale();
+    }
+
+    handleZoomIn() {
+        this.handleZoom(1);
+    }
+
+    handleZoomOut() {
+        this.handleZoom(-1);
+    }
+
+    /**
      * Handle error triggered by metadata load issues
      *
      * @param {Error} err - The error thrown when trying to load metadata
@@ -470,6 +545,9 @@ class Model3DViewer extends Box3DViewer {
             this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
             this.renderer.stopAnimation();
             this.renderer.resetView();
+            // resetView() re-fits the model; recapture that distance as the 100% baseline.
+            this.fitOrbitDistance = null;
+            this.syncZoomScale();
         }
     }
 
@@ -608,7 +686,10 @@ class Model3DViewer extends Box3DViewer {
                 onShowSkeletonsToggle={this.handleShowSkeletons}
                 onShowWireframesToggle={this.handleShowWireframes}
                 onVrToggle={this.handleToggleVr}
+                onZoomIn={this.handleZoomIn}
+                onZoomOut={this.handleZoomOut}
                 renderMode={this.renderMode}
+                scale={this.zoomScale}
                 showGrid={this.showGrid}
                 showSkeletons={this.showSkeletons}
                 showWireframes={this.showWireframes}

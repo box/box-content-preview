@@ -1024,6 +1024,8 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 onShowSkeletonsToggle: model3d.handleShowSkeletons,
                 onShowWireframesToggle: model3d.handleShowWireframes,
                 onVrToggle: model3d.handleToggleVr,
+                onZoomIn: model3d.handleZoomIn,
+                onZoomOut: model3d.handleZoomOut,
                 renderMode: 'Lit',
                 showGrid: true,
                 showSkeletons: false,

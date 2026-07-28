@@ -1,19 +1,21 @@
 import React from 'react';
 import AnimationControls, { Props as AnimationControlsProps } from '../../controls/box3d/AnimationControls';
 import CommentControl from '../../controls/box3d/CommentControl';
-import ControlsBar from '../../controls/controls-bar';
+import ControlsBar, { ControlsBarGroup } from '../../controls/controls-bar';
 import DrawControl from '../../controls/box3d/DrawControl';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../../controls/fullscreen';
 import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/box3d/Model3DSettings';
 import PanControl from '../../controls/box3d/PanControl';
 import ResetControl, { Props as ResetControlProps } from '../../controls/box3d/ResetControl';
 import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/box3d/VrToggleControl';
+import ZoomControls, { Props as ZoomControlsProps } from '../../controls/zoom';
 
 export type Props = AnimationControlsProps &
     FullscreenToggleProps &
     Model3DSettingsProps &
     ResetControlProps &
-    VrToggleControlProps & {
+    VrToggleControlProps &
+    ZoomControlsProps & {
         isCommentModeActive: boolean;
         isDrawModeActive: boolean;
         isPanModeActive: boolean;
@@ -33,6 +35,8 @@ export default function Model3DControls({
     isPanModeActive,
     isPlaying,
     isVrShown,
+    maxScale,
+    minScale,
     onAnimationClipSelect,
     onCameraProjectionChange,
     onCommentToggle,
@@ -49,7 +53,10 @@ export default function Model3DControls({
     onShowSkeletonsToggle,
     onShowWireframesToggle,
     onVrToggle,
+    onZoomIn,
+    onZoomOut,
     renderMode,
+    scale,
     showGrid,
     showSkeletons,
     showWireframes,
@@ -80,6 +87,15 @@ export default function Model3DControls({
                 showSkeletons={showSkeletons}
                 showWireframes={showWireframes}
             />
+            <ControlsBarGroup isDistinct>
+                <ZoomControls
+                    maxScale={maxScale}
+                    minScale={minScale}
+                    onZoomIn={onZoomIn}
+                    onZoomOut={onZoomOut}
+                    scale={scale}
+                />
+            </ControlsBarGroup>
             <PanControl isActive={isPanModeActive} onPanToggle={onPanToggle} />
             <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
             <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
