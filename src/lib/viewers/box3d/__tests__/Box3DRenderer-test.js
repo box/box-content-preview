@@ -380,7 +380,8 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             };
             window.Box3D = Box3DFake;
             renderer.createBox3d({}, {}).then(() => {
-                expect(renderer.box3d.canvas.addEventListener).toBeCalledTimes(2);
+                // 2 webglcontext listeners + wheel + 3 gesture listeners
+                expect(renderer.box3d.canvas.addEventListener).toBeCalledTimes(6);
                 expect(renderer.handleContextRestored).toBeCalled();
                 done();
             });

@@ -83,6 +83,8 @@ class Box3DRenderer extends EventEmitter {
 
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
+        this.handleCanvasWheel = this.handleCanvasWheel.bind(this);
+        this.handleCanvasGesture = this.handleCanvasGesture.bind(this);
     }
 
     /**
@@ -115,6 +117,10 @@ class Box3DRenderer extends EventEmitter {
         if (this.box3d.canvas) {
             this.box3d.canvas.removeEventListener('webglcontextlost', this.handleContextLost);
             this.box3d.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored);
+            this.box3d.canvas.removeEventListener('wheel', this.handleCanvasWheel, { passive: false });
+            this.box3d.canvas.removeEventListener('gesturestart', this.handleCanvasGesture);
+            this.box3d.canvas.removeEventListener('gesturechange', this.handleCanvasGesture);
+            this.box3d.canvas.removeEventListener('gestureend', this.handleCanvasGesture);
         }
 
         this.disableVr();
@@ -267,6 +273,15 @@ class Box3DRenderer extends EventEmitter {
         if (box3d.canvas) {
             box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost);
             box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored);
+            // Keep trackpad pinch-zoom / two-finger scroll on the model instead of
+            // letting it leak into browser page zoom or scroll chaining. Pinch-zoom
+            // arrives as ctrl+wheel (and as gesture events in Safari), NOT a scroll,
+            // so overscroll-behavior can't gate it — we preventDefault instead.
+            // passive:false is required for preventDefault() to take effect on wheel.
+            box3d.canvas.addEventListener('wheel', this.handleCanvasWheel, { passive: false });
+            box3d.canvas.addEventListener('gesturestart', this.handleCanvasGesture);
+            box3d.canvas.addEventListener('gesturechange', this.handleCanvasGesture);
+            box3d.canvas.addEventListener('gestureend', this.handleCanvasGesture);
         }
 
         return new Promise(resolve => {
@@ -307,6 +322,30 @@ class Box3DRenderer extends EventEmitter {
      */
     handleContextRestored() {
         this.emit(EVENT_WEBGL_CONTEXT_RESTORED);
+    }
+
+    /**
+     * Prevent trackpad pinch-zoom (delivered as ctrl+wheel) and two-finger
+     * scroll from bubbling out of the canvas into browser page zoom / scroll.
+     * The Box3D runtime already consumes the wheel for camera zoom; this just
+     * stops the browser default so the page behind the model stays put.
+     *
+     * @param {WheelEvent} event - Wheel event on the canvas
+     * @return {void}
+     */
+    handleCanvasWheel(event) {
+        event.preventDefault();
+    }
+
+    /**
+     * Safari (and iOS) fire gesture events for pinch-zoom instead of ctrl+wheel.
+     * Swallow them so the page doesn't zoom behind the model.
+     *
+     * @param {Event} event - gesturestart / gesturechange / gestureend event
+     * @return {void}
+     */
+    handleCanvasGesture(event) {
+        event.preventDefault();
     }
 
     /**
