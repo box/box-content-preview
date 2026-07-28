@@ -88,8 +88,8 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Whether the pan (spacebar-drag) mode is active (demo) */
     isPanModeActive = false;
 
-    /** @property {boolean} - Whether the forensic watermark overlay is shown (demo) */
-    isWatermarkActive = true;
+    /** @property {boolean} - Whether the forensic watermark overlay is shown (demo). Off by default. */
+    isWatermarkActive = false;
 
     /** @property {boolean} - Whether the version-diff overlay is active (demo). Off by default. */
     isVersionDiffActive = false;
