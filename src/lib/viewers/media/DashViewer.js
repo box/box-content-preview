@@ -38,8 +38,8 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Object} - Status of the filmstrip representation */
     filmstripStatus;
 
-    /** @property {Object} - Status of the extracted_text (transcription) representation */
-    transcriptionStatus;
+    /** @property {Object[]} - Statuses of extracted_text transcription representations */
+    transcriptionStatuses = [];
 
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
@@ -128,8 +128,9 @@ class DashViewer extends VideoBaseViewer {
             this.filmstripStatus.destroy();
         }
 
-        if (this.transcriptionStatus) {
-            this.transcriptionStatus.destroy();
+        if (this.transcriptionStatuses.length) {
+            this.transcriptionStatuses.forEach(status => status.destroy());
+            this.transcriptionStatuses = [];
         }
 
         // Release blob: URL allocated for the filmstrip when migrateAccessTokenToHeader is on
@@ -1022,71 +1023,95 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Loads the extracted_text transcription (.vtt) as a text track when available
+     * Loads a single transcription representation (.vtt) as a text track when available
+     *
+     * @private
+     * @param {string} repName - Representation name (e.g. extracted_text, extracted_text_eng)
+     * @param {string} language - BCP-47 language code for the text track
+     * @param {string} label - Display label for the text track
+     * @return {Promise<boolean>} Whether a text track was added
+     */
+    async loadTranscriptionTrack(repName, language, label) {
+        const rep = getRepresentation(this.options.file, repName);
+        if (!rep?.content?.url_template) {
+            return false;
+        }
+
+        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
+            ? this.createContentUrlV2(rep.content.url_template)
+            : this.createContentUrlWithAuthParams(rep.content.url_template);
+        const transcriptionStatus = this.getRepStatus(rep);
+        this.transcriptionStatuses.push(transcriptionStatus);
+
+        try {
+            await transcriptionStatus.getPromise();
+
+            if (this.isDestroyed() || !this.player) {
+                return false;
+            }
+
+            await this.player.addTextTrackAsync(transcriptionUrl, language, 'subtitles', 'text/vtt', undefined, label);
+
+            return !this.isDestroyed();
+        } catch {
+            // Transcription is non-critical; allow the viewer to continue without it
+            return false;
+        }
+    }
+
+    /**
+     * Loads extracted_text (original language) and extracted_text_eng (English translation)
+     * transcriptions as text tracks when available
      *
      * @private
      * @return {void}
      */
     async loadTranscription() {
-        const extractedText = getRepresentation(this.options.file, 'extracted_text');
-        if (!extractedText?.content?.url_template) {
+        const hasTranscription =
+            getRepresentation(this.options.file, 'extracted_text')?.content?.url_template ||
+            getRepresentation(this.options.file, 'extracted_text_eng')?.content?.url_template;
+
+        if (!hasTranscription) {
             return;
         }
 
-        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
-            ? this.createContentUrlV2(extractedText.content.url_template)
-            : this.createContentUrlWithAuthParams(extractedText.content.url_template);
-        this.transcriptionStatus = this.getRepStatus(extractedText);
+        const addedOriginalTrack = await this.loadTranscriptionTrack('extracted_text', 'und', __('auto_generated'));
+        const addedEnglishTrack = await this.loadTranscriptionTrack(
+            'extracted_text_eng',
+            'eng',
+            getLanguageName('eng') || 'English',
+        );
 
-        try {
-            await this.transcriptionStatus.getPromise();
+        if (!(addedOriginalTrack || addedEnglishTrack) || this.isDestroyed()) {
+            return;
+        }
 
-            if (this.isDestroyed() || !this.player) {
-                return;
-            }
+        if (this.textTracks.length > 0) {
+            // Subtitles were already initialized — append only the new track(s) at the
+            // end of `this.textTracks`. We must not re-sort: in the non-React path, the
+            // user's selection is cached as an INDEX into `this.textTracks` (see
+            // handleSubtitle) and Settings menu items use the same number as their
+            // `data-value`, so reordering would silently swap which track plays.
+            const existingIds = new Set(this.textTracks.map(t => t.id));
+            const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
 
-            await this.player.addTextTrackAsync(
-                transcriptionUrl,
-                'und',
-                'subtitles',
-                'text/vtt',
-                undefined,
-                __('auto_generated'),
-            );
-
-            if (this.isDestroyed()) {
-                return;
-            }
-
-            if (this.textTracks.length > 0) {
-                // Subtitles were already initialized — append only the new track(s) at the
-                // end of `this.textTracks`. We must not re-sort: in the non-React path, the
-                // user's selection is cached as an INDEX into `this.textTracks` (see
-                // handleSubtitle) and Settings menu items use the same number as their
-                // `data-value`, so reordering would silently swap which track plays.
-                const existingIds = new Set(this.textTracks.map(t => t.id));
-                const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
-
-                if (this.useReactControls()) {
-                    this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
-                        ...track,
-                        displayLanguage: this.getTrackDisplayLanguage(track),
-                    }));
-                    this.renderUI();
-                } else {
-                    newTracks.forEach(track => {
-                        this.textTracks.push(track);
-                        this.mediaControls.settings.addSubtitle(
-                            this.getTrackDisplayLanguage(track),
-                            this.textTracks.length - 1,
-                        );
-                    });
-                }
+            if (this.useReactControls()) {
+                this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
+                    ...track,
+                    displayLanguage: this.getTrackDisplayLanguage(track),
+                }));
+                this.renderUI();
             } else {
-                this.loadSubtitles();
+                newTracks.forEach(track => {
+                    this.textTracks.push(track);
+                    this.mediaControls.settings.addSubtitle(
+                        this.getTrackDisplayLanguage(track),
+                        this.textTracks.length - 1,
+                    );
+                });
             }
-        } catch {
-            // Transcription is non-critical; allow the viewer to continue without it
+        } else {
+            this.loadSubtitles();
         }
     }
 
