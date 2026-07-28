@@ -1,0 +1,84 @@
+// DEMO ONLY — 3D version-diff control bar styles
+
+.bp-m3dvd {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    z-index: 140; // above watermark (120) and annotations pins (130)
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 12px;
+    font-family: Lato, Helvetica, Arial, sans-serif;
+    background: rgba(0, 0, 0, .72);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+    transform: translateX(-50%);
+
+    &.bp-m3dvd-loading {
+        opacity: .5;
+        pointer-events: none;
+    }
+
+    &.bp-is-hidden {
+        display: none;
+    }
+
+    .bp-m3dvd-title {
+        padding-right: 4px;
+        font-weight: bold;
+        border-right: 1px solid rgba(255, 255, 255, .25);
+    }
+
+    .bp-m3dvd-field {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .bp-m3dvd-label {
+        color: rgba(255, 255, 255, .7);
+    }
+
+    .bp-m3dvd-swatch {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 1px solid rgba(255, 255, 255, .5);
+        border-radius: 3px;
+    }
+
+    .bp-m3dvd-select {
+        padding: 3px 6px;
+        color: #fff;
+        font-size: 12px;
+        background: rgba(255, 255, 255, .12);
+        border: 1px solid rgba(255, 255, 255, .25);
+        border-radius: 4px;
+
+        option {
+            color: #000; // native dropdown list renders on white
+        }
+    }
+
+    .bp-m3dvd-blink {
+        padding: 4px 10px;
+        color: #fff;
+        font-size: 12px;
+        background: #0061d5;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+            background: #004fb0;
+        }
+    }
+
+    .bp-m3dvd-opacity input[type='range'] {
+        width: 110px;
+        cursor: pointer;
+    }
+}

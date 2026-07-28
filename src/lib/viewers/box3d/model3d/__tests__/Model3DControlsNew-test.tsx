@@ -29,6 +29,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                     isDrawModeActive={false}
                     isPanModeActive={false}
                     isPlaying={false}
+                    isVersionDiffActive={false}
                     isVrShown
                     isWatermarkActive={false}
                     onAnimationClipSelect={onAnimationClipSelect}
@@ -46,6 +47,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                     onShowGridToggle={jest.fn()}
                     onShowSkeletonsToggle={jest.fn()}
                     onShowWireframesToggle={jest.fn()}
+                    onVersionDiffToggle={jest.fn()}
                     onVrToggle={onVrToggle}
                     onWatermarkToggle={jest.fn()}
                     onZoomIn={jest.fn()}

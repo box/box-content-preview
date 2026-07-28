@@ -7,6 +7,7 @@ import FullscreenToggle, { Props as FullscreenToggleProps } from '../../controls
 import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/box3d/Model3DSettings';
 import PanControl from '../../controls/box3d/PanControl';
 import ResetControl, { Props as ResetControlProps } from '../../controls/box3d/ResetControl';
+import VersionDiffControl from '../../controls/box3d/VersionDiffControl';
 import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/box3d/VrToggleControl';
 import WatermarkControl from '../../controls/box3d/WatermarkControl';
 import ZoomControls, { Props as ZoomControlsProps } from '../../controls/zoom';
@@ -20,12 +21,14 @@ export type Props = AnimationControlsProps &
         isCommentModeActive: boolean;
         isDrawModeActive: boolean;
         isPanModeActive: boolean;
+        isVersionDiffActive: boolean;
         isWatermarkActive: boolean;
         onCommentToggle: () => void;
         onDrawToggle: () => void;
         onPanToggle: () => void;
         onSettingsClose: () => void;
         onSettingsOpen: () => void;
+        onVersionDiffToggle: () => void;
         onWatermarkToggle: () => void;
     };
 
@@ -36,6 +39,7 @@ export default function Model3DControls({
     isCommentModeActive,
     isDrawModeActive,
     isPanModeActive,
+    isVersionDiffActive,
     isWatermarkActive,
     isPlaying,
     isVrShown,
@@ -53,6 +57,7 @@ export default function Model3DControls({
     onRotateOnAxisChange,
     onSettingsClose,
     onSettingsOpen,
+    onVersionDiffToggle,
     onWatermarkToggle,
     onShowGridToggle,
     onShowSkeletonsToggle,
@@ -102,6 +107,7 @@ export default function Model3DControls({
                 />
             </ControlsBarGroup>
             <WatermarkControl isActive={isWatermarkActive} onWatermarkToggle={onWatermarkToggle} />
+            <VersionDiffControl isActive={isVersionDiffActive} onVersionDiffToggle={onVersionDiffToggle} />
             <PanControl isActive={isPanModeActive} onPanToggle={onPanToggle} />
             <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
             <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />

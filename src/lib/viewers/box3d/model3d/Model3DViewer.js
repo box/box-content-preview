@@ -5,6 +5,7 @@ import Model3DControls from './Model3DControls';
 import Model3DControlsNew from './Model3DControlsNew';
 import Model3DAnnotationsDemo from './Model3DAnnotationsDemo';
 import Model3DWatermark from './Model3DWatermark';
+import Model3DVersionDiff from './Model3DVersionDiff';
 import Model3DRenderer from './Model3DRenderer';
 import { saveThumbnail } from './threeDThumbnailStore';
 import {
@@ -83,6 +84,9 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Whether the forensic watermark overlay is shown (demo) */
     isWatermarkActive = true;
 
+    /** @property {boolean} - Whether the version-diff overlay is active (demo). Off by default. */
+    isVersionDiffActive = false;
+
     /** @property {number} - Current zoom scale (1 = fit-to-view). Zoom % = fitDistance / orbitDistance. */
     zoomScale = 1;
 
@@ -107,6 +111,7 @@ class Model3DViewer extends Box3DViewer {
         this.handleDrawToggle = this.handleDrawToggle.bind(this);
         this.handlePanToggle = this.handlePanToggle.bind(this);
         this.handleWatermarkToggle = this.handleWatermarkToggle.bind(this);
+        this.handleVersionDiffToggle = this.handleVersionDiffToggle.bind(this);
         this.handleZoomIn = this.handleZoomIn.bind(this);
         this.handleZoomOut = this.handleZoomOut.bind(this);
         this.initViewer = this.initViewer.bind(this);
@@ -126,6 +131,11 @@ class Model3DViewer extends Box3DViewer {
         if (this.watermark) {
             this.watermark.destroy();
             this.watermark = null;
+        }
+
+        if (this.versionDiff) {
+            this.versionDiff.destroy();
+            this.versionDiff = null;
         }
 
         super.destroy();
@@ -300,6 +310,8 @@ class Model3DViewer extends Box3DViewer {
 
         this.initAnnotationsDemo();
 
+        this.initVersionDiff();
+
         this.emit(EVENT_LOAD);
 
         this.captureThumbnail();
@@ -403,6 +415,39 @@ class Model3DViewer extends Box3DViewer {
             },
         });
         this.annotationsDemo.init();
+    }
+
+    /**
+     * DEMO ONLY: mount the 3D version-diff overlay (two version dropdowns, a
+     * blink toggle, and an opacity cross-fade slider). Synthesizes versions from
+     * the live model geometry so it runs without backend version plumbing.
+     *
+     * @private
+     * @return {void}
+     */
+    initVersionDiff() {
+        if (this.versionDiff) {
+            return;
+        }
+
+        this.versionDiff = new Model3DVersionDiff({
+            containerEl: this.wrapperEl,
+            renderer: this.renderer,
+        });
+        this.versionDiff.init();
+        // Off by default — the viewer opens on the plain original model; the
+        // toolbar toggle turns diffing on.
+        this.versionDiff.setEnabled(this.isVersionDiffActive);
+    }
+
+    handleVersionDiffToggle() {
+        this.isVersionDiffActive = !this.isVersionDiffActive;
+        if (this.versionDiff) {
+            this.versionDiff.setEnabled(this.isVersionDiffActive);
+        }
+        if (this.getViewerOption('useReactControls')) {
+            this.renderUI();
+        }
     }
 
     handleCommentToggle() {
@@ -755,6 +800,7 @@ class Model3DViewer extends Box3DViewer {
                 isDrawModeActive={this.isDrawModeActive}
                 isPanModeActive={this.isPanModeActive}
                 isPlaying={this.isAnimationPlaying}
+                isVersionDiffActive={this.isVersionDiffActive}
                 isVrShown={this.showVrButton}
                 isWatermarkActive={this.isWatermarkActive}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
@@ -772,6 +818,7 @@ class Model3DViewer extends Box3DViewer {
                 onShowGridToggle={this.handleShowGrid}
                 onShowSkeletonsToggle={this.handleShowSkeletons}
                 onShowWireframesToggle={this.handleShowWireframes}
+                onVersionDiffToggle={this.handleVersionDiffToggle}
                 onVrToggle={this.handleToggleVr}
                 onWatermarkToggle={this.handleWatermarkToggle}
                 onZoomIn={this.handleZoomIn}
