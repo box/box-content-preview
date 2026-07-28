@@ -152,18 +152,20 @@ describe('lib/viewers/media/DashViewer', () => {
             dash = null;
         });
 
-        test('should destroy transcriptionStatus if it exists', () => {
-            const destroySpy = jest.fn();
-            dash.transcriptionStatus = { destroy: destroySpy };
+        test('should destroy transcriptionStatuses if they exist', () => {
+            const destroySpy1 = jest.fn();
+            const destroySpy2 = jest.fn();
+            dash.transcriptionStatuses = [{ destroy: destroySpy1 }, { destroy: destroySpy2 }];
 
             dash.destroy();
 
-            expect(destroySpy).toBeCalled();
+            expect(destroySpy1).toBeCalled();
+            expect(destroySpy2).toBeCalled();
             dash = null;
         });
 
-        test('should not fail if transcriptionStatus does not exist', () => {
-            dash.transcriptionStatus = undefined;
+        test('should not fail if transcriptionStatuses is empty', () => {
+            dash.transcriptionStatuses = [];
 
             expect(() => dash.destroy()).not.toThrow();
             dash = null;
@@ -956,9 +958,6 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('loadTranscription()', () => {
         beforeEach(() => {
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'aiTranscriptionForVideoSubtitles',
-            );
             dash.options = {
                 file: {
                     representations: {
@@ -967,6 +966,11 @@ describe('lib/viewers/media/DashViewer', () => {
                             {
                                 representation: 'extracted_text',
                                 content: { url_template: 'https://api.box.com/transcription.vtt' },
+                                status: { state: 'success' },
+                            },
+                            {
+                                representation: 'extracted_text_eng',
+                                content: { url_template: 'https://api.box.com/transcription-eng.vtt' },
                                 status: { state: 'success' },
                             },
                         ],
@@ -978,22 +982,17 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
         });
 
-        test('should do nothing when ai transcription for video subtitles feature is disabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
-            dash.loadTranscription();
-            expect(stubs.createUrl).not.toBeCalled();
-        });
-
-        test('should do nothing if the extracted_text representation does not exist', () => {
+        test('should do nothing if no transcription representations exist', () => {
             dash.options.file.representations.entries = [];
             dash.loadTranscription();
             expect(stubs.createUrl).not.toBeCalled();
         });
 
         test('should do nothing if the extracted_text content is missing', () => {
-            dash.options.file.representations.entries[1] = {
-                representation: 'extracted_text',
-            };
+            dash.options.file.representations.entries = [
+                { representation: 'extracted_text' },
+                dash.options.file.representations.entries[2],
+            ];
             dash.loadTranscription();
             expect(stubs.createUrl).not.toBeCalled();
         });
@@ -1003,11 +1002,16 @@ describe('lib/viewers/media/DashViewer', () => {
                 representation: 'extracted_text',
                 content: {},
             };
+            dash.options.file.representations.entries = [
+                dash.options.file.representations.entries[1],
+                dash.options.file.representations.entries[2],
+            ];
             dash.loadTranscription();
             expect(stubs.createUrl).not.toBeCalled();
         });
 
-        test('should create a RepStatus and add transcription as text track when ready', done => {
+        test('should load extracted_text_eng when extracted_text is unavailable', done => {
+            dash.options.file.representations.entries = [dash.options.file.representations.entries[2]];
             const mockRepStatusPromise = Promise.resolve();
             const mockAddTrackPromise = Promise.resolve();
 
@@ -1026,11 +1030,58 @@ describe('lib/viewers/media/DashViewer', () => {
                 .then(() => {
                     expect(dash.player.addTextTrackAsync).toBeCalledWith(
                         'authed-url',
+                        'eng',
+                        'subtitles',
+                        'text/vtt',
+                        undefined,
+                        'English',
+                    );
+                    expect(stubs.loadSubtitles).toBeCalled();
+                    done();
+                });
+        });
+
+        test('should create RepStatuses and add both transcription tracks when ready', done => {
+            const mockRepStatusPromise = Promise.resolve();
+            const mockAddTrackPromise = Promise.resolve();
+
+            jest.spyOn(dash, 'getRepStatus')
+                .mockReturnValueOnce({
+                    destroy: jest.fn(),
+                    getPromise: () => mockRepStatusPromise,
+                })
+                .mockReturnValueOnce({
+                    destroy: jest.fn(),
+                    getPromise: () => mockRepStatusPromise,
+                });
+
+            dash.player.addTextTrackAsync = jest.fn().mockReturnValue(mockAddTrackPromise);
+            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
+
+            dash.loadTranscription();
+
+            mockRepStatusPromise
+                .then(() => mockAddTrackPromise)
+                .then(() => mockAddTrackPromise)
+                .then(() => {
+                    expect(dash.player.addTextTrackAsync).toHaveBeenCalledTimes(2);
+                    expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
+                        1,
+                        'authed-url',
                         'und',
                         'subtitles',
                         'text/vtt',
                         undefined,
                         expect.any(String),
+                    );
+                    expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
+                        2,
+                        'authed-url',
+                        'eng',
+                        'subtitles',
+                        'text/vtt',
+                        undefined,
+                        'English',
                     );
                     expect(stubs.loadSubtitles).toBeCalled();
                     done();
@@ -1038,6 +1089,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should re-render UI without resetting selection when React controls and tracks already exist', done => {
+            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const mockRepStatusPromise = Promise.resolve();
             const mockAddTrackPromise = Promise.resolve();
             const transcriptionTrack = { id: 99, language: 'und', label: 'Transcription' };
@@ -1069,6 +1121,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should preserve Auto-Generated label for existing und tracks in React controls', done => {
+            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const mockRepStatusPromise = Promise.resolve();
             const mockAddTrackPromise = Promise.resolve();
             const transcriptionTrack = { id: 99, language: 'und', label: 'Transcription' };
@@ -1104,6 +1157,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should append only new tracks to settings when non-React controls and tracks already exist', done => {
+            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const mockRepStatusPromise = Promise.resolve();
             const mockAddTrackPromise = Promise.resolve();
             const addSubtitle = jest.fn();
@@ -1149,6 +1203,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should not add track if player is destroyed before rep is ready', done => {
+            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const mockRepStatusPromise = Promise.resolve();
 
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
@@ -1168,6 +1223,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should handle transcription load failure gracefully', async () => {
+            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const mockRepStatusPromise = Promise.reject(new Error('conversion failed'));
 
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
@@ -1183,34 +1239,46 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.loadSubtitles).not.toBeCalled();
         });
 
-        test('should use createContentUrlV2 when migrateAccessTokenToHeader is enabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'aiTranscriptionForVideoSubtitles' || feature === 'migrateAccessTokenToHeader',
-            );
+        test('should use createContentUrlV2 when migrateAccessTokenToHeader is enabled', async () => {
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
             const createUrlV2 = jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('v2-url');
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
+            jest.spyOn(dash, 'getRepStatus')
+                .mockReturnValueOnce({
+                    destroy: jest.fn(),
+                    getPromise: () => Promise.resolve(),
+                })
+                .mockReturnValueOnce({
+                    destroy: jest.fn(),
+                    getPromise: () => Promise.resolve(),
+                });
+            dash.player.addTextTrackAsync = jest.fn().mockResolvedValue();
+            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
 
-            dash.loadTranscription();
+            await dash.loadTranscription();
 
             expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription.vtt');
+            expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription-eng.vtt');
             expect(stubs.createUrl).not.toBeCalled();
         });
 
-        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader is disabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'aiTranscriptionForVideoSubtitles',
-            );
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
+        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader is disabled', async () => {
+            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'getRepStatus')
+                .mockReturnValueOnce({
+                    destroy: jest.fn(),
+                    getPromise: () => Promise.resolve(),
+                })
+                .mockReturnValueOnce({
+                    destroy: jest.fn(),
+                    getPromise: () => Promise.resolve(),
+                });
+            dash.player.addTextTrackAsync = jest.fn().mockResolvedValue();
+            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
 
-            dash.loadTranscription();
+            await dash.loadTranscription();
 
             expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription.vtt');
+            expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription-eng.vtt');
         });
     });
 
@@ -1248,29 +1316,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.textTracks).toEqual([russian, spanish, korean, chinese]);
         });
 
-        test('should pass through unrecognized codes', () => {
-            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
-            const russian = { language: 'rus', id: 3 };
-            const foo = { language: 'foo', id: 4 };
-            const und = { language: 'und', id: 5 };
-            const empty = { language: '', id: 6 };
-            const doesntmatter = { language: 'doesntmatter', id: 6 };
-            const zero = { language: '0', id: 7 };
-            const subs = [russian, foo, und, empty, doesntmatter, zero];
-            stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls
-                .expects('initSubtitles')
-                .withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
-
-            dash.loadSubtitles();
-
-            expect(dash.textTracks).toEqual([russian, foo, und, empty, doesntmatter, zero]);
-        });
-
-        test('should map und to Auto-Generated when ai transcription for video subtitles is enabled', () => {
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                feature => feature === 'aiTranscriptionForVideoSubtitles',
-            );
+        test('should map und to Auto-Generated', () => {
             const und = { language: 'und', id: 5 };
             stubs.mockPlayer.expects('getTextTracks').returns([und]);
             stubs.mockControls.expects('initSubtitles').withArgs([__('auto_generated')], 'English');
