@@ -1026,13 +1026,12 @@ class DashViewer extends VideoBaseViewer {
      * Loads a single transcription representation (.vtt) as a text track when available
      *
      * @private
-     * @param {string} repName - Representation name (e.g. extracted_text, extracted_text_eng)
+     * @param {Object|undefined} rep - Representation object
      * @param {string} language - BCP-47 language code for the text track
      * @param {string} label - Display label for the text track
      * @return {Promise<boolean>} Whether a text track was added
      */
-    async loadTranscriptionTrack(repName, language, label) {
-        const rep = getRepresentation(this.options.file, repName);
+    async loadTranscriptionTrack(rep, language, label) {
         if (!rep?.content?.url_template) {
             return false;
         }
@@ -1067,17 +1066,16 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     async loadTranscription() {
-        const hasTranscription =
-            getRepresentation(this.options.file, 'extracted_text')?.content?.url_template ||
-            getRepresentation(this.options.file, 'extracted_text_eng')?.content?.url_template;
+        const extractedText = getRepresentation(this.options.file, 'extracted_text');
+        const extractedTextEng = getRepresentation(this.options.file, 'extracted_text_eng');
 
-        if (!hasTranscription) {
+        if (!extractedText?.content?.url_template && !extractedTextEng?.content?.url_template) {
             return;
         }
 
-        const addedOriginalTrack = await this.loadTranscriptionTrack('extracted_text', 'und', __('auto_generated'));
+        const addedOriginalTrack = await this.loadTranscriptionTrack(extractedText, 'und', __('auto_generated'));
         const addedEnglishTrack = await this.loadTranscriptionTrack(
-            'extracted_text_eng',
+            extractedTextEng,
             'eng',
             getLanguageName('eng') || 'English',
         );
