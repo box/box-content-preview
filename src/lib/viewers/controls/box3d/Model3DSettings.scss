@@ -17,10 +17,31 @@
     }
 }
 
+// Lift the whole controls root (and therefore the open settings flyout) above the
+// demo watermark (z-index 120) and annotation pins (z-index 130) layers, but only
+// inside the 3D viewer so other viewers are unaffected.
+.bp-box3d .bp-ControlsRoot {
+    z-index: 140;
+}
+
 .bp-Model3DSettings-menu {
-    .bp-SettingsCheckboxItem,
+    min-width: 260px;
+
     .bp-SettingsDropdown,
     .bp-RotateAxisControls {
         margin-top: 10px;
     }
+}
+
+.bp-Model3DSettings-sectionLabel {
+    margin-bottom: 4px;
+    color: #767676;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.bp-Model3DSettings-divider {
+    height: 1px;
+    margin: 16px 0;
+    background-color: #e8e8e8;
 }

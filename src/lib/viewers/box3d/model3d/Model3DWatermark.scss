@@ -16,7 +16,7 @@
     // Low opacity keeps geometry readable through the marks; difference blend
     // makes the marks auto-contrast against both the light background and dark
     // model surfaces without ever being fully opaque.
-    opacity: .08;
+    opacity: .16;
     mix-blend-mode: difference;
     pointer-events: none;
 

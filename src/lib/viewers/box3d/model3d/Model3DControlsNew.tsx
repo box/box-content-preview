@@ -54,21 +54,22 @@ export default function Model3DControls({
     onPlayPause,
     onRenderModeChange,
     onReset,
-    onRotateOnAxisChange,
     onSettingsClose,
     onSettingsOpen,
     onVersionDiffToggle,
     onWatermarkToggle,
+    onShowEnvironmentToggle,
     onShowGridToggle,
-    onShowSkeletonsToggle,
+    onShowLightsToggle,
     onShowWireframesToggle,
     onVrToggle,
     onZoomIn,
     onZoomOut,
     renderMode,
     scale,
+    showEnvironment,
     showGrid,
-    showSkeletons,
+    showLights,
     showWireframes,
 }: Props): JSX.Element {
     return (
@@ -88,13 +89,14 @@ export default function Model3DControls({
                 onClose={onSettingsClose}
                 onOpen={onSettingsOpen}
                 onRenderModeChange={onRenderModeChange}
-                onRotateOnAxisChange={onRotateOnAxisChange}
+                onShowEnvironmentToggle={onShowEnvironmentToggle}
                 onShowGridToggle={onShowGridToggle}
-                onShowSkeletonsToggle={onShowSkeletonsToggle}
+                onShowLightsToggle={onShowLightsToggle}
                 onShowWireframesToggle={onShowWireframesToggle}
                 renderMode={renderMode}
+                showEnvironment={showEnvironment}
                 showGrid={showGrid}
-                showSkeletons={showSkeletons}
+                showLights={showLights}
                 showWireframes={showWireframes}
             />
             <ControlsBarGroup isDistinct>

@@ -1,0 +1,32 @@
+// DEMO ONLY — camera-axis gizmo pinned to the top-right of the 3D viewport.
+
+.bp-m3d-gizmo {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 135; // above watermark (120) and pins (130), below the open settings menu (140)
+    opacity: .75;
+    transition: opacity 150ms;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    .bp-m3d-gizmo-ball {
+        outline: none;
+        cursor: pointer;
+
+        &:hover circle,
+        &:focus-visible circle {
+            filter: brightness(1.2);
+        }
+    }
+
+    .bp-m3d-gizmo-label {
+        font-weight: bold;
+        font-size: 10px;
+        user-select: none;
+        pointer-events: none;
+        fill: #fff;
+    }
+}

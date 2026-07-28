@@ -4,6 +4,7 @@ import ControlsRoot from '../../controls/controls-root';
 import Model3DControls from './Model3DControls';
 import Model3DControlsNew from './Model3DControlsNew';
 import Model3DAnnotationsDemo from './Model3DAnnotationsDemo';
+import Model3DAxisGizmo from './Model3DAxisGizmo';
 import Model3DWatermark from './Model3DWatermark';
 import Model3DVersionDiff from './Model3DVersionDiff';
 import Model3DRenderer from './Model3DRenderer';
@@ -72,6 +73,12 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Boolean indicating whether the wireframes are showing */
     showWireframes = false;
 
+    /** @property {boolean} - Boolean indicating whether scene lights are enabled (demo) */
+    showLights = true;
+
+    /** @property {boolean} - Boolean indicating whether the environment/skybox is enabled (demo) */
+    showEnvironment = true;
+
     /** @property {boolean} - Whether the 3D comment placement mode is active (demo) */
     isCommentModeActive = false;
 
@@ -104,6 +111,8 @@ class Model3DViewer extends Box3DViewer {
         this.handleShowSkeletons = this.handleShowSkeletons.bind(this);
         this.handleShowWireframes = this.handleShowWireframes.bind(this);
         this.handleShowGrid = this.handleShowGrid.bind(this);
+        this.handleShowLights = this.handleShowLights.bind(this);
+        this.handleShowEnvironment = this.handleShowEnvironment.bind(this);
         this.handleToggleAnimation = this.handleToggleAnimation.bind(this);
         this.handleToggleHelpers = this.handleToggleHelpers.bind(this);
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
@@ -131,6 +140,11 @@ class Model3DViewer extends Box3DViewer {
         if (this.watermark) {
             this.watermark.destroy();
             this.watermark = null;
+        }
+
+        if (this.axisGizmo) {
+            this.axisGizmo.destroy();
+            this.axisGizmo = null;
         }
 
         if (this.versionDiff) {
@@ -310,6 +324,8 @@ class Model3DViewer extends Box3DViewer {
 
         this.initAnnotationsDemo();
 
+        this.initAxisGizmo();
+
         this.initVersionDiff();
 
         this.emit(EVENT_LOAD);
@@ -395,6 +411,11 @@ class Model3DViewer extends Box3DViewer {
             containerEl: this.wrapperEl,
             fileId: this.options.file.id,
             renderer: this.renderer,
+            api: this.api,
+            apiHost: this.options.apiHost,
+            token: this.options.token,
+            sharedLink: this.options.sharedLink,
+            sharedLinkPassword: this.options.sharedLinkPassword,
             onPlacementModeChange: active => {
                 this.isCommentModeActive = active;
                 if (this.getViewerOption('useReactControls')) {
@@ -415,6 +436,21 @@ class Model3DViewer extends Box3DViewer {
             },
         });
         this.annotationsDemo.init();
+    }
+
+    /**
+     * DEMO ONLY: mount the top-right camera-axis gizmo (click an axis to orbit the
+     * camera to look down it).
+     *
+     * @private
+     * @return {void}
+     */
+    initAxisGizmo() {
+        if (this.axisGizmo) {
+            return;
+        }
+
+        this.axisGizmo = new Model3DAxisGizmo(this.wrapperEl, this.renderer);
     }
 
     /**
@@ -775,6 +811,38 @@ class Model3DViewer extends Box3DViewer {
     }
 
     /**
+     * Handle toggling scene lights (demo).
+     *
+     * @private
+     * @param {boolean} visible - Indicates whether or not scene lights are enabled.
+     * @return {void}
+     */
+    handleShowLights(visible) {
+        this.renderer.setLightsVisible(visible);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showLights = visible;
+            this.renderUI();
+        }
+    }
+
+    /**
+     * Handle toggling the environment/skybox (demo).
+     *
+     * @private
+     * @param {boolean} visible - Indicates whether or not the environment is enabled.
+     * @return {void}
+     */
+    handleShowEnvironment(visible) {
+        this.renderer.setEnvironmentVisible(visible);
+
+        if (this.controls && this.getViewerOption('useReactControls')) {
+            this.showEnvironment = visible;
+            this.renderUI();
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     handleShowVrButton() {
@@ -812,11 +880,11 @@ class Model3DViewer extends Box3DViewer {
                 onPlayPause={this.handleToggleAnimation}
                 onRenderModeChange={this.handleSetRenderMode}
                 onReset={this.handleReset}
-                onRotateOnAxisChange={this.handleRotateOnAxis}
                 onSettingsClose={() => this.handleToggleHelpers(false)}
                 onSettingsOpen={() => this.handleToggleHelpers(true)}
+                onShowEnvironmentToggle={this.handleShowEnvironment}
                 onShowGridToggle={this.handleShowGrid}
-                onShowSkeletonsToggle={this.handleShowSkeletons}
+                onShowLightsToggle={this.handleShowLights}
                 onShowWireframesToggle={this.handleShowWireframes}
                 onVersionDiffToggle={this.handleVersionDiffToggle}
                 onVrToggle={this.handleToggleVr}
@@ -825,8 +893,9 @@ class Model3DViewer extends Box3DViewer {
                 onZoomOut={this.handleZoomOut}
                 renderMode={this.renderMode}
                 scale={this.zoomScale}
+                showEnvironment={this.showEnvironment}
                 showGrid={this.showGrid}
-                showSkeletons={this.showSkeletons}
+                showLights={this.showLights}
                 showWireframes={this.showWireframes}
             />,
         );

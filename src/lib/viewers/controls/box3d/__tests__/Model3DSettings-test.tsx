@@ -11,9 +11,9 @@ describe('Model3DSettings', () => {
             const onClose = jest.fn();
             const onOpen = jest.fn();
             const onRenderModeChange = jest.fn();
-            const onRotateOnAxisChange = jest.fn();
+            const onShowEnvironmentToggle = jest.fn();
             const onShowGridToggle = jest.fn();
-            const onShowSkeletonsToggle = jest.fn();
+            const onShowLightsToggle = jest.fn();
             const onShowWireframesToggle = jest.fn();
             render(
                 <Model3DSettings
@@ -22,13 +22,14 @@ describe('Model3DSettings', () => {
                     onClose={onClose}
                     onOpen={onOpen}
                     onRenderModeChange={onRenderModeChange}
-                    onRotateOnAxisChange={onRotateOnAxisChange}
+                    onShowEnvironmentToggle={onShowEnvironmentToggle}
                     onShowGridToggle={onShowGridToggle}
-                    onShowSkeletonsToggle={onShowSkeletonsToggle}
+                    onShowLightsToggle={onShowLightsToggle}
                     onShowWireframesToggle={onShowWireframesToggle}
                     renderMode={RenderMode.LIT}
+                    showEnvironment
                     showGrid
-                    showSkeletons={false}
+                    showLights
                     showWireframes={false}
                 />,
             );
@@ -40,47 +41,38 @@ describe('Model3DSettings', () => {
             expect(screen.getByRole('menu')).toHaveClass('bp-Model3DSettings-menu');
             expect(screen.getByRole('menu')).toHaveClass('bp-is-active');
 
-            // CheckboxItems
-            expect(screen.getByLabelText('Show grid')).toHaveAttribute('checked');
-            expect(screen.getByLabelText('Show wireframes')).not.toHaveAttribute('checked');
-            expect(screen.getByLabelText('Show skeletons')).not.toHaveAttribute('checked');
+            // Render mode + camera projection are both radio lists. Render modes come first.
+            const radioItems = screen.getAllByRole('menuitemradio');
+            expect(radioItems[0]).toHaveTextContent('Realistic');
+            expect(radioItems[0]).toHaveAttribute('aria-checked', 'true');
+            expect(radioItems[1]).toHaveTextContent('Wireframes');
+            expect(radioItems[1]).toHaveAttribute('aria-checked', 'false');
+            expect(radioItems[2]).toHaveTextContent('Clay');
+            expect(radioItems[3]).toHaveTextContent('Normals');
 
-            // Dropdowns
-            const dropdowns = screen.queryAllByTestId('bp-settings-dropdown-container');
+            // Selecting Clay clears wireframes and sets the Shape render mode
+            await user.click(radioItems[2]);
+            expect(onShowWireframesToggle).toHaveBeenCalledWith(false);
+            expect(onRenderModeChange).toHaveBeenCalledWith(RenderMode.SHAPE);
 
-            expect(within(dropdowns.at(0)!).getByLabelText('Render mode', { selector: 'button' })).toBeInTheDocument();
-            const renderModeDropdown = within(dropdowns.at(0)!).queryByLabelText(RenderMode.LIT, {
-                selector: 'button',
-            })!;
+            // Selecting Wireframes enables the wireframe overlay
+            await user.click(radioItems[1]);
+            expect(onShowWireframesToggle).toHaveBeenCalledWith(true);
 
-            await user.click(renderModeDropdown);
+            // Preview options — Lights/Environment/Grid toggles reflect their props
+            expect(screen.getByText('Lights')).toBeInTheDocument();
+            expect(screen.getByText('Environment')).toBeInTheDocument();
+            expect(screen.getByText('Grid')).toBeInTheDocument();
 
-            expect(renderModeDropdown).toHaveAttribute('aria-expanded', 'true');
+            // Camera Projection radio list — Perspective is selected, Orthographic is not
+            const projectionItems = screen.getAllByRole('menuitemradio').slice(4);
+            expect(projectionItems[0]).toHaveTextContent('Perspective');
+            expect(projectionItems[0]).toHaveAttribute('aria-checked', 'true');
+            expect(projectionItems[1]).toHaveTextContent('Orthographic');
+            expect(projectionItems[1]).toHaveAttribute('aria-checked', 'false');
 
-            const renderModeList = within(dropdowns.at(0)!).getByRole('listbox');
-
-            expect(renderModeList?.children[0]).toHaveTextContent('Lit');
-            expect(renderModeList?.children[1]).toHaveTextContent('Unlit');
-            expect(renderModeList?.children[2]).toHaveTextContent('Normals');
-            expect(renderModeList?.children[3]).toHaveTextContent('Shape');
-            expect(renderModeList?.children[4]).toHaveTextContent('UV Overlay');
-
-            expect(
-                within(dropdowns.at(1)!).queryByLabelText('Camera Projection', { selector: 'button' }),
-            ).toBeInTheDocument();
-            const cameraProjectionDropdown = within(dropdowns.at(1)!).queryByLabelText(CameraProjection.PERSPECTIVE, {
-                selector: 'button',
-            })!;
-
-            await user.click(cameraProjectionDropdown);
-
-            expect(cameraProjectionDropdown).toHaveAttribute('aria-expanded', 'true');
-
-            const cameraProjectionsList = within(dropdowns.at(1)!).getByRole('listbox');
-            expect(cameraProjectionsList?.children[0]).toHaveTextContent('Perspective');
-            expect(cameraProjectionsList?.children[1]).toHaveTextContent('Orthographic');
-
-            expect(screen.queryByText('Rotate Model')).toBeInTheDocument();
+            await user.click(projectionItems[1]);
+            expect(onCameraProjectionChange).toHaveBeenCalledWith(CameraProjection.ORTHOGRAPHIC);
 
             await user.click(screen.getByTitle('Settings'));
 

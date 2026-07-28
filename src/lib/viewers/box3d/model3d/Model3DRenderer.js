@@ -47,6 +47,9 @@ class Model3DRenderer extends Box3DRenderer {
     /** A mapping of preview render mode names to Box3D render mode enum values */
     renderModeValues;
 
+    /** @property {Object|null} - Saved scene background/environment maps while the environment is hidden */
+    savedEnvironment = null;
+
     /**
      * Creates a 3D runtime and loads in a 3D model for rendering
      *
@@ -496,6 +499,78 @@ class Model3DRenderer extends Box3DRenderer {
     }
 
     /**
+     * Snap the CAMERA (not the model) to look straight down a principal axis, keeping the
+     * current orbit pivot and distance. `sign` is +1 or -1 to pick the positive/negative
+     * axis direction. The view is animated via a short quaternion slerp. (Demo.)
+     *
+     * @public
+     * @param {'x'|'y'|'z'} axis - The axis to look down.
+     * @param {number} sign - +1 or -1 for the positive/negative direction.
+     * @return {void}
+     */
+    snapCameraToAxis(axis, sign = 1) {
+        const cameraObject = this.getCamera();
+        const orbit = cameraObject ? cameraObject.getComponentByScriptId('orbit_camera') : null;
+        if (!cameraObject || !cameraObject.runtimeData || !orbit) {
+            return;
+        }
+
+        const camera = cameraObject.runtimeData;
+
+        // Orbit around the model center: keep the current pivot and distance so the model
+        // stays framed. The camera rides a sphere of radius `distance` centered on the pivot.
+        const distance = orbit.getOrbitDistance();
+        const pivot = orbit.pivotPoint.position.clone();
+
+        // Direction from the pivot out to the camera (unit vector along ±axis).
+        const dir = new THREE.Vector3(axis === 'x' ? sign : 0, axis === 'y' ? sign : 0, axis === 'z' ? sign : 0);
+
+        // Build the target orientation: a camera at pivot + dir*distance looking back at the
+        // pivot. Looking down the world Y axis needs a non-Y up vector to stay well-defined.
+        const up = axis === 'y' ? new THREE.Vector3(0, 0, sign > 0 ? -1 : 1) : new THREE.Vector3(0, 1, 0);
+        const eye = dir
+            .clone()
+            .multiplyScalar(distance)
+            .add(pivot);
+        const lookMatrix = new THREE.Matrix4().lookAt(eye, pivot, up);
+        const targetQ = new THREE.Quaternion().setFromRotationMatrix(lookMatrix);
+
+        const fromQ = camera.quaternion.clone();
+        const startTime = performance.now();
+        const durationMs = 400;
+
+        // Place the camera on the orbit sphere for a given orientation — mirrors the orbit
+        // controller's own placement math (pivot + (0,0,distance) rotated by the quaternion),
+        // so the model always stays centered instead of swinging off screen.
+        const applyOrbit = q => {
+            camera.quaternion.copy(q);
+            camera.position.set(0, 0, distance);
+            camera.position.applyQuaternion(q);
+            camera.position.add(pivot);
+            this.box3d.needsRender = true;
+        };
+
+        const step = now => {
+            const t = Math.min((now - startTime) / durationMs, 1);
+            const eased = t * t * (3 - 2 * t); // smoothstep
+            const interpQ = new THREE.Quaternion();
+            THREE.Quaternion.slerp(fromQ, targetQ, interpQ, eased);
+            applyOrbit(interpQ);
+
+            if (t < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                applyOrbit(targetQ);
+                if (orbit.resetOrbitRotation) {
+                    orbit.resetOrbitRotation();
+                }
+            }
+        };
+
+        window.requestAnimationFrame(step);
+    }
+
+    /**
      * Rotates the loaded model on the provided axis.
      *
      * @public
@@ -565,6 +640,58 @@ class Model3DRenderer extends Box3DRenderer {
         if (this.box3d) {
             this.grid.visible = visible;
         }
+    }
+
+    /**
+     * Set the visibility of scene lights. Walks the live three.js scene graph and toggles
+     * every light source, then forces a re-render. (Demo — Box3D exposes no light component.)
+     *
+     * @private
+     * @param {boolean} visible - Indicates whether or not scene lights are enabled.
+     * @return {void}
+     */
+    setLightsVisible(visible) {
+        const scene = this.getScene() ? this.getScene().runtimeData : undefined;
+        if (!scene) {
+            return;
+        }
+
+        scene.traverse(node => {
+            if (node && node.isLight) {
+                node.visible = visible;
+            }
+        });
+
+        this.box3d.needsRender = true;
+    }
+
+    /**
+     * Set the visibility of the environment (image-based lighting / skybox background).
+     * Toggles the scene background and environment map on the live three.js scene.
+     * (Demo — Box3D exposes no environment component.)
+     *
+     * @private
+     * @param {boolean} visible - Indicates whether or not the environment is enabled.
+     * @return {void}
+     */
+    setEnvironmentVisible(visible) {
+        const scene = this.getScene() ? this.getScene().runtimeData : undefined;
+        if (!scene) {
+            return;
+        }
+
+        if (visible) {
+            if (this.savedEnvironment) {
+                scene.background = this.savedEnvironment.background;
+                scene.environment = this.savedEnvironment.environment;
+            }
+        } else {
+            this.savedEnvironment = { background: scene.background, environment: scene.environment };
+            scene.background = null;
+            scene.environment = null;
+        }
+
+        this.box3d.needsRender = true;
     }
 
     /** @inheritdoc */

@@ -41,11 +41,11 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                     onPlayPause={onPlayPause}
                     onRenderModeChange={jest.fn()}
                     onReset={onReset}
-                    onRotateOnAxisChange={jest.fn()}
                     onSettingsClose={jest.fn()}
                     onSettingsOpen={onSettingsOpen}
+                    onShowEnvironmentToggle={jest.fn()}
                     onShowGridToggle={jest.fn()}
-                    onShowSkeletonsToggle={jest.fn()}
+                    onShowLightsToggle={jest.fn()}
                     onShowWireframesToggle={jest.fn()}
                     onVersionDiffToggle={jest.fn()}
                     onVrToggle={onVrToggle}
@@ -54,8 +54,9 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                     onZoomOut={jest.fn()}
                     renderMode={RenderMode.LIT}
                     scale={1}
+                    showEnvironment
                     showGrid
-                    showSkeletons={false}
+                    showLights
                     showWireframes={false}
                 />,
             );
