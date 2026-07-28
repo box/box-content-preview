@@ -3,6 +3,7 @@ import Box3DViewer from '../Box3DViewer';
 import ControlsRoot from '../../controls/controls-root';
 import Model3DControls from './Model3DControls';
 import Model3DControlsNew from './Model3DControlsNew';
+import Model3DAnnotationsDemo from './Model3DAnnotationsDemo';
 import Model3DRenderer from './Model3DRenderer';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
@@ -68,6 +69,15 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Boolean indicating whether the wireframes are showing */
     showWireframes = false;
 
+    /** @property {boolean} - Whether the 3D comment placement mode is active (demo) */
+    isCommentModeActive = false;
+
+    /** @property {boolean} - Whether the 3D freehand draw mode is active (demo) */
+    isDrawModeActive = false;
+
+    /** @property {boolean} - Whether the pan (spacebar-drag) mode is active (demo) */
+    isPanModeActive = false;
+
     /** @inheritdoc */
     constructor(option) {
         super(option);
@@ -82,9 +92,24 @@ class Model3DViewer extends Box3DViewer {
         this.handleToggleAnimation = this.handleToggleAnimation.bind(this);
         this.handleToggleHelpers = this.handleToggleHelpers.bind(this);
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
+        this.handleCommentToggle = this.handleCommentToggle.bind(this);
+        this.handleDrawToggle = this.handleDrawToggle.bind(this);
+        this.handlePanToggle = this.handlePanToggle.bind(this);
         this.initViewer = this.initViewer.bind(this);
 
         this.onMetadataError = this.onMetadataError.bind(this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    destroy() {
+        if (this.annotationsDemo) {
+            this.annotationsDemo.destroy();
+            this.annotationsDemo = null;
+        }
+
+        super.destroy();
     }
 
     /**
@@ -252,9 +277,66 @@ class Model3DViewer extends Box3DViewer {
 
         this.showWrapper();
 
+        this.initAnnotationsDemo();
+
         this.emit(EVENT_LOAD);
 
         return true;
+    }
+
+    /**
+     * DEMO ONLY: mount the 3D annotations spike (camera-pose comments, faked API).
+     *
+     * @private
+     * @return {void}
+     */
+    initAnnotationsDemo() {
+        if (this.annotationsDemo) {
+            return;
+        }
+
+        this.annotationsDemo = new Model3DAnnotationsDemo({
+            containerEl: this.wrapperEl,
+            fileId: this.options.file.id,
+            renderer: this.renderer,
+            onPlacementModeChange: active => {
+                this.isCommentModeActive = active;
+                if (this.getViewerOption('useReactControls')) {
+                    this.renderUI();
+                }
+            },
+            onDrawModeChange: active => {
+                this.isDrawModeActive = active;
+                if (this.getViewerOption('useReactControls')) {
+                    this.renderUI();
+                }
+            },
+            onPanModeChange: active => {
+                this.isPanModeActive = active;
+                if (this.getViewerOption('useReactControls')) {
+                    this.renderUI();
+                }
+            },
+        });
+        this.annotationsDemo.init();
+    }
+
+    handleCommentToggle() {
+        if (this.annotationsDemo) {
+            this.annotationsDemo.setPlacementMode(!this.isCommentModeActive);
+        }
+    }
+
+    handleDrawToggle() {
+        if (this.annotationsDemo) {
+            this.annotationsDemo.setDrawMode(!this.isDrawModeActive);
+        }
+    }
+
+    handlePanToggle() {
+        if (this.annotationsDemo) {
+            this.annotationsDemo.setPanMode(!this.isPanModeActive);
+        }
     }
 
     /**
@@ -505,11 +587,17 @@ class Model3DViewer extends Box3DViewer {
                 animationClips={this.animationClips}
                 cameraProjection={this.projection}
                 currentAnimationClipId={this.renderer.getAnimationClip()}
+                isCommentModeActive={this.isCommentModeActive}
+                isDrawModeActive={this.isDrawModeActive}
+                isPanModeActive={this.isPanModeActive}
                 isPlaying={this.isAnimationPlaying}
                 isVrShown={this.showVrButton}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
                 onCameraProjectionChange={this.handleSetCameraProjection}
+                onCommentToggle={this.handleCommentToggle}
+                onDrawToggle={this.handleDrawToggle}
                 onFullscreenToggle={this.toggleFullscreen}
+                onPanToggle={this.handlePanToggle}
                 onPlayPause={this.handleToggleAnimation}
                 onRenderModeChange={this.handleSetRenderMode}
                 onReset={this.handleReset}

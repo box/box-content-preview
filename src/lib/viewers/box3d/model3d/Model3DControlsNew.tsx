@@ -1,8 +1,11 @@
 import React from 'react';
 import AnimationControls, { Props as AnimationControlsProps } from '../../controls/box3d/AnimationControls';
+import CommentControl from '../../controls/box3d/CommentControl';
 import ControlsBar from '../../controls/controls-bar';
+import DrawControl from '../../controls/box3d/DrawControl';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../../controls/fullscreen';
 import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/box3d/Model3DSettings';
+import PanControl from '../../controls/box3d/PanControl';
 import ResetControl, { Props as ResetControlProps } from '../../controls/box3d/ResetControl';
 import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/box3d/VrToggleControl';
 
@@ -11,6 +14,12 @@ export type Props = AnimationControlsProps &
     Model3DSettingsProps &
     ResetControlProps &
     VrToggleControlProps & {
+        isCommentModeActive: boolean;
+        isDrawModeActive: boolean;
+        isPanModeActive: boolean;
+        onCommentToggle: () => void;
+        onDrawToggle: () => void;
+        onPanToggle: () => void;
         onSettingsClose: () => void;
         onSettingsOpen: () => void;
     };
@@ -19,15 +28,21 @@ export default function Model3DControls({
     animationClips,
     cameraProjection,
     currentAnimationClipId,
+    isCommentModeActive,
+    isDrawModeActive,
+    isPanModeActive,
     isPlaying,
     isVrShown,
     onAnimationClipSelect,
     onCameraProjectionChange,
+    onCommentToggle,
+    onDrawToggle,
+    onPanToggle,
     onFullscreenToggle,
     onPlayPause,
     onRenderModeChange,
-    onRotateOnAxisChange,
     onReset,
+    onRotateOnAxisChange,
     onSettingsClose,
     onSettingsOpen,
     onShowGridToggle,
@@ -65,6 +80,9 @@ export default function Model3DControls({
                 showSkeletons={showSkeletons}
                 showWireframes={showWireframes}
             />
+            <PanControl isActive={isPanModeActive} onPanToggle={onPanToggle} />
+            <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
+            <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
             <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
         </ControlsBar>
     );

@@ -25,11 +25,17 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                     ]}
                     cameraProjection={CameraProjection.PERSPECTIVE}
                     currentAnimationClipId="123"
+                    isCommentModeActive={false}
+                    isDrawModeActive={false}
+                    isPanModeActive={false}
                     isPlaying={false}
                     isVrShown
                     onAnimationClipSelect={onAnimationClipSelect}
                     onCameraProjectionChange={jest.fn()}
+                    onCommentToggle={jest.fn()}
+                    onDrawToggle={jest.fn()}
                     onFullscreenToggle={onFullscreenToggle}
+                    onPanToggle={jest.fn()}
                     onPlayPause={onPlayPause}
                     onRenderModeChange={jest.fn()}
                     onReset={onReset}
