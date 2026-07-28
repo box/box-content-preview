@@ -4,6 +4,7 @@ import ControlsRoot from '../../controls/controls-root';
 import Model3DControls from './Model3DControls';
 import Model3DControlsNew from './Model3DControlsNew';
 import Model3DAnnotationsDemo from './Model3DAnnotationsDemo';
+import Model3DWatermark from './Model3DWatermark';
 import Model3DRenderer from './Model3DRenderer';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
@@ -78,6 +79,9 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Whether the pan (spacebar-drag) mode is active (demo) */
     isPanModeActive = false;
 
+    /** @property {boolean} - Whether the forensic watermark overlay is shown (demo) */
+    isWatermarkActive = true;
+
     /** @property {number} - Current zoom scale (1 = fit-to-view). Zoom % = fitDistance / orbitDistance. */
     zoomScale = 1;
 
@@ -101,6 +105,7 @@ class Model3DViewer extends Box3DViewer {
         this.handleCommentToggle = this.handleCommentToggle.bind(this);
         this.handleDrawToggle = this.handleDrawToggle.bind(this);
         this.handlePanToggle = this.handlePanToggle.bind(this);
+        this.handleWatermarkToggle = this.handleWatermarkToggle.bind(this);
         this.handleZoomIn = this.handleZoomIn.bind(this);
         this.handleZoomOut = this.handleZoomOut.bind(this);
         this.initViewer = this.initViewer.bind(this);
@@ -115,6 +120,11 @@ class Model3DViewer extends Box3DViewer {
         if (this.annotationsDemo) {
             this.annotationsDemo.destroy();
             this.annotationsDemo = null;
+        }
+
+        if (this.watermark) {
+            this.watermark.destroy();
+            this.watermark = null;
         }
 
         super.destroy();
@@ -285,11 +295,34 @@ class Model3DViewer extends Box3DViewer {
 
         this.showWrapper();
 
+        this.initWatermark();
+
         this.initAnnotationsDemo();
 
         this.emit(EVENT_LOAD);
 
         return true;
+    }
+
+    /**
+     * DEMO ONLY: mount the forensic watermark overlay (user / date / file id).
+     *
+     * @private
+     * @return {void}
+     */
+    initWatermark() {
+        if (this.watermark) {
+            return;
+        }
+
+        const { file = {} } = this.options;
+
+        this.watermark = new Model3DWatermark({
+            containerEl: this.wrapperEl,
+            fileId: file.id,
+        });
+        this.watermark.init();
+        this.watermark.setVisible(this.isWatermarkActive);
     }
 
     /**
@@ -344,6 +377,16 @@ class Model3DViewer extends Box3DViewer {
     handlePanToggle() {
         if (this.annotationsDemo) {
             this.annotationsDemo.setPanMode(!this.isPanModeActive);
+        }
+    }
+
+    handleWatermarkToggle() {
+        this.isWatermarkActive = !this.isWatermarkActive;
+        if (this.watermark) {
+            this.watermark.setVisible(this.isWatermarkActive);
+        }
+        if (this.getViewerOption('useReactControls')) {
+            this.renderUI();
         }
     }
 
@@ -670,6 +713,7 @@ class Model3DViewer extends Box3DViewer {
                 isPanModeActive={this.isPanModeActive}
                 isPlaying={this.isAnimationPlaying}
                 isVrShown={this.showVrButton}
+                isWatermarkActive={this.isWatermarkActive}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
                 onCameraProjectionChange={this.handleSetCameraProjection}
                 onCommentToggle={this.handleCommentToggle}
@@ -686,6 +730,7 @@ class Model3DViewer extends Box3DViewer {
                 onShowSkeletonsToggle={this.handleShowSkeletons}
                 onShowWireframesToggle={this.handleShowWireframes}
                 onVrToggle={this.handleToggleVr}
+                onWatermarkToggle={this.handleWatermarkToggle}
                 onZoomIn={this.handleZoomIn}
                 onZoomOut={this.handleZoomOut}
                 renderMode={this.renderMode}

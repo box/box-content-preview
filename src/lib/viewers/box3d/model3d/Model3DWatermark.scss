@@ -1,0 +1,26 @@
+// DEMO ONLY — 3D model forensic watermark overlay styles
+
+.bp-m3d-watermark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    // Below the annotations pins layer (bp-m3da is z-index 130) but above the
+    // WebGL canvas, so it never blocks orbit/click interactions.
+    z-index: 120;
+    background-repeat: repeat;
+    background-position: center;
+
+    // Low opacity keeps geometry readable through the marks; difference blend
+    // makes the marks auto-contrast against both the light background and dark
+    // model surfaces without ever being fully opaque.
+    opacity: .08;
+    mix-blend-mode: difference;
+    pointer-events: none;
+
+    &.bp-is-hidden {
+        display: none;
+    }
+}

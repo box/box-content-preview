@@ -8,6 +8,7 @@ import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/b
 import PanControl from '../../controls/box3d/PanControl';
 import ResetControl, { Props as ResetControlProps } from '../../controls/box3d/ResetControl';
 import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/box3d/VrToggleControl';
+import WatermarkControl from '../../controls/box3d/WatermarkControl';
 import ZoomControls, { Props as ZoomControlsProps } from '../../controls/zoom';
 
 export type Props = AnimationControlsProps &
@@ -19,11 +20,13 @@ export type Props = AnimationControlsProps &
         isCommentModeActive: boolean;
         isDrawModeActive: boolean;
         isPanModeActive: boolean;
+        isWatermarkActive: boolean;
         onCommentToggle: () => void;
         onDrawToggle: () => void;
         onPanToggle: () => void;
         onSettingsClose: () => void;
         onSettingsOpen: () => void;
+        onWatermarkToggle: () => void;
     };
 
 export default function Model3DControls({
@@ -33,6 +36,7 @@ export default function Model3DControls({
     isCommentModeActive,
     isDrawModeActive,
     isPanModeActive,
+    isWatermarkActive,
     isPlaying,
     isVrShown,
     maxScale,
@@ -49,6 +53,7 @@ export default function Model3DControls({
     onRotateOnAxisChange,
     onSettingsClose,
     onSettingsOpen,
+    onWatermarkToggle,
     onShowGridToggle,
     onShowSkeletonsToggle,
     onShowWireframesToggle,
@@ -96,6 +101,7 @@ export default function Model3DControls({
                     scale={scale}
                 />
             </ControlsBarGroup>
+            <WatermarkControl isActive={isWatermarkActive} onWatermarkToggle={onWatermarkToggle} />
             <PanControl isActive={isPanModeActive} onPanToggle={onPanToggle} />
             <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
             <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
