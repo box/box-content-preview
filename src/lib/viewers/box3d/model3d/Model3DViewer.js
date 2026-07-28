@@ -6,6 +6,7 @@ import Model3DControlsNew from './Model3DControlsNew';
 import Model3DAnnotationsDemo from './Model3DAnnotationsDemo';
 import Model3DWatermark from './Model3DWatermark';
 import Model3DRenderer from './Model3DRenderer';
+import { saveThumbnail } from './threeDThumbnailStore';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
     EVENT_CANVAS_CLICK,
@@ -301,7 +302,49 @@ class Model3DViewer extends Box3DViewer {
 
         this.emit(EVENT_LOAD);
 
+        this.captureThumbnail();
+
         return true;
+    }
+
+    /**
+     * DEMO ONLY: capture a still image of the loaded model and stash it in
+     * localStorage keyed by file id, so EndUserApp can render it as a folder
+     * thumbnail for 3D files (which have no server-generated image rep).
+     *
+     * The Box3D runtime creates its WebGL canvas with preserveDrawingBuffer=true,
+     * so canvas.toDataURL() returns real pixels. The engine renders on demand, so
+     * we force a fresh frame and capture on the next animation frame. The floor
+     * grid is hidden for the capture, then restored, to match the clean icon look.
+     *
+     * @private
+     * @return {void}
+     */
+    captureThumbnail() {
+        const fileId = this.options && this.options.file && this.options.file.id;
+        const canvas = this.renderer && this.renderer.box3d && this.renderer.box3d.canvas;
+        if (!fileId || !canvas) {
+            return;
+        }
+
+        const gridWasVisible = this.showGrid;
+        if (this.renderer.setGridVisible) {
+            this.renderer.setGridVisible(false);
+        }
+        this.renderer.box3d.needsRender = true;
+
+        window.requestAnimationFrame(() => {
+            if (this.destroyed) {
+                return;
+            }
+            saveThumbnail(String(fileId), canvas);
+            if (this.renderer && this.renderer.setGridVisible) {
+                this.renderer.setGridVisible(gridWasVisible);
+            }
+            if (this.renderer && this.renderer.box3d) {
+                this.renderer.box3d.needsRender = true;
+            }
+        });
     }
 
     /**
