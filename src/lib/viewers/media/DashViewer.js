@@ -1,12 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import {
-    CLASS_INVISIBLE,
-    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
-    MEDIA_STATIC_ASSETS_VERSION,
-    PRELOAD_REP_NAME,
-    SUBTITLES_OFF,
-} from '../../constants';
+import { CLASS_INVISIBLE, MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME, SUBTITLES_OFF } from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import getLanguageName from '../../lang';
@@ -673,7 +667,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {string} Localized language name or the raw language code
      */
     getTrackDisplayLanguage(track) {
-        if (this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) && track.language === 'und') {
+        if (track.language === 'und') {
             return __('auto_generated');
         }
 
@@ -1034,10 +1028,6 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     async loadTranscription() {
-        if (!this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
-            return;
-        }
-
         const extractedText = getRepresentation(this.options.file, 'extracted_text');
         if (!extractedText?.content?.url_template) {
             return;
