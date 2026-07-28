@@ -1,5 +1,5 @@
 import React from 'react';
-import IconVersionDiffMedium24 from '../icons/IconVersionDiffMedium24';
+import Icon3DLayerStack24 from '../icons/Icon3DLayerStack24';
 import './VersionDiffControl.scss';
 
 // DEMO ONLY — toolbar toggle for the 3D version-diff overlay. When inactive,
@@ -21,7 +21,7 @@ export default function VersionDiffControl({ isActive, onVersionDiffToggle }: Pr
             title={__('box3d_version_diff')}
             type="button"
         >
-            <IconVersionDiffMedium24 />
+            <Icon3DLayerStack24 />
         </button>
     );
 }

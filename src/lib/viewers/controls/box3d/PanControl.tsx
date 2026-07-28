@@ -1,5 +1,5 @@
 import React from 'react';
-import IconHandMedium24 from '../icons/IconHandMedium24';
+import Icon3DPan24 from '../icons/Icon3DPan24';
 import './PanControl.scss';
 
 export type Props = {
@@ -18,7 +18,7 @@ export default function PanControl({ isActive, onPanToggle }: Props): JSX.Elemen
             title={__('box3d_pan')}
             type="button"
         >
-            <IconHandMedium24 />
+            <Icon3DPan24 />
         </button>
     );
 }
