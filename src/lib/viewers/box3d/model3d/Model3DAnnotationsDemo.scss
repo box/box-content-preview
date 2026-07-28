@@ -85,135 +85,79 @@ $m3da-blue: #0061d5;
     }
 }
 
-// ------------------------------------------------------------ draft popup
+// ------------------------------------------------------------ draft composer
+// Styled to match the real Box comment field: a rounded white pill with a
+// leading status dot, the "Add a comment, @ to mention" placeholder, and a
+// circular send arrow that activates once there's text.
 .bp-m3da-popup {
     position: absolute;
     top: 0;
     left: 0;
-    width: 240px;
-    padding: 10px;
-    background: #fff;
-    border: 1px solid #d3d9e1;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+    width: 320px;
     pointer-events: auto;
 }
 
-.bp-m3da-popup-input {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 6px 8px;
-    font-size: 13px;
+.bp-m3da-composer {
+    display: flex;
+    align-items: center;
+    padding: 8px 8px 8px 14px;
+    background: #fff;
+    border: 1px solid $m3da-blue;
+    border-radius: 24px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+}
+
+.bp-m3da-composer-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-right: 10px;
+    background: $m3da-blue;
+    border-radius: 50%;
+}
+
+.bp-m3da-composer-input {
+    flex: 1;
+    min-height: 20px;
+    max-height: 96px;
+    padding: 0;
+    color: #222;
+    font-size: 15px;
     font-family: inherit;
-    border: 1px solid #d3d9e1;
-    border-radius: 4px;
+    line-height: 20px;
+    background: none;
+    border: 0;
     resize: none;
 
+    &::placeholder {
+        color: #909aa3;
+    }
+
     &:focus {
-        border-color: $m3da-blue;
         outline: none;
     }
 }
 
-.bp-m3da-popup-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 8px;
-}
-
-.bp-m3da-btn {
-    padding: 5px 12px;
-    color: #4e5862;
-    font-weight: bold;
-    font-size: 12px;
-    font-family: inherit;
-    background: #fff;
-    border: 1px solid #d3d9e1;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &.bp-m3da-btn-save {
-        color: #fff;
-        background: $m3da-blue;
-        border-color: $m3da-blue;
-    }
-}
-
-// --------------------------------------------------------- pin tooltip
-.bp-m3da-pin-tooltip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    min-width: 200px;
-    padding: 10px 12px;
-    background: #fff;
-    border: 1px solid #d3d9e1;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .2);
-    transition: opacity .4s;
-    pointer-events: auto;
-
-    &.bp-m3da-tooltip-fade {
-        opacity: 0;
-    }
-}
-
-.bp-m3da-tooltip-header {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 6px;
-}
-
-.bp-m3da-tooltip-avatar {
+.bp-m3da-composer-send {
     display: flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
+    padding: 0;
     color: #fff;
-    font-weight: bold;
-    font-size: 10px;
-    background: #6f52ec;
-    border-radius: 50%;
-}
-
-.bp-m3da-tooltip-name {
-    flex: 1;
-    color: #222;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.bp-m3da-tooltip-index {
-    padding: 2px 6px;
-    color: $m3da-blue;
-    font-weight: bold;
-    font-size: 11px;
-    background: #e8f0fb;
-    border-radius: 4px;
-}
-
-.bp-m3da-tooltip-delete {
-    padding: 0 2px;
-    color: #a7b0ba;
-    font-size: 16px;
-    line-height: 1;
-    background: none;
+    background: $m3da-blue;
     border: 0;
+    border-radius: 50%;
     cursor: pointer;
+    transition: opacity .15s;
 
-    &:hover {
-        color: #f44;
+    &:disabled {
+        background: #a5c8f2;
+        cursor: default;
     }
-}
-
-.bp-m3da-tooltip-message {
-    color: #444;
-    font-size: 13px;
-    overflow-wrap: break-word;
 }
 
 // ---------------------------------------------------------------- flash

@@ -1,5 +1,6 @@
 /* global THREE */
 /* eslint-disable no-console */
+import { getHeaders } from '../../../util';
 import './Model3DAnnotationsDemo.scss';
 
 // ---------------------------------------------------------------------------
@@ -87,7 +88,18 @@ const fakeAnnotationsApi = {
             return remaining;
         });
     },
+    update(fileId, annotationId, patch) {
+        return fakeAnnotationsApi.list(fileId).then(entries => {
+            const updated = entries.map(entry => (entry.id === annotationId ? { ...entry, ...patch } : entry));
+            localStorage.setItem(STORAGE_PREFIX + fileId, JSON.stringify(updated));
+            return updated;
+        });
+    },
 };
+
+// How often we re-check the Activity feed for comments that were marked resolved
+// (there's no push channel from the sidebar into Preview, so we poll).
+const RESOLVED_POLL_MS = 5000;
 
 class Model3DAnnotationsDemo {
     /** @property {Object[]} - Loaded annotations (comments and drawings) */
@@ -122,14 +134,36 @@ class Model3DAnnotationsDemo {
      * @param {HTMLElement} config.containerEl - Viewer wrapper element
      * @param {string} config.fileId - Box file ID used as storage key
      * @param {Model3DRenderer} config.renderer - The model3d renderer
+     * @param {Object} [config.api] - Preview Api client (axios wrapper) for posting real comments
+     * @param {string} [config.apiHost] - Box API host, e.g. https://api.box.com
+     * @param {string} [config.token] - Auth token used to post comments as the current user
+     * @param {string} [config.sharedLink] - Optional shared link for auth
+     * @param {string} [config.sharedLinkPassword] - Optional shared link password
      * @param {Function} config.onPlacementModeChange - Called with (boolean) when comment mode toggles
      * @param {Function} config.onDrawModeChange - Called with (boolean) when draw mode toggles
      * @param {Function} config.onPanModeChange - Called with (boolean) when pan mode toggles
      */
-    constructor({ containerEl, fileId, renderer, onPlacementModeChange, onDrawModeChange, onPanModeChange }) {
+    constructor({
+        containerEl,
+        fileId,
+        renderer,
+        api,
+        apiHost,
+        token,
+        sharedLink,
+        sharedLinkPassword,
+        onPlacementModeChange,
+        onDrawModeChange,
+        onPanModeChange,
+    }) {
         this.containerEl = containerEl;
         this.fileId = fileId;
         this.renderer = renderer;
+        this.api = api;
+        this.apiHost = apiHost;
+        this.token = token;
+        this.sharedLink = sharedLink;
+        this.sharedLinkPassword = sharedLinkPassword;
         this.onPlacementModeChange = onPlacementModeChange || (() => {});
         this.onDrawModeChange = onDrawModeChange || (() => {});
         this.onPanModeChange = onPanModeChange || (() => {});
@@ -154,6 +188,7 @@ class Model3DAnnotationsDemo {
         fakeAnnotationsApi.list(this.fileId).then(entries => {
             this.annotations = entries;
             entries.forEach(annotation => this.addAnnotationEl(annotation));
+            this.startResolvedPolling();
         });
 
         window.__model3dAnnotationsDemo = this;
@@ -161,6 +196,10 @@ class Model3DAnnotationsDemo {
 
     destroy() {
         window.cancelAnimationFrame(this.rafId);
+        if (this.resolvedPollId) {
+            window.clearInterval(this.resolvedPollId);
+            this.resolvedPollId = null;
+        }
         this.detachListeners();
         this.cancelDraft();
         this.cancelDrawingDraft();
@@ -645,25 +684,42 @@ class Model3DAnnotationsDemo {
         const pinEl = this.createPinEl('+', true);
         const popupEl = document.createElement('div');
         popupEl.className = 'bp-m3da-popup';
+        // Composer styled to match the real Box comment field: a leading dot,
+        // "Add a comment, @ to mention" placeholder, and a circular send arrow.
         popupEl.innerHTML = `
-            <textarea class="bp-m3da-popup-input" placeholder="Comment on this view…" rows="3"></textarea>
-            <div class="bp-m3da-popup-actions">
-                <button type="button" class="bp-m3da-btn bp-m3da-btn-cancel">Cancel</button>
-                <button type="button" class="bp-m3da-btn bp-m3da-btn-save">Comment</button>
+            <div class="bp-m3da-composer">
+                <span class="bp-m3da-composer-dot"></span>
+                <textarea class="bp-m3da-composer-input" placeholder="Add a comment, @ to mention" rows="1"></textarea>
+                <button type="button" class="bp-m3da-composer-send" title="Comment" disabled>
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path fill="currentColor" d="M12 4a1 1 0 0 1 .7.29l5 5a1 1 0 0 1-1.4 1.42L13 7.4V19a1 1 0 1 1-2 0V7.41L7.7 10.7a1 1 0 1 1-1.4-1.42l5-5A1 1 0 0 1 12 4Z"/>
+                    </svg>
+                </button>
             </div>`;
         this.pinsEl.appendChild(popupEl);
 
         this.draft = { anchor, cameraPose, pinEl, popupEl };
 
-        const inputEl = popupEl.querySelector('.bp-m3da-popup-input');
-        popupEl.querySelector('.bp-m3da-btn-cancel').addEventListener('click', () => this.setPlacementMode(false));
-        popupEl.querySelector('.bp-m3da-btn-save').addEventListener('click', () => this.saveDraft(inputEl.value));
+        const inputEl = popupEl.querySelector('.bp-m3da-composer-input');
+        const sendEl = popupEl.querySelector('.bp-m3da-composer-send');
+        const syncSendState = () => {
+            sendEl.disabled = inputEl.value.trim().length === 0;
+        };
+
+        sendEl.addEventListener('click', () => this.saveDraft(inputEl.value));
+        inputEl.addEventListener('input', syncSendState);
         inputEl.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                e.stopPropagation();
+                this.setPlacementMode(false);
+                return;
+            }
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.saveDraft(inputEl.value);
             }
         });
+        syncSendState();
         inputEl.focus();
     }
 
@@ -699,12 +755,126 @@ class Model3DAnnotationsDemo {
             },
         };
 
+        // Post a REAL comment to the Box Comments API so it shows up in the
+        // Activity tab (and persists server-side). The camera pose + anchor
+        // still live in localStorage so the pin/fly-back demo keeps working.
+        // Capture the returned comment id so we can later correlate the pin
+        // with its Activity-feed resolution state (see pollResolved()).
+        this.postComment(trimmed).then(commentId => {
+            if (commentId) {
+                annotation.commentId = commentId;
+                fakeAnnotationsApi.update(this.fileId, annotation.id, { commentId });
+            }
+        });
+
         fakeAnnotationsApi.create(this.fileId, annotation).then(() => {
             this.annotations.push(annotation);
             this.addAnnotationEl(annotation);
             this.setPlacementMode(false);
             this.flashPin(annotation.id);
         });
+    }
+
+    /**
+     * Post a real comment on the file so it shows up in the Activity feed.
+     * Because 3D files have no native annotator, we surface the comment as a
+     * plain file comment.
+     *
+     * IMPORTANT: we post to the LEGACY `POST /2.0/comments` endpoint. The
+     * threaded store (`POST /2.0/undoc/comments?file_id=:id`) rejects
+     * Preview's downscoped file token with a 400 — undoc/ routes are
+     * monolith-internal and only accept full webapp-session auth. Legacy
+     * accepts the Preview token, so the demo requires the Activity feed to
+     * run in legacy read mode: UAA off AND both threaded-replies splits off
+     * (ff_preview_sidebar_uaa_integration=no, ff_preview_threaded_replies_q1fy24=no,
+     * ff_threaded_replies_preview=no), which makes Feed.js fall back to
+     * `GET /2.0/files/:id/comments`. Best-effort: failures are logged, not
+     * blocking (the demo pin still saves locally).
+     *
+     * @param {string} message - Comment body (already trimmed)
+     * @return {Promise<string|undefined>} Resolves with the created comment's id (or undefined)
+     */
+    postComment(message) {
+        if (!this.api || !this.apiHost || !this.fileId) {
+            return Promise.resolve();
+        }
+
+        const url = `${this.apiHost}/2.0/comments`;
+        const headers = getHeaders(
+            { 'Content-Type': 'application/json' },
+            this.token,
+            this.sharedLink,
+            this.sharedLinkPassword,
+        );
+        const data = {
+            item: { type: 'file', id: String(this.fileId) },
+            message,
+        };
+
+        return this.api
+            .post(url, data, { headers })
+            .then(response => (response && response.id ? String(response.id) : undefined))
+            .catch(err => {
+                console.warn('[model3d-annotations] failed to post comment to Activity feed', err); // eslint-disable-line no-console
+                return undefined;
+            });
+    }
+
+    /**
+     * Read the file's comments and hide any pin whose comment was marked resolved
+     * in the Activity sidebar. There's no push channel from the sidebar into
+     * Preview, so we poll (see startResolvedPolling). The legacy
+     * `GET /2.0/files/:id/comments` returns `is_resolved` per comment when the
+     * feed is in legacy read mode (the same mode postComment() requires).
+     *
+     * @return {Promise} Resolves when the sync completes (or immediately if no api)
+     */
+    syncResolvedFromActivity() {
+        if (!this.api || !this.apiHost || !this.fileId) {
+            return Promise.resolve();
+        }
+
+        const url = `${this.apiHost}/2.0/files/${this.fileId}/comments?fields=is_resolved`;
+        const headers = getHeaders({}, this.token, this.sharedLink, this.sharedLinkPassword);
+
+        return this.api
+            .get(url, { headers })
+            .then(response => {
+                const resolvedIds = new Set(
+                    ((response && response.entries) || [])
+                        .filter(comment => comment.is_resolved)
+                        .map(comment => String(comment.id)),
+                );
+
+                this.annotations.forEach(annotation => {
+                    const isResolved = annotation.commentId && resolvedIds.has(String(annotation.commentId));
+                    if (isResolved && !annotation.resolved) {
+                        annotation.resolved = true;
+                        fakeAnnotationsApi.update(this.fileId, annotation.id, { resolved: true });
+                        this.applyResolvedVisibility(annotation);
+                    }
+                });
+            })
+            .catch(err => {
+                console.warn('[model3d-annotations] failed to sync resolved state', err); // eslint-disable-line no-console
+            });
+    }
+
+    startResolvedPolling() {
+        this.syncResolvedFromActivity();
+        this.resolvedPollId = window.setInterval(() => this.syncResolvedFromActivity(), RESOLVED_POLL_MS);
+    }
+
+    /** Remove a resolved annotation's pin so it no longer shows on the model. */
+    applyResolvedVisibility(annotation) {
+        if (annotation.type === 'drawing') {
+            this.renderVisibleDrawings();
+            return;
+        }
+        const pinEl = this.pinsEl && this.pinsEl.querySelector(`[data-annotation-id="${annotation.id}"]`);
+        if (pinEl) {
+            pinEl.remove();
+        }
     }
 
     // ---------------------------------------------------------- draw draft
@@ -776,6 +946,11 @@ class Model3DAnnotationsDemo {
     }
 
     addAnnotationEl(annotation) {
+        // Resolved annotations are hidden from the model (still visible/reopenable
+        // in the Activity feed).
+        if (annotation.resolved) {
+            return;
+        }
         if (annotation.type === 'drawing') {
             // Drawings have no pin — visibility is pose-driven, handled in updatePins().
             return;
@@ -795,7 +970,7 @@ class Model3DAnnotationsDemo {
     }
 
     addPinEl(annotation) {
-        const commentAnnotations = this.annotations.filter(a => a.type !== 'drawing');
+        const commentAnnotations = this.annotations.filter(a => a.type !== 'drawing' && !a.resolved);
         const index = commentAnnotations.indexOf(annotation);
         const pinEl = this.createPinEl(String(index + 1));
         pinEl.dataset.annotationId = annotation.id;
@@ -842,13 +1017,6 @@ class Model3DAnnotationsDemo {
             if (pinEl) {
                 positionEl(pinEl, annotation.target.point);
             }
-
-            const tooltipEl = this.pinsEl.querySelector(
-                `.bp-m3da-pin-tooltip[data-anchor-annotation-id="${annotation.id}"]`,
-            );
-            if (tooltipEl) {
-                positionEl(tooltipEl, annotation.target.point, 10);
-            }
         });
 
         if (this.draft) {
@@ -868,7 +1036,7 @@ class Model3DAnnotationsDemo {
         }
 
         const visiblePaths = this.annotations
-            .filter(a => a.type === 'drawing' && this.isPoseNearCamera(a.target.camera))
+            .filter(a => a.type === 'drawing' && !a.resolved && this.isPoseNearCamera(a.target.camera))
             .flatMap(a => a.target.drawing.paths);
 
         this.renderStrokesIntoSvg(this.drawingsSvgEl, visiblePaths, 'bp-m3da-stroke');
@@ -891,9 +1059,25 @@ class Model3DAnnotationsDemo {
     // ---------------------------------------------------------------- focus
 
     focusAnnotation(annotation) {
+        // The comment text lives in the Activity feed now, not on the model —
+        // clicking a pin just flies the camera back to the saved viewpoint.
         this.applyCameraPose(annotation.target.camera);
         this.flashPin(annotation.id);
-        this.showPinTooltip(annotation);
+        this.revealActivitySidebar();
+    }
+
+    /**
+     * Best-effort: click the host app's Activity tab so the posted comments are
+     * visible. The sidebar lives outside Preview's DOM (box-ui-elements), so
+     * this reaches up to the document; a miss is harmless.
+     *
+     * @return {void}
+     */
+    revealActivitySidebar() {
+        const toggle = document.querySelector('[data-testid="sidebaractivity"]');
+        if (toggle) {
+            toggle.click();
+        }
     }
 
     flashPin(annotationId) {
@@ -904,43 +1088,6 @@ class Model3DAnnotationsDemo {
         pinEl.classList.remove('bp-m3da-flash');
         void pinEl.offsetWidth; // eslint-disable-line no-void
         pinEl.classList.add('bp-m3da-flash');
-    }
-
-    /** Show a small tooltip bubble above the pin for ~4 s, then fade it out. */
-    showPinTooltip(annotation) {
-        const existing = this.pinsEl.querySelector('.bp-m3da-pin-tooltip');
-        if (existing) {
-            existing.remove();
-        }
-
-        const commentAnnotations = this.annotations.filter(a => a.type !== 'drawing');
-        const index = commentAnnotations.indexOf(annotation);
-        const tooltipEl = document.createElement('div');
-        tooltipEl.className = 'bp-m3da-pin-tooltip';
-        tooltipEl.innerHTML = `
-            <div class="bp-m3da-tooltip-header">
-                <span class="bp-m3da-tooltip-avatar">${annotation.createdBy.initials}</span>
-                <span class="bp-m3da-tooltip-name">${annotation.createdBy.name}</span>
-                <span class="bp-m3da-tooltip-index">View ${index + 1}</span>
-                <button type="button" class="bp-m3da-tooltip-delete" title="Delete">×</button>
-            </div>
-            <div class="bp-m3da-tooltip-message"></div>`;
-        tooltipEl.querySelector('.bp-m3da-tooltip-message').textContent = annotation.message;
-        tooltipEl.querySelector('.bp-m3da-tooltip-delete').addEventListener('click', e => {
-            e.stopPropagation();
-            this.deleteAnnotation(annotation.id);
-            tooltipEl.remove();
-        });
-        this.pinsEl.appendChild(tooltipEl);
-
-        // Position it — we'll let updatePins handle subsequent frames.
-        tooltipEl.dataset.anchorAnnotationId = annotation.id;
-
-        // Auto-dismiss after 4 s.
-        setTimeout(() => {
-            tooltipEl.classList.add('bp-m3da-tooltip-fade');
-            setTimeout(() => tooltipEl.remove(), 400);
-        }, 4000);
     }
 }
 
