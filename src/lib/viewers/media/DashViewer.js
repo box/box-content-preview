@@ -662,12 +662,17 @@ class DashViewer extends VideoBaseViewer {
 
     /**
      * Returns the display-friendly name for a text track's language.
-     * Maps the undetermined language code 'und' to a localized "Auto-Generated" label.
+     * Uses an explicit track label when provided (e.g. transcription tracks).
+     * Otherwise maps the undetermined language code 'und' to a localized "Auto-Generated" label.
      *
      * @param {Object} track - A Shaka text track object
      * @return {string} Localized language name or the raw language code
      */
     getTrackDisplayLanguage(track) {
+        if (track.label) {
+            return track.label;
+        }
+
         if (track.language === 'und') {
             return __('auto_generated');
         }
@@ -736,7 +741,9 @@ class DashViewer extends VideoBaseViewer {
         // Use the previewer's locale to determine preferred language
         const clientTextTrack = this.textTracks.find(({ displayLanguage }) => displayLanguage === clientLanguage);
         // Fall back to English if user's language doesn't exist
-        const englishTextTrack = this.textTracks.find(({ displayLanguage }) => displayLanguage === 'English');
+        const englishTextTrack = this.textTracks.find(
+            ({ displayLanguage, language }) => displayLanguage === 'English' || language === 'eng',
+        );
         // Fall back to first subtitle in list
         const defaultTextTrack = this.textTracks[0];
 
@@ -1073,11 +1080,11 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        const addedOriginalTrack = await this.loadTranscriptionTrack(extractedText, 'und', __('auto_generated'));
+        const addedOriginalTrack = await this.loadTranscriptionTrack(extractedText, 'und', 'Auto Generated (Original)');
         const addedEnglishTrack = await this.loadTranscriptionTrack(
             extractedTextEng,
             'eng',
-            getLanguageName('eng') || 'English',
+            'Auto Generated (English)',
         );
 
         if (!(addedOriginalTrack || addedEnglishTrack) || this.isDestroyed()) {

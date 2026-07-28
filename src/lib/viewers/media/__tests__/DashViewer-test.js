@@ -1034,7 +1034,7 @@ describe('lib/viewers/media/DashViewer', () => {
                         'subtitles',
                         'text/vtt',
                         undefined,
-                        'English',
+                        'Auto Generated (English)',
                     );
                     expect(stubs.loadSubtitles).toBeCalled();
                     done();
@@ -1072,7 +1072,7 @@ describe('lib/viewers/media/DashViewer', () => {
                         'subtitles',
                         'text/vtt',
                         undefined,
-                        expect.any(String),
+                        'Auto Generated (Original)',
                     );
                     expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                         2,
@@ -1081,7 +1081,7 @@ describe('lib/viewers/media/DashViewer', () => {
                         'subtitles',
                         'text/vtt',
                         undefined,
-                        'English',
+                        'Auto Generated (English)',
                     );
                     expect(stubs.loadSubtitles).toBeCalled();
                     done();
@@ -1114,7 +1114,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(dash.renderUI).toBeCalled();
                     expect(dash.textTracks).toEqual([
                         { id: 1, language: 'eng', displayLanguage: 'English' },
-                        { id: 99, language: 'und', label: 'Transcription', displayLanguage: __('auto_generated') },
+                        { id: 99, language: 'und', label: 'Transcription', displayLanguage: 'Transcription' },
                     ]);
                     done();
                 });
@@ -1150,7 +1150,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(dash.textTracks).toEqual([
                         { id: 1, language: 'und', displayLanguage: __('auto_generated') },
                         { id: 2, language: 'eng', displayLanguage: 'English' },
-                        { id: 99, language: 'und', label: 'Transcription', displayLanguage: __('auto_generated') },
+                        { id: 99, language: 'und', label: 'Transcription', displayLanguage: 'Transcription' },
                     ]);
                     done();
                 });
@@ -1192,7 +1192,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     // New track is appended at the end (idx 2), preserving the existing
                     // index → track mapping so the user's cached selection still resolves
                     // to the originally-selected track.
-                    expect(addSubtitle).toBeCalledWith(__('auto_generated'), 2);
+                    expect(addSubtitle).toBeCalledWith('Transcription', 2);
                     expect(dash.textTracks).toEqual([
                         { id: 1, language: 'eng' },
                         { id: 10, language: 'spa' },
