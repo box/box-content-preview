@@ -148,6 +148,14 @@
                     enableThumbnailsSidebar: true,
                     showAnnotations: true,
                     showDownload: true,
+                    features: {
+                        migrateAccessTokenToHeader: true,
+                    },
+                    viewers: {
+                        Dash: {
+                            useReactControls: true,
+                        },
+                    },
                 };
                 previewOptions.container = '.preview-container';
 

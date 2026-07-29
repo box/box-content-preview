@@ -14,7 +14,9 @@ import { Guide } from '../controls/media/MediaSettingsMenuGuides';
 import VideoControls from './VideoControls';
 import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
+import { GeneratedAudioSource } from '../controls/media/GeneratedAudioSelect';
 import VideoBaseViewer from './VideoBaseViewer';
+import ExternalAudioSync, { GENERATED_AUDIO_LOCAL_URL } from './ExternalAudioSync';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -56,6 +58,12 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Array<Object>} - Array of text tracks for the video */
     textTracks = [];
 
+    /** @property {string} - Selected generated-audio source (original vs external generated track) */
+    selectedGeneratedAudioSource = GeneratedAudioSource.ORIGINAL;
+
+    /** @property {ExternalAudioSync|null} - Syncs external generated audio with muted DASH video */
+    externalAudioSync;
+
     /**
      * @inheritdoc
      */
@@ -81,6 +89,7 @@ class DashViewer extends VideoBaseViewer {
         this.frameStep = this.frameStep.bind(this);
         this.movePlayback = this.movePlayback.bind(this);
         this.updateExperiences = this.updateExperiences.bind(this);
+        this.setGeneratedAudioSource = this.setGeneratedAudioSource.bind(this);
     }
 
     /**
@@ -108,6 +117,12 @@ class DashViewer extends VideoBaseViewer {
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
 
         this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
+
+        this.externalAudioSync = new ExternalAudioSync({
+            mediaEl: this.mediaEl,
+            containerEl: this.mediaContainerEl,
+            audioUrl: GENERATED_AUDIO_LOCAL_URL,
+        });
     }
 
     /**
@@ -155,6 +170,10 @@ class DashViewer extends VideoBaseViewer {
         if (this.guidesEl && this.guidesEl.parentNode) {
             this.guidesEl.parentNode.removeChild(this.guidesEl);
             this.guidesEl = undefined;
+        }
+        if (this.externalAudioSync) {
+            this.externalAudioSync.destroy();
+            this.externalAudioSync = undefined;
         }
         this.removeStats();
         super.destroy();
@@ -1073,12 +1092,17 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     async loadTranscription() {
+        console.log('XDDD');
         const extractedText = getRepresentation(this.options.file, 'extracted_text');
-        const extractedTextEng = getRepresentation(this.options.file, 'extracted_text_eng');
+        const extractedTextEng = getRepresentation(this.options.file, 'extracted_text_en');
 
+        console.log('reps', this.options.file, this.options.file.representations);
+        console.log(extractedText, extractedTextEng);
         if (!extractedText?.content?.url_template && !extractedTextEng?.content?.url_template) {
+            console.log('no transcript');
             return;
         }
+        console.log('transcript yes');
 
         const addedOriginalTrack = await this.loadTranscriptionTrack(extractedText, 'und', 'Auto Generated (Original)');
         const addedEnglishTrack = await this.loadTranscriptionTrack(
@@ -1088,6 +1112,7 @@ class DashViewer extends VideoBaseViewer {
         );
 
         if (!(addedOriginalTrack || addedEnglishTrack) || this.isDestroyed()) {
+            console.log('no transcript v2');
             return;
         }
 
@@ -1258,6 +1283,28 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Switches between original DASH audio and an external generated audio track.
+     *
+     * @param {string} source - GeneratedAudioSource value
+     * @return {void}
+     */
+    setGeneratedAudioSource(source) {
+        if (this.selectedGeneratedAudioSource === source) {
+            return;
+        }
+
+        this.selectedGeneratedAudioSource = source;
+
+        if (source === GeneratedAudioSource.GENERATED) {
+            this.externalAudioSync.enable();
+        } else {
+            this.externalAudioSync.disable();
+        }
+
+        this.renderUI();
+    }
+
+    /**
      * Updates the selected quality and updates the player accordingly
      * @param {string} quality - 'sd', 'hd', or 'auto'
      * @param {boolean} [saveToCache] - Whether to save this value to the cache, defaults to true
@@ -1404,6 +1451,7 @@ class DashViewer extends VideoBaseViewer {
             filmstripInterval: this.filmstripInterval,
             filmstripUrl: this.filmstripUrl,
             fps: this.getFps(),
+            generatedAudioSource: this.selectedGeneratedAudioSource,
             guide: this.selectedGuide,
             isGuidesEnabled: this.isVideoPlayerV2,
             hasDrawing: canDraw,
@@ -1420,6 +1468,7 @@ class DashViewer extends VideoBaseViewer {
             onAudioTrackChange: this.setAudioTrack,
             onAutoplayChange: this.setAutoplay,
             onFullscreenToggle: this.toggleFullscreen,
+            onGeneratedAudioSourceChange: this.setGeneratedAudioSource,
             onGuideChange: this.setGuide,
             onMuteChange: this.toggleMute,
             onPlayPause: this.handlePlayRequest,
