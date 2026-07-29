@@ -16,7 +16,7 @@ import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import { GeneratedAudioSource } from '../controls/media/GeneratedAudioSelect';
 import VideoBaseViewer from './VideoBaseViewer';
-import ExternalAudioSync, { GENERATED_AUDIO_LOCAL_URL } from './ExternalAudioSync';
+import ExternalAudioSync, { GENERATED_AUDIO_URL_BY_SOURCE } from './ExternalAudioSync';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -118,7 +118,7 @@ class DashViewer extends VideoBaseViewer {
         this.externalAudioSync = new ExternalAudioSync({
             mediaEl: this.mediaEl,
             containerEl: this.mediaContainerEl,
-            audioUrl: GENERATED_AUDIO_LOCAL_URL,
+            audioUrl: GENERATED_AUDIO_URL_BY_SOURCE[GeneratedAudioSource.GENERATED_EN],
         });
     }
 
@@ -1167,10 +1167,11 @@ class DashViewer extends VideoBaseViewer {
 
         this.selectedGeneratedAudioSource = source;
 
-        if (source === GeneratedAudioSource.GENERATED) {
-            this.externalAudioSync.enable();
-        } else {
+        if (source === GeneratedAudioSource.ORIGINAL) {
             this.externalAudioSync.disable();
+        } else {
+            this.externalAudioSync.setAudioUrl(GENERATED_AUDIO_URL_BY_SOURCE[source]);
+            this.externalAudioSync.enable();
         }
 
         this.renderUI();

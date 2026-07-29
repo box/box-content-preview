@@ -1,4 +1,4 @@
-import ExternalAudioSync from '../ExternalAudioSync';
+import ExternalAudioSync, { GENERATED_AUDIO_URL_BY_SOURCE } from '../ExternalAudioSync';
 
 describe('ExternalAudioSync', () => {
     let containerEl;
@@ -21,7 +21,7 @@ describe('ExternalAudioSync', () => {
         sync = new ExternalAudioSync({
             mediaEl,
             containerEl,
-            audioUrl: 'http://localhost:1024/audio.m4a',
+            audioUrl: GENERATED_AUDIO_URL_BY_SOURCE['generated-en'],
         });
     });
 
@@ -96,5 +96,17 @@ describe('ExternalAudioSync', () => {
 
         expect(mediaEl.muted).toBe(false);
         expect(sync.audioEl.pause).toHaveBeenCalled();
+    });
+
+    test('should switch audio source when setAudioUrl is called', () => {
+        sync.enable();
+        mockAudioPlayback(sync.audioEl);
+
+        const frenchUrl = GENERATED_AUDIO_URL_BY_SOURCE['generated-fr'];
+        sync.setAudioUrl(frenchUrl);
+
+        expect(sync.audioUrl).toBe(frenchUrl);
+        expect(sync.audioEl.src).toBe(frenchUrl);
+        expect(mediaEl.muted).toBe(true);
     });
 });

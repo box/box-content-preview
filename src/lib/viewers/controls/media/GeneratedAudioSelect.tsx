@@ -10,12 +10,16 @@ import './GeneratedAudioSelect.scss';
 
 export enum GeneratedAudioSource {
     ORIGINAL = 'original',
-    GENERATED = 'generated',
+    GENERATED_EN = 'generated-en',
+    GENERATED_FR = 'generated-fr',
+    GENERATED_JA = 'generated-ja',
 }
 
 export const GENERATED_AUDIO_OPTIONS = [
     { label: 'Original Audio', value: GeneratedAudioSource.ORIGINAL },
-    { label: 'English Audio (Generated)', value: GeneratedAudioSource.GENERATED },
+    { label: 'English Audio (Generated)', value: GeneratedAudioSource.GENERATED_EN },
+    { label: 'French Audio (Generated)', value: GeneratedAudioSource.GENERATED_FR },
+    { label: 'Japanese Audio (Generated)', value: GeneratedAudioSource.GENERATED_JA },
 ];
 
 export type Props = {

@@ -1,7 +1,13 @@
 const SYNC_THRESHOLD_SEC = 0.25;
 const SYNC_EPSILON_SEC = 0.05;
 
-export const GENERATED_AUDIO_LOCAL_URL = 'http://localhost:1024/audio.m4a';
+export const GENERATED_AUDIO_LOCAL_BASE_URL = 'http://localhost:1024';
+
+export const GENERATED_AUDIO_URL_BY_SOURCE = {
+    'generated-en': `${GENERATED_AUDIO_LOCAL_BASE_URL}/audio_en.m4a`,
+    'generated-fr': `${GENERATED_AUDIO_LOCAL_BASE_URL}/audio_fr.m4a`,
+    'generated-ja': `${GENERATED_AUDIO_LOCAL_BASE_URL}/audio_ja.m4a`,
+};
 
 /**
  * Plays an external audio track in sync with a muted video element.
@@ -29,6 +35,39 @@ export default class ExternalAudioSync {
         this.onVideoVolumeChange = this.onVideoVolumeChange.bind(this);
         this.onVideoTimeUpdate = this.onVideoTimeUpdate.bind(this);
         this.onAudioSeeked = this.onAudioSeeked.bind(this);
+    }
+
+    /**
+     * @param {string} audioUrl
+     * @return {void}
+     */
+    setAudioUrl(audioUrl) {
+        if (this.audioUrl === audioUrl) {
+            return;
+        }
+
+        this.audioUrl = audioUrl;
+        const wasActive = this.isActive;
+
+        if (wasActive) {
+            this.isActive = false;
+        }
+
+        if (this.audioEl) {
+            this.clearPendingSync();
+            this.audioEl.pause();
+            this.audioEl.removeEventListener('seeked', this.onAudioSeeked);
+
+            if (this.audioEl.parentNode) {
+                this.audioEl.parentNode.removeChild(this.audioEl);
+            }
+
+            this.audioEl = null;
+        }
+
+        if (wasActive) {
+            this.enable();
+        }
     }
 
     /**
