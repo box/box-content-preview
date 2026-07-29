@@ -24,11 +24,16 @@ describe('SettingsToggle', () => {
         test.each([true, false])('should add or remove class based on isOpen prop', async isOpen => {
             getWrapper({ isOpen });
             const container = await getContainer();
+            const button = await getButton();
 
             if (isOpen) {
                 expect(container).toHaveClass('bp-is-open');
+                expect(button).toHaveClass('bp-is-active');
+                expect(button).toHaveAttribute('aria-expanded', 'true');
             } else {
                 expect(container).not.toHaveClass('bp-is-open');
+                expect(button).not.toHaveClass('bp-is-active');
+                expect(button).toHaveAttribute('aria-expanded', 'false');
             }
         });
 

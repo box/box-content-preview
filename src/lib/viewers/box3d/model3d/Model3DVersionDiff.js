@@ -158,6 +158,43 @@ class Model3DVersionDiff {
     }
 
     /**
+     * Programmatically show a specific version pair (older-on-left) and display
+     * the second one. Used when navigating to a resolved comment: the pill jumps
+     * to the version the comment was created on vs. the version it was resolved
+     * on, so the reviewer sees exactly what changed. Falls back gracefully if the
+     * two ids are equal or unknown.
+     *
+     * @param {string} createdId - Version the comment was created on
+     * @param {string} resolvedId - Version the comment was resolved on
+     * @return {void}
+     */
+    showPair(createdId, resolvedId) {
+        const createdIdx = VERSIONS.findIndex(v => v.id === createdId);
+        let a = createdIdx === -1 ? DEFAULT_SLOT_A : createdId;
+        let b = resolvedId && VERSIONS.some(v => v.id === resolvedId) ? resolvedId : DEFAULT_SLOT_B;
+
+        if (a === b) {
+            // Degenerate pair (created === resolved) — pad to a neighbouring
+            // version so there's still something to blink against.
+            const idx = VERSIONS.findIndex(v => v.id === a);
+            const otherIdx = idx > 0 ? idx - 1 : Math.min(idx + 1, VERSIONS.length - 1);
+            b = VERSIONS[otherIdx].id;
+        }
+
+        if (VERSIONS.findIndex(v => v.id === a) > VERSIONS.findIndex(v => v.id === b)) {
+            [a, b] = [b, a];
+        }
+
+        this.slotA = a;
+        this.slotB = b;
+        // Show the "resolved on" version by default so it reads as the current state.
+        this.frame = resolvedId === a ? 'A' : 'B';
+        this.closeMenu();
+        this.renderSegments();
+        this.applyState();
+    }
+
+    /**
      * Show the control bar only while diffing is enabled.
      *
      * @private

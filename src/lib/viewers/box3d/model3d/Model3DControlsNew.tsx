@@ -1,8 +1,9 @@
 import React from 'react';
 import AnimationControls, { Props as AnimationControlsProps } from '../../controls/box3d/AnimationControls';
 import CommentControl from '../../controls/box3d/CommentControl';
-import ControlsBar, { ControlsBarGroup } from '../../controls/controls-bar';
+import ControlsBar, { ControlsBarDivider, ControlsBarGroup } from '../../controls/controls-bar';
 import DrawControl from '../../controls/box3d/DrawControl';
+import DrawingControls, { Props as DrawingControlsProps } from '../../controls/annotations/DrawingControls';
 import FullscreenToggle, { Props as FullscreenToggleProps } from '../../controls/fullscreen';
 import Model3DSettings, { Props as Model3DSettingsProps } from '../../controls/box3d/Model3DSettings';
 import PanControl from '../../controls/box3d/PanControl';
@@ -11,8 +12,10 @@ import VersionDiffControl from '../../controls/box3d/VersionDiffControl';
 import VrToggleControl, { Props as VrToggleControlProps } from '../../controls/box3d/VrToggleControl';
 import WatermarkControl from '../../controls/box3d/WatermarkControl';
 import ZoomControls, { Props as ZoomControlsProps } from '../../controls/zoom';
+import { AnnotationMode } from '../../../types';
 
 export type Props = AnimationControlsProps &
+    Omit<DrawingControlsProps, 'annotationMode'> &
     FullscreenToggleProps &
     Model3DSettingsProps &
     ResetControlProps &
@@ -33,6 +36,7 @@ export type Props = AnimationControlsProps &
     };
 
 export default function Model3DControls({
+    annotationColor,
     animationClips,
     cameraProjection,
     currentAnimationClipId,
@@ -46,6 +50,7 @@ export default function Model3DControls({
     maxScale,
     minScale,
     onAnimationClipSelect,
+    onAnnotationColorChange,
     onCameraProjectionChange,
     onCommentToggle,
     onDrawToggle,
@@ -73,47 +78,58 @@ export default function Model3DControls({
     showWireframes,
 }: Props): JSX.Element {
     return (
-        <ControlsBar>
-            <ResetControl onReset={onReset} />
-            <AnimationControls
-                animationClips={animationClips}
-                currentAnimationClipId={currentAnimationClipId}
-                isPlaying={isPlaying}
-                onAnimationClipSelect={onAnimationClipSelect}
-                onPlayPause={onPlayPause}
-            />
-            <VrToggleControl isVrShown={isVrShown} onVrToggle={onVrToggle} />
-            <Model3DSettings
-                cameraProjection={cameraProjection}
-                onCameraProjectionChange={onCameraProjectionChange}
-                onClose={onSettingsClose}
-                onOpen={onSettingsOpen}
-                onRenderModeChange={onRenderModeChange}
-                onShowEnvironmentToggle={onShowEnvironmentToggle}
-                onShowGridToggle={onShowGridToggle}
-                onShowLightsToggle={onShowLightsToggle}
-                onShowWireframesToggle={onShowWireframesToggle}
-                renderMode={renderMode}
-                showEnvironment={showEnvironment}
-                showGrid={showGrid}
-                showLights={showLights}
-                showWireframes={showWireframes}
-            />
-            <ControlsBarGroup isDistinct>
-                <ZoomControls
-                    maxScale={maxScale}
-                    minScale={minScale}
-                    onZoomIn={onZoomIn}
-                    onZoomOut={onZoomOut}
-                    scale={scale}
+        <>
+            <ControlsBar>
+                <Model3DSettings
+                    cameraProjection={cameraProjection}
+                    onCameraProjectionChange={onCameraProjectionChange}
+                    onClose={onSettingsClose}
+                    onOpen={onSettingsOpen}
+                    onRenderModeChange={onRenderModeChange}
+                    onShowEnvironmentToggle={onShowEnvironmentToggle}
+                    onShowGridToggle={onShowGridToggle}
+                    onShowLightsToggle={onShowLightsToggle}
+                    onShowWireframesToggle={onShowWireframesToggle}
+                    renderMode={renderMode}
+                    showEnvironment={showEnvironment}
+                    showGrid={showGrid}
+                    showLights={showLights}
+                    showWireframes={showWireframes}
                 />
-            </ControlsBarGroup>
-            <WatermarkControl isActive={isWatermarkActive} onWatermarkToggle={onWatermarkToggle} />
-            <VersionDiffControl isActive={isVersionDiffActive} onVersionDiffToggle={onVersionDiffToggle} />
-            <PanControl isActive={isPanModeActive} onPanToggle={onPanToggle} />
-            <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
-            <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
-            <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
-        </ControlsBar>
+                <WatermarkControl isActive={isWatermarkActive} onWatermarkToggle={onWatermarkToggle} />
+                <ControlsBarDivider />
+                <ResetControl onReset={onReset} />
+                <ControlsBarGroup isDistinct>
+                    <ZoomControls
+                        maxScale={maxScale}
+                        minScale={minScale}
+                        onZoomIn={onZoomIn}
+                        onZoomOut={onZoomOut}
+                        scale={scale}
+                    />
+                </ControlsBarGroup>
+                <PanControl isActive={isPanModeActive} onPanToggle={onPanToggle} />
+                <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                <ControlsBarDivider />
+                <AnimationControls
+                    animationClips={animationClips}
+                    currentAnimationClipId={currentAnimationClipId}
+                    isPlaying={isPlaying}
+                    onAnimationClipSelect={onAnimationClipSelect}
+                    onPlayPause={onPlayPause}
+                />
+                <VrToggleControl isVrShown={isVrShown} onVrToggle={onVrToggle} />
+                <VersionDiffControl isActive={isVersionDiffActive} onVersionDiffToggle={onVersionDiffToggle} />
+                <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
+                <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
+            </ControlsBar>
+            <ControlsBar>
+                <DrawingControls
+                    annotationColor={annotationColor}
+                    annotationMode={isDrawModeActive ? AnnotationMode.DRAWING : AnnotationMode.NONE}
+                    onAnnotationColorChange={onAnnotationColorChange}
+                />
+            </ControlsBar>
+        </>
     );
 }

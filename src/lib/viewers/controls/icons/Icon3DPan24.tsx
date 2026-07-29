@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 // Branded 3D pan glyph (three-axis translate arrows) — from the "3D Preview Assets" icon set.
+// ViewBox tightened slightly so the glyph matches toolbar optical size (~84% fill).
 function Icon3DPan24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg
@@ -9,7 +10,7 @@ function Icon3DPan24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
             focusable="false"
             height="1em"
             role="img"
-            viewBox="0 0 16 16"
+            viewBox="0.25 -0.25 15.5 15.5"
             width="1em"
             {...props}
         >

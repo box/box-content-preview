@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+// Slightly roomier viewBox so the dashed bubble matches ~84% toolbar optical fill.
 function IconDashedSquareBubbleMedium24({ fill, ...rest }: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg
@@ -7,7 +8,7 @@ function IconDashedSquareBubbleMedium24({ fill, ...rest }: React.SVGProps<SVGSVG
             focusable="false"
             height="1em"
             role="img"
-            viewBox="0 0 24 24"
+            viewBox="-0.7 -0.2 25.4 25.4"
             width="1em"
             {...rest}
         >

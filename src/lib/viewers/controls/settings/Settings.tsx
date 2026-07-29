@@ -49,12 +49,16 @@ export default function Settings({
         setActiveMenu(Menu.MAIN);
         setActiveRect(undefined);
         setIsFocused(false);
-        setIsOpen(!isOpen);
 
-        if (!isOpen) {
-            onOpen();
-        } else {
+        if (isOpen) {
+            setIsOpen(false);
             onClose();
+            // Drop focus so the control's :focus highlight doesn't linger and look
+            // like the menu is still open after dismiss.
+            buttonElRef.current?.blur();
+        } else {
+            setIsOpen(true);
+            onOpen();
         }
     };
 

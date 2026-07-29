@@ -2,20 +2,28 @@
 
 .bp-SettingsToggle {
     position: relative;
+    display: flex;
+    align-items: center;
 
     &.bp-is-open {
         .bp-SettingsToggle-icon {
-            transform: rotate(60deg);
+            // Include scale so focus/hover's svg { transform: scale(...) } doesn't
+            // override the open rotation (both set `transform`).
+            transform: rotate(60deg) scale(1.09);
         }
     }
 }
 
 .bp-SettingsToggle-button {
     @include bp-Control;
+
+    &.bp-is-active {
+        color: #fff;
+        background: rgba(255, 255, 255, .25);
+    }
 }
 
 .bp-SettingsToggle-icon {
-    transform: rotate(0);
     transition: transform 300ms ease;
 }
 

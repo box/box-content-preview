@@ -1,0 +1,9 @@
+@import '../styles';
+
+.bp-ControlsBarDivider {
+    flex: none;
+    width: 0;
+    height: 24px;
+    margin: 0 $bp-controls-spacing;
+    border-left: $bp-controls-button-separator;
+}

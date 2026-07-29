@@ -83,6 +83,16 @@ $m3da-blue: #0061d5;
     &.bp-m3da-pin-draft {
         background: #26c281;
     }
+
+    // A resolved pin shown only while its comment is being navigated to: muted
+    // slate so it reads as "resolved / historical", not an open comment.
+    &.bp-m3da-pin-resolved {
+        background: #6b7280;
+
+        &:hover {
+            background: darken(#6b7280, 8%);
+        }
+    }
 }
 
 // ------------------------------------------------------------ draft composer

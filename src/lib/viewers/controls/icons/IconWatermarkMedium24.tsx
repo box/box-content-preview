@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+// Tightened viewBox so the A glyph matches the ~84% optical fill of neighboring Medium24 icons.
 function IconWatermarkMedium24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg
@@ -7,7 +8,7 @@ function IconWatermarkMedium24(props: React.SVGProps<SVGSVGElement>): JSX.Elemen
             focusable="false"
             height="1em"
             role="img"
-            viewBox="0 0 24 24"
+            viewBox="1.3 1.5 21.4 21.4"
             width="1em"
             {...props}
         >

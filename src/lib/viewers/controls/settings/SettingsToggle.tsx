@@ -19,7 +19,8 @@ function SettingsToggle({ badge, isOpen, onClick }: Props, ref: React.Ref<Ref>):
         >
             <button
                 ref={ref}
-                className="bp-SettingsToggle-button"
+                aria-expanded={isOpen}
+                className={classNames('bp-SettingsToggle-button', { 'bp-is-active': isOpen })}
                 data-resin-target="settingsOpen"
                 onClick={onClick}
                 title={__('media_settings')}

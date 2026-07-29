@@ -23,6 +23,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                             name: 'foo',
                         },
                     ]}
+                    annotationColor="#0061d5"
                     cameraProjection={CameraProjection.PERSPECTIVE}
                     currentAnimationClipId="123"
                     isCommentModeActive={false}
@@ -33,6 +34,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
                     isVrShown
                     isWatermarkActive={false}
                     onAnimationClipSelect={onAnimationClipSelect}
+                    onAnnotationColorChange={jest.fn()}
                     onCameraProjectionChange={jest.fn()}
                     onCommentToggle={jest.fn()}
                     onDrawToggle={jest.fn()}
@@ -82,6 +84,100 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
 
             await user.click(screen.getByTitle('Settings'));
             expect(onSettingsOpen).toHaveBeenCalledTimes(1);
+        });
+
+        test('should show color picker when draw mode is active', () => {
+            render(
+                <Model3DControls
+                    animationClips={[]}
+                    annotationColor="#ed3757"
+                    cameraProjection={CameraProjection.PERSPECTIVE}
+                    currentAnimationClipId=""
+                    isCommentModeActive={false}
+                    isDrawModeActive
+                    isPanModeActive={false}
+                    isPlaying={false}
+                    isVersionDiffActive={false}
+                    isVrShown={false}
+                    isWatermarkActive={false}
+                    onAnimationClipSelect={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onCameraProjectionChange={jest.fn()}
+                    onCommentToggle={jest.fn()}
+                    onDrawToggle={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onPanToggle={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onRenderModeChange={jest.fn()}
+                    onReset={jest.fn()}
+                    onSettingsClose={jest.fn()}
+                    onSettingsOpen={jest.fn()}
+                    onShowEnvironmentToggle={jest.fn()}
+                    onShowGridToggle={jest.fn()}
+                    onShowLightsToggle={jest.fn()}
+                    onShowWireframesToggle={jest.fn()}
+                    onVersionDiffToggle={jest.fn()}
+                    onVrToggle={jest.fn()}
+                    onWatermarkToggle={jest.fn()}
+                    onZoomIn={jest.fn()}
+                    onZoomOut={jest.fn()}
+                    renderMode={RenderMode.LIT}
+                    scale={1}
+                    showEnvironment
+                    showGrid
+                    showLights
+                    showWireframes={false}
+                />,
+            );
+
+            expect(screen.getByTestId('bp-color-picker-control')).toBeInTheDocument();
+        });
+
+        test('should hide color picker when draw mode is inactive', () => {
+            render(
+                <Model3DControls
+                    animationClips={[]}
+                    annotationColor="#ed3757"
+                    cameraProjection={CameraProjection.PERSPECTIVE}
+                    currentAnimationClipId=""
+                    isCommentModeActive={false}
+                    isDrawModeActive={false}
+                    isPanModeActive={false}
+                    isPlaying={false}
+                    isVersionDiffActive={false}
+                    isVrShown={false}
+                    isWatermarkActive={false}
+                    onAnimationClipSelect={jest.fn()}
+                    onAnnotationColorChange={jest.fn()}
+                    onCameraProjectionChange={jest.fn()}
+                    onCommentToggle={jest.fn()}
+                    onDrawToggle={jest.fn()}
+                    onFullscreenToggle={jest.fn()}
+                    onPanToggle={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onRenderModeChange={jest.fn()}
+                    onReset={jest.fn()}
+                    onSettingsClose={jest.fn()}
+                    onSettingsOpen={jest.fn()}
+                    onShowEnvironmentToggle={jest.fn()}
+                    onShowGridToggle={jest.fn()}
+                    onShowLightsToggle={jest.fn()}
+                    onShowWireframesToggle={jest.fn()}
+                    onVersionDiffToggle={jest.fn()}
+                    onVrToggle={jest.fn()}
+                    onWatermarkToggle={jest.fn()}
+                    onZoomIn={jest.fn()}
+                    onZoomOut={jest.fn()}
+                    renderMode={RenderMode.LIT}
+                    scale={1}
+                    showEnvironment
+                    showGrid
+                    showLights
+                    showWireframes={false}
+                />,
+            );
+
+            expect(screen.queryByTestId('bp-color-picker-control')).not.toBeInTheDocument();
         });
     });
 });

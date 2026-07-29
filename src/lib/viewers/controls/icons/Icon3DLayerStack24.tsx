@@ -2,6 +2,7 @@ import * as React from 'react';
 
 // Branded layered-stack glyph — from the "3D Preview Assets" icon set. Used for the
 // version-diff (layered versions) toolbar toggle.
+// ViewBox slightly roomier so the stack matches ~84% toolbar optical fill.
 function Icon3DLayerStack24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
     return (
         <svg
@@ -10,7 +11,7 @@ function Icon3DLayerStack24(props: React.SVGProps<SVGSVGElement>): JSX.Element {
             focusable="false"
             height="1em"
             role="img"
-            viewBox="0 0 16 16"
+            viewBox="-0.2 -0.3 16.4 16.4"
             width="1em"
             {...props}
         >

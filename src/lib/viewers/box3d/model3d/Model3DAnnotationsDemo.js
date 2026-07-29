@@ -48,7 +48,7 @@ const FLY_DURATION_MS = 900;
 const CLICK_DRAG_THRESHOLD_PX = 4;
 const FALLBACK_ANCHOR_DISTANCE = 5;
 const DEMO_USER = { initials: 'EW', name: 'Ed Wang' };
-const DRAWING_COLOR = '#ed3757'; // bdl-watermelon-red, matches the real annotation color picker
+const DEFAULT_DRAWING_COLOR = '#ed3757'; // bdl-watermelon-red, matches the real annotation color picker
 const DRAWING_STROKE_WIDTH = 3;
 const PAN_SPEED = 1.5; // multiplier for pivot translation relative to drag distance
 
@@ -101,6 +101,14 @@ const fakeAnnotationsApi = {
 // (there's no push channel from the sidebar into Preview, so we poll).
 const RESOLVED_POLL_MS = 5000;
 
+// DEMO ONLY — which synthetic model version a comment is "created on" vs.
+// "resolved on". The version-diff overlay synthesizes v1/v2/v3 from the live
+// geometry (see Model3DVersionDiff), so we can't read a real version off the
+// backend; we stamp these deterministic defaults so navigating to a resolved
+// comment can open a meaningful before/after diff (original → turret rotated).
+const DEFAULT_CREATED_VERSION = 'v1';
+const DEFAULT_RESOLVED_VERSION = 'v2';
+
 class Model3DAnnotationsDemo {
     /** @property {Object[]} - Loaded annotations (comments and drawings) */
     annotations = [];
@@ -132,6 +140,7 @@ class Model3DAnnotationsDemo {
     /**
      * @param {Object} config
      * @param {HTMLElement} config.containerEl - Viewer wrapper element
+     * @param {string} [config.drawingColor] - Initial stroke color from the annotation color picker
      * @param {string} config.fileId - Box file ID used as storage key
      * @param {Model3DRenderer} config.renderer - The model3d renderer
      * @param {Object} [config.api] - Preview Api client (axios wrapper) for posting real comments
@@ -142,9 +151,13 @@ class Model3DAnnotationsDemo {
      * @param {Function} config.onPlacementModeChange - Called with (boolean) when comment mode toggles
      * @param {Function} config.onDrawModeChange - Called with (boolean) when draw mode toggles
      * @param {Function} config.onPanModeChange - Called with (boolean) when pan mode toggles
+     * @param {Function} [config.onResolvedFocus] - Called with (createdVersionId, resolvedVersionId) when a
+     *        resolved comment is navigated to; the viewer opens the version diff on that pair
+     * @param {Function} [config.onResolvedBlur] - Called when the resolved-comment focus is cleared
      */
     constructor({
         containerEl,
+        drawingColor,
         fileId,
         renderer,
         api,
@@ -155,8 +168,11 @@ class Model3DAnnotationsDemo {
         onPlacementModeChange,
         onDrawModeChange,
         onPanModeChange,
+        onResolvedFocus,
+        onResolvedBlur,
     }) {
         this.containerEl = containerEl;
+        this.drawingColor = drawingColor || DEFAULT_DRAWING_COLOR;
         this.fileId = fileId;
         this.renderer = renderer;
         this.api = api;
@@ -167,7 +183,15 @@ class Model3DAnnotationsDemo {
         this.onPlacementModeChange = onPlacementModeChange || (() => {});
         this.onDrawModeChange = onDrawModeChange || (() => {});
         this.onPanModeChange = onPanModeChange || (() => {});
+        this.onResolvedFocus = onResolvedFocus || (() => {});
+        this.onResolvedBlur = onResolvedBlur || (() => {});
 
+        // Id of the resolved annotation currently being viewed (via navigation),
+        // or null. While set, ONLY this pin is shown and the version diff is open
+        // on the comment's created→resolved versions.
+        this.resolvedFocusId = null;
+
+        this.handleSidebarCommentClick = this.handleSidebarCommentClick.bind(this);
         this.handleCanvasMouseDown = this.handleCanvasMouseDown.bind(this);
         this.handleCanvasMouseMove = this.handleCanvasMouseMove.bind(this);
         this.handleCanvasMouseUp = this.handleCanvasMouseUp.bind(this);
@@ -235,6 +259,10 @@ class Model3DAnnotationsDemo {
         canvas.addEventListener('mouseup', this.handleCanvasMouseUp);
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
+        // Bridge: the Activity sidebar (box-ui-elements) lives outside Preview's
+        // DOM and exposes no push channel, so we listen at the document for clicks
+        // on a comment card and match it back to an annotation by its text.
+        document.addEventListener('click', this.handleSidebarCommentClick, true);
     }
 
     detachListeners() {
@@ -246,6 +274,7 @@ class Model3DAnnotationsDemo {
         }
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
+        document.removeEventListener('click', this.handleSidebarCommentClick, true);
     }
 
     // ------------------------------------------------------- placement mode
@@ -265,6 +294,10 @@ class Model3DAnnotationsDemo {
     }
 
     // ------------------------------------------------------------ draw mode
+
+    setDrawingColor(color) {
+        this.drawingColor = color;
+    }
 
     setDrawMode(enabled) {
         if (enabled) {
@@ -451,7 +484,7 @@ class Model3DAnnotationsDemo {
         if (this.isDrawMode && this.drawingDraft) {
             this.isStrokeActive = true;
             this.drawingDraft.currentPath = {
-                color: DRAWING_COLOR,
+                color: this.drawingColor,
                 points: [this.getCanvasRelativePosition(event)],
             };
             this.drawingDraft.paths.push(this.drawingDraft.currentPath);
@@ -763,6 +796,9 @@ class Model3DAnnotationsDemo {
             message: trimmed,
             createdAt: new Date().toISOString(),
             createdBy: { ...DEMO_USER },
+            // DEMO: stamp the model version this comment was created on so a later
+            // "navigate to resolved comment" can diff created→resolved versions.
+            createdVersion: DEFAULT_CREATED_VERSION,
             target: {
                 type: 'model3d',
                 location: { type: 'model3d', value: 1 },
@@ -866,7 +902,13 @@ class Model3DAnnotationsDemo {
                     const isResolved = annotation.commentId && resolvedIds.has(String(annotation.commentId));
                     if (isResolved && !annotation.resolved) {
                         annotation.resolved = true;
-                        fakeAnnotationsApi.update(this.fileId, annotation.id, { resolved: true });
+                        // DEMO: stamp the version the comment was resolved on so
+                        // navigating to it opens a created→resolved diff.
+                        annotation.resolvedVersion = annotation.resolvedVersion || DEFAULT_RESOLVED_VERSION;
+                        fakeAnnotationsApi.update(this.fileId, annotation.id, {
+                            resolved: true,
+                            resolvedVersion: annotation.resolvedVersion,
+                        });
                         this.applyResolvedVisibility(annotation);
                     }
                 });
@@ -986,10 +1028,16 @@ class Model3DAnnotationsDemo {
     }
 
     addPinEl(annotation) {
-        const commentAnnotations = this.annotations.filter(a => a.type !== 'drawing' && !a.resolved);
-        const index = commentAnnotations.indexOf(annotation);
-        const pinEl = this.createPinEl(String(index + 1));
+        // Unresolved pins are numbered by their position among unresolved
+        // comments. A focused resolved pin isn't in that set, so it falls back to
+        // its index among ALL comments for a stable, meaningful label.
+        const unresolved = this.annotations.filter(a => a.type !== 'drawing' && !a.resolved);
+        const allComments = this.annotations.filter(a => a.type !== 'drawing');
+        const baseIndex = unresolved.indexOf(annotation);
+        const label = String((baseIndex === -1 ? allComments.indexOf(annotation) : baseIndex) + 1);
+        const pinEl = this.createPinEl(label);
         pinEl.dataset.annotationId = annotation.id;
+        pinEl.classList.toggle('bp-m3da-pin-resolved', !!annotation.resolved);
 
         // Clicking a saved pin flies the camera back and shows a mini tooltip.
         pinEl.addEventListener('click', () => this.focusAnnotation(annotation));
@@ -1052,7 +1100,7 @@ class Model3DAnnotationsDemo {
         }
 
         const visiblePaths = this.annotations
-            .filter(a => a.type === 'drawing' && !a.resolved && this.isPoseNearCamera(a.target.camera))
+            .filter(a => a.type === 'drawing' && this.isAnnotationVisible(a) && this.isPoseNearCamera(a.target.camera))
             .flatMap(a => a.target.drawing.paths);
 
         this.renderStrokesIntoSvg(this.drawingsSvgEl, visiblePaths, 'bp-m3da-stroke');
@@ -1075,11 +1123,134 @@ class Model3DAnnotationsDemo {
     // ---------------------------------------------------------------- focus
 
     focusAnnotation(annotation) {
+        // Clicking any live pin clears a resolved-comment focus (we're navigating
+        // to a different comment).
+        this.clearResolvedFocus();
+
         // The comment text lives in the Activity feed now, not on the model —
         // clicking a pin just flies the camera back to the saved viewpoint.
         this.applyCameraPose(annotation.target.camera);
         this.flashPin(annotation.id);
         this.revealActivitySidebar();
+    }
+
+    // -------------------------------------------------- resolved-comment focus
+
+    /**
+     * Document-level (capture-phase) click handler that bridges the Activity
+     * sidebar to Preview. Resolved comments are hidden on the model; clicking one
+     * in the sidebar navigates to it — opening the version diff on the comment's
+     * created→resolved versions and revealing ONLY that pin.
+     *
+     * The sidebar is box-ui-elements and doesn't tag comment cards with their id,
+     * so we match the clicked card's text back to a resolved annotation's message.
+     *
+     * @private
+     * @param {MouseEvent} event - The document click
+     * @return {void}
+     */
+    handleSidebarCommentClick(event) {
+        const card = event.target && event.target.closest && event.target.closest('.bcs-Comment, .bcs-BaseComment');
+        if (!card) {
+            return;
+        }
+
+        const text = (card.textContent || '').trim();
+        if (!text) {
+            return;
+        }
+
+        // Match a resolved annotation whose message is contained in the card text
+        // (the card also holds the author, timestamp, and action labels).
+        const match = this.annotations.find(a => a.resolved && a.message && text.indexOf(a.message) !== -1);
+        if (match) {
+            if (match.id !== this.resolvedFocusId) {
+                this.focusResolvedComment(match);
+            }
+        } else if (this.resolvedFocusId) {
+            // Clicked a different, non-resolved comment — stop viewing the
+            // resolved one (per spec: navigating to a different comment clears it).
+            this.clearResolvedFocus();
+        }
+    }
+
+    /**
+     * Navigate to a resolved comment: open the version diff on the versions the
+     * comment was created on vs. resolved on, fly the camera to its saved pose,
+     * and reveal ONLY this pin (all other pins/drawings stay hidden). The pin
+     * persists while the user toggles between the two versions.
+     *
+     * @param {Object} annotation - A resolved comment annotation
+     * @return {void}
+     */
+    focusResolvedComment(annotation) {
+        if (!annotation || annotation.type === 'drawing') {
+            return;
+        }
+
+        this.resolvedFocusId = annotation.id;
+
+        // Ask the viewer to open the diff on this comment's version pair.
+        this.onResolvedFocus(
+            annotation.createdVersion || DEFAULT_CREATED_VERSION,
+            annotation.resolvedVersion || DEFAULT_RESOLVED_VERSION,
+        );
+
+        this.refreshPinVisibility();
+        this.applyCameraPose(annotation.target.camera);
+        this.flashPin(annotation.id);
+    }
+
+    /**
+     * End a resolved-comment focus: hide its pin again and tell the viewer the
+     * focus is over (it may exit the diff view). No-op if nothing is focused.
+     *
+     * @return {void}
+     */
+    clearResolvedFocus() {
+        if (!this.resolvedFocusId) {
+            return;
+        }
+        this.resolvedFocusId = null;
+        this.refreshPinVisibility();
+        this.onResolvedBlur();
+    }
+
+    /**
+     * Whether a pin/drawing should be visible right now. While a resolved comment
+     * is focused, ONLY that annotation shows. Otherwise, resolved annotations are
+     * hidden and everything else shows.
+     *
+     * @private
+     * @param {Object} annotation - The annotation to test
+     * @return {boolean} True if it should render
+     */
+    isAnnotationVisible(annotation) {
+        if (this.resolvedFocusId) {
+            return annotation.id === this.resolvedFocusId;
+        }
+        return !annotation.resolved;
+    }
+
+    /**
+     * Rebuild comment pins from scratch to match current visibility (used when a
+     * resolved-comment focus starts or ends). Drawings are pose-gated in
+     * renderVisibleDrawings(), so we just re-run that.
+     *
+     * @private
+     * @return {void}
+     */
+    refreshPinVisibility() {
+        if (!this.pinsEl) {
+            return;
+        }
+        // Drop every existing comment pin, then re-add the visible ones so pin
+        // numbering stays consistent with addPinEl()'s filter.
+        this.pinsEl.querySelectorAll('.bp-m3da-pin:not(.bp-m3da-pin-draft)').forEach(el => el.remove());
+        this.annotations
+            .filter(a => a.type !== 'drawing' && this.isAnnotationVisible(a))
+            .forEach(a => this.addPinEl(a));
+        this.renderVisibleDrawings();
     }
 
     /**

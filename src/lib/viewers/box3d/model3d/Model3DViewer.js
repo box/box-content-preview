@@ -94,6 +94,9 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Whether the version-diff overlay is active (demo). Off by default. */
     isVersionDiffActive = false;
 
+    /** @property {boolean} - Whether the diff is open because a resolved comment is being viewed (demo). */
+    isResolvedFocusActive = false;
+
     /** @property {number} - Current zoom scale (1 = fit-to-view). Zoom % = fitDistance / orbitDistance. */
     zoomScale = 1;
 
@@ -116,6 +119,7 @@ class Model3DViewer extends Box3DViewer {
         this.handleToggleAnimation = this.handleToggleAnimation.bind(this);
         this.handleToggleHelpers = this.handleToggleHelpers.bind(this);
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
+        this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
         this.handleCommentToggle = this.handleCommentToggle.bind(this);
         this.handleDrawToggle = this.handleDrawToggle.bind(this);
         this.handlePanToggle = this.handlePanToggle.bind(this);
@@ -409,6 +413,7 @@ class Model3DViewer extends Box3DViewer {
 
         this.annotationsDemo = new Model3DAnnotationsDemo({
             containerEl: this.wrapperEl,
+            drawingColor: this.annotationModule.getColor(),
             fileId: this.options.file.id,
             renderer: this.renderer,
             api: this.api,
@@ -432,6 +437,25 @@ class Model3DViewer extends Box3DViewer {
                 this.isPanModeActive = active;
                 if (this.getViewerOption('useReactControls')) {
                     this.renderUI();
+                }
+            },
+            // Navigating to a resolved comment opens the version diff on the
+            // versions it was created on vs. resolved on.
+            onResolvedFocus: (createdVersionId, resolvedVersionId) => {
+                if (!this.versionDiff) {
+                    return;
+                }
+                this.isResolvedFocusActive = true;
+                if (!this.isVersionDiffActive) {
+                    this.handleVersionDiffToggle();
+                }
+                this.versionDiff.showPair(createdVersionId, resolvedVersionId);
+            },
+            // Leaving the resolved comment (navigating elsewhere) closes the diff.
+            onResolvedBlur: () => {
+                this.isResolvedFocusActive = false;
+                if (this.isVersionDiffActive) {
+                    this.handleVersionDiffToggle();
                 }
             },
         });
@@ -486,9 +510,24 @@ class Model3DViewer extends Box3DViewer {
         if (this.versionDiff) {
             this.versionDiff.setEnabled(this.isVersionDiffActive);
         }
+        // Turning the diff OFF while a resolved comment is being viewed ends that
+        // navigation, so its pin hides again. The guard prevents a callback loop
+        // (clearResolvedFocus → onResolvedBlur → handleVersionDiffToggle).
+        if (!this.isVersionDiffActive && this.isResolvedFocusActive && this.annotationsDemo) {
+            this.isResolvedFocusActive = false;
+            this.annotationsDemo.clearResolvedFocus();
+        }
         if (this.getViewerOption('useReactControls')) {
             this.renderUI();
         }
+    }
+
+    handleAnnotationColorChange(color) {
+        this.annotationModule.setColor(color);
+        if (this.annotationsDemo) {
+            this.annotationsDemo.setDrawingColor(color);
+        }
+        this.renderUI();
     }
 
     handleCommentToggle() {
@@ -867,6 +906,7 @@ class Model3DViewer extends Box3DViewer {
         this.controls.render(
             <Model3DControlsNew
                 animationClips={this.animationClips}
+                annotationColor={this.annotationModule.getColor()}
                 cameraProjection={this.projection}
                 currentAnimationClipId={this.renderer.getAnimationClip()}
                 isCommentModeActive={this.isCommentModeActive}
@@ -877,6 +917,7 @@ class Model3DViewer extends Box3DViewer {
                 isVrShown={this.showVrButton}
                 isWatermarkActive={this.isWatermarkActive}
                 onAnimationClipSelect={this.handleSelectAnimationClip}
+                onAnnotationColorChange={this.handleAnnotationColorChange}
                 onCameraProjectionChange={this.handleSetCameraProjection}
                 onCommentToggle={this.handleCommentToggle}
                 onDrawToggle={this.handleDrawToggle}
