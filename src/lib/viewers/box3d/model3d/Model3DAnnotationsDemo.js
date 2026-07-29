@@ -109,6 +109,11 @@ const RESOLVED_POLL_MS = 5000;
 const DEFAULT_CREATED_VERSION = 'v1';
 const DEFAULT_RESOLVED_VERSION = 'v2';
 
+// Width (px) of the demo Activity sidebar. The 3D viewport is narrowed by this
+// much so the model isn't hidden behind the panel (mirrors how the real Box
+// sidebar reserves space on the right).
+const PANEL_WIDTH = 400;
+
 class Model3DAnnotationsDemo {
     /** @property {Object[]} - Loaded annotations (comments and drawings) */
     annotations = [];
@@ -133,6 +138,12 @@ class Model3DAnnotationsDemo {
 
     /** @property {Object|null} - In-progress pan drag: { lastX, lastY } */
     panDrag = null;
+
+    /** @property {Object|null} - In-progress region-box drag (placement mode): { startX, startY, el } */
+    boxDrag = null;
+
+    /** @property {HTMLElement|null} - Fixed composer shown while captioning a freehand drawing */
+    drawComposerEl = null;
 
     /** @property {number} - requestAnimationFrame id for the pin/drawing re-projection loop */
     rafId = 0;
@@ -191,7 +202,7 @@ class Model3DAnnotationsDemo {
         // on the comment's created→resolved versions.
         this.resolvedFocusId = null;
 
-        this.handleSidebarCommentClick = this.handleSidebarCommentClick.bind(this);
+        this.handlePanelClick = this.handlePanelClick.bind(this);
         this.handleCanvasMouseDown = this.handleCanvasMouseDown.bind(this);
         this.handleCanvasMouseMove = this.handleCanvasMouseMove.bind(this);
         this.handleCanvasMouseUp = this.handleCanvasMouseUp.bind(this);
@@ -213,6 +224,7 @@ class Model3DAnnotationsDemo {
             this.annotations = entries;
             entries.forEach(annotation => this.addAnnotationEl(annotation));
             this.startResolvedPolling();
+            this.renderPanel();
         });
 
         window.__model3dAnnotationsDemo = this;
@@ -234,6 +246,16 @@ class Model3DAnnotationsDemo {
         }
         this.rootEl = null;
 
+        if (this.panelListEl) {
+            this.panelListEl.removeEventListener('click', this.handlePanelClick);
+        }
+        if (this.panelEl && this.panelEl.parentNode) {
+            this.panelEl.parentNode.removeChild(this.panelEl);
+        }
+        this.panelEl = null;
+        this.panelListEl = null;
+        this.clearViewportInset();
+
         if (window.__model3dAnnotationsDemo === this) {
             delete window.__model3dAnnotationsDemo;
         }
@@ -250,6 +272,111 @@ class Model3DAnnotationsDemo {
         this.containerEl.appendChild(this.rootEl);
         this.pinsEl = this.rootEl.querySelector('.bp-m3da-pins');
         this.drawingsSvgEl = this.rootEl.querySelector('.bp-m3da-drawings');
+
+        // DEMO: a self-contained "Activity" sidebar. The real box-ui-elements
+        // sidebar renders in a browsing context Preview can't reach (proven at
+        // runtime: top frame, zero comment cards, zero iframes), so DOM-injecting
+        // into it is impossible. Instead we render our own faithful replica we
+        // fully control — a card per comment with the blue xyz / "v1 ↔ v2" chip;
+        // clicking a card flies the camera (and opens the version diff when the
+        // comment is resolved). The rail of icons on the left mirrors the real
+        // sidebar tabs (only the comments tab does anything).
+        this.panelEl = document.createElement('div');
+        this.panelEl.className = 'bp-m3da-sidebar';
+        // Rail on the LEFT, comments panel on the right. Icons are copied
+        // verbatim from the real box-ui-elements sidebar nav (Activity, Details,
+        // Metadata + the Add-integrations overflow and the collapse toggle);
+        // Box AI and Slack are intentionally omitted for the demo.
+        this.panelEl.innerHTML = `
+            <div class="bp-m3da-rail">
+                <div class="bp-m3da-rail-tabs">
+                    <button type="button" class="bp-m3da-rail-icon bp-m3da-rail-active" title="Activity" aria-label="Activity">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" role="img"><path fill="#909090" fill-rule="evenodd" d="M4 11c0-2.297.683-3.999 1.926-5.138C7.18 4.712 9.155 4 12 4c2.845 0 4.819.711 6.074 1.862C19.317 7.001 20 8.702 20 11c0 2.297-.683 3.999-1.926 5.138C16.82 17.288 14.845 18 12 18h-.459a1.1 1.1 0 0 0-.774.318C9.665 19.41 8.243 20.048 7.16 20.2c-.553.078-.905.013-1.07-.065C6 20.09 6 20.084 6 20V20c0-.22.072-.347.361-.813.285-.458.665-1.104.685-2.104a1.1 1.1 0 0 0-.606-1.005C4.885 15.298 4 13.745 4 11Zm8-9c-3.155 0-5.681.789-7.426 2.388C2.817 5.999 2 8.298 2 11c0 2.938.91 5.227 2.966 6.539a2.79 2.79 0 0 1-.303.592l-.055.088C4.372 18.591 4 19.18 4 20c0 .912.496 1.59 1.23 1.94.657.313 1.453.345 2.205.24 1.428-.2 3.108-.95 4.464-2.18H12c3.155 0 5.681-.789 7.426-2.388C21.183 16.001 22 13.702 22 11c0-2.703-.817-5.001-2.574-6.612C17.68 2.788 15.155 2 12 2ZM8 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm5-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button type="button" class="bp-m3da-rail-icon" title="Details" aria-label="Details">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" role="img"><path fill="#909090" fill-rule="evenodd" d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm0 2c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Zm-2-11a1 1 0 0 1 1-1h.5a1.5 1.5 0 0 1 1.5 1.5V15a1 1 0 1 1 0 2h-.5a1.5 1.5 0 0 1-1.5-1.5V12a1 1 0 0 1-1-1Zm2-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <button type="button" class="bp-m3da-rail-icon" title="Metadata" aria-label="Metadata">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" role="img"><path fill="#909090" fill-rule="evenodd" d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm2 0c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10ZM9 15c0-2.032.002-3.454.117-4.376.023-.184.049-.329.074-.441l.072.082c.235.283.475.697.718 1.182.118.237.23.476.34.71l.024.053c.099.212.198.425.292.612.097.194.212.41.338.587.063.088.157.207.285.314.118.098.374.277.74.277s.622-.179.74-.277c.128-.107.222-.226.285-.314.126-.177.241-.393.338-.587.094-.187.193-.4.292-.611l.025-.054c.11-.234.221-.473.34-.71.242-.485.482-.9.717-1.182l.072-.082c.025.112.05.257.074.441.115.922.117 2.344.117 4.376a1 1 0 1 0 2 0v-.085c0-1.928 0-3.477-.133-4.539-.066-.53-.178-1.065-.417-1.491a1.78 1.78 0 0 0-.573-.629A1.588 1.588 0 0 0 15 8c-.835 0-1.435.547-1.8.985-.39.467-.712 1.053-.97 1.568a24 24 0 0 0-.23.475 24 24 0 0 0-.23-.475c-.258-.515-.58-1.1-.97-1.568C10.434 8.547 9.834 8 9 8c-.302 0-.605.079-.877.257a1.78 1.78 0 0 0-.573.628c-.24.426-.351.962-.417 1.491C7 11.438 7 12.986 7 14.916V15a1 1 0 1 0 2 0Zm2.392-2.746.003-.004-.003.004Zm1.213-.004.003.004-.003-.004Z" clip-rule="evenodd"></path></svg>
+                    </button>
+                    <div class="bp-m3da-rail-divider"></div>
+                    <button type="button" class="bp-m3da-rail-icon" title="Add integrations" aria-label="Add integrations">
+                        <svg width="16" height="16" viewBox="0 0 16 16" role="img"><path fill="#909090" fill-rule="evenodd" d="M9 7h4.5a.5.5 0 01.5.5v1a.5.5 0 01-.5.5H9v4.5a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5V9H2.5a.5.5 0 01-.5-.5v-1a.5.5 0 01.5-.5H7V2.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5V7z"/></svg>
+                    </button>
+                </div>
+                <div class="bp-m3da-rail-footer">
+                    <button type="button" class="bp-m3da-rail-icon bp-m3da-rail-toggle" title="Hide Sidebar" aria-label="Hide Sidebar">
+                        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" role="presentation"><path fill="#909090" d="M17 4a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5H7a5 5 0 0 1-4.993-4.743L2 15V9a5 5 0 0 1 5-5h10ZM7 6a3 3 0 0 0-3 3v6l.004.155A3 3 0 0 0 7 18h3V6H7Zm5 12h5a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5v12Zm2.293-8.707a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-2 2a1 1 0 1 1-1.414-1.414L15.586 12l-1.293-1.293a1 1 0 0 1 0-1.414Z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="bp-m3da-panel">
+                <div class="bp-m3da-panel-topbar">
+                    <span class="bp-m3da-panel-title">Activity</span>
+                    <div class="bp-m3da-panel-topbar-actions">
+                        <button type="button" class="bp-m3da-icon-btn" title="Filter" aria-label="Filter">
+                            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M4 6h16v2H4V6zm3 5h10v2H7v-2zm3 5h4v2h-4v-2z"/></svg>
+                        </button>
+                        <button type="button" class="bp-m3da-addtask">Add Task <span class="bp-m3da-addtask-caret">▾</span></button>
+                    </div>
+                </div>
+                <div class="bp-m3da-panel-body">
+                    <div class="bp-m3da-version-divider"><span class="bp-m3da-version-label">Version Uploaded: <span class="bp-m3da-version-pill">V1</span></span></div>
+                    <div class="bp-m3da-panel-list"></div>
+                </div>
+                <div class="bp-m3da-composer-bar">
+                    <div class="bp-m3da-composer-field">Add a comment, @ to mention</div>
+                    <button type="button" class="bp-m3da-composer-send-round" aria-label="Send">
+                        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4l-1.4 1.4L16.2 11H4v2h12.2l-5.6 5.6L12 20l8-8z" transform="rotate(-90 12 12)"/></svg>
+                    </button>
+                </div>
+            </div>`;
+        // Append the sidebar as a SIBLING of the 3D wrapper (in the preview
+        // container), so it fills the reserved right strip rather than sitting
+        // inside the narrowed viewport.
+        (this.containerEl.parentNode || this.containerEl).appendChild(this.panelEl);
+        this.panelListEl = this.panelEl.querySelector('.bp-m3da-panel-list');
+        this.panelListEl.addEventListener('click', this.handlePanelClick);
+
+        // Narrow the 3D viewport so the model isn't hidden behind the sidebar.
+        // Everything 3D (canvas, pins, drawings, toolbar, gizmo) lives in the
+        // wrapper, and pins re-project off the live canvas rect each frame, so
+        // shrinking the wrapper + triggering a renderer resize shifts the whole
+        // scene left and keeps pins aligned.
+        this.applyViewportInset();
+    }
+
+    /**
+     * Reserve space on the right for the demo sidebar by insetting the 3D
+     * wrapper, then tell the renderer to resize so the WebGL canvas re-centers
+     * into the remaining area.
+     *
+     * @private
+     * @return {void}
+     */
+    applyViewportInset() {
+        this.containerEl.style.right = `${PANEL_WIDTH}px`;
+        this.containerEl.style.width = 'auto';
+        if (this.renderer && typeof this.renderer.resize === 'function') {
+            // Defer so the layout reflow (new wrapper width) lands before the
+            // renderer measures it.
+            window.requestAnimationFrame(() => this.renderer.resize());
+        }
+    }
+
+    /**
+     * Undo the viewport inset (on destroy) and resize the renderer back to full
+     * width.
+     *
+     * @private
+     * @return {void}
+     */
+    clearViewportInset() {
+        this.containerEl.style.right = '';
+        this.containerEl.style.width = '';
+        if (this.renderer && typeof this.renderer.resize === 'function') {
+            this.renderer.resize();
+        }
     }
 
     attachListeners() {
@@ -259,10 +386,6 @@ class Model3DAnnotationsDemo {
         canvas.addEventListener('mouseup', this.handleCanvasMouseUp);
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
-        // Bridge: the Activity sidebar (box-ui-elements) lives outside Preview's
-        // DOM and exposes no push channel, so we listen at the document for clicks
-        // on a comment card and match it back to an annotation by its text.
-        document.addEventListener('click', this.handleSidebarCommentClick, true);
     }
 
     detachListeners() {
@@ -274,7 +397,6 @@ class Model3DAnnotationsDemo {
         }
         document.removeEventListener('keydown', this.handleKeyDown);
         document.removeEventListener('keyup', this.handleKeyUp);
-        document.removeEventListener('click', this.handleSidebarCommentClick, true);
     }
 
     // ------------------------------------------------------- placement mode
@@ -394,7 +516,7 @@ class Model3DAnnotationsDemo {
 
         if (this.isDrawMode) {
             event.stopPropagation();
-            this.finishDrawing();
+            this.setDrawMode(false);
         } else if (this.isPlacementMode || this.draft) {
             event.stopPropagation();
             this.setPlacementMode(false);
@@ -481,6 +603,18 @@ class Model3DAnnotationsDemo {
             return;
         }
 
+        // Placement (box-comment) mode: start dragging out a region rectangle.
+        // Camera controls stay disabled for the duration of the drag so the box
+        // is drawn on a frozen frame (like the region annotation).
+        if (this.isPlacementMode && !this.draft) {
+            this.renderer.disableCameraControls();
+            const boxEl = document.createElement('div');
+            boxEl.className = 'bp-m3da-box-draft';
+            this.pinsEl.appendChild(boxEl);
+            this.boxDrag = { startX: event.clientX, startY: event.clientY, el: boxEl };
+            return;
+        }
+
         if (this.isDrawMode && this.drawingDraft) {
             this.isStrokeActive = true;
             this.drawingDraft.currentPath = {
@@ -499,6 +633,11 @@ class Model3DAnnotationsDemo {
             return;
         }
 
+        if (this.boxDrag) {
+            this.updateBoxDraftEl(event);
+            return;
+        }
+
         if (!this.isStrokeActive || !this.drawingDraft || !this.drawingDraft.currentPath) {
             return;
         }
@@ -514,27 +653,105 @@ class Model3DAnnotationsDemo {
             return;
         }
 
+        if (this.boxDrag) {
+            this.finishBoxDrag(event);
+            return;
+        }
+
         if (this.isStrokeActive) {
             this.isStrokeActive = false;
             if (this.drawingDraft && this.drawingDraft.currentPath && this.drawingDraft.currentPath.points.length < 2) {
                 // A single click with no drag — discard the degenerate stroke.
                 this.drawingDraft.paths.pop();
                 this.renderDraftStrokes();
+            } else {
+                // A stroke was drawn — surface the composer so the user can caption
+                // it. (Draw mode ends when they send or cancel, not on mouse-up.)
+                this.showDrawComposer();
             }
+        }
+    }
+
+    // -------------------------------------------------------------- region box
+
+    /**
+     * Screen-space rect (in canvas percentages) between the box-drag start point
+     * and the current pointer, normalized so width/height are positive.
+     *
+     * @private
+     * @param {MouseEvent} event - The current pointer event
+     * @return {Object} { xPercent, yPercent, wPercent, hPercent } canvas-relative rect
+     */
+    getBoxDragRect(event) {
+        const { canvas } = this.renderer.box3d;
+        const rect = canvas.getBoundingClientRect();
+        const x1 = (this.boxDrag.startX - rect.left) / rect.width;
+        const y1 = (this.boxDrag.startY - rect.top) / rect.height;
+        const x2 = (event.clientX - rect.left) / rect.width;
+        const y2 = (event.clientY - rect.top) / rect.height;
+        return {
+            xPercent: Math.min(x1, x2),
+            yPercent: Math.min(y1, y2),
+            wPercent: Math.abs(x2 - x1),
+            hPercent: Math.abs(y2 - y1),
+        };
+    }
+
+    /** Position/size the live box-drag preview element to the current pointer. */
+    updateBoxDraftEl(event) {
+        const { canvas } = this.renderer.box3d;
+        const canvasRect = canvas.getBoundingClientRect();
+        const rootRect = this.rootEl.getBoundingClientRect();
+        const r = this.getBoxDragRect(event);
+        const left = r.xPercent * canvasRect.width + (canvasRect.left - rootRect.left);
+        const top = r.yPercent * canvasRect.height + (canvasRect.top - rootRect.top);
+        this.boxDrag.el.style.left = `${left}px`;
+        this.boxDrag.el.style.top = `${top}px`;
+        this.boxDrag.el.style.width = `${r.wPercent * canvasRect.width}px`;
+        this.boxDrag.el.style.height = `${r.hPercent * canvasRect.height}px`;
+    }
+
+    /**
+     * Finish a region-box drag: if the box is big enough, raycast its center for
+     * the pin anchor and open the composer; otherwise discard it (a stray click).
+     *
+     * @private
+     * @param {MouseEvent} event - The mouse-up event
+     * @return {void}
+     */
+    finishBoxDrag(event) {
+        const { startX, startY, el } = this.boxDrag;
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        const rect = this.getBoxDragRect(event);
+
+        if (Math.sqrt(dx * dx + dy * dy) <= CLICK_DRAG_THRESHOLD_PX) {
+            // Too small to be a box — treat as a mis-click, stay in placement mode.
+            this.clearBoxDraft();
+            this.renderer.enableCameraControls();
             return;
         }
 
-        if (!this.isPlacementMode || this.draft || !this.mouseDownPoint) {
-            return;
-        }
+        // Hand the preview box to the draft so it stays visible while the user
+        // types the comment (removed on save/cancel), then stop tracking the drag.
+        this.boxDrag = null;
 
-        const dx = event.clientX - this.mouseDownPoint.x;
-        const dy = event.clientY - this.mouseDownPoint.y;
-        if (Math.sqrt(dx * dx + dy * dy) > CLICK_DRAG_THRESHOLD_PX) {
-            return;
-        }
+        // Pin at the box's center: raycast the model at that screen point.
+        const centerX = startX + dx / 2;
+        const centerY = startY + dy / 2;
+        const anchor = this.pickAnchorPoint({ clientX: centerX, clientY: centerY });
+        const cameraPose = this.captureCameraPose();
+        this.openDraft(anchor, rect, cameraPose, el);
+    }
 
-        this.openDraft(event);
+    /** Remove the live box-drag preview element (if any) and clear drag state. */
+    clearBoxDraft() {
+        if (this.boxDrag) {
+            if (this.boxDrag.el && this.boxDrag.el.parentNode) {
+                this.boxDrag.el.remove();
+            }
+            this.boxDrag = null;
+        }
     }
 
     // ------------------------------------------------------ camera & picking
@@ -722,22 +939,27 @@ class Model3DAnnotationsDemo {
         return { x: fallback.x, y: fallback.y, z: fallback.z };
     }
 
-    // ---------------------------------------------------------- comment draft
+    // ------------------------------------------------------- shared composer
 
-    openDraft(event) {
-        const anchor = this.pickAnchorPoint(event);
-        const cameraPose = this.captureCameraPose();
-
-        this.renderer.disableCameraControls();
-
-        const pinEl = this.createPinEl('+', true);
+    /**
+     * Build a comment composer element that matches the real Box comment field: a
+     * borderless rounded white pill with the "Add a comment, @ to mention"
+     * placeholder and a circular send arrow that enables once there's text. Wires
+     * up input/send/Enter/Escape and focuses the input. Send requires non-empty
+     * text (per demo spec — every drawing/box annotation must carry a comment).
+     *
+     * @private
+     * @param {Object} opts
+     * @param {boolean} [opts.fixed] - Pin the composer to the viewer's bottom-center (draw mode)
+     * @param {Function} opts.onSend - Called with the trimmed message when the user sends
+     * @param {Function} opts.onCancel - Called when the user presses Escape
+     * @return {HTMLElement} The composer popup element (already appended to pinsEl)
+     */
+    createComposerEl({ fixed = false, onSend, onCancel }) {
         const popupEl = document.createElement('div');
-        popupEl.className = 'bp-m3da-popup';
-        // Composer styled to match the real Box comment field: a leading dot,
-        // "Add a comment, @ to mention" placeholder, and a circular send arrow.
+        popupEl.className = `bp-m3da-popup${fixed ? ' bp-m3da-popup-fixed' : ''}`;
         popupEl.innerHTML = `
             <div class="bp-m3da-composer">
-                <span class="bp-m3da-composer-dot"></span>
                 <textarea class="bp-m3da-composer-input" placeholder="Add a comment, @ to mention" rows="1"></textarea>
                 <button type="button" class="bp-m3da-composer-send" title="Comment" disabled>
                     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -747,29 +969,59 @@ class Model3DAnnotationsDemo {
             </div>`;
         this.pinsEl.appendChild(popupEl);
 
-        this.draft = { anchor, cameraPose, pinEl, popupEl };
-
         const inputEl = popupEl.querySelector('.bp-m3da-composer-input');
         const sendEl = popupEl.querySelector('.bp-m3da-composer-send');
         const syncSendState = () => {
             sendEl.disabled = inputEl.value.trim().length === 0;
         };
+        const send = () => {
+            if (inputEl.value.trim().length > 0) {
+                onSend(inputEl.value);
+            }
+        };
 
-        sendEl.addEventListener('click', () => this.saveDraft(inputEl.value));
+        sendEl.addEventListener('click', send);
         inputEl.addEventListener('input', syncSendState);
         inputEl.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 e.stopPropagation();
-                this.setPlacementMode(false);
+                onCancel();
                 return;
             }
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                this.saveDraft(inputEl.value);
+                send();
             }
         });
         syncSendState();
         inputEl.focus();
+
+        return popupEl;
+    }
+
+    // ---------------------------------------------------------- comment draft
+
+    /**
+     * Open a comment draft for a placed region box. `anchor` is the world-space
+     * pin point (the box's center), `boxRect` is the screen-space rectangle in
+     * canvas percentages, `cameraPose` is the frozen viewpoint. Camera controls
+     * are already disabled by the box-drag flow.
+     *
+     * @private
+     * @param {Object} anchor - World-space point { x, y, z } for the pin
+     * @param {Object} boxRect - Screen-space rect { xPercent, yPercent, wPercent, hPercent }
+     * @param {Object} cameraPose - Captured camera pose
+     * @param {HTMLElement} [boxEl] - The live preview box element, kept visible while typing
+     * @return {void}
+     */
+    openDraft(anchor, boxRect, cameraPose, boxEl = null) {
+        const pinEl = this.createPinEl('+', true);
+        const popupEl = this.createComposerEl({
+            onSend: message => this.saveDraft(message),
+            onCancel: () => this.setPlacementMode(false),
+        });
+
+        this.draft = { anchor, boxRect, cameraPose, pinEl, popupEl, boxEl };
     }
 
     cancelDraft() {
@@ -779,7 +1031,11 @@ class Model3DAnnotationsDemo {
 
         this.draft.pinEl.remove();
         this.draft.popupEl.remove();
+        if (this.draft.boxEl && this.draft.boxEl.parentNode) {
+            this.draft.boxEl.remove();
+        }
         this.draft = null;
+        this.clearBoxDraft();
         this.renderer.enableCameraControls();
     }
 
@@ -789,7 +1045,7 @@ class Model3DAnnotationsDemo {
             return;
         }
 
-        const { anchor, cameraPose } = this.draft;
+        const { anchor, boxRect, cameraPose } = this.draft;
         const annotation = {
             id: `demo_${Date.now()}_${this.annotations.length}`,
             type: 'comment',
@@ -803,6 +1059,9 @@ class Model3DAnnotationsDemo {
                 type: 'model3d',
                 location: { type: 'model3d', value: 1 },
                 point: anchor,
+                // Screen-space region rectangle (pose-gated, like a drawing). The
+                // pin sits at its center; the box only renders from the saved pose.
+                box: boxRect,
                 camera: cameraPose,
             },
         };
@@ -824,6 +1083,8 @@ class Model3DAnnotationsDemo {
             this.addAnnotationEl(annotation);
             this.setPlacementMode(false);
             this.flashPin(annotation.id);
+            // Add the new comment's card (with its blue chip) to the demo panel.
+            this.renderPanel();
         });
     }
 
@@ -910,6 +1171,8 @@ class Model3DAnnotationsDemo {
                             resolvedVersion: annotation.resolvedVersion,
                         });
                         this.applyResolvedVisibility(annotation);
+                        // Flip its chip label from the xyz anchor to "v1 ↔ v2".
+                        this.renderPanel();
                     }
                 });
             })
@@ -941,12 +1204,49 @@ class Model3DAnnotationsDemo {
         if (!this.drawingDraft) {
             return;
         }
-        this.renderStrokesIntoSvg(this.drawingsSvgEl, this.drawingDraft.paths, 'bp-m3da-draft-stroke');
+        this.renderMarksIntoSvg(this.drawingsSvgEl, this.drawingDraft.paths, [], 'bp-m3da-draft-stroke');
     }
 
-    finishDrawing() {
-        if (!this.drawingDraft) {
-            this.setDrawMode(false);
+    /**
+     * Show the shared comment composer (pinned bottom-center) so the user can
+     * caption the freehand drawing they just drew. Sending saves the drawing with
+     * its comment; Escape cancels the whole draw. Re-shown idempotently if a
+     * further stroke is added.
+     *
+     * @private
+     * @return {void}
+     */
+    showDrawComposer() {
+        if (this.drawComposerEl || !this.drawingDraft) {
+            return;
+        }
+        this.drawComposerEl = this.createComposerEl({
+            fixed: true,
+            onSend: message => this.finishDrawing(message),
+            onCancel: () => this.setDrawMode(false),
+        });
+    }
+
+    /** Remove the draw-mode caption composer (if shown). */
+    cancelDrawComposer() {
+        if (this.drawComposerEl) {
+            this.drawComposerEl.remove();
+            this.drawComposerEl = null;
+        }
+    }
+
+    /**
+     * Save the active freehand drawing with the given comment. Requires both a
+     * valid stroke and non-empty text (per demo spec). Called from the draw-mode
+     * composer's send.
+     *
+     * @private
+     * @param {string} message - The comment body captioning the drawing
+     * @return {void}
+     */
+    finishDrawing(message) {
+        const trimmed = (message || '').trim();
+        if (!this.drawingDraft || !trimmed) {
             return;
         }
 
@@ -961,9 +1261,10 @@ class Model3DAnnotationsDemo {
         const annotation = {
             id: `demo_${Date.now()}_${this.annotations.length}`,
             type: 'drawing',
-            message: '',
+            message: trimmed,
             createdAt: new Date().toISOString(),
             createdBy: { ...DEMO_USER },
+            createdVersion: DEFAULT_CREATED_VERSION,
             target: {
                 type: 'model3d',
                 location: { type: 'model3d', value: 1 },
@@ -972,10 +1273,19 @@ class Model3DAnnotationsDemo {
             },
         };
 
+        // Post a real comment so the drawing shows up in the Activity feed too.
+        this.postComment(trimmed).then(commentId => {
+            if (commentId) {
+                annotation.commentId = commentId;
+                fakeAnnotationsApi.update(this.fileId, annotation.id, { commentId });
+            }
+        });
+
         fakeAnnotationsApi.create(this.fileId, annotation).then(() => {
             this.annotations.push(annotation);
             this.addAnnotationEl(annotation);
             this.setDrawMode(false);
+            this.renderPanel();
         });
     }
 
@@ -984,6 +1294,7 @@ class Model3DAnnotationsDemo {
             return;
         }
 
+        this.cancelDrawComposer();
         this.drawingDraft = null;
         this.isStrokeActive = false;
         this.renderVisibleDrawings();
@@ -1085,7 +1396,20 @@ class Model3DAnnotationsDemo {
 
         if (this.draft) {
             positionEl(this.draft.pinEl, this.draft.anchor);
-            positionEl(this.draft.popupEl, this.draft.anchor, 10);
+            // Place the composer BELOW the region box (not on top of the pin), so
+            // it doesn't cover what was just annotated. Centered on the box's
+            // horizontal midpoint, just under its bottom edge.
+            const { boxRect } = this.draft;
+            if (boxRect) {
+                const centerX =
+                    (boxRect.xPercent + boxRect.wPercent / 2) * canvasRect.width + (canvasRect.left - rootRect.left);
+                const bottomY =
+                    (boxRect.yPercent + boxRect.hPercent) * canvasRect.height + (canvasRect.top - rootRect.top);
+                this.draft.popupEl.classList.remove('bp-is-hidden');
+                this.draft.popupEl.style.transform = `translate(-50%, 0) translate(${centerX}px, ${bottomY + 12}px)`;
+            } else {
+                positionEl(this.draft.popupEl, this.draft.anchor, 10);
+            }
         }
 
         if (!this.isDrawMode) {
@@ -1093,7 +1417,11 @@ class Model3DAnnotationsDemo {
         }
     }
 
-    /** Render every saved drawing whose pose matches the live camera; clear the rest. */
+    /**
+     * Render every saved drawing AND region box whose pose matches the live
+     * camera; clear the rest. Both are screen-space (pose-gated) marks, so they
+     * share the one SVG overlay.
+     */
     renderVisibleDrawings() {
         if (!this.drawingsSvgEl) {
             return;
@@ -1103,14 +1431,37 @@ class Model3DAnnotationsDemo {
             .filter(a => a.type === 'drawing' && this.isAnnotationVisible(a) && this.isPoseNearCamera(a.target.camera))
             .flatMap(a => a.target.drawing.paths);
 
-        this.renderStrokesIntoSvg(this.drawingsSvgEl, visiblePaths, 'bp-m3da-stroke');
+        const visibleBoxes = this.annotations
+            .filter(
+                a =>
+                    a.type === 'comment' &&
+                    a.target &&
+                    a.target.box &&
+                    this.isAnnotationVisible(a) &&
+                    this.isPoseNearCamera(a.target.camera),
+            )
+            .map(a => a.target.box);
+
+        this.renderMarksIntoSvg(this.drawingsSvgEl, visiblePaths, visibleBoxes, 'bp-m3da-stroke');
     }
 
-    /** Render a flat list of { points, color } paths as SVG polylines, replacing prior content. */
-    renderStrokesIntoSvg(svgEl, paths, className) {
+    /**
+     * Render strokes (polylines) and region boxes (rounded rects) into the SVG,
+     * replacing prior content. Rects use canvas-percentage geometry so they track
+     * viewport resizes; strokes use the same percentage-of-viewport model.
+     *
+     * @private
+     * @param {SVGElement} svgEl - The overlay SVG
+     * @param {Object[]} paths - [{ points: [{xPercent,yPercent}], color }]
+     * @param {Object[]} boxes - [{ xPercent, yPercent, wPercent, hPercent }]
+     * @param {string} className - CSS class for the stroke polylines
+     * @return {void}
+     */
+    renderMarksIntoSvg(svgEl, paths, boxes, className) {
         const rect = svgEl.getBoundingClientRect();
         svgEl.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
-        svgEl.innerHTML = paths
+
+        const strokeMarkup = paths
             .map(path => {
                 const pointsAttr = path.points
                     .map(p => `${(p.xPercent * rect.width).toFixed(1)},${(p.yPercent * rect.height).toFixed(1)}`)
@@ -1118,6 +1469,18 @@ class Model3DAnnotationsDemo {
                 return `<polyline class="${className}" points="${pointsAttr}" stroke="${path.color}" stroke-width="${DRAWING_STROKE_WIDTH}" fill="none" />`;
             })
             .join('');
+
+        const boxMarkup = (boxes || [])
+            .map(box => {
+                const x = (box.xPercent * rect.width).toFixed(1);
+                const y = (box.yPercent * rect.height).toFixed(1);
+                const w = (box.wPercent * rect.width).toFixed(1);
+                const h = (box.hPercent * rect.height).toFixed(1);
+                return `<rect class="bp-m3da-box" x="${x}" y="${y}" width="${w}" height="${h}" rx="10" ry="10" />`;
+            })
+            .join('');
+
+        svgEl.innerHTML = strokeMarkup + boxMarkup;
     }
 
     // ---------------------------------------------------------------- focus
@@ -1127,52 +1490,182 @@ class Model3DAnnotationsDemo {
         // to a different comment).
         this.clearResolvedFocus();
 
-        // The comment text lives in the Activity feed now, not on the model —
-        // clicking a pin just flies the camera back to the saved viewpoint.
+        // The comment text lives in the demo Activity panel now, not on the model
+        // — clicking a pin just flies the camera back to the saved viewpoint.
         this.applyCameraPose(annotation.target.camera);
         this.flashPin(annotation.id);
-        this.revealActivitySidebar();
     }
 
-    // -------------------------------------------------- resolved-comment focus
+    // ------------------------------------------------------- activity panel
 
     /**
-     * Document-level (capture-phase) click handler that bridges the Activity
-     * sidebar to Preview. Resolved comments are hidden on the model; clicking one
-     * in the sidebar navigates to it — opening the version diff on the comment's
-     * created→resolved versions and revealing ONLY that pin.
-     *
-     * The sidebar is box-ui-elements and doesn't tag comment cards with their id,
-     * so we match the clicked card's text back to a resolved annotation's message.
+     * The label shown on a comment's blue chip. Because 3D comments have no page
+     * number, we surface the annotation's saved location instead:
+     *   - resolved  → "v1 ↔ v2" (the versions it was created-on and resolved-on)
+     *   - otherwise → "(x: 12, y: 234, z: 123)" from the world-space anchor point
      *
      * @private
-     * @param {MouseEvent} event - The document click
+     * @param {Object} annotation - The annotation backing the comment card
+     * @return {string} Chip label
+     */
+    getChipLabel(annotation) {
+        if (annotation.resolved) {
+            const created = annotation.createdVersion || DEFAULT_CREATED_VERSION;
+            const resolved = annotation.resolvedVersion || DEFAULT_RESOLVED_VERSION;
+            return `${created} ↔ ${resolved}`;
+        }
+        const point = annotation.target && annotation.target.point;
+        if (!point) {
+            return '3D location';
+        }
+        // Models are typically normalized to unit scale, so anchor coordinates
+        // are small fractions (e.g. 0.34, -0.12). Math.round would collapse every
+        // one to 0, so use adaptive precision: 2 decimals for |n| < 10, whole
+        // numbers for larger world-space coordinates.
+        const fmt = n => {
+            const v = Number(n) || 0;
+            return Math.abs(v) < 10 ? Number(v.toFixed(2)) : Math.round(v);
+        };
+        return `(x: ${fmt(point.x)}, y: ${fmt(point.y)}, z: ${fmt(point.z)})`;
+    }
+
+    /**
+     * Escape a string for safe insertion into the panel's innerHTML.
+     *
+     * @private
+     * @param {string} str - Raw text
+     * @return {string} HTML-escaped text
+     */
+    escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str == null ? '' : String(str);
+        return div.innerHTML;
+    }
+
+    /**
+     * Render (from scratch) the demo Activity panel — one card per comment
+     * annotation, each with the blue xyz / "v1 ↔ v2" chip. The real
+     * box-ui-elements sidebar renders in a browsing context Preview can't reach,
+     * so this panel is the demo's fully-controlled stand-in.
+     *
+     * @private
      * @return {void}
      */
-    handleSidebarCommentClick(event) {
-        const card = event.target && event.target.closest && event.target.closest('.bcs-Comment, .bcs-BaseComment');
+    renderPanel() {
+        if (!this.panelListEl) {
+            return;
+        }
+
+        const comments = this.annotations.filter(a => a.type !== 'drawing');
+        if (!comments.length) {
+            this.panelListEl.innerHTML = '<div class="bp-m3da-panel-empty">No comments yet</div>';
+            return;
+        }
+
+        this.panelListEl.innerHTML = comments
+            .map(annotation => {
+                const initials = this.escapeHtml((annotation.createdBy && annotation.createdBy.initials) || '?');
+                const name = this.escapeHtml((annotation.createdBy && annotation.createdBy.name) || 'Someone');
+                const message = this.escapeHtml(annotation.message || '');
+                const chipLabel = this.escapeHtml(this.getChipLabel(annotation));
+                const time = this.escapeHtml(this.formatRelativeTime(annotation.createdAt));
+                const resolvedClass = annotation.resolved ? ' bp-m3da-card-resolved' : '';
+                const focusedClass = annotation.id === this.resolvedFocusId ? ' bp-m3da-card-focused' : '';
+                return `
+                    <div class="bp-m3da-card${resolvedClass}${focusedClass}" data-annotation-id="${annotation.id}" role="button" tabindex="0">
+                        <div class="bp-m3da-card-head">
+                            <span class="bp-m3da-avatar">${initials}</span>
+                            <span class="bp-m3da-card-name">${name}</span>
+                        </div>
+                        <button type="button" class="bp-m3da-chip" data-annotation-id="${annotation.id}">${chipLabel}</button>
+                        <div class="bp-m3da-card-message">${message}</div>
+                        <div class="bp-m3da-card-time">${time}</div>
+                    </div>`;
+            })
+            .join('');
+    }
+
+    /**
+     * Format an ISO timestamp as a Box-style relative time ("3 minutes ago").
+     *
+     * @private
+     * @param {string} iso - ISO 8601 timestamp
+     * @return {string} Relative time label
+     */
+    formatRelativeTime(iso) {
+        if (!iso) {
+            return '';
+        }
+        const then = new Date(iso).getTime();
+        if (Number.isNaN(then)) {
+            return '';
+        }
+        const seconds = Math.max(0, Math.round((Date.now() - then) / 1000));
+        if (seconds < 60) {
+            return seconds <= 1 ? 'Just now' : `${seconds} seconds ago`;
+        }
+        const minutes = Math.round(seconds / 60);
+        if (minutes < 60) {
+            return minutes === 1 ? '1 minute ago' : `${minutes} minutes ago`;
+        }
+        const hours = Math.round(minutes / 60);
+        if (hours < 24) {
+            return hours === 1 ? '1 hour ago' : `${hours} hours ago`;
+        }
+        const days = Math.round(hours / 24);
+        return days === 1 ? '1 day ago' : `${days} days ago`;
+    }
+
+    /**
+     * Click handler for the demo Activity panel (delegated). A click anywhere on a
+     * card — or its blue chip — navigates to that annotation.
+     *
+     * @private
+     * @param {MouseEvent} event - The panel click
+     * @return {void}
+     */
+    handlePanelClick(event) {
+        const card = event.target && event.target.closest && event.target.closest('[data-annotation-id]');
         if (!card) {
             return;
         }
+        event.preventDefault();
+        this.navigateToAnnotation(card.dataset.annotationId);
+    }
 
-        const text = (card.textContent || '').trim();
-        if (!text) {
+    /**
+     * Navigate to an annotation from the panel: fly the camera to its saved pose.
+     * If the comment is resolved, also open the version diff on its
+     * created→resolved pair (reuses the resolved-focus path). Unresolved comments
+     * just fly.
+     *
+     * @private
+     * @param {string} annotationId - Id of the annotation to navigate to
+     * @return {void}
+     */
+    navigateToAnnotation(annotationId) {
+        const annotation = this.annotations.find(a => a.id === annotationId);
+        if (!annotation || !annotation.target || !annotation.target.camera) {
             return;
         }
 
-        // Match a resolved annotation whose message is contained in the card text
-        // (the card also holds the author, timestamp, and action labels).
-        const match = this.annotations.find(a => a.resolved && a.message && text.indexOf(a.message) !== -1);
-        if (match) {
-            if (match.id !== this.resolvedFocusId) {
-                this.focusResolvedComment(match);
+        if (annotation.resolved) {
+            if (annotation.id !== this.resolvedFocusId) {
+                this.focusResolvedComment(annotation);
             }
-        } else if (this.resolvedFocusId) {
-            // Clicked a different, non-resolved comment — stop viewing the
-            // resolved one (per spec: navigating to a different comment clears it).
+            return;
+        }
+
+        // Unresolved: clear any resolved focus/diff, then fly to the saved pose.
+        if (this.resolvedFocusId) {
             this.clearResolvedFocus();
         }
+        this.applyCameraPose(annotation.target.camera);
+        this.flashPin(annotation.id);
+        this.renderPanel();
     }
+
+    // -------------------------------------------------- resolved-comment focus
 
     /**
      * Navigate to a resolved comment: open the version diff on the versions the
@@ -1199,6 +1692,7 @@ class Model3DAnnotationsDemo {
         this.refreshPinVisibility();
         this.applyCameraPose(annotation.target.camera);
         this.flashPin(annotation.id);
+        this.renderPanel();
     }
 
     /**
@@ -1214,6 +1708,7 @@ class Model3DAnnotationsDemo {
         this.resolvedFocusId = null;
         this.refreshPinVisibility();
         this.onResolvedBlur();
+        this.renderPanel();
     }
 
     /**
@@ -1251,20 +1746,6 @@ class Model3DAnnotationsDemo {
             .filter(a => a.type !== 'drawing' && this.isAnnotationVisible(a))
             .forEach(a => this.addPinEl(a));
         this.renderVisibleDrawings();
-    }
-
-    /**
-     * Best-effort: click the host app's Activity tab so the posted comments are
-     * visible. The sidebar lives outside Preview's DOM (box-ui-elements), so
-     * this reaches up to the document; a miss is harmless.
-     *
-     * @return {void}
-     */
-    revealActivitySidebar() {
-        const toggle = document.querySelector('[data-testid="sidebaractivity"]');
-        if (toggle) {
-            toggle.click();
-        }
     }
 
     flashPin(annotationId) {

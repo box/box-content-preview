@@ -81,7 +81,7 @@ $m3da-blue: #0061d5;
     }
 
     &.bp-m3da-pin-draft {
-        background: #26c281;
+        background: $m3da-blue;
     }
 
     // A resolved pin shown only while its comment is being navigated to: muted
@@ -95,10 +95,33 @@ $m3da-blue: #0061d5;
     }
 }
 
+// ------------------------------------------------------------ region box
+// A screen-space rectangle dragged out in box-comment mode (the dashed-square
+// control). Styled to match the real region annotation: a rounded rectangle
+// with the annotation accent color. Rendered as an SVG rect (pose-gated, like
+// drawings); the live drag preview is a plain DOM box.
+$m3da-region: #f4b400; // bdl-yellorange, matches the real region annotation box
+
+.bp-m3da-box-draft {
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    border: 3px solid $m3da-region;
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+.bp-m3da-box {
+    fill: none;
+    stroke: $m3da-region;
+    stroke-width: 3;
+}
+
 // ------------------------------------------------------------ draft composer
-// Styled to match the real Box comment field: a rounded white pill with a
-// leading status dot, the "Add a comment, @ to mention" placeholder, and a
-// circular send arrow that activates once there's text.
+// Styled to match the real Box comment field: a borderless rounded white pill
+// with the "Add a comment, @ to mention" placeholder and a circular send arrow
+// that activates once there's text.
 .bp-m3da-popup {
     position: absolute;
     top: 0;
@@ -107,27 +130,30 @@ $m3da-blue: #0061d5;
     pointer-events: auto;
 }
 
+// Draw-mode composer: pinned to the bottom-center of the viewer (there's no
+// single anchor point for a freehand drawing).
+.bp-m3da-popup-fixed {
+    top: auto;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 .bp-m3da-composer {
     display: flex;
     align-items: center;
-    padding: 8px 8px 8px 14px;
+    padding: 8px 8px 8px 18px;
     background: #fff;
-    border: 1px solid $m3da-blue;
+    border: 0;
     border-radius: 24px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
 }
 
-.bp-m3da-composer-dot {
-    flex: none;
-    width: 8px;
-    height: 8px;
-    margin-right: 10px;
-    background: $m3da-blue;
-    border-radius: 50%;
-}
-
-.bp-m3da-composer-input {
+// Prefixed with `.bp-m3da` + element so we beat `.bp-controls textarea` / `:focus`
+// from _boxui.scss (those set a gray border that turns blue on focus).
+.bp-m3da textarea.bp-m3da-composer-input {
     flex: 1;
+    width: auto;
     min-height: 20px;
     max-height: 96px;
     padding: 0;
@@ -136,15 +162,22 @@ $m3da-blue: #0061d5;
     font-family: inherit;
     line-height: 20px;
     background: none;
-    border: 0;
+    // No border/shadow of its own — the input is flush inside the white pill.
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     resize: none;
 
     &::placeholder {
         color: #909aa3;
     }
 
-    &:focus {
+    &:hover,
+    &:focus,
+    &:focus-visible {
+        border: none;
         outline: none;
+        box-shadow: none;
     }
 }
 
@@ -184,4 +217,336 @@ $m3da-blue: #0061d5;
 
 .bp-m3da-flash {
     animation: bp-m3da-flash 1.2s ease-out 1;
+}
+
+// -------------------------------------------------- demo activity sidebar
+// DEMO: a self-contained replica of the Box Activity sidebar. The real
+// box-ui-elements sidebar renders in a browsing context Preview can't reach, so
+// we fake it completely — a comments panel + the vertical icon rail — and inset
+// the 3D viewport (see applyViewportInset) so the model isn't hidden behind it.
+$m3da-sidebar-width: 400px;
+$m3da-rail-width: 56px;
+$m3da-text: #222;
+$m3da-muted: #767676;
+$m3da-border: #e8e8e8;
+
+.bp-m3da-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 135;
+    display: flex;
+    width: $m3da-sidebar-width;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #fff;
+    border-left: 1px solid $m3da-border;
+    pointer-events: auto;
+}
+
+// -------- comments panel (fills the sidebar minus the rail)
+.bp-m3da-panel {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    background: #fff;
+    border-left: 1px solid $m3da-border;
+}
+
+.bp-m3da-panel-topbar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+}
+
+.bp-m3da-panel-title {
+    color: $m3da-text;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.bp-m3da-panel-topbar-actions {
+    display: flex;
+    align-items: center;
+}
+
+.bp-m3da-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+    padding: 0;
+    color: $m3da-muted;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+        background: #f5f5f5;
+    }
+}
+
+.bp-m3da-addtask {
+    display: flex;
+    align-items: center;
+    padding: 7px 14px;
+    color: $m3da-text;
+    font-weight: bold;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    border: 1px solid #cdcdcd;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+        background: #f5f5f5;
+    }
+}
+
+.bp-m3da-addtask-caret {
+    margin-left: 6px;
+    color: $m3da-muted;
+    font-size: 11px;
+}
+
+.bp-m3da-panel-body {
+    flex: 1 1 auto;
+    padding: 0 20px;
+    overflow-y: auto;
+}
+
+.bp-m3da-version-divider {
+    display: flex;
+    align-items: center;
+    margin: 8px 0 20px;
+    text-align: center;
+
+    &::before,
+    &::after {
+        flex: 1;
+        height: 1px;
+        background: #eee;
+        content: '';
+    }
+}
+
+.bp-m3da-version-label {
+    padding: 0 12px;
+    color: $m3da-muted;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.bp-m3da-version-pill {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 8px;
+    font-weight: bold;
+    border: 1px solid #cdcdcd;
+    border-radius: 10px;
+}
+
+.bp-m3da-panel-list {
+    padding-bottom: 16px;
+}
+
+.bp-m3da-panel-empty {
+    padding: 24px 0;
+    color: $m3da-muted;
+    font-size: 13px;
+    text-align: center;
+}
+
+.bp-m3da-card {
+    margin-bottom: 16px;
+    padding: 16px;
+    border: 1px solid $m3da-border;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+
+    &:hover {
+        border-color: #c8d9f0;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+    }
+
+    &.bp-m3da-card-focused {
+        border-color: $m3da-blue;
+        box-shadow: 0 0 0 1px $m3da-blue;
+    }
+
+    &.bp-m3da-card-resolved .bp-m3da-card-message {
+        color: $m3da-muted;
+        text-decoration: line-through;
+    }
+}
+
+.bp-m3da-card-head {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.bp-m3da-avatar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    background: #4f9dde;
+    border-radius: 50%;
+}
+
+.bp-m3da-card-name {
+    color: $m3da-text;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.bp-m3da-card-message {
+    color: $m3da-text;
+    font-size: 15px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.bp-m3da-card-time {
+    margin-top: 6px;
+    color: $m3da-muted;
+    font-size: 13px;
+}
+
+// Blue deep-link chip inside a card. Mirrors AnnotationActivityLink's
+// box-blue/bold look; shows the annotation's xyz anchor, or "v1 ↔ v2" resolved.
+.bp-m3da-chip {
+    display: inline-block;
+    max-width: 100%;
+    margin: 0 0 4px;
+    padding: 0;
+    overflow-x: hidden;
+    color: $m3da-blue;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: inherit;
+    white-space: nowrap;
+    text-align: left;
+    text-overflow: ellipsis;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+// -------- composer bar (pinned to the bottom of the panel)
+.bp-m3da-composer-bar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    padding: 16px 20px;
+}
+
+.bp-m3da-composer-field {
+    flex: 1 1 auto;
+    padding: 12px 14px;
+    color: #909aa3;
+    font-size: 14px;
+    background: #fff;
+    border: 1px solid #cdcdcd;
+    border-radius: 8px;
+}
+
+.bp-m3da-composer-send-round {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin-left: 10px;
+    padding: 0;
+    color: #fff;
+    background: #a5c8f2;
+    border: 0;
+    border-radius: 50%;
+    cursor: default;
+}
+
+// -------- vertical icon rail (LEFT edge of the sidebar, mirrors the real
+// box-ui-elements SidebarNav): a top group of tab icons + a bottom-pinned
+// collapse toggle.
+.bp-m3da-rail {
+    display: flex;
+    flex: 0 0 $m3da-rail-width;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    height: 100%;
+    padding: 14px 0;
+    background: #fff;
+}
+
+.bp-m3da-rail-tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+// Matches bcs-SidebarNav-footer: pins the collapse toggle to the bottom of
+// the rail once the rail stretches to the full sidebar height.
+.bp-m3da-rail-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+}
+
+.bp-m3da-rail-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 6px;
+    padding: 0;
+    color: $m3da-muted;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+        background: #f5f5f5;
+    }
+
+    // The active tab tints its (currentColor-independent) SVG blue like the
+    // real nav does for the selected tab.
+    &.bp-m3da-rail-active svg path {
+        fill: $m3da-blue;
+    }
+
+    &.bp-m3da-rail-toggle {
+        margin-bottom: 0;
+    }
+}
+
+.bp-m3da-rail-divider {
+    width: 24px;
+    height: 1px;
+    margin: 8px 0;
+    background: #eee;
 }
