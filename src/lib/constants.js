@@ -118,6 +118,9 @@ export const PREVIEW_SCRIPT_NAME = 'preview.js';
 
 export const FILE_OPTION_FILE_VERSION_ID = 'fileVersionId';
 export const FILE_OPTION_START = 'startAt';
+// Per-file flag set when a user deep-links into a freshly uploaded file from the
+// EndUserApp upload "Annotate" notification; triggers the annotation coach-mark.
+export const FILE_OPTION_ANNOTATE_ONBOARDING = 'annotateOnboarding';
 
 export const ANNOTATOR_EVENT = {
     modeEnter: 'annotationmodeenter',

@@ -24,6 +24,8 @@ import {
     RENDER_MODE_LIT,
 } from './model3DConstants';
 import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3DConstants';
+import { FILE_OPTION_ANNOTATE_ONBOARDING } from '../../../constants';
+import { getProp } from '../../../util';
 import './Model3D.scss';
 
 const DEFAULT_AXIS_UP = '+Y';
@@ -82,6 +84,9 @@ class Model3DViewer extends Box3DViewer {
     /** @property {boolean} - Whether the 3D comment placement mode is active (demo) */
     isCommentModeActive = false;
 
+    /** @property {boolean} - Whether the annotate coach-mark should be shown (upload deep-link). */
+    isCommentOnboardingActive = false;
+
     /** @property {boolean} - Whether the 3D freehand draw mode is active (demo) */
     isDrawModeActive = false;
 
@@ -121,6 +126,7 @@ class Model3DViewer extends Box3DViewer {
         this.handleCanvasClick = this.handleCanvasClick.bind(this);
         this.handleAnnotationColorChange = this.handleAnnotationColorChange.bind(this);
         this.handleCommentToggle = this.handleCommentToggle.bind(this);
+        this.handleCommentOnboardingDismiss = this.handleCommentOnboardingDismiss.bind(this);
         this.handleDrawToggle = this.handleDrawToggle.bind(this);
         this.handlePanToggle = this.handlePanToggle.bind(this);
         this.handleWatermarkToggle = this.handleWatermarkToggle.bind(this);
@@ -285,6 +291,15 @@ class Model3DViewer extends Box3DViewer {
     }
 
     initViewer(defaults) {
+        // Show the annotate coach-mark when the user arrived here from the EndUserApp
+        // upload "Annotate" notification (per-file deep-link flag).
+        const fileId = this.options.file && this.options.file.id;
+        this.isCommentOnboardingActive = !!getProp(
+            this.options,
+            `fileOptions.${fileId}.${FILE_OPTION_ANNOTATE_ONBOARDING}`,
+            false,
+        );
+
         if (this.controls) {
             if (this.getViewerOption('useReactControls')) {
                 this.renderUI();
@@ -531,9 +546,21 @@ class Model3DViewer extends Box3DViewer {
     }
 
     handleCommentToggle() {
+        // Interacting with the annotate button fulfills the coach-mark's purpose; dismiss it.
+        this.handleCommentOnboardingDismiss();
+
         if (this.annotationsDemo) {
             this.annotationsDemo.setPlacementMode(!this.isCommentModeActive);
         }
+    }
+
+    handleCommentOnboardingDismiss() {
+        if (!this.isCommentOnboardingActive) {
+            return;
+        }
+
+        this.isCommentOnboardingActive = false;
+        this.renderUI();
     }
 
     handleDrawToggle() {
@@ -910,6 +937,7 @@ class Model3DViewer extends Box3DViewer {
                 cameraProjection={this.projection}
                 currentAnimationClipId={this.renderer.getAnimationClip()}
                 isCommentModeActive={this.isCommentModeActive}
+                isCommentOnboardingActive={this.isCommentOnboardingActive}
                 isDrawModeActive={this.isDrawModeActive}
                 isPanModeActive={this.isPanModeActive}
                 isPlaying={this.isAnimationPlaying}
@@ -919,6 +947,7 @@ class Model3DViewer extends Box3DViewer {
                 onAnimationClipSelect={this.handleSelectAnimationClip}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onCameraProjectionChange={this.handleSetCameraProjection}
+                onCommentOnboardingDismiss={this.handleCommentOnboardingDismiss}
                 onCommentToggle={this.handleCommentToggle}
                 onDrawToggle={this.handleDrawToggle}
                 onFullscreenToggle={this.toggleFullscreen}

@@ -1,5 +1,6 @@
 import React from 'react';
 import AnimationControls, { Props as AnimationControlsProps } from '../../controls/box3d/AnimationControls';
+import Comment3DOnboardingTooltip from '../../controls/box3d/Comment3DOnboardingTooltip';
 import CommentControl from '../../controls/box3d/CommentControl';
 import ControlsBar, { ControlsBarDivider, ControlsBarGroup } from '../../controls/controls-bar';
 import DrawControl from '../../controls/box3d/DrawControl';
@@ -22,10 +23,12 @@ export type Props = AnimationControlsProps &
     VrToggleControlProps &
     ZoomControlsProps & {
         isCommentModeActive: boolean;
+        isCommentOnboardingActive?: boolean;
         isDrawModeActive: boolean;
         isPanModeActive: boolean;
         isVersionDiffActive: boolean;
         isWatermarkActive: boolean;
+        onCommentOnboardingDismiss?: () => void;
         onCommentToggle: () => void;
         onDrawToggle: () => void;
         onPanToggle: () => void;
@@ -41,6 +44,7 @@ export default function Model3DControls({
     cameraProjection,
     currentAnimationClipId,
     isCommentModeActive,
+    isCommentOnboardingActive = false,
     isDrawModeActive,
     isPanModeActive,
     isVersionDiffActive,
@@ -52,6 +56,7 @@ export default function Model3DControls({
     onAnimationClipSelect,
     onAnnotationColorChange,
     onCameraProjectionChange,
+    onCommentOnboardingDismiss,
     onCommentToggle,
     onDrawToggle,
     onPanToggle,
@@ -121,7 +126,12 @@ export default function Model3DControls({
                 <VrToggleControl isVrShown={isVrShown} onVrToggle={onVrToggle} />
                 <VersionDiffControl isActive={isVersionDiffActive} onVersionDiffToggle={onVersionDiffToggle} />
                 <DrawControl isActive={isDrawModeActive} onDrawToggle={onDrawToggle} />
-                <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
+                <Comment3DOnboardingTooltip
+                    isEnabled={isCommentOnboardingActive}
+                    onDismiss={onCommentOnboardingDismiss}
+                >
+                    <CommentControl isActive={isCommentModeActive} onCommentToggle={onCommentToggle} />
+                </Comment3DOnboardingTooltip>
             </ControlsBar>
             <ControlsBar>
                 <DrawingControls
