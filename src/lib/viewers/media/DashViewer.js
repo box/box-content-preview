@@ -40,9 +40,6 @@ class DashViewer extends VideoBaseViewer {
     /** @property {Object} - Status of the filmstrip representation */
     filmstripStatus;
 
-    /** @property {Object[]} - Statuses of extracted_text transcription representations */
-    transcriptionStatuses = [];
-
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
 
@@ -141,11 +138,6 @@ class DashViewer extends VideoBaseViewer {
         // Stop polling for filmstrip
         if (this.filmstripStatus) {
             this.filmstripStatus.destroy();
-        }
-
-        if (this.transcriptionStatuses.length) {
-            this.transcriptionStatuses.forEach(status => status.destroy());
-            this.transcriptionStatuses = [];
         }
 
         // Release blob: URL allocated for the filmstrip when migrateAccessTokenToHeader is on
@@ -680,26 +672,6 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Returns the display-friendly name for a text track's language.
-     * Uses an explicit track label when provided (e.g. transcription tracks).
-     * Otherwise maps the undetermined language code 'und' to a localized "Auto-Generated" label.
-     *
-     * @param {Object} track - A Shaka text track object
-     * @return {string} Localized language name or the raw language code
-     */
-    getTrackDisplayLanguage(track) {
-        if (track.label) {
-            return track.label;
-        }
-
-        if (track.language === 'und') {
-            return __('auto_generated');
-        }
-
-        return getLanguageName(track.language) || track.language;
-    }
-
-    /**
      * Loads captions/subtitles into the settings menu
      *
      * @return {void}
@@ -713,7 +685,7 @@ class DashViewer extends VideoBaseViewer {
                 this.initSubtitles();
             } else {
                 this.mediaControls.initSubtitles(
-                    this.textTracks.map(track => this.getTrackDisplayLanguage(track)),
+                    this.textTracks.map(track => getLanguageName(track.language) || track.language),
                     getLanguageName(this.options.location.locale.substring(0, 2)),
                 );
             }
@@ -753,16 +725,14 @@ class DashViewer extends VideoBaseViewer {
 
         this.textTracks = this.textTracks.map(track => ({
             ...track,
-            displayLanguage: this.getTrackDisplayLanguage(track),
+            displayLanguage: getLanguageName(track.language) || track.language,
         }));
 
         // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
         // Use the previewer's locale to determine preferred language
         const clientTextTrack = this.textTracks.find(({ displayLanguage }) => displayLanguage === clientLanguage);
         // Fall back to English if user's language doesn't exist
-        const englishTextTrack = this.textTracks.find(
-            ({ displayLanguage, language }) => displayLanguage === 'English' || language === 'eng',
-        );
+        const englishTextTrack = this.textTracks.find(({ displayLanguage }) => displayLanguage === 'English');
         // Fall back to first subtitle in list
         const defaultTextTrack = this.textTracks[0];
 
@@ -912,7 +882,6 @@ class DashViewer extends VideoBaseViewer {
         this.startBandwidthTracking();
         this.loadFilmStrip();
         this.loadSubtitles();
-        this.loadTranscription();
         this.loadAlternateAudio();
         this.showPlayButton();
 
@@ -1045,103 +1014,6 @@ class DashViewer extends VideoBaseViewer {
                 .catch(err => {
                     console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
                 });
-        }
-    }
-
-    /**
-     * Loads a single transcription representation (.vtt) as a text track when available
-     *
-     * @private
-     * @param {Object|undefined} rep - Representation object
-     * @param {string} language - BCP-47 language code for the text track
-     * @param {string} label - Display label for the text track
-     * @return {Promise<boolean>} Whether a text track was added
-     */
-    async loadTranscriptionTrack(rep, language, label) {
-        if (!rep?.content?.url_template) {
-            return false;
-        }
-
-        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
-            ? this.createContentUrlV2(rep.content.url_template)
-            : this.createContentUrlWithAuthParams(rep.content.url_template);
-        const transcriptionStatus = this.getRepStatus(rep);
-        this.transcriptionStatuses.push(transcriptionStatus);
-
-        try {
-            await transcriptionStatus.getPromise();
-
-            if (this.isDestroyed() || !this.player) {
-                return false;
-            }
-
-            await this.player.addTextTrackAsync(transcriptionUrl, language, 'subtitles', 'text/vtt', undefined, label);
-
-            return !this.isDestroyed();
-        } catch {
-            // Transcription is non-critical; allow the viewer to continue without it
-            return false;
-        }
-    }
-
-    /**
-     * Loads extracted_text (original language) and extracted_text_eng (English translation)
-     * transcriptions as text tracks when available
-     *
-     * @private
-     * @return {void}
-     */
-    async loadTranscription() {
-        console.log('XDDD');
-        const extractedText = getRepresentation(this.options.file, 'extracted_text');
-        const extractedTextEng = getRepresentation(this.options.file, 'extracted_text_en');
-
-        console.log('reps', this.options.file, this.options.file.representations);
-        console.log(extractedText, extractedTextEng);
-        if (!extractedText?.content?.url_template && !extractedTextEng?.content?.url_template) {
-            console.log('no transcript');
-            return;
-        }
-        console.log('transcript yes');
-
-        const addedOriginalTrack = await this.loadTranscriptionTrack(extractedText, 'und', 'Auto Generated (Original)');
-        const addedEnglishTrack = await this.loadTranscriptionTrack(
-            extractedTextEng,
-            'eng',
-            'Auto Generated (English)',
-        );
-
-        if (!(addedOriginalTrack || addedEnglishTrack) || this.isDestroyed()) {
-            console.log('no transcript v2');
-            return;
-        }
-
-        if (this.textTracks.length > 0) {
-            // Subtitles were already initialized — append only the new track(s) at the
-            // end of `this.textTracks`. We must not re-sort: in the non-React path, the
-            // user's selection is cached as an INDEX into `this.textTracks` (see
-            // handleSubtitle) and Settings menu items use the same number as their
-            // `data-value`, so reordering would silently swap which track plays.
-            const existingIds = new Set(this.textTracks.map(t => t.id));
-            const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
-
-            if (this.useReactControls()) {
-                this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
-                    ...track,
-                    displayLanguage: this.getTrackDisplayLanguage(track),
-                }));
-                this.renderUI();
-            } else {
-                newTracks.forEach(track => {
-                    this.textTracks.push(track);
-                    this.mediaControls.settings.addSubtitle(
-                        this.getTrackDisplayLanguage(track),
-                        this.textTracks.length - 1,
-                    );
-                });
-            }
-        } else {
-            this.loadSubtitles();
         }
     }
 
