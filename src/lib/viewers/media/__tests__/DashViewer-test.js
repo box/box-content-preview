@@ -151,7 +151,6 @@ describe('lib/viewers/media/DashViewer', () => {
             // Ensures that afterEach() cleanup doesn't trigger destroy() again
             dash = null;
         });
-
     });
 
     describe('load()', () => {
