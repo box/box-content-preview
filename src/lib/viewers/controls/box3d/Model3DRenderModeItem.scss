@@ -3,7 +3,8 @@
 .bp-Model3DRenderModeItem {
     display: flex;
     align-items: center;
-    padding: 8px 4px;
+    // More vertical room between rows.
+    padding: 10px 6px;
     outline: none;
     cursor: pointer;
 
@@ -11,34 +12,39 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
-        margin-right: 16px;
-        color: $bdl-gray-80;
+        width: 22px;
+        height: 22px;
+        // Slightly larger gap between the icon and its label.
+        margin-right: 18px;
+        // Dark warm gray, matching the labels (not pure black).
+        color: #4a4642;
 
         svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
         }
     }
 
     .bp-Model3DRenderModeItem-label {
         flex: 1;
-        color: $bdl-gray-80;
-        font-size: 18px;
-        line-height: 24px;
+        // Dark warm gray, regular weight.
+        color: #3d3a36;
+        font-weight: normal;
+        font-size: 15px;
+        line-height: 22px;
     }
 
     .bp-Model3DRenderModeItem-check {
         flex: none;
-        width: 20px;
-        height: 20px;
-        color: $bdl-gray-80;
+        width: 18px;
+        height: 18px;
+        // Medium gray checkmark, lighter than the label.
+        color: #909090;
     }
 
     &:hover,
     &:focus-visible {
         background-color: $bdl-gray-05;
-        border-radius: 6px;
+        border-radius: 8px;
     }
 }

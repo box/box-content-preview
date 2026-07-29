@@ -1,11 +1,24 @@
 .bp-Model3DSettings {
     position: relative;
+    display: flex;
+    align-items: center;
 
     .bp-Settings-flyout {
+        // Push the panel further up so it clears the toolbar with a comfortable gap.
+        top: -16px;
         right: auto;
         left: 0;
         flex-direction: column;
         max-height: none;
+        // Off-white surface with a subtle top-to-bottom luminance gradient (brighter at
+        // top) for a gentle frosted/sheen quality, faintly showing the scene through it.
+        background: linear-gradient(180deg, rgba(255, 255, 255, .96) 0%, rgba(248, 248, 247, .92) 100%);
+        border: 1px solid rgba(0, 0, 0, .04);
+        // Softer, larger corner radius for the newer design direction.
+        border-radius: 24px;
+        // Diffuse, low-opacity shadow so the panel floats rather than sits with a hard edge.
+        box-shadow: 0 12px 40px 0 rgba(0, 0, 0, .12), 0 2px 8px 0 rgba(0, 0, 0, .06);
+        backdrop-filter: blur(20px);
 
         &.bp-is-open {
             display: flex;
@@ -25,7 +38,9 @@
 }
 
 .bp-Model3DSettings-menu {
-    min-width: 260px;
+    min-width: 300px;
+    // Roomier internal padding so content has breathing room against the panel edge.
+    padding: 26px;
 
     .bp-SettingsDropdown,
     .bp-RotateAxisControls {
@@ -34,14 +49,21 @@
 }
 
 .bp-Model3DSettings-sectionLabel {
-    margin-bottom: 4px;
-    color: #767676;
-    font-size: 16px;
-    line-height: 24px;
+    margin-bottom: 10px;
+    color: #8a8a8a;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+// Add extra breathing room above a section label that follows a divider.
+.bp-Model3DSettings-divider + .bp-Model3DSettings-sectionLabel {
+    margin-top: 4px;
 }
 
 .bp-Model3DSettings-divider {
     height: 1px;
-    margin: 16px 0;
-    background-color: #e8e8e8;
+    // Hairline, very light gray, inset from the panel edges rather than edge to edge.
+    margin: 20px 8px;
+    background-color: #ededed;
 }

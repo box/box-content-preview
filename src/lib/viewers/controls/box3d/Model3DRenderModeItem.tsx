@@ -48,7 +48,7 @@ export default function Model3DRenderModeItem({ icon, isSelected, label, onSelec
                         stroke="currentColor"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth="1.5"
+                        strokeWidth="1.25"
                     />
                 </svg>
             )}
