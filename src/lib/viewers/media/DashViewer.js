@@ -1066,28 +1066,51 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Loads extracted_text (original language) and extracted_text_eng (English translation)
-     * transcriptions as text tracks when available
+     * Loads extracted_text transcription representations as text tracks when available
      *
      * @private
      * @return {void}
      */
     async loadTranscription() {
-        const extractedText = getRepresentation(this.options.file, 'extracted_text');
-        const extractedTextEng = getRepresentation(this.options.file, 'extracted_text_eng');
+        const transcriptionReps = [
+            {
+                rep: getRepresentation(this.options.file, 'extracted_text'),
+                language: 'und',
+                label: 'Auto Generated (Original)',
+            },
+            {
+                rep: getRepresentation(this.options.file, 'extracted_text_en'),
+                language: 'eng',
+                label: 'Auto Generated (English)',
+            },
+            {
+                rep: getRepresentation(this.options.file, 'extracted_text_fr'),
+                language: 'fra',
+                label: 'Auto Generated (French)',
+            },
+            {
+                rep: getRepresentation(this.options.file, 'extracted_text_ja'),
+                language: 'jpn',
+                label: 'Auto Generated (Japanese)',
+            },
+        ];
 
-        if (!extractedText?.content?.url_template && !extractedTextEng?.content?.url_template) {
+        const hasTranscription = transcriptionReps.some(({ rep }) => rep?.content?.url_template);
+        if (!hasTranscription) {
             return;
         }
 
-        const addedOriginalTrack = await this.loadTranscriptionTrack(extractedText, 'und', 'Auto Generated (Original)');
-        const addedEnglishTrack = await this.loadTranscriptionTrack(
-            extractedTextEng,
-            'eng',
-            'Auto Generated (English)',
-        );
+        let addedTrack = false;
+        // eslint-disable-next-line no-restricted-syntax
+        for (const { rep, language, label } of transcriptionReps) {
+            // eslint-disable-next-line no-await-in-loop
+            const added = await this.loadTranscriptionTrack(rep, language, label);
+            if (added) {
+                addedTrack = true;
+            }
+        }
 
-        if (!(addedOriginalTrack || addedEnglishTrack) || this.isDestroyed()) {
+        if (!addedTrack || this.isDestroyed()) {
             return;
         }
 
