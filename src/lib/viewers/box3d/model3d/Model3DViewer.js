@@ -469,6 +469,11 @@ class Model3DViewer extends Box3DViewer {
         this.versionDiff = new Model3DVersionDiff({
             containerEl: this.wrapperEl,
             renderer: this.renderer,
+            onExit: () => {
+                if (this.isVersionDiffActive) {
+                    this.handleVersionDiffToggle();
+                }
+            },
         });
         this.versionDiff.init();
         // Off by default — the viewer opens on the plain original model; the

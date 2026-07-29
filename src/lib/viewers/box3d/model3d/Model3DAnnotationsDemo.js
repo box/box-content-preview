@@ -339,6 +339,22 @@ class Model3DAnnotationsDemo {
             return;
         }
 
+        // Single-key mode shortcuts (ignored while typing / with modifiers):
+        //   d — toggle freehand draw mode
+        //   b — toggle box3d_comment (annotation pin) placement mode
+        if (!event.metaKey && !event.ctrlKey && !event.altKey && !this.isTypingTarget(event.target)) {
+            if (event.key === 'd' || event.key === 'D') {
+                event.preventDefault();
+                this.setDrawMode(!this.isDrawMode);
+                return;
+            }
+            if (event.key === 'b' || event.key === 'B') {
+                event.preventDefault();
+                this.setPlacementMode(!this.isPlacementMode);
+                return;
+            }
+        }
+
         if (event.key !== 'Escape') {
             return;
         }

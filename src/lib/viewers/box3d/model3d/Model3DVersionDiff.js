@@ -23,14 +23,26 @@ import './Model3DVersionDiff.scss';
 // a distinct color so it's obvious which layer is which as they cross-fade.
 
 const VERSIONS = [
-    { color: 0x9aa5b1, id: 'v1', label: 'Version 1 — original', transform: null },
-    { color: 0x0061d5, id: 'v2', label: 'Version 2 — turret rotated', rotateDeg: 14, transform: 'rotate' },
-    { color: 0xf5a623, id: 'v3', label: 'Version 3 — gun resized', scaleFactor: 1.18, transform: 'scale' },
+    { color: 0x9aa5b1, id: 'v1', label: 'Version 1', sublabel: 'original', transform: null },
+    { color: 0x0061d5, id: 'v2', label: 'Version 2', sublabel: 'turret rotated', rotateDeg: 14, transform: 'rotate' },
+    { color: 0xf5a623, id: 'v3', label: 'Version 3', sublabel: 'gun resized', scaleFactor: 1.18, transform: 'scale' },
 ];
 
-const DEFAULT_BOTTOM = 'v1';
-const DEFAULT_TOP = 'v2';
+const DEFAULT_SLOT_A = 'v1';
+const DEFAULT_SLOT_B = 'v2';
 const MAX_MESH_RETRIES = 30;
+
+// tap vs. hold threshold for the toggle button / `j` key: a quick press swaps
+// and stays; a longer press "peeks" and snaps back on release.
+const HOLD_MS = 250;
+
+// Inline line-icons (lucide geometry) so the pill needs no icon dependency.
+const ICON_TOGGLE = '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>';
+const ICON_CHEVRON = '<path d="m6 9 6 6 6-6"/>';
+const ICON_X = '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>';
+
+const svgIcon = paths =>
+    `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 
 // The top REGION_TOP_FRACTION of the model's height is treated as the movable
 // "turret"; the smoothstep weld band spans from REGION_BLEND_FROM up to the top,
@@ -58,23 +70,33 @@ class Model3DVersionDiff {
      * @param {Object} config - Configuration
      * @param {HTMLElement} config.containerEl - Element to append the control bar to (viewer wrapper)
      * @param {Model3DRenderer} config.renderer - The model renderer
+     * @param {Function} [config.onExit] - Called when the user exits compare from the pill (✕)
      */
-    constructor({ containerEl, renderer }) {
+    constructor({ containerEl, renderer, onExit }) {
         this.containerEl = containerEl;
         this.renderer = renderer;
+        this.onExit = onExit || (() => {});
 
         this.baseGeometries = [];
         this.versionGroups = {};
         this.hiddenSourceMeshes = [];
 
-        this.bottomId = DEFAULT_BOTTOM;
-        this.topId = DEFAULT_TOP;
-        this.opacity = 0.5;
+        // Two chosen versions (kept older-on-left) and which one is currently
+        // shown. Comparison is a hard blink between A and B — no cross-fade.
+        this.slotA = DEFAULT_SLOT_A;
+        this.slotB = DEFAULT_SLOT_B;
+        this.frame = 'B'; // 'A' | 'B' — which slot is displayed
+        this.openMenu = null; // null | 'A' | 'B'
 
-        this.handleBottomChange = this.handleBottomChange.bind(this);
-        this.handleTopChange = this.handleTopChange.bind(this);
-        this.handleOpacityInput = this.handleOpacityInput.bind(this);
-        this.handleBlink = this.handleBlink.bind(this);
+        // toggle button hold-to-peek bookkeeping
+        this.holdStart = null;
+        this.preHoldFrame = null;
+        this.keyHold = { at: null, pre: null };
+
+        this.handleToggleDown = this.handleToggleDown.bind(this);
+        this.handleToggleUp = this.handleToggleUp.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleKeyUp = this.handleKeyUp.bind(this);
         this.tryBuild = this.tryBuild.bind(this);
     }
 
@@ -95,6 +117,9 @@ class Model3DVersionDiff {
         this.buildDom();
         this.updateBarVisibility();
 
+        document.addEventListener('keydown', this.handleKeyDown);
+        document.addEventListener('keyup', this.handleKeyUp);
+
         window.__model3dVersionDiff = this;
     }
 
@@ -108,6 +133,9 @@ class Model3DVersionDiff {
      */
     setEnabled(enabled) {
         this.enabled = enabled;
+        if (!enabled) {
+            this.closeMenu();
+        }
         this.updateBarVisibility();
 
         if (!this.getSceneRoot()) {
@@ -148,6 +176,9 @@ class Model3DVersionDiff {
      */
     destroy() {
         window.cancelAnimationFrame(this.rafId);
+
+        document.removeEventListener('keydown', this.handleKeyDown);
+        document.removeEventListener('keyup', this.handleKeyUp);
 
         const scene = this.getSceneRoot();
         Object.keys(this.versionGroups).forEach(id => {
@@ -483,9 +514,9 @@ class Model3DVersionDiff {
     // -------------------------------------------------------------- rendering
 
     /**
-     * Show the selected bottom + top version layers and apply the current
-     * cross-fade opacity. Bottom is opaque and writes depth; top is drawn over
-     * it, semi-transparent, with depthWrite off to avoid z-fighting artifacts.
+     * Blink comparison: show ONLY the currently-displayed version, fully opaque.
+     * Toggling `frame` hard-cuts between the two chosen versions through the same
+     * camera, so the human eye picks out anything that moved.
      *
      * @private
      * @return {void}
@@ -498,15 +529,10 @@ class Model3DVersionDiff {
         // Hide every built layer first.
         this.hideVersionGroups();
 
-        const bottom = this.getVersionGroup(this.bottomId);
-        bottom.visible = true;
-        this.setGroupAppearance(bottom, 1, true, 0);
-
-        if (this.topId !== this.bottomId) {
-            const top = this.getVersionGroup(this.topId);
-            top.visible = true;
-            this.setGroupAppearance(top, this.opacity, false, 1);
-        }
+        const shownId = this.frame === 'A' ? this.slotA : this.slotB;
+        const group = this.getVersionGroup(shownId);
+        group.visible = true;
+        this.setGroupAppearance(group, 1, true, 0);
 
         this.forceRender();
     }
@@ -537,8 +563,9 @@ class Model3DVersionDiff {
     // -------------------------------------------------------------------- DOM
 
     /**
-     * Build the floating control bar: two version dropdowns, a blink-toggle
-     * button, and an opacity slider.
+     * Build the floating pill: a toggle button (tap = swap & stay, hold = peek),
+     * a divider, two version segments (tap to reassign; the filled one is shown),
+     * and an exit button. Version dropdowns render as pill menus above the bar.
      *
      * @private
      * @return {void}
@@ -547,92 +574,250 @@ class Model3DVersionDiff {
         this.barEl = document.createElement('div');
         this.barEl.className = 'bp-m3dvd bp-m3dvd-loading';
 
-        const options = VERSIONS.map(v => `<option value="${v.id}">${v.label}</option>`).join('');
-
         this.barEl.innerHTML = `
-            <div class="bp-m3dvd-title">Version diff</div>
-            <label class="bp-m3dvd-field">
-                <span class="bp-m3dvd-swatch" data-role="bottom-swatch"></span>
-                <span class="bp-m3dvd-label">Base</span>
-                <select class="bp-m3dvd-select" data-role="bottom">${options}</select>
-            </label>
-            <label class="bp-m3dvd-field">
-                <span class="bp-m3dvd-swatch" data-role="top-swatch"></span>
-                <span class="bp-m3dvd-label">Compare</span>
-                <select class="bp-m3dvd-select" data-role="top">${options}</select>
-            </label>
-            <button type="button" class="bp-m3dvd-blink" data-role="blink">Toggle A / B</button>
-            <label class="bp-m3dvd-field bp-m3dvd-opacity">
-                <span class="bp-m3dvd-label">Overlay</span>
-                <input type="range" min="0" max="100" value="${Math.round(this.opacity * 100)}" data-role="opacity" />
-            </label>`;
+            <button type="button" class="bp-m3dvd-icon" data-role="toggle"
+                    aria-label="Toggle displayed version (hold to peek)" title="Toggle · J (hold to peek)">
+                ${svgIcon(ICON_TOGGLE)}
+            </button>
+            <span class="bp-m3dvd-divider"></span>
+            <div class="bp-m3dvd-seg-wrap" data-slot="A"></div>
+            <span class="bp-m3dvd-gap"></span>
+            <div class="bp-m3dvd-seg-wrap" data-slot="B"></div>
+            <span class="bp-m3dvd-divider"></span>
+            <button type="button" class="bp-m3dvd-icon" data-role="exit"
+                    aria-label="Exit compare" title="Exit compare">
+                ${svgIcon(ICON_X)}
+            </button>`;
 
         this.containerEl.appendChild(this.barEl);
 
-        this.bottomSelect = this.barEl.querySelector('[data-role="bottom"]');
-        this.topSelect = this.barEl.querySelector('[data-role="top"]');
-        this.opacityInput = this.barEl.querySelector('[data-role="opacity"]');
-        this.bottomSelect.value = this.bottomId;
-        this.topSelect.value = this.topId;
+        const toggleBtn = this.barEl.querySelector('[data-role="toggle"]');
+        toggleBtn.addEventListener('pointerdown', this.handleToggleDown);
+        toggleBtn.addEventListener('pointerup', this.handleToggleUp);
+        toggleBtn.addEventListener('pointerleave', this.handleToggleUp);
 
-        this.bottomSelect.addEventListener('change', this.handleBottomChange);
-        this.topSelect.addEventListener('change', this.handleTopChange);
-        this.opacityInput.addEventListener('input', this.handleOpacityInput);
-        this.barEl.querySelector('[data-role="blink"]').addEventListener('click', this.handleBlink);
+        this.barEl.querySelector('[data-role="exit"]').addEventListener('click', () => {
+            this.onExit();
+        });
 
-        this.updateSwatches();
+        this.renderSegments();
     }
 
     /**
-     * Update the color swatches next to each dropdown to match the version tint.
+     * Render the two version segments and (if open) the dropdown menu for a slot.
+     * The displayed segment is filled; tapping a segment opens a picker to
+     * reassign that slot.
      *
      * @private
      * @return {void}
      */
-    updateSwatches() {
-        const toCss = id => {
+    renderSegments() {
+        ['A', 'B'].forEach(slot => {
+            const wrap = this.barEl.querySelector(`.bp-m3dvd-seg-wrap[data-slot="${slot}"]`);
+            const id = slot === 'A' ? this.slotA : this.slotB;
+            const otherId = slot === 'A' ? this.slotB : this.slotA;
             const version = VERSIONS.find(v => v.id === id) || VERSIONS[0];
-            return `#${version.color.toString(16).padStart(6, '0')}`;
-        };
-        const bottomSwatch = this.barEl.querySelector('[data-role="bottom-swatch"]');
-        const topSwatch = this.barEl.querySelector('[data-role="top-swatch"]');
-        bottomSwatch.style.backgroundColor = toCss(this.bottomId);
-        topSwatch.style.backgroundColor = toCss(this.topId);
+            const displayed = this.frame === slot;
+
+            wrap.innerHTML = '';
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `bp-m3dvd-seg${displayed ? ' bp-is-shown' : ''}`;
+            btn.setAttribute(
+                'aria-label',
+                `${slot === 'A' ? 'Before' : 'After'} version: ${version.label}. Open picker.`,
+            );
+            btn.innerHTML = `<span class="bp-m3dvd-seg-label">${version.label}</span>${svgIcon(ICON_CHEVRON)}`;
+            btn.addEventListener('click', event => {
+                event.stopPropagation();
+                this.toggleMenu(slot);
+            });
+            wrap.appendChild(btn);
+
+            if (this.openMenu === slot) {
+                wrap.appendChild(this.buildMenu(slot, id, otherId));
+            }
+        });
+    }
+
+    /**
+     * Build the version picker menu for a slot. The version taken by the other
+     * slot is disabled so the two segments never collide.
+     *
+     * @private
+     * @param {string} slot - 'A' | 'B'
+     * @param {string} currentId - The version currently in this slot
+     * @param {string} otherId - The version in the other slot
+     * @return {HTMLElement} The menu element
+     */
+    buildMenu(slot, currentId, otherId) {
+        const menu = document.createElement('div');
+        menu.className = 'bp-m3dvd-menu';
+
+        const heading = document.createElement('div');
+        heading.className = 'bp-m3dvd-menu-heading';
+        heading.textContent = slot === 'A' ? 'Before' : 'After';
+        menu.appendChild(heading);
+
+        VERSIONS.forEach(v => {
+            const taken = v.id === otherId;
+            const current = v.id === currentId;
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = `bp-m3dvd-menu-item${current ? ' bp-is-current' : ''}`;
+            item.disabled = taken;
+            item.innerHTML = `<span>${v.label}</span><span class="bp-m3dvd-menu-sub">${v.sublabel}</span>`;
+            if (!taken) {
+                item.addEventListener('click', event => {
+                    event.stopPropagation();
+                    this.assign(slot, v.id);
+                });
+            }
+            menu.appendChild(item);
+        });
+
+        return menu;
     }
 
     // ---------------------------------------------------------------- handlers
 
-    handleBottomChange(event) {
-        this.bottomId = event.target.value;
-        this.updateSwatches();
-        this.applyState();
-    }
+    /**
+     * Open or close the picker for a slot (mutually exclusive), wiring a
+     * click-away listener that dismisses the menu on the next outside click.
+     *
+     * @private
+     * @param {string} slot - 'A' | 'B'
+     * @return {void}
+     */
+    toggleMenu(slot) {
+        if (this.openMenu === slot) {
+            this.closeMenu();
+            return;
+        }
+        this.openMenu = slot;
+        this.renderSegments();
 
-    handleTopChange(event) {
-        this.topId = event.target.value;
-        this.updateSwatches();
-        this.applyState();
-    }
-
-    handleOpacityInput(event) {
-        this.opacity = Number(event.target.value) / 100;
-        this.applyState();
+        this.clickAway = event => {
+            if (!this.barEl || !this.barEl.contains(event.target)) {
+                this.closeMenu();
+            }
+        };
+        // Defer so the opening click doesn't immediately close the menu.
+        window.requestAnimationFrame(() => {
+            if (this.openMenu) {
+                document.addEventListener('mousedown', this.clickAway);
+            }
+        });
     }
 
     /**
-     * Blink comparison: hard-cut between the two versions. Flips the overlay to
-     * fully showing the compare version or fully showing the base — the human
-     * eye picks out anything that moved under a hard toggle.
+     * Close any open picker and tear down its click-away listener.
      *
      * @private
      * @return {void}
      */
-    handleBlink() {
-        this.opacity = this.opacity < 0.5 ? 1 : 0;
-        if (this.opacityInput) {
-            this.opacityInput.value = String(Math.round(this.opacity * 100));
+    closeMenu() {
+        if (this.clickAway) {
+            document.removeEventListener('mousedown', this.clickAway);
+            this.clickAway = null;
         }
+        if (this.openMenu) {
+            this.openMenu = null;
+            if (this.barEl) {
+                this.renderSegments();
+            }
+        }
+    }
+
+    /**
+     * Assign a version to a slot. Slots are kept older-on-left, and the picked
+     * version becomes the displayed frame so the choice is immediately visible.
+     *
+     * @private
+     * @param {string} slot - 'A' | 'B'
+     * @param {string} id - The version id to place in the slot
+     * @return {void}
+     */
+    assign(slot, id) {
+        let a = slot === 'A' ? id : this.slotA;
+        let b = slot === 'B' ? id : this.slotB;
+        if (VERSIONS.findIndex(v => v.id === a) > VERSIONS.findIndex(v => v.id === b)) {
+            [a, b] = [b, a];
+        }
+        this.slotA = a;
+        this.slotB = b;
+        this.frame = id === a ? 'A' : 'B';
+        this.closeMenu();
+        this.renderSegments();
         this.applyState();
+    }
+
+    /**
+     * Flip which version is displayed.
+     *
+     * @private
+     * @return {void}
+     */
+    swap() {
+        this.frame = this.frame === 'A' ? 'B' : 'A';
+        this.renderSegments();
+        this.applyState();
+    }
+
+    // toggle button: tap = swap & stay, hold = peek then snap back on release
+    handleToggleDown() {
+        this.holdStart = Date.now();
+        this.preHoldFrame = this.frame;
+        this.swap();
+    }
+
+    handleToggleUp() {
+        if (this.holdStart === null) {
+            return;
+        }
+        const held = Date.now() - this.holdStart;
+        if (held >= HOLD_MS && this.preHoldFrame) {
+            this.frame = this.preHoldFrame;
+            this.renderSegments();
+            this.applyState();
+        }
+        this.holdStart = null;
+        this.preHoldFrame = null;
+    }
+
+    /**
+     * `j` — same semantics as the toggle button: tap swaps & stays, hold peeks.
+     * Only active while diffing is enabled, and suppressed inside text inputs.
+     *
+     * @private
+     * @param {KeyboardEvent} event - keydown
+     * @return {void}
+     */
+    handleKeyDown(event) {
+        if (!this.enabled || event.repeat || (event.key !== 'j' && event.key !== 'J')) {
+            return;
+        }
+        const el = event.target;
+        const tag = el && el.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || (el && el.isContentEditable)) {
+            return;
+        }
+        event.preventDefault();
+        this.keyHold = { at: Date.now(), pre: this.frame };
+        this.swap();
+    }
+
+    handleKeyUp(event) {
+        if ((event.key !== 'j' && event.key !== 'J') || this.keyHold.at === null) {
+            return;
+        }
+        if (Date.now() - this.keyHold.at >= HOLD_MS && this.keyHold.pre) {
+            this.frame = this.keyHold.pre;
+            this.renderSegments();
+            this.applyState();
+        }
+        this.keyHold = { at: null, pre: null };
     }
 }
 

@@ -1,21 +1,36 @@
-// DEMO ONLY — 3D version-diff control bar styles
+// DEMO ONLY — 3D version-diff floating pill styles.
+//
+// Floating-pill design language: near-black capsule, 1px border, gray line
+// icons, filled segment for the currently-displayed version, hairline
+// dividers, monochrome throughout.
+//
+//   diff pill:  [⇄ toggle] │ [Version 1 ▾][Version 2 ▾] │ [✕]
+
+$m3dvd-bg: #0f0f11;
+$m3dvd-border: #2b2b2f;
+$m3dvd-icon: #d4d4d8;
+$m3dvd-dim: #71717a;
+$m3dvd-active-fill: #3f3f46;
+$m3dvd-divider: #2f2f33;
+$m3dvd-menu-bg: #17171a;
+$m3dvd-hover: #232326;
 
 .bp-m3dvd {
     position: absolute;
     top: 16px;
     left: 50%;
-    z-index: 140; // above watermark (120) and annotations pins (130)
+    z-index: 140; // above watermark (120) and annotation pins (130)
     display: flex;
-    gap: 12px;
     align-items: center;
-    padding: 8px 12px;
-    color: #fff;
-    font-size: 12px;
+    padding: 6px 10px;
+    color: $m3dvd-icon;
     font-family: Lato, Helvetica, Arial, sans-serif;
-    background: rgba(0, 0, 0, .72);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+    background: $m3dvd-bg;
+    border: 1px solid $m3dvd-border;
+    border-radius: 9999px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .45);
     transform: translateX(-50%);
+    user-select: none;
 
     &.bp-m3dvd-loading {
         opacity: .5;
@@ -26,59 +41,127 @@
         display: none;
     }
 
-    .bp-m3dvd-title {
-        padding-right: 4px;
-        font-weight: bold;
-        border-right: 1px solid rgba(255, 255, 255, .25);
+    .bp-m3dvd-divider {
+        align-self: stretch;
+        width: 1px;
+        margin: 8px 6px;
+        background: $m3dvd-divider;
     }
 
-    .bp-m3dvd-field {
+    .bp-m3dvd-gap {
+        width: 4px;
+    }
+
+    .bp-m3dvd-icon {
         display: flex;
-        gap: 6px;
         align-items: center;
-    }
-
-    .bp-m3dvd-label {
-        color: rgba(255, 255, 255, .7);
-    }
-
-    .bp-m3dvd-swatch {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border: 1px solid rgba(255, 255, 255, .5);
-        border-radius: 3px;
-    }
-
-    .bp-m3dvd-select {
-        padding: 3px 6px;
-        color: #fff;
-        font-size: 12px;
-        background: rgba(255, 255, 255, .12);
-        border: 1px solid rgba(255, 255, 255, .25);
-        border-radius: 4px;
-
-        option {
-            color: #000; // native dropdown list renders on white
-        }
-    }
-
-    .bp-m3dvd-blink {
-        padding: 4px 10px;
-        color: #fff;
-        font-size: 12px;
-        background: #0061d5;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        color: $m3dvd-icon;
+        background: transparent;
         border: 0;
-        border-radius: 4px;
+        border-radius: 9999px;
         cursor: pointer;
+        transition: background 120ms ease;
 
         &:hover {
-            background: #004fb0;
+            background: $m3dvd-active-fill;
+        }
+
+        &:active {
+            background: $m3dvd-hover;
         }
     }
 
-    .bp-m3dvd-opacity input[type='range'] {
-        width: 110px;
+    // version segment
+    .bp-m3dvd-seg-wrap {
+        position: relative;
+    }
+
+    .bp-m3dvd-seg {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        padding: 7px 12px;
+        color: $m3dvd-dim;
+        font-weight: normal;
+        font-size: 13px;
+        background: transparent;
+        border: 0;
+        border-radius: 9999px;
         cursor: pointer;
+        transition: background 120ms ease, color 120ms ease;
+
+        svg {
+            opacity: .7;
+        }
+
+        &:hover {
+            color: $m3dvd-icon;
+        }
+
+        &.bp-is-shown {
+            color: #fafafa;
+            font-weight: bold;
+            background: $m3dvd-active-fill;
+        }
+    }
+
+    // version picker menu, dropping below the pill (pill sits at top of viewport)
+    .bp-m3dvd-menu {
+        position: absolute;
+        top: calc(100% + 14px);
+        left: 50%;
+        min-width: 160px;
+        padding: 4px 0;
+        overflow: hidden;
+        background: $m3dvd-menu-bg;
+        border: 1px solid $m3dvd-border;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+        transform: translateX(-50%);
+    }
+
+    .bp-m3dvd-menu-heading {
+        padding: 6px 14px 4px;
+        color: $m3dvd-dim;
+        font-size: 11px;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+    }
+
+    .bp-m3dvd-menu-item {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        justify-content: space-between;
+        width: 100%;
+        padding: 8px 14px;
+        color: $m3dvd-icon;
+        font-size: 13px;
+        text-align: left;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            background: $m3dvd-hover;
+        }
+
+        &:disabled {
+            color: #4b4b52;
+            cursor: default;
+        }
+
+        &.bp-is-current {
+            color: #fafafa;
+        }
+
+        .bp-m3dvd-menu-sub {
+            color: $m3dvd-dim;
+            font-size: 11px;
+        }
     }
 }
