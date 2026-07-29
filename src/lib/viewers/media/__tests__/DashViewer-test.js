@@ -152,24 +152,6 @@ describe('lib/viewers/media/DashViewer', () => {
             dash = null;
         });
 
-        test('should destroy transcriptionStatuses if they exist', () => {
-            const destroySpy1 = jest.fn();
-            const destroySpy2 = jest.fn();
-            dash.transcriptionStatuses = [{ destroy: destroySpy1 }, { destroy: destroySpy2 }];
-
-            dash.destroy();
-
-            expect(destroySpy1).toBeCalled();
-            expect(destroySpy2).toBeCalled();
-            dash = null;
-        });
-
-        test('should not fail if transcriptionStatuses is empty', () => {
-            dash.transcriptionStatuses = [];
-
-            expect(() => dash.destroy()).not.toThrow();
-            dash = null;
-        });
     });
 
     describe('load()', () => {
@@ -958,100 +940,11 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('loadTranscription()', () => {
         beforeEach(() => {
-            dash.options = {
-                file: {
-                    representations: {
-                        entries: [
-                            { representation: 'dash' },
-                            {
-                                representation: 'extracted_text',
-                                content: { url_template: 'https://api.box.com/transcription.vtt' },
-                                status: { state: 'success' },
-                            },
-                            {
-                                representation: 'extracted_text_en',
-                                content: { url_template: 'https://api.box.com/transcription-en.vtt' },
-                                status: { state: 'success' },
-                            },
-                            {
-                                representation: 'extracted_text_fr',
-                                content: { url_template: 'https://api.box.com/transcription-fr.vtt' },
-                                status: { state: 'success' },
-                            },
-                            {
-                                representation: 'extracted_text_ja',
-                                content: { url_template: 'https://api.box.com/transcription-ja.vtt' },
-                                status: { state: 'success' },
-                            },
-                        ],
-                    },
-                },
-            };
-            stubs.createUrl = jest.spyOn(dash, 'createContentUrlWithAuthParams').mockReturnValue('authed-url');
             stubs.loadSubtitles = jest.spyOn(dash, 'loadSubtitles').mockImplementation();
             jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
         });
 
-        test('should do nothing if no transcription representations exist', () => {
-            dash.options.file.representations.entries = [];
-            dash.loadTranscription();
-            expect(stubs.createUrl).not.toBeCalled();
-        });
-
-        test('should do nothing if the extracted_text content is missing', () => {
-            dash.options.file.representations.entries = [
-                { representation: 'extracted_text' },
-                dash.options.file.representations.entries[2],
-            ];
-            dash.loadTranscription();
-            expect(stubs.createUrl).not.toBeCalled();
-        });
-
-        test('should do nothing if the extracted_text url_template is missing', () => {
-            dash.options.file.representations.entries[1] = {
-                representation: 'extracted_text',
-                content: {},
-            };
-            dash.options.file.representations.entries = [
-                dash.options.file.representations.entries[1],
-                dash.options.file.representations.entries[2],
-            ];
-            dash.loadTranscription();
-            expect(stubs.createUrl).not.toBeCalled();
-        });
-
-        test('should load extracted_text_en when extracted_text is unavailable', async () => {
-            dash.options.file.representations.entries = [dash.options.file.representations.entries[2]];
-
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
-
-            dash.player.addTextTrackAsync = jest.fn().mockResolvedValue();
-            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
-
-            await dash.loadTranscription();
-
-            expect(dash.player.addTextTrackAsync).toBeCalledWith(
-                'authed-url',
-                'eng',
-                'subtitles',
-                'text/vtt',
-                undefined,
-                'Auto Generated (English)',
-            );
-            expect(stubs.loadSubtitles).toBeCalled();
-        });
-
-        test('should create RepStatuses and add all transcription tracks when ready', async () => {
-            const mockRepStatus = {
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            };
-
-            jest.spyOn(dash, 'getRepStatus').mockReturnValue(mockRepStatus);
-
+        test('should add all generated transcription tracks from localhost when ready', async () => {
             dash.player.addTextTrackAsync = jest.fn().mockResolvedValue();
             dash.player.getTextTracks = jest.fn().mockReturnValue([]);
 
@@ -1060,7 +953,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.player.addTextTrackAsync).toHaveBeenCalledTimes(4);
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 1,
-                'authed-url',
+                'http://localhost:1024/transcript_und.vtt',
                 'und',
                 'subtitles',
                 'text/vtt',
@@ -1069,7 +962,7 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 2,
-                'authed-url',
+                'http://localhost:1024/transcript_en.vtt',
                 'eng',
                 'subtitles',
                 'text/vtt',
@@ -1078,7 +971,7 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 3,
-                'authed-url',
+                'http://localhost:1024/transcript_fr.vtt',
                 'fra',
                 'subtitles',
                 'text/vtt',
@@ -1087,7 +980,7 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 4,
-                'authed-url',
+                'http://localhost:1024/transcript_ja.vtt',
                 'jpn',
                 'subtitles',
                 'text/vtt',
@@ -1098,13 +991,8 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should re-render UI without resetting selection when React controls and tracks already exist', async () => {
-            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const transcriptionTrack = { id: 99, language: 'und', label: 'Transcription' };
 
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
             jest.spyOn(dash, 'getViewerOption').mockReturnValue(true);
             jest.spyOn(dash, 'renderUI').mockImplementation();
 
@@ -1123,13 +1011,8 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should preserve Auto-Generated label for existing und tracks in React controls', async () => {
-            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const transcriptionTrack = { id: 99, language: 'und', label: 'Transcription' };
 
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
             jest.spyOn(dash, 'getViewerOption').mockReturnValue(true);
             jest.spyOn(dash, 'renderUI').mockImplementation();
 
@@ -1152,13 +1035,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should append only new tracks to settings when non-React controls and tracks already exist', async () => {
-            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
             const addSubtitle = jest.fn();
-
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
 
             // New track's ID would sort it between existing tracks, but we must NOT
             // re-sort this.textTracks: the non-React menu uses array index as data-value
@@ -1190,73 +1067,23 @@ describe('lib/viewers/media/DashViewer', () => {
             ]);
         });
 
-        test('should not add track if player is destroyed before rep is ready', done => {
-            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
-            const mockRepStatusPromise = Promise.resolve();
-
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => mockRepStatusPromise,
-            });
+        test('should not add track if player is destroyed before track is added', async () => {
             jest.spyOn(dash, 'isDestroyed').mockReturnValue(true);
 
             dash.player.addTextTrackAsync = jest.fn();
 
-            dash.loadTranscription();
+            await dash.loadTranscription();
 
-            mockRepStatusPromise.then(() => {
-                expect(dash.player.addTextTrackAsync).not.toBeCalled();
-                done();
-            });
+            expect(dash.player.addTextTrackAsync).not.toBeCalled();
         });
 
         test('should handle transcription load failure gracefully', async () => {
-            dash.options.file.representations.entries = [dash.options.file.representations.entries[1]];
-
-            jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
-                destroy: jest.fn(),
-                getPromise: () => Promise.reject(new Error('conversion failed')),
-            });
+            dash.player.addTextTrackAsync = jest.fn().mockRejectedValue(new Error('transcript unavailable'));
+            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
 
             await dash.loadTranscription();
 
             expect(stubs.loadSubtitles).not.toBeCalled();
-        });
-
-        test('should use createContentUrlV2 when migrateAccessTokenToHeader is enabled', async () => {
-            jest.spyOn(dash, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
-            const createUrlV2 = jest.spyOn(dash, 'createContentUrlV2').mockReturnValue('v2-url');
-            jest.spyOn(dash, 'getRepStatus').mockReturnValue({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
-            dash.player.addTextTrackAsync = jest.fn().mockResolvedValue();
-            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
-
-            await dash.loadTranscription();
-
-            expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription.vtt');
-            expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription-en.vtt');
-            expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription-fr.vtt');
-            expect(createUrlV2).toHaveBeenCalledWith('https://api.box.com/transcription-ja.vtt');
-            expect(stubs.createUrl).not.toBeCalled();
-        });
-
-        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader is disabled', async () => {
-            jest.spyOn(dash, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(dash, 'getRepStatus').mockReturnValue({
-                destroy: jest.fn(),
-                getPromise: () => Promise.resolve(),
-            });
-            dash.player.addTextTrackAsync = jest.fn().mockResolvedValue();
-            dash.player.getTextTracks = jest.fn().mockReturnValue([]);
-
-            await dash.loadTranscription();
-
-            expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription.vtt');
-            expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription-en.vtt');
-            expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription-fr.vtt');
-            expect(stubs.createUrl).toHaveBeenCalledWith('https://api.box.com/transcription-ja.vtt');
         });
     });
 

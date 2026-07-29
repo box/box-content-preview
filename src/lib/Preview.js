@@ -52,7 +52,6 @@ import {
     X_REP_HINT_DOC_THUMBNAIL,
     X_REP_HINT_IMAGE,
     X_REP_HINT_VIDEO_DASH,
-    X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT,
     X_REP_HINT_VIDEO_MP4,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
@@ -1953,11 +1952,7 @@ class Preview extends EventEmitter {
      */
     getRequestHeaders(token) {
         const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
-        let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
-
-        if (isDash) {
-            videoHint += X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT;
-        }
+        const videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
 
         const headers = {
             'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`,

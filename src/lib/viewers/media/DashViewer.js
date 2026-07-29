@@ -15,6 +15,7 @@ import VideoControls from './VideoControls';
 import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import VideoBaseViewer from './VideoBaseViewer';
+import { GENERATED_TRANSCRIPT_TRACKS } from './GeneratedTranscriptUrls';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -37,9 +38,6 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {Object} - Status of the filmstrip representation */
     filmstripStatus;
-
-    /** @property {Object[]} - Statuses of extracted_text transcription representations */
-    transcriptionStatuses = [];
 
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
@@ -126,11 +124,6 @@ class DashViewer extends VideoBaseViewer {
         // Stop polling for filmstrip
         if (this.filmstripStatus) {
             this.filmstripStatus.destroy();
-        }
-
-        if (this.transcriptionStatuses.length) {
-            this.transcriptionStatuses.forEach(status => status.destroy());
-            this.transcriptionStatuses = [];
         }
 
         // Release blob: URL allocated for the filmstrip when migrateAccessTokenToHeader is on
@@ -1030,28 +1023,16 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Loads a single transcription representation (.vtt) as a text track when available
+     * Loads a single generated transcription (.vtt) as a text track when available
      *
      * @private
-     * @param {Object|undefined} rep - Representation object
+     * @param {string} transcriptionUrl - URL for the transcription VTT file
      * @param {string} language - BCP-47 language code for the text track
      * @param {string} label - Display label for the text track
      * @return {Promise<boolean>} Whether a text track was added
      */
-    async loadTranscriptionTrack(rep, language, label) {
-        if (!rep?.content?.url_template) {
-            return false;
-        }
-
-        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
-            ? this.createContentUrlV2(rep.content.url_template)
-            : this.createContentUrlWithAuthParams(rep.content.url_template);
-        const transcriptionStatus = this.getRepStatus(rep);
-        this.transcriptionStatuses.push(transcriptionStatus);
-
+    async loadTranscriptionTrack(transcriptionUrl, language, label) {
         try {
-            await transcriptionStatus.getPromise();
-
             if (this.isDestroyed() || !this.player) {
                 return false;
             }
@@ -1066,45 +1047,17 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Loads extracted_text transcription representations as text tracks when available
+     * Loads generated transcription tracks from the local transcript server when available
      *
      * @private
      * @return {void}
      */
     async loadTranscription() {
-        const transcriptionReps = [
-            {
-                rep: getRepresentation(this.options.file, 'extracted_text'),
-                language: 'und',
-                label: 'Auto Generated (Original)',
-            },
-            {
-                rep: getRepresentation(this.options.file, 'extracted_text_en'),
-                language: 'eng',
-                label: 'Auto Generated (English)',
-            },
-            {
-                rep: getRepresentation(this.options.file, 'extracted_text_fr'),
-                language: 'fra',
-                label: 'Auto Generated (French)',
-            },
-            {
-                rep: getRepresentation(this.options.file, 'extracted_text_ja'),
-                language: 'jpn',
-                label: 'Auto Generated (Japanese)',
-            },
-        ];
-
-        const hasTranscription = transcriptionReps.some(({ rep }) => rep?.content?.url_template);
-        if (!hasTranscription) {
-            return;
-        }
-
         let addedTrack = false;
         // eslint-disable-next-line no-restricted-syntax
-        for (const { rep, language, label } of transcriptionReps) {
+        for (const { url, language, label } of GENERATED_TRANSCRIPT_TRACKS) {
             // eslint-disable-next-line no-await-in-loop
-            const added = await this.loadTranscriptionTrack(rep, language, label);
+            const added = await this.loadTranscriptionTrack(url, language, label);
             if (added) {
                 addedTrack = true;
             }

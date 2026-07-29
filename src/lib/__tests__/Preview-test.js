@@ -3154,8 +3154,7 @@ describe('lib/Preview', () => {
 
         test('should add dash hints if the browser supports dash', () => {
             stubs.canPlayDash.mockReturnValue(true);
-            stubs.headers['X-Rep-Hints'] +=
-                '[dash,mp4][filmstrip][extracted_text][extracted_text_en][extracted_text_fr][extracted_text_ja]';
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
 
             preview.getRequestHeaders();
             expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
