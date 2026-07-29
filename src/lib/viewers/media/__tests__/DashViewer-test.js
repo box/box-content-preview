@@ -953,7 +953,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.player.addTextTrackAsync).toHaveBeenCalledTimes(4);
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 1,
-                'http://localhost:1024/transcript_und.vtt',
+                expect.stringMatching(/\/transcript_und\.vtt$/),
                 'und',
                 'subtitles',
                 'text/vtt',
@@ -962,7 +962,7 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 2,
-                'http://localhost:1024/transcript_en.vtt',
+                expect.stringMatching(/\/transcript_en\.vtt$/),
                 'eng',
                 'subtitles',
                 'text/vtt',
@@ -971,7 +971,7 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 3,
-                'http://localhost:1024/transcript_fr.vtt',
+                expect.stringMatching(/\/transcript_fr\.vtt$/),
                 'fra',
                 'subtitles',
                 'text/vtt',
@@ -980,7 +980,7 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 4,
-                'http://localhost:1024/transcript_ja.vtt',
+                expect.stringMatching(/\/transcript_ja\.vtt$/),
                 'jpn',
                 'subtitles',
                 'text/vtt',

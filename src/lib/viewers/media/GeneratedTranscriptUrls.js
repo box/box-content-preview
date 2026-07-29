@@ -1,4 +1,6 @@
-export const GENERATED_TRANSCRIPT_LOCAL_BASE_URL = 'http://localhost:1024';
+// Serve from the preview origin so Shaka can fetch VTT without cross-origin CORS issues.
+export const GENERATED_TRANSCRIPT_LOCAL_BASE_URL =
+    typeof window !== 'undefined' && window.location?.origin ? window.location.origin : '';
 
 export const GENERATED_TRANSCRIPT_TRACKS = [
     {
