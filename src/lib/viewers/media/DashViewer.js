@@ -16,8 +16,12 @@ import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import { GeneratedAudioSource } from '../controls/media/GeneratedAudioSelect';
 import VideoBaseViewer from './VideoBaseViewer';
-import ExternalAudioSync, { GENERATED_AUDIO_URL_BY_SOURCE } from './ExternalAudioSync';
-import { GENERATED_TRANSCRIPT_TRACKS } from './GeneratedTranscriptUrls';
+import ExternalAudioSync from './ExternalAudioSync';
+import { getGeneratedAudioUrl } from './GeneratedMediaUrls';
+import {
+    createGeneratedTranscriptPlaceholder,
+    getGeneratedTranscriptTracks,
+} from './GeneratedTranscriptUrls';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -119,7 +123,7 @@ class DashViewer extends VideoBaseViewer {
         this.externalAudioSync = new ExternalAudioSync({
             mediaEl: this.mediaEl,
             containerEl: this.mediaContainerEl,
-            audioUrl: GENERATED_AUDIO_URL_BY_SOURCE[GeneratedAudioSource.GENERATED_EN],
+            audioUrl: getGeneratedAudioUrl(GeneratedAudioSource.GENERATED_FR),
         });
     }
 
@@ -1071,46 +1075,114 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     async loadTranscription() {
+        if (this.isDestroyed() || !this.player) {
+            return;
+        }
+
         let addedTrack = false;
+        const loadedLanguages = new Set();
+        const transcriptTracks = getGeneratedTranscriptTracks();
+
         // eslint-disable-next-line no-restricted-syntax
-        for (const { url, language, label } of GENERATED_TRANSCRIPT_TRACKS) {
+        for (const { url, language, label } of transcriptTracks) {
             // eslint-disable-next-line no-await-in-loop
             const added = await this.loadTranscriptionTrack(url, language, label);
             if (added) {
                 addedTrack = true;
+                loadedLanguages.add(language);
             }
         }
 
-        if (!addedTrack || this.isDestroyed()) {
+        const placeholders = transcriptTracks
+            .filter(({ language, alwaysAvailable }) => alwaysAvailable && !loadedLanguages.has(language))
+            .map(track => createGeneratedTranscriptPlaceholder(track));
+
+        if (!addedTrack && placeholders.length === 0) {
             return;
         }
 
-        if (this.textTracks.length > 0) {
-            // Subtitles were already initialized — append only the new track(s) at the
-            // end of `this.textTracks`. We must not re-sort: in the non-React path, the
-            // user's selection is cached as an INDEX into `this.textTracks` (see
-            // handleSubtitle) and Settings menu items use the same number as their
-            // `data-value`, so reordering would silently swap which track plays.
-            const existingIds = new Set(this.textTracks.map(t => t.id));
-            const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
+        if (this.isDestroyed()) {
+            return;
+        }
+
+        if (addedTrack) {
+            if (this.textTracks.length > 0) {
+                // Subtitles were already initialized — append only the new track(s) at the
+                // end of `this.textTracks`. We must not re-sort: in the non-React path, the
+                // user's selection is cached as an INDEX into `this.textTracks` (see
+                // handleSubtitle) and Settings menu items use the same number as their
+                // `data-value`, so reordering would silently swap which track plays.
+                const existingIds = new Set(this.textTracks.map(t => t.id));
+                const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
+
+                if (this.useReactControls()) {
+                    this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
+                        ...track,
+                        displayLanguage: this.getTrackDisplayLanguage(track),
+                    }));
+                    this.renderUI();
+                } else {
+                    newTracks.forEach(track => {
+                        this.textTracks.push(track);
+                        this.mediaControls.settings.addSubtitle(
+                            this.getTrackDisplayLanguage(track),
+                            this.textTracks.length - 1,
+                        );
+                    });
+                }
+            } else {
+                this.loadSubtitles();
+            }
+        }
+
+        if (placeholders.length > 0) {
+            this.appendGeneratedTranscriptPlaceholders(placeholders);
+        }
+    }
+
+    /**
+     * Adds French and Japanese generated transcript menu entries even when VTT files are missing.
+     *
+     * @private
+     * @param {Array<Object>} placeholders - Placeholder text track metadata
+     * @return {void}
+     */
+    appendGeneratedTranscriptPlaceholders(placeholders) {
+        const existingLanguages = new Set(this.textTracks.map(track => track.language));
+        const newPlaceholders = placeholders
+            .filter(({ language }) => !existingLanguages.has(language))
+            .map(track => ({
+                ...track,
+                displayLanguage: this.getTrackDisplayLanguage(track) || track.label,
+            }));
+
+        if (newPlaceholders.length === 0) {
+            return;
+        }
+
+        if (this.textTracks.length === 0) {
+            this.textTracks = newPlaceholders;
 
             if (this.useReactControls()) {
-                this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
-                    ...track,
-                    displayLanguage: this.getTrackDisplayLanguage(track),
-                }));
-                this.renderUI();
+                this.initSubtitles();
             } else {
-                newTracks.forEach(track => {
-                    this.textTracks.push(track);
-                    this.mediaControls.settings.addSubtitle(
-                        this.getTrackDisplayLanguage(track),
-                        this.textTracks.length - 1,
-                    );
-                });
+                this.mediaControls.initSubtitles(
+                    newPlaceholders.map(track => track.displayLanguage),
+                    getLanguageName(this.options.location.locale.substring(0, 2)),
+                );
             }
+
+            return;
+        }
+
+        if (this.useReactControls()) {
+            this.textTracks = [...this.textTracks, ...newPlaceholders];
+            this.renderUI();
         } else {
-            this.loadSubtitles();
+            newPlaceholders.forEach(track => {
+                this.textTracks.push(track);
+                this.mediaControls.settings.addSubtitle(track.displayLanguage, this.textTracks.length - 1);
+            });
         }
     }
 
@@ -1267,8 +1339,14 @@ class DashViewer extends VideoBaseViewer {
         if (source === GeneratedAudioSource.ORIGINAL) {
             this.externalAudioSync.disable();
         } else {
-            this.externalAudioSync.setAudioUrl(GENERATED_AUDIO_URL_BY_SOURCE[source]);
+            const audioUrl = getGeneratedAudioUrl(source);
+            this.externalAudioSync.setAudioUrl(audioUrl);
             this.externalAudioSync.enable();
+
+            // Selecting generated audio while the video is already playing does not emit 'play'.
+            if (!this.mediaEl.paused) {
+                this.externalAudioSync.syncPlaybackToVideo();
+            }
         }
 
         this.renderUI();
@@ -1316,6 +1394,54 @@ class DashViewer extends VideoBaseViewer {
      */
     setSubtitle(subtitle) {
         const subtitleIndex = this.textTracks.findIndex(({ id }) => id === subtitle);
+        const track = this.textTracks[subtitleIndex];
+
+        if (track?.isGeneratedPlaceholder) {
+            if (subtitle !== SUBTITLES_OFF) {
+                this.cache.set('media-subtitles', subtitle, true);
+                this.cache.set('media-subtitles-toggle', true, true);
+                this.selectedSubtitle = subtitle;
+            } else {
+                this.cache.set('media-subtitles-toggle', false, true);
+            }
+
+            if (subtitle === SUBTITLES_OFF) {
+                if (this.autoCaptionDisplayer) {
+                    this.autoCaptionDisplayer.setTextVisibility(false);
+                }
+
+                this.player.setTextTrackVisibility(false);
+                this.emit('subtitlechange', null);
+            } else {
+                this.emit('subtitlechange', track.language);
+
+                this.loadTranscriptionTrack(track.generatedTranscriptUrl, track.language, track.label).then(added => {
+                    if (!added || this.isDestroyed()) {
+                        return;
+                    }
+
+                    const realTrack = this.player.getTextTracks().find(({ language }) => language === track.language);
+
+                    if (!realTrack) {
+                        return;
+                    }
+
+                    this.textTracks = this.textTracks.map(textTrack =>
+                        textTrack.id === track.id
+                            ? { ...realTrack, displayLanguage: this.getTrackDisplayLanguage(realTrack) }
+                            : textTrack,
+                    );
+                    this.player.selectTextTrack(realTrack);
+                    this.player.setTextTrackVisibility(true);
+                    this.selectedSubtitle = realTrack.id;
+                    this.cache.set('media-subtitles', realTrack.id, true);
+                    this.renderUI();
+                });
+            }
+
+            this.renderUI();
+            return;
+        }
 
         if (subtitle !== SUBTITLES_OFF) {
             this.cache.set('media-subtitles', subtitle, true);

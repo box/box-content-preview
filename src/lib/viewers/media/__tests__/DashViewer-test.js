@@ -949,7 +949,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             await dash.loadTranscription();
 
-            expect(dash.player.addTextTrackAsync).toHaveBeenCalledTimes(4);
+            expect(dash.player.addTextTrackAsync).toHaveBeenCalledTimes(3);
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 1,
                 expect.stringMatching(/\/transcript_und\.vtt$/),
@@ -961,15 +961,6 @@ describe('lib/viewers/media/DashViewer', () => {
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
                 2,
-                expect.stringMatching(/\/transcript_en\.vtt$/),
-                'eng',
-                'subtitles',
-                'text/vtt',
-                undefined,
-                'Auto Generated (English)',
-            );
-            expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
-                3,
                 expect.stringMatching(/\/transcript_fr\.vtt$/),
                 'fra',
                 'subtitles',
@@ -978,7 +969,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 'Auto Generated (French)',
             );
             expect(dash.player.addTextTrackAsync).toHaveBeenNthCalledWith(
-                4,
+                3,
                 expect.stringMatching(/\/transcript_ja\.vtt$/),
                 'jpn',
                 'subtitles',
@@ -1077,12 +1068,21 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should handle transcription load failure gracefully', async () => {
+            jest.spyOn(dash, 'useReactControls').mockReturnValue(true);
             dash.player.addTextTrackAsync = jest.fn().mockRejectedValue(new Error('transcript unavailable'));
             dash.player.getTextTracks = jest.fn().mockReturnValue([]);
+            jest.spyOn(dash, 'initSubtitles').mockImplementation();
 
             await dash.loadTranscription();
 
             expect(stubs.loadSubtitles).not.toBeCalled();
+            expect(dash.initSubtitles).toBeCalled();
+            expect(dash.textTracks).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ language: 'fra', isGeneratedPlaceholder: true }),
+                    expect.objectContaining({ language: 'jpn', isGeneratedPlaceholder: true }),
+                ]),
+            );
         });
     });
 

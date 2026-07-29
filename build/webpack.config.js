@@ -89,6 +89,13 @@ function updateConfig(conf, language, index) {
             client: {
                 overlay: { errors: true, warnings: false, runtimeErrors: true },
             },
+            proxy: [
+                {
+                    context: ['/generated-local'],
+                    target: 'http://localhost:1024',
+                    pathRewrite: { '^/generated-local': '' },
+                },
+            ],
         },
     };
 

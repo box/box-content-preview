@@ -1,14 +1,6 @@
 const SYNC_THRESHOLD_SEC = 0.25;
 const SYNC_EPSILON_SEC = 0.05;
 
-export const GENERATED_AUDIO_LOCAL_BASE_URL = 'http://localhost:1024';
-
-export const GENERATED_AUDIO_URL_BY_SOURCE = {
-    'generated-en': `${GENERATED_AUDIO_LOCAL_BASE_URL}/audio_en.m4a`,
-    'generated-fr': `${GENERATED_AUDIO_LOCAL_BASE_URL}/audio_fr.m4a`,
-    'generated-ja': `${GENERATED_AUDIO_LOCAL_BASE_URL}/audio_ja.m4a`,
-};
-
 /**
  * Plays an external audio track in sync with a muted video element.
  */
@@ -26,6 +18,7 @@ export default class ExternalAudioSync {
         this.isActive = false;
         this.isSyncing = false;
         this.audioEl = null;
+        this.audioBlobUrl = null;
         this.pendingSyncHandler = null;
 
         this.onVideoPlay = this.onVideoPlay.bind(this);
@@ -53,8 +46,22 @@ export default class ExternalAudioSync {
             this.isActive = false;
         }
 
+        this.removeAudioElement();
+
+        if (wasActive) {
+            this.enable();
+        }
+    }
+
+    /**
+     * @private
+     * @return {void}
+     */
+    removeAudioElement() {
+        this.clearPendingSync();
+
         if (this.audioEl) {
-            this.clearPendingSync();
+            this.detachVideoListeners();
             this.audioEl.pause();
             this.audioEl.removeEventListener('seeked', this.onAudioSeeked);
 
@@ -65,8 +72,17 @@ export default class ExternalAudioSync {
             this.audioEl = null;
         }
 
-        if (wasActive) {
-            this.enable();
+        this.revokeAudioBlobUrl();
+    }
+
+    /**
+     * @private
+     * @return {void}
+     */
+    revokeAudioBlobUrl() {
+        if (this.audioBlobUrl) {
+            URL.revokeObjectURL(this.audioBlobUrl);
+            this.audioBlobUrl = null;
         }
     }
 
@@ -81,15 +97,68 @@ export default class ExternalAudioSync {
         if (!this.audioEl) {
             this.audioEl = this.containerEl.appendChild(document.createElement('audio'));
             this.audioEl.preload = 'auto';
-            this.audioEl.src = this.audioUrl;
             this.audioEl.addEventListener('seeked', this.onAudioSeeked);
             this.attachVideoListeners();
+            this.loadAudioSource(this.audioUrl);
         }
 
         this.isActive = true;
         this.mediaEl.muted = true;
         this.syncVolume();
         this.syncPlaybackToVideo();
+    }
+
+    /**
+     * Loads generated audio via fetch+blob when possible so duration/seeking work reliably.
+     *
+     * @private
+     * @param {string} url
+     * @return {void}
+     */
+    loadAudioSource(url) {
+        if (!this.audioEl) {
+            return;
+        }
+
+        const canFetchBlob =
+            typeof window !== 'undefined' &&
+            typeof window.fetch === 'function' &&
+            url.startsWith(window.location.origin);
+
+        if (!canFetchBlob) {
+            this.audioEl.src = url;
+            this.audioEl.load();
+            return;
+        }
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`audio fetch failed: ${response.status}`);
+                }
+
+                return response.blob();
+            })
+            .then(blob => {
+                if (!this.audioEl || !this.isActive) {
+                    return;
+                }
+
+                this.revokeAudioBlobUrl();
+                this.audioBlobUrl = URL.createObjectURL(blob);
+                this.audioEl.src = this.audioBlobUrl;
+                this.audioEl.load();
+                this.syncPlaybackToVideo();
+            })
+            .catch(() => {
+                if (!this.audioEl || !this.isActive) {
+                    return;
+                }
+
+                this.audioEl.src = url;
+                this.audioEl.load();
+                this.syncPlaybackToVideo();
+            });
     }
 
     /**
@@ -115,17 +184,7 @@ export default class ExternalAudioSync {
      */
     destroy() {
         this.disable();
-
-        if (this.audioEl) {
-            this.detachVideoListeners();
-            this.audioEl.removeEventListener('seeked', this.onAudioSeeked);
-
-            if (this.audioEl.parentNode) {
-                this.audioEl.parentNode.removeChild(this.audioEl);
-            }
-
-            this.audioEl = null;
-        }
+        this.removeAudioElement();
     }
 
     /**
@@ -157,21 +216,52 @@ export default class ExternalAudioSync {
     /**
      * @private
      * @param {number} time
+     * @return {number}
+     */
+    clampSyncTime(time) {
+        if (!this.audioEl || !Number.isFinite(this.audioEl.duration)) {
+            return time;
+        }
+
+        return Math.min(Math.max(time, 0), Math.max(this.audioEl.duration - SYNC_EPSILON_SEC, 0));
+    }
+
+    /**
+     * @private
+     * @return {boolean}
+     */
+    hasAudioMetadata() {
+        return this.audioEl && this.audioEl.readyState >= HTMLMediaElement.HAVE_METADATA;
+    }
+
+    /**
+     * @private
+     * @param {number} time
      * @return {boolean}
      */
     canSeekTo(time) {
-        if (!this.audioEl || this.audioEl.readyState < HTMLMediaElement.HAVE_METADATA) {
+        if (!this.hasAudioMetadata()) {
             return false;
+        }
+
+        const clampedTime = this.clampSyncTime(time);
+
+        if (!Number.isFinite(this.audioEl.duration)) {
+            return false;
+        }
+
+        if (clampedTime <= this.audioEl.duration) {
+            return true;
         }
 
         const { seekable } = this.audioEl;
 
         if (!seekable || seekable.length === 0) {
-            return Number.isFinite(this.audioEl.duration) && time <= this.audioEl.duration;
+            return false;
         }
 
         for (let index = 0; index < seekable.length; index += 1) {
-            if (time >= seekable.start(index) && time <= seekable.end(index)) {
+            if (clampedTime >= seekable.start(index) && clampedTime <= seekable.end(index)) {
                 return true;
             }
         }
@@ -190,9 +280,23 @@ export default class ExternalAudioSync {
         }
 
         this.audioEl.removeEventListener('loadedmetadata', this.pendingSyncHandler);
+        this.audioEl.removeEventListener('loadeddata', this.pendingSyncHandler);
         this.audioEl.removeEventListener('progress', this.pendingSyncHandler);
         this.audioEl.removeEventListener('canplay', this.pendingSyncHandler);
+        this.audioEl.removeEventListener('canplaythrough', this.pendingSyncHandler);
         this.pendingSyncHandler = null;
+    }
+
+    /**
+     * @private
+     * @return {void}
+     */
+    startAudioPlayback() {
+        if (!this.isActive || !this.audioEl || this.mediaEl.paused) {
+            return;
+        }
+
+        this.audioEl.play().catch(() => {});
     }
 
     /**
@@ -217,27 +321,28 @@ export default class ExternalAudioSync {
 
             if (!this.canSeekTo(targetTime)) {
                 this.pendingSyncHandler = trySync;
+                this.audioEl.addEventListener('loadedmetadata', trySync, { once: true });
+                this.audioEl.addEventListener('loadeddata', trySync, { once: true });
                 this.audioEl.addEventListener('progress', trySync, { once: true });
                 this.audioEl.addEventListener('canplay', trySync, { once: true });
+                this.audioEl.addEventListener('canplaythrough', trySync, { once: true });
                 return;
             }
 
             this.pendingSyncHandler = null;
             this.syncRate();
             this.syncTime();
-
-            if (!this.mediaEl.paused) {
-                this.audioEl.play().catch(() => {});
-            }
+            this.startAudioPlayback();
         };
 
-        if (this.audioEl.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        if (this.hasAudioMetadata()) {
             trySync();
             return;
         }
 
         this.pendingSyncHandler = trySync;
         this.audioEl.addEventListener('loadedmetadata', trySync, { once: true });
+        this.audioEl.addEventListener('loadeddata', trySync, { once: true });
     }
 
     /**
@@ -249,9 +354,9 @@ export default class ExternalAudioSync {
             return;
         }
 
-        const targetTime = this.mediaEl.currentTime;
+        const targetTime = this.clampSyncTime(this.mediaEl.currentTime);
 
-        if (!this.canSeekTo(targetTime)) {
+        if (!this.canSeekTo(this.mediaEl.currentTime)) {
             return;
         }
 
@@ -288,8 +393,9 @@ export default class ExternalAudioSync {
             return;
         }
 
-        this.audioEl.volume = this.mediaEl.volume;
-        this.audioEl.muted = this.mediaEl.volume === 0;
+        const volume = this.mediaEl.volume;
+        this.audioEl.volume = volume;
+        this.audioEl.muted = volume === 0;
     }
 
     /**

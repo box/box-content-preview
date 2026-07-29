@@ -1,26 +1,50 @@
-// Serve from the preview origin so Shaka can fetch VTT without cross-origin CORS issues.
-export const GENERATED_TRANSCRIPT_LOCAL_BASE_URL =
-    typeof window !== 'undefined' && window.location?.origin ? window.location.origin : '';
+import { getGeneratedMediaBaseUrl } from './GeneratedMediaUrls';
 
-export const GENERATED_TRANSCRIPT_TRACKS = [
-    {
-        url: `${GENERATED_TRANSCRIPT_LOCAL_BASE_URL}/transcript_und.vtt`,
-        language: 'und',
-        label: 'Auto Generated (Original)',
-    },
-    {
-        url: `${GENERATED_TRANSCRIPT_LOCAL_BASE_URL}/transcript_en.vtt`,
-        language: 'eng',
-        label: 'Auto Generated (English)',
-    },
-    {
-        url: `${GENERATED_TRANSCRIPT_LOCAL_BASE_URL}/transcript_fr.vtt`,
-        language: 'fra',
-        label: 'Auto Generated (French)',
-    },
-    {
-        url: `${GENERATED_TRANSCRIPT_LOCAL_BASE_URL}/transcript_ja.vtt`,
-        language: 'jpn',
-        label: 'Auto Generated (Japanese)',
-    },
-];
+/**
+ * Transcript VTTs are proxied through the preview dev server to avoid CORS preflight
+ * failures when the local asset server (python http.server) cannot handle OPTIONS.
+ */
+export const getGeneratedTranscriptBaseUrl = getGeneratedMediaBaseUrl;
+
+export const GENERATED_TRANSCRIPT_PLACEHOLDER_IDS = {
+    fra: -1001,
+    jpn: -1002,
+};
+
+export const getGeneratedTranscriptTracks = () => {
+    const baseUrl = getGeneratedTranscriptBaseUrl();
+
+    return [
+        {
+            url: `${baseUrl}/transcript_und.vtt`,
+            language: 'und',
+            label: 'Auto Generated (Original)',
+        },
+        {
+            url: `${baseUrl}/transcript_fr.vtt`,
+            language: 'fra',
+            label: 'Auto Generated (French)',
+            alwaysAvailable: true,
+        },
+        {
+            url: `${baseUrl}/transcript_ja.vtt`,
+            language: 'jpn',
+            label: 'Auto Generated (Japanese)',
+            alwaysAvailable: true,
+        },
+    ];
+};
+
+/**
+ * @param {{ url: string, language: string, label: string }} track
+ * @return {Object}
+ */
+export function createGeneratedTranscriptPlaceholder({ url, language, label }) {
+    return {
+        id: GENERATED_TRANSCRIPT_PLACEHOLDER_IDS[language],
+        language,
+        label,
+        generatedTranscriptUrl: url,
+        isGeneratedPlaceholder: true,
+    };
+}

@@ -1,4 +1,5 @@
-import ExternalAudioSync, { GENERATED_AUDIO_URL_BY_SOURCE } from '../ExternalAudioSync';
+import ExternalAudioSync from '../ExternalAudioSync';
+import { getGeneratedAudioUrl } from '../GeneratedMediaUrls';
 
 describe('ExternalAudioSync', () => {
     let containerEl;
@@ -21,7 +22,7 @@ describe('ExternalAudioSync', () => {
         sync = new ExternalAudioSync({
             mediaEl,
             containerEl,
-            audioUrl: GENERATED_AUDIO_URL_BY_SOURCE['generated-en'],
+            audioUrl: getGeneratedAudioUrl('generated-fr'),
         });
     });
 
@@ -33,6 +34,7 @@ describe('ExternalAudioSync', () => {
     const mockAudioPlayback = audioEl => {
         audioEl.play = jest.fn().mockResolvedValue(undefined);
         audioEl.pause = jest.fn();
+        audioEl.load = jest.fn();
         Object.defineProperty(audioEl, 'paused', { configurable: true, value: true, writable: true });
         Object.defineProperty(audioEl, 'seeking', { configurable: true, value: false, writable: true });
     };
@@ -102,11 +104,11 @@ describe('ExternalAudioSync', () => {
         sync.enable();
         mockAudioPlayback(sync.audioEl);
 
-        const frenchUrl = GENERATED_AUDIO_URL_BY_SOURCE['generated-fr'];
-        sync.setAudioUrl(frenchUrl);
+        const japaneseUrl = getGeneratedAudioUrl('generated-ja');
+        sync.setAudioUrl(japaneseUrl);
 
-        expect(sync.audioUrl).toBe(frenchUrl);
-        expect(sync.audioEl.src).toBe(frenchUrl);
+        expect(sync.audioUrl).toBe(japaneseUrl);
+        expect(sync.audioEl.src).toBe(japaneseUrl);
         expect(mediaEl.muted).toBe(true);
     });
 });
