@@ -24,9 +24,25 @@ import {
     RENDER_MODE_LIT,
 } from './model3DConstants';
 import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3DConstants';
-import { FILE_OPTION_ANNOTATE_ONBOARDING } from '../../../constants';
+import { ANNOTATE_ONBOARDING_QUERY_PARAM, FILE_OPTION_ANNOTATE_ONBOARDING } from '../../../constants';
 import { getProp } from '../../../util';
 import './Model3D.scss';
+
+/**
+ * Whether the current URL carries the annotate-onboarding deep-link param. EndUserApp
+ * navigates to /file/{id}?annotate3d=1 from the upload "Annotate" notification before
+ * either preview path (legacy or federated) renders, so reading it off the URL makes
+ * the coach-mark path-independent.
+ *
+ * @return {boolean} true if the annotate-onboarding param is present
+ */
+function hasAnnotateOnboardingParam() {
+    try {
+        return new URLSearchParams(window.location.search).get(ANNOTATE_ONBOARDING_QUERY_PARAM) === '1';
+    } catch (e) {
+        return false;
+    }
+}
 
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
@@ -184,6 +200,20 @@ class Model3DViewer extends Box3DViewer {
     /**
      * @inheritdoc
      */
+    getViewerOption(option) {
+        // The annotate coach-mark only exists in the React controls. When a user arrives
+        // via the upload "Annotate" deep-link, force useReactControls on so the coach-mark
+        // can render even if the react-controls experiment isn't bucketed for them.
+        if (option === 'useReactControls' && hasAnnotateOnboardingParam()) {
+            return true;
+        }
+
+        return super.getViewerOption(option);
+    }
+
+    /**
+     * @inheritdoc
+     */
     createSubModules() {
         this.controls = this.getViewerOption('useReactControls')
             ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
@@ -292,13 +322,15 @@ class Model3DViewer extends Box3DViewer {
 
     initViewer(defaults) {
         // Show the annotate coach-mark when the user arrived here from the EndUserApp
-        // upload "Annotate" notification (per-file deep-link flag).
+        // upload "Annotate" notification. Accept either the per-file preview option
+        // (legacy ContentPreview path) or the raw URL param (works on every path).
         const fileId = this.options.file && this.options.file.id;
-        this.isCommentOnboardingActive = !!getProp(
+        const hasOnboardingFileOption = !!getProp(
             this.options,
             `fileOptions.${fileId}.${FILE_OPTION_ANNOTATE_ONBOARDING}`,
             false,
         );
+        this.isCommentOnboardingActive = hasOnboardingFileOption || hasAnnotateOnboardingParam();
 
         if (this.controls) {
             if (this.getViewerOption('useReactControls')) {

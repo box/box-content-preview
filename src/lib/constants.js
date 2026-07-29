@@ -121,6 +121,10 @@ export const FILE_OPTION_START = 'startAt';
 // Per-file flag set when a user deep-links into a freshly uploaded file from the
 // EndUserApp upload "Annotate" notification; triggers the annotation coach-mark.
 export const FILE_OPTION_ANNOTATE_ONBOARDING = 'annotateOnboarding';
+// URL query param equivalent of FILE_OPTION_ANNOTATE_ONBOARDING. EndUserApp navigates
+// to /file/{id}?annotate3d=1 before Preview renders, so reading it straight off the
+// URL makes the coach-mark trigger work on both the legacy and federated preview paths.
+export const ANNOTATE_ONBOARDING_QUERY_PARAM = 'annotate3d';
 
 export const ANNOTATOR_EVENT = {
     modeEnter: 'annotationmodeenter',

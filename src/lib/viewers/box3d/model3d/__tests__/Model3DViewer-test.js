@@ -1034,4 +1034,76 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
         });
     });
+
+    describe('annotate-onboarding deep-link (?annotate3d=1)', () => {
+        let originalSearch;
+
+        beforeEach(() => {
+            originalSearch = window.location.search;
+        });
+
+        afterEach(() => {
+            window.history.replaceState({}, '', `${window.location.pathname}${originalSearch}`);
+        });
+
+        const setSearch = search => {
+            window.history.replaceState({}, '', `${window.location.pathname}${search}`);
+        };
+
+        test('should force useReactControls on when the param is present', () => {
+            setSearch('?annotate3d=1');
+
+            expect(model3d.getViewerOption('useReactControls')).toBe(true);
+        });
+
+        test('should not force useReactControls when the param is absent', () => {
+            setSearch('');
+
+            // Falls through to the base implementation (undefined with no viewer options set).
+            expect(model3d.getViewerOption('useReactControls')).toBeFalsy();
+        });
+
+        // initViewer sets isCommentOnboardingActive first, then runs the rest of the
+        // load sequence; stub the downstream calls (which need deep renderer stubs) so
+        // the test isolates just the onboarding-flag computation.
+        const stubInitViewerDownstream = () => {
+            jest.spyOn(model3d, 'renderUI').mockImplementation(() => {});
+            jest.spyOn(model3d, 'handleReset').mockImplementation(() => {});
+            jest.spyOn(model3d, 'populateAnimationControls').mockImplementation(() => {});
+            jest.spyOn(model3d, 'showWrapper').mockImplementation(() => {});
+            jest.spyOn(model3d, 'initWatermark').mockImplementation(() => {});
+            jest.spyOn(model3d, 'initAnnotationsDemo').mockImplementation(() => {});
+            jest.spyOn(model3d, 'initAxisGizmo').mockImplementation(() => {});
+            jest.spyOn(model3d, 'initVersionDiff').mockImplementation(() => {});
+            jest.spyOn(model3d, 'captureThumbnail').mockImplementation(() => {});
+        };
+
+        test('should activate the coach-mark from the URL param in initViewer', () => {
+            setSearch('?annotate3d=1');
+            stubInitViewerDownstream();
+
+            model3d.initViewer({});
+
+            expect(model3d.isCommentOnboardingActive).toBe(true);
+        });
+
+        test('should activate the coach-mark from the fileOptions flag in initViewer', () => {
+            setSearch('');
+            model3d.options.fileOptions = { 0: { annotateOnboarding: true } };
+            stubInitViewerDownstream();
+
+            model3d.initViewer({});
+
+            expect(model3d.isCommentOnboardingActive).toBe(true);
+        });
+
+        test('should leave the coach-mark off with no param and no flag', () => {
+            setSearch('');
+            stubInitViewerDownstream();
+
+            model3d.initViewer({});
+
+            expect(model3d.isCommentOnboardingActive).toBe(false);
+        });
+    });
 });
