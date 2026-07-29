@@ -18,17 +18,21 @@ export type Props = React.PropsWithChildren<{
  */
 export default function Comment3DOnboardingTooltip({ children, isEnabled = false, onDismiss }: Props): JSX.Element {
     const { setIsForced } = React.useContext(ControlsLayerContext);
-    const [isShown, setIsShown] = React.useState(isEnabled);
+    const [isDismissed, setIsDismissed] = React.useState(false);
+
+    // Derive visibility so the coach-mark can never drift out of sync with the enable
+    // flag, and once dismissed it stays dismissed even if the parent re-renders with
+    // isEnabled still true.
+    const isShown = isEnabled && !isDismissed;
 
     React.useEffect(() => {
-        setIsShown(isEnabled);
-        // Keep the toolbar pinned open while the coach-mark is visible so the anchor
-        // button does not slide away underneath the popover.
-        setIsForced(isEnabled);
-    }, [isEnabled, setIsForced]);
+        // Keep the toolbar pinned open (bypasses the fade-out timer) while the coach-mark
+        // is visible so the anchor button doesn't slide away underneath the popover.
+        setIsForced(isShown);
+    }, [isShown, setIsForced]);
 
     const handleDismiss = React.useCallback((): void => {
-        setIsShown(false);
+        setIsDismissed(true);
         setIsForced(false);
 
         if (onDismiss) {
