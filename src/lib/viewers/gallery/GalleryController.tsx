@@ -319,6 +319,7 @@ export default class GalleryController {
 
         const thumbnail = this.galleryThumbnail;
         this.galleryEl = document.createElement('div');
+        this.galleryEl.setAttribute('data-resin-component', 'gallery');
         this.containerEl.insertBefore(this.galleryEl, this.containerEl.querySelector('.bp-ControlsRoot'));
         this.galleryRoot = createRoot(this.galleryEl);
         this.galleryFocusedPage = pdfViewer.currentPageNumber;

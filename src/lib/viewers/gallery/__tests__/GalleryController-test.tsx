@@ -153,6 +153,14 @@ describe('GalleryController', () => {
             expect(requestUiUpdate).toHaveBeenCalledTimes(1);
         });
 
+        test('should tag the gallery root with a resin component', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            controller.toggle();
+
+            const galleryEl = containerEl.firstElementChild as HTMLElement;
+            expect(galleryEl.getAttribute('data-resin-component')).toBe('gallery');
+        });
+
         test('should not call focusToggle on open', () => {
             const { controller, focusToggle } = makeController({ sidebarOpen: false });
             controller.toggle();
