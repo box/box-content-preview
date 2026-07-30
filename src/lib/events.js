@@ -112,6 +112,13 @@ export const USER_DOCUMENT_THUMBNAIL_EVENTS = {
     OPEN: 'user_document_thumbnails_open',
 };
 
+// Events fired when using gallery view
+export const USER_DOCUMENT_GALLERY_EVENTS = {
+    DISMISS: 'user_document_gallery_dismiss', // The gallery closes without the user settling on a page
+    NAVIGATE: 'user_document_gallery_navigate', // The user picks a page, or closes on one they browsed to
+    OPEN: 'user_document_gallery_open', // The user opens the gallery
+};
+
 export const MISSING_EXTERNAL_REFS = 'missing_x_refs';
 
 export const MEDIA_METRIC = {

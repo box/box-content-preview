@@ -49,6 +49,7 @@ import {
     RENDER_EVENT,
     RENDER_METRIC,
     REPORT_ACI,
+    USER_DOCUMENT_GALLERY_EVENTS,
     USER_DOCUMENT_THUMBNAIL_EVENTS,
     VIEWER_EVENT,
 } from '../../events';
@@ -252,6 +253,7 @@ class DocBaseViewer extends BaseViewer {
             },
             onBeforeOpen: () => this.handleGalleryEnter(),
             onAfterClose: () => this.handleGalleryExit(),
+            onClose: landedPage => this.handleGalleryClose(landedPage),
         });
     }
 
@@ -2076,7 +2078,24 @@ class DocBaseViewer extends BaseViewer {
         if (this.annotator) {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
+        this.emitMetric({ name: USER_DOCUMENT_GALLERY_EVENTS.OPEN, data: this.pdfViewer?.pagesCount ?? 0 });
         this.emit(VIEWER_EVENT.galleryOpen);
+    }
+
+    /**
+     * Called as the gallery closes, with the page the user landed on or null if they left without
+     * settling on one. Reported as two distinct metrics so the pick-through rate is measurable.
+     *
+     * @protected
+     * @param {number|null} landedPage - Page the gallery left the document on, or null if unchanged
+     * @return {void}
+     */
+    handleGalleryClose(landedPage) {
+        if (landedPage !== null) {
+            this.emitMetric({ name: USER_DOCUMENT_GALLERY_EVENTS.NAVIGATE, data: landedPage });
+        } else {
+            this.emitMetric({ name: USER_DOCUMENT_GALLERY_EVENTS.DISMISS, data: this.pdfViewer?.pagesCount ?? 0 });
+        }
     }
 
     /**

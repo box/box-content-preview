@@ -36,7 +36,14 @@ import {
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
-import { LOAD_METRIC, RENDER_EVENT, REPORT_ACI, USER_DOCUMENT_THUMBNAIL_EVENTS, VIEWER_EVENT } from '../../../events';
+import {
+    LOAD_METRIC,
+    RENDER_EVENT,
+    REPORT_ACI,
+    USER_DOCUMENT_GALLERY_EVENTS,
+    USER_DOCUMENT_THUMBNAIL_EVENTS,
+    VIEWER_EVENT,
+} from '../../../events';
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
@@ -342,6 +349,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.destroy();
                 expect(docBase.controls.destroy).toBeCalled();
+            });
+
+            test('should destroy the gallery controller before removing metric listeners', () => {
+                const order = [];
+                jest.spyOn(docBase.galleryController, 'destroy').mockImplementation(() => order.push('gallery'));
+                jest.spyOn(docBase, 'removeAllListeners').mockImplementation(() => order.push('listeners'));
+
+                docBase.destroy();
+
+                expect(order).toEqual(['gallery', 'listeners']);
             });
 
             test('should destroy the find bar', () => {
@@ -4564,6 +4581,76 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should not throw if annotator is not initialized', () => {
                 docBase.annotator = undefined;
                 expect(() => docBase.handleGalleryEnter()).not.toThrow();
+            });
+
+            test('should emit the open metric with the page count', () => {
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+                docBase.pdfViewer = { pagesCount: 42 };
+
+                docBase.handleGalleryEnter();
+
+                expect(docBase.emitMetric).toBeCalledWith({
+                    name: USER_DOCUMENT_GALLERY_EVENTS.OPEN,
+                    data: 42,
+                });
+            });
+
+            test('should emit the open metric even when pdfViewer is not initialized', () => {
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+                docBase.pdfViewer = undefined;
+
+                docBase.handleGalleryEnter();
+
+                expect(docBase.emitMetric).toBeCalledWith({
+                    name: USER_DOCUMENT_GALLERY_EVENTS.OPEN,
+                    data: 0,
+                });
+            });
+        });
+
+        describe('handleGalleryClose()', () => {
+            beforeEach(() => {
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+            });
+
+            test('should emit the navigate metric with the page landed on', () => {
+                docBase.handleGalleryClose(9);
+
+                expect(docBase.emitMetric).toBeCalledWith({
+                    name: USER_DOCUMENT_GALLERY_EVENTS.NAVIGATE,
+                    data: 9,
+                });
+            });
+
+            test('should emit the dismiss metric with the page count when no page was landed on', () => {
+                docBase.pdfViewer = { pagesCount: 42 };
+
+                docBase.handleGalleryClose(null);
+
+                expect(docBase.emitMetric).toBeCalledWith({
+                    name: USER_DOCUMENT_GALLERY_EVENTS.DISMISS,
+                    data: 42,
+                });
+            });
+
+            test('should emit the dismiss metric even when pdfViewer is not initialized', () => {
+                docBase.pdfViewer = undefined;
+
+                docBase.handleGalleryClose(null);
+
+                expect(docBase.emitMetric).toBeCalledWith({
+                    name: USER_DOCUMENT_GALLERY_EVENTS.DISMISS,
+                    data: 0,
+                });
+            });
+
+            test('should treat landing on the first page as a navigation rather than a dismissal', () => {
+                docBase.handleGalleryClose(1);
+
+                expect(docBase.emitMetric).toBeCalledWith({
+                    name: USER_DOCUMENT_GALLERY_EVENTS.NAVIGATE,
+                    data: 1,
+                });
             });
         });
 
