@@ -1,3 +1,10 @@
+## 3.70.0 (2026-07-31)
+
+* Gallery resin tags (#1726) ([0214b54](https://github.com/box/box-content-preview/commit/0214b54)), closes [#1726](https://github.com/box/box-content-preview/issues/1726)
+* feat(image-preview): enable preview for cr3 and avif formats (#1715) ([fd8a79e](https://github.com/box/box-content-preview/commit/fd8a79e)), closes [#1715](https://github.com/box/box-content-preview/issues/1715)
+
+
+
 ## 3.69.0 (2026-07-25)
 
 * chore(i18n): update translations (#1676) ([1b88851](https://github.com/box/box-content-preview/commit/1b88851)), closes [#1676](https://github.com/box/box-content-preview/issues/1676)
