@@ -56,6 +56,7 @@ const GalleryTile = React.memo(function GalleryTile({
             aria-selected={isFocused}
             className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
             data-page={pageNum}
+            data-resin-target="galleryTile"
             onClick={() => onClick(pageNum)}
             onFocus={() => onFocus(pageNum)}
             role="option"

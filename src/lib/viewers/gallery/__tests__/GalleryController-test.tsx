@@ -35,6 +35,7 @@ interface Harness {
     focusToggle: jest.Mock;
     onBeforeOpen: jest.Mock;
     onAfterClose: jest.Mock;
+    onClose: jest.Mock;
 }
 
 function makeController(
@@ -63,6 +64,7 @@ function makeController(
     const focusToggle = jest.fn();
     const onBeforeOpen = jest.fn();
     const onAfterClose = jest.fn();
+    const onClose = jest.fn();
 
     const opts: GalleryControllerOptions = {
         containerEl,
@@ -76,6 +78,7 @@ function makeController(
         focusToggle,
         onBeforeOpen,
         onAfterClose,
+        onClose,
     };
 
     return {
@@ -89,6 +92,7 @@ function makeController(
         focusToggle,
         onBeforeOpen,
         onAfterClose,
+        onClose,
     };
 }
 
@@ -147,6 +151,14 @@ describe('GalleryController', () => {
             expect(controller.isOpen).toBe(true);
             expect(containerEl.children).toHaveLength(1);
             expect(requestUiUpdate).toHaveBeenCalledTimes(1);
+        });
+
+        test('should tag the gallery root with a resin component', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            controller.toggle();
+
+            const galleryEl = containerEl.firstElementChild as HTMLElement;
+            expect(galleryEl.getAttribute('data-resin-component')).toBe('gallery');
         });
 
         test('should not call focusToggle on open', () => {
@@ -364,6 +376,94 @@ describe('GalleryController', () => {
 
             expect(setPage).toHaveBeenCalledWith(8);
             expect(controller.isOpen).toBe(false);
+        });
+    });
+
+    describe('outcome reporting', () => {
+        test('should report the picked page when one is chosen from the grid', () => {
+            const { controller, onClose } = makeController({ currentPage: 1, sidebarOpen: false });
+            controller.toggle();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onPageNavigate(8);
+
+            expect(onClose).toHaveBeenCalledWith(8);
+        });
+
+        test('should report a pick when the chosen page is already the current page', () => {
+            const { controller, onClose, setPage } = makeController({ currentPage: 3 });
+            controller.toggle();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onPageNavigate(3);
+
+            // No page change, but the user still found their page — that is a pick, not a bail
+            expect(setPage).not.toHaveBeenCalled();
+            expect(onClose).toHaveBeenCalledWith(3);
+        });
+
+        test('should report no landing on Escape', () => {
+            const { controller, onClose } = makeController();
+            controller.toggle();
+            controller.handleEscape();
+
+            expect(onClose).toHaveBeenCalledWith(null);
+        });
+
+        // Closing commits whichever page was browsed to, so the user has landed on it even though
+        // they never picked it outright — reported as a landing to match what the document does.
+        test('should report the browsed page when closed after arrowing to it', () => {
+            const { controller, onClose, setPage } = makeController({ currentPage: 1, sidebarOpen: false });
+            controller.toggle();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onFocusChange(5);
+            controller.toggle();
+
+            expect(setPage).toHaveBeenCalledWith(5);
+            expect(onClose).toHaveBeenCalledWith(5);
+        });
+
+        test('should report no landing when closed without the page changing', () => {
+            const { controller, onClose, setPage } = makeController({ currentPage: 3, sidebarOpen: false });
+            controller.toggle();
+
+            // Focus starts on the current page and never moves off it
+            controller.toggle();
+
+            expect(setPage).not.toHaveBeenCalled();
+            expect(onClose).toHaveBeenCalledWith(null);
+        });
+
+        test('should report no landing when destroyed while open', () => {
+            const { controller, onClose } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            controller.destroy();
+
+            expect(onClose).toHaveBeenCalledTimes(1);
+            expect(onClose).toHaveBeenCalledWith(null);
+        });
+
+        test('should not report anything when destroyed while closed', () => {
+            const { controller, onClose } = makeController();
+            controller.destroy();
+
+            expect(onClose).not.toHaveBeenCalled();
+        });
+
+        test('should report exactly one outcome per open across repeated use', () => {
+            const { controller, onClose } = makeController({ currentPage: 1, sidebarOpen: false });
+
+            controller.toggle();
+            controller.toggle();
+
+            controller.toggle();
+            mockLastRoot.render.mock.calls[0][0].props.onPageNavigate(4);
+
+            controller.toggle();
+            controller.handleEscape();
+
+            expect(onClose.mock.calls).toEqual([[null], [4], [null]]);
         });
     });
 

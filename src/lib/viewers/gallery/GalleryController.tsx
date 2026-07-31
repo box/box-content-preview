@@ -46,6 +46,7 @@ export type GalleryControllerOptions = {
     focusToggle: () => void;
     onBeforeOpen: () => void;
     onAfterClose: () => void;
+    onClose: (landedPage: number | null) => void;
 };
 
 export default class GalleryController {
@@ -71,6 +72,8 @@ export default class GalleryController {
 
     private onAfterClose: () => void;
 
+    private onClose: (landedPage: number | null) => void;
+
     private galleryRoot: Root | null = null;
 
     private galleryEl: HTMLDivElement | null = null;
@@ -87,6 +90,8 @@ export default class GalleryController {
 
     private isGalleryOpen = false;
 
+    private pickedPage: number | null = null;
+
     constructor(opts: GalleryControllerOptions) {
         this.containerEl = opts.containerEl;
         this.features = opts.features;
@@ -99,6 +104,7 @@ export default class GalleryController {
         this.focusToggle = opts.focusToggle;
         this.onBeforeOpen = opts.onBeforeOpen;
         this.onAfterClose = opts.onAfterClose;
+        this.onClose = opts.onClose;
     }
 
     get isOpen(): boolean {
@@ -176,6 +182,10 @@ export default class GalleryController {
                     }, THUMBNAILS_SIDEBAR_TRANSITION_TIME);
                 }
             }
+
+            const { pickedPage } = this;
+            this.pickedPage = null;
+            this.onClose(pickedPage ?? navigateToPage);
         }
 
         this.requestUiUpdate();
@@ -219,6 +229,13 @@ export default class GalleryController {
     }
 
     destroy(): void {
+        // Teardown with the gallery still open (file switch, preview closed) resolves the open
+        // instead of leaving it looking abandoned. Depends on the viewer destroying this controller
+        // before BaseViewer.destroy drops the metric listeners.
+        if (this.isGalleryOpen) {
+            this.onClose(null);
+        }
+
         if (this.galleryMountTimeoutId !== null) {
             clearTimeout(this.galleryMountTimeoutId);
             this.galleryMountTimeoutId = null;
@@ -263,6 +280,7 @@ export default class GalleryController {
 
     private handleGalleryNavigate = (pageNum: number): void => {
         this.galleryFocusedPage = pageNum;
+        this.pickedPage = pageNum;
         this.toggle();
     };
 
@@ -301,6 +319,7 @@ export default class GalleryController {
 
         const thumbnail = this.galleryThumbnail;
         this.galleryEl = document.createElement('div');
+        this.galleryEl.setAttribute('data-resin-component', 'gallery');
         this.containerEl.insertBefore(this.galleryEl, this.containerEl.querySelector('.bp-ControlsRoot'));
         this.galleryRoot = createRoot(this.galleryEl);
         this.galleryFocusedPage = pdfViewer.currentPageNumber;

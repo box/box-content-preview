@@ -59,6 +59,15 @@ describe('GalleryGrid', () => {
         });
     });
 
+    describe('resin tagging', () => {
+        test('should set the resin target on every tile', () => {
+            getWrapper();
+            screen.getAllByRole('option').forEach(tile => {
+                expect(tile).toHaveAttribute('data-resin-target', 'galleryTile');
+            });
+        });
+    });
+
     describe('current page highlight', () => {
         test('should apply selected class to current page tile', () => {
             getWrapper();
