@@ -363,6 +363,14 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .annotationLayer {
+        // box-annotations inserts its region-creation layer as a sibling inside .page with no
+        // z-index, and its full-page creator div captures pointer events. Since this layer is
+        // also z-index: auto, paint order follows DOM order and whichever layer pdf.js inserts
+        // last wins the click -- which varies by pdf.js version (vendored vs npm). Pin the link
+        // layer into the stack explicitly: above .textLayer (1) and the region-creation overlay
+        // (auto), below the region/highlight/drawing layers (3) and popups (4).
+        z-index: 2;
+
         h1,
         h2,
         h3,
