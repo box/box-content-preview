@@ -11,6 +11,8 @@ describe('Preview Document Gallery', () => {
         collection,
         enableThumbnailsSidebar = false,
         galleryEnabled = true,
+        galleryV2Enabled = true,
+        pinchToZoomEnabled = false,
         targetFileId = fileId,
     } = {}) => {
         const options = {};
@@ -19,6 +21,12 @@ describe('Preview Document Gallery', () => {
             options.features = {
                 galleryView: {
                     enabled: galleryEnabled,
+                },
+                galleryViewV2: {
+                    enabled: galleryV2Enabled,
+                },
+                pinchToZoom: {
+                    enabled: pinchToZoomEnabled,
                 },
             };
         }
@@ -82,6 +90,60 @@ describe('Preview Document Gallery', () => {
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.getByTitle('Gallery view').should('have.attr', 'aria-pressed', 'false');
+    });
+
+    it('Should zoom the gallery independently of the document and persist across reopen', () => {
+        showDocumentPreview();
+        cy.showControls();
+        cy.getByTestId('bp-ZoomControls-current')
+            .invoke('text')
+            .then(documentScale => {
+                openGallery();
+                cy.getByTestId('bp-ZoomControls-current').should('have.text', '100%');
+
+                cy.get('.bp-gallery-tile[data-page="1"]').then($tile => {
+                    const initialWidth = $tile[0].getBoundingClientRect().width;
+                    cy.get('.bp-gallery-tile[data-page="1"] img')
+                        .invoke('attr', 'src')
+                        .then(initialSrc => {
+                            cy.getByTitle('Zoom in').click();
+                            cy.getByTestId('bp-ZoomControls-current').should('have.text', '110%');
+                            cy.get('.bp-gallery-tile[data-page="1"]').should($zoomedTile => {
+                                expect($zoomedTile[0].getBoundingClientRect().width).to.be.greaterThan(initialWidth);
+                            });
+                            cy.get('.bp-gallery-tile[data-page="1"] img').should('have.attr', 'src', initialSrc);
+                        });
+                });
+
+                cy.getByTitle('Gallery view').click();
+                cy.getByTestId('bp-ZoomControls-current').should('have.text', documentScale);
+
+                openGallery();
+                cy.getByTestId('bp-ZoomControls-current').should('have.text', '110%');
+            });
+    });
+
+    it('Should hide gallery zoom controls when the v2 flag is off', () => {
+        showDocumentPreview({ galleryV2Enabled: false });
+        openGallery();
+
+        cy.getByTitle('Zoom in').should('not.exist');
+        cy.getByTitle('Zoom out').should('not.exist');
+    });
+
+    it('Should update gallery zoom from a trackpad pinch gesture', () => {
+        showDocumentPreview({ pinchToZoomEnabled: true });
+        openGallery();
+
+        cy.get('.bp-gallery-grid').trigger('wheel', {
+            clientX: 300,
+            clientY: 300,
+            ctrlKey: true,
+            deltaY: -10,
+            eventConstructor: 'WheelEvent',
+        });
+
+        cy.getByTestId('bp-ZoomControls-current').should('have.text', '110%');
     });
 
     it('Should navigate to a selected page and close gallery view', () => {

@@ -325,6 +325,173 @@ describe('GalleryGrid', () => {
         });
     });
 
+    describe('zoom', () => {
+        test('should scale and clamp the tile width while keeping the listbox structure untouched', () => {
+            const { rerender } = getWrapper();
+            const inner = screen.getByRole('presentation');
+            Object.defineProperty(inner, 'clientWidth', { configurable: true, value: 920 });
+
+            expect(inner).toHaveClass('bp-gallery-grid-inner');
+            expect(inner.style.gridTemplateColumns).toBe('');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe('1.02');
+            expect(screen.getByRole('listbox')).toContainElement(inner);
+            expect(screen.getAllByRole('option')).toHaveLength(10);
+
+            rerender(<GalleryGrid {...defaultProps} scale={1.5} />);
+
+            expect(inner.style.gridTemplateColumns).toBe('repeat(auto-fill, 444px)');
+            expect(inner.style.justifyContent).toBe('center');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe(String(1 + 0.02 / 1.5));
+            expect(screen.getAllByRole('option')).toHaveLength(10);
+
+            rerender(<GalleryGrid {...defaultProps} scale={1} />);
+
+            expect(inner.style.gridTemplateColumns).toBe('');
+            expect(inner.style.justifyContent).toBe('');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe('1.02');
+
+            Object.defineProperty(inner, 'clientWidth', { configurable: true, value: 200 });
+            rerender(<GalleryGrid {...defaultProps} scale={2} />);
+
+            expect(inner.style.gridTemplateColumns).toBe('repeat(auto-fill, 200px)');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe('1.01');
+        });
+
+        test('should keep the topmost visible tile anchored when the scale changes', () => {
+            const { rerender } = getWrapper();
+            const grid = screen.getByRole('listbox');
+            Object.defineProperty(grid, 'scrollLeft', { configurable: true, value: 0, writable: true });
+            Object.defineProperty(grid, 'scrollTop', { configurable: true, value: 100, writable: true });
+            const anchorTile = screen.getByLabelText('Page 3');
+            jest.spyOn(anchorTile, 'getBoundingClientRect')
+                .mockReturnValueOnce({ left: 0, top: 150 } as DOMRect)
+                .mockReturnValueOnce({ left: 30, top: 390 } as DOMRect);
+
+            rerender(<GalleryGrid {...defaultProps} scale={2} />);
+
+            expect(grid.scrollLeft).toBe(30);
+            expect(grid.scrollTop).toBe(340);
+        });
+
+        describe('pinch gestures', () => {
+            let rafCallback: FrameRequestCallback | null = null;
+
+            const wheelEvent = (init: WheelEventInit): WheelEvent =>
+                new WheelEvent('wheel', { bubbles: true, cancelable: true, ...init });
+
+            const touchEvent = (type: string, xPositions: number[]): TouchEvent => {
+                const touches = xPositions.map(
+                    x => (({ clientX: x, clientY: 0, pageX: x, pageY: 0 } as unknown) as Touch),
+                );
+                return new TouchEvent(type, { bubbles: true, cancelable: true, touches });
+            };
+
+            beforeEach(() => {
+                rafCallback = null;
+                jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+                    rafCallback = callback;
+                    return 1;
+                });
+            });
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+                delete (document as { elementFromPoint?: unknown }).elementFromPoint;
+            });
+
+            test('should update scale from a ctrl+wheel trackpad pinch anchored on the cursor', () => {
+                const onScaleChange = jest.fn();
+                const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+                Object.defineProperty(grid, 'scrollLeft', { configurable: true, value: 0, writable: true });
+                Object.defineProperty(grid, 'scrollTop', { configurable: true, value: 0, writable: true });
+                const event = wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 });
+
+                act(() => {
+                    grid.dispatchEvent(event);
+                });
+                expect(event.defaultPrevented).toBe(true);
+
+                act(() => rafCallback!(0));
+                expect(onScaleChange).toHaveBeenCalledWith(1.2);
+
+                const pinchTile = screen.getByLabelText('Page 5');
+                document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
+                jest.spyOn(pinchTile, 'getBoundingClientRect')
+                    .mockReturnValueOnce({ left: 250, top: 180 } as DOMRect)
+                    .mockReturnValueOnce({ left: 310, top: 260 } as DOMRect);
+
+                rerender(
+                    <GalleryGrid {...defaultProps} isPinchZoomEnabled onScaleChange={onScaleChange} scale={1.2} />,
+                );
+
+                expect(document.elementFromPoint).toHaveBeenCalledWith(300, 200);
+                expect(grid.scrollLeft).toBe(60);
+                expect(grid.scrollTop).toBe(80);
+            });
+
+            test('should update scale from a two-finger touch pinch', () => {
+                const onScaleChange = jest.fn();
+                getWrapper({ hasTouch: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(touchEvent('touchstart', [0, 100]));
+                    grid.dispatchEvent(touchEvent('touchmove', [0, 200]));
+                });
+
+                act(() => rafCallback!(0));
+                expect(onScaleChange).toHaveBeenCalledWith(2);
+            });
+
+            test('should report one pinch session per burst of trackpad wheel events', () => {
+                let now = 1000;
+                jest.spyOn(Date, 'now').mockImplementation(() => now);
+                const onPinchStart = jest.fn();
+                getWrapper({ isPinchZoomEnabled: true, onPinchStart });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -20 }));
+                    now += 50; // Within the same gesture
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -20 }));
+                });
+
+                expect(onPinchStart).toHaveBeenCalledTimes(1);
+                expect(onPinchStart).toHaveBeenCalledWith('zoomIn');
+
+                act(() => {
+                    now += 500; // A pause starts a new gesture
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: 20 }));
+                });
+
+                expect(onPinchStart).toHaveBeenCalledTimes(2);
+                expect(onPinchStart).toHaveBeenLastCalledWith('zoomOut');
+            });
+
+            test('should ignore plain wheel scrolling and ctrl+wheel when pinch zoom is disabled', () => {
+                const onScaleChange = jest.fn();
+                const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                const plainWheel = wheelEvent({ deltaY: -20 });
+                act(() => {
+                    grid.dispatchEvent(plainWheel);
+                });
+                expect(plainWheel.defaultPrevented).toBe(false);
+
+                rerender(<GalleryGrid {...defaultProps} isPinchZoomEnabled={false} onScaleChange={onScaleChange} />);
+                const ctrlWheel = wheelEvent({ ctrlKey: true, deltaY: -20 });
+                act(() => {
+                    grid.dispatchEvent(ctrlWheel);
+                });
+
+                expect(ctrlWheel.defaultPrevented).toBe(false);
+                expect(onScaleChange).not.toHaveBeenCalled();
+            });
+        });
+    });
+
     describe('viewport-aware loading', () => {
         // Lay the grid out as a single column of 100px-tall tiles so getUnloadedNearViewport
         // has real geometry to work with (jsdom defaults all dimensions to 0).

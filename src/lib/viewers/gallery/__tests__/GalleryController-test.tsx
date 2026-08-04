@@ -1,4 +1,8 @@
-import GalleryController, { GalleryControllerOptions } from '../GalleryController';
+import GalleryController, {
+    GALLERY_MAX_SCALE,
+    GALLERY_MIN_SCALE,
+    GalleryControllerOptions,
+} from '../GalleryController';
 
 jest.mock('../../../Thumbnail', () => {
     return jest.fn().mockImplementation(() => ({
@@ -45,9 +49,19 @@ function makeController(
         pageCount?: number;
         currentPage?: number;
         flagOn?: boolean;
+        hasTouch?: boolean;
+        zoomFlagOn?: boolean;
     } = {},
 ): Harness {
-    const { sidebarOpen = false, sidebarPresent = true, pageCount = 10, currentPage = 1, flagOn = true } = overrides;
+    const {
+        sidebarOpen = false,
+        sidebarPresent = true,
+        pageCount = 10,
+        currentPage = 1,
+        flagOn = true,
+        hasTouch = false,
+        zoomFlagOn = true,
+    } = overrides;
 
     const containerEl = document.createElement('div');
     document.body.appendChild(containerEl);
@@ -65,10 +79,16 @@ function makeController(
     const onBeforeOpen = jest.fn();
     const onAfterClose = jest.fn();
     const onClose = jest.fn();
+    const onZoomGesture = jest.fn();
 
     const opts: GalleryControllerOptions = {
         containerEl,
-        features: { galleryView: { enabled: flagOn } },
+        features: {
+            galleryView: { enabled: flagOn },
+            galleryViewV2: { enabled: zoomFlagOn },
+            pinchToZoom: { enabled: true },
+        },
+        hasTouch,
         getPdfViewer: () => pdfViewer,
         getPreloader: () => null,
         getThumbnailsSidebar: () => sidebar,
@@ -79,6 +99,7 @@ function makeController(
         onBeforeOpen,
         onAfterClose,
         onClose,
+        onZoomGesture,
     };
 
     return {
@@ -273,17 +294,22 @@ describe('GalleryController', () => {
         });
 
         test('should wire the correct props into GalleryGrid', () => {
-            const { controller } = makeController({ currentPage: 3, pageCount: 25, sidebarOpen: false });
+            const { controller } = makeController({ currentPage: 3, hasTouch: true, pageCount: 25 });
             controller.toggle();
 
             expect(mockLastRoot.render).toHaveBeenCalledTimes(1);
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
+            expect(grid.props.hasTouch).toBe(true);
+            expect(grid.props.isPinchZoomEnabled).toBe(true);
+            expect(grid.props.scale).toBe(1);
             expect(grid.props.thumbnail).toBeDefined();
             expect(grid.props.onClose).toBe(controller.toggle);
             expect(typeof grid.props.onPageNavigate).toBe('function');
             expect(typeof grid.props.onFocusChange).toBe('function');
+            expect(typeof grid.props.onPinchStart).toBe('function');
+            expect(typeof grid.props.onScaleChange).toBe('function');
             expect(typeof grid.props.getPageRatio).toBe('function');
         });
 
@@ -464,6 +490,84 @@ describe('GalleryController', () => {
             controller.handleEscape();
 
             expect(onClose.mock.calls).toEqual([[null], [4], [null]]);
+        });
+    });
+
+    describe('zoom', () => {
+        test('should step by exactly 10% from the current value and clamp to the gallery limits', () => {
+            const { controller, requestUiUpdate } = makeController();
+            controller.toggle();
+            expect(controller.isZoomEnabled).toBe(true);
+            expect(controller.scale).toBe(1);
+
+            controller.zoomIn();
+            expect(controller.scale).toBe(1.1);
+            expect(requestUiUpdate).toHaveBeenCalledTimes(2); // open + zoom
+
+            for (let i = 0; i < 40; i += 1) controller.zoomIn();
+            expect(controller.scale).toBe(GALLERY_MAX_SCALE);
+
+            for (let i = 0; i < 40; i += 1) controller.zoomOut();
+            expect(controller.scale).toBe(GALLERY_MIN_SCALE);
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onScaleChange(0.83);
+            controller.zoomIn();
+            expect(controller.scale).toBe(0.93);
+            controller.zoomOut();
+            controller.zoomOut();
+            expect(controller.scale).toBe(0.73);
+        });
+
+        test('should clamp continuous pinch updates from the grid and re-render it', () => {
+            const { controller } = makeController();
+            controller.toggle();
+            const grid = mockLastRoot.render.mock.calls[0][0];
+
+            grid.props.onScaleChange(1.234);
+            expect(controller.scale).toBe(1.234);
+
+            grid.props.onScaleChange(99);
+            expect(controller.scale).toBe(GALLERY_MAX_SCALE);
+
+            const lastRenderCalls = mockLastRoot.render.mock.calls;
+            expect(lastRenderCalls[lastRenderCalls.length - 1][0].props.scale).toBe(GALLERY_MAX_SCALE);
+        });
+
+        test('should disable zoom entirely unless both gallery flags are on', () => {
+            expect(makeController({ flagOn: false, zoomFlagOn: true }).controller.isZoomEnabled).toBe(false);
+
+            const { controller, requestUiUpdate } = makeController({ hasTouch: true, zoomFlagOn: false });
+            controller.toggle();
+            requestUiUpdate.mockClear();
+
+            expect(controller.isZoomEnabled).toBe(false);
+            controller.zoomIn();
+            expect(controller.scale).toBe(1);
+            expect(requestUiUpdate).not.toHaveBeenCalled();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            expect(grid.props.hasTouch).toBe(false);
+            expect(grid.props.isPinchZoomEnabled).toBe(false);
+
+            grid.props.onScaleChange(1.5);
+            expect(controller.scale).toBe(1);
+        });
+
+        test('should persist scale across close and reopen but reset on destroy', () => {
+            const { controller } = makeController();
+            controller.toggle();
+            controller.zoomIn();
+            controller.zoomIn();
+            expect(controller.scale).toBe(1.2);
+
+            controller.toggle();
+            controller.toggle();
+            const renderCalls = mockLastRoot.render.mock.calls;
+            expect(renderCalls[renderCalls.length - 1][0].props.scale).toBe(1.2);
+
+            controller.destroy();
+            expect(controller.scale).toBe(1);
         });
     });
 

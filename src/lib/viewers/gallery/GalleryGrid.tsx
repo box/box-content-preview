@@ -1,11 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import { decodeKeydown, replacePlaceholders } from '../../util';
+import useGalleryPinch, { PinchDirection, PinchFocal } from './useGalleryPinch';
 import './GalleryGrid.scss';
 
 const GALLERY_THUMB_MAX_WIDTH = 440;
 const CONCURRENT_LOADS = 4;
 const SCROLL_THROTTLE_MS = 200;
+// Keep in sync with the 100% grid rule in GalleryGrid.scss
+const GALLERY_TILE_GAP = 16;
+const GALLERY_TILE_MIN_WIDTH = 220;
 
 export interface GalleryThumbnail {
     init: () => Promise<unknown>;
@@ -23,9 +28,14 @@ export type Props = {
     currentPage: number;
     /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
     getPageRatio?: (pageNum: number) => number | null;
+    hasTouch?: boolean;
+    isPinchZoomEnabled?: boolean;
     onFocusChange?: (pageNum: number) => void;
     onPageNavigate: (n: number) => void;
     onClose: () => void;
+    onPinchStart?: (direction: PinchDirection) => void;
+    onScaleChange?: (scale: number) => void;
+    scale?: number;
     thumbnail: GalleryThumbnail;
 };
 
@@ -76,9 +86,14 @@ export default function GalleryGrid({
     pageCount,
     currentPage,
     getPageRatio,
+    hasTouch = false,
+    isPinchZoomEnabled = false,
     onClose,
     onFocusChange,
     onPageNavigate,
+    onPinchStart = noop,
+    onScaleChange = noop,
+    scale = 1,
     thumbnail,
 }: Props): JSX.Element {
     const [loadedImages, setLoadedImages] = useState<Record<number, string>>({});
@@ -87,6 +102,9 @@ export default function GalleryGrid({
     // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
     const anchorPageRef = useRef(currentPage);
     const gridRef = useRef<HTMLDivElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
+    const focalRef = useRef<PinchFocal | null>(null);
+    const scaleRef = useRef(scale);
     const queueRef = useRef<number[]>([]);
     const isProcessingRef = useRef(false);
     const isMountedRef = useRef(true);
@@ -222,6 +240,69 @@ export default function GalleryGrid({
         handleScrollRef.current();
     }, []);
 
+    useGalleryPinch({
+        focalRef,
+        gridRef,
+        hasTouch,
+        isPinchZoomEnabled,
+        onGestureStart: onPinchStart,
+        onZoom: onScaleChange,
+        scaleRef,
+    });
+
+    const applyZoomLayout = useCallback(() => {
+        const inner = innerRef.current;
+        if (!inner) {
+            return;
+        }
+
+        const currentScale = scaleRef.current;
+        inner.style.setProperty('--bp-gallery-hover-scale', String(1 + 0.02 / currentScale));
+
+        if (currentScale === 1) {
+            inner.style.gridTemplateColumns = '';
+            inner.style.justifyContent = '';
+            return;
+        }
+
+        const width = inner.clientWidth;
+        const columnPitch = GALLERY_TILE_MIN_WIDTH + GALLERY_TILE_GAP;
+        const columns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
+        const baseWidth = (width - (columns - 1) * GALLERY_TILE_GAP) / columns;
+        inner.style.gridTemplateColumns = `repeat(auto-fill, ${Math.min(width, baseWidth * currentScale)}px)`;
+        inner.style.justifyContent = 'center';
+    }, []);
+
+    useLayoutEffect(() => {
+        const grid = gridRef.current;
+        const previousScale = scaleRef.current;
+        scaleRef.current = scale;
+
+        const focal = focalRef.current;
+        focalRef.current = null;
+
+        if (!grid || previousScale === scale) {
+            applyZoomLayout();
+            return;
+        }
+
+        const focalTile = focal
+            ? document.elementFromPoint?.(focal.x, focal.y)?.closest<HTMLElement>('[data-page]')
+            : null;
+        const anchorTile = focalTile || grid.querySelector<HTMLElement>(`[data-page="${anchorPageRef.current}"]`);
+        const beforeRect = anchorTile && anchorTile.getBoundingClientRect();
+
+        applyZoomLayout();
+
+        if (anchorTile && beforeRect) {
+            const afterRect = anchorTile.getBoundingClientRect();
+            grid.scrollLeft += afterRect.left - beforeRect.left;
+            grid.scrollTop += afterRect.top - beforeRect.top;
+        }
+
+        handleScrollRef.current();
+    }, [applyZoomLayout, scale]);
+
     useEffect(() => {
         const throttledScroll = handleScrollRef.current;
 
@@ -283,6 +364,7 @@ export default function GalleryGrid({
                 isFirstObservation = false; // ResizeObserver always fires once on observe()
                 return;
             }
+            applyZoomLayout();
             const tile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
             if (tile) {
                 tile.scrollIntoView({ block: 'start' });
@@ -294,7 +376,7 @@ export default function GalleryGrid({
         observer.observe(grid);
 
         return () => observer.disconnect();
-    }, []);
+    }, [applyZoomLayout]);
 
     const focusTile = useCallback((pageNum: number) => {
         const grid = gridRef.current;
@@ -406,7 +488,9 @@ export default function GalleryGrid({
             role="listbox"
             tabIndex={-1}
         >
-            {tiles}
+            <div ref={innerRef} className="bp-gallery-grid-inner" role="presentation">
+                {tiles}
+            </div>
         </div>
     );
 }

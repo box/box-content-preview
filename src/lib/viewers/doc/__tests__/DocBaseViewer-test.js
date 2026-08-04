@@ -17,6 +17,7 @@ import DocBaseViewer, {
 } from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
+import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/GalleryController';
 import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
@@ -1733,10 +1734,34 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 beforeEach(() => {
                     docBase.galleryController = {
                         isOpen: true,
+                        isZoomEnabled: true,
                         handleArrowKey: jest.fn(),
                         handleEscape: jest.fn().mockReturnValue(true),
+                        zoomIn: jest.fn(),
+                        zoomOut: jest.fn(),
                         destroy: jest.fn(),
                     };
+                });
+
+                test('should route the zoom shortcuts to the gallery zoom, never the document zoom', () => {
+                    const zoomIn = jest.spyOn(docBase, 'zoomIn').mockImplementation();
+                    const zoomOut = jest.spyOn(docBase, 'zoomOut').mockImplementation();
+
+                    expect(docBase.onKeydown('Shift++', { defaultPrevented: false })).toBe(true);
+                    expect(docBase.galleryController.zoomIn).toBeCalledTimes(1);
+
+                    expect(docBase.onKeydown('Shift+_', { defaultPrevented: false })).toBe(true);
+                    expect(docBase.galleryController.zoomOut).toBeCalledTimes(1);
+
+                    expect(zoomIn).not.toBeCalled();
+                    expect(zoomOut).not.toBeCalled();
+                });
+
+                test('should not consume the zoom shortcuts when gallery zoom is disabled', () => {
+                    docBase.galleryController.isZoomEnabled = false;
+
+                    expect(docBase.onKeydown('Shift++', { defaultPrevented: false })).toBe(false);
+                    expect(docBase.galleryController.zoomIn).not.toBeCalled();
                 });
 
                 test('should close the gallery and consume Escape', () => {
@@ -2914,6 +2939,34 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     onThumbnailsToggle: option ? docBase.toggleThumbnails : undefined,
                 });
             });
+
+            test.each([true, false])(
+                'should route the zoom controls to the gallery scale, or the document scale, based on the zoom flag',
+                isZoomEnabled => {
+                    docBase.galleryController = {
+                        isOpen: true,
+                        isZoomEnabled,
+                        canRender: jest.fn().mockReturnValue(true),
+                        destroy: jest.fn(),
+                        scale: 1.5,
+                        toggle: jest.fn(),
+                        zoomIn: jest.fn(),
+                        zoomOut: jest.fn(),
+                    };
+
+                    docBase.renderUI();
+
+                    expect(getProps(docBase)).toMatchObject({
+                        hasGalleryZoom: isZoomEnabled,
+                        isGalleryOpen: true,
+                        maxScale: isZoomEnabled ? GALLERY_MAX_SCALE : 10,
+                        minScale: isZoomEnabled ? GALLERY_MIN_SCALE : 0.1,
+                        onZoomIn: isZoomEnabled ? docBase.galleryController.zoomIn : docBase.zoomIn,
+                        onZoomOut: isZoomEnabled ? docBase.galleryController.zoomOut : docBase.zoomOut,
+                        scale: isZoomEnabled ? 1.5 : 0.9,
+                    });
+                },
+            );
 
             test.each([true, false])('should enable or disable the gallery toggle based on mobile', isMobile => {
                 docBase.isMobile = isMobile;
@@ -4543,6 +4596,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.handleAnnotationControlsClick({ mode: AnnotationMode.NONE });
                 expect(docBase.annotator.toggleAnnotationMode).toBeCalledWith(AnnotationMode.REGION);
                 expect(docBase.containerEl.getAttribute('data-resin-discoverability')).toBe('true');
+            });
+        });
+
+        describe('handleGalleryZoomGesture()', () => {
+            test('should record a resin action distinct from document zoom', () => {
+                docBase.options.resin = { recordAction: jest.fn() };
+                docBase.options.file = { id: '0', extension: 'pdf' };
+
+                docBase.handleGalleryZoomGesture('zoomIn');
+
+                expect(docBase.options.resin.recordAction).toBeCalledWith({
+                    action: 'programmatic',
+                    component: 'galleryView',
+                    target: 'zoomIn',
+                    fileId: '0',
+                    fileExtension: 'pdf',
+                });
             });
         });
 
