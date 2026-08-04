@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import { decodeKeydown, replacePlaceholders } from '../../util';
+import HighResThumbnailStore, { HighResRenderTask } from './HighResThumbnailStore';
 import useGalleryPinch, { PinchDirection, PinchFocal } from './useGalleryPinch';
 import './GalleryGrid.scss';
 
@@ -11,6 +12,13 @@ const SCROLL_THROTTLE_MS = 200;
 // Keep in sync with the 100% grid rule in GalleryGrid.scss
 const GALLERY_TILE_GAP = 16;
 const GALLERY_TILE_MIN_WIDTH = 220;
+const GALLERY_THUMB_WIDTH_TIERS = [GALLERY_THUMB_MAX_WIDTH, GALLERY_THUMB_MAX_WIDTH * 2, GALLERY_THUMB_MAX_WIDTH * 3];
+const GALLERY_THUMB_MAX_TIER = GALLERY_THUMB_WIDTH_TIERS[GALLERY_THUMB_WIDTH_TIERS.length - 1];
+const GALLERY_THUMB_MAX_DPR = 2;
+const GALLERY_HIGH_RES_MAX_BYTES = 64 * 1024 * 1024;
+const GALLERY_HIGH_RES_MAX_PAGES = 16;
+const GALLERY_HIGH_RES_CONCURRENCY = 2;
+const GALLERY_DEFAULT_PAGE_RATIO = 0.775;
 
 export interface GalleryThumbnail {
     init: () => Promise<unknown>;
@@ -19,6 +27,7 @@ export interface GalleryThumbnail {
         itemIndex: number,
         options: { createImgTag: boolean; thumbMaxWidth: number },
     ) => Promise<HTMLImageElement | null>;
+    renderPageImage: (pageNum: number, options: { thumbMaxWidth: number }) => HighResRenderTask;
     /** First-page width:height ratio, populated by init(). Used to size placeholders to the real page shape. */
     pageRatio?: number;
 }
@@ -100,6 +109,7 @@ export default function GalleryGrid({
     thumbnail,
 }: Props): JSX.Element {
     const [loadedImages, setLoadedImages] = useState<Record<number, string>>({});
+    const [highResImages, setHighResImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
     const [pageRatio, setPageRatio] = useState<number | null>(null);
     // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
@@ -112,41 +122,70 @@ export default function GalleryGrid({
     const isProcessingRef = useRef(false);
     const isMountedRef = useRef(true);
     const inFlightRef = useRef<Set<number>>(new Set());
+    const highResStoreRef = useRef<HighResThumbnailStore | null>(null);
 
     const byDistanceFromAnchor = (a: number, b: number): number =>
         Math.abs(a - anchorPageRef.current) - Math.abs(b - anchorPageRef.current);
 
-    // Unloaded tiles within viewport + buffer, on-screen tiles first so the user never
-    // watches a visible hole while off-screen pages load. Pages already being rendered
-    // (in flight) are excluded so re-derives can't waste loader slots on them.
-    function getUnloadedNearViewport(): number[] {
+    function getNeededThumbWidth(): number {
+        if (scaleRef.current === 1) {
+            return GALLERY_THUMB_MAX_WIDTH;
+        }
+
+        const tile = gridRef.current?.querySelector<HTMLElement>('[data-page]');
+        const neededWidth = (tile?.offsetWidth || 0) * Math.min(window.devicePixelRatio || 1, GALLERY_THUMB_MAX_DPR);
+        return GALLERY_THUMB_WIDTH_TIERS.find(tier => tier >= neededWidth) || GALLERY_THUMB_MAX_TIER;
+    }
+
+    // Prioritize visible pages before spending work on the surrounding buffer.
+    function getPagesNearViewport(
+        marginRatio: number,
+        isEligible?: (tile: HTMLElement, pageNum: number) => boolean,
+    ): number[] {
         const grid = gridRef.current;
         if (!grid) return [];
 
         const { scrollTop, clientHeight } = grid;
-        const bufferZone = clientHeight * 3;
         const viewportBottom = scrollTop + clientHeight;
+        const margin = clientHeight * marginRatio;
+        const visible: number[] = [];
+        const nearby: number[] = [];
 
-        const visibleUnloaded: number[] = [];
-        const bufferedUnloaded: number[] = [];
-        const tiles = grid.querySelectorAll('[data-page]');
-
-        tiles.forEach(tile => {
-            const el = tile as HTMLElement;
-            if (!el.dataset.page) return;
-            const pageNum = parseInt(el.dataset.page, 10);
-            if (inFlightRef.current.has(pageNum) || el.querySelector('img')) return;
-            const tileTop = el.offsetTop;
-            const tileBottom = tileTop + el.offsetHeight;
+        grid.querySelectorAll<HTMLElement>('[data-page]').forEach(tile => {
+            if (!tile.dataset.page) return;
+            const pageNum = parseInt(tile.dataset.page, 10);
+            if (isEligible && !isEligible(tile, pageNum)) return;
+            const tileTop = tile.offsetTop;
+            const tileBottom = tileTop + tile.offsetHeight;
 
             if (tileBottom > scrollTop && tileTop < viewportBottom) {
-                visibleUnloaded.push(pageNum);
-            } else if (tileBottom > scrollTop - bufferZone && tileTop < viewportBottom + bufferZone) {
-                bufferedUnloaded.push(pageNum);
+                visible.push(pageNum);
+            } else if (tileBottom > scrollTop - margin && tileTop < viewportBottom + margin) {
+                nearby.push(pageNum);
             }
         });
 
-        return [...visibleUnloaded.sort(byDistanceFromAnchor), ...bufferedUnloaded.sort(byDistanceFromAnchor)];
+        return [...visible.sort(byDistanceFromAnchor), ...nearby.sort(byDistanceFromAnchor)];
+    }
+
+    function syncHighRes() {
+        const store = highResStoreRef.current;
+        if (!store) return;
+
+        const width = getNeededThumbWidth();
+        const ratio = thumbnail.pageRatio || GALLERY_DEFAULT_PAGE_RATIO;
+        if (width === GALLERY_THUMB_MAX_WIDTH) {
+            store.setRetained([], width, ratio);
+        } else if (!isProcessingRef.current) {
+            store.setRetained(getPagesNearViewport(0.5), width, ratio);
+        }
+    }
+
+    function getUnloadedNearViewport(): number[] {
+        return getPagesNearViewport(
+            3,
+            (tile, pageNum) => !inFlightRef.current.has(pageNum) && !tile.querySelector('img'),
+        );
     }
 
     function processQueue() {
@@ -182,6 +221,7 @@ export default function GalleryGrid({
                 queueRef.current = getUnloadedNearViewport().filter(p => remaining.has(p));
                 if (queueRef.current.length === 0) {
                     isProcessingRef.current = false;
+                    syncHighRes();
                     return;
                 }
                 processQueue();
@@ -222,6 +262,7 @@ export default function GalleryGrid({
                 queueRef.current = [...toAdd, ...queueRef.current];
                 startProcessing();
             }
+            syncHighRes();
         }, SCROLL_THROTTLE_MS),
     );
 
@@ -308,6 +349,18 @@ export default function GalleryGrid({
 
     useEffect(() => {
         const throttledScroll = handleScrollRef.current;
+        const highResStore = new HighResThumbnailStore({
+            maxBytes: GALLERY_HIGH_RES_MAX_BYTES,
+            maxConcurrent: GALLERY_HIGH_RES_CONCURRENCY,
+            maxPages: GALLERY_HIGH_RES_MAX_PAGES,
+            onChange: images => {
+                if (isMountedRef.current) {
+                    setHighResImages(images);
+                }
+            },
+            render: (pageNum, width) => thumbnail.renderPageImage(pageNum, { thumbMaxWidth: width }),
+        });
+        highResStoreRef.current = highResStore;
 
         if (gridRef.current) {
             const tile = gridRef.current.querySelector(`[data-page="${currentPage}"]`) as HTMLElement;
@@ -344,12 +397,15 @@ export default function GalleryGrid({
             // Guarded start: the mount scrollIntoView can fire the scroll handler first, and a
             // second unguarded pump would double the concurrent thumbnail renders.
             startProcessing();
+            syncHighRes();
         });
 
         return () => {
             isMountedRef.current = false;
             queueRef.current = [];
             isProcessingRef.current = false;
+            highResStore.destroy();
+            highResStoreRef.current = null;
             throttledScroll.cancel();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -381,12 +437,12 @@ export default function GalleryGrid({
         return () => observer.disconnect();
     }, [applyZoomLayout]);
 
-    const focusTile = useCallback((pageNum: number) => {
+    const focusTile = useCallback((pageNum: number, options?: FocusOptions) => {
         const grid = gridRef.current;
         if (!grid) return;
         const tile = grid.querySelector(`[data-page="${pageNum}"]`) as HTMLElement | null;
         if (tile) {
-            tile.focus();
+            tile.focus(options);
         }
     }, []);
 
@@ -410,7 +466,7 @@ export default function GalleryGrid({
     const handleGridFocus = useCallback(
         (event: React.FocusEvent) => {
             if (event.target === gridRef.current) {
-                focusTile(focusedPage);
+                focusTile(focusedPage, { preventScroll: true });
             }
         },
         [focusedPage, focusTile],
@@ -470,7 +526,7 @@ export default function GalleryGrid({
         tiles.push(
             <GalleryTile
                 key={i}
-                imageSrc={loadedImages[i]}
+                imageSrc={highResImages[i] || loadedImages[i]}
                 isFocused={i === focusedPage}
                 onClick={handleTileClick}
                 onFocus={handleTileFocus}
