@@ -1,3 +1,9 @@
+## 3.71.0 (2026-08-04)
+
+* fix(doc): Keep PDF links above annotations overlay (#1728) ([0c04c4b](https://github.com/box/box-content-preview/commit/0c04c4b)), closes [#1728](https://github.com/box/box-content-preview/issues/1728)
+
+
+
 ## 3.70.0 (2026-07-31)
 
 * Gallery resin tags (#1726) ([0214b54](https://github.com/box/box-content-preview/commit/0214b54)), closes [#1726](https://github.com/box/box-content-preview/issues/1726)
