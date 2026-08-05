@@ -17,7 +17,7 @@ interface Props {
     hasTouch: boolean;
     isPinchZoomEnabled: boolean;
     onGestureStart: (direction: PinchDirection) => void;
-    onZoom: (scale: number) => void;
+    onZoom: (scale: number) => boolean | void;
     scaleRef: MutableRefObject<number>;
 }
 
@@ -59,7 +59,9 @@ export default function useGalleryPinch({
                     pendingRef.current = null;
                     if (pending) {
                         focalRef.current = pending.focal;
-                        onZoomRef.current(pending.scale);
+                        if (onZoomRef.current(pending.scale) === false) {
+                            focalRef.current = null;
+                        }
                     }
                 });
             }

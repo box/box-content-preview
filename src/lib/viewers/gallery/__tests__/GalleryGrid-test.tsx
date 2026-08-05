@@ -430,6 +430,24 @@ describe('GalleryGrid', () => {
                 expect(grid.scrollTop).toBe(80);
             });
 
+            test('should clear the pinch focal point when the scale change is rejected', () => {
+                const onScaleChange = jest.fn().mockReturnValue(false);
+                const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 }));
+                });
+                act(() => rafCallback!(0));
+
+                document.elementFromPoint = jest.fn();
+                rerender(
+                    <GalleryGrid {...defaultProps} isPinchZoomEnabled onScaleChange={onScaleChange} scale={1.1} />,
+                );
+
+                expect(document.elementFromPoint).not.toHaveBeenCalled();
+            });
+
             test('should update scale from a two-finger touch pinch', () => {
                 const onScaleChange = jest.fn();
                 getWrapper({ hasTouch: true, onScaleChange });
@@ -636,9 +654,10 @@ describe('GalleryGrid', () => {
             expect(mockThumbnail.getImageFromCache).toHaveBeenCalledTimes(10);
         });
 
-        test('should use cached images when available', () => {
+        test('should use cached images while preserving the page ratio', async () => {
             const cachedThumbnail = {
                 ...mockThumbnail,
+                pageRatio: 4 / 3,
                 getImageFromCache: jest.fn(pageIndex => {
                     if (pageIndex === 2) {
                         return { image: { src: 'data:image/png;cached-page-3' }, inProgress: false };
@@ -652,6 +671,10 @@ describe('GalleryGrid', () => {
             const img = tile3.querySelector('img');
             expect(img).toBeInTheDocument();
             expect(img).toHaveAttribute('src', 'data:image/png;cached-page-3');
+            await waitFor(() => {
+                expect(tile3.style.aspectRatio).toBe(String(4 / 3));
+                expect(img?.style.height).toBe('100%');
+            });
         });
 
         test('should show placeholder for uncached pages', () => {
@@ -661,20 +684,18 @@ describe('GalleryGrid', () => {
             expect(tile1.querySelector('img')).not.toBeInTheDocument();
         });
 
-        test('should size placeholders from the page ratio once init resolves', async () => {
-            // 16:9 landscape page: ratio 16/9 -> padding-top 56.25%
+        test('should size tiles from the page ratio once init resolves', async () => {
             const thumbnail = { ...mockThumbnail, pageRatio: 16 / 9 };
             getWrapper({ thumbnail });
 
             await waitFor(() => {
-                const placeholder = screen
-                    .getByLabelText('Page 1')
-                    .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
-                expect(placeholder.style.paddingTop).toBe('56.25%');
+                const tile = screen.getByLabelText('Page 1');
+                expect(tile.style.aspectRatio).toBe(String(16 / 9));
+                expect((tile.querySelector('.bp-gallery-tile-placeholder') as HTMLElement).style.height).toBe('100%');
             });
         });
 
-        test('should size each placeholder from its own page ratio when getPageRatio provides one', async () => {
+        test('should size each tile from its own page ratio when getPageRatio provides one', async () => {
             // First page portrait (3:4), page 2 landscape (16:9); pages beyond have no
             // metadata yet and fall back to the first-page ratio.
             const thumbnail = { ...mockThumbnail, pageRatio: 3 / 4 };
@@ -682,16 +703,10 @@ describe('GalleryGrid', () => {
             getWrapper({ thumbnail, getPageRatio });
 
             await waitFor(() => {
-                const landscape = screen
-                    .getByLabelText('Page 2')
-                    .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
-                expect(landscape.style.paddingTop).toBe('56.25%');
+                expect(screen.getByLabelText('Page 2').style.aspectRatio).toBe(String(16 / 9));
             });
 
-            const fallback = screen
-                .getByLabelText('Page 5')
-                .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
-            expect(parseFloat(fallback.style.paddingTop)).toBeCloseTo(133.333);
+            expect(screen.getByLabelText('Page 5').style.aspectRatio).toBe(String(3 / 4));
         });
 
         test('should leave placeholder sizing to the stylesheet when no page ratio is available', async () => {
@@ -700,9 +715,9 @@ describe('GalleryGrid', () => {
                 expect(mockThumbnail.init).toHaveBeenCalled();
             });
 
-            const placeholder = screen
-                .getByLabelText('Page 1')
-                .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
+            const tile = screen.getByLabelText('Page 1');
+            const placeholder = tile.querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
+            expect(tile.style.aspectRatio).toBeFalsy();
             expect(placeholder.style.paddingTop).toBe('');
         });
     });

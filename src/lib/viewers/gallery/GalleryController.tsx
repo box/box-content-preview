@@ -226,9 +226,13 @@ export default class GalleryController {
         return true;
     }
 
-    zoomIn = (): void => this.commitScale(this.galleryScale + GALLERY_SCALE_STEP);
+    zoomIn = (): void => {
+        this.commitScale(this.galleryScale + GALLERY_SCALE_STEP);
+    };
 
-    zoomOut = (): void => this.commitScale(this.galleryScale - GALLERY_SCALE_STEP);
+    zoomOut = (): void => {
+        this.commitScale(this.galleryScale - GALLERY_SCALE_STEP);
+    };
 
     /**
      * Redirects an arrow key pressed outside the grid (e.g. focus parked on a toggle after
@@ -317,19 +321,20 @@ export default class GalleryController {
         this.galleryFocusedPage = pageNum;
     };
 
-    private commitScale = (scale: number): void => {
+    private commitScale = (scale: number): boolean => {
         if (!this.isZoomEnabled || !Number.isFinite(scale)) {
-            return;
+            return false;
         }
 
         const clamped = Math.min(GALLERY_MAX_SCALE, Math.max(GALLERY_MIN_SCALE, Math.round(scale * 1000) / 1000));
         if (clamped === this.galleryScale) {
-            return;
+            return false;
         }
 
         this.galleryScale = clamped;
         this.renderGrid();
         this.requestUiUpdate();
+        return true;
     };
 
     // Per-page width:height ratio from PDF.js page metadata; null until the page's metadata

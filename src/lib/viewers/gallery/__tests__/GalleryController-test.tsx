@@ -524,11 +524,12 @@ describe('GalleryController', () => {
             controller.toggle();
             const grid = mockLastRoot.render.mock.calls[0][0];
 
-            grid.props.onScaleChange(1.234);
+            expect(grid.props.onScaleChange(1.234)).toBe(true);
             expect(controller.scale).toBe(1.234);
 
-            grid.props.onScaleChange(99);
+            expect(grid.props.onScaleChange(99)).toBe(true);
             expect(controller.scale).toBe(GALLERY_MAX_SCALE);
+            expect(grid.props.onScaleChange(99)).toBe(false);
 
             const lastRenderCalls = mockLastRoot.render.mock.calls;
             expect(lastRenderCalls[lastRenderCalls.length - 1][0].props.scale).toBe(GALLERY_MAX_SCALE);

@@ -34,7 +34,7 @@ export type Props = {
     onPageNavigate: (n: number) => void;
     onClose: () => void;
     onPinchStart?: (direction: PinchDirection) => void;
-    onScaleChange?: (scale: number) => void;
+    onScaleChange?: (scale: number) => boolean | void;
     scale?: number;
     thumbnail: GalleryThumbnail;
 };
@@ -56,8 +56,10 @@ const GalleryTile = React.memo(function GalleryTile({
     onFocus,
     pageRatio,
 }: TileProps): JSX.Element {
-    // Match the placeholder to the real page shape so tiles don't resize (reflow/jitter) as images arrive
-    const placeholderStyle = pageRatio ? { paddingTop: `${100 / pageRatio}%` } : undefined;
+    const ratio = pageRatio && Number.isFinite(pageRatio) && pageRatio > 0 ? pageRatio : null;
+    const tileStyle = ratio ? { aspectRatio: String(ratio) } : undefined;
+    const contentStyle = ratio ? { height: '100%' } : undefined;
+    const placeholderStyle = ratio ? { ...contentStyle, paddingTop: 0 } : undefined;
 
     return (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
@@ -70,11 +72,12 @@ const GalleryTile = React.memo(function GalleryTile({
             onClick={() => onClick(pageNum)}
             onFocus={() => onFocus(pageNum)}
             role="option"
+            style={tileStyle}
             tabIndex={isFocused ? 0 : -1}
         >
             <span className="bp-gallery-tile-badge">{pageNum}</span>
             {imageSrc ? (
-                <img alt="" src={imageSrc} />
+                <img alt="" src={imageSrc} style={contentStyle} />
             ) : (
                 <span className="bp-gallery-tile-placeholder" style={placeholderStyle} />
             )}
