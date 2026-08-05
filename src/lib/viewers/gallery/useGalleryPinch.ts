@@ -14,8 +14,8 @@ export interface PinchFocal {
 interface Props {
     focalRef: MutableRefObject<PinchFocal | null>;
     gridRef: RefObject<HTMLDivElement>;
-    hasTouch: boolean;
     isPinchZoomEnabled: boolean;
+    isTouchZoomEnabled: boolean;
     onGestureStart: (direction: PinchDirection) => void;
     onZoom: (scale: number) => boolean | void;
     scaleRef: MutableRefObject<number>;
@@ -25,8 +25,8 @@ interface Props {
 export default function useGalleryPinch({
     focalRef,
     gridRef,
-    hasTouch,
     isPinchZoomEnabled,
+    isTouchZoomEnabled,
     onGestureStart,
     onZoom,
     scaleRef,
@@ -45,7 +45,7 @@ export default function useGalleryPinch({
 
     useEffect(() => {
         const grid = gridRef.current;
-        if (!grid || (!hasTouch && !isPinchZoomEnabled)) {
+        if (!grid || (!isTouchZoomEnabled && !isPinchZoomEnabled)) {
             return undefined;
         }
 
@@ -124,7 +124,7 @@ export default function useGalleryPinch({
         if (isPinchZoomEnabled) {
             grid.addEventListener('wheel', handleWheel, { passive: false });
         }
-        if (hasTouch) {
+        if (isTouchZoomEnabled) {
             grid.addEventListener('touchstart', handleTouchStart, { passive: false });
             grid.addEventListener('touchmove', handleTouchMove, { passive: false });
             grid.addEventListener('touchend', handleTouchEnd);
@@ -142,5 +142,5 @@ export default function useGalleryPinch({
             grid.removeEventListener('touchend', handleTouchEnd);
             grid.removeEventListener('touchcancel', handleTouchEnd);
         };
-    }, [focalRef, gridRef, hasTouch, isPinchZoomEnabled, scaleRef]);
+    }, [focalRef, gridRef, isPinchZoomEnabled, isTouchZoomEnabled, scaleRef]);
 }

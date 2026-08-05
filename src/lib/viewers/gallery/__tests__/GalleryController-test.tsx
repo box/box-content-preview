@@ -301,8 +301,8 @@ describe('GalleryController', () => {
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
-            expect(grid.props.hasTouch).toBe(true);
             expect(grid.props.isPinchZoomEnabled).toBe(true);
+            expect(grid.props.isTouchZoomEnabled).toBe(true);
             expect(grid.props.scale).toBe(1);
             expect(grid.props.thumbnail).toBeDefined();
             expect(grid.props.onClose).toBe(controller.toggle);
@@ -548,8 +548,8 @@ describe('GalleryController', () => {
             expect(requestUiUpdate).not.toHaveBeenCalled();
 
             const grid = mockLastRoot.render.mock.calls[0][0];
-            expect(grid.props.hasTouch).toBe(false);
             expect(grid.props.isPinchZoomEnabled).toBe(false);
+            expect(grid.props.isTouchZoomEnabled).toBe(false);
 
             grid.props.onScaleChange(1.5);
             expect(controller.scale).toBe(1);

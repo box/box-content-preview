@@ -28,8 +28,8 @@ export type Props = {
     currentPage: number;
     /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
     getPageRatio?: (pageNum: number) => number | null;
-    hasTouch?: boolean;
     isPinchZoomEnabled?: boolean;
+    isTouchZoomEnabled?: boolean;
     onFocusChange?: (pageNum: number) => void;
     onPageNavigate: (n: number) => void;
     onClose: () => void;
@@ -89,8 +89,8 @@ export default function GalleryGrid({
     pageCount,
     currentPage,
     getPageRatio,
-    hasTouch = false,
     isPinchZoomEnabled = false,
+    isTouchZoomEnabled = false,
     onClose,
     onFocusChange,
     onPageNavigate,
@@ -246,8 +246,8 @@ export default function GalleryGrid({
     useGalleryPinch({
         focalRef,
         gridRef,
-        hasTouch,
         isPinchZoomEnabled,
+        isTouchZoomEnabled,
         onGestureStart: onPinchStart,
         onZoom: onScaleChange,
         scaleRef,

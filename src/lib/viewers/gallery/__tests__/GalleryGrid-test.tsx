@@ -450,7 +450,7 @@ describe('GalleryGrid', () => {
 
             test('should update scale from a two-finger touch pinch', () => {
                 const onScaleChange = jest.fn();
-                getWrapper({ hasTouch: true, onScaleChange });
+                getWrapper({ isTouchZoomEnabled: true, onScaleChange });
                 const grid = screen.getByRole('listbox');
 
                 act(() => {

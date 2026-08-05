@@ -384,8 +384,8 @@ export default class GalleryController {
             <GalleryGrid
                 currentPage={pdfViewer.currentPageNumber}
                 getPageRatio={this.getPageRatio}
-                hasTouch={this.isZoomEnabled && this.hasTouch}
                 isPinchZoomEnabled={this.isZoomEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')}
+                isTouchZoomEnabled={this.isZoomEnabled && this.hasTouch}
                 onClose={this.toggle}
                 onFocusChange={this.handleFocusChange}
                 onPageNavigate={this.handleGalleryNavigate}
