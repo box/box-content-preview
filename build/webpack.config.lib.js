@@ -62,6 +62,7 @@ module.exports = {
         outputModule: true,
     },
     externals: [
+        'axios',
         'react',
         'react-dom',
         'react-dom/client',
