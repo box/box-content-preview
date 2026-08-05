@@ -11,6 +11,9 @@ describe('TimestampControl', () => {
         mediaContainer = document.createElement('div');
         mediaContainer.className = 'bp-media-container';
         videoEl = document.createElement('video');
+        // jsdom does not implement HTMLMediaElement.paused; pin it so the
+        // animation-frame updater does not treat the element as playing.
+        Object.defineProperty(videoEl, 'paused', { configurable: true, value: true });
         mediaContainer.appendChild(videoEl);
         document.body.appendChild(mediaContainer);
     });

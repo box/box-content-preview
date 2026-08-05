@@ -91,7 +91,7 @@ export default function TimestampControl({
             cancelAnimationFrame(rafIdRef.current);
         };
 
-        if (!mediaEl.paused) {
+        if (mediaEl.paused === false) {
             startLoop();
         }
 
