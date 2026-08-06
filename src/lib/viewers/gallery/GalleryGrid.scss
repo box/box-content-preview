@@ -8,16 +8,22 @@
     left: 0;
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
-    display: grid;
-    grid-auto-rows: min-content;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-    align-items: start;
     padding: 40px;
     padding-bottom: 100px;
     overflow-y: auto;
     overscroll-behavior: none;
     background-color: $white;
+}
+
+// Keep 220px/16px in sync with GalleryGrid's GALLERY_TILE_MIN_WIDTH/GALLERY_TILE_GAP.
+.bp-gallery-grid-inner {
+    --bp-gallery-hover-scale: 1.02;
+
+    display: grid;
+    grid-auto-rows: min-content;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    align-items: start;
 }
 
 .bp-gallery-tile {
@@ -32,7 +38,7 @@
 
     &:hover {
         box-shadow: 0 0 0 3px $seventy-sixers, 0 4px 5px 0 rgba(0, 0, 0, .15);
-        transform: translateY(-1px) scale(1.02);
+        transform: translateY(-1px) scale(var(--bp-gallery-hover-scale));
 
         .bp-gallery-tile-badge {
             opacity: 1;
@@ -47,6 +53,7 @@
         display: block;
         width: 100%;
         height: auto;
+        object-fit: contain;
         border-radius: 12px;
     }
 }
@@ -67,14 +74,14 @@
 
 .bp-gallery-tile-badge {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: -2px;
+    left: -2px;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 28px;
-    height: 24px;
+    min-width: 30px;
+    height: 26px;
     padding: 0 4px;
     color: $white;
     font-size: 13px;

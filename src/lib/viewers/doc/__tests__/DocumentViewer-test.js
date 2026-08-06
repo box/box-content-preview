@@ -227,11 +227,14 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             expect(docbaseStub).toBeCalledTimes(2);
         });
 
-        test('should defer to the gallery key policy instead of paging or zooming while the gallery is open', () => {
+        test('should defer paging and zoom shortcuts to the gallery while it is open', () => {
             doc.galleryController = {
                 isOpen: true,
+                isZoomEnabled: true,
                 handleArrowKey: jest.fn(),
                 handleEscape: jest.fn(),
+                zoomIn: jest.fn(),
+                zoomOut: jest.fn(),
                 destroy: jest.fn(),
             };
 
@@ -241,7 +244,8 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
             const zoomResult = doc.onKeydown('Shift++', { defaultPrevented: false });
             expect(stubs.zoomIn).not.toBeCalled();
-            expect(zoomResult).toBe(false);
+            expect(doc.galleryController.zoomIn).toBeCalledTimes(1);
+            expect(zoomResult).toBe(true);
         });
     });
 
