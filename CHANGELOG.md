@@ -1,3 +1,10 @@
+## 3.72.0 (2026-08-06)
+
+* feat(gallery): add pinch to zoom (#1729) ([96c952f](https://github.com/box/box-content-preview/commit/96c952f)), closes [#1729](https://github.com/box/box-content-preview/issues/1729)
+* chore(deps): update axios, commitlint, cypress, lodash, wait-on, canvas (#1709) ([60da442](https://github.com/box/box-content-preview/commit/60da442)), closes [#1709](https://github.com/box/box-content-preview/issues/1709)
+
+
+
 ## 3.71.0 (2026-08-04)
 
 * fix(doc): Keep PDF links above annotations overlay (#1728) ([0c04c4b](https://github.com/box/box-content-preview/commit/0c04c4b)), closes [#1728](https://github.com/box/box-content-preview/issues/1728)
