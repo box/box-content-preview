@@ -65,6 +65,7 @@ class VideoPreloader extends EventEmitter {
      * @param {HTMLElement} containerEl - Container element to append preload to
      * @param {Object} [options] - Optional options
      * @param {Object} [options.viewport] - { width, height } to use for sizing (same as video viewport to avoid jump)
+     * @param {boolean} [options.sizeWrapperToViewport] - Whether to size the wrapper instead of the container
      * @param {Function} [options.onImageClick] - Called when user clicks the preload image
      * @return {Promise} Promise to show preload
      */
@@ -120,9 +121,10 @@ class VideoPreloader extends EventEmitter {
             return;
         }
 
-        // Clear inline styles we set on the container to restore natural flexbox sizing
-        // This prevents the video controls from being off-screen after video loads
-        if (this.containerEl) {
+        // V1 sizes the media container, so restore its natural flexbox sizing.
+        // V2 sizes the wrapper, which is removed during cleanup and must retain
+        // its dimensions while the fade-out transition runs.
+        if (this.containerEl && !this.preloadOptions?.sizeWrapperToViewport) {
             this.containerEl.style.width = '';
             this.containerEl.style.height = '';
         }
@@ -260,11 +262,16 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     loadHandler = () => {
-        if (!this.preloadEl || !this.imageEl) {
+        if (!this.preloadEl || !this.imageEl || !this.preloadEl.classList.contains(CLASS_INVISIBLE)) {
             return;
         }
 
-        this.sizeContainerToViewport(this.preloadOptions?.viewport);
+        const shouldSizeWrapper = this.preloadOptions?.sizeWrapperToViewport;
+        const sizingTarget = shouldSizeWrapper ? this.wrapperEl : this.containerEl;
+        const hasVideoGeometry = shouldSizeWrapper && sizingTarget?.style.width && sizingTarget?.style.height;
+        if (!hasVideoGeometry) {
+            this.sizeContainerToViewport(this.preloadOptions?.viewport, sizingTarget);
+        }
 
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
 
@@ -290,14 +297,15 @@ class VideoPreloader extends EventEmitter {
     };
 
     /**
-     * Sizes the container based on viewport dimensions and image aspect ratio to match video player sizing.
+     * Sizes the target based on viewport dimensions and image aspect ratio to match video player sizing.
      * This prevents the thumbnail from appearing small and then jumping to the correct size.
      *
      * @param {Object} [viewportOverride] - Optional { width, height }; when provided, use instead of walking DOM (same as video viewport)
+     * @param {HTMLElement} [targetEl] - Element to size; defaults to the media container
      * @return {void}
      */
-    sizeContainerToViewport(viewportOverride) {
-        if (!this.containerEl || !this.imageEl) {
+    sizeContainerToViewport(viewportOverride, targetEl = this.containerEl) {
+        if (!this.containerEl || !this.imageEl || !targetEl) {
             return;
         }
 
@@ -334,6 +342,16 @@ class VideoPreloader extends EventEmitter {
             };
         }
 
+        if (targetEl === this.wrapperEl) {
+            const containerStyle = window.getComputedStyle(this.containerEl);
+            const horizontalPadding =
+                (parseFloat(containerStyle.paddingLeft) || 0) + (parseFloat(containerStyle.paddingRight) || 0);
+            const verticalPadding =
+                (parseFloat(containerStyle.paddingTop) || 0) + (parseFloat(containerStyle.paddingBottom) || 0);
+            viewport.width = Math.max(0, viewport.width - horizontalPadding);
+            viewport.height = Math.max(0, viewport.height - verticalPadding);
+        }
+
         // Apply minimum width to match video sizing logic
         // This ensures controls don't overflow
         const containerWidth = Math.max(MIN_VIDEO_WIDTH_PX, viewport.width);
@@ -360,9 +378,14 @@ class VideoPreloader extends EventEmitter {
             }
         }
 
-        // Set container dimensions
-        this.containerEl.style.width = `${finalWidth}px`;
-        this.containerEl.style.height = `${containerHeight}px`;
+        targetEl.style.width = `${finalWidth}px`;
+        targetEl.style.height = `${containerHeight}px`;
+
+        if (targetEl === this.wrapperEl) {
+            targetEl.style.left = '50%';
+            targetEl.style.top = '50%';
+            targetEl.style.transform = 'translate(-50%, -50%)';
+        }
     }
 
     /**

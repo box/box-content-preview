@@ -190,6 +190,9 @@ class VideoBaseViewer extends MediaBaseViewer {
         const options = {
             onImageClick: () => this.handlePlayRequest(),
         };
+        if (this.featureEnabled('videoPlayerV2.enabled')) {
+            options.sizeWrapperToViewport = true;
+        }
         if (this.wrapperEl) {
             const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             options.viewport = {

@@ -153,6 +153,14 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.containerEl.style.height).toBe('');
         });
 
+        test('should preserve container styles when the V2 wrapper is the sizing target', () => {
+            videoPreloader.preloadOptions = { sizeWrapperToViewport: true };
+            videoPreloader.hidePreload();
+
+            expect(videoPreloader.containerEl.style.width).toBe('1000px');
+            expect(videoPreloader.containerEl.style.height).toBe('500px');
+        });
+
         test('should add transparent class and setup cleanup listeners', () => {
             videoPreloader.hidePreload();
 
@@ -256,6 +264,7 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
             videoPreloader.imageEl = document.createElement('img');
             videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
             jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
             jest.spyOn(videoPreloader, 'emit').mockImplementation();
         });
@@ -294,7 +303,52 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.preloadOptions = { viewport: { width: 800, height: 450 } };
             videoPreloader.loadHandler();
 
-            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 800, height: 450 });
+            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith(
+                { width: 800, height: 450 },
+                videoPreloader.containerEl,
+            );
+        });
+
+        test('should size the V2 wrapper before making the preload visible', () => {
+            videoPreloader.preloadOptions = {
+                sizeWrapperToViewport: true,
+                viewport: { width: 800, height: 450 },
+            };
+            videoPreloader.sizeContainerToViewport.mockImplementation(() => {
+                expect(videoPreloader.preloadEl).toHaveClass(CLASS_INVISIBLE);
+            });
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith(
+                { width: 800, height: 450 },
+                videoPreloader.wrapperEl,
+            );
+            expect(videoPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        test('should preserve video geometry if metadata sizes the V2 wrapper before the image loads', () => {
+            videoPreloader.preloadOptions = {
+                sizeWrapperToViewport: true,
+                viewport: { width: 800, height: 450 },
+            };
+            videoPreloader.wrapperEl.style.width = '640px';
+            videoPreloader.wrapperEl.style.height = '360px';
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.sizeContainerToViewport).not.toBeCalled();
+            expect(videoPreloader.wrapperEl.style.width).toBe('640px');
+            expect(videoPreloader.wrapperEl.style.height).toBe('360px');
+            expect(videoPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        test('should handle a cached image load only once', () => {
+            videoPreloader.loadHandler();
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.sizeContainerToViewport).toHaveBeenCalledTimes(1);
+            expect(videoPreloader.emit).toHaveBeenCalledTimes(1);
         });
 
         test('should add click listener and invoke onImageClick when wrapper is clicked', () => {
@@ -314,8 +368,16 @@ describe('lib/viewers/media/VideoPreloader', () => {
         beforeEach(() => {
             videoPreloader.containerEl = containerEl;
             videoPreloader.imageEl = document.createElement('img');
-            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', { value: 1920, writable: false });
-            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', { value: 1080, writable: false });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', {
+                value: 1920,
+                writable: false,
+                configurable: true,
+            });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', {
+                value: 1080,
+                writable: false,
+                configurable: true,
+            });
         });
 
         test('should not do anything if containerEl or imageEl is missing', () => {
@@ -399,6 +461,49 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             // Height should be constrained to viewport height (400px)
             expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(400);
+        });
+
+        test('should size and center the V2 wrapper without changing the media container', () => {
+            videoPreloader.wrapperEl = document.createElement('div');
+
+            videoPreloader.sizeContainerToViewport({ width: 640, height: 360 }, videoPreloader.wrapperEl);
+
+            expect(videoPreloader.wrapperEl.style.width).toBe('640px');
+            expect(parseFloat(videoPreloader.wrapperEl.style.height)).toBeCloseTo(360, 0);
+            expect(videoPreloader.wrapperEl.style.left).toBe('50%');
+            expect(videoPreloader.wrapperEl.style.top).toBe('50%');
+            expect(videoPreloader.wrapperEl.style.transform).toBe('translate(-50%, -50%)');
+            expect(videoPreloader.containerEl.style.width).toBe('');
+            expect(videoPreloader.containerEl.style.height).toBe('');
+        });
+
+        test('should fit a portrait V2 poster within the viewport', () => {
+            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', {
+                value: 1080,
+                configurable: true,
+            });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', {
+                value: 1920,
+                configurable: true,
+            });
+            videoPreloader.wrapperEl = document.createElement('div');
+
+            videoPreloader.sizeContainerToViewport({ width: 1200, height: 800 }, videoPreloader.wrapperEl);
+
+            expect(parseFloat(videoPreloader.wrapperEl.style.width)).toBeCloseTo(450, 0);
+            expect(videoPreloader.wrapperEl.style.height).toBe('800px');
+            expect(videoPreloader.containerEl.style.width).toBe('');
+            expect(videoPreloader.containerEl.style.height).toBe('');
+        });
+
+        test('should keep the V2 wrapper inside the media container padding', () => {
+            videoPreloader.containerEl.style.padding = '48px';
+            videoPreloader.wrapperEl = document.createElement('div');
+
+            videoPreloader.sizeContainerToViewport({ width: 736, height: 456 }, videoPreloader.wrapperEl);
+
+            expect(videoPreloader.wrapperEl.style.width).toBe('640px');
+            expect(parseFloat(videoPreloader.wrapperEl.style.height)).toBeCloseTo(360, 0);
         });
     });
 

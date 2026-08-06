@@ -810,6 +810,37 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 videoBase.setVideoDimensions();
                 expect(videoBase.mediaContainerEl.style.width).toBe('');
             });
+
+            test('should reconcile provisional poster geometry after metadata when V2 is enabled', () => {
+                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+                videoBase.aspect = 1;
+                videoBase.preloader = {
+                    wrapperEl: document.createElement('div'),
+                };
+                videoBase.preloader.wrapperEl.style.width = '480px';
+                videoBase.preloader.wrapperEl.style.height = '480px';
+
+                videoBase.setVideoDimensions();
+
+                expect(videoBase.preloader.wrapperEl.style.width).toBe('500px');
+                expect(videoBase.preloader.wrapperEl.style.height).toBe('500px');
+            });
+
+            test('should provide fallback poster geometry after metadata when V2 wrapper is unsized', () => {
+                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+                videoBase.aspect = 1;
+                videoBase.preloader = {
+                    wrapperEl: document.createElement('div'),
+                };
+
+                videoBase.setVideoDimensions();
+
+                expect(videoBase.preloader.wrapperEl.style.width).toBe('500px');
+                expect(videoBase.preloader.wrapperEl.style.height).toBe('500px');
+                expect(videoBase.preloader.wrapperEl.style.left).toBe('50%');
+                expect(videoBase.preloader.wrapperEl.style.top).toBe('50%');
+                expect(videoBase.preloader.wrapperEl.style.transform).toBe('translate(-50%, -50%)');
+            });
         });
     });
 
@@ -1376,6 +1407,35 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 'https://example.com/preview.jpg?auth=token',
                 videoBase.mediaContainerEl,
                 expect.objectContaining({ onImageClick: expect.any(Function) }),
+            );
+        });
+
+        test('should target the preload wrapper for sizing when V2 is enabled', () => {
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                'https://example.com/preview.jpg?auth=token',
+                videoBase.mediaContainerEl,
+                expect.objectContaining({
+                    onImageClick: expect.any(Function),
+                    sizeWrapperToViewport: true,
+                }),
+            );
+        });
+
+        test('should preserve container sizing when V2 is disabled', () => {
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+            videoBase.showPreload();
+
+            expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                'https://example.com/preview.jpg?auth=token',
+                videoBase.mediaContainerEl,
+                expect.not.objectContaining({ sizeWrapperToViewport: expect.anything() }),
             );
         });
 
