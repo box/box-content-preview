@@ -18,6 +18,7 @@ describe('GalleryGrid', () => {
         init: jest.fn().mockResolvedValue(100),
         getImageFromCache: jest.fn().mockReturnValue(null),
         createThumbnailImage: jest.fn().mockResolvedValue(null),
+        renderPageImage: jest.fn(() => ({ cancel: jest.fn(), promise: Promise.resolve(null) })),
         destroy: jest.fn(),
     };
 
@@ -263,12 +264,14 @@ describe('GalleryGrid', () => {
         test('should redirect focus to focused tile when grid container is clicked', async () => {
             getWrapper();
             const grid = screen.getByRole('listbox');
+            const focusedTile = screen.getByLabelText('Page 3');
+            const focus = jest.spyOn(focusedTile, 'focus');
             grid.focus();
 
             await waitFor(() => {
-                const focusedTile = screen.getByLabelText('Page 3');
                 expect(focusedTile).toHaveFocus();
             });
+            expect(focus).toHaveBeenCalledWith({ preventScroll: true });
         });
     });
 
@@ -551,6 +554,60 @@ describe('GalleryGrid', () => {
             // Pages beyond the viewport + buffer stay lazy
             expect(thumbnail.createThumbnailImage).toHaveBeenCalledTimes(48);
             expect(screen.getByLabelText('Page 49').querySelector('img')).not.toBeInTheDocument();
+        });
+
+        test('should temporarily sharpen visible tiles after zooming in', async () => {
+            const renderPageImage = jest.fn((pageNum: number, { thumbMaxWidth }: { thumbMaxWidth: number }) => ({
+                cancel: jest.fn(),
+                promise: Promise.resolve({
+                    dataUrl: `data:image/png;high-res-${pageNum}`,
+                    height: thumbMaxWidth,
+                    width: thumbMaxWidth,
+                }),
+            }));
+            const thumbnail = {
+                ...mockThumbnail,
+                createThumbnailImage: jest.fn((pageIndex: number) => {
+                    const image = document.createElement('img');
+                    image.src = `data:image/png;base-${pageIndex + 1}`;
+                    return Promise.resolve(image);
+                }),
+                renderPageImage,
+            };
+            const { rerender } = getWrapper({ pageCount: 10, currentPage: 1, thumbnail });
+            layoutGrid(500);
+
+            await waitFor(() => {
+                expect(thumbnail.createThumbnailImage).toHaveBeenCalledTimes(10);
+            });
+            expect(thumbnail.createThumbnailImage).toHaveBeenCalledWith(0, {
+                createImgTag: true,
+                thumbMaxWidth: 440,
+            });
+            thumbnail.createThumbnailImage.mockClear();
+
+            screen.getAllByRole('option').forEach(tile => {
+                Object.defineProperty(tile, 'offsetWidth', { configurable: true, value: 600 });
+            });
+            rerender(<GalleryGrid {...defaultProps} currentPage={1} scale={2} thumbnail={thumbnail} />);
+
+            await waitFor(() => {
+                expect(renderPageImage).toHaveBeenCalledWith(1, { thumbMaxWidth: 880 });
+            });
+            expect(thumbnail.createThumbnailImage).not.toHaveBeenCalled();
+            expect(screen.getByLabelText('Page 1').querySelector('img')).toHaveAttribute(
+                'src',
+                'data:image/png;high-res-1',
+            );
+
+            rerender(<GalleryGrid {...defaultProps} currentPage={1} scale={1} thumbnail={thumbnail} />);
+
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 1').querySelector('img')).toHaveAttribute(
+                    'src',
+                    'data:image/png;base-1',
+                );
+            });
         });
 
         test('should load radiating outward from the viewed area', async () => {
