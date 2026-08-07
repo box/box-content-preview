@@ -38,6 +38,9 @@ class VideoBaseViewer extends MediaBaseViewer {
     /** @property {VideoPreloader} - Video preloader instance */
     preloader;
 
+    /** @property {HTMLElement} - Full-size padded stage around the shared V2 media frame */
+    mediaStageEl;
+
     /**
      * @inheritdoc
      */
@@ -76,6 +79,16 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Call super() to set up common layout
         super.setup();
 
+        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled') && this.supportsVideoPlayerV2();
+        if (this.isVideoPlayerV2) {
+            this.mediaStageEl = document.createElement('div');
+            this.mediaStageEl.classList.add('bp-media-stage--v2');
+            this.wrapperEl.insertBefore(this.mediaStageEl, this.mediaContainerEl);
+            this.mediaStageEl.appendChild(this.mediaContainerEl);
+            this.wrapperEl.classList.add('bp-media--v2');
+            this.mediaContainerEl.classList.add('bp-media-container--v2');
+        }
+
         this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
 
         this.isNarrowVideo = false;
@@ -100,17 +113,21 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
-        if (this.useReactControls() && !this.featureEnabled('videoPlayerV2.enabled')) {
+        if (this.useReactControls() && !this.isVideoPlayerV2) {
             // Shift up by half the control bar + half the spinner to visually center above the controls
             this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
         }
 
-        if (this.featureEnabled('videoPlayerV2.enabled')) {
-            this.wrapperEl.classList.add('bp-media--v2');
-            this.mediaContainerEl.classList.add('bp-media-container--v2');
-        }
-
         this.lowerLights();
+    }
+
+    /**
+     * Whether this viewer supports the V2 video player structure.
+     *
+     * @return {boolean} true when V2 is supported
+     */
+    supportsVideoPlayerV2() {
+        return true;
     }
 
     /**
@@ -190,10 +207,9 @@ class VideoBaseViewer extends MediaBaseViewer {
         const options = {
             onImageClick: () => this.handlePlayRequest(),
         };
-        if (this.featureEnabled('videoPlayerV2.enabled')) {
-            options.sizeWrapperToViewport = true;
-        }
-        if (this.wrapperEl) {
+        if (this.isVideoPlayerV2) {
+            options.viewport = this.getVideoViewport();
+        } else if (this.wrapperEl) {
             const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             options.viewport = {
                 width: this.wrapperEl.clientWidth,
@@ -398,9 +414,7 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         // For the V2 player, mount the controls on the wrapper (above the media container)
         // so their width is constrained by the viewport rather than the video
-        const controlsContainerEl = this.featureEnabled('videoPlayerV2.enabled')
-            ? this.wrapperEl
-            : this.mediaContainerEl;
+        const controlsContainerEl = this.isVideoPlayerV2 ? this.wrapperEl : this.mediaContainerEl;
 
         this.controls = new ControlsRoot({
             className: 'bp-VideoControlsRoot',
@@ -547,10 +561,10 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     resize() {
         // Reset any prior set widths and heights
-        // We are only going to modify the widths and not heights
-        // This is because in Chrome its not possible to set a height
-        // that larger than the current videoHeight.
         this.mediaEl.style.width = '';
+        if (this.isVideoPlayerV2) {
+            this.mediaEl.style.height = '';
+        }
         if (this.mediaContainerEl) {
             this.mediaContainerEl.style.width = '';
             this.mediaContainerEl.style.height = '';
@@ -572,6 +586,35 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * Returns the usable V2 stage dimensions inside its padding.
+     *
+     * Before React controls mount, reserve their height so poster geometry
+     * matches the stage dimensions after metadata loads.
+     *
+     * @private
+     * @return {Object} viewport width and height
+     */
+    getVideoViewport() {
+        if (!this.mediaStageEl) {
+            return {
+                height: this.wrapperEl.clientHeight,
+                width: this.wrapperEl.clientWidth,
+            };
+        }
+
+        const stageStyle = window.getComputedStyle(this.mediaStageEl);
+        const horizontalPadding =
+            (parseFloat(stageStyle.paddingLeft) || 0) + (parseFloat(stageStyle.paddingRight) || 0);
+        const verticalPadding = (parseFloat(stageStyle.paddingTop) || 0) + (parseFloat(stageStyle.paddingBottom) || 0);
+        const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
+
+        return {
+            height: Math.max(0, this.wrapperEl.clientHeight - verticalPadding - controlsHeight),
+            width: Math.max(0, this.wrapperEl.clientWidth - horizontalPadding),
+        };
+    }
+
+    /**
      * Calculates and applies video dimensions based on viewport constraints.
      * Handles three cases: video fits in viewport, fullscreen mode, or overflow.
      *
@@ -582,14 +625,19 @@ class VideoBaseViewer extends MediaBaseViewer {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
         const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
+        const viewport = this.isVideoPlayerV2
+            ? this.getVideoViewport()
+            : {
+                  height: this.wrapperEl.clientHeight - controlsHeight,
+                  width: this.wrapperEl.clientWidth,
+              };
 
-        // Calculate the viewport height minus the control bar height if using react controls
-        // This is necessary to prevent the control bar from overflowing the viewport when the video scale
-        // is expanded.
-        const viewport = {
-            height: this.wrapperEl.clientHeight - controlsHeight,
-            width: this.wrapperEl.clientWidth,
-        };
+        if (this.isVideoPlayerV2 && this.preloader?.isVisible()) {
+            this.preloader.sizeContainerToViewport(viewport);
+            this.mediaEl.style.width = this.mediaContainerEl.style.width;
+            this.mediaEl.style.height = this.mediaContainerEl.style.height;
+            return;
+        }
 
         // We need the width to be atleast wide enough for the controls
         // to not overflow and fit properly
@@ -632,18 +680,11 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.mediaContainerEl.style.width = this.mediaEl.style.width;
         }
 
-        if (this.featureEnabled('videoPlayerV2.enabled')) {
-            this.mediaContainerEl.style.width = '';
-
-            if (this.preloader?.wrapperEl && this.mediaEl.style.width) {
-                const videoWidth = parseInt(this.mediaEl.style.width, 10);
-                const videoHeight = videoWidth / this.aspect;
-                this.preloader.wrapperEl.style.width = `${videoWidth}px`;
-                this.preloader.wrapperEl.style.height = `${videoHeight}px`;
-                this.preloader.wrapperEl.style.left = '50%';
-                this.preloader.wrapperEl.style.top = '50%';
-                this.preloader.wrapperEl.style.transform = 'translate(-50%, -50%)';
-            }
+        if (this.isVideoPlayerV2 && this.mediaEl.style.width) {
+            const videoWidth = parseFloat(this.mediaEl.style.width);
+            const videoHeight = videoWidth / this.aspect;
+            this.mediaEl.style.height = `${videoHeight}px`;
+            this.mediaContainerEl.style.height = `${videoHeight}px`;
         }
     }
 
@@ -656,7 +697,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     handleNarrowVideoUI() {
         if (this.useReactControls()) {
-            const widthNumber = this.featureEnabled('videoPlayerV2.enabled')
+            const widthNumber = this.isVideoPlayerV2
                 ? this.wrapperEl.clientWidth
                 : parseInt(this.mediaEl.style.width, 10);
 

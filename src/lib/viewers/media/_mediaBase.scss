@@ -178,16 +178,30 @@
     background: radial-gradient(ellipse at center, #2a2a2a 0%, #000 100%);
 }
 
-.bp-media-container--v2 {
+.bp-media-stage--v2 {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 0;
     padding: 48px;
+}
+
+.bp-media-container--v2 {
+    flex: 0 0 auto;
+    width: auto;
+    padding: 0;
 
     video {
+        object-fit: contain;
         border: 1px solid rgba($white, 0.12);
     }
 
     .bp-video-preload-wrapper {
-        inset: 48px auto 48px 50%;
-        transform: translateX(-50%);
+        inset: 0;
+        transform: none;
 
         .bp-preload {
             transform: none;

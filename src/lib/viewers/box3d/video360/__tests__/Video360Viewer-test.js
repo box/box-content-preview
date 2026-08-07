@@ -68,6 +68,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             viewer.isSetup = false;
             viewer.setup();
             expect(viewer.isVideoPlayerV2).toBe(false);
+            expect(viewer.mediaStageEl).toBeUndefined();
             expect(viewer.wrapperEl).not.toHaveClass('bp-media--v2');
             expect(viewer.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
         });

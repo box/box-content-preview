@@ -135,6 +135,9 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.setup();
 
             expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(true);
+            expect(videoBase.mediaStageEl.classList.contains('bp-media-stage--v2')).toBe(true);
+            expect(videoBase.mediaStageEl.parentNode).toBe(videoBase.wrapperEl);
+            expect(videoBase.mediaContainerEl.parentNode).toBe(videoBase.mediaStageEl);
             expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(true);
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
@@ -161,6 +164,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.setup();
 
             expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(false);
+            expect(videoBase.mediaStageEl).toBeUndefined();
+            expect(videoBase.mediaContainerEl.parentNode).toBe(videoBase.wrapperEl);
             expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(false);
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
@@ -325,7 +330,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         test('should mount controls on wrapperEl when videoPlayerV2 is enabled', () => {
             videoBase.mediaContainerEl = document.createElement('div');
             videoBase.wrapperEl = document.createElement('div');
-            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBase.isVideoPlayerV2 = true;
             videoBase.loadUIReact();
 
             expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
@@ -335,7 +340,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         test('should mount controls on mediaContainerEl when videoPlayerV2 is disabled', () => {
             videoBase.mediaContainerEl = document.createElement('div');
             videoBase.wrapperEl = document.createElement('div');
-            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.isVideoPlayerV2 = false;
             videoBase.loadUIReact();
 
             expect(videoBase.controls).toBeInstanceOf(ControlsRoot);
@@ -687,7 +692,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
 
         test('should use wrapperEl.clientWidth when videoPlayerV2 is enabled', () => {
-            jest.spyOn(videoBaseViewer, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBaseViewer.isVideoPlayerV2 = true;
             videoBaseViewer.wrapperEl = document.createElement('div');
             Object.defineProperty(videoBaseViewer.wrapperEl, 'clientWidth', { value: 579 });
             videoBaseViewer.handleNarrowVideoUI();
@@ -696,7 +701,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
 
         test('should use wrapperEl.clientWidth >= threshold when videoPlayerV2 is enabled', () => {
-            jest.spyOn(videoBaseViewer, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            videoBaseViewer.isVideoPlayerV2 = true;
             videoBaseViewer.wrapperEl = document.createElement('div');
             Object.defineProperty(videoBaseViewer.wrapperEl, 'clientWidth', { value: 580 });
             videoBaseViewer.playContainerEl = document.createElement('div');
@@ -803,43 +808,63 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 expect(videoBase.mediaContainerEl.style.width).toBe(videoBase.mediaEl.style.width);
             });
 
-            test('should reset mediaContainerEl width when V2 is enabled', () => {
-                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            test('should size mediaContainerEl as the shared frame when V2 is enabled', () => {
+                videoBase.isVideoPlayerV2 = true;
                 videoBase.aspect = 1;
                 videoBase.mediaContainerEl.style.width = '500px';
                 videoBase.setVideoDimensions();
-                expect(videoBase.mediaContainerEl.style.width).toBe('');
+                expect(videoBase.mediaContainerEl.style.width).toBe('500px');
+                expect(videoBase.mediaContainerEl.style.height).toBe('500px');
             });
 
-            test('should reconcile provisional poster geometry after metadata when V2 is enabled', () => {
-                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+            test('should preserve shared poster geometry after metadata when V2 is enabled', () => {
+                videoBase.isVideoPlayerV2 = true;
                 videoBase.aspect = 1;
                 videoBase.preloader = {
-                    wrapperEl: document.createElement('div'),
-                };
-                videoBase.preloader.wrapperEl.style.width = '480px';
-                videoBase.preloader.wrapperEl.style.height = '480px';
-
-                videoBase.setVideoDimensions();
-
-                expect(videoBase.preloader.wrapperEl.style.width).toBe('500px');
-                expect(videoBase.preloader.wrapperEl.style.height).toBe('500px');
-            });
-
-            test('should provide fallback poster geometry after metadata when V2 wrapper is unsized', () => {
-                jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
-                videoBase.aspect = 1;
-                videoBase.preloader = {
-                    wrapperEl: document.createElement('div'),
+                    isVisible: jest.fn().mockReturnValue(true),
+                    sizeContainerToViewport: jest.fn(() => {
+                        videoBase.mediaContainerEl.style.width = '480px';
+                        videoBase.mediaContainerEl.style.height = '480px';
+                    }),
                 };
 
                 videoBase.setVideoDimensions();
 
-                expect(videoBase.preloader.wrapperEl.style.width).toBe('500px');
-                expect(videoBase.preloader.wrapperEl.style.height).toBe('500px');
-                expect(videoBase.preloader.wrapperEl.style.left).toBe('50%');
-                expect(videoBase.preloader.wrapperEl.style.top).toBe('50%');
-                expect(videoBase.preloader.wrapperEl.style.transform).toBe('translate(-50%, -50%)');
+                expect(videoBase.preloader.sizeContainerToViewport).toHaveBeenCalled();
+                expect(videoBase.mediaContainerEl.style.width).toBe('480px');
+                expect(videoBase.mediaContainerEl.style.height).toBe('480px');
+                expect(videoBase.mediaEl.style.width).toBe('480px');
+                expect(videoBase.mediaEl.style.height).toBe('480px');
+            });
+
+            test('should use video geometry when the V2 poster is not visible', () => {
+                videoBase.isVideoPlayerV2 = true;
+                videoBase.aspect = 1;
+                videoBase.preloader = {
+                    isVisible: jest.fn().mockReturnValue(false),
+                };
+
+                videoBase.setVideoDimensions();
+
+                expect(videoBase.mediaEl.style.width).toBe('500px');
+                expect(videoBase.mediaEl.style.height).toBe('500px');
+                expect(videoBase.mediaContainerEl.style.width).toBe('500px');
+                expect(videoBase.mediaContainerEl.style.height).toBe('500px');
+            });
+        });
+    });
+
+    describe('getVideoViewport()', () => {
+        test('should reserve V2 stage padding and React controls', () => {
+            videoBase.mediaStageEl = document.createElement('div');
+            videoBase.mediaStageEl.style.padding = '48px';
+            Object.defineProperty(videoBase.wrapperEl, 'clientWidth', { value: 800 });
+            Object.defineProperty(videoBase.wrapperEl, 'clientHeight', { value: 600 });
+            videoBase.useReactControls.mockReturnValue(true);
+
+            expect(videoBase.getVideoViewport()).toEqual({
+                height: 384,
+                width: 704,
             });
         });
     });
@@ -1410,8 +1435,11 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             );
         });
 
-        test('should target the preload wrapper for sizing when V2 is enabled', () => {
-            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(flag => flag === 'videoPlayerV2.enabled');
+        test('should size the shared media frame when V2 is enabled', () => {
+            videoBase.isVideoPlayerV2 = true;
+            videoBase.mediaStageEl = document.createElement('div');
+            Object.defineProperty(videoBase.wrapperEl, 'clientWidth', { value: 800 });
+            Object.defineProperty(videoBase.wrapperEl, 'clientHeight', { value: 450 });
             jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
 
             videoBase.showPreload();
@@ -1421,13 +1449,13 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 videoBase.mediaContainerEl,
                 expect.objectContaining({
                     onImageClick: expect.any(Function),
-                    sizeWrapperToViewport: true,
+                    viewport: { height: 450, width: 800 },
                 }),
             );
         });
 
         test('should preserve container sizing when V2 is disabled', () => {
-            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            videoBase.isVideoPlayerV2 = false;
             jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
 
             videoBase.showPreload();

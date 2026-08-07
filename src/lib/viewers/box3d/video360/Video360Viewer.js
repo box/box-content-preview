@@ -45,6 +45,11 @@ class Video360Viewer extends DashViewer {
     }
 
     /** @inheritdoc */
+    supportsVideoPlayerV2() {
+        return false;
+    }
+
+    /** @inheritdoc */
     setup() {
         if (this.isSetup) {
             return;
