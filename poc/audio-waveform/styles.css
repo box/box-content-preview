@@ -1,0 +1,250 @@
+:root {
+    --bp-blue: #0061d5;
+    --bp-black: #000;
+    --bp-gray: #6f6f6f;
+    --bp-white: #fff;
+    --bp-label: #ddd;
+    --player-width: 360px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background:
+        radial-gradient(ellipse at top, #2a2a2a 0%, #1a1a1a 45%, #111 100%);
+    color: #eee;
+}
+
+.poc-header {
+    text-align: center;
+    max-width: 420px;
+    padding: 0 16px;
+}
+
+.poc-header h1 {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.poc-header p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #aaa;
+    line-height: 1.4;
+}
+
+.poc-hint {
+    margin-top: 8px !important;
+    font-size: 0.75rem !important;
+    color: #888 !important;
+}
+
+.poc-hint kbd {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    padding: 1px 4px;
+    font-size: 0.7rem;
+}
+
+/* Mimics .bp-MP3Controls */
+.bp-MP3Controls {
+    display: flex;
+    flex-direction: column;
+    width: var(--player-width);
+    background-color: var(--bp-black);
+    border-radius: 2px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    user-select: none;
+}
+
+.bp-DurationLabels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px 4px;
+    font-size: 11px;
+    color: var(--bp-label);
+    font-variant-numeric: tabular-nums;
+}
+
+.bp-WindowRange {
+    color: var(--bp-gray);
+    font-size: 10px;
+}
+
+.bp-Waveform {
+    position: relative;
+    height: 56px;
+    margin: 0 10px 4px;
+    cursor: pointer;
+}
+
+.bp-Waveform-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.bp-Waveform.is-zoomed {
+    box-shadow: inset 0 0 0 1px rgba(0, 97, 213, 0.35);
+}
+
+.bp-Waveform.is-loading::after {
+    content: 'Generating waveform…';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--bp-gray);
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.bp-MP3Controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px 8px;
+}
+
+.bp-MP3Controls-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.bp-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--bp-white);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.bp-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.bp-btn:focus-visible {
+    outline: 2px solid var(--bp-blue);
+    outline-offset: 1px;
+}
+
+.bp-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.bp-Volume {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.bp-Volume-slider {
+    width: 64px;
+    accent-color: var(--bp-blue);
+    cursor: pointer;
+}
+
+.bp-Zoom {
+    display: flex;
+    align-items: center;
+}
+
+.bp-Zoom-level {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--bp-label);
+    font: inherit;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    min-width: 26px;
+    padding: 2px 0;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.bp-Zoom-level:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.bp-btn:disabled,
+.bp-Zoom-level:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.bp-btn:disabled:hover {
+    background: transparent;
+}
+
+.bp-SettingsStub {
+    opacity: 0.55;
+    cursor: default;
+}
+
+.bp-SettingsStub:hover {
+    background: transparent;
+}
+
+.poc-picker {
+    width: var(--player-width);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #bbb;
+}
+
+.poc-picker label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.poc-picker input[type='file'] {
+    font-size: 0.75rem;
+    color: #ccc;
+}
+
+.poc-status {
+    min-height: 1.2em;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.poc-status[data-tone='error'] {
+    color: #ff8a8a;
+}
+
+.poc-status[data-tone='ok'] {
+    color: #8fd19e;
+}
+
+audio {
+    display: none;
+}
