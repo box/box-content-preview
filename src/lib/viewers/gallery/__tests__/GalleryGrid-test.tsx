@@ -18,6 +18,7 @@ describe('GalleryGrid', () => {
         init: jest.fn().mockResolvedValue(100),
         getImageFromCache: jest.fn().mockReturnValue(null),
         createThumbnailImage: jest.fn().mockResolvedValue(null),
+        renderPageImage: jest.fn(() => ({ cancel: jest.fn(), promise: Promise.resolve(null) })),
         destroy: jest.fn(),
     };
 
@@ -263,12 +264,14 @@ describe('GalleryGrid', () => {
         test('should redirect focus to focused tile when grid container is clicked', async () => {
             getWrapper();
             const grid = screen.getByRole('listbox');
+            const focusedTile = screen.getByLabelText('Page 3');
+            const focus = jest.spyOn(focusedTile, 'focus');
             grid.focus();
 
             await waitFor(() => {
-                const focusedTile = screen.getByLabelText('Page 3');
                 expect(focusedTile).toHaveFocus();
             });
+            expect(focus).toHaveBeenCalledWith({ preventScroll: true });
         });
     });
 
@@ -325,6 +328,191 @@ describe('GalleryGrid', () => {
         });
     });
 
+    describe('zoom', () => {
+        test('should scale and clamp the tile width while keeping the listbox structure untouched', () => {
+            const { rerender } = getWrapper();
+            const inner = screen.getByRole('presentation');
+            Object.defineProperty(inner, 'clientWidth', { configurable: true, value: 920 });
+
+            expect(inner).toHaveClass('bp-gallery-grid-inner');
+            expect(inner.style.gridTemplateColumns).toBe('');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe('1.02');
+            expect(screen.getByRole('listbox')).toContainElement(inner);
+            expect(screen.getAllByRole('option')).toHaveLength(10);
+
+            rerender(<GalleryGrid {...defaultProps} scale={1.5} />);
+
+            expect(inner.style.gridTemplateColumns).toBe('repeat(auto-fill, 444px)');
+            expect(inner.style.justifyContent).toBe('center');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe(String(1 + 0.02 / 1.5));
+            expect(screen.getAllByRole('option')).toHaveLength(10);
+
+            rerender(<GalleryGrid {...defaultProps} scale={1} />);
+
+            expect(inner.style.gridTemplateColumns).toBe('');
+            expect(inner.style.justifyContent).toBe('');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe('1.02');
+
+            Object.defineProperty(inner, 'clientWidth', { configurable: true, value: 200 });
+            rerender(<GalleryGrid {...defaultProps} scale={2} />);
+
+            expect(inner.style.gridTemplateColumns).toBe('repeat(auto-fill, 200px)');
+            expect(inner.style.getPropertyValue('--bp-gallery-hover-scale')).toBe('1.01');
+        });
+
+        test('should keep the topmost visible tile anchored when the scale changes', () => {
+            const { rerender } = getWrapper();
+            const grid = screen.getByRole('listbox');
+            Object.defineProperty(grid, 'scrollLeft', { configurable: true, value: 0, writable: true });
+            Object.defineProperty(grid, 'scrollTop', { configurable: true, value: 100, writable: true });
+            const anchorTile = screen.getByLabelText('Page 3');
+            jest.spyOn(anchorTile, 'getBoundingClientRect')
+                .mockReturnValueOnce({ left: 0, top: 150 } as DOMRect)
+                .mockReturnValueOnce({ left: 30, top: 390 } as DOMRect);
+
+            rerender(<GalleryGrid {...defaultProps} scale={2} />);
+
+            expect(grid.scrollLeft).toBe(30);
+            expect(grid.scrollTop).toBe(340);
+        });
+
+        describe('pinch gestures', () => {
+            let rafCallback: FrameRequestCallback | null = null;
+
+            const wheelEvent = (init: WheelEventInit): WheelEvent =>
+                new WheelEvent('wheel', { bubbles: true, cancelable: true, ...init });
+
+            const touchEvent = (type: string, xPositions: number[]): TouchEvent => {
+                const touches = xPositions.map(
+                    x => (({ clientX: x, clientY: 0, pageX: x, pageY: 0 } as unknown) as Touch),
+                );
+                return new TouchEvent(type, { bubbles: true, cancelable: true, touches });
+            };
+
+            beforeEach(() => {
+                rafCallback = null;
+                jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+                    rafCallback = callback;
+                    return 1;
+                });
+            });
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+                delete (document as { elementFromPoint?: unknown }).elementFromPoint;
+            });
+
+            test('should update scale from a ctrl+wheel trackpad pinch anchored on the cursor', () => {
+                const onScaleChange = jest.fn();
+                const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+                Object.defineProperty(grid, 'scrollLeft', { configurable: true, value: 0, writable: true });
+                Object.defineProperty(grid, 'scrollTop', { configurable: true, value: 0, writable: true });
+                const event = wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 });
+
+                act(() => {
+                    grid.dispatchEvent(event);
+                });
+                expect(event.defaultPrevented).toBe(true);
+
+                act(() => rafCallback!(0));
+                expect(onScaleChange).toHaveBeenCalledWith(1.2);
+
+                const pinchTile = screen.getByLabelText('Page 5');
+                document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
+                jest.spyOn(pinchTile, 'getBoundingClientRect')
+                    .mockReturnValueOnce({ left: 250, top: 180 } as DOMRect)
+                    .mockReturnValueOnce({ left: 310, top: 260 } as DOMRect);
+
+                rerender(
+                    <GalleryGrid {...defaultProps} isPinchZoomEnabled onScaleChange={onScaleChange} scale={1.2} />,
+                );
+
+                expect(document.elementFromPoint).toHaveBeenCalledWith(300, 200);
+                expect(grid.scrollLeft).toBe(60);
+                expect(grid.scrollTop).toBe(80);
+            });
+
+            test('should clear the pinch focal point when the scale change is rejected', () => {
+                const onScaleChange = jest.fn().mockReturnValue(false);
+                const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 }));
+                });
+                act(() => rafCallback!(0));
+
+                document.elementFromPoint = jest.fn();
+                rerender(
+                    <GalleryGrid {...defaultProps} isPinchZoomEnabled onScaleChange={onScaleChange} scale={1.1} />,
+                );
+
+                expect(document.elementFromPoint).not.toHaveBeenCalled();
+            });
+
+            test('should update scale from a two-finger touch pinch', () => {
+                const onScaleChange = jest.fn();
+                getWrapper({ isTouchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(touchEvent('touchstart', [0, 100]));
+                    grid.dispatchEvent(touchEvent('touchmove', [0, 200]));
+                });
+
+                act(() => rafCallback!(0));
+                expect(onScaleChange).toHaveBeenCalledWith(2);
+            });
+
+            test('should report one pinch session per burst of trackpad wheel events', () => {
+                let now = 1000;
+                jest.spyOn(Date, 'now').mockImplementation(() => now);
+                const onPinchStart = jest.fn();
+                getWrapper({ isPinchZoomEnabled: true, onPinchStart });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -20 }));
+                    now += 50; // Within the same gesture
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -20 }));
+                });
+
+                expect(onPinchStart).toHaveBeenCalledTimes(1);
+                expect(onPinchStart).toHaveBeenCalledWith('zoomIn');
+
+                act(() => {
+                    now += 500; // A pause starts a new gesture
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: 20 }));
+                });
+
+                expect(onPinchStart).toHaveBeenCalledTimes(2);
+                expect(onPinchStart).toHaveBeenLastCalledWith('zoomOut');
+            });
+
+            test('should ignore plain wheel scrolling and ctrl+wheel when pinch zoom is disabled', () => {
+                const onScaleChange = jest.fn();
+                const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                const plainWheel = wheelEvent({ deltaY: -20 });
+                act(() => {
+                    grid.dispatchEvent(plainWheel);
+                });
+                expect(plainWheel.defaultPrevented).toBe(false);
+
+                rerender(<GalleryGrid {...defaultProps} isPinchZoomEnabled={false} onScaleChange={onScaleChange} />);
+                const ctrlWheel = wheelEvent({ ctrlKey: true, deltaY: -20 });
+                act(() => {
+                    grid.dispatchEvent(ctrlWheel);
+                });
+
+                expect(ctrlWheel.defaultPrevented).toBe(false);
+                expect(onScaleChange).not.toHaveBeenCalled();
+            });
+        });
+    });
+
     describe('viewport-aware loading', () => {
         // Lay the grid out as a single column of 100px-tall tiles so getUnloadedNearViewport
         // has real geometry to work with (jsdom defaults all dimensions to 0).
@@ -366,6 +554,60 @@ describe('GalleryGrid', () => {
             // Pages beyond the viewport + buffer stay lazy
             expect(thumbnail.createThumbnailImage).toHaveBeenCalledTimes(48);
             expect(screen.getByLabelText('Page 49').querySelector('img')).not.toBeInTheDocument();
+        });
+
+        test('should temporarily sharpen visible tiles after zooming in', async () => {
+            const renderPageImage = jest.fn((pageNum: number, { thumbMaxWidth }: { thumbMaxWidth: number }) => ({
+                cancel: jest.fn(),
+                promise: Promise.resolve({
+                    dataUrl: `data:image/png;high-res-${pageNum}`,
+                    height: thumbMaxWidth,
+                    width: thumbMaxWidth,
+                }),
+            }));
+            const thumbnail = {
+                ...mockThumbnail,
+                createThumbnailImage: jest.fn((pageIndex: number) => {
+                    const image = document.createElement('img');
+                    image.src = `data:image/png;base-${pageIndex + 1}`;
+                    return Promise.resolve(image);
+                }),
+                renderPageImage,
+            };
+            const { rerender } = getWrapper({ pageCount: 10, currentPage: 1, thumbnail });
+            layoutGrid(500);
+
+            await waitFor(() => {
+                expect(thumbnail.createThumbnailImage).toHaveBeenCalledTimes(10);
+            });
+            expect(thumbnail.createThumbnailImage).toHaveBeenCalledWith(0, {
+                createImgTag: true,
+                thumbMaxWidth: 440,
+            });
+            thumbnail.createThumbnailImage.mockClear();
+
+            screen.getAllByRole('option').forEach(tile => {
+                Object.defineProperty(tile, 'offsetWidth', { configurable: true, value: 600 });
+            });
+            rerender(<GalleryGrid {...defaultProps} currentPage={1} scale={2} thumbnail={thumbnail} />);
+
+            await waitFor(() => {
+                expect(renderPageImage).toHaveBeenCalledWith(1, { thumbMaxWidth: 880 });
+            });
+            expect(thumbnail.createThumbnailImage).not.toHaveBeenCalled();
+            expect(screen.getByLabelText('Page 1').querySelector('img')).toHaveAttribute(
+                'src',
+                'data:image/png;high-res-1',
+            );
+
+            rerender(<GalleryGrid {...defaultProps} currentPage={1} scale={1} thumbnail={thumbnail} />);
+
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 1').querySelector('img')).toHaveAttribute(
+                    'src',
+                    'data:image/png;base-1',
+                );
+            });
         });
 
         test('should load radiating outward from the viewed area', async () => {
@@ -469,9 +711,10 @@ describe('GalleryGrid', () => {
             expect(mockThumbnail.getImageFromCache).toHaveBeenCalledTimes(10);
         });
 
-        test('should use cached images when available', () => {
+        test('should use cached images while preserving the page ratio', async () => {
             const cachedThumbnail = {
                 ...mockThumbnail,
+                pageRatio: 4 / 3,
                 getImageFromCache: jest.fn(pageIndex => {
                     if (pageIndex === 2) {
                         return { image: { src: 'data:image/png;cached-page-3' }, inProgress: false };
@@ -485,6 +728,10 @@ describe('GalleryGrid', () => {
             const img = tile3.querySelector('img');
             expect(img).toBeInTheDocument();
             expect(img).toHaveAttribute('src', 'data:image/png;cached-page-3');
+            await waitFor(() => {
+                expect(tile3.style.aspectRatio).toBe(String(4 / 3));
+                expect(img?.style.height).toBe('100%');
+            });
         });
 
         test('should show placeholder for uncached pages', () => {
@@ -494,20 +741,18 @@ describe('GalleryGrid', () => {
             expect(tile1.querySelector('img')).not.toBeInTheDocument();
         });
 
-        test('should size placeholders from the page ratio once init resolves', async () => {
-            // 16:9 landscape page: ratio 16/9 -> padding-top 56.25%
+        test('should size tiles from the page ratio once init resolves', async () => {
             const thumbnail = { ...mockThumbnail, pageRatio: 16 / 9 };
             getWrapper({ thumbnail });
 
             await waitFor(() => {
-                const placeholder = screen
-                    .getByLabelText('Page 1')
-                    .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
-                expect(placeholder.style.paddingTop).toBe('56.25%');
+                const tile = screen.getByLabelText('Page 1');
+                expect(tile.style.aspectRatio).toBe(String(16 / 9));
+                expect((tile.querySelector('.bp-gallery-tile-placeholder') as HTMLElement).style.height).toBe('100%');
             });
         });
 
-        test('should size each placeholder from its own page ratio when getPageRatio provides one', async () => {
+        test('should size each tile from its own page ratio when getPageRatio provides one', async () => {
             // First page portrait (3:4), page 2 landscape (16:9); pages beyond have no
             // metadata yet and fall back to the first-page ratio.
             const thumbnail = { ...mockThumbnail, pageRatio: 3 / 4 };
@@ -515,16 +760,10 @@ describe('GalleryGrid', () => {
             getWrapper({ thumbnail, getPageRatio });
 
             await waitFor(() => {
-                const landscape = screen
-                    .getByLabelText('Page 2')
-                    .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
-                expect(landscape.style.paddingTop).toBe('56.25%');
+                expect(screen.getByLabelText('Page 2').style.aspectRatio).toBe(String(16 / 9));
             });
 
-            const fallback = screen
-                .getByLabelText('Page 5')
-                .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
-            expect(parseFloat(fallback.style.paddingTop)).toBeCloseTo(133.333);
+            expect(screen.getByLabelText('Page 5').style.aspectRatio).toBe(String(3 / 4));
         });
 
         test('should leave placeholder sizing to the stylesheet when no page ratio is available', async () => {
@@ -533,9 +772,9 @@ describe('GalleryGrid', () => {
                 expect(mockThumbnail.init).toHaveBeenCalled();
             });
 
-            const placeholder = screen
-                .getByLabelText('Page 1')
-                .querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
+            const tile = screen.getByLabelText('Page 1');
+            const placeholder = tile.querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
+            expect(tile.style.aspectRatio).toBeFalsy();
             expect(placeholder.style.paddingTop).toBe('');
         });
     });
