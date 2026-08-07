@@ -1,3 +1,9 @@
+## 3.73.0 (2026-08-07)
+
+* feat(gallery): sharpen thumbs (#1730) ([5039afc](https://github.com/box/box-content-preview/commit/5039afc)), closes [#1730](https://github.com/box/box-content-preview/issues/1730)
+
+
+
 ## 3.72.0 (2026-08-06)
 
 * feat(gallery): add pinch to zoom (#1729) ([96c952f](https://github.com/box/box-content-preview/commit/96c952f)), closes [#1729](https://github.com/box/box-content-preview/issues/1729)
