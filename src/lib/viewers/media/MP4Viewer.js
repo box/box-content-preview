@@ -20,8 +20,6 @@ class MP4Viewer extends VideoBaseViewer {
         // Call super() first to set up common layout
         super.setup();
 
-        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
-
         // mp4 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP4);
         this.wrapperEl.classList.add('bp-media-dash');

@@ -189,6 +189,10 @@
     padding: 48px;
 }
 
+.bp-is-fullscreen .bp-media-stage--v2 {
+    padding: 0;
+}
+
 .bp-media-container--v2 {
     flex: 0 0 auto;
     width: auto;

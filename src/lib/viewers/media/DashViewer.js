@@ -112,8 +112,6 @@ class DashViewer extends VideoBaseViewer {
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
-
-        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
     }
 
     /**

@@ -561,6 +561,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     resize() {
         // Reset any prior set widths and heights
+        // V1 only modifies widths: Chrome can't set a height larger than the current videoHeight
         this.mediaEl.style.width = '';
         if (this.isVideoPlayerV2) {
             this.mediaEl.style.height = '';
@@ -596,8 +597,9 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     getVideoViewport() {
         if (!this.mediaStageEl) {
+            const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             return {
-                height: this.wrapperEl.clientHeight,
+                height: this.wrapperEl.clientHeight - controlsHeight,
                 width: this.wrapperEl.clientWidth,
             };
         }

@@ -855,6 +855,17 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     describe('getVideoViewport()', () => {
+        test('should reserve React controls when the V2 stage is unavailable', () => {
+            Object.defineProperty(videoBase.wrapperEl, 'clientWidth', { value: 800 });
+            Object.defineProperty(videoBase.wrapperEl, 'clientHeight', { value: 600 });
+            videoBase.useReactControls.mockReturnValue(true);
+
+            expect(videoBase.getVideoViewport()).toEqual({
+                height: 480,
+                width: 800,
+            });
+        });
+
         test('should reserve V2 stage padding and React controls', () => {
             videoBase.mediaStageEl = document.createElement('div');
             videoBase.mediaStageEl.style.padding = '48px';
