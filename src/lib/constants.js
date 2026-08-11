@@ -101,7 +101,10 @@ export const X_REP_HINT_BASE = '[3d][pdf][text][mp3][json]';
 export const X_REP_HINT_DOC_THUMBNAIL = '[jpg?dimensions=1024x1024&paged=false]';
 export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2048]';
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
+export const X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT = '[extracted_text]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
+
+export const AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES = 'aiTranscriptionForVideoSubtitles';
 
 export const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
 export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js

@@ -1,3 +1,9 @@
+## 3.74.0 (2026-08-11)
+
+* feat(video transcription): add generated video transcriptions to dash preview (#1614) ([f2a1fcc](https://github.com/box/box-content-preview/commit/f2a1fcc)), closes [#1614](https://github.com/box/box-content-preview/issues/1614)
+
+
+
 ## 3.73.0 (2026-08-07)
 
 * feat(gallery): sharpen thumbs (#1730) ([5039afc](https://github.com/box/box-content-preview/commit/5039afc)), closes [#1730](https://github.com/box/box-content-preview/issues/1730)
