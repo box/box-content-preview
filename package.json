@@ -18,6 +18,7 @@
             "default": "./dist/lib/index.js"
         },
         "./styles.css": "./dist/lib/index.css",
+        "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
     "files": [

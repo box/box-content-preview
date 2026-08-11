@@ -110,6 +110,14 @@ module.exports = {
                     filename: 'assets/[name][ext]',
                 },
             },
+            {
+                test: /pdf\.worker\.min\.mjs$/,
+                type: 'asset/resource',
+                include: [path.resolve('node_modules/pdfjs-dist/build')],
+                generator: {
+                    filename: 'pdf.worker.min.mjs',
+                },
+            },
         ],
     },
     optimization: {
