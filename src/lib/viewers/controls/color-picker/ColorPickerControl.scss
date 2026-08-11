@@ -27,7 +27,7 @@
 
 .bp-ColorPickerControl-palette {
     $arrow-height: 12px;
-    $palette-ease: cubic-bezier(.23, 1, .32, 1);
+    $palette-ease: cubic-bezier(0.23, 1, 0.32, 1);
     $palette-duration: 160ms;
 
     position: absolute;
@@ -35,9 +35,11 @@
     left: 50%;
     z-index: 1;
     padding-bottom: 10px;
+
     // display can't be transitioned, so hide via visibility+opacity and delay visibility on close
     // until the fade-out finishes.
-    transform: translate(-50%, -100%) scale(.95);
+    transform: translate(-50%, -100%) scale(0.95);
+
     // Popover sits above its trigger, so scale in from the bottom-center, not its own center.
     transform-origin: bottom center;
     visibility: hidden;

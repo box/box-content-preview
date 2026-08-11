@@ -41,7 +41,7 @@
 @mixin bp-SettingsRow-hover {
     background-color: #f4f4f4;
     border-radius: 12px;
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 10%);
     backdrop-filter: blur(16px);
 }
 

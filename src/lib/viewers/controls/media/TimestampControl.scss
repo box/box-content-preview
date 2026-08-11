@@ -17,7 +17,7 @@
     font-size: 14px;
     font-family: Lato, Arial, sans-serif;
     line-height: 20px;
-    letter-spacing: .3px;
+    letter-spacing: 0.3px;
     white-space: nowrap;
     user-select: none;
 }
@@ -44,14 +44,14 @@
 
 .bp-TimestampControl-separator,
 .bp-TimestampControl-duration {
-    color: rgba(255, 255, 255, .8);
+    color: rgb(255 255 255 / 80%);
 }
 
 .bp-TimestampControl-chevron {
     width: 16px;
     height: 16px;
     margin-left: 2px;
-    fill: rgba(255, 255, 255, .8);
+    fill: rgb(255 255 255 / 80%);
 }
 
 .bp-TimestampControl-flyout {
@@ -63,7 +63,7 @@
     padding: 12px 8px;
     background: $white;
     border-radius: 16px;
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .15);
+    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 15%);
     transform: translateX(-50%);
 }
 
@@ -74,7 +74,7 @@
     font-size: 14px;
     font-family: Lato, Arial, sans-serif;
     line-height: 20px;
-    letter-spacing: .3px;
+    letter-spacing: 0.3px;
     user-select: none;
 }
 

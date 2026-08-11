@@ -2,10 +2,8 @@
 
 .bp-gallery-grid {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
+
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
     padding: 40px;
@@ -34,10 +32,10 @@
     border-radius: 12px;
     box-shadow: 0 0 0 1px $off-white;
     cursor: pointer;
-    transition: box-shadow .2s ease-in-out, transform .2s ease-in-out;
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
 
     &:hover {
-        box-shadow: 0 0 0 3px $seventy-sixers, 0 4px 5px 0 rgba(0, 0, 0, .15);
+        box-shadow: 0 0 0 3px $seventy-sixers, 0 4px 5px 0 rgb(0 0 0 / 15%);
         transform: translateY(-1px) scale(var(--bp-gallery-hover-scale));
 
         .bp-gallery-tile-badge {
@@ -59,11 +57,11 @@
 }
 
 .bp-gallery-tile--selected {
-    box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgba(0, 0, 0, .08);
+    box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgb(0 0 0 / 8%);
 
     &:hover,
     &:focus {
-        box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgba(0, 0, 0, .08);
+        box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgb(0 0 0 / 8%);
     }
 
     .bp-gallery-tile-badge {
@@ -87,9 +85,9 @@
     font-size: 13px;
     line-height: 1;
     background: $seventy-sixers;
-    border-radius: 12px 0 12px 0;
+    border-radius: 12px 0;
     opacity: 0;
-    transition: opacity .15s;
+    transition: opacity 0.15s;
 }
 
 .bp-gallery-tile-placeholder {
@@ -114,6 +112,5 @@
 // `.bp` prefix bumps specificity above Document.scss `.bp .bp-doc.bp-doc-document { overflow-y: scroll }`.
 .bp .bp-is-gallery-open .bp-doc.bp-doc-document,
 .bp .bp-is-gallery-open .bp-doc.bp-is-scrollable {
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 }
