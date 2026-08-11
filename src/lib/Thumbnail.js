@@ -1,9 +1,14 @@
 import isFinite from 'lodash/isFinite';
+import noop from 'lodash/noop';
 import BoundedCache from './BoundedCache';
 
 export const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE = 'bp-thumbnail-image';
 export const THUMBNAIL_TOTAL_WIDTH = 150; // 190px sidebar width - 40px margins
 export const THUMBNAIL_IMAGE_WIDTH = THUMBNAIL_TOTAL_WIDTH * 2; // Multiplied by a scaling factor so that we render the image at a higher resolution
+
+function createRejectedTask(message) {
+    return { cancel: noop, promise: Promise.reject(new Error(message)) };
+}
 
 class Thumbnail {
     /** @property {PDfViewer} - The PDFJS viewer instance */
@@ -11,6 +16,9 @@ class Thumbnail {
 
     /** @property {Object} - Cache for the thumbnail image elements */
     thumbnailImageCache;
+
+    /** @property {Set} - Active PDF.js render tasks */
+    renderTasks;
 
     preloader;
 
@@ -24,8 +32,10 @@ class Thumbnail {
         this.createImageEl = this.createImageEl.bind(this);
         this.createThumbnailImage = this.createThumbnailImage.bind(this);
         this.getThumbnailDataURL = this.getThumbnailDataURL.bind(this);
+        this.renderPageImage = this.renderPageImage.bind(this);
         this.pdfViewer = pdfViewer;
         this.thumbnailImageCache = new BoundedCache();
+        this.renderTasks = new Set();
     }
 
     /**
@@ -34,6 +44,11 @@ class Thumbnail {
      * @return {void}
      */
     destroy() {
+        if (this.renderTasks) {
+            this.renderTasks.forEach(task => task.cancel());
+            this.renderTasks.clear();
+            this.renderTasks = null;
+        }
         if (this.thumbnailImageCache) {
             this.thumbnailImageCache.destroy();
             this.thumbnailImageCache = null;
@@ -146,6 +161,10 @@ class Thumbnail {
                 if (!this.thumbnailImageCache) {
                     return null;
                 }
+                if (!dataUrl) {
+                    this.thumbnailImageCache.set(itemIndex, { ...cacheEntry, inProgress: false });
+                    return null;
+                }
 
                 const imageEl = this.createImageEl(dataUrl, thumbOptions);
                 // Cache this image element for future use
@@ -174,6 +193,102 @@ class Thumbnail {
     }
 
     /**
+     * Renders a page image without caching it.
+     * @param {number} pageNum - The page number of the document (1 indexed)
+     * @param {Object} thumbOptions - Thumbnail render options
+     * @return {Object} A cancellable render task
+     */
+    renderPageImage(pageNum, thumbOptions) {
+        const pdfDocument = this.pdfViewer?.pdfDocument;
+        if (!pdfDocument) {
+            return createRejectedTask('PDF document not ready');
+        }
+
+        const thumbnailImageWidth =
+            thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;
+        if (!isFinite(thumbnailImageWidth) || thumbnailImageWidth <= 0) {
+            return createRejectedTask('Invalid thumbnail render dimensions');
+        }
+
+        const canvas = document.createElement('canvas');
+        let isCancelled = false;
+        let pdfRenderTask = null;
+        const task = {
+            cancel: () => {
+                if (isCancelled) {
+                    return;
+                }
+                isCancelled = true;
+                pdfRenderTask?.cancel();
+            },
+            promise: null,
+        };
+
+        task.promise = pdfDocument
+            .getPage(pageNum)
+            .then(page => {
+                if (isCancelled || !this.thumbnailImageCache) {
+                    return null;
+                }
+
+                const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
+                const viewport = page.getViewport({ scale: 1, rotation });
+                if (
+                    !viewport ||
+                    !isFinite(viewport.width) ||
+                    viewport.width <= 0 ||
+                    !isFinite(viewport.height) ||
+                    viewport.height <= 0
+                ) {
+                    return Promise.reject(new Error('Invalid page viewport'));
+                }
+                const { width, height } = viewport;
+                const currentPageRatio = width / height;
+
+                // More-portrait pages are constrained by the first page's height budget.
+                if (currentPageRatio < this.pageRatio) {
+                    canvas.height = Math.ceil(thumbnailImageWidth / this.pageRatio);
+                    canvas.width = canvas.height * currentPageRatio;
+                } else {
+                    canvas.width = thumbnailImageWidth;
+                    canvas.height = Math.ceil(thumbnailImageWidth / currentPageRatio);
+                }
+                const { width: canvasWidth } = canvas;
+                const scale = canvasWidth / width;
+                pdfRenderTask = page.render({
+                    canvasContext: canvas.getContext('2d'),
+                    viewport: page.getViewport({ scale, rotation }),
+                });
+
+                return pdfRenderTask.promise.then(() => {
+                    if (isCancelled || !this.thumbnailImageCache) {
+                        return null;
+                    }
+
+                    return {
+                        dataUrl: canvas.toDataURL(),
+                        height: canvas.height,
+                        width: canvas.width,
+                    };
+                });
+            })
+            .catch(error => {
+                if (isCancelled) {
+                    return null;
+                }
+                throw error;
+            })
+            .finally(() => {
+                canvas.width = 0;
+                canvas.height = 0;
+                this.renderTasks?.delete(task);
+            });
+
+        this.renderTasks.add(task);
+        return task;
+    }
+
+    /**
      * Given a page number, generates the image data URL for the image of the page
      * @param {number} pageNum  - The page number of the document
      * @return {string} The data URL of the page image
@@ -183,56 +298,7 @@ class Thumbnail {
             return Promise.resolve(this.preloader.preloadedImages[pageNum]);
         }
 
-        const pdfDocument = this.pdfViewer?.pdfDocument;
-        if (!pdfDocument) {
-            return Promise.reject(new Error('PDF document not ready'));
-        }
-
-        const canvas = document.createElement('canvas');
-        const thumbnailImageWidth =
-            thumbOptions && thumbOptions.thumbMaxWidth ? thumbOptions.thumbMaxWidth : THUMBNAIL_IMAGE_WIDTH;
-
-        return pdfDocument
-            .getPage(pageNum)
-            .then(page => {
-                if (!this.thumbnailImageCache) {
-                    return null;
-                }
-
-                const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
-                const viewport = page.getViewport({ scale: 1, rotation });
-                if (!viewport || !isFinite(viewport.width) || !isFinite(viewport.height)) {
-                    return Promise.reject(new Error('Invalid page viewport'));
-                }
-                const { width, height } = viewport;
-                // Get the current page w:h ratio in case it differs from the first page
-                const curPageRatio = width / height;
-
-                // Handle the case where the current page's w:h ratio is less than the
-                // `pageRatio` which means that this page is probably more portrait than
-                // landscape
-                if (curPageRatio < this.pageRatio) {
-                    // Set the canvas height to that of the thumbnail max height
-                    canvas.height = Math.ceil(thumbnailImageWidth / this.pageRatio);
-                    // Find the canvas width based on the current page ratio
-                    canvas.width = canvas.height * curPageRatio;
-                } else {
-                    // In case the current page ratio is same as the first page
-                    // or in case it's larger (which means that it's wider), keep
-                    // the width at the max thumbnail width
-                    canvas.width = thumbnailImageWidth;
-                    // Find the height based on the current page ratio
-                    canvas.height = Math.ceil(thumbnailImageWidth / curPageRatio);
-                }
-                // The amount for which to scale down the current page
-                const { width: canvasWidth } = canvas;
-                const scale = canvasWidth / width;
-                return page.render({
-                    canvasContext: canvas.getContext('2d'),
-                    viewport: page.getViewport({ scale, rotation }),
-                }).promise;
-            })
-            .then(() => canvas.toDataURL());
+        return this.renderPageImage(pageNum, thumbOptions).promise.then(result => result?.dataUrl || null);
     }
 }
 

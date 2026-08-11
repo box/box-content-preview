@@ -5,7 +5,7 @@ import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
-import GalleryController from '../gallery/GalleryController';
+import GalleryController, { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/GalleryController';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -158,6 +158,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
+        this.handleGalleryZoomGesture = this.handleGalleryZoomGesture.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -239,6 +240,7 @@ class DocBaseViewer extends BaseViewer {
         this.galleryController = new GalleryController({
             containerEl: this.containerEl,
             features: this.options.features,
+            hasTouch: this.hasTouch,
             getPdfViewer: () => this.pdfViewer,
             getPreloader: () => this.preloader,
             getThumbnailsSidebar: () => this.thumbnailsSidebar,
@@ -254,6 +256,7 @@ class DocBaseViewer extends BaseViewer {
             onBeforeOpen: () => this.handleGalleryEnter(),
             onAfterClose: () => this.handleGalleryExit(),
             onClose: landedPage => this.handleGalleryClose(landedPage),
+            onZoomGesture: this.handleGalleryZoomGesture,
         });
     }
 
@@ -955,6 +958,18 @@ class DocBaseViewer extends BaseViewer {
                 return true;
             }
 
+            if (this.galleryController.isZoomEnabled) {
+                if (key === 'Shift++') {
+                    this.galleryController.zoomIn();
+                    return true;
+                }
+
+                if (key === 'Shift+_') {
+                    this.galleryController.zoomOut();
+                    return true;
+                }
+            }
+
             // Swallow page-nav keys so they can't flip the doc page underneath the gallery
             // or trigger the host's collection navigation. Arrows pressed outside the grid
             // are redirected into it so the first press navigates the tiles.
@@ -1531,6 +1546,7 @@ class DocBaseViewer extends BaseViewer {
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
         const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
+        const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isZoomEnabled;
 
         this.controls.render(
             <DocControls
@@ -1538,12 +1554,13 @@ class DocBaseViewer extends BaseViewer {
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
+                hasGalleryZoom={this.galleryController.isZoomEnabled}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
                 isGalleryOpen={this.galleryController.isOpen}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
-                maxScale={MAX_SCALE}
-                minScale={MIN_SCALE}
+                maxScale={isGalleryZoomActive ? GALLERY_MAX_SCALE : MAX_SCALE}
+                minScale={isGalleryZoomActive ? GALLERY_MIN_SCALE : MIN_SCALE}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
@@ -1554,11 +1571,11 @@ class DocBaseViewer extends BaseViewer {
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
                 onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
-                onZoomIn={this.zoomIn}
-                onZoomOut={this.zoomOut}
+                onZoomIn={isGalleryZoomActive ? this.galleryController.zoomIn : this.zoomIn}
+                onZoomOut={isGalleryZoomActive ? this.galleryController.zoomOut : this.zoomOut}
                 pageCount={this.pdfViewer.pagesCount}
                 pageNumber={this.pdfViewer.currentPageNumber}
-                scale={this.pdfViewer.currentScale}
+                scale={isGalleryZoomActive ? this.galleryController.scale : this.pdfViewer.currentScale}
             />,
         );
     }
@@ -2061,6 +2078,21 @@ class DocBaseViewer extends BaseViewer {
     toggleFindBar(findBarToggleEl) {
         this.findBarToggleEl = findBarToggleEl;
         this.findBar.toggle();
+    }
+
+    /**
+     * @protected
+     * @param {string} direction - 'zoomIn' or 'zoomOut'
+     * @return {void}
+     */
+    handleGalleryZoomGesture(direction) {
+        this.options.resin?.recordAction({
+            action: 'programmatic',
+            component: 'galleryView',
+            target: direction,
+            fileId: this.options.file.id,
+            fileExtension: this.options.file.extension,
+        });
     }
 
     /**
