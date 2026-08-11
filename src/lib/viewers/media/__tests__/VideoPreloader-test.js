@@ -169,6 +169,27 @@ describe('lib/viewers/media/VideoPreloader', () => {
         });
     });
 
+    describe('isVisible()', () => {
+        beforeEach(() => {
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+        });
+
+        test('should be true when the poster has painted', () => {
+            expect(videoPreloader.isVisible()).toBe(true);
+        });
+
+        test('should be false while the poster is still invisible', () => {
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            expect(videoPreloader.isVisible()).toBe(false);
+        });
+
+        test('should be false once hide/dismiss starts so resize uses video geometry', () => {
+            videoPreloader.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
+            expect(videoPreloader.isVisible()).toBe(false);
+        });
+    });
+
     describe('showLoading()', () => {
         beforeEach(() => {
             videoPreloader.wrapperEl = document.createElement('div');
@@ -310,6 +331,18 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 800, height: 450 });
         });
 
+        test('should prefer a live getViewport callback over a stale viewport snapshot', () => {
+            const getViewport = jest.fn().mockReturnValue({ width: 611, height: 517 });
+            videoPreloader.preloadOptions = {
+                viewport: { width: 800, height: 450 },
+                getViewport,
+            };
+            videoPreloader.loadHandler();
+
+            expect(getViewport).toHaveBeenCalled();
+            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 611, height: 517 });
+        });
+
         test('should size the shared media container before making the preload visible', () => {
             videoPreloader.preloadOptions = { viewport: { width: 800, height: 450 } };
             videoPreloader.sizeContainerToViewport.mockImplementation(() => {
@@ -438,8 +471,70 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             videoPreloader.sizeContainerToViewport();
 
-            // Height should be constrained to viewport height (400px)
-            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(400);
+            // Height should be constrained to viewport height (400px - control bar)
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(280);
+        });
+
+        test('should not produce a frame wider than the viewport', () => {
+            // Wide aspect + short viewport used to yield width > viewport.width after height clamp
+            videoPreloader.sizeContainerToViewport({ width: 611, height: 517 });
+
+            expect(parseFloat(videoPreloader.containerEl.style.width)).toBeLessThanOrEqual(611);
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(517);
+        });
+    });
+
+    describe('poster visibility before video metadata', () => {
+        test('should size and reveal the poster while video metadata is still pending', () => {
+            const videoEl = containerEl.querySelector('video');
+            Object.defineProperty(videoEl, 'readyState', { configurable: true, value: 0 });
+
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            videoPreloader.imageEl = document.createElement('img');
+            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', {
+                configurable: true,
+                value: 1920,
+            });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', {
+                configurable: true,
+                value: 1080,
+            });
+            videoPreloader.preloadOptions = {
+                getViewport: () => ({ width: 800, height: 450 }),
+            };
+            jest.spyOn(videoPreloader, 'emit');
+
+            // Real sizeContainerToViewport — Instant Preview must not wait on loadedmetadata
+            videoPreloader.loadHandler();
+
+            expect(videoEl.readyState).toBe(0);
+            expect(videoPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
+            expect(videoPreloader.isVisible()).toBe(true);
+            expect(videoPreloader.containerEl.style.width).toBe('800px');
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeCloseTo(450, 5);
+            expect(videoPreloader.emit).toHaveBeenCalledWith('preload');
+        });
+
+        test('should keep the poster hidden when metadata is already available', () => {
+            const videoEl = containerEl.querySelector('video');
+            Object.defineProperty(videoEl, 'readyState', { configurable: true, value: 1 });
+
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            videoPreloader.imageEl = document.createElement('img');
+            jest.spyOn(videoPreloader, 'hidePreload').mockImplementation();
+            jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.hidePreload).toHaveBeenCalled();
+            expect(videoPreloader.sizeContainerToViewport).not.toHaveBeenCalled();
+            expect(videoPreloader.preloadEl).toHaveClass(CLASS_INVISIBLE);
         });
     });
 

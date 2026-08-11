@@ -196,6 +196,8 @@
 .bp-media-container--v2 {
     flex: 0 0 auto;
     width: auto;
+    max-width: 100%;
+    max-height: 100%;
     padding: 0;
 
     video {

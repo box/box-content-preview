@@ -19,6 +19,7 @@ import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
 import VideoPreloader from './VideoPreloader';
+import fitFrameToViewport from './fitFrameToViewport';
 import { isWatermarked, getRepresentation } from '../../file';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
@@ -208,7 +209,9 @@ class VideoBaseViewer extends MediaBaseViewer {
             onImageClick: () => this.handlePlayRequest(),
         };
         if (this.isVideoPlayerV2) {
-            options.viewport = this.getVideoViewport();
+            // Resolve viewport at paint time so sidebar/layout changes after showPreload
+            // don't leave the poster sized to a stale, oversized box.
+            options.getViewport = () => this.getVideoViewport();
         } else if (this.wrapperEl) {
             const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             options.viewport = {
@@ -587,20 +590,20 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
-     * Returns the usable V2 stage dimensions inside its padding.
+     * Returns the usable V2 stage content box (inside padding).
      *
-     * Before React controls mount, reserve their height so poster geometry
-     * matches the stage dimensions after metadata loads.
+     * Prefer the stage element's box over the wrapper: the stage is what actually
+     * clips/centers the shared media frame. V2 controls are position:absolute overlays
+     * and do not consume flex space, so do not reserve control-bar height here.
      *
      * @private
      * @return {Object} viewport width and height
      */
     getVideoViewport() {
         if (!this.mediaStageEl) {
-            const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             return {
-                height: this.wrapperEl.clientHeight - controlsHeight,
-                width: this.wrapperEl.clientWidth,
+                height: Math.max(0, this.wrapperEl.clientHeight),
+                width: Math.max(0, this.wrapperEl.clientWidth),
             };
         }
 
@@ -608,12 +611,26 @@ class VideoBaseViewer extends MediaBaseViewer {
         const horizontalPadding =
             (parseFloat(stageStyle.paddingLeft) || 0) + (parseFloat(stageStyle.paddingRight) || 0);
         const verticalPadding = (parseFloat(stageStyle.paddingTop) || 0) + (parseFloat(stageStyle.paddingBottom) || 0);
-        const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
 
         return {
-            height: Math.max(0, this.wrapperEl.clientHeight - verticalPadding - controlsHeight),
-            width: Math.max(0, this.wrapperEl.clientWidth - horizontalPadding),
+            width: Math.max(0, this.mediaStageEl.clientWidth - horizontalPadding),
+            height: Math.max(0, this.mediaStageEl.clientHeight - verticalPadding),
         };
+    }
+
+    /**
+     * Applies width/height to the shared V2 media frame (container + video element).
+     *
+     * @private
+     * @param {number} width
+     * @param {number} height
+     * @return {void}
+     */
+    applySharedMediaFrame(width, height) {
+        this.mediaEl.style.width = `${width}px`;
+        this.mediaEl.style.height = `${height}px`;
+        this.mediaContainerEl.style.width = `${width}px`;
+        this.mediaContainerEl.style.height = `${height}px`;
     }
 
     /**
@@ -634,10 +651,19 @@ class VideoBaseViewer extends MediaBaseViewer {
                   width: this.wrapperEl.clientWidth,
               };
 
-        if (this.isVideoPlayerV2 && this.preloader?.isVisible()) {
-            this.preloader.sizeContainerToViewport(viewport);
-            this.mediaEl.style.width = this.mediaContainerEl.style.width;
-            this.mediaEl.style.height = this.mediaContainerEl.style.height;
+        // V2: one contain-fit into the stage for poster and video so Instant Preview
+        // and playback share the same frame (V2 controls overlay and do not change the stage).
+        if (this.isVideoPlayerV2) {
+            if (this.preloader?.isVisible()) {
+                this.preloader.sizeContainerToViewport(viewport);
+                this.mediaEl.style.width = this.mediaContainerEl.style.width;
+                this.mediaEl.style.height = this.mediaContainerEl.style.height;
+                return;
+            }
+
+            const aspectRatio = this.aspect || width / (height || 1) || 1;
+            const frame = fitFrameToViewport(aspectRatio, viewport);
+            this.applySharedMediaFrame(frame.width, frame.height);
             return;
         }
 
@@ -680,13 +706,6 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         if (this.mediaContainerEl && this.mediaEl.style.width) {
             this.mediaContainerEl.style.width = this.mediaEl.style.width;
-        }
-
-        if (this.isVideoPlayerV2 && this.mediaEl.style.width) {
-            const videoWidth = parseFloat(this.mediaEl.style.width);
-            const videoHeight = videoWidth / this.aspect;
-            this.mediaEl.style.height = `${videoHeight}px`;
-            this.mediaContainerEl.style.height = `${videoHeight}px`;
         }
     }
 

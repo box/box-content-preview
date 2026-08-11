@@ -11,11 +11,11 @@ import {
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
-    MIN_VIDEO_WIDTH_PX,
     VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
 } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { handleRepresentationBlobFetch } from '../../util';
+import fitFrameToViewport from './fitFrameToViewport';
 
 class VideoPreloader extends EventEmitter {
     /** @property {Api} - Api layer used for XHR calls */
@@ -198,12 +198,18 @@ class VideoPreloader extends EventEmitter {
     }
 
     /**
-     * Whether the poster image is currently visible.
+     * Whether the poster is still the authoritative painted frame.
+     * False once hide/dismiss starts (transparent fade) so resize uses video geometry.
      *
-     * @return {boolean} true when the poster has painted
+     * @return {boolean} true when the poster has painted and is not dismissing
      */
     isVisible() {
-        return !!this.preloadEl && !this.preloadEl.classList.contains(CLASS_INVISIBLE);
+        return (
+            !!this.preloadEl &&
+            !!this.wrapperEl &&
+            !this.preloadEl.classList.contains(CLASS_INVISIBLE) &&
+            !this.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT)
+        );
     }
 
     /**
@@ -275,7 +281,7 @@ class VideoPreloader extends EventEmitter {
             return;
         }
 
-        this.sizeContainerToViewport(this.preloadOptions?.viewport);
+        this.sizeContainerToViewport(this.resolveViewport());
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
 
         const mediaWrapper = this.containerEl?.closest('.bp-media');
@@ -296,6 +302,21 @@ class VideoPreloader extends EventEmitter {
 
         this.emit('preload');
     };
+
+    /**
+     * Resolves the viewport to size against, preferring a live getter when provided
+     * so layout changes after showPreload() are reflected at paint time.
+     *
+     * @private
+     * @return {Object|undefined} viewport width/height
+     */
+    resolveViewport() {
+        const { getViewport, viewport } = this.preloadOptions || {};
+        if (typeof getViewport === 'function') {
+            return getViewport();
+        }
+        return viewport;
+    }
 
     /**
      * Sizes the target based on viewport dimensions and image aspect ratio to match video player sizing.
@@ -342,34 +363,13 @@ class VideoPreloader extends EventEmitter {
             };
         }
 
-        // Apply minimum width to match video sizing logic
-        // This ensures controls don't overflow
-        const containerWidth = Math.max(MIN_VIDEO_WIDTH_PX, viewport.width);
-
-        // Calculate container height based on image aspect ratio
         // Use natural dimensions if available (image has loaded), otherwise use current dimensions
         const imageWidth = this.imageEl.naturalWidth || this.imageEl.width || 1;
         const imageHeight = this.imageEl.naturalHeight || this.imageEl.height || 1;
-        const aspectRatio = imageWidth / imageHeight;
+        const { width, height } = fitFrameToViewport(imageWidth / imageHeight, viewport);
 
-        // Calculate height based on width and aspect ratio
-        let containerHeight = containerWidth / aspectRatio;
-        let finalWidth = containerWidth;
-
-        // Ensure height doesn't exceed viewport height
-        if (containerHeight > viewport.height) {
-            containerHeight = viewport.height;
-            // If height is constrained, recalculate width to maintain aspect ratio
-            finalWidth = containerHeight * aspectRatio;
-            // Ensure we still meet minimum width requirement
-            if (finalWidth < MIN_VIDEO_WIDTH_PX) {
-                finalWidth = MIN_VIDEO_WIDTH_PX;
-                containerHeight = finalWidth / aspectRatio;
-            }
-        }
-
-        this.containerEl.style.width = `${finalWidth}px`;
-        this.containerEl.style.height = `${containerHeight}px`;
+        this.containerEl.style.width = `${width}px`;
+        this.containerEl.style.height = `${height}px`;
     }
 
     /**
