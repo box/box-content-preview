@@ -193,15 +193,23 @@
     padding: 0;
 }
 
-.bp-media-container--v2 {
+.bp-media--v2 .bp-media-container--v2 {
     flex: 0 0 auto;
     width: auto;
-    max-width: 100%;
-    max-height: 100%;
+
+    // Override .bp-media-container { min-width: 360px; width: 100%; flex: 1 } —
+    // those force a wider/taller box than the JS contain-fit and stretch the media.
+    min-width: 0;
+    height: auto;
     padding: 0;
 
+    // Box aspect already matches media (JS contain-fit; poster aspect === video aspect).
     video {
-        object-fit: contain;
+        width: 100%;
+        max-width: none;
+        height: 100%;
+        max-height: none;
+        object-fit: fill;
         border: 1px solid rgba($white, 0.12);
     }
 
@@ -214,6 +222,7 @@
         }
 
         .bp-preload-content {
+            object-fit: fill;
             border: 1px solid rgba($white, 0.12);
         }
     }

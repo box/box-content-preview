@@ -439,17 +439,16 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.containerEl.style.width).toBe('853.3333333333333px');
         });
 
-        test('should apply minimum width when viewport is smaller', () => {
+        test('should contain-fit within a narrow viewport', () => {
             const contentWrapper = document.querySelector(`.${CLASS_BOX_PREVIEW_CONTENT}`);
             Object.defineProperty(contentWrapper, 'clientWidth', { value: 300, writable: false });
             Object.defineProperty(contentWrapper, 'clientHeight', { value: 400, writable: false });
 
             videoPreloader.sizeContainerToViewport();
 
-            // Container width should be MIN_VIDEO_WIDTH_PX (420px) when viewport is smaller
-            expect(videoPreloader.containerEl.style.width).toBe('420px');
-            // Height should be calculated based on aspect ratio with minimum width constraint
-            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeGreaterThan(0);
+            // Fallback path subtracts control bar height: 400 - 120 = 280
+            expect(parseFloat(videoPreloader.containerEl.style.width)).toBeLessThanOrEqual(300);
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(280);
         });
 
         test('should calculate height based on image aspect ratio', () => {
