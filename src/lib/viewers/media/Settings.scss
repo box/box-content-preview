@@ -10,8 +10,7 @@ $item-hover-color: #f6fafd;
     max-width: 400px;
     max-height: 210px;
     padding: $padding;
-    overflow-x: hidden;
-    overflow-y: auto; // So scrollbar doesn't show on hover in IE/Edge
+    overflow: hidden auto; // So scrollbar doesn't show on hover in IE/Edge
     color: $fours;
     font-size: 10px;
     line-height: 0; // override line-height (only affects svgs in the menu, since nothing else is inline/inline-block)
@@ -19,7 +18,7 @@ $item-hover-color: #f6fafd;
     border: 1px solid $sf-fog;
     border-radius: 2px;
     visibility: hidden;
-    transition: width .2s, height .2s;
+    transition: width 0.2s, height 0.2s;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 
     .bp-media-settings-is-open & {

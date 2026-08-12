@@ -3,10 +3,7 @@
 
 .bp-text-csv {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -33,7 +30,7 @@
         justify-content: center;
         width: 100%;
         height: 100%;
-        padding: 0 .5em;
+        padding: 0 0.5em;
         overflow: auto;
         border-right: 1px solid $off-white;
         -ms-overflow-style: -ms-autohiding-scrollbar;
@@ -50,17 +47,17 @@
     }
 
     ::-webkit-scrollbar-thumb:vertical {
-        background-color: rgba($black, .2);
+        background-color: rgba($black, 0.2);
         border-radius: 6px;
     }
 
     ::-webkit-scrollbar-thumb:horizontal:hover,
     ::-webkit-scrollbar-thumb:vertical:hover {
-        background: rgba($black, .4);
+        background: rgba($black, 0.4);
     }
 
     ::-webkit-scrollbar-thumb:horizontal {
-        background-color: rgba($black, .2);
+        background-color: rgba($black, 0.2);
         border-radius: 6px;
     }
 }

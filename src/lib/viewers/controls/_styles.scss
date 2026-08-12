@@ -1,22 +1,22 @@
 @import '~box-ui-elements/es/styles/constants/colors';
 @import '~box-ui-elements/es/styles/deprecated';
 
-$bp-controls-background: fade-out($black, .2);
-$bp-controls-opacity: .9;
-$bp-controls-outline: inset 0 0 0 1px fade-out($bdl-gray-20, .5), 0 1px 2px fade-out($black, .9);
+$bp-controls-background: fade-out($black, 0.2);
+$bp-controls-opacity: 0.9;
+$bp-controls-outline: inset 0 0 0 1px fade-out($bdl-gray-20, 0.5), 0 1px 2px fade-out($black, 0.9);
 $bp-controls-radius-inner: 54px;
 $bp-controls-radius-outer: 46px;
 $bp-controls-size-default: 44px;
 $bp-controls-size-large: 56px;
 $bp-controls-size-small: 32px;
 $bp-controls-spacing: 6px;
-$bp-controls-settings-flyout-background: rgba(255, 255, 255, .9);
+$bp-controls-settings-flyout-background: rgb(255 255 255 / 90%);
 $bp-controls-height: 48px;
 $bp-controls-button-gap: 4px;
 $bp-controls-button-separator: 1px solid #4e4e4e;
-$bp-controls-button-hover-background: rgba(255, 255, 255, .08);
-$bp-controls-button-active-background: rgba(255, 255, 255, .16);
-$bp-controls-button-active-hover-background: rgba(255, 255, 255, .2);
+$bp-controls-button-hover-background: rgb(255 255 255 / 8%);
+$bp-controls-button-active-background: rgb(255 255 255 / 16%);
+$bp-controls-button-active-hover-background: rgb(255 255 255 / 20%);
 $bp-controls-button-radius: 25px;
 $bp-controls-distinct-button-size-small: 24px;
 
@@ -40,7 +40,7 @@ $bp-controls-distinct-button-size-small: 24px;
 
     &:disabled {
         cursor: default;
-        opacity: .2;
+        opacity: 0.2;
         pointer-events: none;
     }
 

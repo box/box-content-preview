@@ -9,17 +9,14 @@
 // Used for showing preload, aka Instant Preview
 .bp-document-preload-wrapper {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     height: 100%;
     margin: 0;
     overflow-y: scroll;
     scrollbar-gutter: stable;
     background-color: $ffive;
     opacity: 1;
-    transition: opacity .5s;
+    transition: opacity 0.5s;
 
     &.bp-is-invisible {
         visibility: hidden;
@@ -37,10 +34,7 @@
     .bp-preload-overlay,
     .bp-preload-placeholder::before {
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        inset: 0;
     }
 
     .bp-preload-content {
@@ -48,7 +42,7 @@
     }
 
     .bp-preload-overlay {
-        background-color: rgba(255, 255, 255, .4);
+        background-color: rgb(255 255 255 / 40%);
     }
 
     .bp-preload-placeholder {
