@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { setImmediate as flushImmediate } from 'timers';
 import noop from 'lodash/noop';
 import Api from '../../../api';
 import DashViewer from '../DashViewer';
@@ -15,8 +16,7 @@ const shaka = require(`../../../../third-party/media/${MEDIA_STATIC_ASSETS_VERSI
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const sandbox = sinon.createSandbox();
-
-const flushPromises = () => new Promise(resolve => process.nextTick(resolve));
+const flushPromises = () => new Promise(resolve => flushImmediate(resolve));
 
 let dash;
 let stubs = {};
@@ -806,6 +806,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 jest.runAllTimers();
 
                 expect(dash.showAndHideReactControls).toHaveBeenCalledTimes(11);
+                jest.useRealTimers();
             });
         });
     });
@@ -1177,8 +1178,8 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.loadTranscription();
 
-            // Wait for the rejection to propagate through the .catch handler
-            await new Promise(resolve => setImmediate(resolve));
+            // Let the rejected getPromise() settle into loadTranscription's catch
+            await flushPromises();
 
             expect(stubs.loadSubtitles).not.toBeCalled();
         });

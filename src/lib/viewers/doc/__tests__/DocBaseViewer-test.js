@@ -2143,25 +2143,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should avoid preflight requests by not adding non-standard headers', done => {
+            test('should avoid preflight requests by not adding non-standard headers', () => {
                 docBase.options.location = {
                     locale: 'en-US',
                 };
-                docBase.pdfjsLib.getDocument = jest.fn(docInitParams => ({
-                    promise: new Promise(() => {
-                        const { httpHeaders = {} } = docInitParams;
-                        const headerKeys = Object.keys(httpHeaders);
+                let httpHeaders;
 
-                        const containsNonStandardHeader = headerKeys.some(header => {
-                            return !STANDARD_HEADERS.includes(header);
-                        });
+                docBase.pdfjsLib.getDocument = jest.fn(docInitParams => {
+                    httpHeaders = docInitParams.httpHeaders || {};
+                    return { promise: new Promise(() => {}) };
+                });
 
-                        expect(containsNonStandardHeader).toBe(false);
-                        done();
-                    }),
-                }));
+                docBase.initViewer('');
 
-                return docBase.initViewer('');
+                expect(docBase.pdfjsLib.getDocument).toHaveBeenCalled();
+                const headerKeys = Object.keys(httpHeaders);
+                const containsNonStandardHeader = headerKeys.some(header => !STANDARD_HEADERS.includes(header));
+                expect(containsNonStandardHeader).toBe(false);
             });
 
             test('should resolve the loading task and set the document/viewer', () => {
@@ -4916,18 +4914,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase.pdfViewer.pdfDocument, 'getPage').mockReturnValue(stubs.promiseResolve);
             });
 
-            test('should call createThumbnailImage on the Thumbnail', () => {
+            test('should call createThumbnailImage on the Thumbnail', async () => {
                 docBase.advancedInsightsThumbs = new Thumbnail(docBase.pdfViewer);
                 stubs.createThumb = jest
                     .spyOn(docBase.advancedInsightsThumbs, 'createThumbnailImage')
                     .mockReturnValue(stubs.promiseResolve);
-                docBase.getThumbnail();
+                await docBase.getThumbnail(1);
                 expect(stubs.createThumb).toBeCalled();
             });
 
-            test('should create a new Thumbnail instance', () => {
+            test('should create a new Thumbnail instance', async () => {
                 expect(docBase.advancedInsightsThumbs).toBe(undefined);
-                docBase.getThumbnail();
+                jest.spyOn(Thumbnail.prototype, 'createThumbnailImage').mockResolvedValue(null);
+                await docBase.getThumbnail(1);
                 expect(docBase.advancedInsightsThumbs).toBeInstanceOf(Thumbnail);
             });
 
