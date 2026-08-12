@@ -430,33 +430,51 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
     describe('dismissPreload()', () => {
         test('should hide preload, remove CLASS_INVISIBLE, and resize when preload is visible', () => {
-            const mockPreloader = { wrapperEl: document.createElement('div'), hidePreload: jest.fn() };
+            const mockPreloader = {
+                wrapperEl: document.createElement('div'),
+                hidePreload: jest.fn(),
+                blockFuturePosterPaint: jest.fn(),
+            };
             videoBase.preloader = mockPreloader;
             videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
             jest.spyOn(videoBase, 'resize').mockImplementation();
 
             videoBase.dismissPreload();
 
+            expect(mockPreloader.blockFuturePosterPaint).toHaveBeenCalled();
             expect(mockPreloader.hidePreload).toHaveBeenCalled();
             expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
             expect(videoBase.resize).toHaveBeenCalled();
         });
 
         test('should not call hidePreload when no preloader is present', () => {
+            videoBase.preloader = null;
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
             jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+            jest.spyOn(videoBase, 'resize').mockImplementation();
 
             videoBase.dismissPreload();
 
             expect(videoBase.hidePreload).not.toBeCalled();
+            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
+            expect(videoBase.resize).not.toHaveBeenCalled();
         });
 
-        test('should not call hidePreload when preloader has no wrapperEl', () => {
-            videoBase.preloader = { wrapperEl: undefined };
-            jest.spyOn(videoBase, 'hidePreload').mockImplementation();
+        test('should reveal the video even when the poster wrapper was already cleaned up', () => {
+            videoBase.preloader = {
+                wrapperEl: undefined,
+                hidePreload: jest.fn(),
+                blockFuturePosterPaint: jest.fn(),
+            };
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+            jest.spyOn(videoBase, 'resize').mockImplementation();
 
             videoBase.dismissPreload();
 
-            expect(videoBase.hidePreload).not.toBeCalled();
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
+            expect(videoBase.preloader.hidePreload).not.toHaveBeenCalled();
+            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
+            expect(videoBase.resize).not.toHaveBeenCalled();
         });
 
         test('should resize with video geometry after hide clears isVisible', () => {
@@ -471,6 +489,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 hidePreload: jest.fn(() => {
                     wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
                 }),
+                blockFuturePosterPaint: jest.fn(),
                 isVisible() {
                     return (
                         !!this.preloadEl &&
@@ -1735,13 +1754,28 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
 
         test('should not remove CLASS_INVISIBLE from mediaEl when preload is still visible', () => {
-            videoBase.preloader = { wrapperEl: document.createElement('div') };
+            videoBase.preloader = {
+                wrapperEl: document.createElement('div'),
+                blockFuturePosterPaint: jest.fn(),
+            };
             videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
             jest.spyOn(videoBase.mediaEl.classList, 'remove');
 
             videoBase.loadeddataHandler();
 
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
             expect(videoBase.mediaEl.classList.remove).not.toHaveBeenCalledWith(CLASS_INVISIBLE);
+        });
+
+        test('should block future poster paint when video data loads', () => {
+            videoBase.preloader = {
+                wrapperEl: undefined,
+                blockFuturePosterPaint: jest.fn(),
+            };
+
+            videoBase.loadeddataHandler();
+
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
         });
 
         test('should remove CLASS_INVISIBLE from mediaEl when preload is not showing', () => {

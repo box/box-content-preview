@@ -150,14 +150,23 @@ class VideoBaseViewer extends MediaBaseViewer {
     /**
      * Dismisses the preload thumbnail if it is currently visible. Safe to call
      * multiple times — hidePreload() guards on wrapperEl internally.
+     * Always reveals the video: the poster wrapper may already be gone after fade/cleanup
+     * while mediaEl is still bp-is-invisible from showPreload().
      *
      * @private
      * @return {void}
      */
     dismissPreload() {
-        if (this.preloader?.wrapperEl) {
+        const hadPoster = Boolean(this.preloader?.wrapperEl);
+        this.preloader?.blockFuturePosterPaint();
+        if (hadPoster) {
             this.hidePreload();
+        }
+        if (this.mediaEl) {
             this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        }
+        // Avoid extra resize on no-op calls (e.g. play with no Instant Preview).
+        if (hadPoster) {
             this.resize();
         }
     }
@@ -380,6 +389,9 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     loadeddataHandler() {
         super.loadeddataHandler();
+
+        // Stop a late Instant Preview JPG from painting over the ready video.
+        this.preloader?.blockFuturePosterPaint();
 
         if (!this.preloader?.wrapperEl) {
             this.mediaEl.classList.remove(CLASS_INVISIBLE);

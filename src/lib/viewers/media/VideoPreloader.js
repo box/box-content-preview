@@ -43,6 +43,9 @@ class VideoPreloader extends EventEmitter {
     /** @property {HTMLElement} - Preload wrapper element */
     wrapperEl;
 
+    /** @property {boolean} - When true, never create/paint a new Instant Preview poster */
+    blockPosterPaint = false;
+
     /**
      * [constructor]
      *
@@ -59,6 +62,17 @@ class VideoPreloader extends EventEmitter {
     }
 
     /**
+     * Stop any in-flight or future poster from painting. Used once the video is ready
+     * (or playback has dismissed Instant Preview) so a late JPG cannot overlay the video.
+     * Does not hide an Instant Preview that is already painted — play still dismisses that.
+     *
+     * @return {void}
+     */
+    blockFuturePosterPaint() {
+        this.blockPosterPaint = true;
+    }
+
+    /**
      * Shows a preload of the video by showing a thumbnail image. This should be called
      * while the full video loads to give the user visual feedback on the file as soon as possible.
      *
@@ -72,6 +86,10 @@ class VideoPreloader extends EventEmitter {
     showPreload(preloadUrlWithAuth, containerEl, options = {}) {
         this.containerEl = containerEl;
         this.preloadOptions = options;
+
+        if (this.shouldAbortPosterPaint()) {
+            return Promise.resolve();
+        }
 
         return this.api
             .get(preloadUrlWithAuth, { type: 'blob' })
@@ -93,6 +111,11 @@ class VideoPreloader extends EventEmitter {
                     </div>
                 </div>
             `.trim();
+
+                // Video may have become ready while we built the DOM — do not attach an unpainted poster.
+                if (this.checkVideoLoaded()) {
+                    return;
+                }
 
                 this.containerEl.appendChild(this.wrapperEl);
                 this.placeholderEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
@@ -405,22 +428,66 @@ class VideoPreloader extends EventEmitter {
     };
 
     /**
-     * Check if video is already loaded - if so, hide the preload.
+     * Whether Instant Preview should stop creating/painting a poster.
+     * True once the viewer marks the video ready, while playing, or once metadata exists.
      *
      * @private
-     * @return {boolean} Whether video is already loaded
+     * @return {boolean}
      */
-    checkVideoLoaded() {
-        // If video element exists and has loaded metadata, hide the preload
-        if (this.containerEl) {
-            const videoEl = this.containerEl.querySelector('video');
-            if (videoEl && videoEl.readyState >= 1) {
-                this.hidePreload();
-                return true;
-            }
+    shouldAbortPosterPaint() {
+        if (this.blockPosterPaint) {
+            return true;
         }
 
-        return false;
+        if (!this.containerEl) {
+            return false;
+        }
+
+        const videoEl = this.containerEl.querySelector('video');
+        if (!videoEl) {
+            return false;
+        }
+
+        // Playing: never let a late poster land on top of playback.
+        if (videoEl.paused === false) {
+            return true;
+        }
+
+        // Metadata available: same gate Instant Preview has always used.
+        return videoEl.readyState >= 1;
+    }
+
+    /**
+     * Check if video is already loaded / poster paint should be aborted.
+     * Unpainted poster DOM is removed immediately; an already-visible Instant Preview is left
+     * for dismiss-on-play. Reveals the video when tearing down an unpainted poster.
+     *
+     * @private
+     * @return {boolean} Whether poster create/paint should abort
+     */
+    checkVideoLoaded() {
+        if (!this.shouldAbortPosterPaint()) {
+            return false;
+        }
+
+        const painted = this.wrapperEl && this.preloadEl && !this.preloadEl.classList.contains(CLASS_INVISIBLE);
+
+        if (painted) {
+            // Instant Preview is already up — play/dismiss owns hiding it.
+            return true;
+        }
+
+        // Never painted (or no DOM): drop it and make sure the video can show.
+        if (this.wrapperEl) {
+            this.cleanupPreload();
+        }
+
+        const videoEl = this.containerEl && this.containerEl.querySelector('video');
+        if (videoEl) {
+            videoEl.classList.remove(CLASS_INVISIBLE);
+        }
+
+        return true;
     }
 }
 

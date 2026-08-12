@@ -64,6 +64,8 @@ class MP4Viewer extends VideoBaseViewer {
         if (!this.preloader?.wrapperEl) {
             this.mediaEl.classList.remove(CLASS_INVISIBLE);
         }
+        // Stop a late Instant Preview JPG from painting over the ready video.
+        this.preloader?.blockFuturePosterPaint();
         if (this.useReactControls()) {
             this.loadUIReact();
         } else {

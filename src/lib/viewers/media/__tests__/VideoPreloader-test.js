@@ -66,18 +66,28 @@ describe('lib/viewers/media/VideoPreloader', () => {
         });
 
         test('should not do anything if video is already loaded', () => {
-            // checkVideoLoaded() is called after blob fetch, and it calls hidePreload() if video is loaded
-            jest.spyOn(videoPreloader, 'hidePreload').mockImplementation();
-            // Mock checkVideoLoaded to call hidePreload() and return true (matching real implementation)
+            // checkVideoLoaded() aborts create/paint (cleanup, not hide) when video is ready
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation();
             jest.spyOn(videoPreloader, 'checkVideoLoaded').mockImplementation(function checkVideoLoadedMock() {
-                this.hidePreload();
+                this.cleanupPreload();
                 return true;
             });
 
             return videoPreloader.showPreload('someUrl', containerEl).then(() => {
-                // checkVideoLoaded() is called after blob fetch, and it should call hidePreload() if video is loaded
                 expect(videoPreloader.checkVideoLoaded).toBeCalled();
-                expect(videoPreloader.hidePreload).toBeCalled();
+                expect(videoPreloader.cleanupPreload).toBeCalled();
+                expect(videoPreloader.wrapperEl).toBeUndefined();
+            });
+        });
+
+        test('should resolve immediately when future poster paint is blocked', () => {
+            videoPreloader.blockFuturePosterPaint();
+            jest.spyOn(videoPreloader, 'checkVideoLoaded');
+
+            return videoPreloader.showPreload('someUrl', containerEl).then(() => {
+                expect(stubs.api.get).not.toHaveBeenCalled();
+                expect(videoPreloader.checkVideoLoaded).not.toHaveBeenCalled();
+                expect(videoPreloader.wrapperEl).toBeUndefined();
             });
         });
 
@@ -541,14 +551,35 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.preloadEl = document.createElement('div');
             videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
             videoPreloader.imageEl = document.createElement('img');
-            jest.spyOn(videoPreloader, 'hidePreload').mockImplementation();
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation(() => {
+                videoPreloader.wrapperEl = undefined;
+                videoPreloader.preloadEl = undefined;
+            });
             jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
 
             videoPreloader.loadHandler();
 
-            expect(videoPreloader.hidePreload).toHaveBeenCalled();
+            expect(videoPreloader.cleanupPreload).toHaveBeenCalled();
             expect(videoPreloader.sizeContainerToViewport).not.toHaveBeenCalled();
-            expect(videoPreloader.preloadEl).toHaveClass(CLASS_INVISIBLE);
+        });
+
+        test('should not paint when blockFuturePosterPaint was set after video ready', () => {
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            videoPreloader.imageEl = document.createElement('img');
+            videoPreloader.blockFuturePosterPaint();
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation(() => {
+                videoPreloader.wrapperEl = undefined;
+                videoPreloader.preloadEl = undefined;
+            });
+            jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.cleanupPreload).toHaveBeenCalled();
+            expect(videoPreloader.sizeContainerToViewport).not.toHaveBeenCalled();
         });
     });
 
@@ -597,6 +628,8 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.containerEl = containerEl;
             const videoEl = {
                 readyState: 1, // HAVE_METADATA
+                paused: true,
+                classList: { remove: jest.fn() },
             };
             jest.spyOn(containerEl, 'querySelector').mockReturnValue(videoEl);
 
@@ -604,6 +637,33 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             expect(result).toBe(true);
             expect(containerEl.querySelector).toBeCalledWith('video');
+        });
+
+        test('should return true if the video is already playing', () => {
+            videoPreloader.containerEl = containerEl;
+            const videoEl = {
+                readyState: 0,
+                paused: false,
+                classList: { remove: jest.fn() },
+            };
+            jest.spyOn(containerEl, 'querySelector').mockReturnValue(videoEl);
+
+            expect(videoPreloader.checkVideoLoaded()).toBe(true);
+        });
+
+        test('should return true after blockFuturePosterPaint without tearing down a painted poster', () => {
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            // Already painted Instant Preview
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation();
+            jest.spyOn(videoPreloader, 'hidePreload').mockImplementation();
+            videoPreloader.blockFuturePosterPaint();
+
+            expect(videoPreloader.checkVideoLoaded()).toBe(true);
+            expect(videoPreloader.cleanupPreload).not.toHaveBeenCalled();
+            expect(videoPreloader.hidePreload).not.toHaveBeenCalled();
+            expect(videoPreloader.wrapperEl).toBeTruthy();
         });
 
         test('should return false if video element does not exist', () => {
