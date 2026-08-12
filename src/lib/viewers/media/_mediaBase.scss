@@ -178,6 +178,32 @@
     background: radial-gradient(ellipse at center, #2a2a2a 0%, #000 100%);
 }
 
+// Legacy V2 (videoPosterEarlyPaint off): padded container owns the stage inset.
+.bp-media-container--v2 {
+    padding: 48px;
+
+    video {
+        border: 1px solid rgba($white, .12);
+    }
+
+    .bp-video-preload-wrapper {
+        top: 48px;
+        right: auto;
+        bottom: 48px;
+        left: 50%;
+        transform: translateX(-50%);
+
+        .bp-preload {
+            transform: none;
+        }
+
+        .bp-preload-content {
+            border: 1px solid rgba($white, .12);
+        }
+    }
+}
+
+// Early-paint V2: dedicated stage with a shared contain-fit media frame.
 .bp-media-stage--v2 {
     display: flex;
     flex: 1 1 0;
@@ -193,7 +219,7 @@
     padding: 0;
 }
 
-.bp-media--v2 .bp-media-container--v2 {
+.bp-media-stage--v2 .bp-media-container--v2 {
     flex: 0 0 auto;
     width: auto;
 

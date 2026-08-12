@@ -11,6 +11,7 @@ import {
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_IS_VISIBLE,
+    MIN_VIDEO_WIDTH_PX,
     VIDEO_PLAYER_CONTROL_BAR_HEIGHT,
 } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
@@ -366,10 +367,31 @@ class VideoPreloader extends EventEmitter {
         // Use natural dimensions if available (image has loaded), otherwise use current dimensions
         const imageWidth = this.imageEl.naturalWidth || this.imageEl.width || 1;
         const imageHeight = this.imageEl.naturalHeight || this.imageEl.height || 1;
-        const { width, height } = fitFrameToViewport(imageWidth / imageHeight, viewport);
 
-        this.containerEl.style.width = `${width}px`;
-        this.containerEl.style.height = `${height}px`;
+        if (this.preloadOptions?.earlyPaint) {
+            const { width, height } = fitFrameToViewport(imageWidth / imageHeight, viewport);
+            this.containerEl.style.width = `${width}px`;
+            this.containerEl.style.height = `${height}px`;
+            return;
+        }
+
+        // Legacy path: enforce minimum width to match V1 / pre-early-paint V2 video sizing
+        const containerWidth = Math.max(MIN_VIDEO_WIDTH_PX, viewport.width);
+        const aspectRatio = imageWidth / imageHeight;
+        let containerHeight = containerWidth / aspectRatio;
+        let finalWidth = containerWidth;
+
+        if (containerHeight > viewport.height) {
+            containerHeight = viewport.height;
+            finalWidth = containerHeight * aspectRatio;
+            if (finalWidth < MIN_VIDEO_WIDTH_PX) {
+                finalWidth = MIN_VIDEO_WIDTH_PX;
+                containerHeight = finalWidth / aspectRatio;
+            }
+        }
+
+        this.containerEl.style.width = `${finalWidth}px`;
+        this.containerEl.style.height = `${containerHeight}px`;
     }
 
     /**

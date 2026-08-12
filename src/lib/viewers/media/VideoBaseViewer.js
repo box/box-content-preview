@@ -81,13 +81,16 @@ class VideoBaseViewer extends MediaBaseViewer {
         super.setup();
 
         this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled') && this.supportsVideoPlayerV2();
+        this.isVideoPosterEarlyPaint = this.isVideoPlayerV2 && this.featureEnabled('videoPosterEarlyPaint.enabled');
         if (this.isVideoPlayerV2) {
-            this.mediaStageEl = document.createElement('div');
-            this.mediaStageEl.classList.add('bp-media-stage--v2');
-            this.wrapperEl.insertBefore(this.mediaStageEl, this.mediaContainerEl);
-            this.mediaStageEl.appendChild(this.mediaContainerEl);
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
+            if (this.isVideoPosterEarlyPaint) {
+                this.mediaStageEl = document.createElement('div');
+                this.mediaStageEl.classList.add('bp-media-stage--v2');
+                this.wrapperEl.insertBefore(this.mediaStageEl, this.mediaContainerEl);
+                this.mediaStageEl.appendChild(this.mediaContainerEl);
+            }
         }
 
         this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
@@ -208,10 +211,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         const options = {
             onImageClick: () => this.handlePlayRequest(),
         };
-        if (this.isVideoPlayerV2) {
+        if (this.isVideoPosterEarlyPaint) {
             // Resolve viewport at paint time so sidebar/layout changes after showPreload
             // don't leave the poster sized to a stale, oversized box.
             options.getViewport = () => this.getVideoViewport();
+            options.earlyPaint = true;
         } else if (this.wrapperEl) {
             const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             options.viewport = {
@@ -566,7 +570,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Reset any prior set widths and heights
         // V1 only modifies widths: Chrome can't set a height larger than the current videoHeight
         this.mediaEl.style.width = '';
-        if (this.isVideoPlayerV2) {
+        if (this.isVideoPosterEarlyPaint) {
             this.mediaEl.style.height = '';
         }
         if (this.mediaContainerEl) {
@@ -644,16 +648,16 @@ class VideoBaseViewer extends MediaBaseViewer {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
         const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
-        const viewport = this.isVideoPlayerV2
+        const viewport = this.isVideoPosterEarlyPaint
             ? this.getVideoViewport()
             : {
                   height: this.wrapperEl.clientHeight - controlsHeight,
                   width: this.wrapperEl.clientWidth,
               };
 
-        // V2: one contain-fit into the stage for poster and video so Instant Preview
+        // Early-paint V2: one contain-fit into the stage for poster and video so Instant Preview
         // and playback share the same frame (V2 controls overlay and do not change the stage).
-        if (this.isVideoPlayerV2) {
+        if (this.isVideoPosterEarlyPaint) {
             if (this.preloader?.isVisible()) {
                 this.preloader.sizeContainerToViewport(viewport);
                 this.mediaEl.style.width = this.mediaContainerEl.style.width;
@@ -706,6 +710,21 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         if (this.mediaContainerEl && this.mediaEl.style.width) {
             this.mediaContainerEl.style.width = this.mediaEl.style.width;
+        }
+
+        // Legacy V2: let the padded container fill the stage; size Instant Preview to the video box.
+        if (this.isVideoPlayerV2) {
+            this.mediaContainerEl.style.width = '';
+
+            if (this.preloader?.wrapperEl && this.mediaEl.style.width) {
+                const videoWidth = parseInt(this.mediaEl.style.width, 10);
+                const videoHeight = videoWidth / this.aspect;
+                this.preloader.wrapperEl.style.width = `${videoWidth}px`;
+                this.preloader.wrapperEl.style.height = `${videoHeight}px`;
+                this.preloader.wrapperEl.style.left = '50%';
+                this.preloader.wrapperEl.style.top = '50%';
+                this.preloader.wrapperEl.style.transform = 'translate(-50%, -50%)';
+            }
         }
     }
 

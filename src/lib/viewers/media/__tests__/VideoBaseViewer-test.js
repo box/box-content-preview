@@ -135,10 +135,40 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.setup();
 
             expect(videoBase.wrapperEl.classList.contains('bp-media--v2')).toBe(true);
+            expect(videoBase.mediaStageEl).toBeUndefined();
+            expect(videoBase.mediaContainerEl.parentNode).toBe(videoBase.wrapperEl);
+            expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(true);
+            expect(videoBase.isVideoPosterEarlyPaint).toBe(false);
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should add V2 stage when videoPosterEarlyPaint is enabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            videoBase.useReactControls = jest.fn().mockReturnValue(false);
+            jest.spyOn(videoBase, 'featureEnabled').mockImplementation(
+                flag => flag === 'videoPlayerV2.enabled' || flag === 'videoPosterEarlyPaint.enabled',
+            );
+            videoBase.containerEl = containerEl;
+            videoBase.setup();
+
+            expect(videoBase.isVideoPosterEarlyPaint).toBe(true);
             expect(videoBase.mediaStageEl.classList.contains('bp-media-stage--v2')).toBe(true);
             expect(videoBase.mediaStageEl.parentNode).toBe(videoBase.wrapperEl);
             expect(videoBase.mediaContainerEl.parentNode).toBe(videoBase.mediaStageEl);
-            expect(videoBase.mediaContainerEl.classList.contains('bp-media-container--v2')).toBe(true);
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
                 value: lowerLights,
@@ -431,6 +461,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
         test('should resize with video geometry after hide clears isVisible', () => {
             videoBase.isVideoPlayerV2 = true;
+            videoBase.isVideoPosterEarlyPaint = true;
             videoBase.aspect = 1;
             const wrapperEl = document.createElement('div');
             const preloadEl = document.createElement('div');
@@ -840,8 +871,9 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 expect(videoBase.mediaContainerEl.style.width).toBe(videoBase.mediaEl.style.width);
             });
 
-            test('should size mediaContainerEl as the shared frame when V2 is enabled', () => {
+            test('should size mediaContainerEl as the shared frame when early paint is enabled', () => {
                 videoBase.isVideoPlayerV2 = true;
+                videoBase.isVideoPosterEarlyPaint = true;
                 videoBase.aspect = 1;
                 videoBase.setVideoDimensions();
                 // Contain-fit into wrapper viewport 600x650 → 600x600
@@ -851,8 +883,17 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 expect(videoBase.mediaEl.style.height).toBe('600px');
             });
 
-            test('should preserve shared poster geometry after metadata when V2 is enabled', () => {
+            test('should clear mediaContainerEl width for legacy V2 without early paint', () => {
                 videoBase.isVideoPlayerV2 = true;
+                videoBase.isVideoPosterEarlyPaint = false;
+                videoBase.aspect = 1;
+                videoBase.setVideoDimensions();
+                expect(videoBase.mediaContainerEl.style.width).toBe('');
+            });
+
+            test('should preserve shared poster geometry after metadata when early paint is enabled', () => {
+                videoBase.isVideoPlayerV2 = true;
+                videoBase.isVideoPosterEarlyPaint = true;
                 videoBase.aspect = 1;
                 videoBase.preloader = {
                     isVisible: jest.fn().mockReturnValue(true),
@@ -871,8 +912,9 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 expect(videoBase.mediaEl.style.height).toBe('480px');
             });
 
-            test('should contain-fit video to the stage when the V2 poster is not visible', () => {
+            test('should contain-fit video to the stage when the early-paint poster is not visible', () => {
                 videoBase.isVideoPlayerV2 = true;
+                videoBase.isVideoPosterEarlyPaint = true;
                 videoBase.aspect = 1;
                 videoBase.preloader = {
                     isVisible: jest.fn().mockReturnValue(false),
@@ -890,6 +932,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 // Simulates loadedmetadata → resize while poster is still up: must not
                 // replace the poster frame with video-aspect sizing yet.
                 videoBase.isVideoPlayerV2 = true;
+                videoBase.isVideoPosterEarlyPaint = true;
                 videoBase.videoWidth = 1920;
                 videoBase.videoHeight = 1080;
                 videoBase.aspect = 16 / 9;
@@ -1519,8 +1562,9 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             );
         });
 
-        test('should size the shared media frame when V2 is enabled', () => {
+        test('should size the shared media frame when early paint is enabled', () => {
             videoBase.isVideoPlayerV2 = true;
+            videoBase.isVideoPosterEarlyPaint = true;
             videoBase.mediaStageEl = document.createElement('div');
             videoBase.mediaStageEl.style.padding = '48px';
             // Border-box stage: content 800x450 → client 896x546
@@ -1536,6 +1580,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 videoBase.mediaContainerEl,
                 expect.objectContaining({
                     onImageClick: expect.any(Function),
+                    earlyPaint: true,
                     getViewport: expect.any(Function),
                 }),
             );

@@ -439,10 +439,23 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.containerEl.style.width).toBe('853.3333333333333px');
         });
 
-        test('should contain-fit within a narrow viewport', () => {
+        test('should apply minimum width when viewport is smaller', () => {
             const contentWrapper = document.querySelector(`.${CLASS_BOX_PREVIEW_CONTENT}`);
             Object.defineProperty(contentWrapper, 'clientWidth', { value: 300, writable: false });
             Object.defineProperty(contentWrapper, 'clientHeight', { value: 400, writable: false });
+
+            videoPreloader.sizeContainerToViewport();
+
+            // Legacy path keeps MIN_VIDEO_WIDTH_PX (420px) when viewport is smaller
+            expect(videoPreloader.containerEl.style.width).toBe('420px');
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeGreaterThan(0);
+        });
+
+        test('should contain-fit within a narrow viewport when earlyPaint is enabled', () => {
+            const contentWrapper = document.querySelector(`.${CLASS_BOX_PREVIEW_CONTENT}`);
+            Object.defineProperty(contentWrapper, 'clientWidth', { value: 300, writable: false });
+            Object.defineProperty(contentWrapper, 'clientHeight', { value: 400, writable: false });
+            videoPreloader.preloadOptions = { earlyPaint: true };
 
             videoPreloader.sizeContainerToViewport();
 
@@ -474,8 +487,9 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(280);
         });
 
-        test('should not produce a frame wider than the viewport', () => {
+        test('should not produce a frame wider than the viewport when earlyPaint is enabled', () => {
             // Wide aspect + short viewport used to yield width > viewport.width after height clamp
+            videoPreloader.preloadOptions = { earlyPaint: true };
             videoPreloader.sizeContainerToViewport({ width: 611, height: 517 });
 
             expect(parseFloat(videoPreloader.containerEl.style.width)).toBeLessThanOrEqual(611);
@@ -502,6 +516,7 @@ describe('lib/viewers/media/VideoPreloader', () => {
                 value: 1080,
             });
             videoPreloader.preloadOptions = {
+                earlyPaint: true,
                 getViewport: () => ({ width: 800, height: 450 }),
             };
             jest.spyOn(videoPreloader, 'emit');
