@@ -219,14 +219,10 @@
 .bp-media-stage--v2 .bp-media-container--v2 {
     flex: 0 0 auto;
     width: auto;
-
-    // Override .bp-media-container { min-width: 360px; width: 100%; flex: 1 } —
-    // those force a wider/taller box than the JS contain-fit and stretch the media.
     min-width: 0;
     height: auto;
     padding: 0;
 
-    // JS contain-fits the frame; use contain so a poster/video aspect mismatch does not stretch.
     video {
         width: 100%;
         max-width: none;

@@ -482,13 +482,9 @@ class VideoPreloader extends EventEmitter {
             this.cleanupPreload();
         }
 
-        const videoEl = this.containerEl && this.containerEl.querySelector('video');
-        if (videoEl) {
-            videoEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.containerEl?.querySelector('video')?.classList.remove(CLASS_INVISIBLE);
 
         return true;
     }
 }
-
 export default VideoPreloader;

@@ -158,13 +158,11 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     dismissPreload() {
         const hadPoster = Boolean(this.preloader?.wrapperEl);
-        this.preloader?.blockFuturePosterPaint();
+        this.preloader?.blockFuturePosterPaint?.();
         if (hadPoster) {
             this.hidePreload();
         }
-        if (this.mediaEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.mediaEl?.classList.remove(CLASS_INVISIBLE);
         // Avoid extra resize on no-op calls (e.g. play with no Instant Preview).
         if (hadPoster) {
             this.resize();
@@ -177,9 +175,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     handlePlayRequest() {
-        if (this.preloader) {
-            this.preloader.showLoading();
-        }
+        this.preloader?.showLoading();
         this.userRequestedPlay = true;
         this.togglePlay();
     }
@@ -257,9 +253,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     hidePreload() {
-        if (this.preloader) {
-            this.preloader.hidePreload();
-        }
+        this.preloader?.hidePreload();
     }
 
     /**
@@ -395,8 +389,8 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     syncInstantPreviewWithLoadedVideo() {
         this.preloader?.blockFuturePosterPaint?.();
-        if (this.mediaEl && !this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        if (!this.preloader?.wrapperEl) {
+            this.mediaEl?.classList.remove(CLASS_INVISIBLE);
         }
     }
 
