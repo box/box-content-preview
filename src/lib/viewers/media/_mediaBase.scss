@@ -183,14 +183,11 @@
     padding: 48px;
 
     video {
-        border: 1px solid rgba($white, .12);
+        border: 1px solid rgba($white, 0.12);
     }
 
     .bp-video-preload-wrapper {
-        top: 48px;
-        right: auto;
-        bottom: 48px;
-        left: 50%;
+        inset: 48px auto 48px 50%;
         transform: translateX(-50%);
 
         .bp-preload {
@@ -198,7 +195,7 @@
         }
 
         .bp-preload-content {
-            border: 1px solid rgba($white, .12);
+            border: 1px solid rgba($white, 0.12);
         }
     }
 }
@@ -229,13 +226,13 @@
     height: auto;
     padding: 0;
 
-    // Box aspect already matches media (JS contain-fit; poster aspect === video aspect).
+    // JS contain-fits the frame; use contain so a poster/video aspect mismatch does not stretch.
     video {
         width: 100%;
         max-width: none;
         height: 100%;
         max-height: none;
-        object-fit: fill;
+        object-fit: contain;
         border: 1px solid rgba($white, 0.12);
     }
 
@@ -248,7 +245,7 @@
         }
 
         .bp-preload-content {
-            object-fit: fill;
+            object-fit: contain;
             border: 1px solid rgba($white, 0.12);
         }
     }

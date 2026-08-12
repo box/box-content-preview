@@ -1,5 +1,5 @@
 import React from 'react';
-import { CLASS_INVISIBLE, DEFAULT_VIDEO_FPS, PRELOAD_REP_NAME } from '../../constants';
+import { DEFAULT_VIDEO_FPS, PRELOAD_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import VideoBaseViewer from './VideoBaseViewer';
 import VideoControls from './VideoControls';
@@ -61,11 +61,7 @@ class MP4Viewer extends VideoBaseViewer {
             return;
         }
 
-        if (!this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
-        // Stop a late Instant Preview JPG from painting over the ready video.
-        this.preloader?.blockFuturePosterPaint();
+        this.syncInstantPreviewWithLoadedVideo();
         if (this.useReactControls()) {
             this.loadUIReact();
         } else {

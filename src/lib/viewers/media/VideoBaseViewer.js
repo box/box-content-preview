@@ -355,7 +355,12 @@ class VideoBaseViewer extends MediaBaseViewer {
     destroy() {
         if (this.preloadBlobUrl) {
             URL.revokeObjectURL(this.preloadBlobUrl);
+            this.preloadBlobUrl = undefined;
         }
+
+        // Stop in-flight Instant Preview from painting after navigate-away, and drop any poster DOM.
+        this.preloader?.blockFuturePosterPaint?.();
+        this.preloader?.cleanupPreload?.();
 
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
@@ -382,6 +387,20 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * Once the video has data: stop late Instant Preview painting, and reveal the
+     * video element when no poster wrapper is covering it.
+     *
+     * @protected
+     * @return {void}
+     */
+    syncInstantPreviewWithLoadedVideo() {
+        this.preloader?.blockFuturePosterPaint?.();
+        if (this.mediaEl && !this.preloader?.wrapperEl) {
+            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        }
+    }
+
+    /**
      * Handler for meta data load for the media element.
      *
      * @override
@@ -390,12 +409,7 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadeddataHandler() {
         super.loadeddataHandler();
 
-        // Stop a late Instant Preview JPG from painting over the ready video.
-        this.preloader?.blockFuturePosterPaint();
-
-        if (!this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.syncInstantPreviewWithLoadedVideo();
         this.showPlayButton();
 
         if (this.userRequestedPlay) {

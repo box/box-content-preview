@@ -99,6 +99,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'emit').mockImplementation();
             jest.spyOn(mp4, 'showAndHideReactControls').mockImplementation();
             jest.spyOn(mp4, 'setMediaTime').mockImplementation();
+            jest.spyOn(mp4, 'syncInstantPreviewWithLoadedVideo').mockImplementation();
         });
 
         test('should do nothing if the player is destroyed', () => {
@@ -106,12 +107,14 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'showMedia');
             mp4.loadeddataHandler();
             expect(mp4.showMedia).not.toHaveBeenCalled();
+            expect(mp4.syncInstantPreviewWithLoadedVideo).not.toHaveBeenCalled();
         });
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus without react controls', () => {
             mp4.options.autoFocus = true;
             mp4.startTimeInSeconds = 10;
             mp4.loadeddataHandler();
+            expect(mp4.syncInstantPreviewWithLoadedVideo).toHaveBeenCalled();
             expect(mp4.autoplay).toHaveBeenCalled();
             expect(mp4.showMedia).toHaveBeenCalled();
             expect(mp4.showPlayButton).toHaveBeenCalled();

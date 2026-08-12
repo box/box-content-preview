@@ -267,6 +267,18 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
             expect(videoBase.playButtonEl.removeEventListener).toBeCalledWith('click', videoBase.handlePlayRequest);
         });
+
+        test('should block late Instant Preview paint and clean up the preloader', () => {
+            videoBase.preloader = {
+                blockFuturePosterPaint: jest.fn(),
+                cleanupPreload: jest.fn(),
+            };
+
+            videoBase.destroy();
+
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
+            expect(videoBase.preloader.cleanupPreload).toHaveBeenCalled();
+        });
     });
 
     describe('loadeddataHandler()', () => {
@@ -1701,6 +1713,34 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
     });
 
+    describe('syncInstantPreviewWithLoadedVideo()', () => {
+        test('should block future poster paint and reveal the video when no poster wrapper exists', () => {
+            videoBase.preloader = {
+                wrapperEl: undefined,
+                blockFuturePosterPaint: jest.fn(),
+            };
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+
+            videoBase.syncInstantPreviewWithLoadedVideo();
+
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
+            expect(videoBase.mediaEl).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        test('should block future poster paint but keep the video invisible while a poster wrapper remains', () => {
+            videoBase.preloader = {
+                wrapperEl: document.createElement('div'),
+                blockFuturePosterPaint: jest.fn(),
+            };
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+
+            videoBase.syncInstantPreviewWithLoadedVideo();
+
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
+            expect(videoBase.mediaEl).toHaveClass(CLASS_INVISIBLE);
+        });
+    });
+
     describe('hidePreload()', () => {
         test('should call preloader.hidePreload() if preloader exists', () => {
             const mockPreloader = {
@@ -1767,15 +1807,12 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.classList.remove).not.toHaveBeenCalledWith(CLASS_INVISIBLE);
         });
 
-        test('should block future poster paint when video data loads', () => {
-            videoBase.preloader = {
-                wrapperEl: undefined,
-                blockFuturePosterPaint: jest.fn(),
-            };
+        test('should sync Instant Preview when video data loads', () => {
+            jest.spyOn(videoBase, 'syncInstantPreviewWithLoadedVideo');
 
             videoBase.loadeddataHandler();
 
-            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
+            expect(videoBase.syncInstantPreviewWithLoadedVideo).toHaveBeenCalled();
         });
 
         test('should remove CLASS_INVISIBLE from mediaEl when preload is not showing', () => {
