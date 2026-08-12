@@ -1,3 +1,10 @@
+## 3.75.0 (2026-08-12)
+
+* fix(npm): expose the PDF.js worker asset (#1734) ([efdb12b](https://github.com/box/box-content-preview/commit/efdb12b)), closes [#1734](https://github.com/box/box-content-preview/issues/1734)
+* chore(deps): bump postcss and pin vulnerable transitive resolutions (#1731) ([a56249d](https://github.com/box/box-content-preview/commit/a56249d)), closes [#1731](https://github.com/box/box-content-preview/issues/1731)
+
+
+
 ## 3.74.0 (2026-08-11)
 
 * feat(video transcription): add generated video transcriptions to dash preview (#1614) ([f2a1fcc](https://github.com/box/box-content-preview/commit/f2a1fcc)), closes [#1614](https://github.com/box/box-content-preview/issues/1614)
