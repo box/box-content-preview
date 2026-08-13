@@ -25,6 +25,7 @@ module.exports = {
         'mock-local-storage',
     ],
     setupFilesAfterEnv: ['<rootDir>/build/jest/envSetup.js'],
+    testEnvironment: 'jsdom',
     testPathIgnorePatterns: ['node_modules', 'dist', '__mocks__'],
     transform: {
         '^.+\\.[jt]sx?$': 'babel-jest',

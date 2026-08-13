@@ -23,6 +23,8 @@ describe('lib/PageTracker', () => {
     });
 
     afterEach(() => {
+        jest.clearAllTimers();
+        jest.useRealTimers();
         pageTracker = null;
     });
 
@@ -107,8 +109,8 @@ describe('lib/PageTracker', () => {
 
     describe('startTracking()', () => {
         beforeEach(() => {
-            pageTracker = new PageTracker(stubs.contentInsights);
-            stubs.report = jest.spyOn(pageTracker, 'report');
+            pageTracker = new PageTracker(stubs.contentInsights, stubs.file);
+            stubs.report = jest.spyOn(pageTracker, 'report').mockImplementation();
             stubs.stopTracking = jest.spyOn(pageTracker, 'stopTracking');
             jest.useFakeTimers();
         });
@@ -132,8 +134,8 @@ describe('lib/PageTracker', () => {
 
     describe('stopTracking()', () => {
         beforeEach(() => {
-            pageTracker = new PageTracker(stubs.contentInsights);
-            stubs.report = jest.spyOn(pageTracker, 'report');
+            pageTracker = new PageTracker(stubs.contentInsights, stubs.file);
+            stubs.report = jest.spyOn(pageTracker, 'report').mockImplementation();
             jest.useFakeTimers();
         });
 
@@ -267,11 +269,12 @@ describe('lib/PageTracker', () => {
 
     describe('bindIdleUserEvents()', () => {
         beforeEach(() => {
-            pageTracker = new PageTracker(stubs.contentInsights, null);
+            pageTracker = new PageTracker(stubs.contentInsights, stubs.file);
             stubs.addEventListener = jest.spyOn(window, 'addEventListener');
             stubs.handleUserActive = jest.spyOn(pageTracker, 'throttledActiveUserHandler');
             stubs.handleUserInactive = jest.spyOn(pageTracker, 'handleUserInactive');
             stubs.handleVisibilityChange = jest.spyOn(pageTracker, 'handleVisibilityChange');
+            jest.spyOn(pageTracker, 'report').mockImplementation();
             pageTracker.bindIdleUserEvents();
         });
 
@@ -304,7 +307,9 @@ describe('lib/PageTracker', () => {
         test.each(['click', 'focus', 'keydown', 'mousemove', 'touchstart', 'touchmove', 'wheel'])(
             'should not call the inactive user timeout if the %s event triggers before',
             listener => {
-                jest.useFakeTimers();
+                // Idle timeout uses setTimeout; legacy timers advance it while Date.now
+                // (and lodash throttle) stay on the wall clock.
+                jest.useFakeTimers({ legacyFakeTimers: true });
                 pageTracker.init();
                 // Advance time just before the timeout call
                 jest.advanceTimersByTime(IDLE_TIMER - 1);
@@ -318,7 +323,10 @@ describe('lib/PageTracker', () => {
 
     describe('unbindIdleUserEvents()', () => {
         beforeEach(() => {
-            pageTracker = new PageTracker(stubs.contentInsights, null);
+            // report() is real here; legacy timers keep Date.now below REPORT_TRESHOLD
+            // while the idle setTimeout still advances.
+            jest.useFakeTimers({ legacyFakeTimers: true });
+            pageTracker = new PageTracker(stubs.contentInsights, stubs.file);
             stubs.removeEventListener = jest.spyOn(window, 'removeEventListener');
             stubs.handleUserActive = jest.spyOn(pageTracker, 'throttledActiveUserHandler');
             stubs.handleUserInactive = jest.spyOn(pageTracker, 'handleUserInactive');
@@ -357,7 +365,6 @@ describe('lib/PageTracker', () => {
         test.each(['click', 'focus', 'keydown', 'mousemove', 'touchstart', 'touchmove', 'wheel'])(
             'should not reset the idle timeout if the %s event triggers before',
             listener => {
-                jest.useFakeTimers();
                 pageTracker.init();
                 pageTracker.unbindIdleUserEvents();
                 // Advance time just before the timeout call
@@ -375,7 +382,7 @@ describe('lib/PageTracker', () => {
             pageTracker = new PageTracker(stubs.contentInsights, stubs.file);
             stubs.promiseResolve = Promise.resolve({});
             pageTracker.startTime = Date.now();
-            jest.useFakeTimers('modern');
+            jest.useFakeTimers();
             stubs.date = new Date();
             jest.spyOn(Api.prototype, 'post').mockReturnValue(stubs.promiseResolve);
             stubs.report = jest.spyOn(pageTracker, 'report');
