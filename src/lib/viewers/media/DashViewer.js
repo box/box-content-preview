@@ -174,7 +174,7 @@ class DashViewer extends VideoBaseViewer {
             this.showPreload();
             return Promise.resolve();
         }
-        if (!this.preloader?.wrapperEl) this.showPreload();
+        if (!this.preloader?.wrapperEl && !this.preloader?.showPreloadPromise) this.showPreload();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
 

@@ -137,6 +137,58 @@ describe('lib/viewers/media/VideoPreloader', () => {
                 expect(videoPreloader.wrapperEl).toBeUndefined();
             });
         });
+
+        test('should single-flight overlapping showPreload calls so only one wrapper is appended', () => {
+            let resolveFetch;
+            stubs.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+
+            const first = videoPreloader.showPreload('someUrl', containerEl);
+            const second = videoPreloader.showPreload('otherUrl', containerEl);
+
+            expect(stubs.api.get).toHaveBeenCalledTimes(1);
+            expect(second).toBe(first);
+
+            resolveFetch({ data: new Blob(['test'], { type: 'image/jpeg' }), status: 200 });
+
+            return first.then(() => {
+                expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(1);
+                expect(videoPreloader.wrapperEl).toBe(
+                    containerEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`),
+                );
+            });
+        });
+
+        test('should not append a wrapper when blockFuturePosterPaint invalidates an in-flight fetch', () => {
+            let resolveFetch;
+            stubs.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+
+            const pending = videoPreloader.showPreload('someUrl', containerEl);
+            videoPreloader.blockFuturePosterPaint();
+            resolveFetch({ data: new Blob(['test'], { type: 'image/jpeg' }), status: 200 });
+
+            return pending.then(() => {
+                expect(videoPreloader.wrapperEl).toBeUndefined();
+                expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(0);
+            });
+        });
+
+        test('should no-op a second showPreload once wrapperEl already exists', () => {
+            return videoPreloader.showPreload('someUrl', containerEl).then(() => {
+                stubs.api.get.mockClear();
+                return videoPreloader.showPreload('otherUrl', containerEl).then(() => {
+                    expect(stubs.api.get).not.toHaveBeenCalled();
+                    expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(1);
+                });
+            });
+        });
     });
 
     describe('hidePreload()', () => {
@@ -153,6 +205,18 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.wrapperEl = null;
             videoPreloader.hidePreload();
 
+            expect(videoPreloader.unbindDOMListeners).not.toBeCalled();
+        });
+
+        test('should remove orphan wrappers even when wrapperEl is missing', () => {
+            const orphan = document.createElement('div');
+            orphan.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO;
+            containerEl.appendChild(orphan);
+            videoPreloader.wrapperEl = null;
+
+            videoPreloader.hidePreload();
+
+            expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(0);
             expect(videoPreloader.unbindDOMListeners).not.toBeCalled();
         });
 
@@ -620,6 +684,17 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             const { wrapperEl } = videoPreloader;
             expect(wrapperEl).toBeUndefined();
+        });
+
+        test('should remove orphan wrappers left in the container', () => {
+            videoPreloader.containerEl = containerEl;
+            const orphan = document.createElement('div');
+            orphan.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO;
+            containerEl.appendChild(orphan);
+
+            videoPreloader.cleanupPreload();
+
+            expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(0);
         });
     });
 

@@ -46,6 +46,12 @@ class VideoPreloader extends EventEmitter {
     /** @property {boolean} - When true, never create/paint a new Instant Preview poster */
     blockPosterPaint = false;
 
+    /** @property {number} - Monotonic id so overlapping showPreload fetches cannot append orphans */
+    preloadRequestId = 0;
+
+    /** @property {Promise|null} - In-flight showPreload promise (single-flight) */
+    showPreloadPromise = null;
+
     /**
      * [constructor]
      *
@@ -70,6 +76,26 @@ class VideoPreloader extends EventEmitter {
      */
     blockFuturePosterPaint() {
         this.blockPosterPaint = true;
+        // Invalidate in-flight showPreload work so a late fetch cannot append another wrapper.
+        this.preloadRequestId += 1;
+    }
+
+    /**
+     * Removes Instant Preview wrapper nodes in the container that are not the tracked wrapper.
+     * Overlapping showPreload calls can leave orphans that dismiss would otherwise miss.
+     *
+     * @private
+     * @return {void}
+     */
+    removeOrphanPreloadWrappers() {
+        if (!this.containerEl) {
+            return;
+        }
+        this.containerEl.querySelectorAll(`.${this.wrapperClassName}`).forEach(el => {
+            if (el !== this.wrapperEl) {
+                el.remove();
+            }
+        });
     }
 
     /**
@@ -91,19 +117,28 @@ class VideoPreloader extends EventEmitter {
             return Promise.resolve();
         }
 
-        return this.api
+        // load() may call showPreload again before wrapperEl is set (async fetch). Only one
+        // in-flight create is allowed so dismiss cannot leave an orphan wrapper behind.
+        if (this.wrapperEl || this.showPreloadPromise) {
+            return this.showPreloadPromise || Promise.resolve();
+        }
+
+        this.preloadRequestId += 1;
+        const requestId = this.preloadRequestId;
+
+        this.showPreloadPromise = this.api
             .get(preloadUrlWithAuth, { type: 'blob' })
             .then(handleRepresentationBlobFetch)
             .then(imgBlob => {
-                if (this.checkVideoLoaded()) {
+                if (requestId !== this.preloadRequestId || this.checkVideoLoaded()) {
                     return;
                 }
 
                 this.srcUrl = URL.createObjectURL(imgBlob);
 
-                this.wrapperEl = document.createElement('div');
-                this.wrapperEl.className = this.wrapperClassName;
-                this.wrapperEl.innerHTML = `
+                const wrapperEl = document.createElement('div');
+                wrapperEl.className = this.wrapperClassName;
+                wrapperEl.innerHTML = `
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                     <div class="${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}">
                         <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
@@ -113,9 +148,15 @@ class VideoPreloader extends EventEmitter {
             `.trim();
 
                 // Video may have become ready while we built the DOM — do not attach an unpainted poster.
-                if (this.checkVideoLoaded()) {
+                if (requestId !== this.preloadRequestId || this.checkVideoLoaded()) {
+                    URL.revokeObjectURL(this.srcUrl);
+                    this.srcUrl = undefined;
                     return;
                 }
+
+                // Drop any stray Instant Preview nodes before attaching the tracked one.
+                this.wrapperEl = wrapperEl;
+                this.removeOrphanPreloadWrappers();
 
                 this.containerEl.appendChild(this.wrapperEl);
                 this.placeholderEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
@@ -131,7 +172,12 @@ class VideoPreloader extends EventEmitter {
             })
             .catch(() => {
                 // Silently fail if preload image can't be loaded
+            })
+            .finally(() => {
+                this.showPreloadPromise = null;
             });
+
+        return this.showPreloadPromise;
     }
 
     /**
@@ -140,6 +186,9 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     hidePreload() {
+        // Orphans are never faded via wrapperEl; remove them immediately on dismiss.
+        this.removeOrphanPreloadWrappers();
+
         if (!this.wrapperEl) {
             return;
         }
@@ -252,9 +301,13 @@ class VideoPreloader extends EventEmitter {
             this.wrapperEl = undefined;
         }
 
+        // Remove any Instant Preview wrappers left by overlapping showPreload races.
+        this.removeOrphanPreloadWrappers();
+
         this.preloadEl = undefined;
         this.imageEl = undefined;
         this.placeholderEl = undefined;
+        this.showPreloadPromise = null;
 
         if (this.srcUrl) {
             URL.revokeObjectURL(this.srcUrl);
