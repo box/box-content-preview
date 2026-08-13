@@ -16,6 +16,7 @@ import {
 } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { handleRepresentationBlobFetch } from '../../util';
+import fitFrameToViewport from './fitFrameToViewport';
 
 class VideoPreloader extends EventEmitter {
     /** @property {Api} - Api layer used for XHR calls */
@@ -42,6 +43,15 @@ class VideoPreloader extends EventEmitter {
     /** @property {HTMLElement} - Preload wrapper element */
     wrapperEl;
 
+    /** @property {boolean} - When true, never create/paint a new Instant Preview poster */
+    blockPosterPaint = false;
+
+    /** @property {number} - Monotonic id so overlapping showPreload fetches cannot append orphans */
+    preloadRequestId = 0;
+
+    /** @property {Promise|null} - In-flight showPreload promise (single-flight) */
+    showPreloadPromise = null;
+
     /**
      * [constructor]
      *
@@ -55,6 +65,37 @@ class VideoPreloader extends EventEmitter {
             this.api = api;
         }
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO;
+    }
+
+    /**
+     * Stop any in-flight or future poster from painting. Used once the video is ready
+     * (or playback has dismissed Instant Preview) so a late JPG cannot overlay the video.
+     * Does not hide an Instant Preview that is already painted — play still dismisses that.
+     *
+     * @return {void}
+     */
+    blockFuturePosterPaint() {
+        this.blockPosterPaint = true;
+        // Invalidate in-flight showPreload work so a late fetch cannot append another wrapper.
+        this.preloadRequestId += 1;
+    }
+
+    /**
+     * Removes Instant Preview wrapper nodes in the container that are not the tracked wrapper.
+     * Overlapping showPreload calls can leave orphans that dismiss would otherwise miss.
+     *
+     * @private
+     * @return {void}
+     */
+    removeOrphanPreloadWrappers() {
+        if (!this.containerEl) {
+            return;
+        }
+        this.containerEl.querySelectorAll(`.${this.wrapperClassName}`).forEach(el => {
+            if (el !== this.wrapperEl) {
+                el.remove();
+            }
+        });
     }
 
     /**
@@ -72,19 +113,32 @@ class VideoPreloader extends EventEmitter {
         this.containerEl = containerEl;
         this.preloadOptions = options;
 
-        return this.api
+        if (this.shouldAbortPosterPaint()) {
+            return Promise.resolve();
+        }
+
+        // load() may call showPreload again before wrapperEl is set (async fetch). Only one
+        // in-flight create is allowed so dismiss cannot leave an orphan wrapper behind.
+        if (this.wrapperEl || this.showPreloadPromise) {
+            return this.showPreloadPromise || Promise.resolve();
+        }
+
+        this.preloadRequestId += 1;
+        const requestId = this.preloadRequestId;
+
+        this.showPreloadPromise = this.api
             .get(preloadUrlWithAuth, { type: 'blob' })
             .then(handleRepresentationBlobFetch)
             .then(imgBlob => {
-                if (this.checkVideoLoaded()) {
+                if (requestId !== this.preloadRequestId || this.checkVideoLoaded()) {
                     return;
                 }
 
                 this.srcUrl = URL.createObjectURL(imgBlob);
 
-                this.wrapperEl = document.createElement('div');
-                this.wrapperEl.className = this.wrapperClassName;
-                this.wrapperEl.innerHTML = `
+                const wrapperEl = document.createElement('div');
+                wrapperEl.className = this.wrapperClassName;
+                wrapperEl.innerHTML = `
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                     <div class="${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}">
                         <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
@@ -92,6 +146,17 @@ class VideoPreloader extends EventEmitter {
                     </div>
                 </div>
             `.trim();
+
+                // Video may have become ready while we built the DOM — do not attach an unpainted poster.
+                if (requestId !== this.preloadRequestId || this.checkVideoLoaded()) {
+                    URL.revokeObjectURL(this.srcUrl);
+                    this.srcUrl = undefined;
+                    return;
+                }
+
+                // Drop any stray Instant Preview nodes before attaching the tracked one.
+                this.wrapperEl = wrapperEl;
+                this.removeOrphanPreloadWrappers();
 
                 this.containerEl.appendChild(this.wrapperEl);
                 this.placeholderEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
@@ -107,7 +172,12 @@ class VideoPreloader extends EventEmitter {
             })
             .catch(() => {
                 // Silently fail if preload image can't be loaded
+            })
+            .finally(() => {
+                this.showPreloadPromise = null;
             });
+
+        return this.showPreloadPromise;
     }
 
     /**
@@ -116,6 +186,9 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     hidePreload() {
+        // Orphans are never faded via wrapperEl; remove them immediately on dismiss.
+        this.removeOrphanPreloadWrappers();
+
         if (!this.wrapperEl) {
             return;
         }
@@ -200,6 +273,21 @@ class VideoPreloader extends EventEmitter {
     }
 
     /**
+     * Whether the poster is still the authoritative painted frame.
+     * False once hide/dismiss starts (transparent fade) so resize uses video geometry.
+     *
+     * @return {boolean} true when the poster has painted and is not dismissing
+     */
+    isVisible() {
+        return (
+            !!this.preloadEl &&
+            !!this.wrapperEl &&
+            !this.preloadEl.classList.contains(CLASS_INVISIBLE) &&
+            !this.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT)
+        );
+    }
+
+    /**
      * Cleans up preload DOM.
      *
      * @private
@@ -213,9 +301,13 @@ class VideoPreloader extends EventEmitter {
             this.wrapperEl = undefined;
         }
 
+        // Remove any Instant Preview wrappers left by overlapping showPreload races.
+        this.removeOrphanPreloadWrappers();
+
         this.preloadEl = undefined;
         this.imageEl = undefined;
         this.placeholderEl = undefined;
+        this.showPreloadPromise = null;
 
         if (this.srcUrl) {
             URL.revokeObjectURL(this.srcUrl);
@@ -260,19 +352,20 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     loadHandler = () => {
-        if (!this.preloadEl || !this.imageEl) {
+        if (!this.preloadEl || !this.imageEl || !this.preloadEl.classList.contains(CLASS_INVISIBLE)) {
             return;
         }
 
-        this.sizeContainerToViewport(this.preloadOptions?.viewport);
+        if (this.checkVideoLoaded()) {
+            return;
+        }
 
+        this.sizeContainerToViewport(this.resolveViewport());
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
 
-        if (this.containerEl && this.containerEl.parentNode) {
-            const mediaWrapper = this.containerEl.parentNode;
-            if (mediaWrapper && mediaWrapper.classList && mediaWrapper.classList.contains('bp-media')) {
-                mediaWrapper.classList.add(CLASS_IS_VISIBLE);
-            }
+        const mediaWrapper = this.containerEl?.closest('.bp-media');
+        if (mediaWrapper) {
+            mediaWrapper.classList.add(CLASS_IS_VISIBLE);
         }
 
         const onImageClick = this.preloadOptions?.onImageClick;
@@ -290,7 +383,22 @@ class VideoPreloader extends EventEmitter {
     };
 
     /**
-     * Sizes the container based on viewport dimensions and image aspect ratio to match video player sizing.
+     * Resolves the viewport to size against, preferring a live getter when provided
+     * so layout changes after showPreload() are reflected at paint time.
+     *
+     * @private
+     * @return {Object|undefined} viewport width/height
+     */
+    resolveViewport() {
+        const { getViewport, viewport } = this.preloadOptions || {};
+        if (typeof getViewport === 'function') {
+            return getViewport();
+        }
+        return viewport;
+    }
+
+    /**
+     * Sizes the target based on viewport dimensions and image aspect ratio to match video player sizing.
      * This prevents the thumbnail from appearing small and then jumping to the correct size.
      *
      * @param {Object} [viewportOverride] - Optional { width, height }; when provided, use instead of walking DOM (same as video viewport)
@@ -334,33 +442,32 @@ class VideoPreloader extends EventEmitter {
             };
         }
 
-        // Apply minimum width to match video sizing logic
-        // This ensures controls don't overflow
-        const containerWidth = Math.max(MIN_VIDEO_WIDTH_PX, viewport.width);
-
-        // Calculate container height based on image aspect ratio
         // Use natural dimensions if available (image has loaded), otherwise use current dimensions
         const imageWidth = this.imageEl.naturalWidth || this.imageEl.width || 1;
         const imageHeight = this.imageEl.naturalHeight || this.imageEl.height || 1;
-        const aspectRatio = imageWidth / imageHeight;
 
-        // Calculate height based on width and aspect ratio
+        if (this.preloadOptions?.earlyPaint) {
+            const { width, height } = fitFrameToViewport(imageWidth / imageHeight, viewport);
+            this.containerEl.style.width = `${width}px`;
+            this.containerEl.style.height = `${height}px`;
+            return;
+        }
+
+        // Legacy path: enforce minimum width to match V1 / pre-early-paint V2 video sizing
+        const containerWidth = Math.max(MIN_VIDEO_WIDTH_PX, viewport.width);
+        const aspectRatio = imageWidth / imageHeight;
         let containerHeight = containerWidth / aspectRatio;
         let finalWidth = containerWidth;
 
-        // Ensure height doesn't exceed viewport height
         if (containerHeight > viewport.height) {
             containerHeight = viewport.height;
-            // If height is constrained, recalculate width to maintain aspect ratio
             finalWidth = containerHeight * aspectRatio;
-            // Ensure we still meet minimum width requirement
             if (finalWidth < MIN_VIDEO_WIDTH_PX) {
                 finalWidth = MIN_VIDEO_WIDTH_PX;
                 containerHeight = finalWidth / aspectRatio;
             }
         }
 
-        // Set container dimensions
         this.containerEl.style.width = `${finalWidth}px`;
         this.containerEl.style.height = `${containerHeight}px`;
     }
@@ -376,23 +483,63 @@ class VideoPreloader extends EventEmitter {
     };
 
     /**
-     * Check if video is already loaded - if so, hide the preload.
+     * Whether Instant Preview should stop creating/painting a poster.
+     * True once the viewer marks the video ready, while playing, or once metadata exists.
      *
      * @private
-     * @return {boolean} Whether video is already loaded
+     * @return {boolean}
      */
-    checkVideoLoaded() {
-        // If video element exists and has loaded metadata, hide the preload
-        if (this.containerEl) {
-            const videoEl = this.containerEl.querySelector('video');
-            if (videoEl && videoEl.readyState >= 1) {
-                this.hidePreload();
-                return true;
-            }
+    shouldAbortPosterPaint() {
+        if (this.blockPosterPaint) {
+            return true;
         }
 
-        return false;
+        if (!this.containerEl) {
+            return false;
+        }
+
+        const videoEl = this.containerEl.querySelector('video');
+        if (!videoEl) {
+            return false;
+        }
+
+        // Playing: never let a late poster land on top of playback.
+        if (videoEl.paused === false) {
+            return true;
+        }
+
+        // Metadata available: same gate Instant Preview has always used.
+        return videoEl.readyState >= 1;
+    }
+
+    /**
+     * Check if video is already loaded / poster paint should be aborted.
+     * Unpainted poster DOM is removed immediately; an already-visible Instant Preview is left
+     * for dismiss-on-play. Reveals the video when tearing down an unpainted poster.
+     *
+     * @private
+     * @return {boolean} Whether poster create/paint should abort
+     */
+    checkVideoLoaded() {
+        if (!this.shouldAbortPosterPaint()) {
+            return false;
+        }
+
+        const painted = this.wrapperEl && this.preloadEl && !this.preloadEl.classList.contains(CLASS_INVISIBLE);
+
+        if (painted) {
+            // Instant Preview is already up — play/dismiss owns hiding it.
+            return true;
+        }
+
+        // Never painted (or no DOM): drop it and make sure the video can show.
+        if (this.wrapperEl) {
+            this.cleanupPreload();
+        }
+
+        this.containerEl?.querySelector('video')?.classList.remove(CLASS_INVISIBLE);
+
+        return true;
     }
 }
-
 export default VideoPreloader;

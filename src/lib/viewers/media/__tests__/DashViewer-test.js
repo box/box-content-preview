@@ -727,9 +727,11 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'loadTranscription').mockImplementation();
             jest.spyOn(dash, 'loadAlternateAudio').mockImplementation();
             jest.spyOn(dash, 'loadUI').mockImplementation();
+            jest.spyOn(dash, 'syncInstantPreviewWithLoadedVideo').mockImplementation();
 
             dash.options.autoFocus = true;
             dash.loadeddataHandler();
+            expect(dash.syncInstantPreviewWithLoadedVideo).toBeCalled();
             expect(dash.autoplay).toBeCalled();
             expect(dash.showMedia).toBeCalled();
             expect(dash.showPlayButton).toBeCalled();

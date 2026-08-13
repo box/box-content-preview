@@ -1,5 +1,5 @@
 import React from 'react';
-import { CLASS_INVISIBLE, DEFAULT_VIDEO_FPS, PRELOAD_REP_NAME } from '../../constants';
+import { DEFAULT_VIDEO_FPS, PRELOAD_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import VideoBaseViewer from './VideoBaseViewer';
 import VideoControls from './VideoControls';
@@ -19,8 +19,6 @@ class MP4Viewer extends VideoBaseViewer {
 
         // Call super() first to set up common layout
         super.setup();
-
-        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
 
         // mp4 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP4);
@@ -63,9 +61,7 @@ class MP4Viewer extends VideoBaseViewer {
             return;
         }
 
-        if (!this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.syncInstantPreviewWithLoadedVideo();
         if (this.useReactControls()) {
             this.loadUIReact();
         } else {

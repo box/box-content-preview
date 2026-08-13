@@ -19,6 +19,7 @@ import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
 import MediaBaseViewer from './MediaBaseViewer';
 import VideoPreloader from './VideoPreloader';
+import fitFrameToViewport from './fitFrameToViewport';
 import { isWatermarked, getRepresentation } from '../../file';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
@@ -37,6 +38,9 @@ class VideoBaseViewer extends MediaBaseViewer {
 
     /** @property {VideoPreloader} - Video preloader instance */
     preloader;
+
+    /** @property {HTMLElement} - Full-size padded stage around the shared V2 media frame */
+    mediaStageEl;
 
     /**
      * @inheritdoc
@@ -76,6 +80,19 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Call super() to set up common layout
         super.setup();
 
+        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled') && this.supportsVideoPlayerV2();
+        this.isVideoPosterEarlyPaint = this.isVideoPlayerV2 && this.featureEnabled('videoPosterEarlyPaint.enabled');
+        if (this.isVideoPlayerV2) {
+            this.wrapperEl.classList.add('bp-media--v2');
+            this.mediaContainerEl.classList.add('bp-media-container--v2');
+            if (this.isVideoPosterEarlyPaint) {
+                this.mediaStageEl = document.createElement('div');
+                this.mediaStageEl.classList.add('bp-media-stage--v2');
+                this.wrapperEl.insertBefore(this.mediaStageEl, this.mediaContainerEl);
+                this.mediaStageEl.appendChild(this.mediaContainerEl);
+            }
+        }
+
         this.videoAnnotationsEnabled = this.featureEnabled(VIDEO_ANNOTATIONS_ENABLED);
 
         this.isNarrowVideo = false;
@@ -100,17 +117,21 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
-        if (this.useReactControls() && !this.featureEnabled('videoPlayerV2.enabled')) {
+        if (this.useReactControls() && !this.isVideoPlayerV2) {
             // Shift up by half the control bar + half the spinner to visually center above the controls
             this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
         }
 
-        if (this.featureEnabled('videoPlayerV2.enabled')) {
-            this.wrapperEl.classList.add('bp-media--v2');
-            this.mediaContainerEl.classList.add('bp-media-container--v2');
-        }
-
         this.lowerLights();
+    }
+
+    /**
+     * Whether this viewer supports the V2 video player structure.
+     *
+     * @return {boolean} true when V2 is supported
+     */
+    supportsVideoPlayerV2() {
+        return true;
     }
 
     /**
@@ -129,14 +150,21 @@ class VideoBaseViewer extends MediaBaseViewer {
     /**
      * Dismisses the preload thumbnail if it is currently visible. Safe to call
      * multiple times — hidePreload() guards on wrapperEl internally.
+     * Always reveals the video: the poster wrapper may already be gone after fade/cleanup
+     * while mediaEl is still bp-is-invisible from showPreload().
      *
      * @private
      * @return {void}
      */
     dismissPreload() {
-        if (this.preloader?.wrapperEl) {
+        const hadPoster = Boolean(this.preloader?.wrapperEl);
+        this.preloader?.blockFuturePosterPaint?.();
+        if (hadPoster) {
             this.hidePreload();
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
+        }
+        this.mediaEl?.classList.remove(CLASS_INVISIBLE);
+        // Avoid extra resize on no-op calls (e.g. play with no Instant Preview).
+        if (hadPoster) {
             this.resize();
         }
     }
@@ -147,9 +175,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     handlePlayRequest() {
-        if (this.preloader) {
-            this.preloader.showLoading();
-        }
+        this.preloader?.showLoading();
         this.userRequestedPlay = true;
         this.togglePlay();
     }
@@ -190,7 +216,12 @@ class VideoBaseViewer extends MediaBaseViewer {
         const options = {
             onImageClick: () => this.handlePlayRequest(),
         };
-        if (this.wrapperEl) {
+        if (this.isVideoPosterEarlyPaint) {
+            // Resolve viewport at paint time so sidebar/layout changes after showPreload
+            // don't leave the poster sized to a stale, oversized box.
+            options.getViewport = () => this.getVideoViewport();
+            options.earlyPaint = true;
+        } else if (this.wrapperEl) {
             const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
             options.viewport = {
                 width: this.wrapperEl.clientWidth,
@@ -222,9 +253,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     hidePreload() {
-        if (this.preloader) {
-            this.preloader.hidePreload();
-        }
+        this.preloader?.hidePreload();
     }
 
     /**
@@ -320,7 +349,12 @@ class VideoBaseViewer extends MediaBaseViewer {
     destroy() {
         if (this.preloadBlobUrl) {
             URL.revokeObjectURL(this.preloadBlobUrl);
+            this.preloadBlobUrl = undefined;
         }
+
+        // Stop in-flight Instant Preview from painting after navigate-away, and drop any poster DOM.
+        this.preloader?.blockFuturePosterPaint?.();
+        this.preloader?.cleanupPreload?.();
 
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
@@ -347,6 +381,20 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * Once the video has data: stop late Instant Preview painting, and reveal the
+     * video element when no poster wrapper is covering it.
+     *
+     * @protected
+     * @return {void}
+     */
+    syncInstantPreviewWithLoadedVideo() {
+        this.preloader?.blockFuturePosterPaint?.();
+        if (!this.preloader?.wrapperEl) {
+            this.mediaEl?.classList.remove(CLASS_INVISIBLE);
+        }
+    }
+
+    /**
      * Handler for meta data load for the media element.
      *
      * @override
@@ -355,9 +403,7 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadeddataHandler() {
         super.loadeddataHandler();
 
-        if (!this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.syncInstantPreviewWithLoadedVideo();
         this.showPlayButton();
 
         if (this.userRequestedPlay) {
@@ -395,9 +441,7 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         // For the V2 player, mount the controls on the wrapper (above the media container)
         // so their width is constrained by the viewport rather than the video
-        const controlsContainerEl = this.featureEnabled('videoPlayerV2.enabled')
-            ? this.wrapperEl
-            : this.mediaContainerEl;
+        const controlsContainerEl = this.isVideoPlayerV2 ? this.wrapperEl : this.mediaContainerEl;
 
         this.controls = new ControlsRoot({
             className: 'bp-VideoControlsRoot',
@@ -544,10 +588,11 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     resize() {
         // Reset any prior set widths and heights
-        // We are only going to modify the widths and not heights
-        // This is because in Chrome its not possible to set a height
-        // that larger than the current videoHeight.
+        // V1 only modifies widths: Chrome can't set a height larger than the current videoHeight
         this.mediaEl.style.width = '';
+        if (this.isVideoPosterEarlyPaint) {
+            this.mediaEl.style.height = '';
+        }
         if (this.mediaContainerEl) {
             this.mediaContainerEl.style.width = '';
             this.mediaContainerEl.style.height = '';
@@ -569,6 +614,50 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * Returns the usable V2 stage content box (inside padding).
+     *
+     * Prefer the stage element's box over the wrapper: the stage is what actually
+     * clips/centers the shared media frame. V2 controls are position:absolute overlays
+     * and do not consume flex space, so do not reserve control-bar height here.
+     *
+     * @private
+     * @return {Object} viewport width and height
+     */
+    getVideoViewport() {
+        if (!this.mediaStageEl) {
+            return {
+                height: Math.max(0, this.wrapperEl.clientHeight),
+                width: Math.max(0, this.wrapperEl.clientWidth),
+            };
+        }
+
+        const stageStyle = window.getComputedStyle(this.mediaStageEl);
+        const horizontalPadding =
+            (parseFloat(stageStyle.paddingLeft) || 0) + (parseFloat(stageStyle.paddingRight) || 0);
+        const verticalPadding = (parseFloat(stageStyle.paddingTop) || 0) + (parseFloat(stageStyle.paddingBottom) || 0);
+
+        return {
+            width: Math.max(0, this.mediaStageEl.clientWidth - horizontalPadding),
+            height: Math.max(0, this.mediaStageEl.clientHeight - verticalPadding),
+        };
+    }
+
+    /**
+     * Applies width/height to the shared V2 media frame (container + video element).
+     *
+     * @private
+     * @param {number} width
+     * @param {number} height
+     * @return {void}
+     */
+    applySharedMediaFrame(width, height) {
+        this.mediaEl.style.width = `${width}px`;
+        this.mediaEl.style.height = `${height}px`;
+        this.mediaContainerEl.style.width = `${width}px`;
+        this.mediaContainerEl.style.height = `${height}px`;
+    }
+
+    /**
      * Calculates and applies video dimensions based on viewport constraints.
      * Handles three cases: video fits in viewport, fullscreen mode, or overflow.
      *
@@ -579,14 +668,28 @@ class VideoBaseViewer extends MediaBaseViewer {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
         const controlsHeight = this.useReactControls() ? VIDEO_PLAYER_CONTROL_BAR_HEIGHT : 0;
+        const viewport = this.isVideoPosterEarlyPaint
+            ? this.getVideoViewport()
+            : {
+                  height: this.wrapperEl.clientHeight - controlsHeight,
+                  width: this.wrapperEl.clientWidth,
+              };
 
-        // Calculate the viewport height minus the control bar height if using react controls
-        // This is necessary to prevent the control bar from overflowing the viewport when the video scale
-        // is expanded.
-        const viewport = {
-            height: this.wrapperEl.clientHeight - controlsHeight,
-            width: this.wrapperEl.clientWidth,
-        };
+        // Early-paint V2: one contain-fit into the stage for poster and video so Instant Preview
+        // and playback share the same frame (V2 controls overlay and do not change the stage).
+        if (this.isVideoPosterEarlyPaint) {
+            if (this.preloader?.isVisible()) {
+                this.preloader.sizeContainerToViewport(viewport);
+                this.mediaEl.style.width = this.mediaContainerEl.style.width;
+                this.mediaEl.style.height = this.mediaContainerEl.style.height;
+                return;
+            }
+
+            const aspectRatio = this.aspect || width / (height || 1) || 1;
+            const frame = fitFrameToViewport(aspectRatio, viewport);
+            this.applySharedMediaFrame(frame.width, frame.height);
+            return;
+        }
 
         // We need the width to be atleast wide enough for the controls
         // to not overflow and fit properly
@@ -629,7 +732,8 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.mediaContainerEl.style.width = this.mediaEl.style.width;
         }
 
-        if (this.featureEnabled('videoPlayerV2.enabled')) {
+        // Legacy V2: let the padded container fill the stage; size Instant Preview to the video box.
+        if (this.isVideoPlayerV2) {
             this.mediaContainerEl.style.width = '';
 
             if (this.preloader?.wrapperEl && this.mediaEl.style.width) {
@@ -653,7 +757,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     handleNarrowVideoUI() {
         if (this.useReactControls()) {
-            const widthNumber = this.featureEnabled('videoPlayerV2.enabled')
+            const widthNumber = this.isVideoPlayerV2
                 ? this.wrapperEl.clientWidth
                 : parseInt(this.mediaEl.style.width, 10);
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-    CLASS_INVISIBLE,
     AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
     MEDIA_STATIC_ASSETS_VERSION,
     PRELOAD_REP_NAME,
@@ -112,8 +111,6 @@ class DashViewer extends VideoBaseViewer {
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
-
-        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
     }
 
     /**
@@ -177,7 +174,7 @@ class DashViewer extends VideoBaseViewer {
             this.showPreload();
             return Promise.resolve();
         }
-        if (!this.preloader?.wrapperEl) this.showPreload();
+        if (!this.preloader?.wrapperEl && !this.preloader?.showPreloadPromise) this.showPreload();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
 
@@ -872,9 +869,7 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        if (!this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.syncInstantPreviewWithLoadedVideo();
         this.calculateVideoDimensions();
         if (this.useReactControls()) {
             this.loadUIReact();

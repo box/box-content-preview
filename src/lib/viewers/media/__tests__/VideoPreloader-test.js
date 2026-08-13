@@ -66,18 +66,28 @@ describe('lib/viewers/media/VideoPreloader', () => {
         });
 
         test('should not do anything if video is already loaded', () => {
-            // checkVideoLoaded() is called after blob fetch, and it calls hidePreload() if video is loaded
-            jest.spyOn(videoPreloader, 'hidePreload').mockImplementation();
-            // Mock checkVideoLoaded to call hidePreload() and return true (matching real implementation)
+            // checkVideoLoaded() aborts create/paint (cleanup, not hide) when video is ready
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation();
             jest.spyOn(videoPreloader, 'checkVideoLoaded').mockImplementation(function checkVideoLoadedMock() {
-                this.hidePreload();
+                this.cleanupPreload();
                 return true;
             });
 
             return videoPreloader.showPreload('someUrl', containerEl).then(() => {
-                // checkVideoLoaded() is called after blob fetch, and it should call hidePreload() if video is loaded
                 expect(videoPreloader.checkVideoLoaded).toBeCalled();
-                expect(videoPreloader.hidePreload).toBeCalled();
+                expect(videoPreloader.cleanupPreload).toBeCalled();
+                expect(videoPreloader.wrapperEl).toBeUndefined();
+            });
+        });
+
+        test('should resolve immediately when future poster paint is blocked', () => {
+            videoPreloader.blockFuturePosterPaint();
+            jest.spyOn(videoPreloader, 'checkVideoLoaded');
+
+            return videoPreloader.showPreload('someUrl', containerEl).then(() => {
+                expect(stubs.api.get).not.toHaveBeenCalled();
+                expect(videoPreloader.checkVideoLoaded).not.toHaveBeenCalled();
+                expect(videoPreloader.wrapperEl).toBeUndefined();
             });
         });
 
@@ -127,6 +137,58 @@ describe('lib/viewers/media/VideoPreloader', () => {
                 expect(videoPreloader.wrapperEl).toBeUndefined();
             });
         });
+
+        test('should single-flight overlapping showPreload calls so only one wrapper is appended', () => {
+            let resolveFetch;
+            stubs.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+
+            const first = videoPreloader.showPreload('someUrl', containerEl);
+            const second = videoPreloader.showPreload('otherUrl', containerEl);
+
+            expect(stubs.api.get).toHaveBeenCalledTimes(1);
+            expect(second).toBe(first);
+
+            resolveFetch({ data: new Blob(['test'], { type: 'image/jpeg' }), status: 200 });
+
+            return first.then(() => {
+                expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(1);
+                expect(videoPreloader.wrapperEl).toBe(
+                    containerEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`),
+                );
+            });
+        });
+
+        test('should not append a wrapper when blockFuturePosterPaint invalidates an in-flight fetch', () => {
+            let resolveFetch;
+            stubs.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+
+            const pending = videoPreloader.showPreload('someUrl', containerEl);
+            videoPreloader.blockFuturePosterPaint();
+            resolveFetch({ data: new Blob(['test'], { type: 'image/jpeg' }), status: 200 });
+
+            return pending.then(() => {
+                expect(videoPreloader.wrapperEl).toBeUndefined();
+                expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(0);
+            });
+        });
+
+        test('should no-op a second showPreload once wrapperEl already exists', () => {
+            return videoPreloader.showPreload('someUrl', containerEl).then(() => {
+                stubs.api.get.mockClear();
+                return videoPreloader.showPreload('otherUrl', containerEl).then(() => {
+                    expect(stubs.api.get).not.toHaveBeenCalled();
+                    expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(1);
+                });
+            });
+        });
     });
 
     describe('hidePreload()', () => {
@@ -143,6 +205,18 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.wrapperEl = null;
             videoPreloader.hidePreload();
 
+            expect(videoPreloader.unbindDOMListeners).not.toBeCalled();
+        });
+
+        test('should remove orphan wrappers even when wrapperEl is missing', () => {
+            const orphan = document.createElement('div');
+            orphan.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO;
+            containerEl.appendChild(orphan);
+            videoPreloader.wrapperEl = null;
+
+            videoPreloader.hidePreload();
+
+            expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(0);
             expect(videoPreloader.unbindDOMListeners).not.toBeCalled();
         });
 
@@ -166,6 +240,27 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.cleanupPreload.mockClear();
             videoPreloader.wrapperEl.dispatchEvent(new Event('click'));
             expect(videoPreloader.cleanupPreload).toBeCalled();
+        });
+    });
+
+    describe('isVisible()', () => {
+        beforeEach(() => {
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+        });
+
+        test('should be true when the poster has painted', () => {
+            expect(videoPreloader.isVisible()).toBe(true);
+        });
+
+        test('should be false while the poster is still invisible', () => {
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            expect(videoPreloader.isVisible()).toBe(false);
+        });
+
+        test('should be false once hide/dismiss starts so resize uses video geometry', () => {
+            videoPreloader.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
+            expect(videoPreloader.isVisible()).toBe(false);
         });
     });
 
@@ -256,6 +351,7 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
             videoPreloader.imageEl = document.createElement('img');
             videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
             jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
             jest.spyOn(videoPreloader, 'emit').mockImplementation();
         });
@@ -283,6 +379,18 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(mediaWrapper).toHaveClass(CLASS_IS_VISIBLE);
         });
 
+        test('should make the media wrapper visible through the V2 stage', () => {
+            const mediaWrapper = containerEl.parentNode;
+            const mediaStageEl = document.createElement('div');
+            mediaWrapper.insertBefore(mediaStageEl, containerEl);
+            mediaStageEl.appendChild(containerEl);
+            mediaWrapper.classList.remove(CLASS_IS_VISIBLE);
+
+            videoPreloader.loadHandler();
+
+            expect(mediaWrapper).toHaveClass(CLASS_IS_VISIBLE);
+        });
+
         test('should call sizeContainerToViewport() and emit preload event', () => {
             videoPreloader.loadHandler();
 
@@ -295,6 +403,38 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.loadHandler();
 
             expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 800, height: 450 });
+        });
+
+        test('should prefer a live getViewport callback over a stale viewport snapshot', () => {
+            const getViewport = jest.fn().mockReturnValue({ width: 611, height: 517 });
+            videoPreloader.preloadOptions = {
+                viewport: { width: 800, height: 450 },
+                getViewport,
+            };
+            videoPreloader.loadHandler();
+
+            expect(getViewport).toHaveBeenCalled();
+            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 611, height: 517 });
+        });
+
+        test('should size the shared media container before making the preload visible', () => {
+            videoPreloader.preloadOptions = { viewport: { width: 800, height: 450 } };
+            videoPreloader.sizeContainerToViewport.mockImplementation(() => {
+                expect(videoPreloader.preloadEl).toHaveClass(CLASS_INVISIBLE);
+            });
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.sizeContainerToViewport).toBeCalledWith({ width: 800, height: 450 });
+            expect(videoPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        test('should handle a cached image load only once', () => {
+            videoPreloader.loadHandler();
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.sizeContainerToViewport).toHaveBeenCalledTimes(1);
+            expect(videoPreloader.emit).toHaveBeenCalledTimes(1);
         });
 
         test('should add click listener and invoke onImageClick when wrapper is clicked', () => {
@@ -314,8 +454,16 @@ describe('lib/viewers/media/VideoPreloader', () => {
         beforeEach(() => {
             videoPreloader.containerEl = containerEl;
             videoPreloader.imageEl = document.createElement('img');
-            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', { value: 1920, writable: false });
-            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', { value: 1080, writable: false });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', {
+                value: 1920,
+                writable: false,
+                configurable: true,
+            });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', {
+                value: 1080,
+                writable: false,
+                configurable: true,
+            });
         });
 
         test('should not do anything if containerEl or imageEl is missing', () => {
@@ -372,10 +520,22 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             videoPreloader.sizeContainerToViewport();
 
-            // Container width should be MIN_VIDEO_WIDTH_PX (420px) when viewport is smaller
+            // Legacy path keeps MIN_VIDEO_WIDTH_PX (420px) when viewport is smaller
             expect(videoPreloader.containerEl.style.width).toBe('420px');
-            // Height should be calculated based on aspect ratio with minimum width constraint
             expect(parseFloat(videoPreloader.containerEl.style.height)).toBeGreaterThan(0);
+        });
+
+        test('should contain-fit within a narrow viewport when earlyPaint is enabled', () => {
+            const contentWrapper = document.querySelector(`.${CLASS_BOX_PREVIEW_CONTENT}`);
+            Object.defineProperty(contentWrapper, 'clientWidth', { value: 300, writable: false });
+            Object.defineProperty(contentWrapper, 'clientHeight', { value: 400, writable: false });
+            videoPreloader.preloadOptions = { earlyPaint: true };
+
+            videoPreloader.sizeContainerToViewport();
+
+            // Fallback path subtracts control bar height: 400 - 120 = 280
+            expect(parseFloat(videoPreloader.containerEl.style.width)).toBeLessThanOrEqual(300);
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(280);
         });
 
         test('should calculate height based on image aspect ratio', () => {
@@ -397,8 +557,93 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             videoPreloader.sizeContainerToViewport();
 
-            // Height should be constrained to viewport height (400px)
-            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(400);
+            // Height should be constrained to viewport height (400px - control bar)
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(280);
+        });
+
+        test('should not produce a frame wider than the viewport when earlyPaint is enabled', () => {
+            // Wide aspect + short viewport used to yield width > viewport.width after height clamp
+            videoPreloader.preloadOptions = { earlyPaint: true };
+            videoPreloader.sizeContainerToViewport({ width: 611, height: 517 });
+
+            expect(parseFloat(videoPreloader.containerEl.style.width)).toBeLessThanOrEqual(611);
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeLessThanOrEqual(517);
+        });
+    });
+
+    describe('poster visibility before video metadata', () => {
+        test('should size and reveal the poster while video metadata is still pending', () => {
+            const videoEl = containerEl.querySelector('video');
+            Object.defineProperty(videoEl, 'readyState', { configurable: true, value: 0 });
+
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            videoPreloader.imageEl = document.createElement('img');
+            Object.defineProperty(videoPreloader.imageEl, 'naturalWidth', {
+                configurable: true,
+                value: 1920,
+            });
+            Object.defineProperty(videoPreloader.imageEl, 'naturalHeight', {
+                configurable: true,
+                value: 1080,
+            });
+            videoPreloader.preloadOptions = {
+                earlyPaint: true,
+                getViewport: () => ({ width: 800, height: 450 }),
+            };
+            jest.spyOn(videoPreloader, 'emit');
+
+            // Real sizeContainerToViewport — Instant Preview must not wait on loadedmetadata
+            videoPreloader.loadHandler();
+
+            expect(videoEl.readyState).toBe(0);
+            expect(videoPreloader.preloadEl).not.toHaveClass(CLASS_INVISIBLE);
+            expect(videoPreloader.isVisible()).toBe(true);
+            expect(videoPreloader.containerEl.style.width).toBe('800px');
+            expect(parseFloat(videoPreloader.containerEl.style.height)).toBeCloseTo(450, 5);
+            expect(videoPreloader.emit).toHaveBeenCalledWith('preload');
+        });
+
+        test('should keep the poster hidden when metadata is already available', () => {
+            const videoEl = containerEl.querySelector('video');
+            Object.defineProperty(videoEl, 'readyState', { configurable: true, value: 1 });
+
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            videoPreloader.imageEl = document.createElement('img');
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation(() => {
+                videoPreloader.wrapperEl = undefined;
+                videoPreloader.preloadEl = undefined;
+            });
+            jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.cleanupPreload).toHaveBeenCalled();
+            expect(videoPreloader.sizeContainerToViewport).not.toHaveBeenCalled();
+        });
+
+        test('should not paint when blockFuturePosterPaint was set after video ready', () => {
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            videoPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+            videoPreloader.imageEl = document.createElement('img');
+            videoPreloader.blockFuturePosterPaint();
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation(() => {
+                videoPreloader.wrapperEl = undefined;
+                videoPreloader.preloadEl = undefined;
+            });
+            jest.spyOn(videoPreloader, 'sizeContainerToViewport').mockImplementation();
+
+            videoPreloader.loadHandler();
+
+            expect(videoPreloader.cleanupPreload).toHaveBeenCalled();
+            expect(videoPreloader.sizeContainerToViewport).not.toHaveBeenCalled();
         });
     });
 
@@ -440,6 +685,17 @@ describe('lib/viewers/media/VideoPreloader', () => {
             const { wrapperEl } = videoPreloader;
             expect(wrapperEl).toBeUndefined();
         });
+
+        test('should remove orphan wrappers left in the container', () => {
+            videoPreloader.containerEl = containerEl;
+            const orphan = document.createElement('div');
+            orphan.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO;
+            containerEl.appendChild(orphan);
+
+            videoPreloader.cleanupPreload();
+
+            expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_VIDEO}`)).toHaveLength(0);
+        });
     });
 
     describe('checkVideoLoaded()', () => {
@@ -447,6 +703,8 @@ describe('lib/viewers/media/VideoPreloader', () => {
             videoPreloader.containerEl = containerEl;
             const videoEl = {
                 readyState: 1, // HAVE_METADATA
+                paused: true,
+                classList: { remove: jest.fn() },
             };
             jest.spyOn(containerEl, 'querySelector').mockReturnValue(videoEl);
 
@@ -454,6 +712,33 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             expect(result).toBe(true);
             expect(containerEl.querySelector).toBeCalledWith('video');
+        });
+
+        test('should return true if the video is already playing', () => {
+            videoPreloader.containerEl = containerEl;
+            const videoEl = {
+                readyState: 0,
+                paused: false,
+                classList: { remove: jest.fn() },
+            };
+            jest.spyOn(containerEl, 'querySelector').mockReturnValue(videoEl);
+
+            expect(videoPreloader.checkVideoLoaded()).toBe(true);
+        });
+
+        test('should return true after blockFuturePosterPaint without tearing down a painted poster', () => {
+            videoPreloader.containerEl = containerEl;
+            videoPreloader.wrapperEl = document.createElement('div');
+            videoPreloader.preloadEl = document.createElement('div');
+            // Already painted Instant Preview
+            jest.spyOn(videoPreloader, 'cleanupPreload').mockImplementation();
+            jest.spyOn(videoPreloader, 'hidePreload').mockImplementation();
+            videoPreloader.blockFuturePosterPaint();
+
+            expect(videoPreloader.checkVideoLoaded()).toBe(true);
+            expect(videoPreloader.cleanupPreload).not.toHaveBeenCalled();
+            expect(videoPreloader.hidePreload).not.toHaveBeenCalled();
+            expect(videoPreloader.wrapperEl).toBeTruthy();
         });
 
         test('should return false if video element does not exist', () => {
