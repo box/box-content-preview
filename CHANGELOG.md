@@ -1,3 +1,10 @@
+## 3.76.0 (2026-08-13)
+
+* chore(deps): Upgrade Jest from 26 to 29 (#1736) ([ae10843](https://github.com/box/box-content-preview/commit/ae10843)), closes [#1736](https://github.com/box/box-content-preview/issues/1736)
+* chore(deps): Upgrade stylelint from 12 to 16 (#1735) ([65e4cd0](https://github.com/box/box-content-preview/commit/65e4cd0)), closes [#1735](https://github.com/box/box-content-preview/issues/1735)
+
+
+
 ## 3.75.0 (2026-08-12)
 
 * fix(npm): expose the PDF.js worker asset (#1734) ([efdb12b](https://github.com/box/box-content-preview/commit/efdb12b)), closes [#1734](https://github.com/box/box-content-preview/issues/1734)
