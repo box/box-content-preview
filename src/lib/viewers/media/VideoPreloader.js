@@ -144,6 +144,8 @@ class VideoPreloader extends EventEmitter {
             return;
         }
 
+        // Clear inline styles we set on the container to restore natural flexbox sizing
+        // This prevents the video controls from being off-screen after video loads
         if (this.containerEl) {
             this.containerEl.style.width = '';
             this.containerEl.style.height = '';
