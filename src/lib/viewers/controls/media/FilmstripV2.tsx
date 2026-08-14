@@ -42,7 +42,8 @@ export default function FilmstripV2({
     const displayWidth = Math.floor(sourceFrameWidth * scale) || FILMSTRIP_DISPLAY_WIDTH;
     const backgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * displayWidth;
     const backgroundTop = -(frameRow * FILMSTRIP_DISPLAY_HEIGHT);
-    const backgroundWidth = imageWidth ? imageWidth * scale : undefined;
+    // Sprite width must be a multiple of displayWidth so 1.5x scale cannot drift across frames.
+    const backgroundWidth = displayWidth * FILMSTRIP_FRAMES_PER_ROW;
     const cardWidth = displayWidth + 24;
     const filmstripLeft = Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth);
 
@@ -70,7 +71,7 @@ export default function FilmstripV2({
                     backgroundImage: imageUrl ? `url('${imageUrl}')` : '',
                     backgroundPositionX: backgroundLeft,
                     backgroundPositionY: backgroundTop,
-                    backgroundSize: backgroundWidth ? `${backgroundWidth}px auto` : undefined,
+                    backgroundSize: `${backgroundWidth}px auto`,
                     height: FILMSTRIP_DISPLAY_HEIGHT,
                     width: displayWidth,
                 }}
