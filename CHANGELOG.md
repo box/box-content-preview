@@ -1,3 +1,10 @@
+## 3.77.0 (2026-08-14)
+
+* chore(deps): Bump css-minimizer and Cypress, drop redundant pins (#1738) ([aafcf55](https://github.com/box/box-content-preview/commit/aafcf55)), closes [#1738](https://github.com/box/box-content-preview/issues/1738)
+* feat(video): early-paint Instant Preview behind feature flag (#1732) ([0b1a350](https://github.com/box/box-content-preview/commit/0b1a350)), closes [#1732](https://github.com/box/box-content-preview/issues/1732)
+
+
+
 ## 3.76.0 (2026-08-13)
 
 * chore(deps): Upgrade Jest from 26 to 29 (#1736) ([ae10843](https://github.com/box/box-content-preview/commit/ae10843)), closes [#1736](https://github.com/box/box-content-preview/issues/1736)
