@@ -1329,6 +1329,13 @@ class Preview extends EventEmitter {
                 return;
             }
 
+            // Server file info is authoritative: a video with no dash/mp4 will never play for this
+            // account (HD video is paid). Instant Preview may have mounted a jpg-only viewer from
+            // cache; throw error_account instead of waiting forever on an empty player.
+            if (this.isVideoFileByExtension() && !this.hasPlayableVideoReps(file)) {
+                throw new PreviewError(ERROR_CODE.ACCOUNT, __('error_account'));
+            }
+
             // Should load viewer for first time if:
             //   - File isn't cached OR
             //   - Cached file doesn't have a valid structure
