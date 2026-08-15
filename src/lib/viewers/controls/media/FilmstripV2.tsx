@@ -32,6 +32,7 @@ export default function FilmstripV2({
 }: Props): JSX.Element | null {
     const [isLoading, setIsLoading] = React.useState(true);
     const [imageWidth, setImageWidth] = React.useState<number>(0);
+    const [imageHeight, setImageHeight] = React.useState<number>(0);
     const frameNumber = Math.floor(time / interval);
     const frameRow = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW);
     const sourceFrameWidth = imageWidth
@@ -42,8 +43,9 @@ export default function FilmstripV2({
     const displayWidth = Math.floor(sourceFrameWidth * scale) || FILMSTRIP_DISPLAY_WIDTH;
     const backgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * displayWidth;
     const backgroundTop = -(frameRow * FILMSTRIP_DISPLAY_HEIGHT);
-    // Sprite width must be a multiple of displayWidth so 1.5x scale cannot drift across frames.
+    // Width snaps to displayWidth so frames cannot drift; height is 1.5x so rows fill the 135px window.
     const backgroundWidth = displayWidth * FILMSTRIP_FRAMES_PER_ROW;
+    const backgroundHeight = imageHeight ? imageHeight * scale : undefined;
     const cardWidth = displayWidth + 24;
     const filmstripLeft = Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth);
 
@@ -53,6 +55,7 @@ export default function FilmstripV2({
         const filmstripImage = document.createElement('img');
         filmstripImage.onload = (): void => {
             setImageWidth(filmstripImage.naturalWidth);
+            setImageHeight(filmstripImage.naturalHeight);
             setIsLoading(false);
         };
         filmstripImage.src = imageUrl;
@@ -71,7 +74,9 @@ export default function FilmstripV2({
                     backgroundImage: imageUrl ? `url('${imageUrl}')` : '',
                     backgroundPositionX: backgroundLeft,
                     backgroundPositionY: backgroundTop,
-                    backgroundSize: `${backgroundWidth}px auto`,
+                    backgroundSize: backgroundHeight
+                        ? `${backgroundWidth}px ${backgroundHeight}px`
+                        : `${backgroundWidth}px auto`,
                     height: FILMSTRIP_DISPLAY_HEIGHT,
                     width: displayWidth,
                 }}

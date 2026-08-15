@@ -110,7 +110,7 @@ describe('FilmstripV2', () => {
     });
 
     describe('frame width', () => {
-        const mockFilmstripLoad = (naturalWidth: number): (() => void) => {
+        const mockFilmstripLoad = (naturalWidth: number, naturalHeight = 90): (() => void) => {
             let capturedImg: HTMLImageElement | null = null;
             const originalCreateElement = document.createElement.bind(document);
             jest.spyOn(document, 'createElement').mockImplementation((tag: string) => {
@@ -123,6 +123,7 @@ describe('FilmstripV2', () => {
                 act(() => {
                     if (capturedImg?.onload) {
                         Object.defineProperty(capturedImg, 'naturalWidth', { value: naturalWidth });
+                        Object.defineProperty(capturedImg, 'naturalHeight', { value: naturalHeight });
                         (capturedImg.onload as (this: GlobalEventHandlers, ev: Event) => void).call(
                             capturedImg,
                             new Event('load'),
@@ -163,11 +164,11 @@ describe('FilmstripV2', () => {
             triggerLoad();
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            // source = 127, display = floor(190.5) = 190, sprite = 190 * 100, frame 53 offset = -10070
+            // source = 127, display = floor(190.5) = 190; width = 190*100, height = 90*1.5 so the window fills
             expect(frame).toHaveStyle({
                 width: '190px',
                 backgroundPositionX: '-10070px',
-                backgroundSize: '19000px auto',
+                backgroundSize: '19000px 135px',
             });
         });
 
@@ -185,11 +186,31 @@ describe('FilmstripV2', () => {
             triggerLoad();
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            // source = 128, display = 192, sprite = 19200, frame 53 offset = -10176
+            // source = 128, display = 192, sprite = 19200x135, frame 53 offset = -10176
             expect(frame).toHaveStyle({
                 width: '192px',
                 backgroundPositionX: '-10176px',
-                backgroundSize: '19200px auto',
+                backgroundSize: '19200px 135px',
+            });
+        });
+
+        test('should scale multi-row filmstrip height to fill each 135px row', () => {
+            const triggerLoad = mockFilmstripLoad(12800, 180);
+            render(
+                <FilmstripV2
+                    aspectRatio={1.4167}
+                    imageUrl="https://example.com/filmstrip.jpg"
+                    interval={1}
+                    time={110}
+                />,
+            );
+
+            triggerLoad();
+
+            const frame = screen.getByTestId('bp-FilmstripV2-frame');
+            expect(frame).toHaveStyle({
+                backgroundPositionY: '-135px',
+                backgroundSize: '19200px 270px',
             });
         });
     });
