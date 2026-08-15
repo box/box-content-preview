@@ -32,14 +32,13 @@ describe('FilmstripV2', () => {
     describe('frame display', () => {
         test('should set background image when imageUrl is provided', () => {
             render(<FilmstripV2 imageUrl="https://example.com/filmstrip.jpg" interval={1} time={5} />);
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame.style.backgroundImage).toContain('https://example.com/filmstrip.jpg');
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frameImage.style.backgroundImage).toContain('https://example.com/filmstrip.jpg');
         });
 
-        test('should not set background image when imageUrl is empty', () => {
+        test('should not render the filmstrip image when imageUrl is empty', () => {
             render(<FilmstripV2 interval={1} time={5} />);
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame.style.backgroundImage).toBe('');
+            expect(screen.queryByTestId('bp-FilmstripV2-frameImage')).not.toBeInTheDocument();
         });
 
         test('should set frame height to 135px', () => {
@@ -50,8 +49,8 @@ describe('FilmstripV2', () => {
 
         test('should calculate background position based on time and interval', () => {
             render(<FilmstripV2 imageUrl="https://example.com/filmstrip.jpg" interval={1} time={10} />);
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame.style.backgroundPositionX).toBeDefined();
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frameImage.style.backgroundPositionX).toBeDefined();
         });
     });
 
@@ -106,6 +105,107 @@ describe('FilmstripV2', () => {
             expect(screen.queryByTestId('bp-FilmstripV2-crawler')).not.toBeInTheDocument();
 
             (document.createElement as jest.Mock).mockRestore();
+        });
+    });
+
+    describe('frame width', () => {
+        const mockFilmstripLoad = (naturalWidth: number): (() => void) => {
+            let capturedImg: HTMLImageElement | null = null;
+            const originalCreateElement = document.createElement.bind(document);
+            jest.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+                const el = originalCreateElement(tag);
+                if (tag === 'img') capturedImg = el as HTMLImageElement;
+                return el;
+            });
+
+            return (): void => {
+                act(() => {
+                    if (capturedImg?.onload) {
+                        Object.defineProperty(capturedImg, 'naturalWidth', { value: naturalWidth });
+                        (capturedImg.onload as (this: GlobalEventHandlers, ev: Event) => void).call(
+                            capturedImg,
+                            new Event('load'),
+                        );
+                    }
+                });
+                (document.createElement as jest.Mock).mockRestore();
+            };
+        };
+
+        test('should derive display width from filmstrip image width after load', () => {
+            const triggerLoad = mockFilmstripLoad(12800);
+            render(
+                <FilmstripV2 aspectRatio={1.4167} imageUrl="https://example.com/filmstrip.jpg" interval={1} time={1} />,
+            );
+            const frame = screen.getByTestId('bp-FilmstripV2-frame');
+
+            // Before load: source = floor(1.4167 * 90) = 127, display = floor(127 * 1.5) = 190
+            expect(frame).toHaveStyle({ width: '190px' });
+
+            triggerLoad();
+
+            // After load: source = floor(12800 / 100) = 128, display = floor(128 * 1.5) = 192
+            expect(frame).toHaveStyle({ width: '192px' });
+        });
+
+        test('should pan in native JPEG pixels so scaled frames do not drift', () => {
+            const triggerLoad = mockFilmstripLoad(12700);
+            render(
+                <FilmstripV2
+                    aspectRatio={1.4167}
+                    imageUrl="https://example.com/filmstrip.jpg"
+                    interval={1}
+                    time={53}
+                />,
+            );
+
+            triggerLoad();
+
+            const frame = screen.getByTestId('bp-FilmstripV2-frame');
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frame).toHaveStyle({ width: '190px' });
+            expect(frameImage).toHaveStyle({ width: '127px', height: '90px' });
+            expect(frameImage.style.backgroundPositionX).toBe('-6731px');
+            expect(Number.parseInt(frameImage.style.backgroundPositionY, 10)).toBe(0);
+        });
+
+        test('should keep even source frames aligned after 1.5x scale', () => {
+            const triggerLoad = mockFilmstripLoad(12800);
+            render(
+                <FilmstripV2
+                    aspectRatio={1.4167}
+                    imageUrl="https://example.com/filmstrip.jpg"
+                    interval={1}
+                    time={53}
+                />,
+            );
+
+            triggerLoad();
+
+            const frame = screen.getByTestId('bp-FilmstripV2-frame');
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frame).toHaveStyle({ width: '192px' });
+            expect(frameImage).toHaveStyle({ width: '128px', height: '90px', transform: 'scale(1.5)' });
+            expect(frameImage.style.backgroundPositionX).toBe('-6784px');
+            expect(Number.parseInt(frameImage.style.backgroundPositionY, 10)).toBe(0);
+        });
+
+        test('should pan to the next native row after 100 frames', () => {
+            const triggerLoad = mockFilmstripLoad(12800);
+            render(
+                <FilmstripV2
+                    aspectRatio={1.4167}
+                    imageUrl="https://example.com/filmstrip.jpg"
+                    interval={1}
+                    time={110}
+                />,
+            );
+
+            triggerLoad();
+
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frameImage.style.backgroundPositionX).toBe('-1280px');
+            expect(frameImage.style.backgroundPositionY).toBe('-90px');
         });
     });
 });
