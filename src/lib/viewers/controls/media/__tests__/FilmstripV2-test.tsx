@@ -27,6 +27,12 @@ describe('FilmstripV2', () => {
             const el = screen.getByTestId('bp-FilmstripV2');
             expect(el.style.left).toBe('0px');
         });
+
+        test('should snap filmstrip position to whole pixels', () => {
+            render(<FilmstripV2 position={200.4} positionMax={800} />);
+            const el = screen.getByTestId('bp-FilmstripV2');
+            expect(el.style.left).toBe('68px');
+        });
     });
 
     describe('frame display', () => {
@@ -164,11 +170,11 @@ describe('FilmstripV2', () => {
             triggerLoad();
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            // source = 127, display = floor(190.5) = 190; width = 190*100, height = 90*1.5 so the window fills
+            // source = 127, display = floor(190.5) = 190; height overscans 1px (136) and is clipped
             expect(frame).toHaveStyle({
                 width: '190px',
                 backgroundPositionX: '-10070px',
-                backgroundSize: '19000px 135px',
+                backgroundSize: '19000px 136px',
             });
         });
 
@@ -186,11 +192,11 @@ describe('FilmstripV2', () => {
             triggerLoad();
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            // source = 128, display = 192, sprite = 19200x135, frame 53 offset = -10176
+            // source = 128, display = 192, sprite = 19200x136, frame 53 offset = -10176
             expect(frame).toHaveStyle({
                 width: '192px',
                 backgroundPositionX: '-10176px',
-                backgroundSize: '19200px 135px',
+                backgroundSize: '19200px 136px',
             });
         });
 
@@ -209,8 +215,8 @@ describe('FilmstripV2', () => {
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
             expect(frame).toHaveStyle({
-                backgroundPositionY: '-135px',
-                backgroundSize: '19200px 270px',
+                backgroundPositionY: '-136px',
+                backgroundSize: '19200px 272px',
             });
         });
     });

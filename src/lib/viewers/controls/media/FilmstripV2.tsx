@@ -41,13 +41,16 @@ export default function FilmstripV2({
           Math.floor(FILMSTRIP_DISPLAY_WIDTH * (FILMSTRIP_SOURCE_FRAME_HEIGHT / FILMSTRIP_DISPLAY_HEIGHT));
     const scale = FILMSTRIP_DISPLAY_HEIGHT / FILMSTRIP_SOURCE_FRAME_HEIGHT;
     const displayWidth = Math.floor(sourceFrameWidth * scale) || FILMSTRIP_DISPLAY_WIDTH;
+    const rowCount = imageHeight ? imageHeight / FILMSTRIP_SOURCE_FRAME_HEIGHT : 0;
+    // Paint each row 1px taller than the window and clip. Subpixel rounding otherwise
+    // samples the next row (often a black letterbox) as a line under the thumbnail.
+    const scaledRowHeight = FILMSTRIP_DISPLAY_HEIGHT + 1;
     const backgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * displayWidth;
-    const backgroundTop = -(frameRow * FILMSTRIP_DISPLAY_HEIGHT);
-    // Width snaps to displayWidth so frames cannot drift; height is 1.5x so rows fill the 135px window.
+    const backgroundTop = -(frameRow * (rowCount ? scaledRowHeight : FILMSTRIP_DISPLAY_HEIGHT));
     const backgroundWidth = displayWidth * FILMSTRIP_FRAMES_PER_ROW;
-    const backgroundHeight = imageHeight ? imageHeight * scale : undefined;
+    const backgroundHeight = rowCount ? rowCount * scaledRowHeight : undefined;
     const cardWidth = displayWidth + 24;
-    const filmstripLeft = Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth);
+    const filmstripLeft = Math.round(Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth));
 
     React.useEffect((): void => {
         if (!imageUrl) return;
