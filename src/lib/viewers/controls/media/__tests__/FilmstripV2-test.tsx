@@ -27,25 +27,18 @@ describe('FilmstripV2', () => {
             const el = screen.getByTestId('bp-FilmstripV2');
             expect(el.style.left).toBe('0px');
         });
-
-        test('should snap filmstrip position to whole pixels', () => {
-            render(<FilmstripV2 position={200.4} positionMax={800} />);
-            const el = screen.getByTestId('bp-FilmstripV2');
-            expect(el.style.left).toBe('68px');
-        });
     });
 
     describe('frame display', () => {
         test('should set background image when imageUrl is provided', () => {
             render(<FilmstripV2 imageUrl="https://example.com/filmstrip.jpg" interval={1} time={5} />);
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame.style.backgroundImage).toContain('https://example.com/filmstrip.jpg');
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frameImage.style.backgroundImage).toContain('https://example.com/filmstrip.jpg');
         });
 
-        test('should not set background image when imageUrl is empty', () => {
+        test('should not render the filmstrip image when imageUrl is empty', () => {
             render(<FilmstripV2 interval={1} time={5} />);
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame.style.backgroundImage).toBe('');
+            expect(screen.queryByTestId('bp-FilmstripV2-frameImage')).not.toBeInTheDocument();
         });
 
         test('should set frame height to 135px', () => {
@@ -56,8 +49,8 @@ describe('FilmstripV2', () => {
 
         test('should calculate background position based on time and interval', () => {
             render(<FilmstripV2 imageUrl="https://example.com/filmstrip.jpg" interval={1} time={10} />);
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame.style.backgroundPositionX).toBeDefined();
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frameImage.style.backgroundPositionX).toBeDefined();
         });
     });
 
@@ -116,7 +109,7 @@ describe('FilmstripV2', () => {
     });
 
     describe('frame width', () => {
-        const mockFilmstripLoad = (naturalWidth: number, naturalHeight = 90): (() => void) => {
+        const mockFilmstripLoad = (naturalWidth: number): (() => void) => {
             let capturedImg: HTMLImageElement | null = null;
             const originalCreateElement = document.createElement.bind(document);
             jest.spyOn(document, 'createElement').mockImplementation((tag: string) => {
@@ -129,7 +122,6 @@ describe('FilmstripV2', () => {
                 act(() => {
                     if (capturedImg?.onload) {
                         Object.defineProperty(capturedImg, 'naturalWidth', { value: naturalWidth });
-                        Object.defineProperty(capturedImg, 'naturalHeight', { value: naturalHeight });
                         (capturedImg.onload as (this: GlobalEventHandlers, ev: Event) => void).call(
                             capturedImg,
                             new Event('load'),
@@ -156,7 +148,7 @@ describe('FilmstripV2', () => {
             expect(frame).toHaveStyle({ width: '192px' });
         });
 
-        test('should align background size to display width so scaled frames do not drift', () => {
+        test('should pan in native JPEG pixels so scaled frames do not drift', () => {
             const triggerLoad = mockFilmstripLoad(12700);
             render(
                 <FilmstripV2
@@ -170,12 +162,11 @@ describe('FilmstripV2', () => {
             triggerLoad();
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            // source = 127, display = floor(190.5) = 190; height overscans 1px (136) and is clipped
-            expect(frame).toHaveStyle({
-                width: '190px',
-                backgroundPositionX: '-10070px',
-                backgroundSize: '19000px 136px',
-            });
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frame).toHaveStyle({ width: '190px' });
+            expect(frameImage).toHaveStyle({ width: '127px', height: '90px' });
+            expect(frameImage.style.backgroundPositionX).toBe('-6731px');
+            expect(Number.parseInt(frameImage.style.backgroundPositionY, 10)).toBe(0);
         });
 
         test('should keep even source frames aligned after 1.5x scale', () => {
@@ -192,16 +183,15 @@ describe('FilmstripV2', () => {
             triggerLoad();
 
             const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            // source = 128, display = 192, sprite = 19200x136, frame 53 offset = -10176
-            expect(frame).toHaveStyle({
-                width: '192px',
-                backgroundPositionX: '-10176px',
-                backgroundSize: '19200px 136px',
-            });
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frame).toHaveStyle({ width: '192px' });
+            expect(frameImage).toHaveStyle({ width: '128px', height: '90px', transform: 'scale(1.5)' });
+            expect(frameImage.style.backgroundPositionX).toBe('-6784px');
+            expect(Number.parseInt(frameImage.style.backgroundPositionY, 10)).toBe(0);
         });
 
-        test('should scale multi-row filmstrip height to fill each 135px row', () => {
-            const triggerLoad = mockFilmstripLoad(12800, 180);
+        test('should pan to the next native row after 100 frames', () => {
+            const triggerLoad = mockFilmstripLoad(12800);
             render(
                 <FilmstripV2
                     aspectRatio={1.4167}
@@ -213,11 +203,9 @@ describe('FilmstripV2', () => {
 
             triggerLoad();
 
-            const frame = screen.getByTestId('bp-FilmstripV2-frame');
-            expect(frame).toHaveStyle({
-                backgroundPositionY: '-136px',
-                backgroundSize: '19200px 272px',
-            });
+            const frameImage = screen.getByTestId('bp-FilmstripV2-frameImage');
+            expect(frameImage.style.backgroundPositionX).toBe('-1280px');
+            expect(frameImage.style.backgroundPositionY).toBe('-90px');
         });
     });
 });

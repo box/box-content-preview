@@ -32,7 +32,6 @@ export default function FilmstripV2({
 }: Props): JSX.Element | null {
     const [isLoading, setIsLoading] = React.useState(true);
     const [imageWidth, setImageWidth] = React.useState<number>(0);
-    const [imageHeight, setImageHeight] = React.useState<number>(0);
     const frameNumber = Math.floor(time / interval);
     const frameRow = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW);
     const sourceFrameWidth = imageWidth
@@ -41,16 +40,11 @@ export default function FilmstripV2({
           Math.floor(FILMSTRIP_DISPLAY_WIDTH * (FILMSTRIP_SOURCE_FRAME_HEIGHT / FILMSTRIP_DISPLAY_HEIGHT));
     const scale = FILMSTRIP_DISPLAY_HEIGHT / FILMSTRIP_SOURCE_FRAME_HEIGHT;
     const displayWidth = Math.floor(sourceFrameWidth * scale) || FILMSTRIP_DISPLAY_WIDTH;
-    const rowCount = imageHeight ? imageHeight / FILMSTRIP_SOURCE_FRAME_HEIGHT : 0;
-    // Paint each row 1px taller than the window and clip. Subpixel rounding otherwise
-    // samples the next row (often a black letterbox) as a line under the thumbnail.
-    const scaledRowHeight = FILMSTRIP_DISPLAY_HEIGHT + 1;
-    const backgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * displayWidth;
-    const backgroundTop = -(frameRow * (rowCount ? scaledRowHeight : FILMSTRIP_DISPLAY_HEIGHT));
-    const backgroundWidth = displayWidth * FILMSTRIP_FRAMES_PER_ROW;
-    const backgroundHeight = rowCount ? rowCount * scaledRowHeight : undefined;
+    // Pan in native JPEG pixels (same as Filmstrip.tsx) so 1.5x scale cannot leak the next cell.
+    const backgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * sourceFrameWidth;
+    const backgroundTop = -(frameRow * FILMSTRIP_SOURCE_FRAME_HEIGHT);
     const cardWidth = displayWidth + 24;
-    const filmstripLeft = Math.round(Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth));
+    const filmstripLeft = Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth);
 
     React.useEffect((): void => {
         if (!imageUrl) return;
@@ -58,7 +52,6 @@ export default function FilmstripV2({
         const filmstripImage = document.createElement('img');
         filmstripImage.onload = (): void => {
             setImageWidth(filmstripImage.naturalWidth);
-            setImageHeight(filmstripImage.naturalHeight);
             setIsLoading(false);
         };
         filmstripImage.src = imageUrl;
@@ -74,16 +67,24 @@ export default function FilmstripV2({
                 className="bp-FilmstripV2-frame"
                 data-testid="bp-FilmstripV2-frame"
                 style={{
-                    backgroundImage: imageUrl ? `url('${imageUrl}')` : '',
-                    backgroundPositionX: backgroundLeft,
-                    backgroundPositionY: backgroundTop,
-                    backgroundSize: backgroundHeight
-                        ? `${backgroundWidth}px ${backgroundHeight}px`
-                        : `${backgroundWidth}px auto`,
                     height: FILMSTRIP_DISPLAY_HEIGHT,
                     width: displayWidth,
                 }}
             >
+                {!!imageUrl && (
+                    <div
+                        className="bp-FilmstripV2-frameImage"
+                        data-testid="bp-FilmstripV2-frameImage"
+                        style={{
+                            backgroundImage: `url('${imageUrl}')`,
+                            backgroundPositionX: backgroundLeft,
+                            backgroundPositionY: backgroundTop,
+                            height: FILMSTRIP_SOURCE_FRAME_HEIGHT,
+                            transform: `scale(${scale})`,
+                            width: sourceFrameWidth,
+                        }}
+                    />
+                )}
                 {isLoading && (
                     <div className="bp-crawler" data-testid="bp-FilmstripV2-crawler">
                         <div />
