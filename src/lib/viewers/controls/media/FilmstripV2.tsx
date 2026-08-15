@@ -8,6 +8,7 @@ const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_SOURCE_FRAME_HEIGHT = 90;
 const FILMSTRIP_DISPLAY_HEIGHT = 135;
 const FILMSTRIP_DISPLAY_WIDTH = 240;
+const FILMSTRIP_DISPLAY_SCALE = FILMSTRIP_DISPLAY_HEIGHT / FILMSTRIP_SOURCE_FRAME_HEIGHT;
 
 export type Props = {
     aspectRatio?: number;
@@ -32,17 +33,17 @@ export default function FilmstripV2({
 }: Props): JSX.Element | null {
     const [isLoading, setIsLoading] = React.useState(true);
     const [imageWidth, setImageWidth] = React.useState<number>(0);
-    const frameNumber = Math.floor(time / interval);
-    const frameRow = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW);
+
+    const frameNumber = Math.floor(time / interval); // Current frame based on current time
+    const frameRow = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW); // Row number if there is more than one row
     const sourceFrameWidth = imageWidth
         ? Math.floor(imageWidth / FILMSTRIP_FRAMES_PER_ROW)
         : Math.floor(aspectRatio * FILMSTRIP_SOURCE_FRAME_HEIGHT) ||
           Math.floor(FILMSTRIP_DISPLAY_WIDTH * (FILMSTRIP_SOURCE_FRAME_HEIGHT / FILMSTRIP_DISPLAY_HEIGHT));
-    const scale = FILMSTRIP_DISPLAY_HEIGHT / FILMSTRIP_SOURCE_FRAME_HEIGHT;
-    const displayWidth = Math.floor(sourceFrameWidth * scale) || FILMSTRIP_DISPLAY_WIDTH;
-    // Pan in native JPEG pixels (same as Filmstrip.tsx) so 1.5x scale cannot leak the next cell.
-    const backgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * sourceFrameWidth;
-    const backgroundTop = -(frameRow * FILMSTRIP_SOURCE_FRAME_HEIGHT);
+    const frameBackgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * sourceFrameWidth; // Frame position in its row
+    const frameBackgroundTop = -(frameRow * FILMSTRIP_SOURCE_FRAME_HEIGHT); // Row position in its filmstrip
+
+    const displayWidth = Math.floor(sourceFrameWidth * FILMSTRIP_DISPLAY_SCALE) || FILMSTRIP_DISPLAY_WIDTH;
     const cardWidth = displayWidth + 24;
     const filmstripLeft = Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth);
 
@@ -77,10 +78,10 @@ export default function FilmstripV2({
                         data-testid="bp-FilmstripV2-frameImage"
                         style={{
                             backgroundImage: `url('${imageUrl}')`,
-                            backgroundPositionX: backgroundLeft,
-                            backgroundPositionY: backgroundTop,
+                            backgroundPositionX: frameBackgroundLeft,
+                            backgroundPositionY: frameBackgroundTop,
                             height: FILMSTRIP_SOURCE_FRAME_HEIGHT,
-                            transform: `scale(${scale})`,
+                            transform: `scale(${FILMSTRIP_DISPLAY_SCALE})`,
                             width: sourceFrameWidth,
                         }}
                     />
