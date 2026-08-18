@@ -35,6 +35,7 @@ import {
     uncacheFile,
     isWatermarked,
     getCachedFile,
+    getRepresentation,
     normalizeFileVersion,
     canDownload,
     shouldDownloadWM,
@@ -1207,11 +1208,23 @@ class Preview extends EventEmitter {
         // Log cache hit
         this.logger.setCached();
 
-        // Finally load the viewer
-        this.loadViewer();
-
         const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
-        if (!this.options.skipServerUpdate || needsVideoReps) {
+        const needsTranscriptionRep =
+            isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+            this.isVideoFileByExtension() &&
+            !this.hasTranscriptionRep(this.file);
+        const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps || needsTranscriptionRep;
+
+        // When playable video reps are already cached but extracted_text is not, defer loading the
+        // viewer until handleFileInfoResponse can supply transcription metadata. Loading dash first
+        // races loadeddata (no captions) against the server refresh.
+        const deferViewerForTranscription = needsTranscriptionRep && !needsVideoReps && needsServerRefresh;
+
+        if (!deferViewerForTranscription) {
+            this.loadViewer();
+        }
+
+        if (needsServerRefresh) {
             this.loadFromServer();
         }
     }
@@ -1336,6 +1349,12 @@ class Preview extends EventEmitter {
                 throw new PreviewError(ERROR_CODE.ACCOUNT, __('error_account'));
             }
 
+            const needsTranscriptionReload =
+                isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+                this.isVideoFileByExtension() &&
+                !this.hasTranscriptionRep(cachedFile) &&
+                this.hasTranscriptionRep(file);
+
             // Should load viewer for first time if:
             //   - File isn't cached OR
             //   - Cached file doesn't have a valid structure
@@ -1348,6 +1367,20 @@ class Preview extends EventEmitter {
             } else if (cachedFile.file_version.sha1 !== file.file_version.sha1 || isFileWatermarked) {
                 this.logger.setCacheStale(); // Log that cache is stale
                 this.reload(true); // Reload viewer without fetching updated file info from server
+            } else if (needsTranscriptionReload) {
+                // Cache was valid but lacked extracted_text (e.g. prefetch without the hint).
+                // Server refresh now has the rep — update the viewer so loadTranscription can run.
+                if (this.viewer) {
+                    this.viewer.options.file = this.file;
+                    if (typeof this.viewer.loadTranscription === 'function') {
+                        this.viewer.loadTranscription();
+                    }
+                } else {
+                    this.loadViewer();
+                }
+            } else if (!this.viewer) {
+                // Viewer load was deferred in loadFromCache() pending transcription metadata.
+                this.loadViewer();
             }
         } catch (err) {
             const error =
@@ -1476,6 +1509,18 @@ class Preview extends EventEmitter {
                 viewer => VIDEO_VIEWER_NAMES.indexOf(viewer.NAME) > -1 && viewer.EXT && viewer.EXT.indexOf(ext) > -1,
             );
         });
+    }
+
+    /**
+     * Returns true if file has an extracted_text transcription rep with a content URL.
+     *
+     * @private
+     * @param {Object} file - File object
+     * @return {boolean}
+     */
+    hasTranscriptionRep(file) {
+        const extractedText = getRepresentation(file, 'extracted_text');
+        return !!extractedText?.content?.url_template;
     }
 
     /**
