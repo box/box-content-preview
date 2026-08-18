@@ -292,12 +292,15 @@ class Thumbnail {
     }
 
     /**
-     * Releases a page's decoded resources (images, operator list) after a thumbnail render.
-     * PDF.js otherwise retains them until document destroy, ballooning memory as gallery and
-     * sidebar renders touch every page the user scrolls past. Dispatching thumbnailrendered
-     * hands the release to PDF.js's own handler, which skips pages still buffered by the
-     * document viewer (so the visible page keeps its resources) and defers cleanup of pages
-     * that are rendering elsewhere via its pending-cleanup flag.
+     * Notifies PDF.js that a thumbnail render has settled, mirroring PDF.js's own
+     * PDFThumbnailView: the PDFViewer's thumbnailrendered handler calls pdfPage.cleanup()
+     * for pages its buffer no longer holds, releasing their decoded resources. Buffered
+     * pages keep their resources, and cleanup of pages rendering elsewhere is deferred via
+     * PDF.js's pending-cleanup flag. No-ops for viewers without an event bus.
+     *
+     * This matters for content whose decoded data lives in the JS heap (e.g. image masks)
+     * and for viewers without OffscreenCanvas support; bitmap-backed images in Chrome are
+     * already released by PDF.js for thumbnail-only pages (see PREVIEW-1548 investigation).
      *
      * @param {PDFPageProxy|null} pdfPage - The PDF.js page proxy, or null if the page was never loaded
      * @return {void}
