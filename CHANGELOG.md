@@ -1,3 +1,10 @@
+## 3.78.0 (2026-08-17)
+
+* fix(video): prevent V2 filmstrip thumbnail drift on non-standard aspect ratios (#1741) ([027a2b6](https://github.com/box/box-content-preview/commit/027a2b6)), closes [#1741](https://github.com/box/box-content-preview/issues/1741)
+* fix(video): show account error for free-user video preview (#1742) ([9e7f5cf](https://github.com/box/box-content-preview/commit/9e7f5cf)), closes [#1742](https://github.com/box/box-content-preview/issues/1742)
+
+
+
 ## 3.77.0 (2026-08-14)
 
 * chore(deps): Bump css-minimizer and Cypress, drop redundant pins (#1738) ([aafcf55](https://github.com/box/box-content-preview/commit/aafcf55)), closes [#1738](https://github.com/box/box-content-preview/issues/1738)

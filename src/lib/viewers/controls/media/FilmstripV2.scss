@@ -16,11 +16,26 @@
 }
 
 .bp-FilmstripV2-frame {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: 10px;
+}
+
+.bp-FilmstripV2-frameImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    transform-origin: top left;
+}
+
+.bp-FilmstripV2-frame .bp-crawler {
+    position: relative;
+    z-index: 1;
 }
 
 .bp-FilmstripV2-time {
