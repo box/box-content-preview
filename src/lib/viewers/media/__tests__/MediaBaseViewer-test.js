@@ -127,18 +127,23 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         test('should load mediaUrl in the media element', () => {
+            const blobUrl = 'blob:http://localhost/media';
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
 
             return media.load().then(() => {
                 expect(media.mediaEl.addEventListener).toBeCalledWith('loadedmetadata', media.loadeddataHandler);
                 expect(media.mediaEl.addEventListener).toBeCalledWith('error', media.errorHandler);
-                expect(media.mediaEl.src).toBe('http://localhost/www.box.com');
+                expect(media.mediaEl.src).toBe(blobUrl);
             });
         });
 
         test('should enable autoplay if on iOS', () => {
             jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue('blob:media');
             media.mediaEl = document.createElement('video');
 
             return media.load().then(() => {
@@ -149,6 +154,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         test('should invoke startLoadTimer()', () => {
             jest.spyOn(media, 'startLoadTimer');
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue('blob:media');
 
             return media.load().then(() => {
                 expect(media.startLoadTimer).toBeCalled();
@@ -1607,21 +1614,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('load() with migrateAccessTokenToHeader', () => {
+    describe('load() with header auth', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = jest.fn();
         });
 
-        test('should use fetchContentAsBlobUrl when flag is enabled', () => {
+        test('should use fetchContentAsBlobUrl', () => {
             const blobUrl = 'blob:http://localhost/abc-123';
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
             jest.spyOn(media, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
 
             return media.load().then(() => {
-                expect(media.featureEnabled).toHaveBeenCalledWith('migrateAccessTokenToHeader');
                 expect(media.createContentUrlV2).toHaveBeenCalledWith('www.box.com');
                 expect(media.fetchContentAsBlobUrl).toHaveBeenCalledWith('http://localhost/content');
                 expect(media.mediaEl.src).toBe(blobUrl);
@@ -1629,20 +1634,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 expect(media.mediaUrl).toBe(blobUrl);
             });
         });
-
-        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(media, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=abc');
-            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-
-            return media.load().then(() => {
-                expect(media.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com');
-                expect(media.mediaEl.src).toBe('http://localhost/content?token=abc');
-            });
-        });
     });
 
-    describe('restartPlayback() with migrateAccessTokenToHeader', () => {
+    describe('restartPlayback() with header auth', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.currentTime = 10;
@@ -1656,13 +1650,12 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             };
         });
 
-        test('should revoke old blob URL and fetch new one when flag is enabled', () => {
+        test('should revoke old blob URL and fetch new one', () => {
             const oldBlobUrl = 'blob:http://localhost/old-123';
             const newBlobUrl = 'blob:http://localhost/new-456';
             media.mediaBlobUrl = oldBlobUrl;
 
             jest.spyOn(URL, 'revokeObjectURL');
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
             jest.spyOn(media, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(newBlobUrl));
 
@@ -1680,20 +1673,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 expect(media.mediaEl.src).toBe(newBlobUrl);
             });
         });
-
-        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(media, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=new');
-
-            media.restartPlayback('new-token');
-
-            expect(media.options.token).toBe('new-token');
-            expect(media.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com');
-            expect(media.mediaEl.src).toBe('http://localhost/content?token=new');
-        });
     });
 
-    describe('destroy() with migrateAccessTokenToHeader', () => {
+    describe('destroy() with blob media URL', () => {
         test('should revoke mediaBlobUrl if it exists', () => {
             const blobUrl = 'blob:http://localhost/abc-123';
             media.mediaBlobUrl = blobUrl;

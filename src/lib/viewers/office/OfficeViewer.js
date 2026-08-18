@@ -165,7 +165,7 @@ class OfficeViewer extends BaseViewer {
 
         // This occurs in the case of .xlsb files where no pdf rep exists
         if (template) {
-            this.pdfUrl = this.createContentUrlWithAuthParams(template);
+            this.pdfUrl = this.createContentUrlV2(template);
         }
     }
 
@@ -335,7 +335,7 @@ class OfficeViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        return this.api.get(pdfUrl, { type: 'blob' }).then(blob => {
+        return this.api.get(pdfUrl, { type: 'blob', headers: this.appendAuthHeader() }).then(blob => {
             this.printBlob = blob;
         });
     }

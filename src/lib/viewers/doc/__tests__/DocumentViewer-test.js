@@ -110,7 +110,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'load', {
                 value: jest.fn().mockImplementation(() => Promise.resolve()),
             });
-            jest.spyOn(doc, 'createContentUrlWithAuthParams').mockImplementation();
+            jest.spyOn(doc, 'createContentUrlV2').mockImplementation();
             jest.spyOn(doc, 'handleAssetAndRepLoad').mockImplementation();
             jest.spyOn(doc, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
             jest.spyOn(doc, 'loadAssets').mockImplementation();

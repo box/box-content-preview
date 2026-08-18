@@ -7,7 +7,6 @@ import {
     ANNOTATOR_EVENT,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     CLASS_INVISIBLE,
-    CLASS_PREFETCHED_IMAGE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../constants';
@@ -62,8 +61,7 @@ class ImageViewer extends ImageBaseViewer {
             this.removeListener('zoom', this.handleZoomEvent);
         }
 
-        // Auth header migration uses blob URLs for images (XHR fetch + createObjectURL).
-        // Revoke to free the memory since blobs persist until explicitly released.
+        // Blob URLs stay allocated until revoked.
         if (this.imageEl && this.imageEl.src && this.imageEl.src.startsWith('blob:')) {
             URL.revokeObjectURL(this.imageEl.src);
         }
@@ -116,30 +114,24 @@ class ImageViewer extends ImageBaseViewer {
 
         this.bindDOMListeners();
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
-            return this.getRepStatus()
-                .getPromise()
-                .then(() => {
-                    this.startLoadTimer();
-                    // Reuse prefetched blob URL if available, otherwise fetch now
-                    return this.prefetchedBlobUrlPromise || this.fetchContentAsBlobUrl(contentUrl);
-                })
-                .then(blobUrl => {
-                    this.prefetchedBlobUrlPromise = null;
-                    this.imageEl.src = blobUrl;
-                    if (this.imageEl.complete) {
-                        this.finishLoading();
-                    }
-                    super.handleAssetAndRepLoad();
-                })
-                .catch(this.handleAssetError);
-        }
-
-        const downloadUrl = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+        const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
         return this.getRepStatus()
             .getPromise()
-            .then(() => this.handleAssetAndRepLoad(downloadUrl))
+            .then(() => {
+                this.startLoadTimer();
+                return this.fetchContentAsBlobUrl(contentUrl);
+            })
+            .then(blobUrl => {
+                if (this.isDestroyed()) {
+                    URL.revokeObjectURL(blobUrl);
+                    return;
+                }
+                this.imageEl.src = blobUrl;
+                if (this.imageEl.complete) {
+                    this.finishLoading();
+                }
+                super.handleAssetAndRepLoad();
+            })
             .catch(this.handleAssetError);
     }
 
@@ -189,10 +181,6 @@ class ImageViewer extends ImageBaseViewer {
         }
     }
 
-    prefetchFinishedLoading(event) {
-        document.body.removeChild(event?.currentTarget);
-    }
-
     /**
      * Prefetches assets for an image.
      *
@@ -206,17 +194,10 @@ class ImageViewer extends ImageBaseViewer {
         if ((content || preload) && !isWatermarked && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
 
-            if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
-                this.prefetchedBlobUrlPromise = this.fetchContentAsBlobUrl(contentUrl);
-            } else {
-                const preFetchedImg = document.createElement('img');
-                preFetchedImg.addEventListener('load', this.prefetchFinishedLoading);
-                preFetchedImg.classList.add(CLASS_PREFETCHED_IMAGE);
-                document.body.appendChild(preFetchedImg);
-
-                preFetchedImg.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
-            }
+            const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
+            this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() }).catch(err => {
+                console.warn('Image prefetch failed', err); // eslint-disable-line no-console
+            });
         }
     }
 

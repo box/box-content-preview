@@ -184,6 +184,9 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('constructImageUrls()', () => {
         test('should remove both the new and old form of asset path', () => {
+            jest.spyOn(multiImage, 'createContentUrlV2').mockImplementation((template, asset) =>
+                template.includes('{+asset_path}') ? template.replace('{+asset_path}', asset) : template,
+            );
             const firstURL = 'file/100/content/1.png';
             const result = multiImage.constructImageUrls('file/100/content/{page}.png');
 
@@ -209,41 +212,16 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(result.length).toBe(3);
         });
 
-        test('should use createContentUrlV2 when migrateAccessTokenToHeader flag is on', () => {
-            jest.spyOn(multiImage, 'featureEnabled').mockImplementation(
-                feature => feature === 'migrateAccessTokenToHeader',
-            );
+        test('should use createContentUrlV2', () => {
             jest.spyOn(multiImage, 'createContentUrlV2').mockReturnValue('https://example.com/image-{page}.jpg');
-            jest.spyOn(multiImage, 'createContentUrlWithAuthParams');
 
             const result = multiImage.constructImageUrls('file/100/content/{page}.png');
 
             expect(multiImage.createContentUrlV2).toHaveBeenCalledWith('file/100/content/{page}.png', '{page}.png');
-            expect(multiImage.createContentUrlWithAuthParams).not.toHaveBeenCalled();
             expect(result.length).toBe(3);
             expect(result[0]).toBe('https://example.com/image-1.jpg');
             expect(result[1]).toBe('https://example.com/image-2.jpg');
             expect(result[2]).toBe('https://example.com/image-3.jpg');
-        });
-
-        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is off', () => {
-            jest.spyOn(multiImage, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(multiImage, 'createContentUrlWithAuthParams').mockReturnValue(
-                'https://example.com/auth-image-{page}.jpg',
-            );
-            jest.spyOn(multiImage, 'createContentUrl');
-
-            const result = multiImage.constructImageUrls('file/100/content/{page}.png');
-
-            expect(multiImage.createContentUrlWithAuthParams).toHaveBeenCalledWith(
-                'file/100/content/{page}.png',
-                '{page}.png',
-            );
-            expect(multiImage.createContentUrl).not.toHaveBeenCalled();
-            expect(result.length).toBe(3);
-            expect(result[0]).toBe('https://example.com/auth-image-1.jpg');
-            expect(result[1]).toBe('https://example.com/auth-image-2.jpg');
-            expect(result[2]).toBe('https://example.com/auth-image-3.jpg');
         });
     });
 
@@ -251,21 +229,26 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             multiImage.setup();
             stubs.bindImageListeners = jest.spyOn(multiImage, 'bindImageListeners');
+            jest.spyOn(multiImage, 'fetchContentAsBlobUrl').mockImplementation(url => Promise.resolve(url));
         });
 
         test('should set the single image el and error handler if it is not the first image', () => {
             multiImage.singleImageEls = [null, stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 1);
-            expect(multiImage.singleImageEls[1].src).toBeDefined();
             expect(stubs.bindImageListeners).toBeCalled();
+            expect(multiImage.fetchContentAsBlobUrl).toHaveBeenCalledWith('file/100/content/{page}.png');
         });
 
-        test('should set the image source', () => {
+        test('should set the image source from a blob URL', () => {
             multiImage.singleImageEls = [stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
-            expect(multiImage.singleImageEls[0].src).toBe('file/100/content/{page}.png');
+            expect(multiImage.fetchContentAsBlobUrl).toHaveBeenCalledWith('file/100/content/{page}.png');
+
+            return multiImage.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                expect(multiImage.singleImageEls[0].src).toBe('file/100/content/{page}.png');
+            });
         });
 
         test('should set the page number for each image el', () => {
@@ -282,41 +265,9 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(stubs.singleImageEl.classList.add).toBeCalledWith(CLASS_MULTI_IMAGE_PAGE);
         });
 
-        test('should use fetchContentAsBlobUrl when migrateAccessTokenToHeader flag is on', () => {
-            const blobUrl = 'blob:http://example.com/image-blob';
-            jest.spyOn(multiImage, 'featureEnabled').mockImplementation(
-                feature => feature === 'migrateAccessTokenToHeader',
-            );
-            jest.spyOn(multiImage, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
-            multiImage.singleImageEls = [stubs.singleImageEl];
-
-            multiImage.setupImageEls('https://example.com/image.jpg', 0);
-
-            expect(multiImage.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://example.com/image.jpg');
-
-            // Wait for promise to resolve
-            return multiImage.fetchContentAsBlobUrl().then(() => {
-                expect(stubs.singleImageEl.src).toBe(blobUrl);
-            });
-        });
-
-        test('should set src directly when migrateAccessTokenToHeader flag is off', () => {
-            jest.spyOn(multiImage, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(multiImage, 'fetchContentAsBlobUrl');
-            multiImage.singleImageEls = [stubs.singleImageEl];
-
-            multiImage.setupImageEls('https://example.com/image-auth.jpg', 0);
-
-            expect(multiImage.fetchContentAsBlobUrl).not.toHaveBeenCalled();
-            expect(stubs.singleImageEl.src).toBe('https://example.com/image-auth.jpg');
-        });
-
-        test('should use fetchContentAsBlobUrl for each page when migrateAccessTokenToHeader flag is on', () => {
+        test('should use fetchContentAsBlobUrl for each page', () => {
             const blobUrl1 = 'blob:http://example.com/image1-blob';
             const blobUrl2 = 'blob:http://example.com/image2-blob';
-            jest.spyOn(multiImage, 'featureEnabled').mockImplementation(
-                feature => feature === 'migrateAccessTokenToHeader',
-            );
             const fetchSpy = jest
                 .spyOn(multiImage, 'fetchContentAsBlobUrl')
                 .mockReturnValueOnce(Promise.resolve(blobUrl1))
@@ -332,6 +283,36 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(fetchSpy).toHaveBeenCalledTimes(2);
             expect(fetchSpy).toHaveBeenNthCalledWith(1, 'https://example.com/page1.jpg');
             expect(fetchSpy).toHaveBeenNthCalledWith(2, 'https://example.com/page2.jpg');
+        });
+
+        test('should handle a page fetch error as a download error', () => {
+            const err = new Error('401');
+            jest.spyOn(multiImage, 'fetchContentAsBlobUrl').mockReturnValue(Promise.reject(err));
+            jest.spyOn(multiImage, 'handleMultiImageDownloadError').mockImplementation();
+            multiImage.singleImageEls = [stubs.singleImageEl];
+
+            multiImage.setupImageEls('https://example.com/page1.jpg', 0);
+
+            return Promise.resolve()
+                .then(() => Promise.resolve())
+                .then(() => {
+                    expect(multiImage.handleMultiImageDownloadError).toHaveBeenCalledWith(err);
+                });
+        });
+
+        test('should revoke the blob URL if destroyed before the fetch resolves', () => {
+            const blobUrl = 'blob:http://example.com/page';
+            jest.spyOn(multiImage, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
+            jest.spyOn(multiImage, 'isDestroyed').mockReturnValue(true);
+            jest.spyOn(URL, 'revokeObjectURL');
+            multiImage.singleImageEls = [stubs.singleImageEl];
+
+            multiImage.setupImageEls('https://example.com/page1.jpg', 0);
+
+            return multiImage.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                expect(URL.revokeObjectURL).toHaveBeenCalledWith(blobUrl);
+                expect(stubs.singleImageEl.src).not.toBe(blobUrl);
+            });
         });
     });
 

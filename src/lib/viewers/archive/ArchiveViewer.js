@@ -50,13 +50,8 @@ class ArchiveViewer extends BaseViewer {
                 const template = get(representation, 'content.url_template');
                 this.startLoadTimer();
 
-                if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                    const contentUrl = this.createContentUrlV2(template);
-                    return this.api.get(contentUrl, { headers: this.appendAuthHeader() });
-                }
-
-                const contentUrl = this.createContentUrlWithAuthParams(template);
-                return this.api.get(contentUrl);
+                const contentUrl = this.createContentUrlV2(template);
+                return this.api.get(contentUrl, { headers: this.appendAuthHeader() });
             })
             .then(this.finishLoading)
             .catch(this.handleAssetError);
