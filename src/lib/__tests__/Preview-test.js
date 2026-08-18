@@ -1780,6 +1780,7 @@ describe('lib/Preview', () => {
         });
 
         test('should refresh from server when skipServerUpdate but video lacks transcription rep', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
             jest.spyOn(preview, 'hasTranscriptionRep').mockReturnValue(false);
@@ -1997,6 +1998,54 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).toHaveBeenCalled();
         });
 
+        test('should trigger account error when video file has only preload rep and no playable reps', () => {
+            stubs.file.extension = 'mp4';
+            stubs.file.representations.entries = [{ representation: PRELOAD_REP_NAME }];
+            stubs.getCachedFile.mockReturnValue(null);
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).toHaveBeenCalledWith(expect.any(PreviewError));
+            expect(stubs.triggerError.mock.calls[0][0].code).toBe(ERROR_CODE.ACCOUNT);
+            expect(stubs.triggerError.mock.calls[0][0].message).toBe(__('error_account'));
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should trigger account error when Instant Preview viewer is showing jpg but server file has no playable reps', () => {
+            preview.viewer = {
+                options: {
+                    viewer: { NAME: 'Dash' },
+                    representation: { representation: PRELOAD_REP_NAME },
+                },
+            };
+            stubs.file.extension = 'mp4';
+            stubs.file.representations.entries = [{ representation: PRELOAD_REP_NAME }];
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: stubs.file.file_version.sha1 },
+            });
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).toHaveBeenCalledWith(expect.any(PreviewError));
+            expect(stubs.triggerError.mock.calls[0][0].code).toBe(ERROR_CODE.ACCOUNT);
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should not trigger account error when video file has pending dash rep', () => {
+            stubs.loadViewer.mockImplementation(() => {});
+            stubs.file.extension = 'mp4';
+            stubs.file.representations.entries = [
+                { representation: PRELOAD_REP_NAME },
+                { representation: 'dash', status: { state: 'pending' } },
+            ];
+            stubs.getCachedFile.mockReturnValue(null);
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).not.toHaveBeenCalled();
+            expect(stubs.loadViewer).toHaveBeenCalled();
+        });
+
         test('should uncache the file if the file is watermarked', () => {
             stubs.isWatermarked.mockReturnValue(true);
             stubs.getCachedFile.mockReturnValue({
@@ -2040,6 +2089,7 @@ describe('lib/Preview', () => {
         });
 
         test('should update viewer and load transcription when cache lacked extracted_text', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
             preview.file.extension = 'avi';
@@ -2068,6 +2118,8 @@ describe('lib/Preview', () => {
         });
 
         test('should load the deferred viewer when transcription is still unavailable on the server', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            preview.viewerLoadDeferredForTranscription = true;
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
             preview.viewer = undefined;

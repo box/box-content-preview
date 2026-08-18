@@ -130,6 +130,9 @@ class Preview extends EventEmitter {
     /** @property {Object} - Current viewer instance */
     viewer;
 
+    /** @property {boolean} - Whether viewer load was deferred pending transcription metadata */
+    viewerLoadDeferredForTranscription = false;
+
     /** @property {string[]} - List of file IDs to preview */
     collection = [];
 
@@ -1210,6 +1213,7 @@ class Preview extends EventEmitter {
 
         const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
         const needsTranscriptionRep =
+            this.canUseDash() &&
             isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
             this.isVideoFileByExtension() &&
             !this.hasTranscriptionRep(this.file);
@@ -1218,7 +1222,11 @@ class Preview extends EventEmitter {
         // When playable video reps are already cached but extracted_text is not, defer loading the
         // viewer until handleFileInfoResponse can supply transcription metadata. Loading dash first
         // races loadeddata (no captions) against the server refresh.
-        const deferViewerForTranscription = needsTranscriptionRep && !needsVideoReps && needsServerRefresh;
+        const deferViewerForTranscription = needsTranscriptionRep && !needsVideoReps;
+
+        if (deferViewerForTranscription) {
+            this.viewerLoadDeferredForTranscription = true;
+        }
 
         if (!deferViewerForTranscription) {
             this.loadViewer();
@@ -1350,6 +1358,7 @@ class Preview extends EventEmitter {
             }
 
             const needsTranscriptionReload =
+                this.canUseDash() &&
                 isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
                 this.isVideoFileByExtension() &&
                 !this.hasTranscriptionRep(cachedFile) &&
@@ -1378,7 +1387,7 @@ class Preview extends EventEmitter {
                 } else {
                     this.loadViewer();
                 }
-            } else if (!this.viewer) {
+            } else if (!this.viewer && this.viewerLoadDeferredForTranscription) {
                 // Viewer load was deferred in loadFromCache() pending transcription metadata.
                 this.loadViewer();
             }
@@ -1404,6 +1413,8 @@ class Preview extends EventEmitter {
         if (!this.open) {
             return;
         }
+
+        this.viewerLoadDeferredForTranscription = false;
 
         // Tear down current viewer so its DOM (e.g. preload image for video) is cleared before creating the new one.
         if (this.viewer && typeof this.viewer.destroy === 'function') {
@@ -1519,8 +1530,18 @@ class Preview extends EventEmitter {
      * @return {boolean}
      */
     hasTranscriptionRep(file) {
-        const extractedText = getRepresentation(file, 'extracted_text');
+        const extractedText = file && getRepresentation(file, 'extracted_text');
         return !!extractedText?.content?.url_template;
+    }
+
+    /**
+     * Returns true when Dash playback is available and not disabled.
+     *
+     * @private
+     * @return {boolean}
+     */
+    canUseDash() {
+        return Browser.canPlayDash() && !this.disabledViewers.Dash;
     }
 
     /**
@@ -1785,6 +1806,12 @@ class Preview extends EventEmitter {
 
         // Check if we hit the retry limit for fetching file info
         if (this.retryCount > RETRY_COUNT) {
+            // Viewer load was deferred for transcription refresh; fall back to cached playback.
+            if (this.viewerLoadDeferredForTranscription && !this.viewer) {
+                this.loadViewer();
+                return;
+            }
+
             let errorCode = ERROR_CODE.EXCEEDED_RETRY_LIMIT;
             let errorMessage = __('error_refresh');
 
@@ -2025,7 +2052,7 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
+        const isDash = this.canUseDash();
         let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
 
         if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
