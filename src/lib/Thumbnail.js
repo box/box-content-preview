@@ -213,6 +213,7 @@ class Thumbnail {
         const canvas = document.createElement('canvas');
         let isCancelled = false;
         let pdfRenderTask = null;
+        let pdfPage = null;
         const task = {
             cancel: () => {
                 if (isCancelled) {
@@ -230,6 +231,7 @@ class Thumbnail {
                 if (isCancelled || !this.thumbnailImageCache) {
                     return null;
                 }
+                pdfPage = page;
 
                 const rotation = ((this.pdfViewer.pagesRotation || 0) + page.rotate) % 360;
                 const viewport = page.getViewport({ scale: 1, rotation });
@@ -281,11 +283,38 @@ class Thumbnail {
             .finally(() => {
                 canvas.width = 0;
                 canvas.height = 0;
+                this.releasePageResources(pdfPage);
                 this.renderTasks?.delete(task);
             });
 
         this.renderTasks.add(task);
         return task;
+    }
+
+    /**
+     * Releases a page's decoded resources (images, operator list) after a thumbnail render.
+     * PDF.js otherwise retains them until document destroy, ballooning memory as gallery and
+     * sidebar renders touch every page the user scrolls past. Mirrors PDF.js's own
+     * post-thumbnail cleanup: pages cached by the document viewer are skipped so the visible
+     * page never loses resources the main view still needs. Older bundled PDF.js viewers that
+     * do not expose isPageCached are skipped conservatively. cleanup() refuses by returning
+     * false (it does not throw) while the page is rendering elsewhere; PDF.js then finishes
+     * the release itself after that render completes, via its pending-cleanup flag.
+     *
+     * @param {Object|null} pdfPage - The PDF.js page proxy, or null if the render never started
+     * @return {void}
+     */
+    releasePageResources(pdfPage) {
+        if (!pdfPage) {
+            return;
+        }
+
+        const isPageCached = this.pdfViewer?.isPageCached;
+        if (typeof isPageCached !== 'function' || isPageCached.call(this.pdfViewer, pdfPage.pageNumber)) {
+            return;
+        }
+
+        pdfPage.cleanup();
     }
 
     /**
