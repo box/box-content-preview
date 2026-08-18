@@ -13,13 +13,12 @@ describe('Thumbnail', () => {
     beforeEach(() => {
         stubs.getViewport = jest.fn();
         stubs.cancelRender = jest.fn();
-        stubs.cleanup = jest.fn();
+        stubs.dispatch = jest.fn();
         stubs.render = jest.fn(() => ({
             cancel: stubs.cancelRender,
             promise: Promise.resolve(),
         }));
         page = {
-            cleanup: stubs.cleanup,
             getViewport: stubs.getViewport,
             pageNumber: 1,
             render: stubs.render,
@@ -28,10 +27,12 @@ describe('Thumbnail', () => {
         pagePromise = Promise.resolve(page);
         stubs.getPage = jest.fn(() => pagePromise);
         pdfViewer = {
+            eventBus: {
+                dispatch: stubs.dispatch,
+            },
             pdfDocument: {
                 getPage: stubs.getPage,
             },
-            isPageCached: jest.fn().mockReturnValue(false),
         };
         thumbnail = new Thumbnail(pdfViewer);
     });
@@ -404,13 +405,18 @@ describe('Thumbnail', () => {
             expect(stubs.getPage).toHaveBeenCalled();
         });
 
-        test('should release PDF.js page resources after a successful render', async () => {
+        test('should dispatch thumbnailrendered to release page resources after a successful render', async () => {
             const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
             await task.promise;
-            expect(stubs.cleanup).toHaveBeenCalled();
+
+            expect(stubs.dispatch).toHaveBeenCalledWith('thumbnailrendered', {
+                source: thumbnail,
+                pageNumber: 1,
+                pdfPage: page,
+            });
         });
 
-        test('should release PDF.js page resources after cancelling a render that had started', async () => {
+        test('should dispatch thumbnailrendered after cancelling a render that had started', async () => {
             let rejectRender;
             stubs.render.mockReturnValue({
                 cancel: stubs.cancelRender,
@@ -426,10 +432,13 @@ describe('Thumbnail', () => {
             rejectRender(new Error('Rendering cancelled'));
 
             await expect(task.promise).resolves.toBeNull();
-            expect(stubs.cleanup).toHaveBeenCalled();
+            expect(stubs.dispatch).toHaveBeenCalledWith(
+                'thumbnailrendered',
+                expect.objectContaining({ pdfPage: page }),
+            );
         });
 
-        test('should not clean up a page whose render was cancelled before it started', async () => {
+        test('should not dispatch thumbnailrendered when the render was cancelled before the page was loaded', async () => {
             let resolvePage;
             stubs.getPage.mockReturnValue(
                 new Promise(resolve => {
@@ -442,43 +451,26 @@ describe('Thumbnail', () => {
             resolvePage(page);
 
             await expect(task.promise).resolves.toBeNull();
-            expect(stubs.cleanup).not.toHaveBeenCalled();
+            expect(stubs.dispatch).not.toHaveBeenCalled();
         });
 
-        test('should resolve and clear the task when PDF.js defers cleanup because the page is rendering elsewhere', async () => {
-            stubs.cleanup.mockReturnValue(false);
+        test('should clear the render task before releasing page resources', async () => {
+            stubs.dispatch.mockImplementation(() => {
+                expect(thumbnail.renderTasks.size).toBe(0);
+            });
 
             const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
             await expect(task.promise).resolves.toMatchObject({ width: 20 });
-            expect(stubs.cleanup).toHaveBeenCalled();
+
+            expect(stubs.dispatch).toHaveBeenCalled();
             expect(thumbnail.renderTasks.size).toBe(0);
         });
 
-        test('should skip cleanup while the main viewer caches the page', async () => {
-            pdfViewer.isPageCached.mockReturnValue(true);
+        test('should skip the release when the viewer exposes no event bus', async () => {
+            delete pdfViewer.eventBus;
 
             const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
             await expect(task.promise).resolves.toMatchObject({ width: 20 });
-
-            expect(pdfViewer.isPageCached).toHaveBeenCalledWith(1);
-            expect(stubs.cleanup).not.toHaveBeenCalled();
-        });
-
-        test('should clean up a page the main viewer has evicted from its cache', async () => {
-            const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
-            await task.promise;
-
-            expect(pdfViewer.isPageCached).toHaveBeenCalledWith(1);
-            expect(stubs.cleanup).toHaveBeenCalled();
-        });
-
-        test('should skip cleanup when the bundled PDF.js viewer cannot report its page cache', async () => {
-            delete pdfViewer.isPageCached;
-
-            const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
-            await task.promise;
-
-            expect(stubs.cleanup).not.toHaveBeenCalled();
         });
     });
 });
