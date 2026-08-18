@@ -21,13 +21,8 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -114,7 +109,6 @@
         "lodash": "^4.18.1",
         "mini-css-extract-plugin": "^2.10.2",
         "mock-local-storage": "^1.1.15",
-        "mojito-rb-gen": "^0.0.1",
         "npm-run-all": "^4.1.5",
         "postcss": "^8.5.18",
         "postcss-loader": "^8.1.1",
@@ -149,7 +143,7 @@
         "build": "yarn setup && yarn clean && yarn build:i18n && yarn build:dev",
         "build:ci": "yarn setup && yarn webpack --progress --config build/webpack.config.js",
         "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --config build/webpack.config.js",
-        "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
+        "build:i18n": "node build/buildI18n.js",
         "build:lib": "yarn build:i18n && yarn build:lib:js && yarn build:lib:verify && yarn build:lib:types",
         "build:lib:verify": "node build/verifyLibBundle.js",
         "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
