@@ -97,17 +97,17 @@ increment_version() {
         echo "----------------------------------------------------------------------"
         echo "Bumping major version..."
         echo "----------------------------------------------------------------------"
-        npm --no-git-tag-version version major
+        cmd npm --no-git-tag-version version major || return 1
     elif $minor_release; then
         echo "----------------------------------------------------------------------"
         echo "Bumping minor version..."
         echo "----------------------------------------------------------------------"
-        npm --no-git-tag-version version minor
+        cmd npm --no-git-tag-version version minor || return 1
     elif $patch_release; then
         echo "----------------------------------------------------------------------"
         echo "Bumping patch version..."
         echo "----------------------------------------------------------------------"
-        npm --no-git-tag-version version patch
+        cmd npm --no-git-tag-version version patch || return 1
     fi
 
     # The current version being built
@@ -119,13 +119,76 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------------------------"
 
-    if cmd ./node_modules/.bin/conventional-changelog -i CHANGELOG.md --same-file; then
+    # infile defaults to CHANGELOG.md; outfile defaults to infile (replaces --same-file)
+    if cmd ./node_modules/.bin/conventional-changelog -n changelog.config.js -i CHANGELOG.md; then
         echo "----------------------------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------------------------"
     else
         echo "----------------------------------------------------------------------"
         echo "Error: Could not update the CHANGELOG for this version"
+        echo "----------------------------------------------------------------------"
+        return 1
+    fi
+}
+
+publish_github_release() {
+    echo "----------------------------------------------------------------------"
+    echo "Publishing GitHub release v$VERSION"
+    echo "----------------------------------------------------------------------"
+
+    local token="${GITHUB_TOKEN:-${CONVENTIONAL_GITHUB_RELEASER_TOKEN:-}}"
+
+    local notes_file payload_file
+    notes_file=$(mktemp)
+    payload_file=$(mktemp)
+    # Top CHANGELOG section only (between the first and second ## headers)
+    awk 'BEGIN { section = 0 } /^## / { section += 1; if (section == 2) exit } section' CHANGELOG.md >"$notes_file"
+
+    if $dry_run; then
+        echo "The build script would POST GitHub release v$VERSION"
+        rm -f "$notes_file" "$payload_file"
+        echo "----------------------------------------------------------------------"
+        echo "Published GitHub release v$VERSION"
+        echo "----------------------------------------------------------------------"
+        return 0
+    fi
+
+    if [ -z "$token" ]; then
+        rm -f "$notes_file" "$payload_file"
+        echo "----------------------------------------------------------------------"
+        echo "Error: GITHUB_TOKEN (or CONVENTIONAL_GITHUB_RELEASER_TOKEN) is required"
+        echo "----------------------------------------------------------------------"
+        return 1
+    fi
+
+    if ! jq -n \
+        --arg tag "v$VERSION" \
+        --arg name "v$VERSION" \
+        --rawfile body "$notes_file" \
+        '{tag_name:$tag, name:$name, body:$body, draft:false, prerelease:false}' >"$payload_file"; then
+        rm -f "$notes_file" "$payload_file"
+        echo "----------------------------------------------------------------------"
+        echo "Error: Could not build GitHub release payload"
+        echo "----------------------------------------------------------------------"
+        return 1
+    fi
+
+    if curl --fail --silent --show-error \
+        -X POST \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $token" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "https://api.github.com/repos/box/box-content-preview/releases" \
+        -d @"$payload_file"; then
+        rm -f "$notes_file" "$payload_file"
+        echo "----------------------------------------------------------------------"
+        echo "Published GitHub release v$VERSION"
+        echo "----------------------------------------------------------------------"
+    else
+        rm -f "$notes_file" "$payload_file"
+        echo "----------------------------------------------------------------------"
+        echo "Error: Could not publish GitHub release v$VERSION"
         echo "----------------------------------------------------------------------"
         return 1
     fi
@@ -225,11 +288,8 @@ push_new_release() {
     # Push to GitHub
     push_to_github || return 1
 
-    # Push GitHub release
-    echo "----------------------------------------------------------------------"
-    echo "Pushing new GitHub release"
-    echo "----------------------------------------------------------------------"
-    cmd ./node_modules/.bin/conventional-github-releaser
+    # Create the GitHub Release from the new CHANGELOG section
+    publish_github_release || return 1
 
     return 0
 }

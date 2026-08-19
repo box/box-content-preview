@@ -1,3 +1,9 @@
+## 3.79.0 (2026-08-19)
+
+* chore(deps): Modernize release changelog tooling (#1737) ([e46a4f1](https://github.com/box/box-content-preview/commit/e46a4f1)), closes [#1737](https://github.com/box/box-content-preview/issues/1737)
+* chore(deps): Replace mojito-rb-gen and bump Babel preset-env (#1740) ([ee7cabf](https://github.com/box/box-content-preview/commit/ee7cabf)), closes [#1740](https://github.com/box/box-content-preview/issues/1740)
+* chore(preview): Roll out Authorization headers for representations (#1744) ([160fbd5](https://github.com/box/box-content-preview/commit/160fbd5)), closes [#1744](https://github.com/box/box-content-preview/issues/1744)
+
 ## 3.78.0 (2026-08-17)
 
 * fix(video): prevent V2 filmstrip thumbnail drift on non-standard aspect ratios (#1741) ([027a2b6](https://github.com/box/box-content-preview/commit/027a2b6)), closes [#1741](https://github.com/box/box-content-preview/issues/1741)
