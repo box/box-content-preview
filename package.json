@@ -21,13 +21,8 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -49,7 +44,7 @@
         "@babel/plugin-proposal-class-properties": "^7.18.6",
         "@babel/plugin-proposal-object-rest-spread": "^7.18.6",
         "@babel/plugin-transform-object-assign": "^7.18.6",
-        "@babel/preset-env": "^7.18.6",
+        "@babel/preset-env": "^7.24.7",
         "@babel/preset-react": "^7.18.6",
         "@babel/preset-typescript": "^7.18.6",
         "@box/blueprint-web": "^14.41.0",
@@ -89,7 +84,6 @@
         "eslint": "^8.43.0",
         "eslint-config-airbnb": "^18.0.1",
         "eslint-config-prettier": "^6.7.0",
-        "eslint-import-resolver-webpack": "^0.11.1",
         "eslint-plugin-babel": "^5.3.0",
         "eslint-plugin-chai-friendly": "^0.4.1",
         "eslint-plugin-cypress": "^2.8.1",
@@ -114,7 +108,6 @@
         "lodash": "^4.18.1",
         "mini-css-extract-plugin": "^2.10.2",
         "mock-local-storage": "^1.1.15",
-        "mojito-rb-gen": "^0.0.1",
         "npm-run-all": "^4.1.5",
         "postcss": "^8.5.18",
         "postcss-loader": "^8.1.1",
@@ -149,7 +142,7 @@
         "build": "yarn setup && yarn clean && yarn build:i18n && yarn build:dev",
         "build:ci": "yarn setup && yarn webpack --progress --config build/webpack.config.js",
         "build:dev": "BABEL_ENV=dev NODE_ENV=dev yarn webpack --progress --config build/webpack.config.js",
-        "build:i18n": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
+        "build:i18n": "node build/buildI18n.js",
         "build:lib": "yarn build:i18n && yarn build:lib:js && yarn build:lib:verify && yarn build:lib:types",
         "build:lib:verify": "node build/verifyLibBundle.js",
         "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
