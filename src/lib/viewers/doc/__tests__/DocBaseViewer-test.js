@@ -67,18 +67,6 @@ let containerEl;
 let rootEl;
 let stubs = {};
 
-const STANDARD_HEADERS = [
-    'Accept',
-    'Accept-Language',
-    'Content-Language',
-    'Content-Type',
-    'DPR',
-    'Downlink',
-    'Save-Data',
-    'Viewport-Width',
-    'Width',
-];
-
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
     const pdfjsLib = { GlobalWorkerOptions: {} };
@@ -523,11 +511,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 jest.spyOn(stubs.api, 'get').mockImplementation();
                 jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation();
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith(template);
+                expect(docBase.createContentUrlV2).toHaveBeenCalledWith(template);
             });
 
             test('should not prefetch preload if preload is true and representation is not ready', () => {
@@ -542,22 +530,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 jest.spyOn(stubs.api, 'get');
                 jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams');
+                jest.spyOn(docBase, 'createContentUrlV2');
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).not.toBeCalledWith(template);
+                expect(docBase.createContentUrlV2).not.toBeCalledWith(template);
             });
 
             test('should not prefetch preload if file is watermarked', () => {
                 docBase.options.file.watermark_info = {
                     is_watermarked: true,
                 };
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation();
 
                 docBase.prefetch({ assets: false, preload: true, content: false });
 
-                expect(docBase.createContentUrlWithAuthParams).not.toHaveBeenCalled();
+                expect(docBase.createContentUrlV2).not.toHaveBeenCalled();
             });
 
             test('should prefetch content if content is true and representation is ready', () => {
@@ -588,7 +576,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 ];
                 docBase.options.isDocFirstPrefetchEnabled = true;
                 const contentUrl = 'someContentUrl';
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+                jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue(contentUrl);
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
                 docBase.prefetch({ assets: false, preload: true, content: true });
                 expect(stubs.getPreloadImageRequestPromises).toBeCalled();
@@ -614,7 +602,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.prefetch({ assets: false, preload: false, content: true });
             });
 
-            test('should use createContentUrlV2 and pass headers when prefetching preload with migrateAccessTokenToHeader flag on', () => {
+            test('should use createContentUrlV2 and pass headers when prefetching preload', () => {
                 const preloadRep = {
                     content: {
                         url_template: 'preload-template',
@@ -626,7 +614,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
                 jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue('url-without-token');
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
                 jest.spyOn(stubs.api, 'get');
@@ -637,31 +624,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.api.get).toHaveBeenCalledWith('url-without-token', { type: 'blob', headers: mockHeaders });
             });
 
-            test('should use createContentUrlWithAuthParams when prefetching preload with migrateAccessTokenToHeader flag off', () => {
-                const preloadRep = {
-                    content: {
-                        url_template: 'preload-template',
-                    },
-                    status: {
-                        state: 'success',
-                    },
-                };
-                jest.spyOn(file, 'getRepresentation').mockReturnValue(preloadRep);
-                jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue('url-with-token');
-                jest.spyOn(stubs.api, 'get');
-
-                docBase.prefetch({ assets: false, preload: true, content: false });
-
-                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('preload-template');
-                expect(stubs.api.get).toHaveBeenCalledWith('url-with-token', { type: 'blob' });
-            });
-
-            test('should use createContentUrlV2 and pass headers when prefetching content with migrateAccessTokenToHeader flag on', () => {
+            test('should use createContentUrlV2 and pass headers when prefetching content', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue('url-without-token');
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
                 jest.spyOn(stubs.api, 'get');
@@ -673,18 +638,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     type: 'document',
                     headers: mockHeaders,
                 });
-            });
-
-            test('should use createContentUrlWithAuthParams when prefetching content with migrateAccessTokenToHeader flag off', () => {
-                jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(true);
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue('url-with-token');
-                jest.spyOn(stubs.api, 'get');
-
-                docBase.prefetch({ assets: false, preload: false, content: true });
-
-                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
-                expect(stubs.api.get).toHaveBeenCalledWith('url-with-token', { type: 'document' });
             });
         });
 
@@ -902,7 +855,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
+                jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue(preloadUrl);
                 sandbox
                     .mock(docBase.preloader)
                     .expects('showPreload')
@@ -927,7 +880,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     .stub(docBase, 'getViewerOption')
                     .withArgs('preload')
                     .returns(true);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue(preloadUrl);
+                jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue(preloadUrl);
 
                 sandbox.mock(docBase.preloader).expects('showPreload');
 
@@ -937,7 +890,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should load doc first preloader properly for doc first pages when webp rep available', () => {
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     // pagedUrlTemplate gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
                     if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
                         return 'paged-url';
@@ -959,13 +912,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     'paged-url',
                     4,
                     docBase,
-                    {},
+                    expect.objectContaining({ headers: expect.any(Object) }),
                 );
             });
 
             test('should not throw an error in doc first preloader and use jpeg rep if no webp rep available', () => {
                 webpRep = null;
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     if (url === jpegUrlTemplate) {
                         return 'jpeg-preload-url';
                     }
@@ -983,7 +936,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     null,
                     1,
                     docBase,
-                    {},
+                    expect.objectContaining({ headers: expect.any(Object) }),
                 );
             });
 
@@ -997,7 +950,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     },
                 };
 
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     // the webpRep template gets turned into this url in the code as {+asset_path} is replaced with PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER
                     if (url === `https://url/${PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER}`) {
                         return 'paged-url';
@@ -1019,13 +972,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     null,
                     1,
                     docBase,
-                    {},
+                    expect.objectContaining({ headers: expect.any(Object) }),
                 );
             });
 
             test('should skip preload when preloaderImagesPrefetched is true and only jpeg rep available (single-page path)', () => {
                 webpRep = null;
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     if (url === jpegUrlTemplate) {
                         return 'jpeg-preload-url';
                     }
@@ -1044,7 +997,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should show preload when preloaderImagesPrefetched is false even for single-page path', () => {
                 webpRep = null;
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation(url => {
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     if (url === jpegUrlTemplate) {
                         return 'jpeg-preload-url';
                     }
@@ -1064,13 +1017,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     null,
                     1,
                     docBase,
-                    {},
+                    expect.objectContaining({ headers: expect.any(Object) }),
                 );
             });
 
-            test('should use createContentUrlV2 and pass headers when migrateAccessTokenToHeader flag is on', () => {
+            test('should use createContentUrlV2 and pass headers for jpeg preload', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue('url-without-token');
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
                 jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
@@ -1084,22 +1036,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is off', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue('url-with-token');
-                jest.spyOn(docBase, 'appendAuthHeader');
-                jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
-
-                docBase.showPreload();
-
-                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalled();
-                expect(docBase.appendAuthHeader).not.toHaveBeenCalled();
-                expect(docBase.preloader.showPreload).toHaveBeenCalledWith('url-with-token', containerEl, {});
-            });
-
-            test('should use createContentUrlV2 for paged preload when migrateAccessTokenToHeader flag is on', () => {
+            test('should use createContentUrlV2 for paged preload', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     if (url.includes(PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER)) {
                         return 'paged-url-without-token';
@@ -1158,7 +1096,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(stubs.api, 'get').mockImplementation();
                 jest.spyOn(docBase, 'setup').mockImplementation();
                 Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockImplementation();
+                jest.spyOn(docBase, 'createContentUrlV2').mockImplementation();
                 jest.spyOn(docBase, 'handleAssetAndRepLoad').mockImplementation();
                 jest.spyOn(docBase, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
                 jest.spyOn(docBase, 'loadAssets').mockResolvedValue();
@@ -1174,7 +1112,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.load().then(() => {
                     expect(docBase.loadAssets).toHaveBeenCalledWith(JS, CSS);
                     expect(docBase.setup).not.toHaveBeenCalled();
-                    expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
+                    expect(docBase.createContentUrlV2).toHaveBeenCalledWith('foo');
                     expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
                     expect(docBase.loadAssets).not.toHaveBeenCalledWith(EXIF_READER);
                 });
@@ -1186,26 +1124,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.loadAssets).toHaveBeenNthCalledWith(2, JS_NO_EXIF, CSS);
                     expect(docBase.loadAssets).toHaveBeenNthCalledWith(1, EXIF_READER);
                     expect(docBase.setup).not.toHaveBeenCalled();
-                    expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
+                    expect(docBase.createContentUrlV2).toHaveBeenCalledWith('foo');
                     expect(docBase.handleAssetAndRepLoad).toHaveBeenCalled();
                 });
             });
 
-            test('should use createContentUrlV2 when migrateAccessTokenToHeader flag is on', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
+            test('should set pdfUrl from createContentUrlV2', () => {
                 jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue('url-without-token');
 
                 return docBase.load().then(() => {
                     expect(docBase.createContentUrlV2).toHaveBeenCalledWith('foo');
                     expect(docBase.pdfUrl).toBe('url-without-token');
-                });
-            });
-
-            test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is off', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-
-                return docBase.load().then(() => {
-                    expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo');
                 });
             });
 
@@ -2143,23 +2072,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should avoid preflight requests by not adding non-standard headers', () => {
-                docBase.options.location = {
-                    locale: 'en-US',
-                };
-                let httpHeaders;
-
-                docBase.pdfjsLib.getDocument = jest.fn(docInitParams => {
-                    httpHeaders = docInitParams.httpHeaders || {};
-                    return { promise: new Promise(() => {}) };
-                });
+            test('should pass Authorization headers to pdf.js', () => {
+                const mockHeaders = { Authorization: 'Bearer token' };
+                jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
 
                 docBase.initViewer('');
 
-                expect(docBase.pdfjsLib.getDocument).toHaveBeenCalled();
-                const headerKeys = Object.keys(httpHeaders);
-                const containsNonStandardHeader = headerKeys.some(header => !STANDARD_HEADERS.includes(header));
-                expect(containsNonStandardHeader).toBe(false);
+                expect(docBase.pdfjsLib.getDocument).toHaveBeenCalledWith(
+                    expect.objectContaining({ httpHeaders: mockHeaders }),
+                );
             });
 
             test('should resolve the loading task and set the document/viewer', () => {
@@ -2448,9 +2369,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            test('should pass httpHeaders when migrateAccessTokenToHeader flag is on', () => {
+            test('should pass httpHeaders to pdf.js', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
                 const doc = {
                     numPages: 1,
@@ -2460,20 +2380,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 return docBase.initViewer('url').then(() => {
                     expect(stubs.getDocument).toHaveBeenCalledWith(
                         expect.objectContaining({ httpHeaders: mockHeaders }),
-                    );
-                });
-            });
-
-            test('should not pass httpHeaders when migrateAccessTokenToHeader flag is off', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-                const doc = {
-                    numPages: 1,
-                };
-                stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
-
-                return docBase.initViewer('url').then(() => {
-                    expect(stubs.getDocument).toHaveBeenCalledWith(
-                        expect.not.objectContaining({ httpHeaders: expect.anything() }),
                     );
                 });
             });
@@ -2798,22 +2704,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
-            test('should pass auth headers when migrateAccessTokenToHeader flag is on', () => {
+            test('should pass auth headers when fetching the print blob', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
 
                 return docBase.fetchPrintBlob('url').then(() => {
                     expect(stubs.get).toHaveBeenCalledWith('url', { type: 'blob', headers: mockHeaders });
-                    expect(docBase.printBlob).toBe('blob');
-                });
-            });
-
-            test('should not pass auth headers when migrateAccessTokenToHeader flag is off', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-
-                return docBase.fetchPrintBlob('url').then(() => {
-                    expect(stubs.get).toHaveBeenCalledWith('url', { type: 'blob' });
                     expect(docBase.printBlob).toBe('blob');
                 });
             });
@@ -5035,10 +4931,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             let mockFile;
             let jpegRep;
             let webpRep;
-            const webpUrl =
-                'https://example.com/webp/page_number?access_token=auth_token&box_client_name=name&box_client_version=version';
-            const jpegUrl =
-                'https://example.com/jpeg/{+asset}?access_token=auth_token&box_client_name=name&box_client_version=version';
+            const webpUrl = 'https://example.com/webp/page_number?box_client_name=name&box_client_version=version';
+            const jpegUrl = 'https://example.com/jpeg/{+asset}?box_client_name=name&box_client_version=version';
+            const preloadHeaders = { headers: expect.objectContaining({ Authorization: 'Bearer auth_token' }) };
             beforeEach(() => {
                 // Mock representations
                 jpegRep = {
@@ -5085,7 +4980,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should clear sharedLink and sharedLinkPassword options and reset them after prefetching', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl, {});
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    '',
+                    5,
+                    webpUrl,
+                    preloadHeaders,
+                );
                 expect(docBase.options.sharedLink).toBe('original-shared-link');
                 expect(docBase.options.sharedLinkPassword).toBe('original-password');
             });
@@ -5115,13 +5016,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     jpegUrl,
                     1, // default fallback page count when webp metadata is not available
                     '',
-                    {},
+                    preloadHeaders,
                 );
             });
 
             test('should only prefetch webp representations when webp is ready', () => {
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, '', 5, webpUrl, {});
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    '',
+                    5,
+                    webpUrl,
+                    preloadHeaders,
+                );
             });
 
             test('should handle webp representation without metadata pages', () => {
@@ -5133,7 +5040,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     '',
                     8,
                     expect.any(String),
-                    {},
+                    preloadHeaders,
                 );
             });
 
@@ -5147,7 +5054,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     '', // jpegUrlAuthTemplate should be false when webp is available
                     8, // default page count when pages is not specified
                     expect.any(String),
-                    {},
+                    preloadHeaders,
                 );
             });
 
@@ -5159,14 +5066,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     '', // jpegUrlAuthTemplate should be false when webp is available
                     5,
                     webpUrl,
-                    {},
+                    preloadHeaders,
                 );
             });
 
             test('should handle webp representation without content', () => {
                 webpRep.content = null;
                 docBase.prefetchPreloaderImages(mockFile);
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(docBase.api, jpegUrl, 1, '', {});
+                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
+                    docBase.api,
+                    jpegUrl,
+                    1,
+                    '',
+                    preloadHeaders,
+                );
             });
 
             test('should call Promise.all with the returned promises', () => {
@@ -5210,7 +5123,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect.any(String),
                     1,
                     2,
-                    {},
+                    preloadHeaders,
                 );
 
                 // Wait for promises to resolve
@@ -5296,7 +5209,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect.any(String),
                     1,
                     2,
-                    {},
+                    preloadHeaders,
                 );
                 expect(getPreloadImageRequestPromisesByBatchSpy).toHaveBeenCalledTimes(1);
 
@@ -5337,7 +5250,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect.any(String),
                     1,
                     2,
-                    {},
+                    preloadHeaders,
                 );
 
                 // Wait for promises to resolve
@@ -5438,9 +5351,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 getPreloadImageRequestPromisesByBatchSpy.mockRestore();
             });
 
-            test('should use createContentUrlV2 and pass headers when migrateAccessTokenToHeader flag is on', () => {
+            test('should use createContentUrlV2 and pass headers when prefetching preloader images', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockImplementation(url => {
                     if (url.includes('page_number')) {
                         return 'webp-url-without-token';
@@ -5458,22 +5370,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     5,
                     'webp-url-without-token',
                     { headers: mockHeaders },
-                );
-            });
-
-            test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is off', () => {
-                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
-                jest.spyOn(docBase, 'createContentUrlWithAuthParams').mockReturnValue('url-with-token');
-
-                docBase.prefetchPreloaderImages(mockFile);
-
-                expect(docBase.createContentUrlWithAuthParams).toHaveBeenCalled();
-                expect(stubs.getPreloadImageRequestPromises).toHaveBeenCalledWith(
-                    docBase.api,
-                    '',
-                    5,
-                    'url-with-token',
-                    {},
                 );
             });
         });

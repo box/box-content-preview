@@ -641,11 +641,29 @@ class Preview extends EventEmitter {
             // This allows the browser to download representation content
             const params = { response_content_disposition_type: 'attachment', ...queryParams };
             const downloadUrl = appendQueryParams(
-                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.getAssetPath()),
+                this.viewer.createContentUrlV2(contentUrlTemplate, this.viewer.getAssetPath()),
                 params,
             );
 
-            this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
+            this.api
+                .get(downloadUrl, { type: 'blob', headers: this.getRequestHeaders() })
+                .then(data => {
+                    const blob = data instanceof Blob ? data : new Blob([data]);
+                    const blobUrl = URL.createObjectURL(blob);
+                    const anchor = document.createElement('a');
+                    anchor.href = blobUrl;
+                    anchor.download = (this.file && this.file.name) || 'download';
+                    document.body.appendChild(anchor);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                    URL.revokeObjectURL(blobUrl);
+                })
+                .catch(error => {
+                    const code = getProp(error, 'response.data.code');
+                    const msg =
+                        code === ERROR_CODE_403_FORBIDDEN_BY_POLICY ? downloadErrorDueToPolicyMsg : downloadErrorMsg;
+                    this.ui.showNotification(msg);
+                });
 
             // Otherwise, get the content download URL of the original file and download
         } else {
@@ -721,7 +739,6 @@ class Preview extends EventEmitter {
         preload = false,
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
-        isAccessTokenHeaderEnabled = false,
     }) {
         let file;
         let loader;
@@ -762,10 +779,6 @@ class Preview extends EventEmitter {
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
             options.docFirstPagesConfig = docFirstPagesConfig;
-            options.features = {
-                ...this.options.features,
-                migrateAccessTokenToHeader: isAccessTokenHeaderEnabled,
-            };
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));

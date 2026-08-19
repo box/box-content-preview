@@ -131,7 +131,7 @@ class DashViewer extends VideoBaseViewer {
             this.filmstripStatus.destroy();
         }
 
-        // Release blob: URL allocated for the filmstrip when migrateAccessTokenToHeader is on
+        // Release blob: URL allocated for the filmstrip
         if (this.filmstripUrl && this.filmstripUrl.startsWith('blob:')) {
             URL.revokeObjectURL(this.filmstripUrl);
         }
@@ -207,12 +207,8 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                const contentUrl = this.createContentUrlV2(template, MANIFEST);
-                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
-            } else {
-                this.api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
-            }
+            const contentUrl = this.createContentUrlV2(template, MANIFEST);
+            this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
         }
     }
 
@@ -340,7 +336,7 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * A networking filter to append representation URLs with tokens
+     * Rewrites representation URIs without an access token and attaches Authorization headers.
      * Manifest type will use an asset name. Segments will not.
      *
      * @private
@@ -351,24 +347,14 @@ class DashViewer extends VideoBaseViewer {
     requestFilter(type, request) {
         const asset = type === shaka.net.NetworkingEngine.RequestType.MANIFEST ? MANIFEST : undefined;
         /* eslint-disable no-param-reassign */
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            request.uris = request.uris.map(uri => {
-                let newUri = this.createContentUrlV2(uri, asset);
-                if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
-                    newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
-                }
-                return newUri;
-            });
-            Object.assign(request.headers, this.appendAuthHeader());
-        } else {
-            request.uris = request.uris.map(uri => {
-                let newUri = this.createContentUrlWithAuthParams(uri, asset);
-                if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
-                    newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
-                }
-                return newUri;
-            });
-        }
+        request.uris = request.uris.map(uri => {
+            let newUri = this.createContentUrlV2(uri, asset);
+            if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
+                newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
+            }
+            return newUri;
+        });
+        request.headers = Object.assign(request.headers || {}, this.appendAuthHeader());
         /* eslint-enable no-param-reassign */
     }
 
@@ -969,36 +955,19 @@ class DashViewer extends VideoBaseViewer {
         const filmstripInterval = filmstrip && filmstrip.metadata && filmstrip.metadata.interval;
 
         if (filmstripInterval > 0) {
-            const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
             const useReactControls = this.useReactControls();
-            const url = useHeaders
-                ? this.createContentUrlV2(filmstrip.content.url_template)
-                : this.createContentUrlWithAuthParams(filmstrip.content.url_template);
+            const url = this.createContentUrlV2(filmstrip.content.url_template);
 
             this.filmstripInterval = filmstripInterval;
             this.filmstripStatus = this.getRepStatus(filmstrip);
-            // When useHeaders is on, the URL has no token and would 401 if rendered as <img src>.
-            // Defer setting filmstripUrl until the blob: URL is ready below.
-            this.filmstripUrl = useHeaders ? null : url;
-
-            // Legacy controls have a synchronous init path when the URL already carries a token.
-            if (!useHeaders && !useReactControls) {
-                this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstripInterval);
-                return;
-            }
+            this.filmstripUrl = null;
 
             this.filmstripStatus
                 .getPromise()
-                .then(() => (useHeaders ? this.fetchContentAsBlobUrl(url) : url))
+                .then(() => this.fetchContentAsBlobUrl(url))
                 .then(filmstripUrl => {
-                    // <img src> can't carry an Authorization header, so when the access-token has
-                    // been migrated out of the URL we expose the rep as a blob: URL instead.
-                    // If the viewer was destroyed while we were fetching, release the blob now —
-                    // destroy() can't see it because filmstripUrl was still null when it ran.
                     if (this.destroyed) {
-                        if (useHeaders) {
-                            URL.revokeObjectURL(filmstripUrl);
-                        }
+                        URL.revokeObjectURL(filmstripUrl);
                         return;
                     }
                     this.filmstripUrl = filmstripUrl;
@@ -1013,9 +982,8 @@ class DashViewer extends VideoBaseViewer {
                         );
                     }
                 })
-                // Filmstrip is a non-critical scrubbing-preview enhancement, so any failure
-                // (rep status reject, blob fetch reject) is swallowed rather than failing
-                // the whole viewer. Warn so prod 401s leave a breadcrumb in DevTools.
+                // Filmstrip is a non-critical scrubbing-preview enhancement.
+                // Warn so prod 401s leave a breadcrumb in DevTools.
                 .catch(err => {
                     console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
                 });
@@ -1038,9 +1006,7 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        const transcriptionUrl = this.featureEnabled('migrateAccessTokenToHeader')
-            ? this.createContentUrlV2(extractedText.content.url_template)
-            : this.createContentUrlWithAuthParams(extractedText.content.url_template);
+        const transcriptionUrl = this.createContentUrlV2(extractedText.content.url_template);
         this.transcriptionStatus = this.getRepStatus(extractedText);
 
         try {

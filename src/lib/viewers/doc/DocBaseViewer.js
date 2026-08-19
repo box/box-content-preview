@@ -427,14 +427,11 @@ class DocBaseViewer extends BaseViewer {
             jpegPreloadRep && this.isRepresentationReady(jpegPreloadRep) && jpegPreloadRep.content?.url_template;
         const onlyJpegRepAvailable = jpegRepReady && !pagedWebpRepReady;
 
-        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
-        const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
+        const headersOption = { headers: this.appendAuthHeader() };
 
         if (onlyJpegRepAvailable) {
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
-            const jpegUrlAuthTemplate = useHeaders
-                ? this.createContentUrlV2(jpegUrlTemplate)
-                : this.createContentUrlWithAuthParams(jpegUrlTemplate);
+            const jpegUrlAuthTemplate = this.createContentUrlV2(jpegUrlTemplate);
             const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '', headersOption);
             Promise.all(promises).then(() => {
                 this.preloaderImagesPrefetched = true;
@@ -443,9 +440,7 @@ class DocBaseViewer extends BaseViewer {
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
-            const pagedUrlAuthTemplate = useHeaders
-                ? this.createContentUrlV2(newPagedUrlTemplate)
-                : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+            const pagedUrlAuthTemplate = this.createContentUrlV2(newPagedUrlTemplate);
 
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
                 const {
@@ -525,13 +520,8 @@ class DocBaseViewer extends BaseViewer {
                 if (preloadRep && this.isRepresentationReady(preloadRep)) {
                     const { url_template: template } = preloadRep.content;
 
-                    // Prefetch as blob since preload needs to load image as a blob
-                    if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                        const contentUrl = this.createContentUrlV2(template);
-                        this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() });
-                    } else {
-                        this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
-                    }
+                    const contentUrl = this.createContentUrlV2(template);
+                    this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() });
                 }
             } else {
                 this.prefetchPreloaderImages(file);
@@ -540,12 +530,8 @@ class DocBaseViewer extends BaseViewer {
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                const contentUrl = this.createContentUrlV2(template);
-                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
-            } else {
-                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
-            }
+            const contentUrl = this.createContentUrlV2(template);
+            this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
         }
     }
 
@@ -605,11 +591,8 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const { url_template: template = '' } = preloadRep?.content || {};
-        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
-        const preloadUrl = useHeaders
-            ? this.createContentUrlV2(template)
-            : this.createContentUrlWithAuthParams(template);
-        const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
+        const preloadUrl = this.createContentUrlV2(template);
+        const headersOption = { headers: this.appendAuthHeader() };
 
         if (!this.docFirstPagesEnabled) {
             this.startPreloadTimer();
@@ -630,9 +613,7 @@ class DocBaseViewer extends BaseViewer {
                 const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
                 const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
                 const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
-                const pagedPreLoadUrl = useHeaders
-                    ? this.createContentUrlV2(newPagedUrlTemplate)
-                    : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+                const pagedPreLoadUrl = this.createContentUrlV2(newPagedUrlTemplate);
                 this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrl, pageCount, this, headersOption);
             }
         }
@@ -674,11 +655,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const template = this.options.representation.content.url_template;
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            this.pdfUrl = this.createContentUrlV2(template);
-        } else {
-            this.pdfUrl = this.createContentUrlWithAuthParams(template);
-        }
+        this.pdfUrl = this.createContentUrlV2(template);
         let jsAssets;
         let cssAssets;
         const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
@@ -1093,9 +1070,7 @@ class DocBaseViewer extends BaseViewer {
             url: pdfUrl,
         };
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            pdfDocConfig.httpHeaders = this.appendAuthHeader();
-        }
+        pdfDocConfig.httpHeaders = this.appendAuthHeader();
 
         this.pdfLoadingTask = this.pdfjsLib.getDocument(pdfDocConfig);
 
@@ -1423,11 +1398,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        const options = { type: 'blob' };
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            options.headers = this.appendAuthHeader();
-        }
-        return this.api.get(pdfUrl, options).then(blob => {
+        return this.api.get(pdfUrl, { type: 'blob', headers: this.appendAuthHeader() }).then(blob => {
             this.printBlob = blob;
         });
     }
