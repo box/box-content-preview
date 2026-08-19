@@ -20,9 +20,15 @@ export type WaveformValidationResult =
     | { ok: true; payload: NormalizedWaveformPayload }
     | { ok: false; error: WaveformError; retryable: boolean };
 
+type WaveformValidationFailure = Extract<WaveformValidationResult, { ok: false }>;
+
 const DEFAULT_PEAK_SCALE: WaveformPeakScale = 'unit';
 const DEFAULT_CHANNEL_POLICY: WaveformChannelPolicy = 'mono_max';
 const DEFAULT_ENVELOPE: WaveformEnvelope = 'peak';
+
+function fail(code: WaveformError['code'], message: string, retryable = false): WaveformValidationFailure {
+    return { ok: false, error: { code, message }, retryable };
+}
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -83,6 +89,89 @@ function asWaveformPayloadV1(raw: Record<string, unknown>): WaveformPayloadV1 | 
     };
 }
 
+function readPayloadObject(
+    raw: unknown,
+    maxPayloadBytes: number,
+): { ok: true; value: Record<string, unknown> } | WaveformValidationFailure {
+    if (raw === null || raw === undefined) {
+        return fail('INVALID_PAYLOAD', 'Payload is null or undefined');
+    }
+
+    const byteLength = payloadByteLength(raw);
+    if (byteLength > maxPayloadBytes) {
+        return fail('PAYLOAD_TOO_LARGE', `Payload size ${byteLength} exceeds limit ${maxPayloadBytes}`);
+    }
+
+    if (!isPlainObject(raw)) {
+        return fail('INVALID_PAYLOAD', 'Payload must be an object');
+    }
+
+    return { ok: true, value: raw };
+}
+
+function checkVersion(raw: Record<string, unknown>): WaveformValidationFailure | null {
+    if (raw.version === WAVEFORM_PAYLOAD_VERSION) {
+        return null;
+    }
+
+    const { version } = raw;
+    if (typeof version === 'number' && version > WAVEFORM_PAYLOAD_VERSION) {
+        return fail(
+            'UNSUPPORTED_VERSION',
+            `Unsupported waveform version ${version}; max supported is ${WAVEFORM_PAYLOAD_VERSION}`,
+        );
+    }
+
+    return fail('INVALID_PAYLOAD', 'Missing or invalid version field');
+}
+
+function checkDuration(payload: WaveformPayloadV1, expectedDurationSec?: number): WaveformValidationFailure | null {
+    if (!Number.isFinite(payload.durationSec) || payload.durationSec <= 0) {
+        return fail('INVALID_DURATION', 'durationSec must be a positive finite number');
+    }
+
+    if (
+        expectedDurationSec !== undefined &&
+        Number.isFinite(expectedDurationSec) &&
+        Math.abs(payload.durationSec - expectedDurationSec) > DURATION_MISMATCH_TOLERANCE_SEC
+    ) {
+        return fail(
+            'DURATION_MISMATCH',
+            `Payload duration ${payload.durationSec}s differs from media duration ${expectedDurationSec}s`,
+            true,
+        );
+    }
+
+    return null;
+}
+
+function normalizePeaks(
+    peaks: number[],
+    maxPeakCount: number,
+): { ok: true; peaks: Float32Array } | WaveformValidationFailure {
+    if (peaks.length === 0) {
+        return fail('EMPTY_PEAKS', 'peaks array must not be empty');
+    }
+
+    if (peaks.length > maxPeakCount) {
+        return fail('PEAK_COUNT_EXCEEDED', `peaks length ${peaks.length} exceeds max ${maxPeakCount}`);
+    }
+
+    const normalized = new Float32Array(peaks.length);
+    for (let i = 0; i < peaks.length; i += 1) {
+        const value = peaks[i];
+        if (!Number.isFinite(value)) {
+            return fail('NON_FINITE_PEAK', `Peak at index ${i} is not finite`);
+        }
+        if (value < PEAK_UNIT_MIN || value > PEAK_UNIT_MAX) {
+            return fail('PEAK_OUT_OF_RANGE', `Peak at index ${i} is outside [${PEAK_UNIT_MIN}, ${PEAK_UNIT_MAX}]`);
+        }
+        normalized[i] = value;
+    }
+
+    return { ok: true, peaks: normalized };
+}
+
 /**
  * Validates a version-1 waveform payload and returns normalized peaks for rendering.
  * Wire JSON requires version, durationSec, and peaks. sampleCount and source are ignored.
@@ -94,129 +183,29 @@ export function validateWaveformPayload(
     const maxPeakCount = options.maxPeakCount ?? MAX_PEAK_COUNT;
     const maxPayloadBytes = options.maxPayloadBytes ?? MAX_PAYLOAD_BYTES;
 
-    if (raw === null || raw === undefined) {
-        return {
-            ok: false,
-            error: { code: 'INVALID_PAYLOAD', message: 'Payload is null or undefined' },
-            retryable: false,
-        };
+    const objectResult = readPayloadObject(raw, maxPayloadBytes);
+    if (!objectResult.ok) {
+        return objectResult;
     }
 
-    const byteLength = payloadByteLength(raw);
-    if (byteLength > maxPayloadBytes) {
-        return {
-            ok: false,
-            error: {
-                code: 'PAYLOAD_TOO_LARGE',
-                message: `Payload size ${byteLength} exceeds limit ${maxPayloadBytes}`,
-            },
-            retryable: false,
-        };
+    const versionFailure = checkVersion(objectResult.value);
+    if (versionFailure) {
+        return versionFailure;
     }
 
-    if (!isPlainObject(raw)) {
-        return {
-            ok: false,
-            error: { code: 'INVALID_PAYLOAD', message: 'Payload must be an object' },
-            retryable: false,
-        };
-    }
-
-    if (raw.version !== WAVEFORM_PAYLOAD_VERSION) {
-        const { version } = raw;
-        if (typeof version === 'number' && version > WAVEFORM_PAYLOAD_VERSION) {
-            return {
-                ok: false,
-                error: {
-                    code: 'UNSUPPORTED_VERSION',
-                    message: `Unsupported waveform version ${version}; max supported is ${WAVEFORM_PAYLOAD_VERSION}`,
-                },
-                retryable: false,
-            };
-        }
-
-        return {
-            ok: false,
-            error: { code: 'INVALID_PAYLOAD', message: 'Missing or invalid version field' },
-            retryable: false,
-        };
-    }
-
-    const payload = asWaveformPayloadV1(raw);
+    const payload = asWaveformPayloadV1(objectResult.value);
     if (!payload) {
-        return {
-            ok: false,
-            error: { code: 'INVALID_PAYLOAD', message: 'Payload failed structural validation' },
-            retryable: false,
-        };
+        return fail('INVALID_PAYLOAD', 'Payload failed structural validation');
     }
 
-    if (!Number.isFinite(payload.durationSec) || payload.durationSec <= 0) {
-        return {
-            ok: false,
-            error: { code: 'INVALID_DURATION', message: 'durationSec must be a positive finite number' },
-            retryable: false,
-        };
+    const durationFailure = checkDuration(payload, options.expectedDurationSec);
+    if (durationFailure) {
+        return durationFailure;
     }
 
-    if (
-        options.expectedDurationSec !== undefined &&
-        Number.isFinite(options.expectedDurationSec) &&
-        Math.abs(payload.durationSec - options.expectedDurationSec) > DURATION_MISMATCH_TOLERANCE_SEC
-    ) {
-        return {
-            ok: false,
-            error: {
-                code: 'DURATION_MISMATCH',
-                message: `Payload duration ${payload.durationSec}s differs from media duration ${options.expectedDurationSec}s`,
-            },
-            retryable: true,
-        };
-    }
-
-    if (payload.peaks.length === 0) {
-        return {
-            ok: false,
-            error: { code: 'EMPTY_PEAKS', message: 'peaks array must not be empty' },
-            retryable: false,
-        };
-    }
-
-    if (payload.peaks.length > maxPeakCount) {
-        return {
-            ok: false,
-            error: {
-                code: 'PEAK_COUNT_EXCEEDED',
-                message: `peaks length ${payload.peaks.length} exceeds max ${maxPeakCount}`,
-            },
-            retryable: false,
-        };
-    }
-
-    const normalized = new Float32Array(payload.peaks.length);
-    for (let i = 0; i < payload.peaks.length; i += 1) {
-        const value = payload.peaks[i];
-        if (!Number.isFinite(value)) {
-            return {
-                ok: false,
-                error: {
-                    code: 'NON_FINITE_PEAK',
-                    message: `Peak at index ${i} is not finite`,
-                },
-                retryable: false,
-            };
-        }
-        if (value < PEAK_UNIT_MIN || value > PEAK_UNIT_MAX) {
-            return {
-                ok: false,
-                error: {
-                    code: 'PEAK_OUT_OF_RANGE',
-                    message: `Peak at index ${i} is outside [${PEAK_UNIT_MIN}, ${PEAK_UNIT_MAX}]`,
-                },
-                retryable: false,
-            };
-        }
-        normalized[i] = value;
+    const peaksResult = normalizePeaks(payload.peaks, maxPeakCount);
+    if (!peaksResult.ok) {
+        return peaksResult;
     }
 
     return {
@@ -224,7 +213,7 @@ export function validateWaveformPayload(
         payload: {
             version: WAVEFORM_PAYLOAD_VERSION,
             durationSec: payload.durationSec,
-            peaks: normalized,
+            peaks: peaksResult.peaks,
             peakScale: payload.peakScale ?? DEFAULT_PEAK_SCALE,
             channelPolicy: payload.channelPolicy ?? DEFAULT_CHANNEL_POLICY,
             envelope: payload.envelope ?? DEFAULT_ENVELOPE,

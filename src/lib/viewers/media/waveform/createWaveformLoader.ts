@@ -1,12 +1,13 @@
 import {
     isWaveformErrorCode,
+    NormalizedWaveformPayload,
     WaveformError,
     WaveformErrorCode,
     WaveformLoadState,
     WaveformSource,
     WaveformValidationOptions,
 } from './types';
-import { isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';
+import { isRetryableWaveformError, validateWaveformPayload, WaveformValidationResult } from './validateWaveformPayload';
 
 export type CreateWaveformLoaderOptions = WaveformValidationOptions;
 
@@ -20,6 +21,11 @@ export class WaveformLoadError extends Error {
         this.code = code;
     }
 }
+
+type LoadGeneration = {
+    id: number;
+    signal: AbortSignal;
+};
 
 function isAbortError(error: unknown): boolean {
     return (
@@ -45,6 +51,18 @@ function errorFromUnknown(error: unknown): WaveformError {
     return { code: 'LOAD_FAILED', message };
 }
 
+function failedLoadState(error: WaveformError): WaveformLoadState {
+    return {
+        status: 'failed',
+        error,
+        retryable: isRetryableWaveformError(error.code),
+    };
+}
+
+function readyLoadState(payload: NormalizedWaveformPayload): WaveformLoadState {
+    return { status: 'ready', payload };
+}
+
 /**
  * Wraps an async payload fetch with abort + stale-result suppression.
  * Playback must not depend on this completing — callers treat unavailable/failed as degrade paths.
@@ -62,77 +80,72 @@ export function createWaveformLoader(
         state = next;
     };
 
-    const load = async (): Promise<WaveformLoadState> => {
+    const settle = (next: WaveformLoadState): WaveformLoadState => {
+        setState(next);
+        return next;
+    };
+
+    const startLoad = (): LoadGeneration => {
         if (abortController) {
             abortController.abort();
         }
 
-        const currentGeneration = generation + 1;
-        generation = currentGeneration;
+        generation += 1;
         abortController = new AbortController();
-        const { signal } = abortController;
-
         setState({ status: 'pending' });
+        return { id: generation, signal: abortController.signal };
+    };
 
-        const cancelledIfStale = (): WaveformLoadState | null => {
-            if (!signal.aborted && generation === currentGeneration) {
-                return null;
-            }
-            if (generation === currentGeneration) {
-                setState({ status: 'cancelled' });
+    const cancelledIfStale = (request: LoadGeneration): WaveformLoadState | null => {
+        if (!request.signal.aborted && generation === request.id) {
+            return null;
+        }
+        if (generation === request.id) {
+            setState({ status: 'cancelled' });
+        }
+        return { status: 'cancelled' };
+    };
+
+    const settleValidation = (validation: WaveformValidationResult): WaveformLoadState => {
+        if (!validation.ok) {
+            return settle(failedLoadState(validation.error));
+        }
+        return settle(readyLoadState(validation.payload));
+    };
+
+    const settleFetchError = (error: unknown, request: LoadGeneration): WaveformLoadState => {
+        if (request.signal.aborted || generation !== request.id || isAbortError(error)) {
+            if (generation === request.id) {
+                return settle({ status: 'cancelled' });
             }
             return { status: 'cancelled' };
-        };
+        }
+        return settle(failedLoadState(errorFromUnknown(error)));
+    };
+
+    const load = async (): Promise<WaveformLoadState> => {
+        const request = startLoad();
 
         try {
-            const raw = await fetchPayload(signal);
+            const raw = await fetchPayload(request.signal);
 
-            const staleAfterFetch = cancelledIfStale();
+            const staleAfterFetch = cancelledIfStale(request);
             if (staleAfterFetch) {
                 return staleAfterFetch;
             }
 
             const validation = validateWaveformPayload(raw, options);
 
-            const staleAfterValidate = cancelledIfStale();
+            const staleAfterValidate = cancelledIfStale(request);
             if (staleAfterValidate) {
                 return staleAfterValidate;
             }
 
-            if (!validation.ok) {
-                const failed: WaveformLoadState = {
-                    status: 'failed',
-                    error: validation.error,
-                    retryable: isRetryableWaveformError(validation.error.code),
-                };
-                setState(failed);
-                return failed;
-            }
-
-            const ready: WaveformLoadState = {
-                status: 'ready',
-                payload: validation.payload,
-            };
-            setState(ready);
-            return ready;
+            return settleValidation(validation);
         } catch (error) {
-            if (signal.aborted || generation !== currentGeneration || isAbortError(error)) {
-                if (generation === currentGeneration) {
-                    setState({ status: 'cancelled' });
-                }
-                return { status: 'cancelled' };
-            }
-
-            const waveformError = errorFromUnknown(error);
-            const failed: WaveformLoadState = {
-                status: 'failed',
-                error: waveformError,
-                retryable: isRetryableWaveformError(waveformError.code),
-            };
-            setState(failed);
-            return failed;
+            return settleFetchError(error, request);
         } finally {
-            if (generation === currentGeneration) {
+            if (generation === request.id) {
                 abortController = null;
             }
         }
@@ -155,7 +168,7 @@ export function createWaveformLoader(
     };
 }
 
-/** Returns capped state when media exceeds client beta envelope before decode. */
+/** Returns capped state when media exceeds client decode size or duration limits. */
 export function createCappedWaveformState(message: string): WaveformLoadState {
     return {
         status: 'capped',
