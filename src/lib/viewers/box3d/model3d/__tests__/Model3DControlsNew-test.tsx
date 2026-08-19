@@ -60,7 +60,7 @@ describe('lib/viewers/box3d/model3d/Model3DControlsNew', () => {
             await user.click(animationClip);
             expect(onAnimationClipSelect).toHaveBeenCalledTimes(1);
 
-            await user.click(screen.getByTitle('Enter fullscreen'));
+            await user.click(screen.getByRole('button', { name: 'Enter fullscreen' }));
             expect(onFullscreenToggle).toHaveBeenCalledTimes(1);
 
             await user.click(screen.getByTitle('Toggle VR display'));

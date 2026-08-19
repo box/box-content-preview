@@ -1,6 +1,7 @@
 import React from 'react';
-import IconArrowsMaximizeMedium24 from '../icons/IconArrowsMaximizeMedium24';
-import IconArrowsMinimizeMedium24 from '../icons/IconArrowsMinimizeMedium24';
+import { IconButton } from '@box/blueprint-web';
+import ArrowsCollapse from '@box/blueprint-web-assets/icons/Fill/ArrowsCollapse';
+import ArrowsExpand from '@box/blueprint-web-assets/icons/Fill/ArrowsExpand';
 import useFullscreen from '../hooks/useFullscreen';
 import './FullscreenToggle.scss';
 
@@ -11,23 +12,21 @@ export type Props = {
 
 export default function FullscreenToggle({ onFullscreenToggle, ...rest }: Props): JSX.Element {
     const isFullscreen = useFullscreen();
-    const Icon = isFullscreen ? IconArrowsMinimizeMedium24 : IconArrowsMaximizeMedium24;
-    const title = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
+    const Icon = isFullscreen ? ArrowsCollapse : ArrowsExpand;
+    const ariaLabel = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
 
     const handleClick = ({ target }: React.MouseEvent): void => {
         onFullscreenToggle(!isFullscreen, target);
     };
 
     return (
-        <button
+        <IconButton
+            aria-label={ariaLabel}
             className="bp-FullscreenToggle"
             data-resin-target="fullscreen"
+            icon={Icon}
             onClick={handleClick}
-            title={title}
-            type="button"
             {...rest}
-        >
-            <Icon />
-        </button>
+        />
     );
 }
