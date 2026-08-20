@@ -130,14 +130,10 @@ export default class GalleryController {
         return this.galleryScale;
     }
 
-    /** V2 requires the V1 flag: parent apps target the splits independently. */
-    get isV2Enabled(): boolean {
+    /** Both gallery flags must be on: parent apps target the splits independently. */
+    get isEnhancedGalleryEnabled(): boolean {
         const { features } = this;
         return isFeatureEnabled(features, 'galleryView.enabled') && isFeatureEnabled(features, 'galleryViewV2.enabled');
-    }
-
-    get isZoomEnabled(): boolean {
-        return this.isV2Enabled;
     }
 
     canRender(pageCount: number): boolean {
@@ -328,7 +324,7 @@ export default class GalleryController {
     };
 
     private commitScale = (scale: number): boolean => {
-        if (!this.isZoomEnabled || !Number.isFinite(scale)) {
+        if (!this.isEnhancedGalleryEnabled || !Number.isFinite(scale)) {
             return false;
         }
 
@@ -390,9 +386,11 @@ export default class GalleryController {
             <GalleryGrid
                 currentPage={pdfViewer.currentPageNumber}
                 getPageRatio={this.getPageRatio}
-                isAriaGridEnabled={this.isV2Enabled}
-                isPinchZoomEnabled={this.isZoomEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')}
-                isTouchZoomEnabled={this.isZoomEnabled && this.hasTouch}
+                isAriaGridEnabled={this.isEnhancedGalleryEnabled}
+                isPinchZoomEnabled={
+                    this.isEnhancedGalleryEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')
+                }
+                isTouchZoomEnabled={this.isEnhancedGalleryEnabled && this.hasTouch}
                 onClose={this.toggle}
                 onFocusChange={this.handleFocusChange}
                 onPageNavigate={this.handleGalleryNavigate}

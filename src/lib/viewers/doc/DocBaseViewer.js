@@ -936,7 +936,7 @@ class DocBaseViewer extends BaseViewer {
                 return true;
             }
 
-            if (this.galleryController.isZoomEnabled) {
+            if (this.galleryController.isEnhancedGalleryEnabled) {
                 if (key === 'Shift++') {
                     this.galleryController.zoomIn();
                     return true;
@@ -1518,7 +1518,7 @@ class DocBaseViewer extends BaseViewer {
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
         const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
-        const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isZoomEnabled;
+        const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isEnhancedGalleryEnabled;
 
         this.controls.render(
             <DocControls
@@ -1526,7 +1526,7 @@ class DocBaseViewer extends BaseViewer {
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
-                hasGalleryZoom={this.galleryController.isZoomEnabled}
+                hasGalleryZoom={this.galleryController.isEnhancedGalleryEnabled}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
                 isGalleryOpen={this.galleryController.isOpen}

@@ -884,8 +884,8 @@ describe('GalleryGrid', () => {
             });
         });
 
-        describe('semantics', () => {
-            test('should render grid, row, and gridcell structure with row/column metadata', () => {
+        describe('ARIA roles and row/column numbers', () => {
+            test('should render grid, row, and gridcell structure with row/column numbers', () => {
                 setupGrid(3);
 
                 const grid = screen.getByRole('grid');
@@ -921,7 +921,7 @@ describe('GalleryGrid', () => {
                 expect(screen.getByLabelText('Page 1')).toHaveAttribute('tabIndex', '-1');
             });
 
-            test('should not add grid metadata when the flag is off', () => {
+            test('should not add row/column numbers when the flag is off', () => {
                 getWrapper();
 
                 const listbox = screen.getByRole('listbox');

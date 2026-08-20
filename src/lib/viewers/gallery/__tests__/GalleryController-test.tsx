@@ -498,7 +498,7 @@ describe('GalleryController', () => {
         test('should step by exactly 10% from the current value and clamp to the gallery limits', () => {
             const { controller, requestUiUpdate } = makeController();
             controller.toggle();
-            expect(controller.isZoomEnabled).toBe(true);
+            expect(controller.isEnhancedGalleryEnabled).toBe(true);
             expect(controller.scale).toBe(1);
 
             controller.zoomIn();
@@ -537,13 +537,13 @@ describe('GalleryController', () => {
         });
 
         test('should disable zoom entirely unless both gallery flags are on', () => {
-            expect(makeController({ flagOn: false, zoomFlagOn: true }).controller.isZoomEnabled).toBe(false);
+            expect(makeController({ flagOn: false, zoomFlagOn: true }).controller.isEnhancedGalleryEnabled).toBe(false);
 
             const { controller, requestUiUpdate } = makeController({ hasTouch: true, zoomFlagOn: false });
             controller.toggle();
             requestUiUpdate.mockClear();
 
-            expect(controller.isZoomEnabled).toBe(false);
+            expect(controller.isEnhancedGalleryEnabled).toBe(false);
             controller.zoomIn();
             expect(controller.scale).toBe(1);
             expect(requestUiUpdate).not.toHaveBeenCalled();
@@ -574,16 +574,19 @@ describe('GalleryController', () => {
         });
     });
 
-    describe('isV2Enabled', () => {
+    describe('isEnhancedGalleryEnabled', () => {
         test.each`
-            v1       | v2       | expected
-            ${true}  | ${true}  | ${true}
-            ${true}  | ${false} | ${false}
-            ${false} | ${true}  | ${false}
-        `('should return $expected when v1=$v1 and v2=$v2', ({ v1, v2, expected }) => {
-            const { controller } = makeController({ flagOn: v1, zoomFlagOn: v2 });
-            expect(controller.isV2Enabled).toBe(expected);
-        });
+            flagOn   | zoomFlagOn | expected
+            ${true}  | ${true}    | ${true}
+            ${true}  | ${false}   | ${false}
+            ${false} | ${true}    | ${false}
+        `(
+            'should return $expected when flagOn=$flagOn and zoomFlagOn=$zoomFlagOn',
+            ({ flagOn, zoomFlagOn, expected }) => {
+                const { controller } = makeController({ flagOn, zoomFlagOn });
+                expect(controller.isEnhancedGalleryEnabled).toBe(expected);
+            },
+        );
     });
 
     describe('handleEscape', () => {
