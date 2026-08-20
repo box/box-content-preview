@@ -17,7 +17,7 @@ import DocBaseViewer, {
 } from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
-import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/GalleryController';
+import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
 import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
@@ -1700,7 +1700,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(consumed).toBe(true);
                 });
 
-                test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'])(
+                test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', '[', ']'])(
                     'should swallow %s without paging',
                     key => {
                         const consumed = docBase.onKeydown(key, { defaultPrevented: false });

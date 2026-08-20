@@ -24,6 +24,12 @@
     align-items: start;
 }
 
+// V2 ARIA grid rows exist only for the accessibility tree: display: contents generates no
+// box, so tiles stay direct grid items of .bp-gallery-grid-inner and layout is unchanged.
+.bp-gallery-grid-row {
+    display: contents;
+}
+
 .bp-gallery-tile {
     position: relative;
     padding: 0;

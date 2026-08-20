@@ -3,22 +3,22 @@ import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import { decodeKeydown, replacePlaceholders } from '../../util';
 import HighResThumbnailStore, { HighResRenderTask } from './HighResThumbnailStore';
+import {
+    CONCURRENT_LOADS,
+    GALLERY_HIGH_RES_CONCURRENCY,
+    GALLERY_HIGH_RES_MAX_BYTES,
+    GALLERY_HIGH_RES_MAX_PAGES,
+    GALLERY_THUMB_MAX_DPR,
+    GALLERY_THUMB_MAX_TIER,
+    GALLERY_THUMB_MAX_WIDTH,
+    GALLERY_THUMB_WIDTH_TIERS,
+    GALLERY_TILE_GAP,
+    GALLERY_TILE_MIN_WIDTH,
+    SCROLL_THROTTLE_MS,
+} from './constants';
+import { getColumnIndex, getPageAbove, getPageBelow, getRowCount } from './galleryGridNavigation';
 import useGalleryPinch, { PinchDirection, PinchFocal } from './useGalleryPinch';
 import './GalleryGrid.scss';
-
-const GALLERY_THUMB_MAX_WIDTH = 440;
-const CONCURRENT_LOADS = 4;
-const SCROLL_THROTTLE_MS = 200;
-// Keep in sync with the 100% grid rule in GalleryGrid.scss
-const GALLERY_TILE_GAP = 16;
-const GALLERY_TILE_MIN_WIDTH = 220;
-const GALLERY_THUMB_WIDTH_TIERS = [GALLERY_THUMB_MAX_WIDTH, GALLERY_THUMB_MAX_WIDTH * 2, GALLERY_THUMB_MAX_WIDTH * 3];
-const GALLERY_THUMB_MAX_TIER = GALLERY_THUMB_WIDTH_TIERS[GALLERY_THUMB_WIDTH_TIERS.length - 1];
-const GALLERY_THUMB_MAX_DPR = 2;
-const GALLERY_HIGH_RES_MAX_BYTES = 64 * 1024 * 1024;
-const GALLERY_HIGH_RES_MAX_PAGES = 16;
-const GALLERY_HIGH_RES_CONCURRENCY = 2;
-const GALLERY_DEFAULT_PAGE_RATIO = 0.775;
 
 export interface GalleryThumbnail {
     init: () => Promise<unknown>;
@@ -37,6 +37,8 @@ export type Props = {
     currentPage: number;
     /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
     getPageRatio?: (pageNum: number) => number | null;
+    /** V2: swaps listbox/option semantics for an ARIA grid with 2D arrow navigation. */
+    isAriaGridEnabled?: boolean;
     isPinchZoomEnabled?: boolean;
     isTouchZoomEnabled?: boolean;
     onFocusChange?: (pageNum: number) => void;
@@ -51,19 +53,23 @@ export type Props = {
 interface TileProps {
     pageNum: number;
     isFocused: boolean;
+    ariaColIndex?: number;
     imageSrc?: string;
     onClick: (pageNum: number) => void;
     onFocus: (pageNum: number) => void;
     pageRatio?: number | null;
+    role: 'option' | 'gridcell';
 }
 
 const GalleryTile = React.memo(function GalleryTile({
     pageNum,
     isFocused,
+    ariaColIndex,
     imageSrc,
     onClick,
     onFocus,
     pageRatio,
+    role,
 }: TileProps): JSX.Element {
     const ratio = pageRatio && Number.isFinite(pageRatio) && pageRatio > 0 ? pageRatio : null;
     const tileStyle = ratio ? { aspectRatio: String(ratio) } : undefined;
@@ -73,6 +79,7 @@ const GalleryTile = React.memo(function GalleryTile({
     return (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         <div
+            aria-colindex={ariaColIndex}
             aria-label={replacePlaceholders(__('page_gallery_tile'), [String(pageNum)])}
             aria-selected={isFocused}
             className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
@@ -80,11 +87,13 @@ const GalleryTile = React.memo(function GalleryTile({
             data-resin-target="galleryTile"
             onClick={() => onClick(pageNum)}
             onFocus={() => onFocus(pageNum)}
-            role="option"
+            role={role}
             style={tileStyle}
             tabIndex={isFocused ? 0 : -1}
         >
-            <span className="bp-gallery-tile-badge">{pageNum}</span>
+            <span aria-hidden="true" className="bp-gallery-tile-badge">
+                {pageNum}
+            </span>
             {imageSrc ? (
                 <img alt="" src={imageSrc} style={contentStyle} />
             ) : (
@@ -98,6 +107,7 @@ export default function GalleryGrid({
     pageCount,
     currentPage,
     getPageRatio,
+    isAriaGridEnabled = false,
     isPinchZoomEnabled = false,
     isTouchZoomEnabled = false,
     onClose,
@@ -112,6 +122,8 @@ export default function GalleryGrid({
     const [highResImages, setHighResImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
     const [pageRatio, setPageRatio] = useState<number | null>(null);
+    // Measured from the rendered layout; drives ARIA grid metadata and 2D navigation (v2).
+    const [columnCount, setColumnCount] = useState(1);
     // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
     const anchorPageRef = useRef(currentPage);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -123,6 +135,8 @@ export default function GalleryGrid({
     const isMountedRef = useRef(true);
     const inFlightRef = useRef<Set<number>>(new Set());
     const highResStoreRef = useRef<HighResThumbnailStore | null>(null);
+    const columnCountRef = useRef(1);
+    const restoreFocusRef = useRef(false);
 
     const byDistanceFromAnchor = (a: number, b: number): number =>
         Math.abs(a - anchorPageRef.current) - Math.abs(b - anchorPageRef.current);
@@ -170,14 +184,14 @@ export default function GalleryGrid({
 
     function syncHighRes() {
         const store = highResStoreRef.current;
-        if (!store) return;
+        const { pageRatio } = thumbnail;
+        if (!store || !pageRatio) return;
 
         const width = getNeededThumbWidth();
-        const ratio = thumbnail.pageRatio || GALLERY_DEFAULT_PAGE_RATIO;
         if (width === GALLERY_THUMB_MAX_WIDTH) {
-            store.setRetained([], width, ratio);
+            store.setRetained([], width, pageRatio);
         } else if (!isProcessingRef.current) {
-            store.setRetained(getPagesNearViewport(0.5), width, ratio);
+            store.setRetained(getPagesNearViewport(0.5), width, pageRatio);
         }
     }
 
@@ -317,6 +331,41 @@ export default function GalleryGrid({
         inner.style.justifyContent = 'center';
     }, []);
 
+    // Counts tiles sharing the first row's offsetTop instead of duplicating the CSS
+    // auto-fill math, so the stylesheet stays the only source of truth for the layout.
+    // Runs after every layout mutation: mount, container resize, and zoom changes.
+    const measureColumnCount = useCallback(() => {
+        const grid = gridRef.current;
+        const inner = innerRef.current;
+        if (!isAriaGridEnabled || !grid || !inner) {
+            return;
+        }
+
+        // Without a layout box (hidden host, zero-size container), offsetTop reads 0 for every
+        // tile and the count would balloon to the page count; keep the last measured value.
+        if (!inner.offsetWidth) {
+            return;
+        }
+
+        const tiles = inner.querySelectorAll<HTMLElement>('[data-page]');
+        if (tiles.length === 0) {
+            return;
+        }
+
+        let count = 1;
+        while (count < tiles.length && tiles[count].offsetTop === tiles[0].offsetTop) {
+            count += 1;
+        }
+
+        if (count !== columnCountRef.current) {
+            // Re-chunking tiles into different rows recreates the focused tile's DOM node,
+            // which would silently drop focus to <body>; remember to restore it post-render.
+            restoreFocusRef.current = grid.contains(document.activeElement);
+            columnCountRef.current = count;
+            setColumnCount(count);
+        }
+    }, [isAriaGridEnabled]);
+
     useLayoutEffect(() => {
         const grid = gridRef.current;
         const previousScale = scaleRef.current;
@@ -327,6 +376,7 @@ export default function GalleryGrid({
 
         if (!grid || previousScale === scale) {
             applyZoomLayout();
+            measureColumnCount();
             return;
         }
 
@@ -345,7 +395,8 @@ export default function GalleryGrid({
         }
 
         handleScrollRef.current();
-    }, [applyZoomLayout, scale]);
+        measureColumnCount();
+    }, [applyZoomLayout, measureColumnCount, scale]);
 
     useEffect(() => {
         const throttledScroll = handleScrollRef.current;
@@ -419,11 +470,16 @@ export default function GalleryGrid({
 
         let isFirstObservation = true;
         const observer = new ResizeObserver(() => {
+            // The initial fire on observe() can already report a size the mount-time layout
+            // effect never saw (e.g. a container that gained its size right after mount), so
+            // always re-apply layout and re-measure; only the scroll-anchor restore is skipped
+            // on that first delivery, since there is no viewed area to preserve yet.
+            applyZoomLayout();
+            measureColumnCount();
             if (isFirstObservation) {
-                isFirstObservation = false; // ResizeObserver always fires once on observe()
+                isFirstObservation = false;
                 return;
             }
-            applyZoomLayout();
             const tile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
             if (tile) {
                 tile.scrollIntoView({ block: 'start' });
@@ -435,7 +491,7 @@ export default function GalleryGrid({
         observer.observe(grid);
 
         return () => observer.disconnect();
-    }, [applyZoomLayout]);
+    }, [applyZoomLayout, measureColumnCount]);
 
     const focusTile = useCallback((pageNum: number, options?: FocusOptions) => {
         const grid = gridRef.current;
@@ -445,6 +501,27 @@ export default function GalleryGrid({
             tile.focus(options);
         }
     }, []);
+
+    // Re-chunking on a column-count change unmounts and recreates tile DOM nodes, which drops
+    // focus to <body> when the focused tile is one of them. Two cases need it reclaimed:
+    //  - resize/fullscreen: flagged during measurement while the grid still held focus
+    //  - mount: the initial focus lands on a pre-measurement tile node, because React flushes
+    //    the pending mount effect before the sync re-render the measurement schedules
+    // Restoring focus also makes assistive tech re-announce the cell's new coordinates.
+    const committedColumnCountRef = useRef(columnCount);
+    useLayoutEffect(() => {
+        const isRechunk = committedColumnCountRef.current !== columnCount;
+        committedColumnCountRef.current = columnCount;
+        if (!isRechunk) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (restoreFocusRef.current || !active || active === document.body) {
+            restoreFocusRef.current = false;
+            focusTile(focusedPage, { preventScroll: true });
+        }
+    }, [columnCount, focusedPage, focusTile]);
 
     const handleTileFocus = useCallback(
         (pageNum: number) => {
@@ -482,8 +559,29 @@ export default function GalleryGrid({
                     event.stopPropagation();
                     onClose();
                     return;
-                // Listbox is 1-D — arrows move ±1; row-aware nav comes with v2 grid role.
-                case 'ArrowUp':
+                // V1 listbox is 1-D: every arrow moves ±1 page. The v2 ARIA grid keeps ±1 for
+                // Left/Right (wrapping across row edges, clamped at the first/last page) and
+                // moves Up/Down by one row, clamping Down to the last tile on a short final row.
+                case 'ArrowUp': {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const target = isAriaGridEnabled ? getPageAbove(focusedPage, columnCount) : focusedPage - 1;
+                    if (target !== null && target >= 1) {
+                        focusTile(target);
+                    }
+                    return;
+                }
+                case 'ArrowDown': {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const target = isAriaGridEnabled
+                        ? getPageBelow(focusedPage, columnCount, pageCount)
+                        : focusedPage + 1;
+                    if (target !== null && target <= pageCount) {
+                        focusTile(target);
+                    }
+                    return;
+                }
                 case 'ArrowLeft':
                     event.preventDefault();
                     event.stopPropagation();
@@ -491,7 +589,6 @@ export default function GalleryGrid({
                         focusTile(focusedPage - 1);
                     }
                     return;
-                case 'ArrowDown':
                 case 'ArrowRight':
                     event.preventDefault();
                     event.stopPropagation();
@@ -518,7 +615,7 @@ export default function GalleryGrid({
                 default:
             }
         },
-        [focusedPage, focusTile, onClose, onPageNavigate, pageCount],
+        [columnCount, focusedPage, focusTile, isAriaGridEnabled, onClose, onPageNavigate, pageCount],
     );
 
     const tiles = [];
@@ -526,29 +623,57 @@ export default function GalleryGrid({
         tiles.push(
             <GalleryTile
                 key={i}
+                ariaColIndex={isAriaGridEnabled ? getColumnIndex(i, columnCount) : undefined}
                 imageSrc={highResImages[i] || loadedImages[i]}
                 isFocused={i === focusedPage}
                 onClick={handleTileClick}
                 onFocus={handleTileFocus}
                 pageNum={i}
                 pageRatio={(getPageRatio && getPageRatio(i)) || pageRatio}
+                role={isAriaGridEnabled ? 'gridcell' : 'option'}
             />,
         );
+    }
+
+    // ARIA requires gridcells to live inside rows. The display: contents row wrappers add
+    // that level to the accessibility tree without generating boxes, so the tiles remain
+    // direct CSS-grid items and the visual layout is identical to the flat listbox.
+    let content: React.ReactNode = tiles;
+    if (isAriaGridEnabled) {
+        const rows = [];
+        for (let start = 0; start < tiles.length; start += columnCount) {
+            const rowIndex = start / columnCount + 1;
+            rows.push(
+                // Named with the row number so AT announces that instead of every tile in the row.
+                <div
+                    key={start}
+                    aria-label={String(rowIndex)}
+                    aria-rowindex={rowIndex}
+                    className="bp-gallery-grid-row"
+                    role="row"
+                >
+                    {tiles.slice(start, start + columnCount)}
+                </div>,
+            );
+        }
+        content = rows;
     }
 
     return (
         <div
             ref={gridRef}
+            aria-colcount={isAriaGridEnabled ? columnCount : undefined}
             aria-label={__('page_gallery')}
+            aria-rowcount={isAriaGridEnabled ? getRowCount(pageCount, columnCount) : undefined}
             className="bp-gallery-grid"
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
             onScroll={handleScroll}
-            role="listbox"
+            role={isAriaGridEnabled ? 'grid' : 'listbox'}
             tabIndex={-1}
         >
             <div ref={innerRef} className="bp-gallery-grid-inner" role="presentation">
-                {tiles}
+                {content}
             </div>
         </div>
     );

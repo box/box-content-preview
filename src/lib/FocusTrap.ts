@@ -9,6 +9,7 @@ const FOCUSABLE_ELEMENT_SELECTORS = [
     'input[type="checkbox"]',
     'select',
     '[role="option"][tabindex="0"]',
+    '[role="gridcell"][tabindex="0"]',
 ];
 const EXCLUDED_SELECTOR_ATTRIBUTES = ['disabled', 'tabindex="-1"', 'aria-disabled="true"', 'aria-hidden="true"'];
 const FOCUSABLE_ELEMENTS_SELECTOR = FOCUSABLE_ELEMENT_SELECTORS.map(element => {

@@ -1,8 +1,10 @@
-import GalleryController, {
+import {
+    GALLERY_MAX_PAGES,
     GALLERY_MAX_SCALE,
     GALLERY_MIN_SCALE,
-    GalleryControllerOptions,
-} from '../GalleryController';
+    THUMBNAILS_SIDEBAR_TRANSITION_TIME,
+} from '../constants';
+import GalleryController, { GalleryControllerOptions } from '../GalleryController';
 
 jest.mock('../../../Thumbnail', () => {
     return jest.fn().mockImplementation(() => ({
@@ -23,8 +25,6 @@ jest.mock('react-dom/client', () => ({
         return mockLastRoot;
     }),
 }));
-
-const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301;
 
 type Sidebar = { isOpen: boolean; setCurrentPage: jest.Mock };
 
@@ -153,12 +153,12 @@ describe('GalleryController', () => {
 
     describe('canRender', () => {
         test.each`
-            pages  | flag     | expected
-            ${1}   | ${true}  | ${false}
-            ${2}   | ${true}  | ${true}
-            ${200} | ${true}  | ${true}
-            ${201} | ${true}  | ${false}
-            ${50}  | ${false} | ${false}
+            pages                    | flag     | expected
+            ${1}                     | ${true}  | ${false}
+            ${2}                     | ${true}  | ${true}
+            ${GALLERY_MAX_PAGES}     | ${true}  | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false}
+            ${50}                    | ${false} | ${false}
         `('should return $expected when pages=$pages and flag=$flag', ({ pages, flag, expected }) => {
             const { controller } = makeController({ flagOn: flag });
             expect(controller.canRender(pages)).toBe(expected);
@@ -301,6 +301,7 @@ describe('GalleryController', () => {
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
+            expect(grid.props.isAriaGridEnabled).toBe(true);
             expect(grid.props.isPinchZoomEnabled).toBe(true);
             expect(grid.props.isTouchZoomEnabled).toBe(true);
             expect(grid.props.scale).toBe(1);
@@ -550,6 +551,7 @@ describe('GalleryController', () => {
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.isPinchZoomEnabled).toBe(false);
             expect(grid.props.isTouchZoomEnabled).toBe(false);
+            expect(grid.props.isAriaGridEnabled).toBe(false);
 
             grid.props.onScaleChange(1.5);
             expect(controller.scale).toBe(1);
@@ -572,6 +574,18 @@ describe('GalleryController', () => {
         });
     });
 
+    describe('isV2Enabled', () => {
+        test.each`
+            v1       | v2       | expected
+            ${true}  | ${true}  | ${true}
+            ${true}  | ${false} | ${false}
+            ${false} | ${true}  | ${false}
+        `('should return $expected when v1=$v1 and v2=$v2', ({ v1, v2, expected }) => {
+            const { controller } = makeController({ flagOn: v1, zoomFlagOn: v2 });
+            expect(controller.isV2Enabled).toBe(expected);
+        });
+    });
+
     describe('handleEscape', () => {
         test('should return false when gallery is closed', () => {
             const { controller } = makeController();
@@ -590,10 +604,10 @@ describe('GalleryController', () => {
     describe('handleArrowKey', () => {
         // Adds the selected tile to the gallery root (mounted before .bp-ControlsRoot; with no
         // controls seeded it lands as containerEl's last child).
-        function seedSelectedTile(containerEl: HTMLElement): HTMLElement {
+        function seedSelectedTile(containerEl: HTMLElement, role = 'option'): HTMLElement {
             const galleryEl = containerEl.lastElementChild as HTMLElement;
             const tile = document.createElement('div');
-            tile.setAttribute('role', 'option');
+            tile.setAttribute('role', role);
             tile.setAttribute('tabindex', '0');
             galleryEl.appendChild(tile);
             return tile;
@@ -622,7 +636,19 @@ describe('GalleryController', () => {
             expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
         });
 
-        test('should not redirect focus for non-arrow keys', () => {
+        test('should redirect into a v2 gridcell tile', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl, 'gridcell');
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
+
+            expect(document.activeElement).toBe(tile);
+        });
+
+        test('should not redirect focus for non-grid-nav keys', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
             const toggle = seedToggle(containerEl);
             controller.toggle();
@@ -632,6 +658,22 @@ describe('GalleryController', () => {
             controller.handleArrowKey('[');
 
             expect(document.activeElement).toBe(toggle);
+        });
+
+        test.each(['Home', 'End'])('should redirect %s into the selected tile', key => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl);
+            const tileKeydown = jest.fn();
+            tile.addEventListener('keydown', tileKeydown);
+
+            toggle.focus();
+            controller.handleArrowKey(key);
+
+            expect(document.activeElement).toBe(tile);
+            expect(tileKeydown).toHaveBeenCalledTimes(1);
+            expect(tileKeydown.mock.calls[0][0].key).toBe(key);
         });
 
         test('should be a no-op when the gallery is closed', () => {

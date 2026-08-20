@@ -77,8 +77,8 @@ describe('Preview Document Gallery', () => {
         openGallery();
 
         cy.getByTitle('Gallery view').should('have.attr', 'aria-pressed', 'true');
-        cy.get('.bp-gallery-grid[role="listbox"]')
-            .find('[role="option"]')
+        cy.get('.bp-gallery-grid[role="grid"]')
+            .find('[role="gridcell"]')
             .should('have.length', 2);
         cy.get('.bp-gallery-tile[data-page="1"] img').should('be.visible');
         cy.getByTitle('Next page').should('not.exist');
@@ -90,6 +90,70 @@ describe('Preview Document Gallery', () => {
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.getByTitle('Gallery view').should('have.attr', 'aria-pressed', 'false');
+    });
+
+    it('Should measure the responsive column count and clamp vertical navigation (v2)', () => {
+        // Default 1600px viewport: both pages fit side by side, so the measured grid is
+        // 2 columns x 1 row — distinguishable from the pre-measurement default of 1 column.
+        showDocumentPreview();
+        openGallery();
+
+        cy.get('.bp-gallery-grid[role="grid"]')
+            .should('have.attr', 'aria-colcount', '2')
+            .and('have.attr', 'aria-rowcount', '1');
+        cy.get('.bp-gallery-grid [role="row"]').should('have.length', 1);
+        cy.get('[role="gridcell"][aria-label="Page 1"]').should('have.attr', 'aria-colindex', '1');
+        cy.get('[role="gridcell"][aria-label="Page 2"]').should('have.attr', 'aria-colindex', '2');
+
+        // The display: contents row wrapper must not generate a box: tiles share a visual row
+        cy.get('.bp-gallery-tile[data-page="1"]').then($first => {
+            cy.get('.bp-gallery-tile[data-page="2"]').then($second => {
+                expect($first[0].getBoundingClientRect().top).to.equal($second[0].getBoundingClientRect().top);
+            });
+        });
+
+        // Single row: Down/Up are no-ops (the 1-D listbox would have moved); Right still moves ±1
+        cy.get('[role="gridcell"][aria-label="Page 1"]').type('{downArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 1');
+        cy.focused().type('{rightArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 2');
+        cy.focused().type('{upArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 2');
+    });
+
+    it('Should stack rows on a narrow viewport and navigate vertically (v2)', () => {
+        // Narrow viewport → single column → the 2-page doc stacks into 2 rows
+        cy.viewport(500, 800);
+        showDocumentPreview();
+        openGallery();
+
+        cy.get('.bp-gallery-grid[role="grid"]')
+            .should('have.attr', 'aria-colcount', '1')
+            .and('have.attr', 'aria-rowcount', '2');
+        cy.get('.bp-gallery-grid [role="row"]').should('have.length', 2);
+        cy.get('[role="gridcell"][aria-label="Page 1"]').should('have.attr', 'aria-colindex', '1');
+        cy.get('[role="gridcell"][aria-label="Page 2"]').should('have.attr', 'aria-colindex', '1');
+
+        // Down/Up move by a row; Right keeps moving ±1 page across row edges
+        cy.get('[role="gridcell"][aria-label="Page 1"]').type('{downArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 2');
+        cy.focused().type('{upArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 1');
+        cy.focused().type('{rightArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 2');
+    });
+
+    it('Should keep listbox semantics and 1D arrows when the v2 flag is off', () => {
+        showDocumentPreview({ galleryV2Enabled: false });
+        openGallery();
+
+        cy.get('.bp-gallery-grid[role="listbox"]').should('not.have.attr', 'aria-rowcount');
+        cy.get('.bp-gallery-grid[role="listbox"]')
+            .find('[role="option"]')
+            .should('have.length', 2);
+
+        cy.get('[role="option"][aria-label="Page 1"]').type('{downArrow}');
+        cy.focused().should('have.attr', 'aria-label', 'Page 2');
     });
 
     it('Should zoom the gallery independently of the document and persist across reopen', () => {
@@ -153,7 +217,7 @@ describe('Preview Document Gallery', () => {
             .should('have.text', '1 / 2');
         openGallery();
 
-        cy.get('[role="option"][aria-label="Page 2"]').click();
+        cy.get('.bp-gallery-tile[data-page="2"]').click();
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.getPreviewPage(2).should('be.visible');
@@ -164,7 +228,7 @@ describe('Preview Document Gallery', () => {
         showDocumentPreview({ targetFileId: presentationFileId });
         openGallery();
 
-        cy.get('[role="option"][aria-label="Page 2"]').click();
+        cy.get('.bp-gallery-tile[data-page="2"]').click();
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.getPreviewPage(2).should('be.visible');
@@ -180,7 +244,7 @@ describe('Preview Document Gallery', () => {
             .should('have.text', '1 / 2');
         openGallery();
 
-        cy.get('[role="option"][aria-label="Page 1"]').type('{esc}');
+        cy.get('.bp-gallery-tile[data-page="1"]').type('{esc}');
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.get('@currentPage').should('have.text', '1 / 2');
@@ -223,7 +287,7 @@ describe('Preview Document Gallery', () => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(301); // Wait for the thumbnails sidebar transition to complete
         cy.getByTestId('thumbnails-sidebar').should('not.be.visible');
-        cy.get('[role="option"][aria-label="Page 2"]').click();
+        cy.get('.bp-gallery-tile[data-page="2"]').click();
 
         cy.getPreviewPage(2).should('be.visible');
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
@@ -264,7 +328,7 @@ describe('Preview Document Gallery', () => {
 
     it('Should release previous document resources when navigating to the next file', () => {
         showGalleryWithRenderedThumbnails({ collection: [fileId, singlePageFileId] });
-        cy.get('[role="option"][aria-label="Page 1"]').type('{esc}');
+        cy.get('.bp-gallery-tile[data-page="1"]').type('{esc}');
         cy.showControls();
 
         cy.window().then(win => {

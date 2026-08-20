@@ -5,7 +5,8 @@ import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
-import GalleryController, { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/GalleryController';
+import GalleryController from '../gallery/GalleryController';
+import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -948,9 +949,9 @@ class DocBaseViewer extends BaseViewer {
             }
 
             // Swallow page-nav keys so they can't flip the doc page underneath the gallery
-            // or trigger the host's collection navigation. Arrows pressed outside the grid
-            // are redirected into it so the first press navigates the tiles.
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'].includes(key)) {
+            // or trigger the host's collection navigation. Arrows/Home/End pressed outside
+            // the grid are redirected into it so the first press navigates the tiles.
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', '[', ']'].includes(key)) {
                 this.galleryController.handleArrowKey(key);
                 return true;
             }
