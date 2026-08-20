@@ -50,7 +50,7 @@ function makeController(
         currentPage?: number;
         flagOn?: boolean;
         hasTouch?: boolean;
-        zoomFlagOn?: boolean;
+        enhancedGalleryEnabled?: boolean;
     } = {},
 ): Harness {
     const {
@@ -60,7 +60,7 @@ function makeController(
         currentPage = 1,
         flagOn = true,
         hasTouch = false,
-        zoomFlagOn = true,
+        enhancedGalleryEnabled = true,
     } = overrides;
 
     const containerEl = document.createElement('div');
@@ -85,7 +85,7 @@ function makeController(
         containerEl,
         features: {
             galleryView: { enabled: flagOn },
-            galleryViewV2: { enabled: zoomFlagOn },
+            galleryViewV2: { enabled: enhancedGalleryEnabled },
             pinchToZoom: { enabled: true },
         },
         hasTouch,
@@ -537,9 +537,11 @@ describe('GalleryController', () => {
         });
 
         test('should disable zoom entirely unless both gallery flags are on', () => {
-            expect(makeController({ flagOn: false, zoomFlagOn: true }).controller.isEnhancedGalleryEnabled).toBe(false);
+            expect(
+                makeController({ flagOn: false, enhancedGalleryEnabled: true }).controller.isEnhancedGalleryEnabled,
+            ).toBe(false);
 
-            const { controller, requestUiUpdate } = makeController({ hasTouch: true, zoomFlagOn: false });
+            const { controller, requestUiUpdate } = makeController({ hasTouch: true, enhancedGalleryEnabled: false });
             controller.toggle();
             requestUiUpdate.mockClear();
 
@@ -576,14 +578,14 @@ describe('GalleryController', () => {
 
     describe('isEnhancedGalleryEnabled', () => {
         test.each`
-            flagOn   | zoomFlagOn | expected
-            ${true}  | ${true}    | ${true}
-            ${true}  | ${false}   | ${false}
-            ${false} | ${true}    | ${false}
+            flagOn   | enhancedGalleryEnabled | expected
+            ${true}  | ${true}                | ${true}
+            ${true}  | ${false}               | ${false}
+            ${false} | ${true}                | ${false}
         `(
-            'should return $expected when flagOn=$flagOn and zoomFlagOn=$zoomFlagOn',
-            ({ flagOn, zoomFlagOn, expected }) => {
-                const { controller } = makeController({ flagOn, zoomFlagOn });
+            'should return $expected when flagOn=$flagOn and enhancedGalleryEnabled=$enhancedGalleryEnabled',
+            ({ flagOn, enhancedGalleryEnabled, expected }) => {
+                const { controller } = makeController({ flagOn, enhancedGalleryEnabled });
                 expect(controller.isEnhancedGalleryEnabled).toBe(expected);
             },
         );
