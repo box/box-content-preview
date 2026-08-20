@@ -521,6 +521,12 @@ export default function GalleryGrid({
             restoreFocusRef.current = false;
             focusTile(focusedPage, { preventScroll: true });
         }
+
+        // Re-chunk replaced the tiles the zoom/resize scroll fixup used; re-anchor on the new ones.
+        const tile = gridRef.current?.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
+        if (tile) {
+            tile.scrollIntoView({ block: 'start' });
+        }
     }, [columnCount, focusedPage, focusTile]);
 
     const handleTileFocus = useCallback(
