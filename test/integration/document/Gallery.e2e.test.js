@@ -11,7 +11,7 @@ describe('Preview Document Gallery', () => {
         collection,
         enableThumbnailsSidebar = false,
         galleryEnabled = true,
-        galleryV2Enabled = true,
+        enhancedGalleryEnabled = true,
         pinchToZoomEnabled = false,
         targetFileId = fileId,
     } = {}) => {
@@ -23,7 +23,7 @@ describe('Preview Document Gallery', () => {
                     enabled: galleryEnabled,
                 },
                 galleryViewV2: {
-                    enabled: galleryV2Enabled,
+                    enabled: enhancedGalleryEnabled,
                 },
                 pinchToZoom: {
                     enabled: pinchToZoomEnabled,
@@ -92,7 +92,7 @@ describe('Preview Document Gallery', () => {
         cy.getByTitle('Gallery view').should('have.attr', 'aria-pressed', 'false');
     });
 
-    it('Should measure the responsive column count and clamp vertical navigation (v2)', () => {
+    it('Should measure the responsive column count and clamp vertical navigation', () => {
         // Default 1600px viewport: both pages fit side by side, so the measured grid is
         // 2 columns x 1 row — distinguishable from the pre-measurement default of 1 column.
         showDocumentPreview();
@@ -121,7 +121,7 @@ describe('Preview Document Gallery', () => {
         cy.focused().should('have.attr', 'aria-label', 'Page 2');
     });
 
-    it('Should stack rows on a narrow viewport and navigate vertically (v2)', () => {
+    it('Should stack rows on a narrow viewport and navigate vertically', () => {
         // Narrow viewport → single column → the 2-page doc stacks into 2 rows
         cy.viewport(500, 800);
         showDocumentPreview();
@@ -143,8 +143,8 @@ describe('Preview Document Gallery', () => {
         cy.focused().should('have.attr', 'aria-label', 'Page 2');
     });
 
-    it('Should keep listbox semantics and 1D arrows when the v2 flag is off', () => {
-        showDocumentPreview({ galleryV2Enabled: false });
+    it('Should keep listbox semantics and 1D arrows when the enhanced gallery flag is off', () => {
+        showDocumentPreview({ enhancedGalleryEnabled: false });
         openGallery();
 
         cy.get('.bp-gallery-grid[role="listbox"]').should('not.have.attr', 'aria-rowcount');
@@ -187,8 +187,8 @@ describe('Preview Document Gallery', () => {
             });
     });
 
-    it('Should hide gallery zoom controls when the v2 flag is off', () => {
-        showDocumentPreview({ galleryV2Enabled: false });
+    it('Should hide gallery zoom controls when the enhanced gallery flag is off', () => {
+        showDocumentPreview({ enhancedGalleryEnabled: false });
         openGallery();
 
         cy.getByTitle('Zoom in').should('not.exist');

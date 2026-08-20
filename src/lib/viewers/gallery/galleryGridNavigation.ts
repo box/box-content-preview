@@ -1,6 +1,6 @@
 /**
- * Pure math for the gallery's v2 ARIA grid: pages are laid out row-major, so page p
- * (1-based) occupies row floor((p - 1) / columns) and column (p - 1) % columns.
+ * Pure math for the gallery ARIA grid: pages are laid out row-major, so page p
+ * (1-based) occupies row floor((p - 1) / columns) + 1 and column ((p - 1) % columns) + 1.
  * All indices returned here are 1-based, matching aria-rowindex / aria-colindex.
  */
 

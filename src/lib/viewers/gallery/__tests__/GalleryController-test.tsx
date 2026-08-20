@@ -639,7 +639,7 @@ describe('GalleryController', () => {
             expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
         });
 
-        test('should redirect into a v2 gridcell tile', () => {
+        test('should redirect into a gridcell tile', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
             const toggle = seedToggle(containerEl);
             controller.toggle();

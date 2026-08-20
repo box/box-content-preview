@@ -37,7 +37,7 @@ export type Props = {
     currentPage: number;
     /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
     getPageRatio?: (pageNum: number) => number | null;
-    /** V2: swaps listbox/option semantics for an ARIA grid with 2D arrow navigation. */
+    /** When true, use ARIA grid roles and 2D arrow navigation instead of listbox/option. */
     isAriaGridEnabled?: boolean;
     isPinchZoomEnabled?: boolean;
     isTouchZoomEnabled?: boolean;
@@ -122,7 +122,7 @@ export default function GalleryGrid({
     const [highResImages, setHighResImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
     const [pageRatio, setPageRatio] = useState<number | null>(null);
-    // Measured from the rendered layout; drives ARIA grid metadata and 2D navigation (v2).
+    // Measured from the rendered layout; drives ARIA grid row/column numbers and 2D navigation.
     const [columnCount, setColumnCount] = useState(1);
     // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
     const anchorPageRef = useRef(currentPage);
@@ -502,12 +502,7 @@ export default function GalleryGrid({
         }
     }, []);
 
-    // Re-chunking on a column-count change unmounts and recreates tile DOM nodes, which drops
-    // focus to <body> when the focused tile is one of them. Two cases need it reclaimed:
-    //  - resize/fullscreen: flagged during measurement while the grid still held focus
-    //  - mount: the initial focus lands on a pre-measurement tile node, because React flushes
-    //    the pending mount effect before the sync re-render the measurement schedules
-    // Restoring focus also makes assistive tech re-announce the cell's new coordinates.
+    // Re-chunk unmounts tiles and drops focus; restore it after mount and resize/fullscreen.
     const committedColumnCountRef = useRef(columnCount);
     useLayoutEffect(() => {
         const isRechunk = committedColumnCountRef.current !== columnCount;
@@ -565,9 +560,8 @@ export default function GalleryGrid({
                     event.stopPropagation();
                     onClose();
                     return;
-                // V1 listbox is 1-D: every arrow moves ±1 page. The v2 ARIA grid keeps ±1 for
-                // Left/Right (wrapping across row edges, clamped at the first/last page) and
-                // moves Up/Down by one row, clamping Down to the last tile on a short final row.
+                // Listbox: every arrow moves ±1 page. ARIA grid: Left/Right stay ±1 (across row
+                // edges, clamped at first/last page); Up/Down move one row (Down clamps on a short last row).
                 case 'ArrowUp': {
                     event.preventDefault();
                     event.stopPropagation();

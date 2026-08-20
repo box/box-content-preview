@@ -820,7 +820,7 @@ describe('GalleryGrid', () => {
         });
     });
 
-    describe('ARIA grid (v2)', () => {
+    describe('ARIA grid', () => {
         // jsdom has no layout, so geometry is mocked at the prototype level: offsetTop lays the
         // tiles out row by row from a mutable column count, and offsetWidth reports a layout box
         // only while a column count is set (the component skips measurement without one).
