@@ -1,3 +1,8 @@
+## 3.80.0 (2026-08-20)
+
+* fix(video): keep V2 fullscreen button aligned when preview layout recenters (#1749) ([74f7d07](https://github.com/box/box-content-preview/commit/74f7d07)), closes [#1749](https://github.com/box/box-content-preview/issues/1749)
+* feat(audio): audio waveform contract (#1747) ([8fe633f](https://github.com/box/box-content-preview/commit/8fe633f)), closes [#1747](https://github.com/box/box-content-preview/issues/1747)
+
 ## 3.79.0 (2026-08-19)
 
 * chore(deps): Modernize release changelog tooling (#1737) ([e46a4f1](https://github.com/box/box-content-preview/commit/e46a4f1)), closes [#1737](https://github.com/box/box-content-preview/issues/1737)
