@@ -884,6 +884,79 @@ describe('GalleryGrid', () => {
             });
         });
 
+        describe('scroll restore after re-chunk', () => {
+            // The component reads the anchor tile's getBoundingClientRect().top when it schedules
+            // a re-chunk (capture) and again after the new tile nodes commit (restore). jsdom
+            // returns all-zero rects, so feed each read from a per-page queue to simulate the
+            // tile drifting between the two reads; the last queue entry repeats.
+            const mockTileRectTops = (topsByPage: Record<string, number[]>) => {
+                jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function mockRect(
+                    this: Element,
+                ): DOMRect {
+                    const page = (this as HTMLElement).dataset?.page;
+                    const queue = page ? topsByPage[page] : undefined;
+                    let top = 0;
+                    if (queue && queue.length > 0) {
+                        top = queue.length > 1 ? (queue.shift() as number) : queue[0];
+                    }
+                    return {
+                        top,
+                        bottom: top,
+                        left: 0,
+                        right: 0,
+                        width: 0,
+                        height: 0,
+                        x: 0,
+                        y: top,
+                        toJSON: () => ({}),
+                    } as DOMRect;
+                });
+            };
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should keep the mount-time centering instead of restoring the pre-centering capture', () => {
+                // Page 3 reads 0 at the pre-centering capture, then 300 once the mount effect has
+                // centered it; the restore after the mount re-chunk must see a zero delta.
+                mockTileRectTops({ '3': [0, 300] });
+                setupGrid(3);
+
+                const grid = screen.getByRole('grid');
+                // Guard against the mount re-chunk never happening, which would make this vacuous
+                expect(grid).toHaveAttribute('aria-colcount', '3');
+                expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'center' });
+                expect(grid.scrollTop).toBe(0);
+            });
+
+            test('should restore the scroll on the first re-chunk after a single-column mount', () => {
+                // A single-column mount schedules no re-chunk, so the first one comes from a
+                // later resize and its restore must not be mistaken for the mount re-chunk
+                setupGrid(1);
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveAttribute('aria-colcount', '1');
+
+                // Anchor page 3: captured at 100, found at 250 after the new rows commit
+                mockTileRectTops({ '3': [100, 250] });
+                layoutColumns(2);
+
+                expect(grid).toHaveAttribute('aria-colcount', '2');
+                expect(grid.scrollTop).toBe(150);
+            });
+
+            test('should shift the scroll by the anchor tile drift across a later re-chunk', () => {
+                setupGrid(3);
+                const grid = screen.getByRole('grid');
+                grid.scrollTop = 400;
+
+                mockTileRectTops({ '3': [100, 250] });
+                layoutColumns(2);
+
+                expect(grid.scrollTop).toBe(550);
+            });
+        });
+
         describe('ARIA roles and row/column numbers', () => {
             test('should render grid, row, and gridcell structure with row/column numbers', () => {
                 setupGrid(3);

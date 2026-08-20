@@ -137,10 +137,9 @@ export default function GalleryGrid({
     const highResStoreRef = useRef<HighResThumbnailStore | null>(null);
     const columnCountRef = useRef(1);
     const restoreFocusRef = useRef(false);
-    // Anchor tile's viewport top captured when a re-chunk is scheduled, so the post-commit effect
-    // can restore the scroll by delta instead of snapping the anchor to the top of the viewport.
-    const rechunkAnchorTopRef = useRef<number | null>(null);
-    const isFirstRechunkRef = useRef(true);
+    // Anchor tile and its viewport top, captured together when a re-chunk is scheduled so the
+    // post-commit effect restores against the same tile even if the anchor page changes meanwhile.
+    const rechunkAnchorRef = useRef<{ page: number; top: number } | null>(null);
 
     const byDistanceFromAnchor = (a: number, b: number): number =>
         Math.abs(a - anchorPageRef.current) - Math.abs(b - anchorPageRef.current);
@@ -366,9 +365,12 @@ export default function GalleryGrid({
             // which would silently drop focus to <body>; remember to restore it post-render.
             restoreFocusRef.current = grid.contains(document.activeElement);
             // Capture where the anchor tile sits now — after any zoom/resize scroll fixups that
-            // already ran — so the post-commit effect can put it back in exactly the same place.
-            const anchorTile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`);
-            rechunkAnchorTopRef.current = anchorTile ? anchorTile.getBoundingClientRect().top : null;
+            // already ran — so the post-commit effect can restore its position.
+            const anchorPage = anchorPageRef.current;
+            const anchorTile = grid.querySelector(`[data-page="${anchorPage}"]`);
+            rechunkAnchorRef.current = anchorTile
+                ? { page: anchorPage, top: anchorTile.getBoundingClientRect().top }
+                : null;
             columnCountRef.current = count;
             setColumnCount(count);
         }
@@ -426,6 +428,12 @@ export default function GalleryGrid({
             if (tile) {
                 tile.scrollIntoView({ block: 'center' });
                 tile.focus();
+                // The mount-time measurement may have captured this tile's position before this
+                // centering ran; refresh the capture so the re-chunk restore keeps the centering.
+                const anchor = rechunkAnchorRef.current;
+                if (anchor && anchor.page === currentPage) {
+                    anchor.top = tile.getBoundingClientRect().top;
+                }
             }
         }
 
@@ -512,7 +520,8 @@ export default function GalleryGrid({
         }
     }, []);
 
-    // Re-chunk unmounts tiles and drops focus; restore it after mount and resize/fullscreen.
+    // Re-chunk recreates the tile DOM nodes, which drops focus and can shift the scroll
+    // position; restore both after the new nodes commit.
     const committedColumnCountRef = useRef(columnCount);
     useLayoutEffect(() => {
         const isRechunk = committedColumnCountRef.current !== columnCount;
@@ -527,27 +536,18 @@ export default function GalleryGrid({
             focusTile(focusedPage, { preventScroll: true });
         }
 
-        const anchorTop = rechunkAnchorTopRef.current;
-        rechunkAnchorTopRef.current = null;
+        const anchor = rechunkAnchorRef.current;
+        rechunkAnchorRef.current = null;
 
-        // Skip the mount re-chunk: the mount effect centers the current page after the
-        // measurement captured its anchor, so restoring would undo that centering.
-        if (isFirstRechunkRef.current) {
-            isFirstRechunkRef.current = false;
-            return;
-        }
-
-        // Swapping the row DOM can clamp scrollTop. Restore the anchor tile to its captured
-        // position by delta, preserving the zoom focal-point and resize fixups that already ran.
+        // Swapping the row DOM out from under the scroller can shift scrollTop. Restore the
+        // captured anchor tile to its captured viewport position by delta, preserving the mount
+        // centering and the zoom focal-point / resize fixups that already ran.
         const grid = gridRef.current;
-        const tile = grid && (grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null);
-        if (!grid || !tile) {
-            return;
-        }
-        if (anchorTop !== null) {
-            grid.scrollTop += tile.getBoundingClientRect().top - anchorTop;
-        } else {
-            tile.scrollIntoView({ block: 'start' });
+        if (grid && anchor) {
+            const tile = grid.querySelector(`[data-page="${anchor.page}"]`) as HTMLElement | null;
+            if (tile) {
+                grid.scrollTop += tile.getBoundingClientRect().top - anchor.top;
+            }
         }
     }, [columnCount, focusedPage, focusTile]);
 
