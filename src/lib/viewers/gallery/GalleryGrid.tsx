@@ -137,6 +137,10 @@ export default function GalleryGrid({
     const highResStoreRef = useRef<HighResThumbnailStore | null>(null);
     const columnCountRef = useRef(1);
     const restoreFocusRef = useRef(false);
+    // Anchor tile's viewport top captured when a re-chunk is scheduled, so the post-commit effect
+    // can restore the scroll by delta instead of snapping the anchor to the top of the viewport.
+    const rechunkAnchorTopRef = useRef<number | null>(null);
+    const isFirstRechunkRef = useRef(true);
 
     const byDistanceFromAnchor = (a: number, b: number): number =>
         Math.abs(a - anchorPageRef.current) - Math.abs(b - anchorPageRef.current);
@@ -361,6 +365,10 @@ export default function GalleryGrid({
             // Re-chunking tiles into different rows recreates the focused tile's DOM node,
             // which would silently drop focus to <body>; remember to restore it post-render.
             restoreFocusRef.current = grid.contains(document.activeElement);
+            // Capture where the anchor tile sits now — after any zoom/resize scroll fixups that
+            // already ran — so the post-commit effect can put it back in exactly the same place.
+            const anchorTile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`);
+            rechunkAnchorTopRef.current = anchorTile ? anchorTile.getBoundingClientRect().top : null;
             columnCountRef.current = count;
             setColumnCount(count);
         }
@@ -475,15 +483,17 @@ export default function GalleryGrid({
             // always re-apply layout and re-measure; only the scroll-anchor restore is skipped
             // on that first delivery, since there is no viewed area to preserve yet.
             applyZoomLayout();
-            measureColumnCount();
             if (isFirstObservation) {
                 isFirstObservation = false;
+                measureColumnCount();
                 return;
             }
             const tile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
             if (tile) {
                 tile.scrollIntoView({ block: 'start' });
             }
+            // Measure after the anchor restore so a scheduled re-chunk captures the restored position.
+            measureColumnCount();
             // A larger viewport (fullscreen enter, window resize) can reveal unloaded tiles
             // without any scroll event, so run the same catch-up the scroll handler does.
             handleScrollRef.current();
@@ -517,9 +527,26 @@ export default function GalleryGrid({
             focusTile(focusedPage, { preventScroll: true });
         }
 
-        // Re-chunk replaced the tiles the zoom/resize scroll fixup used; re-anchor on the new ones.
-        const tile = gridRef.current?.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
-        if (tile) {
+        const anchorTop = rechunkAnchorTopRef.current;
+        rechunkAnchorTopRef.current = null;
+
+        // Skip the mount re-chunk: the mount effect centers the current page after the
+        // measurement captured its anchor, so restoring would undo that centering.
+        if (isFirstRechunkRef.current) {
+            isFirstRechunkRef.current = false;
+            return;
+        }
+
+        // Swapping the row DOM can clamp scrollTop. Restore the anchor tile to its captured
+        // position by delta, preserving the zoom focal-point and resize fixups that already ran.
+        const grid = gridRef.current;
+        const tile = grid && (grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null);
+        if (!grid || !tile) {
+            return;
+        }
+        if (anchorTop !== null) {
+            grid.scrollTop += tile.getBoundingClientRect().top - anchorTop;
+        } else {
             tile.scrollIntoView({ block: 'start' });
         }
     }, [columnCount, focusedPage, focusTile]);
