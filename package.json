@@ -21,17 +21,13 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
+        "@tanstack/react-virtual": "^3.14.10",
         "pdfjs-dist": "4.3.136"
     },
     "peerDependencies": {
