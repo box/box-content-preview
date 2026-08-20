@@ -14,6 +14,7 @@ import {
     GALLERY_THUMB_MAX_WIDTH,
     GALLERY_THUMB_WIDTH_TIERS,
     GALLERY_TILE_GAP,
+    GALLERY_TILE_MIN_WIDTH,
     SCROLL_THROTTLE_MS,
     GALLERY_VIRTUAL_OVERSCAN,
 } from './constants';
@@ -47,7 +48,7 @@ export type Props = {
     currentPage: number;
     /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
     getPageRatio?: (pageNum: number) => number | null;
-    /** When true, use ARIA grid roles and 2D arrow navigation instead of listbox/option. */
+    /** Enhanced gallery: ARIA grid, 2D arrow navigation, and row virtualization. */
     isAriaGridEnabled?: boolean;
     isPinchZoomEnabled?: boolean;
     isTouchZoomEnabled?: boolean;
@@ -64,22 +65,18 @@ interface TileProps {
     pageNum: number;
     isFocused: boolean;
     ariaColIndex?: number;
-    ariaPosInSet?: number;
-    ariaSetSize?: number;
     imageSrc?: string;
     onClick: (pageNum: number) => void;
     onFocus: (pageNum: number) => void;
     pageRatio?: number | null;
     role: 'option' | 'gridcell';
-    width: number;
+    width?: number;
 }
 
 const GalleryTile = React.memo(function GalleryTile({
     pageNum,
     isFocused,
     ariaColIndex,
-    ariaPosInSet,
-    ariaSetSize,
     imageSrc,
     onClick,
     onFocus,
@@ -88,7 +85,10 @@ const GalleryTile = React.memo(function GalleryTile({
     width,
 }: TileProps): JSX.Element {
     const ratio = pageRatio && Number.isFinite(pageRatio) && pageRatio > 0 ? pageRatio : null;
-    const tileStyle = ratio ? { aspectRatio: String(ratio), width } : { width };
+    const tileStyle = {
+        ...(ratio ? { aspectRatio: String(ratio) } : undefined),
+        ...(width != null ? { width } : undefined),
+    };
     const contentStyle = ratio ? { height: '100%' } : undefined;
     const placeholderStyle = ratio ? { ...contentStyle, paddingTop: 0 } : undefined;
 
@@ -97,9 +97,7 @@ const GalleryTile = React.memo(function GalleryTile({
         <div
             aria-colindex={ariaColIndex}
             aria-label={replacePlaceholders(__('page_gallery_tile'), [String(pageNum)])}
-            aria-posinset={ariaPosInSet}
             aria-selected={isFocused}
-            aria-setsize={ariaSetSize}
             className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
             data-page={pageNum}
             data-resin-target="galleryTile"
@@ -159,6 +157,7 @@ export default function GalleryGrid({
     const pageCountRef = useRef(pageCount);
     const getPageRatioRef = useRef(getPageRatio);
     const pageRatioRef = useRef(pageRatio);
+    const isAriaGridEnabledRef = useRef(isAriaGridEnabled);
 
     loadedImagesRef.current = loadedImages;
     focusedPageRef.current = focusedPage;
@@ -166,13 +165,14 @@ export default function GalleryGrid({
     pageCountRef.current = pageCount;
     getPageRatioRef.current = getPageRatio;
     pageRatioRef.current = pageRatio;
+    isAriaGridEnabledRef.current = isAriaGridEnabled;
 
     const { columns, tileWidth } = getGalleryLayout(layoutWidth, scale);
     const columnsRef = useRef(columns);
     const tileWidthRef = useRef(tileWidth);
     const prevColumnsForFocusRef = useRef(columns);
 
-    if (prevColumnsForFocusRef.current !== columns) {
+    if (isAriaGridEnabled && prevColumnsForFocusRef.current !== columns) {
         if (gridRef.current && gridRef.current.contains(document.activeElement)) {
             pendingFocusRef.current = focusedPage;
         }
@@ -191,7 +191,8 @@ export default function GalleryGrid({
     const prevLayoutRef = useRef({ columns, tileWidth, scale });
 
     const virtualizer = useVirtualizer({
-        count: getRowCount(pageCount, columns),
+        count: isAriaGridEnabled ? getRowCount(pageCount, columns) : 0,
+        enabled: isAriaGridEnabled,
         estimateSize: (rowIndex: number) => getRowHeight(rowIndex, pageCount, columns, tileWidth, getRatio),
         gap: GALLERY_TILE_GAP,
         getScrollElement: () => gridRef.current,
@@ -206,24 +207,57 @@ export default function GalleryGrid({
             return GALLERY_THUMB_MAX_WIDTH;
         }
 
-        const neededWidth = tileWidthRef.current * Math.min(window.devicePixelRatio || 1, GALLERY_THUMB_MAX_DPR);
+        if (isAriaGridEnabledRef.current) {
+            const neededWidth = tileWidthRef.current * Math.min(window.devicePixelRatio || 1, GALLERY_THUMB_MAX_DPR);
+            return GALLERY_THUMB_WIDTH_TIERS.find(tier => tier >= neededWidth) || GALLERY_THUMB_MAX_TIER;
+        }
+
+        const tile = gridRef.current?.querySelector<HTMLElement>('[data-page]');
+        const neededWidth = (tile?.offsetWidth || 0) * Math.min(window.devicePixelRatio || 1, GALLERY_THUMB_MAX_DPR);
         return GALLERY_THUMB_WIDTH_TIERS.find(tier => tier >= neededWidth) || GALLERY_THUMB_MAX_TIER;
     }
 
     // Prioritize visible pages before spending work on the surrounding buffer.
-    function getPagesNearViewport(marginRatio: number, isEligible?: (pageNum: number) => boolean): number[] {
+    function getPagesNearViewport(
+        marginRatio: number,
+        isEligible?: (pageNum: number, tile?: HTMLElement) => boolean,
+    ): number[] {
         const grid = gridRef.current;
         if (!grid) return [];
 
-        const { visible, nearby } = collectPagesNearViewport({
-            clientHeight: grid.clientHeight,
-            columns: columnsRef.current,
-            getRatio: getRatioRef.current,
-            isEligible,
-            marginRatio,
-            pageCount: pageCountRef.current,
-            scrollTop: grid.scrollTop,
-            tileWidth: tileWidthRef.current,
+        if (isAriaGridEnabledRef.current) {
+            const { visible, nearby } = collectPagesNearViewport({
+                clientHeight: grid.clientHeight,
+                columns: columnsRef.current,
+                getRatio: getRatioRef.current,
+                isEligible,
+                marginRatio,
+                pageCount: pageCountRef.current,
+                scrollTop: grid.scrollTop,
+                tileWidth: tileWidthRef.current,
+            });
+
+            return [...visible.sort(byDistanceFromAnchor), ...nearby.sort(byDistanceFromAnchor)];
+        }
+
+        const { scrollTop, clientHeight } = grid;
+        const viewportBottom = scrollTop + clientHeight;
+        const margin = clientHeight * marginRatio;
+        const visible: number[] = [];
+        const nearby: number[] = [];
+
+        grid.querySelectorAll<HTMLElement>('[data-page]').forEach(tile => {
+            if (!tile.dataset.page) return;
+            const pageNum = parseInt(tile.dataset.page, 10);
+            if (isEligible && !isEligible(pageNum, tile)) return;
+            const tileTop = tile.offsetTop;
+            const tileBottom = tileTop + tile.offsetHeight;
+
+            if (tileBottom > scrollTop && tileTop < viewportBottom) {
+                visible.push(pageNum);
+            } else if (tileBottom > scrollTop - margin && tileTop < viewportBottom + margin) {
+                nearby.push(pageNum);
+            }
         });
 
         return [...visible.sort(byDistanceFromAnchor), ...nearby.sort(byDistanceFromAnchor)];
@@ -243,10 +277,15 @@ export default function GalleryGrid({
     }
 
     function getUnloadedNearViewport(): number[] {
-        return getPagesNearViewport(
-            3,
-            pageNum => !inFlightRef.current.has(pageNum) && !loadedImagesRef.current[pageNum],
-        );
+        return getPagesNearViewport(3, (pageNum, tile) => {
+            if (inFlightRef.current.has(pageNum)) {
+                return false;
+            }
+            if (tile) {
+                return !tile.querySelector('img');
+            }
+            return !loadedImagesRef.current[pageNum];
+        });
     }
 
     function processQueue() {
@@ -331,13 +370,26 @@ export default function GalleryGrid({
     const handleScroll = useCallback(() => {
         const grid = gridRef.current;
         if (grid) {
-            anchorPageRef.current = getAnchorPageFromScroll(
-                grid.scrollTop,
-                pageCountRef.current,
-                columnsRef.current,
-                tileWidthRef.current,
-                getRatioRef.current,
-            );
+            if (isAriaGridEnabledRef.current) {
+                anchorPageRef.current = getAnchorPageFromScroll(
+                    grid.scrollTop,
+                    pageCountRef.current,
+                    columnsRef.current,
+                    tileWidthRef.current,
+                    getRatioRef.current,
+                );
+            } else {
+                const tiles = grid.querySelectorAll<HTMLElement>('[data-page]');
+                for (let i = 0; i < tiles.length; i += 1) {
+                    if (tiles[i].offsetTop + tiles[i].offsetHeight > grid.scrollTop) {
+                        const { page } = tiles[i].dataset;
+                        if (page) {
+                            anchorPageRef.current = parseInt(page, 10);
+                        }
+                        break;
+                    }
+                }
+            }
         }
         handleScrollRef.current();
     }, []);
@@ -352,9 +404,34 @@ export default function GalleryGrid({
         scaleRef,
     });
 
+    const applyZoomLayout = useCallback(() => {
+        const inner = innerRef.current;
+        if (!inner) {
+            return;
+        }
+
+        const currentScale = scaleRef.current;
+        inner.style.setProperty('--bp-gallery-hover-scale', String(1 + 0.02 / currentScale));
+
+        if (currentScale === 1) {
+            inner.style.gridTemplateColumns = '';
+            inner.style.justifyContent = '';
+            return;
+        }
+
+        const width = inner.clientWidth;
+        const columnPitch = GALLERY_TILE_MIN_WIDTH + GALLERY_TILE_GAP;
+        const layoutColumns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
+        const baseWidth = (width - (layoutColumns - 1) * GALLERY_TILE_GAP) / layoutColumns;
+        inner.style.gridTemplateColumns = `repeat(auto-fill, ${Math.min(width, baseWidth * currentScale)}px)`;
+        inner.style.justifyContent = 'center';
+    }, []);
+
     useLayoutEffect(() => {
-        virtualizer.measure();
-    }, [columns, getRatio, pageCount, tileWidth, virtualizer]);
+        if (isAriaGridEnabled) {
+            virtualizer.measure();
+        }
+    }, [columns, getRatio, isAriaGridEnabled, pageCount, tileWidth, virtualizer]);
 
     useLayoutEffect(() => {
         const grid = gridRef.current;
@@ -364,6 +441,30 @@ export default function GalleryGrid({
 
         const focal = focalRef.current;
         focalRef.current = null;
+
+        if (!isAriaGridEnabled) {
+            if (!grid || previousScale === scale) {
+                applyZoomLayout();
+                return;
+            }
+
+            const focalTile = focal
+                ? document.elementFromPoint?.(focal.x, focal.y)?.closest<HTMLElement>('[data-page]')
+                : null;
+            const anchorTile = focalTile || grid.querySelector<HTMLElement>(`[data-page="${anchorPageRef.current}"]`);
+            const beforeRect = anchorTile && anchorTile.getBoundingClientRect();
+
+            applyZoomLayout();
+
+            if (anchorTile && beforeRect) {
+                const afterRect = anchorTile.getBoundingClientRect();
+                grid.scrollLeft += afterRect.left - beforeRect.left;
+                grid.scrollTop += afterRect.top - beforeRect.top;
+            }
+
+            handleScrollRef.current();
+            return;
+        }
 
         if (inner) {
             inner.style.setProperty('--bp-gallery-hover-scale', String(1 + 0.02 / scale));
@@ -396,7 +497,7 @@ export default function GalleryGrid({
         grid.scrollTop += nextStart - prevStart;
 
         handleScrollRef.current();
-    }, [columns, getRatio, pageCount, scale, tileWidth]);
+    }, [applyZoomLayout, columns, getRatio, isAriaGridEnabled, pageCount, scale, tileWidth]);
 
     useLayoutEffect(() => {
         const page = pendingFocusRef.current;
@@ -425,8 +526,16 @@ export default function GalleryGrid({
         });
         highResStoreRef.current = highResStore;
 
-        pendingFocusRef.current = currentPage;
-        virtualizer.scrollToIndex(getRowIndex(currentPage, columnsRef.current) - 1, { align: 'center' });
+        if (isAriaGridEnabled) {
+            pendingFocusRef.current = currentPage;
+            virtualizer.scrollToIndex(getRowIndex(currentPage, columnsRef.current) - 1, { align: 'center' });
+        } else if (gridRef.current) {
+            const tile = gridRef.current.querySelector(`[data-page="${currentPage}"]`) as HTMLElement;
+            if (tile) {
+                tile.scrollIntoView({ block: 'center' });
+                tile.focus();
+            }
+        }
 
         const initialImages: Record<number, string> = {};
         const uncachedPages: number[] = [];
@@ -478,23 +587,37 @@ export default function GalleryGrid({
 
         let isFirstObservation = true;
         const observer = new ResizeObserver(() => {
-            const width = inner.clientWidth;
-            // The initial fire on observe() can already report a size the mount-time layout
-            // effect never saw (e.g. a container that gained its size right after mount), so
-            // always adopt a positive width; only the scroll-anchor restore is skipped on that
-            // first delivery, since there is no viewed area to preserve yet.
-            if (width > 0 && width !== layoutWidthRef.current) {
-                if (grid.contains(document.activeElement)) {
-                    pendingFocusRef.current = focusedPageRef.current;
+            if (isAriaGridEnabled) {
+                const width = inner.clientWidth;
+                // The initial fire on observe() can already report a size the mount-time layout
+                // effect never saw (e.g. a container that gained its size right after mount), so
+                // always adopt a positive width; only the scroll-anchor restore is skipped on that
+                // first delivery, since there is no viewed area to preserve yet.
+                if (width > 0 && width !== layoutWidthRef.current) {
+                    if (grid.contains(document.activeElement)) {
+                        pendingFocusRef.current = focusedPageRef.current;
+                    }
+                    layoutWidthRef.current = width;
+                    setLayoutWidth(width);
                 }
-                layoutWidthRef.current = width;
-                setLayoutWidth(width);
+                if (isFirstObservation) {
+                    isFirstObservation = false;
+                    return;
+                }
+                virtualizer.scrollToIndex(getRowIndex(anchorPageRef.current, columnsRef.current) - 1, {
+                    align: 'start',
+                });
+            } else {
+                applyZoomLayout();
+                if (isFirstObservation) {
+                    isFirstObservation = false;
+                    return;
+                }
+                const tile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
+                if (tile) {
+                    tile.scrollIntoView({ block: 'start' });
+                }
             }
-            if (isFirstObservation) {
-                isFirstObservation = false;
-                return;
-            }
-            virtualizer.scrollToIndex(getRowIndex(anchorPageRef.current, columnsRef.current) - 1, { align: 'start' });
             // A larger viewport (fullscreen enter, window resize) can reveal unloaded tiles
             // without any scroll event, so run the same catch-up the scroll handler does.
             handleScrollRef.current();
@@ -502,7 +625,7 @@ export default function GalleryGrid({
         observer.observe(grid);
 
         return () => observer.disconnect();
-    }, [virtualizer]);
+    }, [applyZoomLayout, isAriaGridEnabled, virtualizer]);
 
     const focusTile = useCallback(
         (pageNum: number, options?: FocusOptions) => {
@@ -513,12 +636,15 @@ export default function GalleryGrid({
                 tile.focus(options);
                 return;
             }
+            if (!isAriaGridEnabled) {
+                return;
+            }
             pendingFocusRef.current = pageNum;
             virtualizer.scrollToIndex(getRowIndex(pageNum, columnsRef.current) - 1, {
                 align: options && options.preventScroll ? 'auto' : 'center',
             });
         },
-        [virtualizer],
+        [isAriaGridEnabled, virtualizer],
     );
 
     const handleTileFocus = useCallback(
@@ -613,43 +739,50 @@ export default function GalleryGrid({
         [columns, focusedPage, focusTile, isAriaGridEnabled, onClose, onPageNavigate, pageCount],
     );
 
-    const tileRole = isAriaGridEnabled ? 'gridcell' : 'option';
-    const virtualRows = virtualizer.getVirtualItems();
-    const rows = virtualRows.map(virtualRow => {
-        const rowIndex = virtualRow.index + 1;
-        const pages = getPagesInRow(virtualRow.index, columns, pageCount);
+    const renderTile = (pageNum: number): JSX.Element => (
+        <GalleryTile
+            key={pageNum}
+            ariaColIndex={isAriaGridEnabled ? getColumnIndex(pageNum, columns) : undefined}
+            imageSrc={highResImages[pageNum] || loadedImages[pageNum]}
+            isFocused={pageNum === focusedPage}
+            onClick={handleTileClick}
+            onFocus={handleTileFocus}
+            pageNum={pageNum}
+            pageRatio={(getPageRatio && getPageRatio(pageNum)) || pageRatio}
+            role={isAriaGridEnabled ? 'gridcell' : 'option'}
+            width={isAriaGridEnabled ? tileWidth : undefined}
+        />
+    );
 
-        return (
-            <div
-                key={virtualRow.key}
-                aria-label={isAriaGridEnabled ? String(rowIndex) : undefined}
-                aria-rowindex={isAriaGridEnabled ? rowIndex : undefined}
-                className="bp-gallery-grid-row"
-                role={isAriaGridEnabled ? 'row' : 'presentation'}
-                style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                }}
-            >
-                {pages.map(pageNum => (
-                    <GalleryTile
-                        key={pageNum}
-                        ariaColIndex={isAriaGridEnabled ? getColumnIndex(pageNum, columns) : undefined}
-                        ariaPosInSet={isAriaGridEnabled ? undefined : pageNum}
-                        ariaSetSize={isAriaGridEnabled ? undefined : pageCount}
-                        imageSrc={highResImages[pageNum] || loadedImages[pageNum]}
-                        isFocused={pageNum === focusedPage}
-                        onClick={handleTileClick}
-                        onFocus={handleTileFocus}
-                        pageNum={pageNum}
-                        pageRatio={(getPageRatio && getPageRatio(pageNum)) || pageRatio}
-                        role={tileRole}
-                        width={tileWidth}
-                    />
-                ))}
-            </div>
-        );
-    });
+    let content: React.ReactNode;
+    if (isAriaGridEnabled) {
+        content = virtualizer.getVirtualItems().map(virtualRow => {
+            const rowIndex = virtualRow.index + 1;
+            const pages = getPagesInRow(virtualRow.index, columns, pageCount);
+
+            return (
+                <div
+                    key={virtualRow.key}
+                    aria-label={String(rowIndex)}
+                    aria-rowindex={rowIndex}
+                    className="bp-gallery-grid-row"
+                    role="row"
+                    style={{
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                >
+                    {pages.map(renderTile)}
+                </div>
+            );
+        });
+    } else {
+        const tiles = [];
+        for (let i = 1; i <= pageCount; i += 1) {
+            tiles.push(renderTile(i));
+        }
+        content = tiles;
+    }
 
     return (
         <div
@@ -657,7 +790,7 @@ export default function GalleryGrid({
             aria-colcount={isAriaGridEnabled ? columns : undefined}
             aria-label={__('page_gallery')}
             aria-rowcount={isAriaGridEnabled ? getRowCount(pageCount, columns) : undefined}
-            className="bp-gallery-grid"
+            className={`bp-gallery-grid${isAriaGridEnabled ? ' bp-gallery-grid--virtualized' : ''}`}
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
             onScroll={handleScroll}
@@ -668,9 +801,9 @@ export default function GalleryGrid({
                 ref={innerRef}
                 className="bp-gallery-grid-inner"
                 role="presentation"
-                style={{ height: virtualizer.getTotalSize() }}
+                style={isAriaGridEnabled ? { height: virtualizer.getTotalSize() } : undefined}
             >
-                {rows}
+                {content}
             </div>
         </div>
     );

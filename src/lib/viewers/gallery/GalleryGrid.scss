@@ -17,11 +17,20 @@
 .bp-gallery-grid-inner {
     --bp-gallery-hover-scale: 1.02;
 
+    display: grid;
+    grid-auto-rows: min-content;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+.bp-gallery-grid--virtualized .bp-gallery-grid-inner {
+    display: block;
     position: relative;
     width: 100%;
 }
 
-.bp-gallery-grid-row {
+.bp-gallery-grid--virtualized .bp-gallery-grid-row {
     position: absolute;
     top: 0;
     left: 0;
