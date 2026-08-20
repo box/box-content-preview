@@ -230,7 +230,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         test('should defer paging and zoom shortcuts to the gallery while it is open', () => {
             doc.galleryController = {
                 isOpen: true,
-                isZoomEnabled: true,
+                isEnhancedGalleryEnabled: true,
                 handleArrowKey: jest.fn(),
                 handleEscape: jest.fn(),
                 zoomIn: jest.fn(),

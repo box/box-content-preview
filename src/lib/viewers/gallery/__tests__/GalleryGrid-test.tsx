@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GALLERY_THUMB_MAX_WIDTH, GALLERY_THUMB_WIDTH_TIERS } from '../constants';
 import GalleryGrid from '../GalleryGrid';
 
 const observeMock = jest.fn();
@@ -92,7 +93,9 @@ describe('GalleryGrid', () => {
             getWrapper();
             const allTiles = screen.getAllByRole('option');
             allTiles.forEach(tile => {
-                expect(tile.querySelector('.bp-gallery-tile-badge')).toBeInTheDocument();
+                const badge = tile.querySelector('.bp-gallery-tile-badge');
+                expect(badge).toBeInTheDocument();
+                expect(badge).toHaveAttribute('aria-hidden', 'true');
             });
         });
 
@@ -572,6 +575,7 @@ describe('GalleryGrid', () => {
                     image.src = `data:image/png;base-${pageIndex + 1}`;
                     return Promise.resolve(image);
                 }),
+                pageRatio: 1,
                 renderPageImage,
             };
             const { rerender } = getWrapper({ pageCount: 10, currentPage: 1, thumbnail });
@@ -582,7 +586,7 @@ describe('GalleryGrid', () => {
             });
             expect(thumbnail.createThumbnailImage).toHaveBeenCalledWith(0, {
                 createImgTag: true,
-                thumbMaxWidth: 440,
+                thumbMaxWidth: GALLERY_THUMB_MAX_WIDTH,
             });
             thumbnail.createThumbnailImage.mockClear();
 
@@ -592,7 +596,7 @@ describe('GalleryGrid', () => {
             rerender(<GalleryGrid {...defaultProps} currentPage={1} scale={2} thumbnail={thumbnail} />);
 
             await waitFor(() => {
-                expect(renderPageImage).toHaveBeenCalledWith(1, { thumbMaxWidth: 880 });
+                expect(renderPageImage).toHaveBeenCalledWith(1, { thumbMaxWidth: GALLERY_THUMB_WIDTH_TIERS[1] });
             });
             expect(thumbnail.createThumbnailImage).not.toHaveBeenCalled();
             expect(screen.getByLabelText('Page 1').querySelector('img')).toHaveAttribute(
@@ -607,6 +611,43 @@ describe('GalleryGrid', () => {
                     'src',
                     'data:image/png;base-1',
                 );
+            });
+        });
+
+        test('should wait for thumbnail initialization before rendering high-resolution pages', async () => {
+            let resolveInit!: (value: number) => void;
+            const initPromise = new Promise<number>(resolve => {
+                resolveInit = resolve;
+            });
+            const renderPageImage = jest.fn((pageNum: number, { thumbMaxWidth }: { thumbMaxWidth: number }) => ({
+                cancel: jest.fn(),
+                promise: Promise.resolve({
+                    dataUrl: `data:image/png;high-res-${pageNum}`,
+                    height: thumbMaxWidth,
+                    width: thumbMaxWidth,
+                }),
+            }));
+            const thumbnail = {
+                ...mockThumbnail,
+                createThumbnailImage: jest.fn().mockResolvedValue(null),
+                init: jest.fn(() => initPromise),
+                pageRatio: undefined as number | undefined,
+                renderPageImage,
+            };
+            const { rerender } = getWrapper({ pageCount: 10, currentPage: 1, thumbnail });
+            layoutGrid(500);
+            screen.getAllByRole('option').forEach(tile => {
+                Object.defineProperty(tile, 'offsetWidth', { configurable: true, value: 600 });
+            });
+
+            rerender(<GalleryGrid {...defaultProps} currentPage={1} scale={2} thumbnail={thumbnail} />);
+            expect(renderPageImage).not.toHaveBeenCalled();
+
+            thumbnail.pageRatio = 1;
+            resolveInit(100);
+
+            await waitFor(() => {
+                expect(renderPageImage).toHaveBeenCalledWith(1, { thumbMaxWidth: GALLERY_THUMB_WIDTH_TIERS[1] });
             });
         });
 
@@ -776,6 +817,357 @@ describe('GalleryGrid', () => {
             const placeholder = tile.querySelector('.bp-gallery-tile-placeholder') as HTMLElement;
             expect(tile.style.aspectRatio).toBeFalsy();
             expect(placeholder.style.paddingTop).toBe('');
+        });
+    });
+
+    describe('ARIA grid', () => {
+        // jsdom has no layout, so geometry is mocked at the prototype level: offsetTop lays the
+        // tiles out row by row from a mutable column count, and offsetWidth reports a layout box
+        // only while a column count is set (the component skips measurement without one).
+        // Prototype getters survive the tile-node recreation re-chunking causes, unlike per-node stubs.
+        let mockColumns: number | null = null;
+        const originalOffsetTop = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetTop');
+        const originalOffsetWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth');
+
+        beforeEach(() => {
+            mockColumns = null;
+            Object.defineProperty(HTMLElement.prototype, 'offsetTop', {
+                configurable: true,
+                get(this: HTMLElement): number {
+                    const page = this.dataset ? this.dataset.page : undefined;
+                    if (!page || mockColumns === null) {
+                        return 0;
+                    }
+                    return Math.floor((parseInt(page, 10) - 1) / mockColumns) * 300;
+                },
+            });
+            Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+                configurable: true,
+                get: (): number => (mockColumns === null ? 0 : 800),
+            });
+        });
+
+        afterEach(() => {
+            if (originalOffsetTop) {
+                Object.defineProperty(HTMLElement.prototype, 'offsetTop', originalOffsetTop);
+            }
+            if (originalOffsetWidth) {
+                Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth);
+            }
+        });
+
+        // Renders the default 10 pages (current page 3) laid out in the given column count;
+        // the mount-time measurement picks it up immediately.
+        const setupGrid = (columns: number, props = {}) => {
+            mockColumns = columns;
+            return getWrapper({ isAriaGridEnabled: true, ...props });
+        };
+
+        // Reflows to a new column count and fires a resize so the component re-measures.
+        const layoutColumns = (columns: number) => {
+            mockColumns = columns;
+            act(() => resizeCallback());
+        };
+
+        const focusPage = (page: number) => act(() => screen.getByLabelText(`Page ${page}`).focus());
+
+        describe('mount focus', () => {
+            // The mount-time measurement re-chunks the grid, which unmounts the tile node the
+            // mount effect focused (React flushes pending passive effects before the sync
+            // re-render a layout-effect state update schedules). Focus must be reclaimed or
+            // arrow keys go dead until the user clicks.
+            test('should keep focus on the current page tile after the mount re-measure re-chunks the grid', () => {
+                setupGrid(3);
+                // Guard against the mount re-chunk never happening, which would make this vacuous
+                expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
+                expect(screen.getByLabelText('Page 3')).toHaveFocus();
+            });
+        });
+
+        describe('scroll restore after re-chunk', () => {
+            // The component reads the anchor tile's getBoundingClientRect().top when it schedules
+            // a re-chunk (capture) and again after the new tile nodes commit (restore). jsdom
+            // returns all-zero rects, so feed each read from a per-page queue to simulate the
+            // tile drifting between the two reads; the last queue entry repeats.
+            const mockTileRectTops = (topsByPage: Record<string, number[]>) => {
+                jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function mockRect(
+                    this: Element,
+                ): DOMRect {
+                    const page = (this as HTMLElement).dataset?.page;
+                    const queue = page ? topsByPage[page] : undefined;
+                    let top = 0;
+                    if (queue && queue.length > 0) {
+                        top = queue.length > 1 ? (queue.shift() as number) : queue[0];
+                    }
+                    return {
+                        top,
+                        bottom: top,
+                        left: 0,
+                        right: 0,
+                        width: 0,
+                        height: 0,
+                        x: 0,
+                        y: top,
+                        toJSON: () => ({}),
+                    } as DOMRect;
+                });
+            };
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should keep the mount-time centering instead of restoring the pre-centering capture', () => {
+                // Page 3 reads 0 at the pre-centering capture, then 300 once the mount effect has
+                // centered it; the restore after the mount re-chunk must see a zero delta.
+                mockTileRectTops({ '3': [0, 300] });
+                setupGrid(3);
+
+                const grid = screen.getByRole('grid');
+                // Guard against the mount re-chunk never happening, which would make this vacuous
+                expect(grid).toHaveAttribute('aria-colcount', '3');
+                expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'center' });
+                expect(grid.scrollTop).toBe(0);
+            });
+
+            test('should restore the scroll on the first re-chunk after a single-column mount', () => {
+                // A single-column mount schedules no re-chunk, so the first one comes from a
+                // later resize and its restore must not be mistaken for the mount re-chunk
+                setupGrid(1);
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveAttribute('aria-colcount', '1');
+
+                // Anchor page 3: captured at 100, found at 250 after the new rows commit
+                mockTileRectTops({ '3': [100, 250] });
+                layoutColumns(2);
+
+                expect(grid).toHaveAttribute('aria-colcount', '2');
+                expect(grid.scrollTop).toBe(150);
+            });
+
+            test('should shift the scroll by the anchor tile drift across a later re-chunk', () => {
+                setupGrid(3);
+                const grid = screen.getByRole('grid');
+                grid.scrollTop = 400;
+
+                mockTileRectTops({ '3': [100, 250] });
+                layoutColumns(2);
+
+                expect(grid.scrollTop).toBe(550);
+            });
+        });
+
+        describe('ARIA roles and row/column numbers', () => {
+            test('should render grid, row, and gridcell structure with row/column numbers', () => {
+                setupGrid(3);
+
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveClass('bp-gallery-grid');
+                expect(grid).toHaveAttribute('aria-label', 'Page gallery');
+                expect(grid).toHaveAttribute('aria-rowcount', '4');
+                expect(grid).toHaveAttribute('aria-colcount', '3');
+                expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+                expect(screen.queryAllByRole('option')).toHaveLength(0);
+
+                const rows = screen.getAllByRole('row');
+                expect(rows).toHaveLength(4);
+                rows.forEach((row, index) => {
+                    expect(row).toHaveAttribute('aria-rowindex', String(index + 1));
+                    expect(row).toHaveAttribute('aria-label', String(index + 1));
+                    expect(row).toHaveClass('bp-gallery-grid-row');
+                });
+                expect(rows[0].querySelectorAll('[role="gridcell"]')).toHaveLength(3);
+                expect(rows[3].querySelectorAll('[role="gridcell"]')).toHaveLength(1);
+
+                expect(screen.getAllByRole('gridcell')).toHaveLength(10);
+                expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-colindex', '1');
+                expect(screen.getByLabelText('Page 5')).toHaveAttribute('aria-colindex', '2');
+                expect(screen.getByLabelText('Page 10')).toHaveAttribute('aria-colindex', '1');
+            });
+
+            test('should keep selection and roving tabindex semantics on gridcells', () => {
+                setupGrid(3);
+
+                expect(screen.getByLabelText('Page 3')).toHaveAttribute('aria-selected', 'true');
+                expect(screen.getByLabelText('Page 3')).toHaveAttribute('tabIndex', '0');
+                expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-selected', 'false');
+                expect(screen.getByLabelText('Page 1')).toHaveAttribute('tabIndex', '-1');
+            });
+
+            test('should not add row/column numbers when the flag is off', () => {
+                getWrapper();
+
+                const listbox = screen.getByRole('listbox');
+                expect(listbox).not.toHaveAttribute('aria-rowcount');
+                expect(listbox).not.toHaveAttribute('aria-colcount');
+                expect(screen.queryAllByRole('row')).toHaveLength(0);
+                expect(screen.getByLabelText('Page 1')).not.toHaveAttribute('aria-colindex');
+            });
+        });
+
+        describe('2D keyboard navigation', () => {
+            // Rows at 3 columns: [1 2 3] [4 5 6] [7 8 9] [10]
+            test('should move down a row on ArrowDown', async () => {
+                setupGrid(3);
+                focusPage(2);
+                await userEvent.keyboard('{ArrowDown}');
+                expect(screen.getByLabelText('Page 5')).toHaveFocus();
+            });
+
+            test('should move up a row on ArrowUp', async () => {
+                setupGrid(3);
+                focusPage(5);
+                await userEvent.keyboard('{ArrowUp}');
+                expect(screen.getByLabelText('Page 2')).toHaveFocus();
+            });
+
+            test('should not move on ArrowUp in the first row', async () => {
+                setupGrid(3);
+                focusPage(2);
+                await userEvent.keyboard('{ArrowUp}');
+                expect(screen.getByLabelText('Page 2')).toHaveFocus();
+            });
+
+            test('should not move on ArrowDown in the last row', async () => {
+                setupGrid(3);
+                focusPage(10);
+                await userEvent.keyboard('{ArrowDown}');
+                expect(screen.getByLabelText('Page 10')).toHaveFocus();
+            });
+
+            test('should clamp ArrowDown to the last tile when no cell is directly below', async () => {
+                setupGrid(3);
+                focusPage(9); // directly below would be page 12, which does not exist
+                await userEvent.keyboard('{ArrowDown}');
+                expect(screen.getByLabelText('Page 10')).toHaveFocus();
+            });
+
+            test('should not move on ArrowDown in a full last row', async () => {
+                setupGrid(2); // rows: [1 2] [3 4] [5 6] [7 8] [9 10]
+                focusPage(9);
+                await userEvent.keyboard('{ArrowDown}');
+                expect(screen.getByLabelText('Page 9')).toHaveFocus();
+            });
+
+            test('should wrap to the next row on ArrowRight at a row edge', async () => {
+                setupGrid(3);
+                focusPage(3);
+                await userEvent.keyboard('{ArrowRight}');
+                expect(screen.getByLabelText('Page 4')).toHaveFocus();
+            });
+
+            test('should wrap to the previous row on ArrowLeft at a row start', async () => {
+                setupGrid(3);
+                focusPage(4);
+                await userEvent.keyboard('{ArrowLeft}');
+                expect(screen.getByLabelText('Page 3')).toHaveFocus();
+            });
+
+            test('should not move past the last page on ArrowRight', async () => {
+                setupGrid(3);
+                focusPage(10);
+                await userEvent.keyboard('{ArrowRight}');
+                expect(screen.getByLabelText('Page 10')).toHaveFocus();
+            });
+
+            test('should not move past the first page on ArrowLeft', async () => {
+                setupGrid(3);
+                focusPage(1);
+                await userEvent.keyboard('{ArrowLeft}');
+                expect(screen.getByLabelText('Page 1')).toHaveFocus();
+            });
+
+            test('should keep Home and End jumping to the first and last page of the grid', async () => {
+                setupGrid(3);
+                focusPage(5);
+                await userEvent.keyboard('{Home}');
+                expect(screen.getByLabelText('Page 1')).toHaveFocus();
+                await userEvent.keyboard('{End}');
+                expect(screen.getByLabelText('Page 10')).toHaveFocus();
+            });
+
+            test('should call onPageNavigate on Enter', async () => {
+                const onPageNavigate = jest.fn();
+                setupGrid(3, { onPageNavigate });
+                focusPage(5);
+                await userEvent.keyboard('{Enter}');
+                expect(onPageNavigate).toHaveBeenCalledWith(5);
+            });
+
+            test('should call onClose on Escape', async () => {
+                const onClose = jest.fn();
+                setupGrid(3, { onClose });
+                focusPage(5);
+                await userEvent.keyboard('{Escape}');
+                expect(onClose).toHaveBeenCalled();
+            });
+        });
+
+        describe('responsive column changes', () => {
+            test('should update metadata and keep focus on the same page when the column count changes', async () => {
+                setupGrid(3);
+                focusPage(5);
+                await waitFor(() => expect(screen.getByLabelText('Page 5')).toHaveFocus());
+                const nodeBeforeRechunk = screen.getByLabelText('Page 5');
+
+                layoutColumns(2); // rows become [1 2] [3 4] [5 6] [7 8] [9 10]
+
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveAttribute('aria-rowcount', '5');
+                expect(grid).toHaveAttribute('aria-colcount', '2');
+                expect(screen.getAllByRole('row')).toHaveLength(5);
+                expect(screen.getByLabelText('Page 5')).toHaveAttribute('aria-colindex', '1');
+                // Prove the re-chunk actually recreated the node, so a passing focus assertion
+                // demonstrates restoration across a node swap rather than surviving focus
+                expect(screen.getByLabelText('Page 5')).not.toBe(nodeBeforeRechunk);
+                expect(screen.getByLabelText('Page 5')).toHaveFocus();
+                expect(screen.getByLabelText('Page 5')).toHaveAttribute('aria-selected', 'true');
+            });
+
+            test('should keep 2D navigation in sync with the new column count', async () => {
+                setupGrid(3);
+                focusPage(5);
+                layoutColumns(2);
+
+                await userEvent.keyboard('{ArrowDown}');
+                expect(screen.getByLabelText('Page 7')).toHaveFocus();
+            });
+
+            test('should not steal focus from outside the grid when a resize re-chunks', () => {
+                setupGrid(3);
+                const outside = document.createElement('button');
+                document.body.appendChild(outside);
+                act(() => outside.focus());
+
+                layoutColumns(2);
+
+                // The re-chunk happened, but focus stays where the user put it
+                expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '2');
+                expect(outside).toHaveFocus();
+
+                document.body.removeChild(outside);
+            });
+
+            test('should re-measure the column count when the zoom scale changes', () => {
+                const { rerender } = setupGrid(3);
+                expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
+
+                mockColumns = 2; // zoomed tiles are wider, so fewer fit per row
+                rerender(<GalleryGrid {...defaultProps} isAriaGridEnabled scale={1.5} />);
+
+                expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '2');
+                expect(screen.getAllByRole('row')).toHaveLength(5);
+            });
+
+            test('should keep the last measured column count when the grid loses its layout box', () => {
+                setupGrid(3);
+                expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
+
+                mockColumns = null; // hidden host: no layout box, offsetTop reads 0 everywhere
+                act(() => resizeCallback());
+
+                expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
+            });
         });
     });
 });

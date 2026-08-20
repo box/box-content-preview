@@ -17,7 +17,7 @@ import DocBaseViewer, {
 } from '../DocBaseViewer';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
-import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/GalleryController';
+import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
 import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
@@ -1663,7 +1663,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 beforeEach(() => {
                     docBase.galleryController = {
                         isOpen: true,
-                        isZoomEnabled: true,
+                        isEnhancedGalleryEnabled: true,
                         handleArrowKey: jest.fn(),
                         handleEscape: jest.fn().mockReturnValue(true),
                         zoomIn: jest.fn(),
@@ -1687,7 +1687,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
 
                 test('should not consume the zoom shortcuts when gallery zoom is disabled', () => {
-                    docBase.galleryController.isZoomEnabled = false;
+                    docBase.galleryController.isEnhancedGalleryEnabled = false;
 
                     expect(docBase.onKeydown('Shift++', { defaultPrevented: false })).toBe(false);
                     expect(docBase.galleryController.zoomIn).not.toBeCalled();
@@ -1700,7 +1700,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(consumed).toBe(true);
                 });
 
-                test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '[', ']'])(
+                test.each(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', '[', ']'])(
                     'should swallow %s without paging',
                     key => {
                         const consumed = docBase.onKeydown(key, { defaultPrevented: false });
@@ -2836,10 +2836,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test.each([true, false])(
                 'should route the zoom controls to the gallery scale, or the document scale, based on the zoom flag',
-                isZoomEnabled => {
+                isEnhancedGalleryEnabled => {
                     docBase.galleryController = {
                         isOpen: true,
-                        isZoomEnabled,
+                        isEnhancedGalleryEnabled,
                         canRender: jest.fn().mockReturnValue(true),
                         destroy: jest.fn(),
                         scale: 1.5,
@@ -2851,13 +2851,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.renderUI();
 
                     expect(getProps(docBase)).toMatchObject({
-                        hasGalleryZoom: isZoomEnabled,
+                        hasGalleryZoom: isEnhancedGalleryEnabled,
                         isGalleryOpen: true,
-                        maxScale: isZoomEnabled ? GALLERY_MAX_SCALE : 10,
-                        minScale: isZoomEnabled ? GALLERY_MIN_SCALE : 0.1,
-                        onZoomIn: isZoomEnabled ? docBase.galleryController.zoomIn : docBase.zoomIn,
-                        onZoomOut: isZoomEnabled ? docBase.galleryController.zoomOut : docBase.zoomOut,
-                        scale: isZoomEnabled ? 1.5 : 0.9,
+                        maxScale: isEnhancedGalleryEnabled ? GALLERY_MAX_SCALE : 10,
+                        minScale: isEnhancedGalleryEnabled ? GALLERY_MIN_SCALE : 0.1,
+                        onZoomIn: isEnhancedGalleryEnabled ? docBase.galleryController.zoomIn : docBase.zoomIn,
+                        onZoomOut: isEnhancedGalleryEnabled ? docBase.galleryController.zoomOut : docBase.zoomOut,
+                        scale: isEnhancedGalleryEnabled ? 1.5 : 0.9,
                     });
                 },
             );
