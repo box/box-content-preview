@@ -21,18 +21,14 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
-        "pdfjs-dist": "4.3.136"
+        "pdfjs-dist": "4.3.136",
+        "wavesurfer.js": "7.12.11"
     },
     "peerDependencies": {
         "@box/blueprint-web": "^14.32.1",
