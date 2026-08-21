@@ -85,6 +85,26 @@ interface TileProps {
     width?: number;
 }
 
+function collectPageRatios(pageCount: number, getRatio: (pageNum: number) => number): number[] {
+    const ratios: number[] = new Array(pageCount + 1);
+    for (let page = 1; page <= pageCount; page += 1) {
+        ratios[page] = getRatio(page);
+    }
+    return ratios;
+}
+
+function havePageRatiosChanged(prev: number[] | undefined, next: number[]): boolean {
+    if (!prev || prev.length !== next.length) {
+        return Boolean(prev);
+    }
+    for (let page = 1; page < next.length; page += 1) {
+        if (prev[page] !== next[page]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 const GalleryTile = React.memo(function GalleryTile({
     pageNum,
     isFocused,
@@ -204,6 +224,7 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
     getRatioRef.current = getRatio;
 
     const prevLayoutRef = useRef({ columns, tileWidth, scale });
+    const prevRatiosRef = useRef<number[] | undefined>(undefined);
     const hasMeasuredLayoutRef = useRef(false);
 
     const virtualizer = useVirtualizer({
@@ -549,6 +570,44 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         tileWidth,
         virtualizer,
     ]);
+
+    // getPageRatio is a stable method whose return values change as PDF.js
+    // metadata arrives, so this must run after every commit — a dep on getRatio
+    // would miss mixed-size pages. After remasure, re-anchor like zoom.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useLayoutEffect(() => {
+        if (!isAriaGridEnabled) {
+            return;
+        }
+
+        const nextRatios = collectPageRatios(pageCount, getRatio);
+        const prevRatios = prevRatiosRef.current;
+        const didRatiosChange = havePageRatiosChanged(prevRatios, nextRatios);
+        prevRatiosRef.current = nextRatios;
+
+        const grid = gridRef.current;
+        if (!didRatiosChange || !hasMeasuredLayoutRef.current || !grid || layoutWidth <= 0) {
+            return;
+        }
+
+        virtualizer.measure();
+
+        const getPrevRatio = (pageNum: number): number => {
+            const previous = prevRatios && prevRatios[pageNum];
+            return previous != null ? previous : getRatio(pageNum);
+        };
+        const page = anchorPageRef.current;
+        const prevStart = getRowStartOffset(
+            getRowIndex(page, columns) - 1,
+            pageCount,
+            columns,
+            tileWidth,
+            getPrevRatio,
+        );
+        const nextStart = getRowStartOffset(getRowIndex(page, columns) - 1, pageCount, columns, tileWidth, getRatio);
+        grid.scrollTop += nextStart - prevStart;
+        handleScrollRef.current();
+    });
 
     useLayoutEffect(() => {
         const page = pendingFocusRef.current;

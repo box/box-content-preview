@@ -1166,6 +1166,100 @@ describe('GalleryGrid', () => {
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
             });
         });
+
+        describe('page ratio remasure', () => {
+            test('should remasure row height when a per-page ratio becomes known', () => {
+                const ratios: Record<number, number | null> = {};
+                const getPageRatio = (pageNum: number): number | null => ratios[pageNum] ?? null;
+                const { rerender } = setupGrid(3, { currentPage: 1, getPageRatio, pageCount: 10 });
+                const { tileWidth } = getGalleryLayout(widthForColumns(3));
+
+                expect(parseFloat(screen.getAllByRole('row')[0].style.height)).toBeCloseTo(
+                    tileWidth / GALLERY_TILE_DEFAULT_RATIO,
+                );
+
+                ratios[2] = 0.5;
+                rerender(
+                    <GalleryGrid
+                        {...defaultProps}
+                        currentPage={1}
+                        getPageRatio={getPageRatio}
+                        isAriaGridEnabled
+                        pageCount={10}
+                    />,
+                );
+
+                expect(parseFloat(screen.getAllByRole('row')[0].style.height)).toBeCloseTo(tileWidth / 0.5);
+                expect(screen.getByLabelText('Page 2').style.aspectRatio).toBe(String(0.5));
+            });
+
+            test('should keep the anchored page in view when ratios above it change', () => {
+                const ratios: Record<number, number | null> = {};
+                const getPageRatio = (pageNum: number): number | null => ratios[pageNum] ?? null;
+                const { columns, tileWidth } = getGalleryLayout(widthForColumns(3));
+                const rowStart = (getRatio: (pageNum: number) => number): number =>
+                    getRowStartOffset(getRowIndex(7, columns) - 1, 10, columns, tileWidth, getRatio);
+
+                const { rerender } = setupGrid(3, { currentPage: 7, getPageRatio, pageCount: 10 });
+                const grid = screen.getByRole('grid');
+                Object.defineProperty(grid, 'scrollTop', {
+                    configurable: true,
+                    writable: true,
+                    value: rowStart(() => GALLERY_TILE_DEFAULT_RATIO),
+                });
+
+                ratios[1] = 0.5;
+                ratios[2] = 0.5;
+                ratios[3] = 0.5;
+                rerender(
+                    <GalleryGrid
+                        {...defaultProps}
+                        currentPage={7}
+                        getPageRatio={getPageRatio}
+                        isAriaGridEnabled
+                        pageCount={10}
+                    />,
+                );
+
+                expect(grid.scrollTop).toBe(rowStart(pageNum => ratios[pageNum] ?? GALLERY_TILE_DEFAULT_RATIO));
+                expect(screen.getByLabelText('Page 7')).toBeInTheDocument();
+            });
+
+            test('should remasure and re-anchor when the first-page ratio lands from init', async () => {
+                let resolveInit: ((value?: unknown) => void) | undefined;
+                const thumbnail = {
+                    ...mockThumbnail,
+                    pageRatio: 0.5,
+                    init: jest.fn(
+                        () =>
+                            new Promise(resolve => {
+                                resolveInit = resolve;
+                            }),
+                    ),
+                };
+                const { columns, tileWidth } = getGalleryLayout(widthForColumns(3));
+                const rowStart = (getRatio: (pageNum: number) => number): number =>
+                    getRowStartOffset(getRowIndex(7, columns) - 1, 10, columns, tileWidth, getRatio);
+
+                setupGrid(3, { currentPage: 7, pageCount: 10, thumbnail });
+                const grid = screen.getByRole('grid');
+                Object.defineProperty(grid, 'scrollTop', {
+                    configurable: true,
+                    writable: true,
+                    value: rowStart(() => GALLERY_TILE_DEFAULT_RATIO),
+                });
+
+                await act(async () => {
+                    resolveInit?.();
+                });
+
+                await waitFor(() => {
+                    expect(parseFloat(screen.getAllByRole('row')[2].style.height)).toBeCloseTo(tileWidth / 0.5);
+                });
+                expect(grid.scrollTop).toBe(rowStart(() => 0.5));
+                expect(screen.getByLabelText('Page 7')).toBeInTheDocument();
+            });
+        });
     });
 
     describe('virtualization', () => {
