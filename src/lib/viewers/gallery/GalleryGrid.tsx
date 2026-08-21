@@ -189,6 +189,7 @@ export default function GalleryGrid({
     getRatioRef.current = getRatio;
 
     const prevLayoutRef = useRef({ columns, tileWidth, scale });
+    const hasMeasuredLayoutRef = useRef(false);
 
     const virtualizer = useVirtualizer({
         count: isAriaGridEnabled ? getRowCount(pageCount, columns) : 0,
@@ -379,15 +380,11 @@ export default function GalleryGrid({
                     getRatioRef.current,
                 );
             } else {
-                const tiles = grid.querySelectorAll<HTMLElement>('[data-page]');
-                for (let i = 0; i < tiles.length; i += 1) {
-                    if (tiles[i].offsetTop + tiles[i].offsetHeight > grid.scrollTop) {
-                        const { page } = tiles[i].dataset;
-                        if (page) {
-                            anchorPageRef.current = parseInt(page, 10);
-                        }
-                        break;
-                    }
+                const tiles = Array.from(grid.querySelectorAll<HTMLElement>('[data-page]'));
+                const anchorTile = tiles.find(tile => tile.offsetTop + tile.offsetHeight > grid.scrollTop);
+                const page = anchorTile?.dataset.page;
+                if (page) {
+                    anchorPageRef.current = Number.parseInt(page, 10);
                 }
             }
         }
@@ -476,9 +473,20 @@ export default function GalleryGrid({
         }
 
         const prevLayout = prevLayoutRef.current;
+        const didColumnsOrWidthChange = prevLayout.columns !== columns || prevLayout.tileWidth !== tileWidth;
+        const didScaleChange = previousScale !== scale;
         prevLayoutRef.current = { columns, tileWidth, scale };
 
-        if (!grid || previousScale === scale) {
+        // First positive width is the initial measure, not a user resize. Skip restore
+        // so it does not fight the mount scroll to currentPage.
+        const isFirstMeasuredLayout = !hasMeasuredLayoutRef.current;
+        if (layoutWidth > 0) {
+            hasMeasuredLayoutRef.current = true;
+        }
+
+        // Restore after this commit so row indexes use the new column count. Doing
+        // this in ResizeObserver reads columnsRef before setLayoutWidth flushes.
+        if (!grid || (!didColumnsOrWidthChange && !didScaleChange) || isFirstMeasuredLayout) {
             return;
         }
 
@@ -497,14 +505,14 @@ export default function GalleryGrid({
         grid.scrollTop += nextStart - prevStart;
 
         handleScrollRef.current();
-    }, [applyZoomLayout, columns, getRatio, isAriaGridEnabled, pageCount, scale, tileWidth]);
+    }, [applyZoomLayout, columns, getRatio, isAriaGridEnabled, layoutWidth, pageCount, scale, tileWidth]);
 
     useLayoutEffect(() => {
         const page = pendingFocusRef.current;
         if (page == null) {
             return;
         }
-        const tile = gridRef.current && gridRef.current.querySelector<HTMLElement>(`[data-page="${page}"]`);
+        const tile = gridRef.current?.querySelector<HTMLElement>(`[data-page="${page}"]`);
         if (tile) {
             pendingFocusRef.current = null;
             tile.focus({ preventScroll: true });
@@ -591,8 +599,8 @@ export default function GalleryGrid({
                 const width = inner.clientWidth;
                 // The initial fire on observe() can already report a size the mount-time layout
                 // effect never saw (e.g. a container that gained its size right after mount), so
-                // always adopt a positive width; only the scroll-anchor restore is skipped on that
-                // first delivery, since there is no viewed area to preserve yet.
+                // always adopt a positive width. Scroll restore is not done here: columnsRef is
+                // still stale until setLayoutWidth commits; the layout effect restores after that.
                 if (width > 0 && width !== layoutWidthRef.current) {
                     if (grid.contains(document.activeElement)) {
                         pendingFocusRef.current = focusedPageRef.current;
@@ -604,9 +612,6 @@ export default function GalleryGrid({
                     isFirstObservation = false;
                     return;
                 }
-                virtualizer.scrollToIndex(getRowIndex(anchorPageRef.current, columnsRef.current) - 1, {
-                    align: 'start',
-                });
             } else {
                 applyZoomLayout();
                 if (isFirstObservation) {
@@ -625,7 +630,7 @@ export default function GalleryGrid({
         observer.observe(grid);
 
         return () => observer.disconnect();
-    }, [applyZoomLayout, isAriaGridEnabled, virtualizer]);
+    }, [applyZoomLayout, isAriaGridEnabled]);
 
     const focusTile = useCallback(
         (pageNum: number, options?: FocusOptions) => {

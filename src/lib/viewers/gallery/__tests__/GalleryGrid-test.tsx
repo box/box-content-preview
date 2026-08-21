@@ -4,10 +4,13 @@ import userEvent from '@testing-library/user-event';
 import {
     GALLERY_THUMB_MAX_WIDTH,
     GALLERY_THUMB_WIDTH_TIERS,
+    GALLERY_TILE_DEFAULT_RATIO,
     GALLERY_TILE_GAP,
     GALLERY_TILE_MIN_WIDTH,
 } from '../constants';
 import GalleryGrid from '../GalleryGrid';
+import { getGalleryLayout, getRowStartOffset } from '../galleryGridLayout';
+import { getRowIndex } from '../galleryGridNavigation';
 
 const observeMock = jest.fn();
 const disconnectMock = jest.fn();
@@ -1058,6 +1061,33 @@ describe('GalleryGrid', () => {
         });
 
         describe('responsive column changes', () => {
+            test('should restore the anchored page using the new column count after a resize', () => {
+                const rowStart = (page: number, columnCount: number): number => {
+                    const { columns, tileWidth } = getGalleryLayout(widthForColumns(columnCount));
+                    return getRowStartOffset(
+                        getRowIndex(page, columns) - 1,
+                        10,
+                        columns,
+                        tileWidth,
+                        () => GALLERY_TILE_DEFAULT_RATIO,
+                    );
+                };
+
+                setupGrid(3, { currentPage: 7, pageCount: 10 });
+                const grid = screen.getByRole('grid');
+                // Viewed area is page 7's row at 3 columns; resize must remap that page, not the old row index.
+                Object.defineProperty(grid, 'scrollTop', {
+                    configurable: true,
+                    writable: true,
+                    value: rowStart(7, 3),
+                });
+
+                layoutColumns(2);
+
+                expect(grid.scrollTop).toBe(rowStart(7, 2));
+                expect(grid.scrollTop).not.toBe(rowStart(7, 3));
+            });
+
             test('should update metadata and keep focus on the same page when the column count changes', async () => {
                 setupGrid(3);
                 focusPage(5);
