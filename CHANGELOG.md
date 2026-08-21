@@ -1,3 +1,7 @@
+## 3.81.0 (2026-08-21)
+
+* feat(gallery): add ARIA grid for 2D navigation (#1733) ([65fc9d6](https://github.com/box/box-content-preview/commit/65fc9d6)), closes [#1733](https://github.com/box/box-content-preview/issues/1733)
+
 ## 3.80.0 (2026-08-20)
 
 * fix(video): keep V2 fullscreen button aligned when preview layout recenters (#1749) ([74f7d07](https://github.com/box/box-content-preview/commit/74f7d07)), closes [#1749](https://github.com/box/box-content-preview/issues/1749)
