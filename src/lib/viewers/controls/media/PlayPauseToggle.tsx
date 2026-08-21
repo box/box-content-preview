@@ -12,9 +12,15 @@ export type Props = {
     isPlaying?: boolean;
     onPlayPause: (isPlaying: boolean) => void;
     movePlayback?: (forward: boolean, duration: number) => void;
+    showSkipButtons?: boolean;
 };
 
-export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePlayback = noop }: Props): JSX.Element {
+export default function PlayPauseToggle({
+    isPlaying,
+    onPlayPause = noop,
+    movePlayback = noop,
+    showSkipButtons = true,
+}: Props): JSX.Element {
     const PlayPauseIcon = isPlaying ? IconPause24 : IconPlay24;
     const title = isPlaying ? __('media_pause') : __('media_play');
     const skipForwardTitle = __('media_skip_forward');
@@ -30,14 +36,16 @@ export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePla
 
     return (
         <>
-            <MediaToggle
-                className="bp-PlayPauseToggle"
-                data-resin-target="skipBackward"
-                onClick={moveBackward}
-                title={skipBackwardTitle}
-            >
-                <IconBack24 />
-            </MediaToggle>
+            {showSkipButtons && (
+                <MediaToggle
+                    className="bp-PlayPauseToggle"
+                    data-resin-target="skipBackward"
+                    onClick={moveBackward}
+                    title={skipBackwardTitle}
+                >
+                    <IconBack24 />
+                </MediaToggle>
+            )}
 
             <MediaToggle
                 className="bp-PlayPauseToggle"
@@ -48,14 +56,16 @@ export default function PlayPauseToggle({ isPlaying, onPlayPause = noop, movePla
                 <PlayPauseIcon />
             </MediaToggle>
 
-            <MediaToggle
-                className="bp-PlayPauseToggle"
-                data-resin-target="skipForward"
-                onClick={moveForward}
-                title={skipForwardTitle}
-            >
-                <IconForward24 />
-            </MediaToggle>
+            {showSkipButtons && (
+                <MediaToggle
+                    className="bp-PlayPauseToggle"
+                    data-resin-target="skipForward"
+                    onClick={moveForward}
+                    title={skipForwardTitle}
+                >
+                    <IconForward24 />
+                </MediaToggle>
+            )}
         </>
     );
 }
