@@ -107,7 +107,7 @@
     transition: opacity 0.15s;
 }
 
-// Keep 129% in sync with GALLERY_TILE_DEFAULT_RATIO (100/129).
+// Placeholder 220:170 (height:width) → padding-top 129%. Keep in sync with GALLERY_TILE_DEFAULT_RATIO.
 .bp-gallery-tile-placeholder {
     display: block;
     width: 100%;

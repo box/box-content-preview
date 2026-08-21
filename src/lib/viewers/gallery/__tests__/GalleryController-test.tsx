@@ -153,18 +153,18 @@ describe('GalleryController', () => {
 
     describe('canRender', () => {
         test.each`
-            pages                    | flag     | v2       | expected
-            ${1}                     | ${true}  | ${true}  | ${false}
-            ${2}                     | ${true}  | ${true}  | ${true}
-            ${GALLERY_MAX_PAGES}     | ${true}  | ${true}  | ${true}
-            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${true}  | ${true}
-            ${GALLERY_MAX_PAGES}     | ${true}  | ${false} | ${true}
-            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false} | ${false}
-            ${50}                    | ${false} | ${true}  | ${false}
+            pages                    | flag     | enhancedGallery | expected
+            ${1}                     | ${true}  | ${true}         | ${false}
+            ${2}                     | ${true}  | ${true}         | ${true}
+            ${GALLERY_MAX_PAGES}     | ${true}  | ${true}         | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${true}         | ${true}
+            ${GALLERY_MAX_PAGES}     | ${true}  | ${false}        | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false}        | ${false}
+            ${50}                    | ${false} | ${true}         | ${false}
         `(
-            'should return $expected when pages=$pages, galleryView=$flag, galleryViewV2=$v2',
-            ({ pages, flag, v2, expected }) => {
-                const { controller } = makeController({ flagOn: flag, enhancedGalleryEnabled: v2 });
+            'should return $expected when pages=$pages, galleryView=$flag, enhancedGallery=$enhancedGallery',
+            ({ pages, flag, enhancedGallery, expected }) => {
+                const { controller } = makeController({ flagOn: flag, enhancedGalleryEnabled: enhancedGallery });
                 expect(controller.canRender(pages)).toBe(expected);
             },
         );

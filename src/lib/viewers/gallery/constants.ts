@@ -5,7 +5,7 @@ export const SCROLL_THROTTLE_MS = 200;
 // Keep in sync with GalleryGrid.scss row gap / min tile width.
 export const GALLERY_TILE_GAP = 16;
 export const GALLERY_TILE_MIN_WIDTH = 220;
-// Matches .bp-gallery-tile-placeholder padding-top: 129% (width:height).
+// Placeholder width:height. 220:170 (height:width) → padding-top 129% in GalleryGrid.scss.
 export const GALLERY_TILE_DEFAULT_RATIO = 100 / 129;
 export const GALLERY_VIRTUAL_OVERSCAN = 3;
 
@@ -21,7 +21,7 @@ export const GALLERY_HIGH_RES_MAX_PAGES = 16;
 export const GALLERY_HIGH_RES_CONCURRENCY = 2;
 
 // Gallery availability and zoom limits.
-// Hide the gallery toggle for files above this page count when v2 is off.
+// Hide the gallery toggle for files above this page count when enhanced gallery is off.
 // Virtualized enhanced gallery has no upper bound.
 export const GALLERY_MAX_PAGES = 200;
 export const GALLERY_MAX_SCALE = 3;
