@@ -477,16 +477,23 @@ export default function GalleryGrid({
         const didScaleChange = previousScale !== scale;
         prevLayoutRef.current = { columns, tileWidth, scale };
 
-        // First positive width is the initial measure, not a user resize. Skip restore
-        // so it does not fight the mount scroll to currentPage.
-        const isFirstMeasuredLayout = !hasMeasuredLayoutRef.current;
-        if (layoutWidth > 0) {
+        // Do not scrollToIndex until layoutWidth > 0: getGalleryLayout(0) is 1 column,
+        // and TanStack will clamp that oversized index to the last row.
+        if (!grid || layoutWidth <= 0) {
+            return;
+        }
+
+        if (!hasMeasuredLayoutRef.current) {
             hasMeasuredLayoutRef.current = true;
+            pendingFocusRef.current = currentPage;
+            virtualizer.scrollToIndex(getRowIndex(currentPage, columns) - 1, { align: 'center' });
+            handleScrollRef.current();
+            return;
         }
 
         // Restore after this commit so row indexes use the new column count. Doing
         // this in ResizeObserver reads columnsRef before setLayoutWidth flushes.
-        if (!grid || (!didColumnsOrWidthChange && !didScaleChange) || isFirstMeasuredLayout) {
+        if (!didColumnsOrWidthChange && !didScaleChange) {
             return;
         }
 
@@ -505,7 +512,18 @@ export default function GalleryGrid({
         grid.scrollTop += nextStart - prevStart;
 
         handleScrollRef.current();
-    }, [applyZoomLayout, columns, getRatio, isAriaGridEnabled, layoutWidth, pageCount, scale, tileWidth]);
+    }, [
+        applyZoomLayout,
+        columns,
+        currentPage,
+        getRatio,
+        isAriaGridEnabled,
+        layoutWidth,
+        pageCount,
+        scale,
+        tileWidth,
+        virtualizer,
+    ]);
 
     useLayoutEffect(() => {
         const page = pendingFocusRef.current;
@@ -536,7 +554,6 @@ export default function GalleryGrid({
 
         if (isAriaGridEnabled) {
             pendingFocusRef.current = currentPage;
-            virtualizer.scrollToIndex(getRowIndex(currentPage, columnsRef.current) - 1, { align: 'center' });
         } else if (gridRef.current) {
             const tile = gridRef.current.querySelector(`[data-page="${currentPage}"]`) as HTMLElement;
             if (tile) {

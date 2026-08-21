@@ -912,6 +912,20 @@ describe('GalleryGrid', () => {
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
                 expect(screen.getByLabelText('Page 3')).toHaveFocus();
             });
+
+            test('should center the current page after the first positive layout width', async () => {
+                setViewport(widthForColumns(3), 400);
+                getWrapper({ isAriaGridEnabled: true, currentPage: 40, pageCount: 80 });
+
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveAttribute('aria-colcount', '3');
+                fireEvent.scroll(grid);
+                await waitFor(() => {
+                    expect(screen.getByLabelText('Page 40')).toBeInTheDocument();
+                });
+                expect(screen.getByLabelText('Page 40')).toHaveFocus();
+                expect(screen.queryByLabelText('Page 80')).not.toBeInTheDocument();
+            });
         });
 
         describe('ARIA roles and row/column numbers', () => {
