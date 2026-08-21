@@ -33,36 +33,16 @@ function leftPercent(timeSec: number, durationSec: number): string {
     return `${progress * 100}%`;
 }
 
-function fillWidth(container: HTMLElement | null): number {
-    const width = container ? container.clientWidth : 0;
+function fillWidth(widthCssPx: number): number {
     const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-    return width * pixelRatio;
+    return widthCssPx * pixelRatio;
 }
 
-type WaveSurferRenderer = {
-    render?: (data: unknown) => void;
-};
-
 function applyPeaks(wavesurfer: WaveSurfer, peaks: ArrayLike<number>, durationSec: number): void {
-    const channelData = toChannels(peaks);
-    if (wavesurfer.setOptions) {
-        wavesurfer.setOptions({
-            duration: durationSec,
-            peaks: channelData,
-        });
-    }
-
-    const decoded = wavesurfer.getDecodedData ? wavesurfer.getDecodedData() : null;
-    // Private wavesurfer renderer (7.12.11): force a redraw after setOptions(peaks).
-    const { renderer } = (wavesurfer as unknown) as { renderer?: WaveSurferRenderer };
-    if (decoded && renderer && renderer.render) {
-        renderer.render(decoded);
+    if (!wavesurfer.load) {
         return;
     }
-
-    if (wavesurfer.load) {
-        wavesurfer.load('', channelData, durationSec);
-    }
+    wavesurfer.load('', toChannels(peaks), durationSec);
 }
 
 /**
@@ -96,6 +76,7 @@ export default function WaveformView({
     durationSecRef.current = durationSec;
 
     const [hoverProgress, setHoverProgress] = useState<number | null>(null);
+    const [canvasWidthPx, setCanvasWidthPx] = useState(0);
     const bufferProgress = getBufferedProgress(bufferedRange, durationSec);
 
     const updatePlayheadPosition = useCallback((timeSec: number): void => {
@@ -155,6 +136,23 @@ export default function WaveformView({
             displayedPeaksRef.current = null;
         };
     }, [height]);
+
+    useLayoutEffect(() => {
+        const el = containerRef.current;
+        if (!el) {
+            return undefined;
+        }
+
+        setCanvasWidthPx(el.clientWidth);
+
+        const observer = new ResizeObserver(entries => {
+            entries.forEach(entry => {
+                setCanvasWidthPx(entry.contentRect.width);
+            });
+        });
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     useEffect(() => {
         const wavesurfer = wavesurferRef.current;
@@ -260,11 +258,11 @@ export default function WaveformView({
 
         const fills = getWaveformFills({ bufferProgress, hoverProgress });
         wavesurfer.setOptions({
-            progressColor: toCanvasFill(fills.progressColor, fillWidth(containerRef.current)),
-            waveColor: toCanvasFill(fills.waveColor, fillWidth(containerRef.current)),
+            progressColor: toCanvasFill(fills.progressColor, fillWidth(canvasWidthPx)),
+            waveColor: toCanvasFill(fills.waveColor, fillWidth(canvasWidthPx)),
         });
         wavesurfer.setTime(currentTimeRef.current);
-    }, [bufferProgress, hoverProgress]);
+    }, [bufferProgress, canvasWidthPx, hoverProgress]);
 
     const onHoverMove = useCallback(
         (event: React.MouseEvent<HTMLDivElement>) => {

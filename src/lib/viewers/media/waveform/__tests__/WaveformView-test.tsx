@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import WaveSurfer from 'wavesurfer.js';
 import WaveformView, {
     WAVEFORM_BAR_GAP,
@@ -10,22 +10,38 @@ import WaveformView, {
 import { WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
 
 const mockDestroy = jest.fn();
+const mockLoad = jest.fn();
 const mockSetOptions = jest.fn();
 const mockSetTime = jest.fn();
-const mockRender = jest.fn();
-const mockGetDecodedData = jest.fn(() => ({ duration: 8 }));
-const mockOn = jest.fn(() => jest.fn());
+const mockObserve = jest.fn();
+const mockDisconnect = jest.fn();
+let clickHandler: ((relativeX: number) => void) | undefined;
+let resizeCallback: ResizeObserverCallback | undefined;
+
+const mockOn = jest.fn((event: string, handler: (relativeX: number) => void) => {
+    if (event === 'click') {
+        clickHandler = handler;
+    }
+    return jest.fn();
+});
+
+const mockResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => {
+    resizeCallback = callback;
+    return {
+        disconnect: mockDisconnect,
+        observe: mockObserve,
+        unobserve: jest.fn(),
+    };
+});
+((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
 
 jest.mock('wavesurfer.js', () => ({
     __esModule: true,
     default: {
         create: jest.fn(() => ({
             destroy: mockDestroy,
-            getDecodedData: mockGetDecodedData,
+            load: mockLoad,
             on: mockOn,
-            renderer: {
-                render: mockRender,
-            },
             setOptions: mockSetOptions,
             setTime: mockSetTime,
         })),
@@ -33,7 +49,17 @@ jest.mock('wavesurfer.js', () => ({
 }));
 
 describe('WaveformView', () => {
+    beforeAll(() => {
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 200 });
+    });
+
+    afterAll(() => {
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 0 });
+    });
+
     beforeEach(() => {
+        clickHandler = undefined;
+        resizeCallback = undefined;
         jest.clearAllMocks();
     });
 
@@ -137,8 +163,19 @@ describe('WaveformView', () => {
         expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
     });
 
+    test('should seek from a wavesurfer click', () => {
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+
+        expect(clickHandler).toBeDefined();
+        clickHandler?.(0.25);
+
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
     test('should ignore hover and clicks while inert', () => {
-        render(<WaveformView durationSec={8} interactive={false} peaks={[0.2, 0.8]} />);
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} interactive={false} onSeek={onSeek} peaks={[0.2, 0.8]} />);
         const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
         jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
             bottom: 140,
@@ -153,10 +190,12 @@ describe('WaveformView', () => {
         });
 
         fireEvent.mouseMove(track, { clientX: 50 });
+        clickHandler?.(0.25);
 
         expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--inert');
         expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
         expect(WaveSurfer.create).toHaveBeenCalledWith(expect.objectContaining({ interact: false }));
+        expect(onSeek).not.toHaveBeenCalled();
     });
 
     test('should keep the wavesurfer instance when duration changes from the placeholder', () => {
@@ -169,14 +208,13 @@ describe('WaveformView', () => {
 
         expect(WaveSurfer.create).toHaveBeenCalledTimes(1);
         expect(mockDestroy).not.toHaveBeenCalled();
-        expect(mockSetOptions).toHaveBeenCalledWith(
-            expect.objectContaining({
-                duration: 8,
-                peaks: [
-                    [0.2, 0.8],
-                    [0.2, 0.8],
-                ],
-            }),
+        expect(mockLoad).toHaveBeenCalledWith(
+            '',
+            [
+                [0.2, 0.8],
+                [0.2, 0.8],
+            ],
+            8,
         );
     });
 
@@ -217,13 +255,38 @@ describe('WaveformView', () => {
 
         frames[0](800);
 
-        const peakUpdate = mockSetOptions.mock.calls
-            .map(call => call[0])
-            .reverse()
-            .find(options => options && options.peaks);
-        expect(peakUpdate.duration).toBe(8);
-        expect(peakUpdate.peaks[0][0]).toBeCloseTo(0.2);
-        expect(peakUpdate.peaks[0][1]).toBeCloseTo(0.8);
-        expect(mockRender).toHaveBeenCalled();
+        const peakLoad = [...mockLoad.mock.calls].reverse().find(call => call[1]);
+        expect(peakLoad[0]).toBe('');
+        expect(peakLoad[2]).toBe(8);
+        expect(peakLoad[1][0][0]).toBeCloseTo(0.2);
+        expect(peakLoad[1][0][1]).toBeCloseTo(0.8);
+    });
+
+    test('should recompute fills when the canvas width changes', () => {
+        const bufferedRange = ({
+            end: () => 4,
+            length: 1,
+            start: () => 0,
+        } as unknown) as TimeRanges;
+
+        render(<WaveformView bufferedRange={bufferedRange} durationSec={8} peaks={[0.2, 0.8]} />);
+
+        expect(mockResizeObserver).toHaveBeenCalled();
+        expect(mockObserve).toHaveBeenCalled();
+        expect(resizeCallback).toBeDefined();
+
+        mockSetOptions.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { width: 400 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetOptions).toHaveBeenCalled();
     });
 });
