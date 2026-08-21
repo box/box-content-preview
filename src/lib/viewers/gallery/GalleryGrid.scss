@@ -24,10 +24,21 @@
     align-items: start;
 }
 
-// ARIA grid rows exist only for the accessibility tree: display: contents generates no
-// box, so tiles stay direct grid items of .bp-gallery-grid-inner and layout is unchanged.
-.bp-gallery-grid-row {
-    display: contents;
+.bp-gallery-grid--virtualized .bp-gallery-grid-inner {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.bp-gallery-grid--virtualized .bp-gallery-grid-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    gap: 16px;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
 }
 
 .bp-gallery-tile {
@@ -96,6 +107,7 @@
     transition: opacity 0.15s;
 }
 
+// Keep 129% in sync with GALLERY_TILE_DEFAULT_RATIO (100/129).
 .bp-gallery-tile-placeholder {
     display: block;
     width: 100%;
