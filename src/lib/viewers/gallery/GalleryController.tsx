@@ -13,7 +13,7 @@ import {
     GALLERY_SCALE_STEP,
     THUMBNAILS_SIDEBAR_TRANSITION_TIME,
 } from './constants';
-import GalleryGrid, { GalleryThumbnail } from './GalleryGrid';
+import GalleryGrid, { GalleryGridHandle, GalleryThumbnail } from './GalleryGrid';
 import { PinchDirection } from './useGalleryPinch';
 
 // Controller-owned shape: GalleryGrid only sees the read surface (GalleryThumbnail),
@@ -88,6 +88,8 @@ export default class GalleryController {
     private galleryRoot: Root | null = null;
 
     private galleryEl: HTMLDivElement | null = null;
+
+    private galleryGridRef = React.createRef<GalleryGridHandle>();
 
     private galleryThumbnail: ManagedGalleryThumbnail | null = null;
 
@@ -239,22 +241,15 @@ export default class GalleryController {
 
     /**
      * Redirects a grid-nav key pressed outside the grid (e.g. focus parked on a toggle after
-     * toggling fullscreen) back into it: refocuses the selected tile and replays the key so
-     * the first press navigates, like the thumbnail sidebar. Keys pressed inside the grid
-     * never arrive here — GalleryGrid stops propagation on every arrow/Home/End it handles.
+     * toggling fullscreen) into GalleryGrid so the first press navigates, like the thumbnail
+     * sidebar. Keys pressed inside the grid never arrive here — GalleryGrid stops propagation
+     * on every arrow/Home/End it handles.
      */
     handleArrowKey(key: string): void {
         if (!this.isGalleryOpen) return;
         if (!key.startsWith('Arrow') && key !== 'Home' && key !== 'End') return;
 
-        const grid = this.galleryEl;
-        if (!grid) return;
-
-        const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"], [role="gridcell"][tabindex="0"]');
-        if (tile) {
-            tile.focus();
-            tile.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-        }
+        this.galleryGridRef.current?.handleNavKey(key);
     }
 
     handleRotate(): void {
@@ -386,6 +381,7 @@ export default class GalleryController {
         const pdfViewer = this.getPdfViewer();
         this.galleryRoot.render(
             <GalleryGrid
+                ref={this.galleryGridRef}
                 currentPage={pdfViewer.currentPageNumber}
                 getPageRatio={this.getPageRatio}
                 isAriaGridEnabled={this.isEnhancedGalleryEnabled}

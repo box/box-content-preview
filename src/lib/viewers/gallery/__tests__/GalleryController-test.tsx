@@ -612,17 +612,6 @@ describe('GalleryController', () => {
     });
 
     describe('handleArrowKey', () => {
-        // Adds the selected tile to the gallery root (mounted before .bp-ControlsRoot; with no
-        // controls seeded it lands as containerEl's last child).
-        function seedSelectedTile(containerEl: HTMLElement, role = 'option'): HTMLElement {
-            const galleryEl = containerEl.lastElementChild as HTMLElement;
-            const tile = document.createElement('div');
-            tile.setAttribute('role', role);
-            tile.setAttribute('tabindex', '0');
-            galleryEl.appendChild(tile);
-            return tile;
-        }
-
         function seedToggle(containerEl: HTMLElement): HTMLElement {
             const toggle = document.createElement('button');
             toggle.className = 'bp-GalleryToggle';
@@ -630,69 +619,60 @@ describe('GalleryController', () => {
             return toggle;
         }
 
-        test('should refocus the selected tile and replay the arrow into the grid', () => {
-            const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
-            controller.toggle();
-            const tile = seedSelectedTile(containerEl);
-            const tileKeydown = jest.fn();
-            tile.addEventListener('keydown', tileKeydown);
+        function setGridHandle(controller: GalleryController): jest.Mock {
+            const handleNavKey = jest.fn();
+            ((controller as unknown) as {
+                galleryGridRef: { current: { handleNavKey: jest.Mock } };
+            }).galleryGridRef.current = {
+                handleNavKey,
+            };
+            return handleNavKey;
+        }
 
-            toggle.focus();
+        test('should forward arrow keys to the grid handle', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            seedToggle(containerEl);
+            controller.toggle();
+            const handleNavKey = setGridHandle(controller);
+
             controller.handleArrowKey('ArrowDown');
 
-            expect(document.activeElement).toBe(tile);
-            expect(tileKeydown).toHaveBeenCalledTimes(1);
-            expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
+            expect(handleNavKey).toHaveBeenCalledTimes(1);
+            expect(handleNavKey).toHaveBeenCalledWith('ArrowDown');
         });
 
-        test('should redirect into a gridcell tile', () => {
+        test('should not forward non-grid-nav keys', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
+            seedToggle(containerEl);
             controller.toggle();
-            const tile = seedSelectedTile(containerEl, 'gridcell');
+            const handleNavKey = setGridHandle(controller);
 
-            toggle.focus();
-            controller.handleArrowKey('ArrowDown');
-
-            expect(document.activeElement).toBe(tile);
-        });
-
-        test('should not redirect focus for non-grid-nav keys', () => {
-            const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
-            controller.toggle();
-            seedSelectedTile(containerEl);
-
-            toggle.focus();
             controller.handleArrowKey('[');
 
-            expect(document.activeElement).toBe(toggle);
+            expect(handleNavKey).not.toHaveBeenCalled();
         });
 
-        test.each(['Home', 'End'])('should redirect %s into the selected tile', key => {
+        test.each(['Home', 'End'])('should forward %s to the grid handle', key => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
+            seedToggle(containerEl);
             controller.toggle();
-            const tile = seedSelectedTile(containerEl);
-            const tileKeydown = jest.fn();
-            tile.addEventListener('keydown', tileKeydown);
+            const handleNavKey = setGridHandle(controller);
 
-            toggle.focus();
             controller.handleArrowKey(key);
 
-            expect(document.activeElement).toBe(tile);
-            expect(tileKeydown).toHaveBeenCalledTimes(1);
-            expect(tileKeydown.mock.calls[0][0].key).toBe(key);
+            expect(handleNavKey).toHaveBeenCalledTimes(1);
+            expect(handleNavKey).toHaveBeenCalledWith(key);
         });
 
         test('should be a no-op when the gallery is closed', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
             const toggle = seedToggle(containerEl);
+            const handleNavKey = setGridHandle(controller);
 
             toggle.focus();
             controller.handleArrowKey('ArrowDown');
 
+            expect(handleNavKey).not.toHaveBeenCalled();
             expect(document.activeElement).toBe(toggle);
         });
     });

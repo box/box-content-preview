@@ -1,5 +1,13 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import React, {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react';
+import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import { decodeKeydown, replacePlaceholders } from '../../util';
@@ -61,6 +69,10 @@ export type Props = {
     thumbnail: GalleryThumbnail;
 };
 
+export type GalleryGridHandle = {
+    handleNavKey: (key: string) => void;
+};
+
 interface TileProps {
     pageNum: number;
     isFocused: boolean;
@@ -119,21 +131,24 @@ const GalleryTile = React.memo(function GalleryTile({
     );
 });
 
-export default function GalleryGrid({
-    pageCount,
-    currentPage,
-    getPageRatio,
-    isAriaGridEnabled = false,
-    isPinchZoomEnabled = false,
-    isTouchZoomEnabled = false,
-    onClose,
-    onFocusChange,
-    onPageNavigate,
-    onPinchStart = noop,
-    onScaleChange = noop,
-    scale = 1,
-    thumbnail,
-}: Props): JSX.Element {
+const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
+    {
+        pageCount,
+        currentPage,
+        getPageRatio,
+        isAriaGridEnabled = false,
+        isPinchZoomEnabled = false,
+        isTouchZoomEnabled = false,
+        onClose,
+        onFocusChange,
+        onPageNavigate,
+        onPinchStart = noop,
+        onScaleChange = noop,
+        scale = 1,
+        thumbnail,
+    },
+    ref,
+) {
     const [loadedImages, setLoadedImages] = useState<Record<number, string>>({});
     const [highResImages, setHighResImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
@@ -198,6 +213,16 @@ export default function GalleryGrid({
         gap: GALLERY_TILE_GAP,
         getScrollElement: () => gridRef.current,
         overscan: GALLERY_VIRTUAL_OVERSCAN,
+        // Keep the selected row mounted so scrolling it offscreen does not drop keyboard focus.
+        rangeExtractor: range => {
+            const indexes = defaultRangeExtractor(range);
+            const focusedRow = getRowIndex(focusedPageRef.current, columnsRef.current) - 1;
+            if (focusedRow >= 0 && focusedRow < range.count && indexes.indexOf(focusedRow) === -1) {
+                indexes.push(focusedRow);
+                indexes.sort((a, b) => a - b);
+            }
+            return indexes;
+        },
     });
 
     const byDistanceFromAnchor = (a: number, b: number): number =>
@@ -695,70 +720,71 @@ export default function GalleryGrid({
         [focusedPage, focusTile],
     );
 
-    const handleGridKeyDown = useCallback(
-        (event: React.KeyboardEvent) => {
-            const key = decodeKeydown(event);
-
+    // Listbox: every arrow moves ±1 page. ARIA grid: Left/Right stay ±1 (across row
+    // edges, clamped at first/last page); Up/Down move one row (Down clamps on a short last row).
+    const handleNavKey = useCallback(
+        (key: string): boolean => {
             switch (key) {
-                case 'Escape':
-                    event.preventDefault();
-                    event.stopPropagation();
-                    onClose();
-                    return;
-                // Listbox: every arrow moves ±1 page. ARIA grid: Left/Right stay ±1 (across row
-                // edges, clamped at first/last page); Up/Down move one row (Down clamps on a short last row).
                 case 'ArrowUp': {
-                    event.preventDefault();
-                    event.stopPropagation();
                     const target = isAriaGridEnabled ? getPageAbove(focusedPage, columns) : focusedPage - 1;
                     if (target !== null && target >= 1) {
                         focusTile(target);
                     }
-                    return;
+                    return true;
                 }
                 case 'ArrowDown': {
-                    event.preventDefault();
-                    event.stopPropagation();
                     const target = isAriaGridEnabled ? getPageBelow(focusedPage, columns, pageCount) : focusedPage + 1;
                     if (target !== null && target <= pageCount) {
                         focusTile(target);
                     }
-                    return;
+                    return true;
                 }
                 case 'ArrowLeft':
-                    event.preventDefault();
-                    event.stopPropagation();
                     if (focusedPage > 1) {
                         focusTile(focusedPage - 1);
                     }
-                    return;
+                    return true;
                 case 'ArrowRight':
-                    event.preventDefault();
-                    event.stopPropagation();
                     if (focusedPage < pageCount) {
                         focusTile(focusedPage + 1);
                     }
-                    return;
+                    return true;
                 case 'Home':
-                    event.preventDefault();
-                    event.stopPropagation();
                     focusTile(1);
-                    return;
+                    return true;
                 case 'End':
-                    event.preventDefault();
-                    event.stopPropagation();
                     focusTile(pageCount);
-                    return;
+                    return true;
                 case 'Enter':
                 case 'Space':
-                    event.preventDefault();
-                    event.stopPropagation();
                     onPageNavigate(focusedPage);
-                    break;
+                    return true;
                 default:
+                    return false;
             }
         },
-        [columns, focusedPage, focusTile, isAriaGridEnabled, onClose, onPageNavigate, pageCount],
+        [columns, focusedPage, focusTile, isAriaGridEnabled, onPageNavigate, pageCount],
+    );
+
+    useImperativeHandle(ref, () => ({ handleNavKey }), [handleNavKey]);
+
+    const handleGridKeyDown = useCallback(
+        (event: React.KeyboardEvent) => {
+            const key = decodeKeydown(event);
+
+            if (key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                onClose();
+                return;
+            }
+
+            if (handleNavKey(key)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        },
+        [handleNavKey, onClose],
     );
 
     const renderTile = (pageNum: number): JSX.Element => (
@@ -829,4 +855,6 @@ export default function GalleryGrid({
             </div>
         </div>
     );
-}
+});
+
+export default GalleryGrid;

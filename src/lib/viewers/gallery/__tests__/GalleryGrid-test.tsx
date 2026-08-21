@@ -1224,5 +1224,31 @@ describe('GalleryGrid', () => {
                 expect(screen.getByLabelText('Page 1')).toHaveFocus();
             });
         });
+
+        test('should keep the focused tile mounted and navigable after it scrolls out of view', async () => {
+            setViewport(400, 400);
+            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
+            screen.getByLabelText('Page 1').focus();
+
+            const grid = screen.getByRole('grid');
+            const inner = document.querySelector('.bp-gallery-grid-inner') as HTMLElement;
+            Object.defineProperty(grid, 'scrollTop', {
+                configurable: true,
+                writable: true,
+                value: parseFloat(inner.style.height),
+            });
+            fireEvent.scroll(grid);
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
+            });
+            expect(screen.getByLabelText('Page 1')).toBeInTheDocument();
+            expect(screen.getByLabelText('Page 1')).toHaveFocus();
+
+            await userEvent.keyboard('{ArrowDown}');
+            fireEvent.scroll(grid);
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 2')).toHaveFocus();
+            });
+        });
     });
 });
