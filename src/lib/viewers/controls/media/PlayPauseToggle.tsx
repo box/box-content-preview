@@ -12,14 +12,14 @@ export type Props = {
     isPlaying?: boolean;
     onPlayPause: (isPlaying: boolean) => void;
     movePlayback?: (forward: boolean, duration: number) => void;
-    showSkipButtons?: boolean;
+    hasSkipButtons?: boolean;
 };
 
 export default function PlayPauseToggle({
     isPlaying,
     onPlayPause = noop,
     movePlayback = noop,
-    showSkipButtons = true,
+    hasSkipButtons = true,
 }: Props): JSX.Element {
     const PlayPauseIcon = isPlaying ? IconPause24 : IconPlay24;
     const title = isPlaying ? __('media_pause') : __('media_play');
@@ -36,7 +36,7 @@ export default function PlayPauseToggle({
 
     return (
         <>
-            {showSkipButtons && (
+            {hasSkipButtons && (
                 <MediaToggle
                     className="bp-PlayPauseToggle"
                     data-resin-target="skipBackward"
@@ -56,7 +56,7 @@ export default function PlayPauseToggle({
                 <PlayPauseIcon />
             </MediaToggle>
 
-            {showSkipButtons && (
+            {hasSkipButtons && (
                 <MediaToggle
                     className="bp-PlayPauseToggle"
                     data-resin-target="skipForward"

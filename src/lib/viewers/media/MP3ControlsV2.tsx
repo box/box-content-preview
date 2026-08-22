@@ -93,7 +93,7 @@ export default function MP3ControlsV2({
             {hasMetadata && (
                 <div className="bp-MP3ControlsV2-bar" data-testid="bp-MP3ControlsV2-bar">
                     <div className="bp-MP3ControlsV2-group">
-                        <PlayPauseToggle isPlaying={isPlaying} onPlayPause={onPlayPause} showSkipButtons={false} />
+                        <PlayPauseToggle hasSkipButtons={false} isPlaying={isPlaying} onPlayPause={onPlayPause} />
                         <div className="bp-MP3ControlsV2-divider" />
                         <TimestampControl currentTime={currentTime} durationTime={durationValue} />
                     </div>

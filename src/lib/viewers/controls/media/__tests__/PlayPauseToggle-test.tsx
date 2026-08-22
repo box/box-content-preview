@@ -40,8 +40,8 @@ describe('PlayPauseToggle', () => {
             expect(toggle).toBeInTheDocument();
         });
 
-        test('should hide skip buttons when showSkipButtons is false', async () => {
-            getWrapper({ showSkipButtons: false });
+        test('should hide skip buttons when hasSkipButtons is false', async () => {
+            getWrapper({ hasSkipButtons: false });
 
             expect(await getToggle()).toBeInTheDocument();
             expect(screen.queryByTitle(__('media_skip_forward'))).not.toBeInTheDocument();

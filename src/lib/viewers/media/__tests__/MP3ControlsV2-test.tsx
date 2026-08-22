@@ -1,18 +1,18 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import MP3ControlsV2 from '../MP3ControlsV2';
+import MP3ControlsV2, { Props } from '../MP3ControlsV2';
 
 jest.mock('../waveform/WaveformView', () => {
-    const React = require('react');
-
-    return function MockWaveformView({ interactive }) {
+    function MockWaveformView({ interactive }: { interactive?: boolean }): JSX.Element {
         return <div data-interactive={interactive ? 'true' : 'false'} data-testid="bp-waveform-view" />;
-    };
+    }
+
+    return MockWaveformView;
 });
 
 describe('MP3ControlsV2', () => {
-    const getWrapper = (props = {}) =>
+    const getWrapper = (props: Partial<Props> = {}) =>
         render(
             <MP3ControlsV2
                 autoplay={false}
