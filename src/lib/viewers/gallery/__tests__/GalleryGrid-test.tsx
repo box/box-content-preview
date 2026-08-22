@@ -184,6 +184,7 @@ describe('GalleryGrid', () => {
         });
 
         test('should still allow click navigation when thumbnail render failed (fallback tile)', async () => {
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation();
             const failingThumbnail = {
                 ...mockThumbnail,
                 createThumbnailImage: jest.fn().mockRejectedValue(new Error('render failed')),
@@ -197,6 +198,8 @@ describe('GalleryGrid', () => {
 
             await userEvent.click(tile);
             expect(onPageNavigate).toHaveBeenCalledWith(7);
+            expect(errorSpy).toHaveBeenCalled();
+            errorSpy.mockRestore();
         });
     });
 
@@ -820,6 +823,22 @@ describe('GalleryGrid', () => {
             });
         });
 
+        test('should still start the load queue when thumbnail.init rejects', async () => {
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+            const thumbnail = {
+                ...mockThumbnail,
+                init: jest.fn().mockRejectedValue(new Error('init failed')),
+                createThumbnailImage: jest.fn().mockResolvedValue({ src: 'data:image/png;test' }),
+            };
+            getWrapper({ thumbnail });
+
+            await waitFor(() => {
+                expect(thumbnail.createThumbnailImage).toHaveBeenCalled();
+            });
+            expect(errorSpy).toHaveBeenCalled();
+            errorSpy.mockRestore();
+        });
+
         test('should check cache for each page on mount', () => {
             getWrapper();
             expect(mockThumbnail.getImageFromCache).toHaveBeenCalledTimes(10);
@@ -1317,6 +1336,33 @@ describe('GalleryGrid', () => {
             await waitFor(() => {
                 expect(screen.getByLabelText('Page 1')).toHaveFocus();
             });
+        });
+
+        test('should open the End page even if that tile has not mounted yet', async () => {
+            const onPageNavigate = jest.fn();
+            setViewport(400, 400);
+            getWrapper({ isAriaGridEnabled: true, onPageNavigate, pageCount: 80, currentPage: 1 });
+            screen.getByLabelText('Page 1').focus();
+
+            await userEvent.keyboard('{End}{Enter}');
+
+            expect(onPageNavigate).toHaveBeenCalledWith(80);
+        });
+
+        test('should not pull focus back into the grid after Home/End if the user has left it', async () => {
+            setViewport(400, 400);
+            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
+            screen.getByLabelText('Page 1').focus();
+            await userEvent.keyboard('{End}');
+
+            const outside = document.createElement('button');
+            document.body.appendChild(outside);
+            act(() => outside.focus());
+
+            fireEvent.scroll(screen.getByRole('grid'));
+            expect(outside).toHaveFocus();
+
+            document.body.removeChild(outside);
         });
 
         test('should keep the focused tile mounted and navigable after it scrolls out of view', async () => {

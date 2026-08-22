@@ -21,6 +21,16 @@ describe('galleryGridLayout', () => {
             expect(getGalleryLayout(692)).toEqual({ columns: 3, tileWidth: GALLERY_TILE_MIN_WIDTH });
             expect(getGalleryLayout(456)).toEqual({ columns: 2, tileWidth: GALLERY_TILE_MIN_WIDTH });
             expect(getGalleryLayout(200)).toEqual({ columns: 1, tileWidth: 200 });
+            // Widths that do not divide cleanly used to lose a column to floating-point floor.
+            expect(getGalleryLayout(1522).columns).toBe(6);
+        });
+
+        test('should keep scale-1 columns equal to the auto-fill count across common widths', () => {
+            const columnPitch = GALLERY_TILE_MIN_WIDTH + GALLERY_TILE_GAP;
+            for (let width = 200; width <= 2000; width += 1) {
+                const expected = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
+                expect(getGalleryLayout(width).columns).toBe(expected);
+            }
         });
 
         test('should scale tile width and reduce columns when zoomed in', () => {

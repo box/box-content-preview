@@ -8,7 +8,7 @@ export interface GalleryLayout {
 
 /**
  * Column count and tile width for a gallery of `width` CSS pixels at `scale`.
- * Matches CSS auto-fill minmax(220px, 1fr) at scale 1, and the previous
+ * Matches CSS auto-fill minmax(220px, 1fr) at scale 1, and the listbox path's
  * applyZoomLayout + auto-fill behavior when zoomed.
  */
 export function getGalleryLayout(width: number, scale = 1): GalleryLayout {
@@ -20,7 +20,12 @@ export function getGalleryLayout(width: number, scale = 1): GalleryLayout {
     const baseColumns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
     const baseWidth = (width - (baseColumns - 1) * GALLERY_TILE_GAP) / baseColumns;
     const tileWidth = Math.min(width, baseWidth * scale);
-    const columns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / (tileWidth + GALLERY_TILE_GAP)));
+    // At scale 1 this equals baseColumns algebraically; flooring the round-trip of
+    // tileWidth can drop a column to floating-point error (e.g. 1522px → 5 instead of 6).
+    if (scale === 1) {
+        return { columns: baseColumns, tileWidth };
+    }
+    const columns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / (tileWidth + GALLERY_TILE_GAP) + 1e-9));
 
     return { columns, tileWidth };
 }
@@ -30,13 +35,14 @@ export function resolvePageRatio(
     getPageRatio: ((pageNum: number) => number | null) | undefined,
     pageRatio: number | null,
 ): number {
-    const ratio = (getPageRatio && getPageRatio(pageNum)) || pageRatio;
+    const ratio = getPageRatio?.(pageNum) || pageRatio;
     if (ratio && Number.isFinite(ratio) && ratio > 0) {
         return ratio;
     }
     return GALLERY_TILE_DEFAULT_RATIO;
 }
 
+/** `rowIndex` is 0-based (TanStack). `getRowIndex()` in galleryGridNavigation is 1-based. */
 export function getPagesInRow(rowIndex: number, columns: number, pageCount: number): number[] {
     const start = rowIndex * columns + 1;
     const end = Math.min(start + columns - 1, pageCount);
@@ -55,11 +61,7 @@ export function getRowHeight(
     getRatio: (pageNum: number) => number,
 ): number {
     const pages = getPagesInRow(rowIndex, columns, pageCount);
-    let height = 0;
-    for (let i = 0; i < pages.length; i += 1) {
-        height = Math.max(height, tileWidth / getRatio(pages[i]));
-    }
-    return height;
+    return pages.reduce((height, pageNum) => Math.max(height, tileWidth / getRatio(pageNum)), 0);
 }
 
 export function getRowStartOffset(
@@ -146,11 +148,11 @@ export function collectPagesNearViewport({
 
         if (bucket) {
             const pages = getPagesInRow(row, columns, pageCount);
-            for (let i = 0; i < pages.length; i += 1) {
-                if (!isEligible || isEligible(pages[i])) {
-                    bucket.push(pages[i]);
+            pages.forEach(pageNum => {
+                if (!isEligible || isEligible(pageNum)) {
+                    bucket.push(pageNum);
                 }
-            }
+            });
         }
 
         top = bottom + gap;
