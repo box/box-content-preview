@@ -155,10 +155,10 @@ export function collectPagesNearViewport({
         }
 
         if (bucket) {
-            const pages = getPagesInRow(row, columns, pageCount);
-            pages.forEach(pageNum => {
+            const target = bucket;
+            getPagesInRow(row, columns, pageCount).forEach(pageNum => {
                 if (!isEligible || isEligible(pageNum)) {
-                    bucket.push(pageNum);
+                    target.push(pageNum);
                 }
             });
         }
