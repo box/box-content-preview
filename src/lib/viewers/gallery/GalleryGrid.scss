@@ -37,7 +37,9 @@
     display: flex;
     gap: 16px;
     align-items: start;
-    justify-content: center;
+
+    // Pack leftover tiles under the leftmost columns, like CSS auto-fill.
+    justify-content: flex-start;
     width: 100%;
 }
 

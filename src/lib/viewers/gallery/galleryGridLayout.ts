@@ -42,6 +42,14 @@ export function resolvePageRatio(
     return GALLERY_TILE_DEFAULT_RATIO;
 }
 
+/** Width of a full row of tiles, used to left-align a short last row inside a centered track. */
+export function getRowTrackWidth(columns: number, tileWidth: number, gap: number = GALLERY_TILE_GAP): number {
+    if (columns <= 0) {
+        return 0;
+    }
+    return columns * tileWidth + (columns - 1) * gap;
+}
+
 /** `rowIndex` is 0-based (TanStack). `getRowIndex()` in galleryGridNavigation is 1-based. */
 export function getPagesInRow(rowIndex: number, columns: number, pageCount: number): number[] {
     const start = rowIndex * columns + 1;

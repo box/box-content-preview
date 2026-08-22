@@ -9,7 +9,7 @@ import {
     GALLERY_TILE_MIN_WIDTH,
 } from '../constants';
 import GalleryGrid from '../GalleryGrid';
-import { getGalleryLayout, getRowStartOffset } from '../galleryGridLayout';
+import { getGalleryLayout, getRowStartOffset, getRowTrackWidth } from '../galleryGridLayout';
 import { getRowIndex } from '../galleryGridNavigation';
 
 const observeMock = jest.fn();
@@ -975,6 +975,35 @@ describe('GalleryGrid', () => {
                 expect(screen.getByLabelText('Page 10')).toHaveAttribute('aria-colindex', '1');
             });
 
+            test('should left-align leftover tiles in a short last row', () => {
+                const { rerender } = setupGrid(3, { pageCount: 8 });
+
+                const rows = screen.getAllByRole('row');
+                expect(rows).toHaveLength(3);
+                expect(rows[2].querySelectorAll('[role="gridcell"]')).toHaveLength(2);
+
+                const layout = getGalleryLayout(widthForColumns(3));
+                const trackWidth = getRowTrackWidth(layout.columns, layout.tileWidth);
+                rows.forEach(row => {
+                    expect(row).toHaveStyle({
+                        width: `${trackWidth}px`,
+                        left: '0px',
+                    });
+                });
+
+                rerender(<GalleryGrid {...defaultProps} isAriaGridEnabled pageCount={8} scale={1.5} />);
+
+                const zoomed = getGalleryLayout(widthForColumns(3), 1.5);
+                const zoomedTrackWidth = getRowTrackWidth(zoomed.columns, zoomed.tileWidth);
+                const zoomedLeft = (widthForColumns(3) - zoomedTrackWidth) / 2;
+                screen.getAllByRole('row').forEach(row => {
+                    expect(row).toHaveStyle({
+                        width: `${zoomedTrackWidth}px`,
+                        left: `${zoomedLeft}px`,
+                    });
+                });
+            });
+
             test('should keep selection and roving tabindex semantics on gridcells', () => {
                 setupGrid(3);
 
@@ -1004,11 +1033,35 @@ describe('GalleryGrid', () => {
                 expect(screen.getByLabelText('Page 5')).toHaveFocus();
             });
 
+            test('should not scroll on ArrowDown when the next row is already in view', async () => {
+                setupGrid(3);
+                const grid = screen.getByRole('grid');
+                Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
+                focusPage(2);
+
+                await userEvent.keyboard('{ArrowDown}');
+
+                expect(screen.getByLabelText('Page 5')).toHaveFocus();
+                expect(grid.scrollTop).toBe(0);
+            });
+
             test('should move up a row on ArrowUp', async () => {
                 setupGrid(3);
                 focusPage(5);
                 await userEvent.keyboard('{ArrowUp}');
                 expect(screen.getByLabelText('Page 2')).toHaveFocus();
+            });
+
+            test('should not scroll on ArrowUp when the previous row is already in view', async () => {
+                setupGrid(3);
+                const grid = screen.getByRole('grid');
+                Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
+                focusPage(5);
+
+                await userEvent.keyboard('{ArrowUp}');
+
+                expect(screen.getByLabelText('Page 2')).toHaveFocus();
+                expect(grid.scrollTop).toBe(0);
             });
 
             test('should not move on ArrowUp in the first row', async () => {
@@ -1326,15 +1379,63 @@ describe('GalleryGrid', () => {
             screen.getByLabelText('Page 1').focus();
 
             await userEvent.keyboard('{End}');
-            fireEvent.scroll(screen.getByRole('grid'));
             await waitFor(() => {
                 expect(screen.getByLabelText('Page 80')).toHaveFocus();
             });
 
             await userEvent.keyboard('{Home}');
-            fireEvent.scroll(screen.getByRole('grid'));
             await waitFor(() => {
                 expect(screen.getByLabelText('Page 1')).toHaveFocus();
+            });
+        });
+
+        test('should jump Home and End when the focused tile has been scrolled offscreen', async () => {
+            setViewport(400, 400);
+            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
+            screen.getByLabelText('Page 1').focus();
+
+            const grid = screen.getByRole('grid');
+            const inner = document.querySelector('.bp-gallery-grid-inner') as HTMLElement;
+            Object.defineProperty(grid, 'scrollTop', {
+                configurable: true,
+                writable: true,
+                value: parseFloat(inner.style.height),
+            });
+            fireEvent.scroll(grid);
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
+            });
+            expect(screen.getByLabelText('Page 1')).toHaveFocus();
+
+            await userEvent.keyboard('{End}');
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 80')).toHaveFocus();
+            });
+
+            await userEvent.keyboard('{Home}');
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 1')).toHaveFocus();
+            });
+        });
+
+        test('should load thumbnails around the End row without a follow-up scroll', async () => {
+            const thumbnail = {
+                ...mockThumbnail,
+                createThumbnailImage: jest.fn().mockResolvedValue({ src: 'data:image/png;test' }),
+            };
+            setViewport(400, 400);
+            getWrapper({ isAriaGridEnabled: true, currentPage: 1, pageCount: 80, thumbnail });
+            screen.getByLabelText('Page 1').focus();
+            thumbnail.createThumbnailImage.mockClear();
+
+            await userEvent.keyboard('{End}');
+
+            await waitFor(() => {
+                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
+            });
+            await waitFor(() => {
+                const pages = thumbnail.createThumbnailImage.mock.calls.map(([index]) => index + 1);
+                expect(pages.some(page => page >= 77)).toBe(true);
             });
         });
 

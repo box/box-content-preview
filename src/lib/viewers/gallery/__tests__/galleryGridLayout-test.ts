@@ -6,6 +6,7 @@ import {
     getPagesInRow,
     getRowHeight,
     getRowStartOffset,
+    getRowTrackWidth,
     resolvePageRatio,
 } from '../galleryGridLayout';
 
@@ -53,6 +54,12 @@ describe('galleryGridLayout', () => {
         test('should list the pages that belong to a row', () => {
             expect(getPagesInRow(0, 3, 10)).toEqual([1, 2, 3]);
             expect(getPagesInRow(3, 3, 10)).toEqual([10]);
+        });
+
+        test('should size a full row track so leftover tiles pack under the left columns', () => {
+            expect(getRowTrackWidth(3, 296)).toBe(3 * 296 + 2 * GALLERY_TILE_GAP);
+            expect(getRowTrackWidth(1, 220)).toBe(220);
+            expect(getRowTrackWidth(0, 296)).toBe(0);
         });
 
         test('should size a row from the tallest tile in it', () => {
