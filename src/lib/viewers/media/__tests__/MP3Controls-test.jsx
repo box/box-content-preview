@@ -26,6 +26,7 @@ describe('MP3Controls', () => {
             const container = await screen.findByTestId('media-controls-wrapper');
 
             expect(container).toBeInTheDocument();
+            expect(container).toHaveClass('bp-MP3Controls');
         });
 
         test('should pass down props to MediaSettings', async () => {
@@ -61,6 +62,15 @@ describe('MP3Controls', () => {
             fireEvent.keyDown(slider, { key: 'ArrowLeft' });
 
             expect(onTimeChange).toHaveBeenCalled();
+        });
+
+        test('should render the time slider and skip buttons', async () => {
+            getWrapper({ durationTime: 8 });
+
+            expect(await screen.findByRole('slider', { name: __('media_time_slider') })).toBeInTheDocument();
+            expect(screen.getByTitle(__('media_skip_forward'))).toBeInTheDocument();
+            expect(screen.getByTitle(__('media_skip_backward'))).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-TimestampControl')).not.toBeInTheDocument();
         });
 
         test('should pass down props to VolumeControls', async () => {

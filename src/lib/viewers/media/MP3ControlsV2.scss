@@ -1,0 +1,97 @@
+@import '../controls/media/styles';
+
+.bp-MP3ControlsRoot:has(.bp-MP3ControlsV2) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    pointer-events: none;
+}
+
+.bp-MP3ControlsV2 {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    background: transparent;
+    pointer-events: none;
+}
+
+.bp-MP3ControlsV2-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+    pointer-events: none;
+
+    .bp-WaveformView {
+        pointer-events: auto;
+    }
+}
+
+.bp-MP3ControlsV2-playOverlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    padding: 0;
+    background: rgb(0 0 0 / 50%);
+    border: 0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    pointer-events: auto;
+
+    svg {
+        width: 48px;
+        height: 48px;
+        fill: #fff;
+    }
+}
+
+.bp-MP3ControlsV2-stage .bp-media-buffering-spinner {
+    z-index: 2;
+    pointer-events: none;
+}
+
+.bp-MP3ControlsV2-bar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 32px;
+    padding: 30px 48px 20px;
+    background: linear-gradient(to top, rgb(0 0 0 / 100%), rgb(0 0 0 / 0%));
+    pointer-events: auto;
+}
+
+.bp-MP3ControlsV2-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.bp-MP3ControlsV2-divider {
+    width: 1px;
+    height: 24px;
+    background-color: rgb(255 255 255 / 10%);
+    border-radius: 1px;
+}
+
+.bp-MP3ControlsV2 .bp-MP3Controls-settings {
+    @include bp-VideoControls-settings;
+}
