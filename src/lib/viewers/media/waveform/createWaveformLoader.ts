@@ -27,14 +27,14 @@ type LoadGeneration = {
     signal: AbortSignal;
 };
 
-function isAbortError(error: unknown): boolean {
+export function isAbortError(error: unknown): boolean {
     return (
         (typeof DOMException !== 'undefined' && error instanceof DOMException && error.name === 'AbortError') ||
         (error instanceof Error && error.name === 'AbortError')
     );
 }
 
-function errorFromUnknown(error: unknown): WaveformError {
+export function errorFromUnknown(error: unknown, fallbackCode: WaveformErrorCode = 'LOAD_FAILED'): WaveformError {
     if (error instanceof WaveformLoadError) {
         return { code: error.code, message: error.message };
     }
@@ -48,7 +48,7 @@ function errorFromUnknown(error: unknown): WaveformError {
     }
 
     const message = error instanceof Error ? error.message : 'Waveform load failed';
-    return { code: 'LOAD_FAILED', message };
+    return { code: fallbackCode, message };
 }
 
 function failedLoadState(error: WaveformError): WaveformLoadState {

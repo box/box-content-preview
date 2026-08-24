@@ -6,8 +6,8 @@ import {
     PEAK_UNIT_MIN,
     WAVEFORM_PAYLOAD_VERSION,
 } from './constants';
-import { createCappedWaveformState, WaveformLoadError } from './createWaveformLoader';
-import { isWaveformErrorCode, WaveformCaps, WaveformError, WaveformLoadState } from './types';
+import { createCappedWaveformState, errorFromUnknown, isAbortError, WaveformLoadError } from './createWaveformLoader';
+import { WaveformCaps, WaveformError, WaveformLoadState } from './types';
 import { isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';
 
 export type DecodeSkipReason = 'missing_metadata' | 'compressed_size' | 'duration';
@@ -28,7 +28,7 @@ export type ClientDecodeOutput = {
 export type DecodeToPeaksFn = (signal: AbortSignal) => Promise<ClientDecodeOutput>;
 
 export type DecodeTimings = {
-    decodeMs: number | null;
+    attemptMs: number | null;
     extractMs: number | null;
 };
 
@@ -55,7 +55,7 @@ type DecodeAudioContext = {
     ) => Promise<AudioBuffer> | void;
 };
 
-const EMPTY_TIMINGS: DecodeTimings = { decodeMs: null, extractMs: null };
+const EMPTY_TIMINGS: DecodeTimings = { attemptMs: null, extractMs: null };
 
 function now(): number {
     return typeof performance !== 'undefined' ? performance.now() : Date.now();
@@ -78,13 +78,6 @@ function getAudioContextConstructor(): (new () => DecodeAudioContext) | undefine
         webkitAudioContext?: new () => DecodeAudioContext;
     };
     return AudioContext || webkitAudioContext;
-}
-
-function isAbortError(error: unknown): boolean {
-    return (
-        (typeof DOMException !== 'undefined' && error instanceof DOMException && error.name === 'AbortError') ||
-        (error instanceof Error && error.name === 'AbortError')
-    );
 }
 
 function getDecodeSkipMessage(reason: DecodeSkipReason): string {
@@ -114,17 +107,6 @@ function createSkippedDecodeResult(reason: DecodeSkipReason): ClientDecodeResult
         timings: EMPTY_TIMINGS,
         reason,
     };
-}
-
-function errorFromUnknown(error: unknown): WaveformError {
-    if (error instanceof WaveformLoadError) {
-        return { code: error.code, message: error.message };
-    }
-    if (error instanceof Error && isWaveformErrorCode(error.name)) {
-        return { code: error.name, message: error.message };
-    }
-    const message = error instanceof Error ? error.message : 'Client decode failed';
-    return { code: 'DECODE_FAILED', message };
 }
 
 function decodeWithContext(
@@ -331,26 +313,26 @@ export async function runClientDecode(options: {
         if (signal.aborted || isAbortError(error)) {
             return { status: 'cancelled', isDecodeSkipped: false, timings: EMPTY_TIMINGS };
         }
-        const waveformError = errorFromUnknown(error);
+        const waveformError = errorFromUnknown(error, 'DECODE_FAILED');
         return {
             status: 'failed',
             error: waveformError,
             retryable: isRetryableWaveformError(waveformError.code),
             isDecodeSkipped: false,
             timings: {
-                decodeMs: now() - decodeStarted,
+                attemptMs: now() - decodeStarted,
                 extractMs: null,
             },
         };
     }
 
-    const decodeMs = now() - decodeStarted;
+    const attemptMs = now() - decodeStarted;
 
     if (signal.aborted) {
         return {
             status: 'cancelled',
             isDecodeSkipped: false,
-            timings: { decodeMs, extractMs: null },
+            timings: { attemptMs, extractMs: null },
         };
     }
 
@@ -369,7 +351,7 @@ export async function runClientDecode(options: {
             error: validation.error,
             retryable: isRetryableWaveformError(validation.error.code),
             isDecodeSkipped: false,
-            timings: { decodeMs, extractMs: decodeOutput.extractMs },
+            timings: { attemptMs, extractMs: decodeOutput.extractMs },
         };
     }
 
@@ -377,7 +359,7 @@ export async function runClientDecode(options: {
         status: 'ready',
         payload: validation.payload,
         isDecodeSkipped: false,
-        timings: { decodeMs, extractMs: decodeOutput.extractMs },
+        timings: { attemptMs, extractMs: decodeOutput.extractMs },
     };
 }
 

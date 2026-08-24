@@ -72,6 +72,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.wrapperEl).toHaveClass('bp-media--v2');
             expect(mp3.mediaContainerEl).toHaveClass('bp-media-container--v2');
             expect(mp3.isAudioPlayerV2).toBe(true);
+            expect(mp3.importWaveformDecode).toBeCalled();
         });
 
         test('should not apply v2 classes when React controls are off', () => {
@@ -427,6 +428,24 @@ describe('lib/viewers/media/MP3Viewer', () => {
             });
         });
 
+        test('should include skip reason on the metric when metadata is missing', async () => {
+            loadPeaks.mockResolvedValue({
+                status: 'unavailable',
+                error: { code: 'UNAVAILABLE', message: 'missing' },
+                reason: 'missing_metadata',
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'unavailable',
+                code: 'UNAVAILABLE',
+                reason: 'missing_metadata',
+            });
+        });
+
         test('should keep empty peaks when decode fails', async () => {
             loadPeaks.mockResolvedValue({
                 status: 'failed',
@@ -459,9 +478,22 @@ describe('lib/viewers/media/MP3Viewer', () => {
             await mp3.startClientWaveformDecode();
 
             expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.isWaveformDecodeRetryPending).toBe(true);
             expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
                 status: 'failed',
                 code: 'LOAD_FAILED',
+            });
+        });
+
+        test('should not retry overlay play when the thrown error is not retryable', async () => {
+            mp3.importWaveformDecode.mockRejectedValue(new WaveformLoadError('INVALID_PAYLOAD', 'bad payload'));
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'failed',
+                code: 'INVALID_PAYLOAD',
             });
         });
 

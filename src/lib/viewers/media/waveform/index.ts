@@ -9,6 +9,12 @@ export {
     CLIENT_DECODE_MAX_DURATION_SEC,
     CLIENT_DECODE_PEAK_COUNT,
 } from './constants';
-export { createCappedWaveformState, createWaveformLoader, WaveformLoadError } from './createWaveformLoader';
+export {
+    createCappedWaveformState,
+    createWaveformLoader,
+    errorFromUnknown,
+    isAbortError,
+    WaveformLoadError,
+} from './createWaveformLoader';
 export { isWaveformErrorCode, WAVEFORM_ERROR_CODES } from './types';
 export { isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';

@@ -3,17 +3,11 @@ import { MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import MediaBaseViewer from './MediaBaseViewer';
 import MP3Controls from './MP3Controls';
 import MP3ControlsRoot from './MP3ControlsRoot';
-import { WaveformLoadError } from './waveform/createWaveformLoader';
+import { errorFromUnknown, isAbortError, WaveformLoadError } from './waveform/createWaveformLoader';
+import { isRetryableWaveformError } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
-
-function isAbortError(error) {
-    return (
-        (typeof DOMException !== 'undefined' && error instanceof DOMException && error.name === 'AbortError') ||
-        (error instanceof Error && error.name === 'AbortError')
-    );
-}
 
 class MP3Viewer extends MediaBaseViewer {
     /**
@@ -36,6 +30,7 @@ class MP3Viewer extends MediaBaseViewer {
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
             this.ensureV2Controls();
+            this.importWaveformDecode();
         }
 
         // Audio element
@@ -105,7 +100,16 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {Promise<{ loadPeaks: Function }>} client-decode helpers
      */
     importWaveformDecode() {
-        return import(/* webpackChunkName: "mp3-waveform-decode" */ './waveform/decode');
+        if (!this.waveformDecodeImport) {
+            this.waveformDecodeImport = import(/* webpackChunkName: "mp3-waveform-decode" */ './waveform/decode').catch(
+                error => {
+                    this.waveformDecodeImport = null;
+                    throw error;
+                },
+            );
+        }
+
+        return this.waveformDecodeImport;
     }
 
     /**
@@ -271,20 +275,12 @@ class MP3Viewer extends MediaBaseViewer {
                     return;
                 }
 
-                let code = 'LOAD_FAILED';
-                if (error instanceof WaveformLoadError) {
-                    ({ code } = error);
-                } else if (error && error.name === 'DECODE_FAILED') {
-                    code = 'DECODE_FAILED';
-                }
+                const waveformError = errorFromUnknown(error, 'LOAD_FAILED');
                 this.handleClientWaveformDecodeResult(
                     {
                         status: 'failed',
-                        error: {
-                            code,
-                            message: error && error.message ? error.message : 'Client decode failed',
-                        },
-                        retryable: true,
+                        error: waveformError,
+                        retryable: isRetryableWaveformError(waveformError.code),
                     },
                     controller,
                     signal,

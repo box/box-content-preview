@@ -201,7 +201,7 @@ describe('runClientDecode', () => {
         expect(result.status).toBe('capped');
         expect(result.isDecodeSkipped).toBe(true);
         expect(result.reason).toBe('compressed_size');
-        expect(result.timings.decodeMs).toBeNull();
+        expect(result.timings.attemptMs).toBeNull();
         if (result.status === 'capped') {
             expect(result.error.code).toBe('CAP_EXCEEDED');
         }
@@ -247,7 +247,7 @@ describe('runClientDecode', () => {
 
         expect(result.status).toBe('ready');
         expect(result.isDecodeSkipped).toBe(false);
-        expect(result.timings.decodeMs).not.toBeNull();
+        expect(result.timings.attemptMs).not.toBeNull();
         expect(result.timings.extractMs).not.toBeNull();
         if (result.status === 'ready') {
             expect(result.payload.peaks).toBeInstanceOf(Float32Array);
