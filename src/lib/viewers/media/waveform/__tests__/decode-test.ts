@@ -120,7 +120,6 @@ describe('decodePcm', () => {
             ) => {
                 success({
                     duration: 2,
-                    length: 3,
                     numberOfChannels: 1,
                     getChannelData: () => new Float32Array([0, 0.5, -1]),
                 });
