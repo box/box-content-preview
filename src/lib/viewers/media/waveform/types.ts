@@ -85,6 +85,8 @@ export type WaveformValidationOptions = {
     /** Override default caps (used in tests and perf harness). */
     maxPeakCount?: number;
     maxPayloadBytes?: number;
+    /** Skip JSON byte-length check (in-memory client peaks, not wire JSON). */
+    isPayloadByteCheckSkipped?: boolean;
 };
 
 export type WaveformCaps = {

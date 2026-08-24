@@ -96,6 +96,14 @@ describe('validateWaveformPayload', () => {
             }
         });
 
+        test('should skip payload byte limit when isPayloadByteCheckSkipped is set', () => {
+            const result = validateWaveformPayload(readyOverview, {
+                maxPayloadBytes: 16,
+                isPayloadByteCheckSkipped: true,
+            });
+            expect(result.ok).toBe(true);
+        });
+
         test('should reject non-finite peak', () => {
             const peaks = [...readyOverview.peaks];
             peaks[2] = Number.NaN;

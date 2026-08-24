@@ -92,14 +92,17 @@ function asWaveformPayloadV1(raw: Record<string, unknown>): WaveformPayloadV1 | 
 function readPayloadObject(
     raw: unknown,
     maxPayloadBytes: number,
+    isPayloadByteCheckSkipped = false,
 ): { ok: true; value: Record<string, unknown> } | WaveformValidationFailure {
     if (raw === null || raw === undefined) {
         return fail('INVALID_PAYLOAD', 'Payload is null or undefined');
     }
 
-    const byteLength = payloadByteLength(raw);
-    if (byteLength > maxPayloadBytes) {
-        return fail('PAYLOAD_TOO_LARGE', `Payload size ${byteLength} exceeds limit ${maxPayloadBytes}`);
+    if (!isPayloadByteCheckSkipped) {
+        const byteLength = payloadByteLength(raw);
+        if (byteLength > maxPayloadBytes) {
+            return fail('PAYLOAD_TOO_LARGE', `Payload size ${byteLength} exceeds limit ${maxPayloadBytes}`);
+        }
     }
 
     if (!isPlainObject(raw)) {
@@ -183,7 +186,7 @@ export function validateWaveformPayload(
     const maxPeakCount = options.maxPeakCount ?? MAX_PEAK_COUNT;
     const maxPayloadBytes = options.maxPayloadBytes ?? MAX_PAYLOAD_BYTES;
 
-    const objectResult = readPayloadObject(raw, maxPayloadBytes);
+    const objectResult = readPayloadObject(raw, maxPayloadBytes, options.isPayloadByteCheckSkipped === true);
     if (!objectResult.ok) {
         return objectResult;
     }
