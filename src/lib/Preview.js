@@ -1801,17 +1801,23 @@ class Preview extends EventEmitter {
             return;
         }
 
+        // Transcription is optional. If we deferred the viewer only to refresh
+        // extracted_text and still have dash/mp4 in memory, play now. Uncache +
+        // load(id) would replace this.file with { id } and stick on the spinner.
+        if (this.viewerLoadDeferredForTranscription && !this.viewer && this.hasPlayableVideoReps(this.file)) {
+            try {
+                this.loadViewer();
+                return;
+            } catch {
+                // Fall through to uncache / retry / error viewer
+            }
+        }
+
         // Nuke the cache
         uncacheFile(this.cache, this.file);
 
         // Check if we hit the retry limit for fetching file info
         if (this.retryCount > RETRY_COUNT) {
-            // Viewer load was deferred for transcription refresh; fall back to cached playback.
-            if (this.viewerLoadDeferredForTranscription && !this.viewer) {
-                this.loadViewer();
-                return;
-            }
-
             let errorCode = ERROR_CODE.EXCEEDED_RETRY_LIMIT;
             let errorMessage = __('error_refresh');
 

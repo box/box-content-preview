@@ -2724,6 +2724,65 @@ describe('lib/Preview', () => {
             expect(stubs.uncacheFile).not.toHaveBeenCalled();
         });
 
+        test('should load cached video when transcription file-info refresh fails', () => {
+            stubs.loadViewer = jest.spyOn(preview, 'loadViewer').mockImplementation();
+            preview.open = true;
+            preview.viewerLoadDeferredForTranscription = true;
+            preview.viewer = undefined;
+            preview.retryCount = 1;
+            preview.file = {
+                id: '123',
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            };
+
+            preview.handleFetchError(stubs.error);
+
+            expect(stubs.loadViewer).toHaveBeenCalled();
+            expect(stubs.uncacheFile).not.toHaveBeenCalled();
+            expect(stubs.triggerError).not.toHaveBeenCalled();
+            jest.advanceTimersByTime(10000);
+            expect(stubs.load).not.toHaveBeenCalled();
+        });
+
+        test('should uncache and retry when transcription was deferred but file has no playable reps', () => {
+            stubs.loadViewer = jest.spyOn(preview, 'loadViewer').mockImplementation();
+            preview.open = true;
+            preview.viewerLoadDeferredForTranscription = true;
+            preview.viewer = undefined;
+            preview.retryCount = 1;
+            preview.file = { id: '123' };
+
+            preview.handleFetchError(stubs.error);
+
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+            expect(stubs.uncacheFile).toHaveBeenCalled();
+            expect(stubs.triggerError).not.toHaveBeenCalled();
+            jest.advanceTimersByTime(4001);
+            expect(stubs.load).toHaveBeenCalledWith('123');
+        });
+
+        test('should fall through to error handling if deferred loadViewer throws', () => {
+            stubs.loadViewer = jest.spyOn(preview, 'loadViewer').mockImplementation(() => {
+                throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
+            });
+            preview.open = true;
+            preview.viewerLoadDeferredForTranscription = true;
+            preview.retryCount = 6;
+            preview.file = {
+                id: '123',
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            };
+
+            preview.handleFetchError(stubs.error);
+
+            expect(stubs.uncacheFile).toHaveBeenCalled();
+            expect(stubs.triggerError).toHaveBeenCalled();
+        });
+
         test('should clear the current file from the cache', () => {
             preview.file = {
                 id: '0',
