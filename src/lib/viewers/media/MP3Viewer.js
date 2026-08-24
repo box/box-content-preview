@@ -7,6 +7,12 @@ import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
 
+function createLoadFailedError(message) {
+    const error = new Error(message);
+    error.name = 'LOAD_FAILED';
+    return error;
+}
+
 class MP3Viewer extends MediaBaseViewer {
     /**
      * @inheritdoc
@@ -28,6 +34,7 @@ class MP3Viewer extends MediaBaseViewer {
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
             this.ensureV2Controls();
+            this.importWaveformDecode();
         }
 
         // Audio element
@@ -94,6 +101,30 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
+     * @return {Promise<{ loadPeaks: Function }>} client-decode helpers
+     */
+    async importWaveformDecode() {
+        if (!this.waveformDecodeImport) {
+            this.waveformDecodeImport = import(/* webpackChunkName: "mp3-waveform-decode" */ './waveform/decode');
+        }
+
+        try {
+            return await this.waveformDecodeImport;
+        } catch (error) {
+            this.waveformDecodeImport = null;
+            throw error;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    destroy() {
+        this.abortClientWaveformDecode();
+        super.destroy();
+    }
+
+    /**
      * @inheritdoc
      */
     load() {
@@ -138,9 +169,16 @@ class MP3Viewer extends MediaBaseViewer {
     loadeddataHandler() {
         super.loadeddataHandler();
 
-        if (this.isAudioPlayerV2 && this.userRequestedPlay) {
+        if (!this.isAudioPlayerV2) {
+            return;
+        }
+
+        // Play first so Safari has a user gesture before AudioContext is created.
+        if (this.userRequestedPlay) {
             this.play();
         }
+
+        this.startClientWaveformDecode();
     }
 
     /**
@@ -149,7 +187,135 @@ class MP3Viewer extends MediaBaseViewer {
     handlePlayRequest = () => {
         this.userRequestedPlay = true;
         this.togglePlay();
+
+        if (this.isWaveformDecodeRetryPending && !this.hasUsedWaveformDecodePlayRetry) {
+            this.hasUsedWaveformDecodePlayRetry = true;
+            this.isWaveformDecodeRetryPending = false;
+            this.startClientWaveformDecode();
+        }
     };
+
+    /**
+     * Fetch compressed audio bytes for client decode. Prefers an already-fetched blob URL.
+     *
+     * @param {AbortSignal} signal
+     * @return {Promise<ArrayBuffer>}
+     */
+    async fetchAudioArrayBuffer(signal) {
+        if (this.mediaBlobUrl) {
+            const response = await fetch(this.mediaBlobUrl, { signal });
+            if (!response.ok) {
+                throw createLoadFailedError(`Waveform fetch failed (${response.status})`);
+            }
+            return response.arrayBuffer();
+        }
+
+        const template =
+            this.options.representation &&
+            this.options.representation.content &&
+            this.options.representation.content.url_template;
+        if (!template) {
+            throw createLoadFailedError('Waveform fetch URL is missing');
+        }
+
+        const data = await this.api.get(this.createContentUrlV2(template), {
+            headers: this.appendAuthHeader(),
+            signal,
+            type: 'arraybuffer',
+        });
+
+        if (data instanceof ArrayBuffer) {
+            return data;
+        }
+        throw createLoadFailedError('Waveform fetch did not return binary data');
+    }
+
+    abortClientWaveformDecode() {
+        if (!this.waveformDecodeController) {
+            return;
+        }
+        this.waveformDecodeController.abort();
+        this.waveformDecodeController = null;
+    }
+
+    /**
+     * Decode peaks in the background when the file is under size and duration caps.
+     * Does not block playback. Capped or failed decode keeps the placeholder waveform.
+     *
+     * @return {Promise<void>}
+     */
+    async startClientWaveformDecode() {
+        if (!this.isAudioPlayerV2 || this.destroyed) {
+            return;
+        }
+
+        this.abortClientWaveformDecode();
+        const controller = new AbortController();
+        this.waveformDecodeController = controller;
+        const { signal } = controller;
+
+        try {
+            const decodeModule = await this.importWaveformDecode();
+            if (this.destroyed || signal.aborted || this.waveformDecodeController !== controller) {
+                return;
+            }
+
+            const result = await decodeModule.loadPeaks({
+                compressedBytes: this.options.file && this.options.file.size,
+                durationSec: this.mediaEl && this.mediaEl.duration,
+                fetchArrayBuffer: fetchSignal => this.fetchAudioArrayBuffer(fetchSignal),
+                signal,
+            });
+            this.handleClientWaveformDecodeResult(result, controller, signal);
+        } catch (error) {
+            if (error && error.name === 'AbortError') {
+                this.handleClientWaveformDecodeResult({ status: 'cancelled' }, controller, signal);
+                return;
+            }
+
+            this.handleClientWaveformDecodeResult(
+                {
+                    error: {
+                        code: 'LOAD_FAILED',
+                        message: error instanceof Error ? error.message : 'Waveform decode failed',
+                    },
+                    retryable: true,
+                    status: 'failed',
+                },
+                controller,
+                signal,
+            );
+        }
+    }
+
+    /**
+     * Apply peaks, or record a retryable failure for overlay play.
+     *
+     * @param {import('./waveform/types').ClientDecodeResult} result
+     * @param {AbortController} controller in-flight controller for this attempt
+     * @param {AbortSignal} signal
+     * @return {void}
+     */
+    handleClientWaveformDecodeResult(result, controller, signal) {
+        if (!result || this.destroyed || signal.aborted || this.waveformDecodeController !== controller) {
+            return;
+        }
+
+        if (result.status === 'ready') {
+            this.waveformPeaks = result.payload.peaks;
+            this.isWaveformDecodeRetryPending = false;
+            this.renderUI();
+            return;
+        }
+
+        if (result.status === 'cancelled') {
+            return;
+        }
+
+        if (result.status === 'failed' && result.retryable && !this.hasUsedWaveformDecodePlayRetry) {
+            this.isWaveformDecodeRetryPending = true;
+        }
+    }
 
     /**
      * @inheritdoc
