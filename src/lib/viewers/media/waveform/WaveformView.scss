@@ -34,7 +34,7 @@
     height: 150px;
     pointer-events: none;
     background: linear-gradient(#2487ff, #006bed);
-    border-radius: 999px;
+    border-radius: 1px;
 
     // Spread stroke instead of border: border-box on .bp-container * would collapse the 2px fill.
     box-shadow: 0 0 0 1px #222, 0 0 10px 0 rgb(36 135 255 / 30%);

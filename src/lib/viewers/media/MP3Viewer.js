@@ -3,11 +3,15 @@ import { VIEWER_EVENT } from '../../events';
 import MediaBaseViewer from './MediaBaseViewer';
 import MP3Controls from './MP3Controls';
 import MP3ControlsRoot from './MP3ControlsRoot';
-import { errorFromUnknown, isAbortError, WaveformLoadError } from './waveform/createWaveformLoader';
-import { isRetryableWaveformError } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
+
+function createLoadFailedError(message) {
+    const error = new Error(message);
+    error.name = 'LOAD_FAILED';
+    return error;
+}
 
 class MP3Viewer extends MediaBaseViewer {
     /**
@@ -199,12 +203,11 @@ class MP3Viewer extends MediaBaseViewer {
      */
     async fetchAudioArrayBuffer(signal) {
         if (this.mediaBlobUrl) {
-            return fetch(this.mediaBlobUrl, { signal }).then(response => {
-                if (!response.ok) {
-                    throw new WaveformLoadError('LOAD_FAILED', `Waveform fetch failed (${response.status})`);
-                }
-                return response.arrayBuffer();
-            });
+            const response = await fetch(this.mediaBlobUrl, { signal });
+            if (!response.ok) {
+                throw createLoadFailedError(`Waveform fetch failed (${response.status})`);
+            }
+            return response.arrayBuffer();
         }
 
         const template =
@@ -212,21 +215,19 @@ class MP3Viewer extends MediaBaseViewer {
             this.options.representation.content &&
             this.options.representation.content.url_template;
         if (!template) {
-            return Promise.reject(new WaveformLoadError('LOAD_FAILED', 'Waveform fetch URL is missing'));
+            throw createLoadFailedError('Waveform fetch URL is missing');
         }
 
-        const request = this.api.get(this.createContentUrlV2(template), {
+        const data = await this.api.get(this.createContentUrlV2(template), {
             headers: this.appendAuthHeader(),
             signal,
             type: 'arraybuffer',
         });
 
-        return request.then(data => {
-            if (data instanceof ArrayBuffer) {
-                return data;
-            }
-            throw new WaveformLoadError('LOAD_FAILED', 'Waveform fetch did not return binary data');
-        });
+        if (data instanceof ArrayBuffer) {
+            return data;
+        }
+        throw createLoadFailedError('Waveform fetch did not return binary data');
     }
 
     abortClientWaveformDecode() {
@@ -267,16 +268,18 @@ class MP3Viewer extends MediaBaseViewer {
             });
             this.handleClientWaveformDecodeResult(result, controller, signal);
         } catch (error) {
-            if (isAbortError(error)) {
+            if (error && error.name === 'AbortError') {
                 this.handleClientWaveformDecodeResult({ status: 'cancelled' }, controller, signal);
                 return;
             }
 
-            const waveformError = errorFromUnknown(error, 'LOAD_FAILED');
             this.handleClientWaveformDecodeResult(
                 {
-                    error: waveformError,
-                    retryable: isRetryableWaveformError(waveformError.code),
+                    error: {
+                        code: 'LOAD_FAILED',
+                        message: error instanceof Error ? error.message : 'Waveform decode failed',
+                    },
+                    retryable: true,
                     status: 'failed',
                 },
                 controller,

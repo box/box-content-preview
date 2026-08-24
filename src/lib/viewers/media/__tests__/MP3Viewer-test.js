@@ -6,7 +6,6 @@ import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
 import { VIEWER_EVENT } from '../../../events';
-import { WaveformLoadError } from '../waveform/createWaveformLoader';
 import { loadPeaks } from '../waveform/decode';
 
 jest.mock('../waveform/decode', () => ({
@@ -466,8 +465,12 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.isWaveformDecodeRetryPending).toBe(true);
         });
 
-        test('should not retry overlay play when the thrown error is not retryable', async () => {
-            mp3.importWaveformDecode.mockRejectedValue(new WaveformLoadError('INVALID_PAYLOAD', 'bad payload'));
+        test('should not retry overlay play when decode failure is not retryable', async () => {
+            loadPeaks.mockResolvedValue({
+                error: { code: 'INVALID_PAYLOAD', message: 'bad payload' },
+                retryable: false,
+                status: 'failed',
+            });
 
             await mp3.startClientWaveformDecode();
 
@@ -517,9 +520,31 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.mediaBlobUrl = null;
             mp3.options.representation = {};
 
-            await expect(mp3.fetchAudioArrayBuffer(new AbortController().signal)).rejects.toBeInstanceOf(
-                WaveformLoadError,
-            );
+            await expect(mp3.fetchAudioArrayBuffer(new AbortController().signal)).rejects.toMatchObject({
+                name: 'LOAD_FAILED',
+            });
+        });
+
+        test('should fetch via authenticated GET when no blob URL is available', async () => {
+            const buffer = new ArrayBuffer(8);
+            const { signal } = new AbortController();
+            mp3.mediaBlobUrl = null;
+            mp3.options.representation = {
+                content: { url_template: 'https://example.com/audio.mp3' },
+            };
+            mp3.api = { get: jest.fn().mockResolvedValue(buffer) };
+            jest.spyOn(mp3, 'createContentUrlV2').mockReturnValue('https://example.com/audio.mp3?auth');
+            jest.spyOn(mp3, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer t' });
+
+            const result = await mp3.fetchAudioArrayBuffer(signal);
+
+            expect(result).toBe(buffer);
+            expect(mp3.createContentUrlV2).toHaveBeenCalledWith('https://example.com/audio.mp3');
+            expect(mp3.api.get).toHaveBeenCalledWith('https://example.com/audio.mp3?auth', {
+                headers: { Authorization: 'Bearer t' },
+                signal,
+                type: 'arraybuffer',
+            });
         });
     });
 });
