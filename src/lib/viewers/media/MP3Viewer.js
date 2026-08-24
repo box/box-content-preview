@@ -1,5 +1,5 @@
 import React from 'react';
-import { MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 import MediaBaseViewer from './MediaBaseViewer';
 import MP3Controls from './MP3Controls';
 import MP3ControlsRoot from './MP3ControlsRoot';
@@ -286,7 +286,7 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Apply peaks, record a retryable failure for overlay play, or emit a degrade metric.
+     * Apply peaks, or record a retryable failure for overlay play.
      *
      * @param {Object} result loadPeaks / runClientDecode result
      * @param {AbortController} controller in-flight controller for this attempt
@@ -312,26 +312,6 @@ class MP3Viewer extends MediaBaseViewer {
         if (result.status === 'failed' && result.retryable && !this.hasUsedWaveformDecodePlayRetry) {
             this.isWaveformDecodeRetryPending = true;
         }
-
-        this.emitWaveformDecodeMetric(result);
-    }
-
-    /**
-     * @param {Object} result capped or failed loadPeaks result
-     * @return {void}
-     */
-    emitWaveformDecodeMetric(result) {
-        const metricData = result.reason
-            ? {
-                  code: result.error && result.error.code,
-                  reason: result.reason,
-                  status: result.status,
-              }
-            : {
-                  code: result.error && result.error.code,
-                  status: result.status,
-              };
-        this.emitMetric(MEDIA_METRIC_EVENTS.waveformDecode, metricData);
     }
 
     /**

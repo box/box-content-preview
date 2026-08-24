@@ -5,7 +5,7 @@ import MP3ControlsV2 from '../MP3ControlsV2';
 import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
-import { MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../../events';
+import { VIEWER_EVENT } from '../../../events';
 import { WaveformLoadError } from '../waveform/createWaveformLoader';
 import { loadPeaks } from '../waveform/decode';
 
@@ -401,7 +401,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.mediaEl = { duration: 30 };
             mp3.options.file = { id: 1, size: 1024 };
             jest.spyOn(mp3, 'renderUI').mockImplementation();
-            jest.spyOn(mp3, 'emitMetric').mockImplementation();
         });
 
         test('should apply decoded peaks when loadPeaks is ready', async () => {
@@ -414,7 +413,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.waveformPeaks).toEqual([0.2, 0.8]);
             expect(mp3.renderUI).toBeCalled();
-            expect(mp3.emitMetric).not.toBeCalled();
         });
 
         test('should keep empty peaks when decode is skipped as capped', async () => {
@@ -422,13 +420,9 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.renderUI).not.toBeCalled();
-            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                code: 'CAP_EXCEEDED',
-                status: 'capped',
-            });
         });
 
-        test('should include skip reason on the metric when metadata is missing', async () => {
+        test('should keep empty peaks when metadata is missing', async () => {
             loadPeaks.mockResolvedValue({
                 error: { code: 'UNAVAILABLE', message: 'missing' },
                 reason: 'missing_metadata',
@@ -439,11 +433,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
-            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                code: 'UNAVAILABLE',
-                reason: 'missing_metadata',
-                status: 'unavailable',
-            });
         });
 
         test('should keep empty peaks when decode fails', async () => {
@@ -458,10 +447,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.renderUI).not.toBeCalled();
             expect(mp3.isWaveformDecodeRetryPending).toBe(true);
-            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                code: 'LOAD_FAILED',
-                status: 'failed',
-            });
         });
 
         test('should not decode when v2 is off', async () => {
@@ -479,10 +464,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.isWaveformDecodeRetryPending).toBe(true);
-            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                code: 'LOAD_FAILED',
-                status: 'failed',
-            });
         });
 
         test('should not retry overlay play when the thrown error is not retryable', async () => {
@@ -491,10 +472,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
             await mp3.startClientWaveformDecode();
 
             expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
-            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                code: 'INVALID_PAYLOAD',
-                status: 'failed',
-            });
         });
 
         test('should abort an in-flight decode on destroy', () => {
