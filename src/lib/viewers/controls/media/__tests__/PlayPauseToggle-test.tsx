@@ -40,6 +40,14 @@ describe('PlayPauseToggle', () => {
             expect(toggle).toBeInTheDocument();
         });
 
+        test('should hide skip buttons when hasSkipButtons is false', async () => {
+            getWrapper({ hasSkipButtons: false });
+
+            expect(await getToggle()).toBeInTheDocument();
+            expect(screen.queryByTitle(__('media_skip_forward'))).not.toBeInTheDocument();
+            expect(screen.queryByTitle(__('media_skip_backward'))).not.toBeInTheDocument();
+        });
+
         test.each`
             isPlaying | icon             | title
             ${true}   | ${'IconPause24'} | ${'Pause'}

@@ -27,6 +27,21 @@
         right: 10px;
     }
 
+    &.bp-media--v2 {
+        .bp-media-container,
+        .bp-media-container--v2 {
+            width: 100%;
+            max-width: none;
+            height: 100%;
+            min-height: 0;
+            padding: 0;
+        }
+
+        audio {
+            display: none;
+        }
+    }
+
     .bp-media-controls-wrapper {
         background: $black;
         visibility: visible;

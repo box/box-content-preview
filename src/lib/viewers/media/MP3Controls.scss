@@ -19,8 +19,5 @@
 }
 
 .bp-MP3Controls-settings {
-    .bp-SettingsToggle {
-        width: $bp-MediaControl-width;
-        height: $bp-MediaControl-height;
-    }
+    @include bp-VideoControls-settings;
 }
