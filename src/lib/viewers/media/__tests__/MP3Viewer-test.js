@@ -5,7 +5,13 @@ import MP3ControlsV2 from '../MP3ControlsV2';
 import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
-import { VIEWER_EVENT } from '../../../events';
+import { MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../../events';
+import { loadPeaks } from '../waveform/decode';
+import { WaveformLoadError } from '../waveform/createWaveformLoader';
+
+jest.mock('../waveform/decode', () => ({
+    loadPeaks: jest.fn(() => Promise.resolve({ status: 'capped', error: { code: 'CAP_EXCEEDED', message: 'skip' } })),
+}));
 
 let mp3;
 
@@ -30,6 +36,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
         };
         mp3.containerEl = containerEl;
         jest.spyOn(MP3Viewer.prototype, 'importV2Controls').mockResolvedValue({ default: MP3ControlsV2 });
+        jest.spyOn(MP3Viewer.prototype, 'importWaveformDecode').mockResolvedValue({ loadPeaks });
     });
 
     afterEach(() => {
@@ -65,6 +72,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.wrapperEl).toHaveClass('bp-media--v2');
             expect(mp3.mediaContainerEl).toHaveClass('bp-media-container--v2');
             expect(mp3.isAudioPlayerV2).toBe(true);
+            expect(mp3.importWaveformDecode).toBeCalled();
         });
 
         test('should not apply v2 classes when React controls are off', () => {
@@ -211,11 +219,26 @@ describe('lib/viewers/media/MP3Viewer', () => {
     describe('handlePlayRequest()', () => {
         test('should remember the play request and toggle playback', () => {
             jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
 
             mp3.handlePlayRequest();
 
             expect(mp3.userRequestedPlay).toBe(true);
             expect(mp3.togglePlay).toBeCalled();
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should retry decode once after a retryable failure', () => {
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            mp3.isWaveformDecodeRetryPending = true;
+
+            mp3.handlePlayRequest();
+            mp3.handlePlayRequest();
+
+            expect(mp3.startClientWaveformDecode).toBeCalledTimes(1);
+            expect(mp3.hasUsedWaveformDecodePlayRetry).toBe(true);
+            expect(mp3.isWaveformDecodeRetryPending).toBe(false);
         });
     });
 
@@ -224,12 +247,14 @@ describe('lib/viewers/media/MP3Viewer', () => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
             mp3.isAudioPlayerV2 = true;
             mp3.userRequestedPlay = true;
-            jest.spyOn(mp3, 'play').mockImplementation();
+            const order = [];
+            jest.spyOn(mp3, 'play').mockImplementation(() => order.push('play'));
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation(() => order.push('decode'));
 
             mp3.loadeddataHandler();
 
             expect(MediaBaseViewer.prototype.loadeddataHandler).toBeCalled();
-            expect(mp3.play).toBeCalled();
+            expect(order).toEqual(['play', 'decode']);
         });
 
         test('should not auto-start playback when play was not requested', () => {
@@ -240,6 +265,17 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadeddataHandler();
 
             expect(mp3.play).not.toBeCalled();
+        });
+
+        test('should start client decode for v2 after metadata', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'play').mockImplementation();
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.startClientWaveformDecode).toBeCalled();
         });
     });
 
@@ -353,6 +389,160 @@ describe('lib/viewers/media/MP3Viewer', () => {
             jest.spyOn(mp3, 'pause').mockImplementation();
             mp3.handleAutoplayFail();
             expect(mp3.pause).toBeCalled();
+        });
+    });
+
+    describe('startClientWaveformDecode()', () => {
+        beforeEach(() => {
+            loadPeaks.mockReset();
+            loadPeaks.mockResolvedValue({ status: 'capped', error: { code: 'CAP_EXCEEDED', message: 'skip' } });
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaks = [];
+            mp3.mediaEl = { duration: 30 };
+            mp3.options.file = { id: 1, size: 1024 };
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emitMetric').mockImplementation();
+        });
+
+        test('should apply decoded peaks when loadPeaks is ready', async () => {
+            loadPeaks.mockResolvedValue({
+                status: 'ready',
+                payload: { peaks: [0.2, 0.8] },
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([0.2, 0.8]);
+            expect(mp3.renderUI).toBeCalled();
+            expect(mp3.emitMetric).not.toBeCalled();
+        });
+
+        test('should keep empty peaks when decode is skipped as capped', async () => {
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'capped',
+                code: 'CAP_EXCEEDED',
+            });
+        });
+
+        test('should include skip reason on the metric when metadata is missing', async () => {
+            loadPeaks.mockResolvedValue({
+                status: 'unavailable',
+                error: { code: 'UNAVAILABLE', message: 'missing' },
+                reason: 'missing_metadata',
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'unavailable',
+                code: 'UNAVAILABLE',
+                reason: 'missing_metadata',
+            });
+        });
+
+        test('should keep empty peaks when decode fails', async () => {
+            loadPeaks.mockResolvedValue({
+                status: 'failed',
+                error: { code: 'LOAD_FAILED', message: 'network' },
+                retryable: true,
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.isWaveformDecodeRetryPending).toBe(true);
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'failed',
+                code: 'LOAD_FAILED',
+            });
+        });
+
+        test('should not decode when v2 is off', async () => {
+            mp3.isAudioPlayerV2 = false;
+
+            await mp3.startClientWaveformDecode();
+
+            expect(loadPeaks).not.toBeCalled();
+        });
+
+        test('should map a decode-chunk load failure to LOAD_FAILED', async () => {
+            mp3.importWaveformDecode.mockRejectedValue(new Error('chunk failed'));
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.isWaveformDecodeRetryPending).toBe(true);
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'failed',
+                code: 'LOAD_FAILED',
+            });
+        });
+
+        test('should not retry overlay play when the thrown error is not retryable', async () => {
+            mp3.importWaveformDecode.mockRejectedValue(new WaveformLoadError('INVALID_PAYLOAD', 'bad payload'));
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
+            expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
+                status: 'failed',
+                code: 'INVALID_PAYLOAD',
+            });
+        });
+
+        test('should abort an in-flight decode on destroy', () => {
+            loadPeaks.mockReturnValue(new Promise(() => undefined));
+            const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
+
+            mp3.startClientWaveformDecode();
+            const { signal } = mp3.waveformDecodeController;
+            mp3.destroy();
+
+            expect(signal.aborted).toBe(true);
+            expect(mp3.waveformDecodeController).toBeNull();
+            superDestroy.mockRestore();
+        });
+    });
+
+    describe('fetchAudioArrayBuffer()', () => {
+        const originalFetch = global.fetch;
+
+        afterEach(() => {
+            global.fetch = originalFetch;
+        });
+
+        test('should prefer an existing blob URL over a second API GET', async () => {
+            mp3.mediaBlobUrl = 'blob:audio';
+            mp3.api = { get: jest.fn() };
+            global.fetch = jest.fn().mockResolvedValue({
+                ok: true,
+                arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+            });
+
+            const buffer = await mp3.fetchAudioArrayBuffer(new AbortController().signal);
+
+            expect(buffer).toBeInstanceOf(ArrayBuffer);
+            expect(global.fetch).toHaveBeenCalledWith(
+                'blob:audio',
+                expect.objectContaining({ signal: expect.any(AbortSignal) }),
+            );
+            expect(mp3.api.get).not.toHaveBeenCalled();
+        });
+
+        test('should reject when neither a blob URL nor a representation URL is available', async () => {
+            mp3.mediaBlobUrl = null;
+            mp3.options.representation = {};
+
+            await expect(mp3.fetchAudioArrayBuffer(new AbortController().signal)).rejects.toBeInstanceOf(
+                WaveformLoadError,
+            );
         });
     });
 });
