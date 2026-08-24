@@ -2,6 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+    GALLERY_GRID_PADDING_TOP,
     GALLERY_THUMB_MAX_WIDTH,
     GALLERY_THUMB_WIDTH_TIERS,
     GALLERY_TILE_DEFAULT_RATIO,
@@ -968,6 +969,7 @@ describe('GalleryGrid', () => {
                 });
                 expect(rows[0].querySelectorAll('[role="gridcell"]')).toHaveLength(3);
                 expect(rows[3].querySelectorAll('[role="gridcell"]')).toHaveLength(1);
+                expect(rows[0]).toHaveStyle({ transform: 'translateY(0px)' });
 
                 expect(screen.getAllByRole('gridcell')).toHaveLength(10);
                 expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-colindex', '1');
@@ -1043,6 +1045,23 @@ describe('GalleryGrid', () => {
 
                 expect(screen.getByLabelText('Page 5')).toHaveFocus();
                 expect(grid.scrollTop).toBe(0);
+            });
+
+            test('should scroll on ArrowDown when grid padding puts the next row below the fold', async () => {
+                const width = widthForColumns(3);
+                const { columns, tileWidth } = getGalleryLayout(width);
+                const nextRowStart = getRowStartOffset(1, 10, columns, tileWidth, () => GALLERY_TILE_DEFAULT_RATIO);
+                setViewport(width, Math.ceil(nextRowStart) + GALLERY_GRID_PADDING_TOP - 1);
+                getWrapper({ isAriaGridEnabled: true, currentPage: 2 });
+
+                const grid = screen.getByRole('grid');
+                Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
+                focusPage(2);
+
+                await userEvent.keyboard('{ArrowDown}');
+
+                expect(screen.getByLabelText('Page 5')).toHaveFocus();
+                expect(grid.scrollTop).toBeGreaterThan(0);
             });
 
             test('should move up a row on ArrowUp', async () => {

@@ -6,6 +6,8 @@
 
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
+
+    // Keep in sync with GALLERY_GRID_PADDING_TOP / GALLERY_GRID_PADDING_BOTTOM.
     padding: 40px;
     padding-bottom: 100px;
     overflow-y: auto;
@@ -109,7 +111,7 @@
     transition: opacity 0.15s;
 }
 
-// Placeholder 220:170 (height:width) → padding-top 129%. Keep in sync with GALLERY_TILE_DEFAULT_RATIO.
+// Default tile height is 129% of width (ratio 100/129). Keep in sync with GALLERY_TILE_DEFAULT_RATIO.
 .bp-gallery-tile-placeholder {
     display: block;
     width: 100%;

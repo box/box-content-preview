@@ -14,6 +14,7 @@ import { decodeKeydown, replacePlaceholders } from '../../util';
 import HighResThumbnailStore, { HighResRenderTask } from './HighResThumbnailStore';
 import {
     CONCURRENT_LOADS,
+    GALLERY_GRID_PADDING_TOP,
     GALLERY_HIGH_RES_CONCURRENCY,
     GALLERY_HIGH_RES_MAX_BYTES,
     GALLERY_HIGH_RES_MAX_PAGES,
@@ -85,8 +86,10 @@ function collectPageRatios(pageCount: number, getRatio: (pageNum: number) => num
     return ratios;
 }
 
-function isRowInScrollport(grid: HTMLElement, rowStart: number, rowEnd: number): boolean {
-    return grid.clientHeight > 0 && rowEnd > grid.scrollTop && rowStart < grid.scrollTop + grid.clientHeight;
+function isRowInScrollport(grid: HTMLElement, rowStart: number, rowEnd: number, scrollMargin: number): boolean {
+    const top = rowStart + scrollMargin;
+    const bottom = rowEnd + scrollMargin;
+    return grid.clientHeight > 0 && bottom > grid.scrollTop && top < grid.scrollTop + grid.clientHeight;
 }
 
 function shouldApplyPendingFocus(pending: PendingFocus, grid: HTMLElement | null): boolean {
@@ -398,6 +401,9 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         gap: GALLERY_TILE_GAP,
         getScrollElement: () => gridRef.current,
         overscan: GALLERY_VIRTUAL_OVERSCAN,
+        // CSS padding on the scroll container. Item offsets match scrollTop; subtract
+        // this from translateY so rows stay positioned inside the inner wrapper.
+        scrollMargin: GALLERY_GRID_PADDING_TOP,
         // Keep the selected row mounted so scrolling it offscreen does not drop keyboard focus.
         rangeExtractor: range => {
             const indexes = defaultRangeExtractor(range);
@@ -972,7 +978,7 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
                 const rowEnd = rowStart + getRowHeight(rowIndex, pages, columns, tileWidth, getRatioRef.current);
                 // auto: only move the window when the target row is offscreen. A pinned
                 // offscreen tile is still in the DOM, so presence must not skip the jump.
-                const inView = align === 'auto' && isRowInScrollport(grid, rowStart, rowEnd);
+                const inView = align === 'auto' && isRowInScrollport(grid, rowStart, rowEnd, GALLERY_GRID_PADDING_TOP);
                 if (!inView) {
                     pendingFocusRef.current = { page: pageNum, from: document.activeElement };
                     virtualizer.scrollToIndex(rowIndex, { align });
@@ -984,6 +990,14 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
             const tile = grid.querySelector(`[data-page="${pageNum}"]`) as HTMLElement | null;
             if (tile) {
                 tile.focus({ preventScroll: true });
+                return;
+            }
+
+            // Geometrically in view, but the virtualizer has not mounted the row yet.
+            if (isAriaGridEnabled && !preventScroll) {
+                pendingFocusRef.current = { page: pageNum, from: document.activeElement };
+                virtualizer.scrollToIndex(getRowIndex(pageNum, columnsRef.current) - 1, { align });
+                grid.dispatchEvent(new Event('scroll'));
             }
         },
         [isAriaGridEnabled, selectPage, virtualizer],
@@ -1138,7 +1152,7 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
                     style={{
                         height: `${virtualRow.size}px`,
                         left: `${rowLeft}px`,
-                        transform: `translateY(${virtualRow.start}px)`,
+                        transform: `translateY(${virtualRow.start - GALLERY_GRID_PADDING_TOP}px)`,
                         width: `${rowTrackWidth}px`,
                     }}
                 >

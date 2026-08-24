@@ -2,10 +2,12 @@ export const GALLERY_THUMB_MAX_WIDTH = 440;
 export const CONCURRENT_LOADS = 4;
 export const SCROLL_THROTTLE_MS = 200;
 
-// Keep in sync with GalleryGrid.scss row gap / min tile width.
+// Keep in sync with GalleryGrid.scss row gap / min tile width / grid padding.
 export const GALLERY_TILE_GAP = 16;
 export const GALLERY_TILE_MIN_WIDTH = 220;
-// Placeholder width:height. 220:170 (height:width) → padding-top 129% in GalleryGrid.scss.
+export const GALLERY_GRID_PADDING_TOP = 40;
+export const GALLERY_GRID_PADDING_BOTTOM = 100;
+// Default tile width/height. GalleryGrid.scss padding-top must stay 1/ratio (129%).
 export const GALLERY_TILE_DEFAULT_RATIO = 100 / 129;
 export const GALLERY_VIRTUAL_OVERSCAN = 3;
 
