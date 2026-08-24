@@ -211,13 +211,11 @@ class MP3Viewer extends MediaBaseViewer {
             return Promise.reject(new WaveformLoadError('LOAD_FAILED', 'Waveform fetch URL is missing'));
         }
 
-        const request = this.featureEnabled('migrateAccessTokenToHeader')
-            ? this.api.get(this.createContentUrlV2(template), {
-                  headers: this.appendAuthHeader(),
-                  signal,
-                  type: 'arraybuffer',
-              })
-            : this.api.get(this.createContentUrlWithAuthParams(template), { signal, type: 'arraybuffer' });
+        const request = this.api.get(this.createContentUrlV2(template), {
+            headers: this.appendAuthHeader(),
+            signal,
+            type: 'arraybuffer',
+        });
 
         return request.then(data => {
             if (data instanceof ArrayBuffer) {
@@ -297,7 +295,7 @@ class MP3Viewer extends MediaBaseViewer {
     /**
      * Apply peaks, record a retryable failure for overlay play, or emit a degrade metric.
      *
-     * @param {Object} result loadPeaks / probeDecode result
+     * @param {Object} result loadPeaks / runClientDecode result
      * @param {AbortController} controller in-flight controller for this attempt
      * @param {AbortSignal} signal
      * @return {void}

@@ -14,10 +14,10 @@ export const DURATION_MISMATCH_TOLERANCE_SEC = 1;
 export const PEAK_UNIT_MIN = 0;
 export const PEAK_UNIT_MAX = 1;
 
-/** Skip client PCM decode when the compressed file is larger than this. */
+/** Skip client decode when the compressed file is larger than this. */
 export const CLIENT_DECODE_MAX_COMPRESSED_BYTES = 6 * 1024 * 1024;
 
-/** Skip client PCM decode when media duration is longer than this. */
+/** Skip client decode when media duration is longer than this. */
 export const CLIENT_DECODE_MAX_DURATION_SEC = 5 * 60;
 
 /** Default overview resolution for client-generated peaks. */

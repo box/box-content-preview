@@ -1,25 +1,25 @@
 import { CLIENT_DECODE_MAX_COMPRESSED_BYTES, CLIENT_DECODE_MAX_DURATION_SEC } from '../constants';
 import { WaveformLoadError } from '../createWaveformLoader';
-import { canDecode, decodePcm, extractPeaks, loadPeaks, probeDecode } from '../decode';
+import { getDecodeDecision, decodeToPeaks, extractPeaks, loadPeaks, runClientDecode } from '../decode';
 
-function silentPcm(durationSec: number): Float32Array[] {
+function silentSamples(durationSec: number): Float32Array[] {
     const samples = Math.max(8, Math.floor(durationSec * 100));
     return [new Float32Array(samples)];
 }
 
-describe('canDecode', () => {
+describe('getDecodeDecision', () => {
     const underCap = {
         compressedBytes: 1024 * 1024,
         durationSec: 60,
     };
 
     test('should allow decode when size and duration are within limits', () => {
-        expect(canDecode(underCap)).toEqual({ isAllowed: true });
+        expect(getDecodeDecision(underCap)).toEqual({ isAllowed: true });
     });
 
     test('should allow decode at exact cap boundaries', () => {
         expect(
-            canDecode({
+            getDecodeDecision({
                 compressedBytes: CLIENT_DECODE_MAX_COMPRESSED_BYTES,
                 durationSec: CLIENT_DECODE_MAX_DURATION_SEC,
             }),
@@ -28,7 +28,7 @@ describe('canDecode', () => {
 
     test('should reject when compressed size is over the cap', () => {
         expect(
-            canDecode({
+            getDecodeDecision({
                 ...underCap,
                 compressedBytes: CLIENT_DECODE_MAX_COMPRESSED_BYTES + 1,
             }),
@@ -37,7 +37,7 @@ describe('canDecode', () => {
 
     test('should reject when duration is over the cap', () => {
         expect(
-            canDecode({
+            getDecodeDecision({
                 ...underCap,
                 durationSec: CLIENT_DECODE_MAX_DURATION_SEC + 0.1,
             }),
@@ -45,16 +45,16 @@ describe('canDecode', () => {
     });
 
     test('should reject when metadata is missing', () => {
-        expect(canDecode({})).toEqual({ isAllowed: false, reason: 'missing_metadata' });
-        expect(canDecode({ compressedBytes: 1000 })).toEqual({
+        expect(getDecodeDecision({})).toEqual({ isAllowed: false, reason: 'missing_metadata' });
+        expect(getDecodeDecision({ compressedBytes: 1000 })).toEqual({
             isAllowed: false,
             reason: 'missing_metadata',
         });
-        expect(canDecode({ durationSec: 10 })).toEqual({ isAllowed: false, reason: 'missing_metadata' });
+        expect(getDecodeDecision({ durationSec: 10 })).toEqual({ isAllowed: false, reason: 'missing_metadata' });
     });
 
     test('should honor cap overrides', () => {
-        expect(canDecode(underCap, { maxCompressedBytes: 512 })).toEqual({
+        expect(getDecodeDecision(underCap, { maxCompressedBytes: 512 })).toEqual({
             isAllowed: false,
             reason: 'compressed_size',
         });
@@ -97,7 +97,7 @@ describe('extractPeaks', () => {
     });
 });
 
-describe('decodePcm', () => {
+describe('decodeToPeaks', () => {
     const audioWindow = window as Window & {
         AudioContext?: unknown;
         webkitAudioContext?: unknown;
@@ -138,7 +138,7 @@ describe('decodePcm', () => {
     });
 
     test('should extract peaks from decodeAudioData before closing the context', async () => {
-        const result = await decodePcm(new ArrayBuffer(8), undefined, 3);
+        const result = await decodeToPeaks(new ArrayBuffer(8), undefined, 3);
 
         expect(result.durationSec).toBe(2);
         expect(result.peaks).toEqual([0, 0.5, 1]);
@@ -150,14 +150,16 @@ describe('decodePcm', () => {
         audioWindow.AudioContext = undefined;
         audioWindow.webkitAudioContext = undefined;
 
-        await expect(decodePcm(new ArrayBuffer(8))).rejects.toEqual(expect.objectContaining({ code: 'DECODE_FAILED' }));
+        await expect(decodeToPeaks(new ArrayBuffer(8))).rejects.toEqual(
+            expect.objectContaining({ code: 'DECODE_FAILED' }),
+        );
     });
 
     test('should throw when the signal is already aborted', async () => {
         const controller = new AbortController();
         controller.abort();
 
-        await expect(decodePcm(new ArrayBuffer(8), controller.signal)).rejects.toMatchObject({
+        await expect(decodeToPeaks(new ArrayBuffer(8), controller.signal)).rejects.toMatchObject({
             name: 'AbortError',
         });
         expect(audioWindow.AudioContext).not.toHaveBeenCalled();
@@ -166,7 +168,7 @@ describe('decodePcm', () => {
     test('should close AudioContext when aborted during decode', async () => {
         decodeAudioData.mockImplementation(() => new Promise(() => undefined));
         const controller = new AbortController();
-        const pending = decodePcm(new ArrayBuffer(8), controller.signal);
+        const pending = decodeToPeaks(new ArrayBuffer(8), controller.signal);
 
         await Promise.resolve();
         expect(audioWindow.AudioContext).toHaveBeenCalled();
@@ -182,20 +184,20 @@ describe('decodePcm', () => {
             error(new Error('bad mp3'));
         });
 
-        await expect(decodePcm(new ArrayBuffer(8))).rejects.toBeInstanceOf(WaveformLoadError);
+        await expect(decodeToPeaks(new ArrayBuffer(8))).rejects.toBeInstanceOf(WaveformLoadError);
     });
 });
 
-describe('probeDecode', () => {
+describe('runClientDecode', () => {
     test('should skip decode when compressed size is over the cap', async () => {
-        const decodePcmFn = jest.fn();
-        const result = await probeDecode({
+        const decodeToPeaksFn = jest.fn();
+        const result = await runClientDecode({
             compressedBytes: CLIENT_DECODE_MAX_COMPRESSED_BYTES + 1,
             durationSec: 30,
-            decodePcm: decodePcmFn,
+            decode: decodeToPeaksFn,
         });
 
-        expect(decodePcmFn).not.toHaveBeenCalled();
+        expect(decodeToPeaksFn).not.toHaveBeenCalled();
         expect(result.status).toBe('capped');
         expect(result.isDecodeSkipped).toBe(true);
         expect(result.reason).toBe('compressed_size');
@@ -206,26 +208,26 @@ describe('probeDecode', () => {
     });
 
     test('should skip decode when duration is over the cap', async () => {
-        const decodePcmFn = jest.fn();
-        const result = await probeDecode({
+        const decodeToPeaksFn = jest.fn();
+        const result = await runClientDecode({
             compressedBytes: 1024,
             durationSec: CLIENT_DECODE_MAX_DURATION_SEC + 1,
-            decodePcm: decodePcmFn,
+            decode: decodeToPeaksFn,
         });
 
-        expect(decodePcmFn).not.toHaveBeenCalled();
+        expect(decodeToPeaksFn).not.toHaveBeenCalled();
         expect(result.status).toBe('capped');
         expect(result.isDecodeSkipped).toBe(true);
         expect(result.reason).toBe('duration');
     });
 
     test('should skip decode as unavailable when metadata is missing', async () => {
-        const decodePcmFn = jest.fn();
-        const result = await probeDecode({
-            decodePcm: decodePcmFn,
+        const decodeToPeaksFn = jest.fn();
+        const result = await runClientDecode({
+            decode: decodeToPeaksFn,
         });
 
-        expect(decodePcmFn).not.toHaveBeenCalled();
+        expect(decodeToPeaksFn).not.toHaveBeenCalled();
         expect(result.status).toBe('unavailable');
         expect(result.isDecodeSkipped).toBe(true);
         expect(result.reason).toBe('missing_metadata');
@@ -234,14 +236,13 @@ describe('probeDecode', () => {
 
     test('should extract and validate peaks when under the cap', async () => {
         const durationSec = 8;
-        const result = await probeDecode({
+        const result = await runClientDecode({
             compressedBytes: 2048,
             durationSec,
-            peakCount: 8,
-            decodePcm: async () => ({
-                durationSec,
-                peakSource: silentPcm(durationSec),
-            }),
+            decode: async () => {
+                const peaks = extractPeaks(silentSamples(durationSec), 8);
+                return { durationSec, peaks, extractMs: 0 };
+            },
         });
 
         expect(result.status).toBe('ready');
@@ -258,10 +259,10 @@ describe('probeDecode', () => {
     test('should map named LOAD_FAILED throws without treating them as DECODE_FAILED', async () => {
         const error = new Error('network');
         error.name = 'LOAD_FAILED';
-        const result = await probeDecode({
+        const result = await runClientDecode({
             compressedBytes: 2048,
             durationSec: 8,
-            decodePcm: async () => {
+            decode: async () => {
                 throw error;
             },
         });
@@ -274,10 +275,10 @@ describe('probeDecode', () => {
     });
 
     test('should map decode throws to failed DECODE_FAILED', async () => {
-        const result = await probeDecode({
+        const result = await runClientDecode({
             compressedBytes: 2048,
             durationSec: 8,
-            decodePcm: async () => {
+            decode: async () => {
                 throw new WaveformLoadError('DECODE_FAILED', 'decodeAudioData failed');
             },
         });
@@ -291,17 +292,17 @@ describe('probeDecode', () => {
     });
 
     test('should cancel when the signal is already aborted', async () => {
-        const decodePcmFn = jest.fn();
+        const decodeToPeaksFn = jest.fn();
         const controller = new AbortController();
         controller.abort();
-        const result = await probeDecode({
+        const result = await runClientDecode({
             compressedBytes: 2048,
             durationSec: 8,
-            decodePcm: decodePcmFn,
+            decode: decodeToPeaksFn,
             signal: controller.signal,
         });
 
-        expect(decodePcmFn).not.toHaveBeenCalled();
+        expect(decodeToPeaksFn).not.toHaveBeenCalled();
         expect(result.status).toBe('cancelled');
         expect(result.isDecodeSkipped).toBe(true);
     });

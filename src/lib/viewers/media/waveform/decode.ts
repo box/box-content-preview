@@ -19,29 +19,22 @@ export type MediaInfo = {
     durationSec?: number;
 };
 
-export type ExtractedClientDecodeOutput = {
+export type ClientDecodeOutput = {
     durationSec: number;
     peaks: number[];
     extractMs: number;
 };
 
-export type DeferredClientDecodeOutput = {
-    durationSec: number;
-    peakSource: AudioBuffer | Float32Array[];
-};
-
-export type ClientDecodeOutput = ExtractedClientDecodeOutput | DeferredClientDecodeOutput;
-
 export type DecodeToPeaksFn = (signal: AbortSignal) => Promise<ClientDecodeOutput>;
 
-export type ProbeTimings = {
+export type DecodeTimings = {
     decodeMs: number | null;
     extractMs: number | null;
 };
 
-export type ProbeResult = WaveformLoadState & {
+export type ClientDecodeResult = WaveformLoadState & {
     isDecodeSkipped: boolean;
-    timings: ProbeTimings;
+    timings: DecodeTimings;
     reason?: DecodeSkipReason;
     error?: WaveformError;
 };
@@ -62,6 +55,20 @@ type DecodeAudioContext = {
     ) => Promise<AudioBuffer> | void;
 };
 
+const EMPTY_TIMINGS: DecodeTimings = { decodeMs: null, extractMs: null };
+
+function now(): number {
+    return typeof performance !== 'undefined' ? performance.now() : Date.now();
+}
+
+function createAbortError(): DOMException {
+    return new DOMException('Aborted', 'AbortError');
+}
+
+function isPositiveFinite(value: unknown): value is number {
+    return typeof value === 'number' && Number.isFinite(value) && value > 0;
+}
+
 function getAudioContextConstructor(): (new () => DecodeAudioContext) | undefined {
     if (typeof window === 'undefined') {
         return undefined;
@@ -71,10 +78,6 @@ function getAudioContextConstructor(): (new () => DecodeAudioContext) | undefine
         webkitAudioContext?: new () => DecodeAudioContext;
     };
     return AudioContext || webkitAudioContext;
-}
-
-function isExtractedClientDecodeOutput(output: ClientDecodeOutput): output is ExtractedClientDecodeOutput {
-    return 'peaks' in output;
 }
 
 function isAbortError(error: unknown): boolean {
@@ -94,14 +97,13 @@ function getDecodeSkipMessage(reason: DecodeSkipReason): string {
     return 'Compressed size or duration is missing; skipping client decode';
 }
 
-function createSkippedDecodeResult(reason: DecodeSkipReason): ProbeResult {
-    const emptyTimings: ProbeTimings = { decodeMs: null, extractMs: null };
+function createSkippedDecodeResult(reason: DecodeSkipReason): ClientDecodeResult {
     if (reason === 'missing_metadata') {
         return {
             status: 'unavailable',
             error: { code: 'UNAVAILABLE', message: getDecodeSkipMessage(reason) },
             isDecodeSkipped: true,
-            timings: emptyTimings,
+            timings: EMPTY_TIMINGS,
             reason,
         };
     }
@@ -109,7 +111,7 @@ function createSkippedDecodeResult(reason: DecodeSkipReason): ProbeResult {
     return {
         ...createCappedWaveformState(getDecodeSkipMessage(reason)),
         isDecodeSkipped: true,
-        timings: emptyTimings,
+        timings: EMPTY_TIMINGS,
         reason,
     };
 }
@@ -125,22 +127,32 @@ function errorFromUnknown(error: unknown): WaveformError {
     return { code: 'DECODE_FAILED', message };
 }
 
-function decodeWithContext(context: DecodeAudioContext, buffer: ArrayBuffer): Promise<AudioBuffer> {
+function decodeWithContext(
+    context: DecodeAudioContext,
+    buffer: ArrayBuffer,
+    signal?: AbortSignal,
+): Promise<AudioBuffer> {
     return new Promise((resolve, reject) => {
         let isSettled = false;
+        let onAbort: () => void = () => undefined;
+
         const succeed = (decoded: AudioBuffer) => {
-            if (!isSettled) {
-                isSettled = true;
-                resolve(decoded);
+            if (isSettled) {
+                return;
             }
+            isSettled = true;
+            signal?.removeEventListener('abort', onAbort);
+            resolve(decoded);
         };
+
         const fail = (error?: unknown) => {
             if (isSettled) {
                 return;
             }
             isSettled = true;
+            signal?.removeEventListener('abort', onAbort);
             if (isAbortError(error)) {
-                reject(error);
+                reject(error instanceof DOMException ? error : createAbortError());
                 return;
             }
             reject(
@@ -149,6 +161,15 @@ function decodeWithContext(context: DecodeAudioContext, buffer: ArrayBuffer): Pr
                     : new WaveformLoadError('DECODE_FAILED', 'decodeAudioData failed'),
             );
         };
+
+        onAbort = () => fail(createAbortError());
+
+        if (signal?.aborted) {
+            fail(createAbortError());
+            return;
+        }
+
+        signal?.addEventListener('abort', onAbort, { once: true });
 
         try {
             const maybePromise = context.decodeAudioData(buffer, succeed, fail);
@@ -163,21 +184,14 @@ function decodeWithContext(context: DecodeAudioContext, buffer: ArrayBuffer): Pr
 
 /**
  * Decide whether to run decodeAudioData. Either cap failing, or unknown size/duration,
- * skips decode so playback is never blocked by PCM expansion.
+ * skips decode so playback is never blocked by expanding the full audio buffer.
  */
-export function canDecode(media: MediaInfo, caps: WaveformCaps = {}): DecodeDecision {
+export function getDecodeDecision(media: MediaInfo, caps: WaveformCaps = {}): DecodeDecision {
     const maxCompressedBytes = caps.maxCompressedBytes ?? CLIENT_DECODE_MAX_COMPRESSED_BYTES;
     const maxDurationSec = caps.maxDurationSec ?? CLIENT_DECODE_MAX_DURATION_SEC;
     const { compressedBytes, durationSec } = media;
 
-    if (
-        typeof compressedBytes !== 'number' ||
-        !Number.isFinite(compressedBytes) ||
-        compressedBytes <= 0 ||
-        typeof durationSec !== 'number' ||
-        !Number.isFinite(durationSec) ||
-        durationSec <= 0
-    ) {
+    if (!isPositiveFinite(compressedBytes) || !isPositiveFinite(durationSec)) {
         return { isAllowed: false, reason: 'missing_metadata' };
     }
 
@@ -193,18 +207,16 @@ export function canDecode(media: MediaInfo, caps: WaveformCaps = {}): DecodeDeci
 }
 
 /**
- * Collapse PCM channels to one unsigned peak per time bucket (max abs, then clamp to unit).
+ * Collapse audio channels to one unsigned peak per time bucket (max abs, then clamp to unit).
  * Accepts an AudioBuffer so callers can extract before closing the AudioContext.
  */
 export function extractPeaks(
-    peakSource: AudioBuffer | Float32Array[],
+    audio: AudioBuffer | Float32Array[],
     peakCount: number = CLIENT_DECODE_PEAK_COUNT,
 ): number[] {
-    const channels: ArrayLike<number>[] = Array.isArray(peakSource)
-        ? peakSource
-        : Array.from({ length: peakSource.numberOfChannels }, (_, channelIndex) =>
-              peakSource.getChannelData(channelIndex),
-          );
+    const channels: ArrayLike<number>[] = Array.isArray(audio)
+        ? audio
+        : Array.from({ length: audio.numberOfChannels }, (_, channelIndex) => audio.getChannelData(channelIndex));
 
     if (peakCount <= 0 || channels.length === 0) {
         return [];
@@ -240,15 +252,15 @@ export function extractPeaks(
 
 /**
  * Decode compressed audio and extract unit peaks while the AudioBuffer is live.
- * Does not attach a media element or fetch a URL. Does not copy PCM channels.
+ * Does not attach a media element or fetch a URL. Does not copy channel data.
  */
-export async function decodePcm(
+export async function decodeToPeaks(
     arrayBuffer: ArrayBuffer,
     signal?: AbortSignal,
     peakCount: number = CLIENT_DECODE_PEAK_COUNT,
-): Promise<ExtractedClientDecodeOutput> {
+): Promise<ClientDecodeOutput> {
     if (signal?.aborted) {
-        throw new DOMException('Aborted', 'AbortError');
+        throw createAbortError();
     }
 
     const AudioContextConstructor = getAudioContextConstructor();
@@ -257,62 +269,26 @@ export async function decodePcm(
     }
 
     const context = new AudioContextConstructor();
-    let rejectForAbort: ((error: DOMException) => void) | undefined;
-    const abortDecode = (): void => {
-        context.close().catch(() => {
-            // Context may already be closed.
-        });
-        if (rejectForAbort) {
-            rejectForAbort(new DOMException('Aborted', 'AbortError'));
-        }
-    };
-
-    if (signal) {
-        signal.addEventListener('abort', abortDecode, { once: true });
-    }
 
     try {
-        const audioBuffer = await new Promise<AudioBuffer>((resolve, reject) => {
-            if (signal?.aborted) {
-                reject(new DOMException('Aborted', 'AbortError'));
-                return;
-            }
-
-            rejectForAbort = reject;
-
-            const fail = (error?: unknown): void => {
-                if (signal?.aborted || isAbortError(error)) {
-                    reject(error instanceof DOMException ? error : new DOMException('Aborted', 'AbortError'));
-                    return;
-                }
-                reject(error);
-            };
-
-            decodeWithContext(context, arrayBuffer.slice(0)).then(resolve, fail);
-        });
-
+        const audioBuffer = await decodeWithContext(context, arrayBuffer.slice(0), signal);
         if (signal?.aborted) {
-            throw new DOMException('Aborted', 'AbortError');
+            throw createAbortError();
         }
 
-        const extractStarted = typeof performance !== 'undefined' ? performance.now() : Date.now();
+        const extractStarted = now();
         const peaks = extractPeaks(audioBuffer, peakCount);
-        const extractMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - extractStarted;
-
         return {
             durationSec: audioBuffer.duration,
             peaks,
-            extractMs,
+            extractMs: now() - extractStarted,
         };
     } catch (error) {
         if (signal?.aborted || isAbortError(error)) {
-            throw error instanceof DOMException ? error : new DOMException('Aborted', 'AbortError');
+            throw createAbortError();
         }
         throw error;
     } finally {
-        if (signal) {
-            signal.removeEventListener('abort', abortDecode);
-        }
         try {
             await context.close();
         } catch {
@@ -322,19 +298,17 @@ export async function decodePcm(
 }
 
 /**
- * Measures a client-decode attempt against the V1 waveform contract.
+ * Run a client-decode attempt against the V1 waveform contract.
  * Decode is not invoked when size or duration is over the cap (or unknown).
  */
-export async function probeDecode(options: {
+export async function runClientDecode(options: {
     compressedBytes?: number;
     durationSec?: number;
-    decodePcm: DecodeToPeaksFn;
-    peakCount?: number;
+    decode: DecodeToPeaksFn;
     caps?: WaveformCaps;
     signal?: AbortSignal;
-}): Promise<ProbeResult> {
-    const emptyTimings: ProbeTimings = { decodeMs: null, extractMs: null };
-    const decision = canDecode(
+}): Promise<ClientDecodeResult> {
+    const decision = getDecodeDecision(
         { compressedBytes: options.compressedBytes, durationSec: options.durationSec },
         options.caps,
     );
@@ -344,18 +318,18 @@ export async function probeDecode(options: {
     }
 
     if (options.signal?.aborted) {
-        return { status: 'cancelled', isDecodeSkipped: true, timings: emptyTimings };
+        return { status: 'cancelled', isDecodeSkipped: true, timings: EMPTY_TIMINGS };
     }
 
     const signal = options.signal ?? new AbortController().signal;
-    const decodeStarted = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const decodeStarted = now();
 
     let decodeOutput: ClientDecodeOutput;
     try {
-        decodeOutput = await options.decodePcm(signal);
+        decodeOutput = await options.decode(signal);
     } catch (error) {
         if (signal.aborted || isAbortError(error)) {
-            return { status: 'cancelled', isDecodeSkipped: false, timings: emptyTimings };
+            return { status: 'cancelled', isDecodeSkipped: false, timings: EMPTY_TIMINGS };
         }
         const waveformError = errorFromUnknown(error);
         return {
@@ -364,13 +338,13 @@ export async function probeDecode(options: {
             retryable: isRetryableWaveformError(waveformError.code),
             isDecodeSkipped: false,
             timings: {
-                decodeMs: (typeof performance !== 'undefined' ? performance.now() : Date.now()) - decodeStarted,
+                decodeMs: now() - decodeStarted,
                 extractMs: null,
             },
         };
     }
 
-    const decodeMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - decodeStarted;
+    const decodeMs = now() - decodeStarted;
 
     if (signal.aborted) {
         return {
@@ -380,21 +354,11 @@ export async function probeDecode(options: {
         };
     }
 
-    let peaks: number[];
-    let extractMs: number;
-    if (isExtractedClientDecodeOutput(decodeOutput)) {
-        ({ peaks, extractMs } = decodeOutput);
-    } else {
-        const extractStarted = typeof performance !== 'undefined' ? performance.now() : Date.now();
-        peaks = extractPeaks(decodeOutput.peakSource, options.peakCount ?? CLIENT_DECODE_PEAK_COUNT);
-        extractMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - extractStarted;
-    }
-
     const validation = validateWaveformPayload(
         {
             version: WAVEFORM_PAYLOAD_VERSION,
             durationSec: options.durationSec ?? decodeOutput.durationSec,
-            peaks,
+            peaks: decodeOutput.peaks,
         },
         { isPayloadByteCheckSkipped: true },
     );
@@ -405,16 +369,15 @@ export async function probeDecode(options: {
             error: validation.error,
             retryable: isRetryableWaveformError(validation.error.code),
             isDecodeSkipped: false,
-            timings: { decodeMs, extractMs },
+            timings: { decodeMs, extractMs: decodeOutput.extractMs },
         };
     }
 
-    const { payload } = validation;
     return {
         status: 'ready',
-        payload,
+        payload: validation.payload,
         isDecodeSkipped: false,
-        timings: { decodeMs, extractMs },
+        timings: { decodeMs, extractMs: decodeOutput.extractMs },
     };
 }
 
@@ -422,14 +385,14 @@ export async function probeDecode(options: {
  * Gate, fetch, decode, and extract in-viewer peaks. Skips decode when over cap.
  * Playback must not await this.
  */
-export function loadPeaks(request: ClientDecodeRequest): Promise<ProbeResult> {
-    return probeDecode({
+export function loadPeaks(request: ClientDecodeRequest): Promise<ClientDecodeResult> {
+    return runClientDecode({
         compressedBytes: request.compressedBytes,
         durationSec: request.durationSec,
         signal: request.signal,
-        decodePcm: async signal => {
+        decode: async signal => {
             const arrayBuffer = await request.fetchArrayBuffer(signal);
-            return decodePcm(arrayBuffer, signal);
+            return decodeToPeaks(arrayBuffer, signal);
         },
     });
 }
