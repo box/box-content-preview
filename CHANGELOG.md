@@ -1,3 +1,8 @@
+## 3.82.0 (2026-08-24)
+
+* Feat/audio player v2 (#1752) ([6a0034b](https://github.com/box/box-content-preview/commit/6a0034b)), closes [#1752](https://github.com/box/box-content-preview/issues/1752)
+* feat(audio): add wavesurfer waveform view (#1751) ([15785ac](https://github.com/box/box-content-preview/commit/15785ac)), closes [#1751](https://github.com/box/box-content-preview/issues/1751)
+
 ## 3.81.0 (2026-08-21)
 
 * feat(gallery): add ARIA grid for 2D navigation (#1733) ([65fc9d6](https://github.com/box/box-content-preview/commit/65fc9d6)), closes [#1733](https://github.com/box/box-content-preview/issues/1733)
