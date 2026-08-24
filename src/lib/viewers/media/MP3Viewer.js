@@ -245,7 +245,7 @@ class MP3Viewer extends MediaBaseViewer {
      */
     async startClientWaveformDecode() {
         if (!this.isAudioPlayerV2 || this.destroyed) {
-            return Promise.resolve();
+            return;
         }
 
         this.abortClientWaveformDecode();
@@ -253,39 +253,36 @@ class MP3Viewer extends MediaBaseViewer {
         this.waveformDecodeController = controller;
         const { signal } = controller;
 
-        return this.importWaveformDecode()
-            .then(mod => {
-                if (this.destroyed || signal.aborted || this.waveformDecodeController !== controller) {
-                    return null;
-                }
+        try {
+            const decodeModule = await this.importWaveformDecode();
+            if (this.destroyed || signal.aborted || this.waveformDecodeController !== controller) {
+                return;
+            }
 
-                return mod.loadPeaks({
-                    compressedBytes: this.options.file && this.options.file.size,
-                    durationSec: this.mediaEl && this.mediaEl.duration,
-                    fetchArrayBuffer: innerSignal => this.fetchAudioArrayBuffer(innerSignal || signal),
-                    signal,
-                });
-            })
-            .then(result => {
-                this.handleClientWaveformDecodeResult(result, controller, signal);
-            })
-            .catch(error => {
-                if (isAbortError(error)) {
-                    this.handleClientWaveformDecodeResult({ status: 'cancelled' }, controller, signal);
-                    return;
-                }
-
-                const waveformError = errorFromUnknown(error, 'LOAD_FAILED');
-                this.handleClientWaveformDecodeResult(
-                    {
-                        status: 'failed',
-                        error: waveformError,
-                        retryable: isRetryableWaveformError(waveformError.code),
-                    },
-                    controller,
-                    signal,
-                );
+            const result = await decodeModule.loadPeaks({
+                compressedBytes: this.options.file && this.options.file.size,
+                durationSec: this.mediaEl && this.mediaEl.duration,
+                fetchArrayBuffer: fetchSignal => this.fetchAudioArrayBuffer(fetchSignal || signal),
+                signal,
             });
+            this.handleClientWaveformDecodeResult(result, controller, signal);
+        } catch (error) {
+            if (isAbortError(error)) {
+                this.handleClientWaveformDecodeResult({ status: 'cancelled' }, controller, signal);
+                return;
+            }
+
+            const waveformError = errorFromUnknown(error, 'LOAD_FAILED');
+            this.handleClientWaveformDecodeResult(
+                {
+                    error: waveformError,
+                    retryable: isRetryableWaveformError(waveformError.code),
+                    status: 'failed',
+                },
+                controller,
+                signal,
+            );
+        }
     }
 
     /**
@@ -324,14 +321,17 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {void}
      */
     emitWaveformDecodeMetric(result) {
-        const data = {
-            status: result.status,
-            code: result.error && result.error.code,
-        };
-        if (result.reason) {
-            data.reason = result.reason;
-        }
-        this.emitMetric(MEDIA_METRIC_EVENTS.waveformDecode, data);
+        const metricData = result.reason
+            ? {
+                  code: result.error && result.error.code,
+                  reason: result.reason,
+                  status: result.status,
+              }
+            : {
+                  code: result.error && result.error.code,
+                  status: result.status,
+              };
+        this.emitMetric(MEDIA_METRIC_EVENTS.waveformDecode, metricData);
     }
 
     /**

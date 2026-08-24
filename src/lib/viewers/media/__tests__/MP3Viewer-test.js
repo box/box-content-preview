@@ -6,11 +6,11 @@ import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
 import { MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../../events';
-import { loadPeaks } from '../waveform/decode';
 import { WaveformLoadError } from '../waveform/createWaveformLoader';
+import { loadPeaks } from '../waveform/decode';
 
 jest.mock('../waveform/decode', () => ({
-    loadPeaks: jest.fn(() => Promise.resolve({ status: 'capped', error: { code: 'CAP_EXCEEDED', message: 'skip' } })),
+    loadPeaks: jest.fn(() => Promise.resolve({ error: { code: 'CAP_EXCEEDED', message: 'skip' }, status: 'capped' })),
 }));
 
 let mp3;
@@ -395,7 +395,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
     describe('startClientWaveformDecode()', () => {
         beforeEach(() => {
             loadPeaks.mockReset();
-            loadPeaks.mockResolvedValue({ status: 'capped', error: { code: 'CAP_EXCEEDED', message: 'skip' } });
+            loadPeaks.mockResolvedValue({ error: { code: 'CAP_EXCEEDED', message: 'skip' }, status: 'capped' });
             mp3.isAudioPlayerV2 = true;
             mp3.waveformPeaks = [];
             mp3.mediaEl = { duration: 30 };
@@ -406,8 +406,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
         test('should apply decoded peaks when loadPeaks is ready', async () => {
             loadPeaks.mockResolvedValue({
-                status: 'ready',
                 payload: { peaks: [0.2, 0.8] },
+                status: 'ready',
             });
 
             await mp3.startClientWaveformDecode();
@@ -423,16 +423,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.renderUI).not.toBeCalled();
             expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                status: 'capped',
                 code: 'CAP_EXCEEDED',
+                status: 'capped',
             });
         });
 
         test('should include skip reason on the metric when metadata is missing', async () => {
             loadPeaks.mockResolvedValue({
-                status: 'unavailable',
                 error: { code: 'UNAVAILABLE', message: 'missing' },
                 reason: 'missing_metadata',
+                status: 'unavailable',
             });
 
             await mp3.startClientWaveformDecode();
@@ -440,17 +440,17 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
             expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                status: 'unavailable',
                 code: 'UNAVAILABLE',
                 reason: 'missing_metadata',
+                status: 'unavailable',
             });
         });
 
         test('should keep empty peaks when decode fails', async () => {
             loadPeaks.mockResolvedValue({
-                status: 'failed',
                 error: { code: 'LOAD_FAILED', message: 'network' },
                 retryable: true,
+                status: 'failed',
             });
 
             await mp3.startClientWaveformDecode();
@@ -459,8 +459,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.renderUI).not.toBeCalled();
             expect(mp3.isWaveformDecodeRetryPending).toBe(true);
             expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                status: 'failed',
                 code: 'LOAD_FAILED',
+                status: 'failed',
             });
         });
 
@@ -480,8 +480,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.waveformPeaks).toEqual([]);
             expect(mp3.isWaveformDecodeRetryPending).toBe(true);
             expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                status: 'failed',
                 code: 'LOAD_FAILED',
+                status: 'failed',
             });
         });
 
@@ -492,8 +492,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
             expect(mp3.emitMetric).toBeCalledWith(MEDIA_METRIC_EVENTS.waveformDecode, {
-                status: 'failed',
                 code: 'INVALID_PAYLOAD',
+                status: 'failed',
             });
         });
 
