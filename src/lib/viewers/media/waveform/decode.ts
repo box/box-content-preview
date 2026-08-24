@@ -7,44 +7,18 @@ import {
     WAVEFORM_PAYLOAD_VERSION,
 } from './constants';
 import { createCappedWaveformState, errorFromUnknown, isAbortError, WaveformLoadError } from './createWaveformLoader';
-import { WaveformCaps, WaveformError, WaveformLoadState } from './types';
+import {
+    ClientDecodeOutput,
+    ClientDecodeRequest,
+    ClientDecodeResult,
+    DecodeDecision,
+    DecodeSkipReason,
+    DecodeTimings,
+    DecodeToPeaksFn,
+    MediaInfo,
+    WaveformCaps,
+} from './types';
 import { isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';
-
-export type DecodeSkipReason = 'missing_metadata' | 'compressed_size' | 'duration';
-
-export type DecodeDecision = { isAllowed: true } | { isAllowed: false; reason: DecodeSkipReason };
-
-export type MediaInfo = {
-    compressedBytes?: number;
-    durationSec?: number;
-};
-
-export type ClientDecodeOutput = {
-    durationSec: number;
-    peaks: number[];
-    extractMs: number;
-};
-
-export type DecodeToPeaksFn = (signal: AbortSignal) => Promise<ClientDecodeOutput>;
-
-export type DecodeTimings = {
-    attemptMs: number | null;
-    extractMs: number | null;
-};
-
-export type ClientDecodeResult = WaveformLoadState & {
-    isDecodeSkipped: boolean;
-    timings: DecodeTimings;
-    reason?: DecodeSkipReason;
-    error?: WaveformError;
-};
-
-export type ClientDecodeRequest = {
-    compressedBytes?: number;
-    durationSec?: number;
-    fetchArrayBuffer: (signal: AbortSignal) => Promise<ArrayBuffer>;
-    signal?: AbortSignal;
-};
 
 type DecodeAudioContext = {
     close: () => Promise<void>;
