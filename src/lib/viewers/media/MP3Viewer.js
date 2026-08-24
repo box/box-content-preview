@@ -103,17 +103,17 @@ class MP3Viewer extends MediaBaseViewer {
     /**
      * @return {Promise<{ loadPeaks: Function }>} client-decode helpers
      */
-    importWaveformDecode() {
+    async importWaveformDecode() {
         if (!this.waveformDecodeImport) {
-            this.waveformDecodeImport = import(/* webpackChunkName: "mp3-waveform-decode" */ './waveform/decode').catch(
-                error => {
-                    this.waveformDecodeImport = null;
-                    throw error;
-                },
-            );
+            this.waveformDecodeImport = import(/* webpackChunkName: "mp3-waveform-decode" */ './waveform/decode');
         }
 
-        return this.waveformDecodeImport;
+        try {
+            return await this.waveformDecodeImport;
+        } catch (error) {
+            this.waveformDecodeImport = null;
+            throw error;
+        }
     }
 
     /**
@@ -263,7 +263,7 @@ class MP3Viewer extends MediaBaseViewer {
             const result = await decodeModule.loadPeaks({
                 compressedBytes: this.options.file && this.options.file.size,
                 durationSec: this.mediaEl && this.mediaEl.duration,
-                fetchArrayBuffer: fetchSignal => this.fetchAudioArrayBuffer(fetchSignal || signal),
+                fetchArrayBuffer: fetchSignal => this.fetchAudioArrayBuffer(fetchSignal),
                 signal,
             });
             this.handleClientWaveformDecodeResult(result, controller, signal);
@@ -291,7 +291,7 @@ class MP3Viewer extends MediaBaseViewer {
     /**
      * Apply peaks, or record a retryable failure for overlay play.
      *
-     * @param {Object} result loadPeaks / runClientDecode result
+     * @param {import('./waveform/types').ClientDecodeResult} result
      * @param {AbortController} controller in-flight controller for this attempt
      * @param {AbortSignal} signal
      * @return {void}
