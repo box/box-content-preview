@@ -7,9 +7,9 @@
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
 
-    // Keep in sync with GALLERY_GRID_PADDING_TOP / GALLERY_GRID_PADDING_BOTTOM.
+    // Keep in sync with GALLERY_GRID_PADDING_TOP.
     padding: 40px;
-    padding-bottom: 100px;
+    padding-bottom: 100px; // Toolbar gutter; CSS-only, not used by the virtualizer.
     overflow-y: auto;
     overscroll-behavior: none;
     background-color: $white;

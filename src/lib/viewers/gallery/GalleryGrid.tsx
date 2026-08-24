@@ -401,7 +401,7 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         gap: GALLERY_TILE_GAP,
         getScrollElement: () => gridRef.current,
         overscan: GALLERY_VIRTUAL_OVERSCAN,
-        // CSS padding on the scroll container. Item offsets match scrollTop; subtract
+        // Top padding on the scroll container. Item offsets match scrollTop; subtract
         // this from translateY so rows stay positioned inside the inner wrapper.
         scrollMargin: GALLERY_GRID_PADDING_TOP,
         // Keep the selected row mounted so scrolling it offscreen does not drop keyboard focus.
