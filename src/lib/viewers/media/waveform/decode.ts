@@ -31,7 +31,7 @@ type DecodeAudioContext = {
 
 const EMPTY_TIMINGS: DecodeTimings = { attemptMs: null, extractMs: null };
 
-function timestampMs(): number {
+function getCurrentTimeMs(): number {
     return typeof performance !== 'undefined' ? performance.now() : Date.now();
 }
 
@@ -92,7 +92,7 @@ function decodeWithContext(
         let isSettled = false;
         let onAbort: () => void = () => undefined;
 
-        const succeed = (decoded: AudioBuffer) => {
+        const onSuccess = (decoded: AudioBuffer) => {
             if (isSettled) {
                 return;
             }
@@ -101,7 +101,7 @@ function decodeWithContext(
             resolve(decoded);
         };
 
-        const fail = (error?: unknown) => {
+        const onFailure = (error?: unknown) => {
             if (isSettled) {
                 return;
             }
@@ -118,22 +118,22 @@ function decodeWithContext(
             );
         };
 
-        onAbort = () => fail(createAbortError());
+        onAbort = () => onFailure(createAbortError());
 
         if (signal?.aborted) {
-            fail(createAbortError());
+            onFailure(createAbortError());
             return;
         }
 
         signal?.addEventListener('abort', onAbort, { once: true });
 
         try {
-            const maybePromise = context.decodeAudioData(buffer, succeed, fail);
+            const maybePromise = context.decodeAudioData(buffer, onSuccess, onFailure);
             if (maybePromise && typeof maybePromise.then === 'function') {
-                maybePromise.then(succeed, fail);
+                maybePromise.then(onSuccess, onFailure);
             }
         } catch (error) {
-            fail(error);
+            onFailure(error);
         }
     });
 }
@@ -232,12 +232,12 @@ export async function decodeToPeaks(
             throw createAbortError();
         }
 
-        const extractStarted = timestampMs();
+        const extractStarted = getCurrentTimeMs();
         const peaks = extractPeaks(audioBuffer, peakCount);
         return {
             durationSec: audioBuffer.duration,
             peaks,
-            extractMs: timestampMs() - extractStarted,
+            extractMs: getCurrentTimeMs() - extractStarted,
         };
     } catch (error) {
         if (signal?.aborted || isAbortError(error)) {
@@ -278,7 +278,7 @@ export async function runClientDecode(options: {
     }
 
     const signal = options.signal ?? new AbortController().signal;
-    const decodeStarted = timestampMs();
+    const decodeStarted = getCurrentTimeMs();
 
     let decodeOutput: ClientDecodeOutput;
     try {
@@ -294,13 +294,13 @@ export async function runClientDecode(options: {
             retryable: isRetryableWaveformError(waveformError.code),
             isDecodeSkipped: false,
             timings: {
-                attemptMs: timestampMs() - decodeStarted,
+                attemptMs: getCurrentTimeMs() - decodeStarted,
                 extractMs: null,
             },
         };
     }
 
-    const attemptMs = timestampMs() - decodeStarted;
+    const attemptMs = getCurrentTimeMs() - decodeStarted;
 
     if (signal.aborted) {
         return {
