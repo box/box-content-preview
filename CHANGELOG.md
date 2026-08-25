@@ -1,3 +1,8 @@
+## 3.83.0 (2026-08-25)
+
+* feat(audio): decode client waveform peaks under size and duration caps (#1756) ([ec6e574](https://github.com/box/box-content-preview/commit/ec6e574)), closes [#1756](https://github.com/box/box-content-preview/issues/1756)
+* feat(audio): load client waveform peaks into the MP3 viewer (#1757) ([6c05de7](https://github.com/box/box-content-preview/commit/6c05de7)), closes [#1757](https://github.com/box/box-content-preview/issues/1757)
+
 ## 3.82.0 (2026-08-24)
 
 * Feat/audio player v2 (#1752) ([6a0034b](https://github.com/box/box-content-preview/commit/6a0034b)), closes [#1752](https://github.com/box/box-content-preview/issues/1752)
