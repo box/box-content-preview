@@ -227,16 +227,36 @@ describe('GalleryGrid', () => {
             expect(screen.getByLabelText('Page 4')).toHaveFocus();
         });
 
-        test('should allow native focus scrolling when moving between listbox tiles', async () => {
+        test('should scroll the focused tile into view when moving between listbox tiles', async () => {
             getWrapper();
             screen.getByLabelText('Page 3').focus();
             const nextTile = screen.getByLabelText('Page 4');
-            const focus = jest.spyOn(nextTile, 'focus');
+            const scrollIntoView = jest.fn();
+            nextTile.scrollIntoView = scrollIntoView;
 
             await userEvent.keyboard('{ArrowRight}');
 
-            expect(focus).toHaveBeenCalledWith({ preventScroll: false });
+            expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
             expect(nextTile).toHaveFocus();
+        });
+
+        test('should scroll Home and End listbox tiles to the start and end of the grid', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            const firstTile = screen.getByLabelText('Page 1');
+            const lastTile = screen.getByLabelText('Page 10');
+            const scrollFirst = jest.fn();
+            const scrollLast = jest.fn();
+            firstTile.scrollIntoView = scrollFirst;
+            lastTile.scrollIntoView = scrollLast;
+
+            await userEvent.keyboard('{Home}');
+            expect(scrollFirst).toHaveBeenCalledWith({ block: 'start', inline: 'nearest' });
+            expect(firstTile).toHaveFocus();
+
+            await userEvent.keyboard('{End}');
+            expect(scrollLast).toHaveBeenCalledWith({ block: 'end', inline: 'nearest' });
+            expect(lastTile).toHaveFocus();
         });
 
         test('should move focus to previous tile on ArrowUp', async () => {
