@@ -1796,8 +1796,8 @@ describe('lib/Preview', () => {
 
             preview.loadFromCache();
 
+            expect(stubs.loadViewer).toHaveBeenCalled();
             expect(stubs.loadFromServer).toHaveBeenCalled();
-            expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
         test('should load the viewer immediately when video reps are also missing', () => {
@@ -2117,12 +2117,34 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
-        test('should load the deferred viewer when transcription is still unavailable on the server', () => {
+        test('should load viewer when cache lacked extracted_text and viewer is not yet created', () => {
             jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
-            preview.viewerLoadDeferredForTranscription = true;
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
             preview.viewer = undefined;
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: 2 },
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            });
+            stubs.file.representations.entries = [
+                { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
+                { representation: 'extracted_text', content: { url_template: 'https://example.com/vtt' } },
+            ];
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.loadViewer).toHaveBeenCalled();
+        });
+
+        test('should not reload the viewer when transcription is still unavailable on the server', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            preview.viewer = {
+                options: { file: {} },
+            };
             stubs.getCachedFile.mockReturnValue({
                 file_version: { sha1: 2 },
                 representations: {
@@ -2135,7 +2157,7 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
 
-            expect(stubs.loadViewer).toHaveBeenCalled();
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
         test('should set the cache stale and re-load the viewer if the file is watermarked', () => {
@@ -2722,65 +2744,6 @@ describe('lib/Preview', () => {
 
             preview.handleFetchError(stubs.error);
             expect(stubs.uncacheFile).not.toHaveBeenCalled();
-        });
-
-        test('should load cached video when transcription file-info refresh fails', () => {
-            stubs.loadViewer = jest.spyOn(preview, 'loadViewer').mockImplementation();
-            preview.open = true;
-            preview.viewerLoadDeferredForTranscription = true;
-            preview.viewer = undefined;
-            preview.retryCount = 1;
-            preview.file = {
-                id: '123',
-                representations: {
-                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
-                },
-            };
-
-            preview.handleFetchError(stubs.error);
-
-            expect(stubs.loadViewer).toHaveBeenCalled();
-            expect(stubs.uncacheFile).not.toHaveBeenCalled();
-            expect(stubs.triggerError).not.toHaveBeenCalled();
-            jest.advanceTimersByTime(10000);
-            expect(stubs.load).not.toHaveBeenCalled();
-        });
-
-        test('should uncache and retry when transcription was deferred but file has no playable reps', () => {
-            stubs.loadViewer = jest.spyOn(preview, 'loadViewer').mockImplementation();
-            preview.open = true;
-            preview.viewerLoadDeferredForTranscription = true;
-            preview.viewer = undefined;
-            preview.retryCount = 1;
-            preview.file = { id: '123' };
-
-            preview.handleFetchError(stubs.error);
-
-            expect(stubs.loadViewer).not.toHaveBeenCalled();
-            expect(stubs.uncacheFile).toHaveBeenCalled();
-            expect(stubs.triggerError).not.toHaveBeenCalled();
-            jest.advanceTimersByTime(4001);
-            expect(stubs.load).toHaveBeenCalledWith('123');
-        });
-
-        test('should fall through to error handling if deferred loadViewer throws', () => {
-            stubs.loadViewer = jest.spyOn(preview, 'loadViewer').mockImplementation(() => {
-                throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
-            });
-            preview.open = true;
-            preview.viewerLoadDeferredForTranscription = true;
-            preview.retryCount = 6;
-            preview.file = {
-                id: '123',
-                representations: {
-                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
-                },
-            };
-
-            preview.handleFetchError(stubs.error);
-
-            expect(stubs.uncacheFile).toHaveBeenCalled();
-            expect(stubs.triggerError).toHaveBeenCalled();
         });
 
         test('should clear the current file from the cache', () => {

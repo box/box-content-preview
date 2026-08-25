@@ -130,9 +130,6 @@ class Preview extends EventEmitter {
     /** @property {Object} - Current viewer instance */
     viewer;
 
-    /** @property {boolean} - Whether viewer load was deferred pending transcription metadata */
-    viewerLoadDeferredForTranscription = false;
-
     /** @property {string[]} - List of file IDs to preview */
     collection = [];
 
@@ -1219,18 +1216,11 @@ class Preview extends EventEmitter {
             !this.hasTranscriptionRep(this.file);
         const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps || needsTranscriptionRep;
 
-        // When playable video reps are already cached but extracted_text is not, defer loading the
-        // viewer until handleFileInfoResponse can supply transcription metadata. Loading dash first
-        // races loadeddata (no captions) against the server refresh.
-        const deferViewerForTranscription = needsTranscriptionRep && !needsVideoReps;
-
-        if (deferViewerForTranscription) {
-            this.viewerLoadDeferredForTranscription = true;
-        }
-
-        if (!deferViewerForTranscription) {
-            this.loadViewer();
-        }
+        // Play from cache immediately. If extracted_text is missing, loadFromServer()
+        // still runs; handleFileInfoResponse then calls loadTranscription() on the
+        // live viewer. DashViewer.loadTranscription() no-ops without a url and can
+        // attach tracks after loadeddata, so blocking first paint is unnecessary.
+        this.loadViewer();
 
         if (needsServerRefresh) {
             this.loadFromServer();
@@ -1378,7 +1368,9 @@ class Preview extends EventEmitter {
                 this.reload(true); // Reload viewer without fetching updated file info from server
             } else if (needsTranscriptionReload) {
                 // Cache was valid but lacked extracted_text (e.g. prefetch without the hint).
-                // Server refresh now has the rep — update the viewer so loadTranscription can run.
+                // Server refresh now has the rep — update the already-playing viewer so
+                // loadTranscription can attach captions. If loadeddata has not fired yet,
+                // DashViewer's handler will call loadTranscription() with this file.
                 if (this.viewer) {
                     this.viewer.options.file = this.file;
                     if (typeof this.viewer.loadTranscription === 'function') {
@@ -1387,9 +1379,6 @@ class Preview extends EventEmitter {
                 } else {
                     this.loadViewer();
                 }
-            } else if (!this.viewer && this.viewerLoadDeferredForTranscription) {
-                // Viewer load was deferred in loadFromCache() pending transcription metadata.
-                this.loadViewer();
             }
         } catch (err) {
             const error =
@@ -1413,8 +1402,6 @@ class Preview extends EventEmitter {
         if (!this.open) {
             return;
         }
-
-        this.viewerLoadDeferredForTranscription = false;
 
         // Tear down current viewer so its DOM (e.g. preload image for video) is cleared before creating the new one.
         if (this.viewer && typeof this.viewer.destroy === 'function') {
@@ -1799,18 +1786,6 @@ class Preview extends EventEmitter {
         // If preview is closed don't do anything
         if (!this.open) {
             return;
-        }
-
-        // Transcription is optional. If we deferred the viewer only to refresh
-        // extracted_text and still have dash/mp4 in memory, play now. Uncache +
-        // load(id) would replace this.file with { id } and stick on the spinner.
-        if (this.viewerLoadDeferredForTranscription && !this.viewer && this.hasPlayableVideoReps(this.file)) {
-            try {
-                this.loadViewer();
-                return;
-            } catch {
-                // Fall through to uncache / retry / error viewer
-            }
         }
 
         // Nuke the cache
