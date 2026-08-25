@@ -1779,7 +1779,7 @@ describe('lib/Preview', () => {
             expect(preview.loadFromServer).not.toHaveBeenCalled();
         });
 
-        test('should refresh from server when skipServerUpdate but video lacks transcription rep', () => {
+        test('should not refresh from server when skipServerUpdate even if transcription rep is missing', () => {
             jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
@@ -1797,10 +1797,10 @@ describe('lib/Preview', () => {
             preview.loadFromCache();
 
             expect(stubs.loadViewer).toHaveBeenCalled();
-            expect(stubs.loadFromServer).toHaveBeenCalled();
+            expect(stubs.loadFromServer).not.toHaveBeenCalled();
         });
 
-        test('should load the viewer immediately when video reps are also missing', () => {
+        test('should load the viewer immediately when skipServerUpdate but video lacks playable reps', () => {
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
             jest.spyOn(preview, 'hasTranscriptionRep').mockReturnValue(false);
@@ -1857,6 +1857,31 @@ describe('lib/Preview', () => {
             const expectedTag = Timer.createTag(1, LOAD_METRIC.fileInfoTime);
             preview.loadFromServer();
             expect(startStub).toHaveBeenCalledWith(expectedTag);
+        });
+
+        test('should not call handleFetchError when file-info fails but a playable viewer is showing', () => {
+            stubs.get.mockReturnValue(Promise.reject(new Error('network')));
+            preview.viewer = {};
+            jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(true);
+
+            preview.loadFromServer();
+
+            return new Promise(resolve => setTimeout(resolve, 0)).then(() => {
+                expect(stubs.handleFetchError).not.toHaveBeenCalled();
+            });
+        });
+
+        test('should call handleFetchError when file-info fails and no playable viewer is showing', () => {
+            const error = new Error('network');
+            stubs.get.mockReturnValue(Promise.reject(error));
+            preview.viewer = undefined;
+            jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(false);
+
+            preview.loadFromServer();
+
+            return new Promise(resolve => setTimeout(resolve, 0)).then(() => {
+                expect(stubs.handleFetchError).toHaveBeenCalledWith(error);
+            });
         });
     });
 
@@ -2088,7 +2113,7 @@ describe('lib/Preview', () => {
             expect(stubs.reload).toHaveBeenCalled();
         });
 
-        test('should update viewer and load transcription when cache lacked extracted_text', () => {
+        test('should update viewer and load transcription when cache lacked extracted_text and viewer is loaded', () => {
             jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
@@ -2107,6 +2132,7 @@ describe('lib/Preview', () => {
             preview.viewer = {
                 options: { file: {} },
                 player: {},
+                isLoaded: () => true,
                 loadTranscription,
             };
 
@@ -2117,11 +2143,11 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
-        test('should load viewer when cache lacked extracted_text and viewer is not yet created', () => {
+        test('should update file but not load transcription when viewer exists but is not loaded', () => {
             jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
-            preview.viewer = undefined;
+            preview.file.extension = 'avi';
             stubs.getCachedFile.mockReturnValue({
                 file_version: { sha1: 2 },
                 representations: {
@@ -2132,10 +2158,42 @@ describe('lib/Preview', () => {
                 { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
                 { representation: 'extracted_text', content: { url_template: 'https://example.com/vtt' } },
             ];
+            const loadTranscription = jest.fn();
+            preview.viewer = {
+                options: { file: {} },
+                player: {},
+                isLoaded: () => false,
+                loadTranscription,
+            };
 
             preview.handleFileInfoResponse(stubs.file);
 
-            expect(stubs.loadViewer).toHaveBeenCalled();
+            expect(preview.viewer.options.file).toBe(stubs.file);
+            expect(loadTranscription).not.toHaveBeenCalled();
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should not throw when the cached file lacks representations entries', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            preview.viewer = {
+                options: { file: {} },
+                isLoaded: () => true,
+                loadTranscription: jest.fn(),
+            };
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: 2 },
+            });
+            stubs.file.representations.entries = [
+                { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
+                { representation: 'extracted_text', content: { url_template: 'https://example.com/vtt' } },
+            ];
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).not.toHaveBeenCalled();
+            expect(preview.viewer.loadTranscription).toHaveBeenCalled();
         });
 
         test('should not reload the viewer when transcription is still unavailable on the server', () => {
