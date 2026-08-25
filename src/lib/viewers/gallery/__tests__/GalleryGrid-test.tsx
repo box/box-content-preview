@@ -227,6 +227,18 @@ describe('GalleryGrid', () => {
             expect(screen.getByLabelText('Page 4')).toHaveFocus();
         });
 
+        test('should allow native focus scrolling when moving between listbox tiles', async () => {
+            getWrapper();
+            screen.getByLabelText('Page 3').focus();
+            const nextTile = screen.getByLabelText('Page 4');
+            const focus = jest.spyOn(nextTile, 'focus');
+
+            await userEvent.keyboard('{ArrowRight}');
+
+            expect(focus).toHaveBeenCalledWith({ preventScroll: false });
+            expect(nextTile).toHaveFocus();
+        });
+
         test('should move focus to previous tile on ArrowUp', async () => {
             getWrapper();
             screen.getByLabelText('Page 3').focus();

@@ -995,7 +995,8 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
 
             const tile = grid.querySelector(`[data-page="${pageNum}"]`) as HTMLElement | null;
             if (tile) {
-                tile.focus({ preventScroll: true });
+                // ARIA grid scrolls via scrollToIndex; listbox relies on native focus scrolling.
+                tile.focus({ preventScroll: isAriaGridEnabled || preventScroll });
                 return;
             }
 
