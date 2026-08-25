@@ -29,6 +29,7 @@ import {
 } from './constants';
 import {
     getGalleryLayout,
+    getOccupiedColumns,
     getPagesInRow,
     getRowHeight,
     getRowStartOffset,
@@ -377,7 +378,9 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
     currentPageRef.current = currentPage;
     isAriaGridEnabledRef.current = isAriaGridEnabled;
 
-    const { columns, tileWidth } = getGalleryLayout(layoutWidth, scale);
+    const layout = getGalleryLayout(layoutWidth, scale);
+    const columns = getOccupiedColumns(layout.columns, pageCount);
+    const { tileWidth } = layout;
     const columnsRef = useRef(columns);
     const tileWidthRef = useRef(tileWidth);
     columnsRef.current = columns;
@@ -921,7 +924,10 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
                         grid,
                         pageCount: pageCountRef.current,
                         currentPage: currentPageRef.current,
-                        columns: getGalleryLayout(width, scaleRef.current).columns,
+                        columns: getOccupiedColumns(
+                            getGalleryLayout(width, scaleRef.current).columns,
+                            pageCountRef.current,
+                        ),
                         getRatio: getRatioRef.current,
                         hasMeasuredLayoutRef,
                         prevRatiosRef,

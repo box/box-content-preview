@@ -3,6 +3,7 @@ import {
     collectPagesNearViewport,
     getAnchorPageFromScroll,
     getGalleryLayout,
+    getOccupiedColumns,
     getPagesInRow,
     getRowHeight,
     getRowStartOffset,
@@ -37,6 +38,14 @@ describe('galleryGridLayout', () => {
         test('should scale tile width and reduce columns when zoomed in', () => {
             expect(getGalleryLayout(920, 1.5)).toEqual({ columns: 2, tileWidth: 444 });
             expect(getGalleryLayout(200, 2)).toEqual({ columns: 1, tileWidth: 200 });
+        });
+    });
+
+    describe('getOccupiedColumns', () => {
+        test('should drop empty columns when the document is shorter than a fitted row', () => {
+            expect(getOccupiedColumns(6, 2)).toBe(2);
+            expect(getOccupiedColumns(3, 10)).toBe(3);
+            expect(getOccupiedColumns(3, 0)).toBe(1);
         });
     });
 

@@ -30,6 +30,14 @@ export function getGalleryLayout(width: number, scale = 1): GalleryLayout {
     return { columns, tileWidth };
 }
 
+/**
+ * Fitted auto-fill columns can exceed the number of pages (a 2-page doc on a
+ * wide viewport). ARIA and 2D navigation should only count occupied columns.
+ */
+export function getOccupiedColumns(fittedColumns: number, pageCount: number): number {
+    return Math.min(fittedColumns, Math.max(pageCount, 1));
+}
+
 export function resolvePageRatio(
     pageNum: number,
     getPageRatio: ((pageNum: number) => number | null) | undefined,

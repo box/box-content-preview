@@ -977,6 +977,24 @@ describe('GalleryGrid', () => {
                 expect(screen.getByLabelText('Page 10')).toHaveAttribute('aria-colindex', '1');
             });
 
+            test('should not advertise empty columns when the document is shorter than the fitted row', async () => {
+                setupGrid(6, { currentPage: 1, pageCount: 2 });
+
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveAttribute('aria-colcount', '2');
+                expect(grid).toHaveAttribute('aria-rowcount', '1');
+                expect(screen.getAllByRole('row')).toHaveLength(1);
+                expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-colindex', '1');
+                expect(screen.getByLabelText('Page 2')).toHaveAttribute('aria-colindex', '2');
+
+                await userEvent.keyboard('{ArrowDown}');
+                expect(screen.getByLabelText('Page 1')).toHaveFocus();
+                await userEvent.keyboard('{ArrowRight}');
+                expect(screen.getByLabelText('Page 2')).toHaveFocus();
+                await userEvent.keyboard('{ArrowUp}');
+                expect(screen.getByLabelText('Page 2')).toHaveFocus();
+            });
+
             test('should left-align leftover tiles in a short last row', () => {
                 const { rerender } = setupGrid(3, { pageCount: 8 });
 
