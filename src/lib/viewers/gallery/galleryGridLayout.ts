@@ -1,5 +1,4 @@
 import { GALLERY_TILE_DEFAULT_RATIO, GALLERY_TILE_GAP, GALLERY_TILE_MIN_WIDTH } from './constants';
-import { getRowCount } from './galleryGridNavigation';
 
 export interface GalleryLayout {
     columns: number;
@@ -93,86 +92,4 @@ export function getRowStartOffset(
         offset += getRowHeight(row, pageCount, columns, tileWidth, getRatio) + gap;
     }
     return offset;
-}
-
-export function getAnchorPageFromScroll(
-    scrollTop: number,
-    pageCount: number,
-    columns: number,
-    tileWidth: number,
-    getRatio: (pageNum: number) => number,
-    gap: number = GALLERY_TILE_GAP,
-): number {
-    if (pageCount <= 0) {
-        return 1;
-    }
-
-    const rowCount = getRowCount(pageCount, columns);
-    let top = 0;
-    for (let row = 0; row < rowCount; row += 1) {
-        const size = getRowHeight(row, pageCount, columns, tileWidth, getRatio);
-        if (top + size > scrollTop) {
-            return row * columns + 1;
-        }
-        top += size + gap;
-    }
-
-    return (rowCount - 1) * columns + 1;
-}
-
-export function collectPagesNearViewport({
-    scrollTop,
-    clientHeight,
-    marginRatio,
-    pageCount,
-    columns,
-    tileWidth,
-    getRatio,
-    isEligible,
-    gap = GALLERY_TILE_GAP,
-}: {
-    scrollTop: number;
-    clientHeight: number;
-    marginRatio: number;
-    pageCount: number;
-    columns: number;
-    tileWidth: number;
-    getRatio: (pageNum: number) => number;
-    isEligible?: (pageNum: number) => boolean;
-    gap?: number;
-}): { visible: number[]; nearby: number[] } {
-    const visible: number[] = [];
-    const nearby: number[] = [];
-    if (clientHeight <= 0 || columns <= 0 || pageCount <= 0) {
-        return { visible, nearby };
-    }
-
-    const viewportBottom = scrollTop + clientHeight;
-    const margin = clientHeight * marginRatio;
-    const rowCount = getRowCount(pageCount, columns);
-    let top = 0;
-
-    for (let row = 0; row < rowCount; row += 1) {
-        const size = getRowHeight(row, pageCount, columns, tileWidth, getRatio);
-        const bottom = top + size;
-        let bucket: number[] | null = null;
-        if (bottom > scrollTop && top < viewportBottom) {
-            bucket = visible;
-        } else if (bottom > scrollTop - margin && top < viewportBottom + margin) {
-            bucket = nearby;
-        }
-
-        if (bucket) {
-            const target = bucket;
-            getPagesInRow(row, columns, pageCount).forEach(pageNum => {
-                if (!isEligible || isEligible(pageNum)) {
-                    target.push(pageNum);
-                }
-            });
-        }
-
-        top = bottom + gap;
-    }
-
-    return { visible, nearby };
 }

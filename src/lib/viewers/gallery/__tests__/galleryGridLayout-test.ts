@@ -1,7 +1,5 @@
 import { GALLERY_TILE_DEFAULT_RATIO, GALLERY_TILE_GAP, GALLERY_TILE_MIN_WIDTH } from '../constants';
 import {
-    collectPagesNearViewport,
-    getAnchorPageFromScroll,
     getGalleryLayout,
     getOccupiedColumns,
     getPagesInRow,
@@ -79,31 +77,6 @@ describe('galleryGridLayout', () => {
         test('should accumulate row offsets including the inter-row gap', () => {
             expect(getRowStartOffset(0, 10, 3, 300, getRatio)).toBe(0);
             expect(getRowStartOffset(1, 10, 3, 300, getRatio)).toBe(300 + GALLERY_TILE_GAP);
-        });
-    });
-
-    describe('scroll mapping', () => {
-        const getRatio = (): number => 1;
-
-        test('should return the first page of the topmost intersecting row', () => {
-            expect(getAnchorPageFromScroll(0, 10, 3, 100, getRatio)).toBe(1);
-            expect(getAnchorPageFromScroll(100 + GALLERY_TILE_GAP + 1, 10, 3, 100, getRatio)).toBe(4);
-        });
-
-        test('should classify visible pages before the buffer', () => {
-            const { visible, nearby } = collectPagesNearViewport({
-                scrollTop: 0,
-                clientHeight: 100,
-                marginRatio: 1,
-                pageCount: 10,
-                columns: 1,
-                tileWidth: 100,
-                getRatio,
-            });
-
-            expect(visible).toEqual([1]);
-            expect(nearby[0]).toBe(2);
-            expect(nearby).not.toContain(1);
         });
     });
 });
