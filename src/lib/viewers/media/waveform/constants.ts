@@ -29,7 +29,7 @@ export const WAVEFORM_ZOOM_MAX = 24;
 export const WAVEFORM_MIN_VIEW_WINDOW_SEC = 4;
 export const WAVEFORM_ZOOM_SLIDER_MAX = 100;
 export const WAVEFORM_ZOOM_DISMISS_MS = 250;
-export const WAVEFORM_FOLLOW_INSET_PX = 80;
+export const WAVEFORM_FOLLOW_INSET_PX = 200;
 export const WAVEFORM_PLAYHEAD_JUMP_MS = 400;
 
 export const WAVEFORM_BAR_GAP = 2;

@@ -143,7 +143,7 @@ describe('viewport', () => {
         expect(follow.kind).toBe('followRight');
         if (follow.kind === 'followRight') {
             expect(follow.isPlayheadPinned).toBe(true);
-            expect(follow.scrollLeftPx).toBeCloseTo(1280);
+            expect(follow.scrollLeftPx).toBeCloseTo(1400);
         }
     });
 
@@ -173,6 +173,7 @@ describe('viewport', () => {
 
     test('should pin the playhead at the follow inset as a CSS percent', () => {
         expect(getPinnedPlayheadLeft(200)).toBe(`${((200 - 200 / 3) / 200) * 100}%`);
+        expect(getPinnedPlayheadLeft(800)).toBe('75%');
         expect(getPinnedPlayheadLeft(0)).toBe('0%');
     });
 
