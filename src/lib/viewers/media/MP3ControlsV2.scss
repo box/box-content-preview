@@ -34,6 +34,18 @@
     }
 }
 
+.bp-MP3ControlsV2-waveformZoom {
+    position: absolute;
+    top: 48px;
+    right: 48px;
+    z-index: 3;
+    pointer-events: none;
+
+    .bp-WaveformZoomControl {
+        pointer-events: auto;
+    }
+}
+
 .bp-MP3ControlsV2-playOverlay {
     position: absolute;
     top: 50%;

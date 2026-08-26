@@ -1,17 +1,39 @@
-import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import React, { useEffect as mockUseEffect } from 'react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MP3ControlsV2, { Props } from '../MP3ControlsV2';
+import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
 
 jest.mock('../waveform/WaveformView', () => {
-    function MockWaveformView({ interactive }: { interactive?: boolean }): JSX.Element {
-        return <div data-interactive={interactive ? 'true' : 'false'} data-testid="bp-waveform-view" />;
+    function MockWaveformView({
+        interactive,
+        onViewportChange,
+        onZoomChange,
+    }: {
+        interactive?: boolean;
+        onViewportChange?: (viewport: { maxZoom: number; widthPx: number }) => void;
+        onZoomChange?: (zoomLevel: number) => void;
+    }): JSX.Element {
+        mockUseEffect(() => {
+            onViewportChange?.({ maxZoom: 4, widthPx: 800 });
+        }, [onViewportChange]);
+        return (
+            <div data-interactive={interactive ? 'true' : 'false'} data-testid="bp-waveform-view">
+                <button data-testid="bp-mock-waveform-zoom" onClick={() => onZoomChange?.(2)} type="button">
+                    zoom
+                </button>
+            </div>
+        );
     }
 
     return MockWaveformView;
 });
 
 describe('MP3ControlsV2', () => {
+    afterEach(() => {
+        jest.useRealTimers();
+    });
+
     const getWrapper = (props: Partial<Props> = {}) =>
         render(
             <MP3ControlsV2
@@ -137,6 +159,60 @@ describe('MP3ControlsV2', () => {
             );
 
             expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+        });
+
+        test('should not show zoom while the play overlay is visible', async () => {
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-MP3ControlsV2-play-overlay')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should show zoom after play once real peaks report a max above 1x', async () => {
+            getWrapper({ durationTime: 8, isPlaying: true, peaks: [0.2, 0.8] });
+
+            expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+            expect(await screen.findByTestId('bp-waveform-zoom')).toBeInTheDocument();
+        });
+
+        test('should hide zoom until real peaks load', async () => {
+            getWrapper({ durationTime: 8 });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should keep zoom hidden after play when only placeholder peaks are present', async () => {
+            getWrapper({ durationTime: 8, isPlaying: true });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-interactive', 'true');
+            expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should open the zoom slider on waveform zoom and dismiss after the delay', async () => {
+            jest.useFakeTimers();
+            getWrapper({ durationTime: 8, isPlaying: true, peaks: [0.2, 0.8] });
+
+            const control = await screen.findByTestId('bp-waveform-zoom');
+            expect(control).not.toHaveClass('bp-is-open');
+
+            fireEvent.click(screen.getByTestId('bp-mock-waveform-zoom'));
+            expect(control).toHaveClass('bp-is-open');
+            expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toHaveAttribute(
+                'aria-valuenow',
+                '33',
+            );
+
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_ZOOM_DISMISS_MS - 1);
+            });
+            expect(control).toHaveClass('bp-is-open');
+
+            act(() => {
+                jest.advanceTimersByTime(1);
+            });
+            expect(control).not.toHaveClass('bp-is-open');
         });
     });
 });

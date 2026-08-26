@@ -144,3 +144,54 @@ export type WaveformLoaderFactory = (
     fetchPayload: (signal: AbortSignal) => Promise<unknown>,
     options?: WaveformValidationOptions,
 ) => WaveformSource;
+
+/** Visible slice of the timeline. Emitted whenever zoom, scroll, or width changes. */
+export type WaveformViewport = {
+    durationSec: number;
+    endSec: number;
+    heightPx: number;
+    maxZoom: number;
+    pixelsPerSecond: number;
+    scrollLeftPx: number;
+    startSec: number;
+    widthPx: number;
+    zoomLevel: number;
+};
+
+export type WaveformViewportInput = Omit<WaveformViewport, 'endSec' | 'pixelsPerSecond' | 'startSec'>;
+
+export type WaveformViewProps = {
+    bufferedRange?: TimeRanges;
+    currentTime?: number;
+    durationSec: number;
+    height?: number;
+    interactive?: boolean;
+    mediaEl?: HTMLMediaElement | null;
+    onSeek?: (timeSec: number) => void;
+    onViewportChange?: (viewport: WaveformViewport) => void;
+    onZoomChange?: (zoomLevel: number) => void;
+    peaks: ArrayLike<number>;
+    zoomLevel?: number;
+};
+
+export type WaveformZoomControlProps = {
+    isRevealed?: boolean;
+    maxZoom: number;
+    onZoomChange: (zoomLevel: number) => void;
+    zoomLevel: number;
+};
+
+/** One canvas linear-gradient stop. `offset` is 0–1 along the bar. */
+export type GradientStop = {
+    color: string;
+    offset: number;
+};
+
+/**
+ * Wavesurfer's two paints: left of the playhead (`progressColor`) and right of it (`waveColor`).
+ * A string is a solid fill; a stop list is a left-to-right step gradient.
+ */
+export type WaveformFills = {
+    progressColor: string | GradientStop[];
+    waveColor: string | GradientStop[];
+};

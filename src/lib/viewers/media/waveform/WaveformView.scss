@@ -8,6 +8,16 @@
     padding: 0 60px;
     overflow: visible;
     background: none;
+
+    &.bp-WaveformView--zoomed {
+        padding: 0;
+
+        .bp-WaveformView-canvas {
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent);
+            mask-image: linear-gradient(to right, transparent, #000 60px, #000 calc(100% - 60px), transparent);
+        }
+    }
 }
 
 .bp-WaveformView-track {
