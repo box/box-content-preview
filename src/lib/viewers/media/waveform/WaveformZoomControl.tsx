@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import IconZoom24 from '../../controls/icons/IconZoom24';
 import MediaToggle from '../../controls/media/MediaToggle';
 import SliderControl from '../../controls/slider';
 import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_SLIDER_MAX } from './constants';
@@ -108,16 +109,7 @@ export default function WaveformZoomControl({
                 onClick={handleToggleClick}
                 title={__('media_zoom')}
             >
-                <svg aria-hidden="true" focusable="false" height="20" viewBox="0 0 24 24" width="20">
-                    <path
-                        d="M4 12h16M7 9l-3 3 3 3M17 9l3 3-3 3"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.75"
-                    />
-                </svg>
+                <IconZoom24 />
             </MediaToggle>
         </div>
     );
