@@ -1,26 +1,31 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import WaveSurfer from 'wavesurfer.js';
-import WaveformView, {
-    WAVEFORM_BAR_GAP,
-    WAVEFORM_BAR_RADIUS,
-    WAVEFORM_BAR_WIDTH,
-    WAVEFORM_HEIGHT,
-} from '../WaveformView';
+import WaveformView from '../WaveformView';
+import { WAVEFORM_BAR_GAP, WAVEFORM_BAR_RADIUS, WAVEFORM_BAR_WIDTH, WAVEFORM_HEIGHT } from '../constants';
 import { WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
 
 const mockDestroy = jest.fn();
 const mockLoad = jest.fn();
 const mockSetOptions = jest.fn();
 const mockSetTime = jest.fn();
+const mockGetScroll = jest.fn(() => 0);
+const mockGetWidth = jest.fn(() => 200);
+const mockGetWrapper = jest.fn(() => ({ clientWidth: 200 }));
+const mockSetScroll = jest.fn();
+const mockSetScrollTime = jest.fn();
 const mockObserve = jest.fn();
 const mockDisconnect = jest.fn();
 let clickHandler: ((relativeX: number) => void) | undefined;
+let scrollHandler: ((relativeX?: number) => void) | undefined;
 let resizeCallback: ResizeObserverCallback | undefined;
 
-const mockOn = jest.fn((event: string, handler: (relativeX: number) => void) => {
+const mockOn = jest.fn((event: string, handler: (relativeX?: number) => void) => {
     if (event === 'click') {
         clickHandler = handler;
+    }
+    if (event === 'scroll') {
+        scrollHandler = handler;
     }
     return jest.fn();
 });
@@ -40,9 +45,14 @@ jest.mock('wavesurfer.js', () => ({
     default: {
         create: jest.fn(() => ({
             destroy: mockDestroy,
+            getScroll: mockGetScroll,
+            getWidth: mockGetWidth,
+            getWrapper: mockGetWrapper,
             load: mockLoad,
             on: mockOn,
             setOptions: mockSetOptions,
+            setScroll: mockSetScroll,
+            setScrollTime: mockSetScrollTime,
             setTime: mockSetTime,
         })),
     },
@@ -59,6 +69,7 @@ describe('WaveformView', () => {
 
     beforeEach(() => {
         clickHandler = undefined;
+        scrollHandler = undefined;
         resizeCallback = undefined;
         jest.clearAllMocks();
     });
@@ -101,22 +112,22 @@ describe('WaveformView', () => {
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
 
-        const rafCallbacks: FrameRequestCallback[] = [];
-        const cancelRaf = jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        const animationCallbacks: FrameRequestCallback[] = [];
+        const cancelAnimation = jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
         jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
-            rafCallbacks.push(cb);
-            return rafCallbacks.length;
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
         });
 
         render(<WaveformView currentTime={1} durationSec={8} mediaEl={mediaEl} peaks={[0.2, 0.8]} />);
 
-        cancelRaf.mockClear();
+        cancelAnimation.mockClear();
         mockSetTime.mockClear();
 
         mediaEl.currentTime = 4;
         mediaEl.dispatchEvent(new Event('seeked'));
 
-        expect(cancelRaf).not.toHaveBeenCalled();
+        expect(cancelAnimation).not.toHaveBeenCalled();
         expect(mockSetTime).toHaveBeenCalledWith(4);
     });
 
@@ -138,6 +149,27 @@ describe('WaveformView', () => {
         fireEvent.mouseMove(track, { clientX: 50 });
 
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+        expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should show the hover time chip while zoomed', () => {
+        render(<WaveformView durationSec={8} peaks={new Array(800).fill(0.5)} zoomLevel={2} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:01.00');
         expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
     });
 
@@ -263,11 +295,11 @@ describe('WaveformView', () => {
     });
 
     test('should recompute fills when the canvas width changes', () => {
-        const bufferedRange = ({
+        const bufferedRange = {
             end: () => 4,
             length: 1,
             start: () => 0,
-        } as unknown) as TimeRanges;
+        } as TimeRanges;
 
         render(<WaveformView bufferedRange={bufferedRange} durationSec={8} peaks={[0.2, 0.8]} />);
 
@@ -288,5 +320,91 @@ describe('WaveformView', () => {
         });
 
         expect(mockSetOptions).toHaveBeenCalled();
+    });
+
+    test('should emit viewport zoom limits from peak density, duration, and viewport width', () => {
+        const onViewportChange = jest.fn();
+        render(<WaveformView durationSec={60} onViewportChange={onViewportChange} peaks={new Array(800).fill(0.5)} />);
+
+        expect(onViewportChange).toHaveBeenCalledWith(expect.objectContaining({ maxZoom: 4, widthPx: 200 }));
+    });
+
+    test('should not allow zoom when the file is shorter than the minimum window floor', () => {
+        const onViewportChange = jest.fn();
+        render(<WaveformView durationSec={2} onViewportChange={onViewportChange} peaks={new Array(16384).fill(0.5)} />);
+
+        expect(onViewportChange).toHaveBeenCalledWith(expect.objectContaining({ maxZoom: 1, widthPx: 200 }));
+    });
+
+    test('should apply minPxPerSec and the zoomed class when zoomed in', () => {
+        render(<WaveformView durationSec={8} peaks={new Array(800).fill(0.5)} zoomLevel={2} />);
+
+        expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--zoomed');
+        expect(mockSetOptions).toHaveBeenCalledWith(
+            expect.objectContaining({
+                autoScroll: false,
+                minPxPerSec: 50,
+            }),
+        );
+    });
+
+    test('should not recenter when only the peak-derived max zoom changes', () => {
+        render(<WaveformView currentTime={10} durationSec={300} peaks={new Array(16384).fill(0.5)} zoomLevel={2} />);
+
+        mockSetScroll.mockClear();
+        mockSetScrollTime.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { width: 800 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetScroll).not.toHaveBeenCalled();
+        expect(mockSetScrollTime).not.toHaveBeenCalled();
+    });
+
+    test('should zoom around the pointer on ctrl+wheel', () => {
+        const onZoomChange = jest.fn();
+        render(
+            <WaveformView durationSec={8} onZoomChange={onZoomChange} peaks={new Array(800).fill(0.5)} zoomLevel={1} />,
+        );
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(onZoomChange).toHaveBeenCalled();
+        expect(onZoomChange.mock.calls[0][0]).toBeGreaterThan(1);
+    });
+
+    test('should not zoom on ctrl+wheel when zoom is not enabled', () => {
+        render(<WaveformView durationSec={8} peaks={new Array(800).fill(0.5)} zoomLevel={1} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--zoomed');
+    });
+
+    test('should not zoom on ctrl+wheel when the minimum window floor leaves no zoom headroom', () => {
+        const onZoomChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={2}
+                onZoomChange={onZoomChange}
+                peaks={new Array(16384).fill(0.5)}
+                zoomLevel={1}
+            />,
+        );
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(onZoomChange).not.toHaveBeenCalled();
+        expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--zoomed');
     });
 });

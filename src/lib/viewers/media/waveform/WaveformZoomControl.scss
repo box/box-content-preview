@@ -1,0 +1,103 @@
+@import '../../controls/media/styles';
+
+$bp-WaveformZoom-size: 48px;
+$bp-WaveformZoom-open-width: 178px;
+$bp-WaveformZoom-padding: 4px;
+$bp-WaveformZoom-gap: 8px;
+$bp-WaveformZoom-track-width: 103px;
+$bp-WaveformZoom-track-height: 8px;
+$bp-WaveformZoom-fill-range: $bp-WaveformZoom-track-width - $bp-WaveformZoom-track-height;
+$bp-WaveformZoom-icon: 40px;
+$bp-WaveformZoom-glyph: 24px;
+
+.bp-WaveformZoomControl {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    align-items: center;
+    justify-content: flex-end;
+    width: $bp-WaveformZoom-size;
+    height: $bp-WaveformZoom-size;
+    padding: $bp-WaveformZoom-padding;
+    overflow: hidden;
+    background: rgb(255 255 255 / 10%);
+    border-radius: 32px;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+    backdrop-filter: blur(60px);
+    transition: width 150ms ease-out, gap 150ms ease-out;
+
+    &.bp-is-open {
+        gap: $bp-WaveformZoom-gap;
+        width: $bp-WaveformZoom-open-width;
+    }
+}
+
+.bp-WaveformZoomControl-flyout {
+    flex: 0 0 auto;
+    width: 0;
+    height: $bp-WaveformZoom-track-height;
+    overflow: hidden;
+    transition: width 150ms ease-out;
+
+    &.bp-is-open {
+        width: $bp-WaveformZoom-track-width;
+    }
+}
+
+.bp-WaveformZoomControl-slider {
+    width: $bp-WaveformZoom-track-width;
+    height: $bp-WaveformZoom-track-height;
+
+    .bp-SliderControl-track {
+        height: $bp-WaveformZoom-track-height;
+        margin: 0;
+        background: rgb(255 255 255 / 30%);
+        background-image: none;
+        border-radius: 20px;
+
+        &::after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(#{$bp-WaveformZoom-track-height} + #{$bp-WaveformZoom-fill-range} * var(--bp-zoom-t, 0));
+            height: $bp-WaveformZoom-track-height;
+            background: rgb(255 255 255 / 90%);
+            border-radius: 20px;
+            content: '';
+        }
+    }
+
+    .bp-SliderControl-thumb {
+        display: none;
+    }
+}
+
+.bp-WaveformZoomControl-toggle {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 0 0 $bp-WaveformZoom-icon;
+    align-items: center;
+    justify-content: center;
+    width: $bp-WaveformZoom-icon;
+    height: $bp-WaveformZoom-icon;
+    padding: 0;
+    color: rgb(255 255 255 / 80%);
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+
+    svg {
+        width: $bp-WaveformZoom-glyph;
+        height: $bp-WaveformZoom-glyph;
+        padding: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-WaveformZoomControl,
+    .bp-WaveformZoomControl-flyout {
+        transition: none;
+    }
+}

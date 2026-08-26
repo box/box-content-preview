@@ -613,6 +613,14 @@ describe('lib/util', () => {
         });
     });
 
+    describe('getCurrentTimeMs()', () => {
+        test('should use performance.now when it is available', () => {
+            jest.spyOn(performance, 'now').mockReturnValue(12.5);
+
+            expect(util.getCurrentTimeMs()).toBe(12.5);
+        });
+    });
+
     describe('getClosestPageToPinch()', () => {
         test('should find the closest page', () => {
             const page1 = {

@@ -22,3 +22,17 @@ export const CLIENT_DECODE_MAX_DURATION_SEC = 5 * 60;
 
 /** Default overview resolution for client-generated peaks. */
 export const CLIENT_DECODE_PEAK_COUNT = 16384;
+
+export const WAVEFORM_ZOOM_MIN = 1;
+export const WAVEFORM_ZOOM_MAX = 24;
+/** Visible window never shorter than this. */
+export const WAVEFORM_MIN_VIEW_WINDOW_SEC = 4;
+export const WAVEFORM_ZOOM_SLIDER_MAX = 100;
+export const WAVEFORM_ZOOM_DISMISS_MS = 250;
+
+export const WAVEFORM_BAR_GAP = 2;
+export const WAVEFORM_BAR_WIDTH = 2;
+export const WAVEFORM_BAR_RADIUS = WAVEFORM_BAR_WIDTH / 2;
+/** Total bar height so the top and bottom radii meet as a circle on the mirror. */
+export const WAVEFORM_BAR_MIN_HEIGHT = WAVEFORM_BAR_WIDTH;
+export const WAVEFORM_HEIGHT = 140;
