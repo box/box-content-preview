@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../constants';
 import WaveformZoomControl from '../WaveformZoomControl';
@@ -82,19 +82,21 @@ describe('WaveformZoomControl', () => {
         expect(control).not.toHaveClass('bp-is-open');
     });
 
-    test('should keep the slider out of the tab order until the control opens', () => {
+    test('should keep the slider out of the tab order until the control opens', async () => {
+        const user = userEvent.setup();
         render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1} />);
 
         const toggle = screen.getByRole('button', { name: __('media_zoom') });
         expect(toggle).toHaveAttribute('aria-expanded', 'false');
         expect(screen.queryByRole('slider', { name: __('media_zoom_slider') })).not.toBeInTheDocument();
 
-        fireEvent.click(toggle);
+        await user.tab();
 
+        expect(toggle).toHaveFocus();
         expect(toggle).toHaveAttribute('aria-expanded', 'true');
-        expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toHaveFocus();
+        expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toBeInTheDocument();
 
-        fireEvent.click(toggle);
+        await user.keyboard('{Enter}');
 
         expect(toggle).toHaveAttribute('aria-expanded', 'false');
         expect(screen.queryByRole('slider', { name: __('media_zoom_slider') })).not.toBeInTheDocument();
