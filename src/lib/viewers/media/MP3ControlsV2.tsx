@@ -10,6 +10,7 @@ import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
 import { WaveformViewport } from './waveform/types';
+import { clampWaveformZoom } from './waveform/viewport';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
 import './MP3ControlsV2.scss';
@@ -73,6 +74,10 @@ export default function MP3ControlsV2({
         },
         [revealZoomControl],
     );
+
+    useEffect(() => {
+        setZoomLevel(prev => clampWaveformZoom(prev, maxZoom));
+    }, [maxZoom]);
 
     useEffect(() => () => window.clearTimeout(zoomRevealTimerRef.current), []);
 

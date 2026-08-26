@@ -11,6 +11,7 @@
 
     &.bp-WaveformView--zoomed {
         padding: 0;
+        touch-action: none;
 
         .bp-WaveformView-canvas {
             overflow: hidden;

@@ -91,6 +91,7 @@ export default function WaveformZoomControl({
                 <SliderControl
                     aria-hidden={!isOpen}
                     className="bp-WaveformZoomControl-slider"
+                    data-resin-target="waveformZoomSlider"
                     id={sliderId}
                     max={WAVEFORM_ZOOM_SLIDER_MAX}
                     min={0}
@@ -106,6 +107,7 @@ export default function WaveformZoomControl({
                 aria-controls={sliderId}
                 aria-expanded={isOpen}
                 className="bp-WaveformZoomControl-toggle"
+                data-resin-target="waveformZoom"
                 onClick={handleToggleClick}
                 title={__('media_zoom')}
             >

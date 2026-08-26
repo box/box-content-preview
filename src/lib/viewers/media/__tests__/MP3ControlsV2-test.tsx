@@ -1,5 +1,5 @@
 import React, { useEffect as mockUseEffect } from 'react';
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MP3ControlsV2, { Props } from '../MP3ControlsV2';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
@@ -21,6 +21,13 @@ jest.mock('../waveform/WaveformView', () => {
             <div data-interactive={interactive ? 'true' : 'false'} data-testid="bp-waveform-view">
                 <button data-testid="bp-mock-waveform-zoom" onClick={() => onZoomChange?.(2)} type="button">
                     zoom
+                </button>
+                <button
+                    data-testid="bp-mock-waveform-max-zoom"
+                    onClick={() => onViewportChange?.({ maxZoom: 1.2, widthPx: 1600 })}
+                    type="button"
+                >
+                    resize
                 </button>
             </div>
         );
@@ -197,7 +204,8 @@ describe('MP3ControlsV2', () => {
             const control = await screen.findByTestId('bp-waveform-zoom');
             expect(control).not.toHaveClass('bp-is-open');
 
-            fireEvent.click(screen.getByTestId('bp-mock-waveform-zoom'));
+            const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+            await user.click(screen.getByTestId('bp-mock-waveform-zoom'));
             expect(control).toHaveClass('bp-is-open');
             expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toHaveAttribute(
                 'aria-valuenow',
@@ -212,6 +220,24 @@ describe('MP3ControlsV2', () => {
             act(() => {
                 jest.advanceTimersByTime(1);
             });
+            expect(control).not.toHaveClass('bp-is-open');
+        });
+
+        test('should not open the zoom slider when max zoom drops on resize', async () => {
+            jest.useFakeTimers();
+            getWrapper({ durationTime: 8, isPlaying: true, peaks: [0.2, 0.8] });
+
+            const control = await screen.findByTestId('bp-waveform-zoom');
+            const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+            await user.click(screen.getByTestId('bp-mock-waveform-zoom'));
+            expect(control).toHaveClass('bp-is-open');
+
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_ZOOM_DISMISS_MS);
+            });
+            expect(control).not.toHaveClass('bp-is-open');
+
+            await user.click(screen.getByTestId('bp-mock-waveform-max-zoom'));
             expect(control).not.toHaveClass('bp-is-open');
         });
     });

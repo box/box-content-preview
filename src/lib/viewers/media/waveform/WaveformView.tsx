@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
+import { getCurrentTimeMs } from '../../../util';
 import {
     getBufferedProgress,
     getWaveformFills,
@@ -39,11 +40,6 @@ type ZoomOrigin = {
 function devicePixelWidth(widthCssPx: number): number {
     const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
     return widthCssPx * pixelRatio;
-}
-
-/** Monotonic clock for peak-morph animations. */
-function timestampMs(): number {
-    return typeof performance !== 'undefined' ? performance.now() : Date.now();
 }
 
 function prefersReducedMotion(): boolean {
@@ -345,8 +341,7 @@ export default function WaveformView({
         if (!isControlled) {
             setInternalZoom(clamped);
         }
-        onZoomChange?.(clamped);
-    }, [internalZoom, isControlled, maxZoom, onZoomChange, zoomLevelProp]);
+    }, [internalZoom, isControlled, maxZoom, zoomLevelProp]);
 
     useEffect(() => {
         onViewportChange?.(viewport);
@@ -468,7 +463,7 @@ export default function WaveformView({
             return undefined;
         }
 
-        const start = timestampMs();
+        const start = getCurrentTimeMs();
         const tick = (now: number): void => {
             const elapsedMs = now - start;
             const framePeaks = morphPeaks(fromPeaks, peaks, elapsedMs);

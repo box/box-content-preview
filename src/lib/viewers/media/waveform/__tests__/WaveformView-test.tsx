@@ -295,11 +295,11 @@ describe('WaveformView', () => {
     });
 
     test('should recompute fills when the canvas width changes', () => {
-        const bufferedRange = ({
+        const bufferedRange = {
             end: () => 4,
             length: 1,
             start: () => 0,
-        } as unknown) as TimeRanges;
+        } as TimeRanges;
 
         render(<WaveformView bufferedRange={bufferedRange} durationSec={8} peaks={[0.2, 0.8]} />);
 

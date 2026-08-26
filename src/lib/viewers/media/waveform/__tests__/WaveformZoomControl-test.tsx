@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../constants';
 import WaveformZoomControl from '../WaveformZoomControl';
 
@@ -8,7 +9,8 @@ describe('WaveformZoomControl', () => {
         jest.useRealTimers();
     });
 
-    test('should expand on hover and report slider zoom changes', () => {
+    test('should expand on hover and report slider zoom changes', async () => {
+        const user = userEvent.setup();
         const onZoomChange = jest.fn();
         render(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={1} />);
 
@@ -16,30 +18,37 @@ describe('WaveformZoomControl', () => {
         const flyout = control.querySelector('.bp-WaveformZoomControl-flyout');
         expect(control).not.toHaveClass('bp-is-open');
         expect(flyout).not.toHaveClass('bp-is-open');
+        expect(screen.getByRole('button', { name: __('media_zoom') })).toHaveAttribute(
+            'data-resin-target',
+            'waveformZoom',
+        );
 
-        fireEvent.mouseEnter(control);
+        await user.hover(control);
         expect(control).toHaveClass('bp-is-open');
         expect(flyout).toHaveClass('bp-is-open');
 
         const slider = screen.getByRole('slider', { name: __('media_zoom_slider') });
-        fireEvent.keyDown(slider, { key: 'ArrowRight' });
+        expect(slider).toHaveAttribute('data-resin-target', 'waveformZoomSlider');
+        await user.tab();
+        await user.keyboard('{ArrowRight}');
 
         expect(onZoomChange).toHaveBeenCalled();
         expect(onZoomChange.mock.calls[0][0]).toBeGreaterThan(1);
     });
 
-    test('should keep the slider open through the dismiss delay after mouse leave', () => {
+    test('should keep the slider open through the dismiss delay after mouse leave', async () => {
         jest.useFakeTimers();
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
         const onZoomChange = jest.fn();
         render(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={1} />);
 
         const control = screen.getByTestId('bp-waveform-zoom');
         const flyout = control.querySelector('.bp-WaveformZoomControl-flyout');
-        fireEvent.mouseEnter(control);
+        await user.hover(control);
         expect(control).toHaveClass('bp-is-open');
         expect(flyout).toHaveClass('bp-is-open');
 
-        fireEvent.mouseLeave(control);
+        await user.unhover(control);
         expect(control).toHaveClass('bp-is-open');
         expect(flyout).toHaveClass('bp-is-open');
 

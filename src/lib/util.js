@@ -639,6 +639,16 @@ export function getDistance(x1, y1, x2, y2) {
 }
 
 /**
+ * Monotonic clock in milliseconds. Falls back to wall time when performance is missing.
+ *
+ * @public
+ * @return {number} Current time in milliseconds
+ */
+export function getCurrentTimeMs() {
+    return typeof performance !== 'undefined' ? performance.now() : Date.now();
+}
+
+/**
  * Returns the closest visible page to a pinch event
  *
  * @public

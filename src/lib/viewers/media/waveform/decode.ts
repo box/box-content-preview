@@ -1,3 +1,4 @@
+import { getCurrentTimeMs } from '../../../util';
 import {
     CLIENT_DECODE_MAX_COMPRESSED_BYTES,
     CLIENT_DECODE_MAX_DURATION_SEC,
@@ -30,10 +31,6 @@ type DecodeAudioContext = {
 };
 
 const EMPTY_TIMINGS: DecodeTimings = { attemptMs: null, extractMs: null };
-
-function getCurrentTimeMs(): number {
-    return typeof performance !== 'undefined' ? performance.now() : Date.now();
-}
 
 function createAbortError(): DOMException {
     return new DOMException('Aborted', 'AbortError');
