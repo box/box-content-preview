@@ -38,6 +38,15 @@ const mockOn = jest.fn((event: string, handler: (relativeX?: number) => void) =>
     return jest.fn();
 });
 
+function spyFollowScrollSettle(onSettle: (fn: () => void) => void): void {
+    jest.spyOn(window, 'setTimeout').mockImplementation(((fn: TimerHandler, ms?: number) => {
+        if (ms === WAVEFORM_FOLLOW_SCROLL_SETTLE_MS && typeof fn === 'function') {
+            onSettle(fn as () => void);
+        }
+        return 0;
+    }) as typeof window.setTimeout);
+}
+
 const mockResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => {
     resizeCallback = callback;
     return {
@@ -686,11 +695,8 @@ describe('WaveformView', () => {
         });
         jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
         let settleUserScroll: (() => void) | undefined;
-        jest.spyOn(window, 'setTimeout').mockImplementation((fn, ms) => {
-            if (ms === WAVEFORM_FOLLOW_SCROLL_SETTLE_MS) {
-                settleUserScroll = fn as () => void;
-            }
-            return 1;
+        spyFollowScrollSettle(fn => {
+            settleUserScroll = fn;
         });
         jest.spyOn(window, 'clearTimeout').mockImplementation(jest.fn());
 
@@ -774,11 +780,8 @@ describe('WaveformView', () => {
         });
         jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
         let settleUserScroll: (() => void) | undefined;
-        jest.spyOn(window, 'setTimeout').mockImplementation((fn, ms) => {
-            if (ms === WAVEFORM_FOLLOW_SCROLL_SETTLE_MS) {
-                settleUserScroll = fn as () => void;
-            }
-            return 1;
+        spyFollowScrollSettle(fn => {
+            settleUserScroll = fn;
         });
         jest.spyOn(window, 'clearTimeout').mockImplementation(jest.fn());
 
