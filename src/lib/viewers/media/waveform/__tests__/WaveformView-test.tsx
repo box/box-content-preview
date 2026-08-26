@@ -17,10 +17,10 @@ const mockSetScrollTime = jest.fn();
 const mockObserve = jest.fn();
 const mockDisconnect = jest.fn();
 let clickHandler: ((relativeX: number) => void) | undefined;
-let scrollHandler: (() => void) | undefined;
+let scrollHandler: ((relativeX?: number) => void) | undefined;
 let resizeCallback: ResizeObserverCallback | undefined;
 
-const mockOn = jest.fn((event: string, handler: (relativeX: number) => void) => {
+const mockOn = jest.fn((event: string, handler: (relativeX?: number) => void) => {
     if (event === 'click') {
         clickHandler = handler;
     }
