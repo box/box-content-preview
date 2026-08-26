@@ -25,10 +25,12 @@ export const CLIENT_DECODE_PEAK_COUNT = 16384;
 
 export const WAVEFORM_ZOOM_MIN = 1;
 export const WAVEFORM_ZOOM_MAX = 24;
-/** Visible window never shorter than this. */
+/** Visible window never shorter than this, so follow-playhead stays smooth. */
 export const WAVEFORM_MIN_VIEW_WINDOW_SEC = 4;
 export const WAVEFORM_ZOOM_SLIDER_MAX = 100;
 export const WAVEFORM_ZOOM_DISMISS_MS = 250;
+export const WAVEFORM_FOLLOW_INSET_PX = 80;
+export const WAVEFORM_PLAYHEAD_JUMP_MS = 400;
 
 export const WAVEFORM_BAR_GAP = 2;
 export const WAVEFORM_BAR_WIDTH = 2;

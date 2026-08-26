@@ -15,6 +15,7 @@ import {
     WAVEFORM_BAR_RADIUS,
     WAVEFORM_BAR_WIDTH,
     WAVEFORM_HEIGHT,
+    WAVEFORM_PLAYHEAD_JUMP_MS,
     WAVEFORM_ZOOM_MIN,
 } from './constants';
 import { formatTime, morphPeaks, toChannels, WAVEFORM_PEAK_TRANSITION_MS } from './peaks';
@@ -22,6 +23,8 @@ import { WaveformFills, WaveformViewProps, WaveformViewport } from './types';
 import {
     clampWaveformZoom,
     createWaveformViewport,
+    getPinnedPlayheadLeft,
+    getPlayheadCameraAction,
     getViewportAtScroll,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
@@ -145,6 +148,9 @@ export default function WaveformView({
     const bufferProgressRef = useRef(0);
     const hoverProgressRef = useRef<number | null>(null);
     const programmaticScrollRef = useRef(false);
+    const jumpAnimationRef = useRef(0);
+    const mediaTimeRef = useRef(currentTime ?? 0);
+    const isFollowPinnedRef = useRef(false);
     const onViewportChangeRef = useRef(onViewportChange);
     onSeekRef.current = onSeek;
     interactiveRef.current = interactive;
@@ -187,7 +193,10 @@ export default function WaveformView({
         [canvasWidthPx, durationSec, height, maxZoom, scrollLeft, zoomLevel],
     );
     const viewportRef = useRef(viewport);
-    viewportRef.current = viewport;
+    viewportRef.current =
+        isFollowPinnedRef.current || jumpAnimationRef.current
+            ? getViewportAtScroll(viewport, viewportRef.current.scrollLeftPx)
+            : viewport;
 
     const setZoomLevel = useCallback(
         (nextZoom: number) => {
@@ -217,12 +226,20 @@ export default function WaveformView({
             return;
         }
 
-        playhead.style.left = timeLeftPercent(timeSec, durationSecRef.current, viewportRef.current);
+        if (!isFollowPinnedRef.current) {
+            playhead.style.left = timeLeftPercent(timeSec, durationSecRef.current, viewportRef.current);
+        }
 
         const wavesurfer = wavesurferRef.current;
         if (wavesurfer && wavesurfer.setTime) {
             wavesurfer.setTime(timeSec);
         }
+    }, []);
+
+    /** Stop pinning the playhead; later scrolls are treated as user pans. */
+    const clearFollowPin = useCallback((): void => {
+        isFollowPinnedRef.current = false;
+        programmaticScrollRef.current = false;
     }, []);
 
     const applyScrollLeft = useCallback((scrollLeftPx: number, shouldCommitState: boolean): void => {
@@ -234,7 +251,10 @@ export default function WaveformView({
         wavesurfer.setScroll(scrollLeftPx);
         viewportRef.current = getViewportAtScroll(viewportRef.current, getScrollLeft(wavesurfer, scrollLeftPx));
         window.requestAnimationFrame(() => {
-            // Keep the flag through delayed `scroll` after a zoom setScroll.
+            // Keep the flag through delayed `scroll` while the camera is driving.
+            if (jumpAnimationRef.current || isFollowPinnedRef.current) {
+                return;
+            }
             programmaticScrollRef.current = false;
         });
         if (shouldCommitState) {
@@ -242,6 +262,86 @@ export default function WaveformView({
             setScrollLeft(getScrollLeft(wavesurfer, scrollLeftPx));
         }
     }, []);
+
+    /** Stick the playhead at the follow inset so only the waveform scrolls. */
+    const pinFollowPlayhead = useCallback(
+        (playhead: HTMLElement | null, viewport: WaveformViewport, isPinned: boolean): void => {
+            isFollowPinnedRef.current = isPinned;
+            if (!playhead || !isPinned || !(viewport.widthPx > 0)) {
+                return;
+            }
+            playhead.style.left = getPinnedPlayheadLeft(viewport.widthPx);
+        },
+        [],
+    );
+
+    const applyPlayheadCamera = useCallback(
+        (timeSec: number, playJustStarted: boolean): void => {
+            mediaTimeRef.current = timeSec;
+            const wavesurfer = wavesurferRef.current;
+            const viewport = viewportRef.current;
+            if (!wavesurfer || viewport.zoomLevel <= WAVEFORM_ZOOM_MIN) {
+                return;
+            }
+            if (jumpAnimationRef.current && !playJustStarted) {
+                return;
+            }
+
+            const liveViewport = getViewportAtScroll(viewport, getScrollLeft(wavesurfer, viewport.scrollLeftPx));
+            const action = getPlayheadCameraAction({
+                isPlaying: true,
+                playJustStarted,
+                timeSec,
+                viewport: liveViewport,
+            });
+            if (action.kind === 'none') {
+                if (isFollowPinnedRef.current) {
+                    isFollowPinnedRef.current = false;
+                    applyScrollLeft(liveViewport.scrollLeftPx, true);
+                }
+                programmaticScrollRef.current = false;
+                return;
+            }
+
+            window.cancelAnimationFrame(jumpAnimationRef.current);
+            jumpAnimationRef.current = 0;
+            if (action.kind === 'followRight') {
+                pinFollowPlayhead(playheadRef.current, liveViewport, action.isPlayheadPinned);
+                applyScrollLeft(action.scrollLeftPx, !action.isPlayheadPinned);
+                return;
+            }
+
+            isFollowPinnedRef.current = false;
+            const from = getScrollLeft(wavesurfer, liveViewport.scrollLeftPx);
+            if (prefersReducedMotion() || typeof window.requestAnimationFrame !== 'function') {
+                applyScrollLeft(action.scrollLeftPx, true);
+                return;
+            }
+
+            programmaticScrollRef.current = true;
+            const start = getCurrentTimeMs();
+            const tick = (now: number): void => {
+                const t = Math.min(1, (now - start) / WAVEFORM_PLAYHEAD_JUMP_MS);
+                const liveAction = getPlayheadCameraAction({
+                    isPlaying: true,
+                    playJustStarted: true,
+                    timeSec: mediaTimeRef.current,
+                    viewport: getViewportAtScroll(viewportRef.current, getScrollLeft(wavesurfer, from)),
+                });
+                const to = liveAction.kind === 'none' ? action.scrollLeftPx : liveAction.scrollLeftPx;
+                applyScrollLeft(from + (to - from) * (1 - (1 - t) * (1 - t)), false);
+                if (t < 1) {
+                    jumpAnimationRef.current = window.requestAnimationFrame(tick);
+                    return;
+                }
+                jumpAnimationRef.current = 0;
+                applyScrollLeft(to, true);
+                applyPlayheadCamera(mediaTimeRef.current, false);
+            };
+            jumpAnimationRef.current = window.requestAnimationFrame(tick);
+        },
+        [applyScrollLeft, pinFollowPlayhead],
+    );
 
     useEffect(() => {
         const container = containerRef.current;
@@ -275,10 +375,16 @@ export default function WaveformView({
             onSeekRef.current?.(relativeX * durationSecRef.current);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
-            if (programmaticScrollRef.current) {
+            // jumping || follow-held programmatic: extra WS scroll events are not pans.
+            const isCameraOwnedScroll = programmaticScrollRef.current || jumpAnimationRef.current !== 0;
+            if (isCameraOwnedScroll) {
                 viewportRef.current = getViewportAtScroll(viewportRef.current, getScrollLeft(wavesurfer));
                 return;
             }
+            window.cancelAnimationFrame(jumpAnimationRef.current);
+            jumpAnimationRef.current = 0;
+            isFollowPinnedRef.current = false;
+            programmaticScrollRef.current = false;
             syncViewport();
         });
         const unsubscribeZoom = wavesurfer.on('zoom', () => {
@@ -304,6 +410,7 @@ export default function WaveformView({
 
         return () => {
             window.cancelAnimationFrame(peakTransitionAnimationRef.current);
+            window.cancelAnimationFrame(jumpAnimationRef.current);
             unsubscribeClick();
             unsubscribeScroll();
             unsubscribeZoom();
@@ -412,21 +519,28 @@ export default function WaveformView({
         const tick = (): void => {
             if (!media.paused) {
                 updatePlayheadPosition(media.currentTime);
+                applyPlayheadCamera(media.currentTime, false);
             }
             playheadAnimationRef.current = window.requestAnimationFrame(tick);
         };
 
         const startLoop = (): void => {
             window.cancelAnimationFrame(playheadAnimationRef.current);
+            applyPlayheadCamera(media.currentTime, true);
             playheadAnimationRef.current = window.requestAnimationFrame(tick);
         };
 
         const stopLoop = (): void => {
             window.cancelAnimationFrame(playheadAnimationRef.current);
+            window.cancelAnimationFrame(jumpAnimationRef.current);
+            jumpAnimationRef.current = 0;
+            clearFollowPin();
+            syncViewport();
             updatePlayheadPosition(media.currentTime);
         };
 
         const handleSeeked = (): void => {
+            clearFollowPin();
             updatePlayheadPosition(media.currentTime);
         };
 
@@ -441,12 +555,13 @@ export default function WaveformView({
 
         return () => {
             window.cancelAnimationFrame(playheadAnimationRef.current);
+            window.cancelAnimationFrame(jumpAnimationRef.current);
             media.removeEventListener('play', startLoop);
             media.removeEventListener('playing', startLoop);
             media.removeEventListener('pause', stopLoop);
             media.removeEventListener('seeked', handleSeeked);
         };
-    }, [mediaEl, updatePlayheadPosition]);
+    }, [applyPlayheadCamera, mediaEl, syncViewport, clearFollowPin, updatePlayheadPosition]);
 
     useEffect(() => {
         const wavesurfer = wavesurferRef.current;

@@ -1,11 +1,13 @@
 import {
+    WAVEFORM_FOLLOW_INSET_PX,
     WAVEFORM_MIN_VIEW_WINDOW_SEC,
     WAVEFORM_ZOOM_MAX,
     WAVEFORM_ZOOM_MIN,
     WAVEFORM_ZOOM_SLIDER_MAX,
 } from './constants';
-import { WaveformViewport, WaveformViewportInput } from './types';
+import { PlayheadCameraAction, WaveformViewport, WaveformViewportInput } from './types';
 
+/** Visible window: start/end times, pixels-per-second, and the current zoom. */
 export function createWaveformViewport({
     durationSec,
     heightPx,
@@ -120,4 +122,84 @@ export function zoomFromSliderValue(value: number, maxZoom: number = WAVEFORM_ZO
     }
     const t = Math.min(WAVEFORM_ZOOM_SLIDER_MAX, Math.max(0, value)) / WAVEFORM_ZOOM_SLIDER_MAX;
     return clampWaveformZoom(WAVEFORM_ZOOM_MIN + t * (max - WAVEFORM_ZOOM_MIN), max);
+}
+
+/** Scroll offset that still shows a full window (no overscroll). */
+function clampScrollLeft(scrollLeftPx: number, viewport: WaveformViewport): number {
+    const maxScroll = Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
+    if (!Number.isFinite(scrollLeftPx)) {
+        return 0;
+    }
+    return Math.min(maxScroll, Math.max(0, scrollLeftPx));
+}
+
+/** Follow inset in CSS px, capped at one third of the view so a narrow player still has room. */
+export function getFollowInsetPx(widthPx: number, insetPx: number = WAVEFORM_FOLLOW_INSET_PX): number {
+    if (!(widthPx > 0)) {
+        return 0;
+    }
+    return Math.min(Math.max(0, insetPx), widthPx / 3);
+}
+
+/** CSS left for a playhead pinned to the follow inset. */
+export function getPinnedPlayheadLeft(widthPx: number, insetPx: number = WAVEFORM_FOLLOW_INSET_PX): string {
+    const inset = getFollowInsetPx(widthPx, insetPx);
+    if (!(widthPx > 0)) {
+        return '0%';
+    }
+    return `${((widthPx - inset) / widthPx) * 100}%`;
+}
+
+/**
+ * Walk across the view until the playhead nears the right edge, then follow.
+ * Off-screen at play start jumps in; off-screen right while playing keeps following.
+ */
+export function getPlayheadCameraAction({
+    insetPx = WAVEFORM_FOLLOW_INSET_PX,
+    isPlaying,
+    playJustStarted,
+    timeSec,
+    viewport,
+}: {
+    insetPx?: number;
+    isPlaying: boolean;
+    playJustStarted: boolean;
+    timeSec: number;
+    viewport: WaveformViewport;
+}): PlayheadCameraAction {
+    if (
+        !isPlaying ||
+        viewport.zoomLevel <= WAVEFORM_ZOOM_MIN ||
+        !(viewport.widthPx > 0) ||
+        !(viewport.pixelsPerSecond > 0)
+    ) {
+        return { kind: 'none' };
+    }
+
+    const inset = getFollowInsetPx(viewport.widthPx, insetPx);
+    const viewX = positionPxFromTime(timeSec, viewport);
+    const playheadCanvasX = timeSec * viewport.pixelsPerSecond;
+
+    if (viewX < 0) {
+        if (!playJustStarted) {
+            return { kind: 'none' };
+        }
+        return { kind: 'jump', scrollLeftPx: clampScrollLeft(playheadCanvasX - inset, viewport) };
+    }
+
+    if (viewX >= viewport.widthPx - inset) {
+        const unclampedScroll = playheadCanvasX - (viewport.widthPx - inset);
+        const scrollLeftPx = clampScrollLeft(unclampedScroll, viewport);
+        const maxScroll = Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
+        if (playJustStarted && viewX > viewport.widthPx) {
+            return { kind: 'jump', scrollLeftPx };
+        }
+        return {
+            kind: 'followRight',
+            isPlayheadPinned: unclampedScroll <= maxScroll,
+            scrollLeftPx,
+        };
+    }
+
+    return { kind: 'none' };
 }
