@@ -150,6 +150,15 @@ export function getPinnedPlayheadLeft(widthPx: number, insetPx: number = WAVEFOR
     return `${((widthPx - inset) / widthPx) * 100}%`;
 }
 
+/** CSS left % of the playhead from the left of the visible window. */
+export function timeLeftPercent(timeSec: number, durationSec: number, viewport: WaveformViewport): string {
+    if (viewport.widthPx > 0 && viewport.pixelsPerSecond > 0) {
+        return `${(positionPxFromTime(timeSec, viewport) / viewport.widthPx) * 100}%`;
+    }
+    const progress = durationSec > 0 ? Math.min(1, Math.max(0, timeSec / durationSec)) : 0;
+    return `${progress * 100}%`;
+}
+
 /**
  * Walk across the view until the playhead nears the right edge, then follow.
  * Off-screen at play start jumps in; off-screen right while playing keeps following.
@@ -179,6 +188,7 @@ export function getPlayheadCameraAction({
     const inset = getFollowInsetPx(viewport.widthPx, insetPx);
     const viewX = positionPxFromTime(timeSec, viewport);
     const playheadCanvasX = timeSec * viewport.pixelsPerSecond;
+    const followX = viewport.widthPx - inset;
 
     if (viewX < 0) {
         if (!playJustStarted) {
@@ -187,8 +197,8 @@ export function getPlayheadCameraAction({
         return { kind: 'jump', scrollLeftPx: clampScrollLeft(playheadCanvasX - inset, viewport) };
     }
 
-    if (viewX >= viewport.widthPx - inset) {
-        const unclampedScroll = playheadCanvasX - (viewport.widthPx - inset);
+    if (viewX >= followX) {
+        const unclampedScroll = playheadCanvasX - followX;
         const scrollLeftPx = clampScrollLeft(unclampedScroll, viewport);
         const maxScroll = Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
         if (playJustStarted && viewX > viewport.widthPx) {

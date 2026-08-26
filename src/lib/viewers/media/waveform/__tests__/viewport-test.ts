@@ -10,6 +10,7 @@ import {
     positionPxFromTime,
     sliderValueFromZoom,
     timeFromPositionPx,
+    timeLeftPercent,
     zoomFromSliderValue,
 } from '../viewport';
 
@@ -175,6 +176,11 @@ describe('viewport', () => {
         expect(getPinnedPlayheadLeft(200)).toBe(`${((200 - 200 / 3) / 200) * 100}%`);
         expect(getPinnedPlayheadLeft(800)).toBe('75%');
         expect(getPinnedPlayheadLeft(0)).toBe('0%');
+    });
+
+    test('should place the playhead as a CSS percent of the visible window', () => {
+        expect(timeLeftPercent(2, 8, overview)).toBe('25%');
+        expect(timeLeftPercent(2, 8, createWaveformViewport({ ...overview, widthPx: 0 }))).toBe('25%');
     });
 
     test('should cap max zoom at 24x, by peak density, and by the minimum window', () => {

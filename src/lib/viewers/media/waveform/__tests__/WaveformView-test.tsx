@@ -6,6 +6,7 @@ import {
     WAVEFORM_BAR_GAP,
     WAVEFORM_BAR_RADIUS,
     WAVEFORM_BAR_WIDTH,
+    WAVEFORM_FOLLOW_SCROLL_SETTLE_MS,
     WAVEFORM_HEIGHT,
     WAVEFORM_PLAYHEAD_JUMP_MS,
 } from '../constants';
@@ -668,5 +669,162 @@ describe('WaveformView', () => {
         });
 
         expect(playhead.style.left).toBe('87.5%');
+    });
+
+    test('should not jump back after a pan leaves the playhead off the right', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.5, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        let settleUserScroll: (() => void) | undefined;
+        jest.spyOn(window, 'setTimeout').mockImplementation((fn, ms) => {
+            if (ms === WAVEFORM_FOLLOW_SCROLL_SETTLE_MS) {
+                settleUserScroll = fn as () => void;
+            }
+            return 1;
+        });
+        jest.spyOn(window, 'clearTimeout').mockImplementation(jest.fn());
+
+        render(
+            <WaveformView
+                currentTime={3.5}
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+
+        mockGetScroll.mockReturnValue(0);
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+            scrollHandler?.();
+        });
+
+        const playhead = screen.getByTestId('bp-waveform-playhead');
+        const pinnedLeft = getPinnedPlayheadLeft(200);
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        mediaEl.dispatchEvent(new Event('play'));
+        expect(playhead.style.left).toBe(pinnedLeft);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        const callsWhileFollowing = mockSetScroll.mock.calls.length;
+        expect(callsWhileFollowing).toBeGreaterThan(0);
+
+        mockGetScroll.mockReturnValue(0);
+        act(() => {
+            scrollHandler?.();
+        });
+
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 4.1, writable: true });
+        act(() => {
+            settleUserScroll?.();
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+        expect(mockSetScroll.mock.calls.length).toBe(callsWhileFollowing);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.5, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+        expect(playhead.style.left).toBe(pinnedLeft);
+        expect(mockSetScroll.mock.calls.length).toBeGreaterThan(callsWhileFollowing);
+    });
+
+    test('should not pin after pause during a pan settle', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.5, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        let settleUserScroll: (() => void) | undefined;
+        jest.spyOn(window, 'setTimeout').mockImplementation((fn, ms) => {
+            if (ms === WAVEFORM_FOLLOW_SCROLL_SETTLE_MS) {
+                settleUserScroll = fn as () => void;
+            }
+            return 1;
+        });
+        jest.spyOn(window, 'clearTimeout').mockImplementation(jest.fn());
+
+        render(
+            <WaveformView
+                currentTime={3.5}
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+
+        mockGetScroll.mockReturnValue(0);
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+            scrollHandler?.();
+        });
+
+        const playhead = screen.getByTestId('bp-waveform-playhead');
+        const pinnedLeft = getPinnedPlayheadLeft(200);
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        mediaEl.dispatchEvent(new Event('play'));
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        mockGetScroll.mockReturnValue(0);
+        act(() => {
+            scrollHandler?.();
+        });
+        const callsAfterPan = mockSetScroll.mock.calls.length;
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('pause'));
+            settleUserScroll?.();
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+        expect(mockSetScroll.mock.calls.length).toBe(callsAfterPan);
     });
 });

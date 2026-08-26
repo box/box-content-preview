@@ -31,6 +31,8 @@ export const WAVEFORM_ZOOM_SLIDER_MAX = 100;
 export const WAVEFORM_ZOOM_DISMISS_MS = 250;
 export const WAVEFORM_FOLLOW_INSET_PX = 200;
 export const WAVEFORM_PLAYHEAD_JUMP_MS = 400;
+/** After the last user pan, wait this long before the camera may pin again. */
+export const WAVEFORM_FOLLOW_SCROLL_SETTLE_MS = 150;
 
 export const WAVEFORM_BAR_GAP = 2;
 export const WAVEFORM_BAR_WIDTH = 2;
