@@ -140,9 +140,7 @@ export default class GalleryController {
 
     canRender(pageCount: number): boolean {
         return (
-            isFeatureEnabled(this.features, 'galleryView.enabled') &&
-            pageCount > 1 &&
-            (this.isEnhancedGalleryEnabled || pageCount <= GALLERY_MAX_PAGES)
+            isFeatureEnabled(this.features, 'galleryView.enabled') && pageCount > 1 && pageCount <= GALLERY_MAX_PAGES
         );
     }
 

@@ -157,7 +157,7 @@ describe('GalleryController', () => {
             ${1}                     | ${true}  | ${true}         | ${false}
             ${2}                     | ${true}  | ${true}         | ${true}
             ${GALLERY_MAX_PAGES}     | ${true}  | ${true}         | ${true}
-            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${true}         | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${true}         | ${false}
             ${GALLERY_MAX_PAGES}     | ${true}  | ${false}        | ${true}
             ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false}        | ${false}
             ${50}                    | ${false} | ${true}         | ${false}
