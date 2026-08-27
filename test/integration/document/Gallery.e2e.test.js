@@ -271,15 +271,8 @@ describe('Preview Document Gallery', () => {
         cy.getByTitle('Gallery view').should('not.exist');
     });
 
-    it('Should show the gallery toggle for a large document when enhanced gallery is on', () => {
+    it('Should hide the gallery toggle for a document above the page limit', () => {
         showDocumentPreview({ targetFileId: largeFileId });
-
-        cy.showControls();
-        cy.getByTitle('Gallery view').should('be.visible');
-    });
-
-    it('Should hide the gallery toggle for a document above the page limit when enhanced gallery is off', () => {
-        showDocumentPreview({ enhancedGalleryEnabled: false, targetFileId: largeFileId });
 
         cy.showControls();
         cy.getByTitle('Gallery view').should('not.exist');
