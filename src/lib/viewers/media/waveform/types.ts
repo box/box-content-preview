@@ -160,6 +160,11 @@ export type WaveformViewport = {
 
 export type WaveformViewportInput = Omit<WaveformViewport, 'endSec' | 'pixelsPerSecond' | 'startSec'>;
 
+export type PlayheadCameraAction =
+    | { type: 'none' }
+    | { type: 'followRight'; isPlayheadPinned: boolean; scrollLeftPx: number }
+    | { type: 'jump'; scrollLeftPx: number };
+
 export type WaveformViewProps = {
     bufferedRange?: TimeRanges;
     currentTime?: number;

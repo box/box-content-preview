@@ -2,12 +2,15 @@ import { WAVEFORM_MIN_VIEW_WINDOW_SEC, WAVEFORM_ZOOM_MAX } from '../constants';
 import {
     clampWaveformZoom,
     createWaveformViewport,
+    getPinnedPlayheadLeft,
+    getPlayheadCameraAction,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
     isTimeInView,
     positionPxFromTime,
     sliderValueFromZoom,
     timeFromPositionPx,
+    timeLeftPercent,
     zoomFromSliderValue,
 } from '../viewport';
 
@@ -45,6 +48,136 @@ describe('viewport', () => {
         expect(timeFromPositionPx(100, zoomed)).toBe(6);
         expect(isTimeInView(2, zoomed)).toBe(false);
         expect(isTimeInView(6, zoomed)).toBe(true);
+    });
+
+    test('should not follow the playhead until it nears the right edge', () => {
+        const zoomed = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+
+        expect(
+            getPlayheadCameraAction({
+                insetPx: 40,
+                isPlaying: true,
+                playJustStarted: false,
+                timeSec: 1,
+                viewport: zoomed,
+            }),
+        ).toEqual({ type: 'none' });
+
+        const follow = getPlayheadCameraAction({
+            insetPx: 40,
+            isPlaying: true,
+            playJustStarted: false,
+            timeSec: 3.5,
+            viewport: zoomed,
+        });
+        expect(follow.type).toBe('followRight');
+        if (follow.type === 'followRight') {
+            expect(follow.isPlayheadPinned).toBe(true);
+            expect(follow.scrollLeftPx).toBeCloseTo(15);
+        }
+
+        const offRight = getPlayheadCameraAction({
+            isPlaying: true,
+            playJustStarted: false,
+            timeSec: 10,
+            viewport: createWaveformViewport({
+                durationSec: 60,
+                heightPx: 140,
+                maxZoom: 15,
+                scrollLeftPx: 0,
+                widthPx: 800,
+                zoomLevel: 15,
+            }),
+        });
+        expect(offRight.type).toBe('followRight');
+        if (offRight.type === 'followRight') {
+            expect(offRight.isPlayheadPinned).toBe(true);
+            expect(offRight.scrollLeftPx).toBeCloseTo(1400);
+        }
+    });
+
+    test('should jump the playhead into view on the off-screen side when play starts', () => {
+        const offRight = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        const jumpRight = getPlayheadCameraAction({
+            insetPx: 40,
+            isPlaying: true,
+            playJustStarted: true,
+            timeSec: 6,
+            viewport: offRight,
+        });
+        expect(jumpRight.type).toBe('jump');
+        if (jumpRight.type === 'jump') {
+            expect(jumpRight.scrollLeftPx).toBeCloseTo(140);
+        }
+
+        const offLeft = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 200,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        const jumpLeft = getPlayheadCameraAction({
+            insetPx: 40,
+            isPlaying: true,
+            playJustStarted: true,
+            timeSec: 1,
+            viewport: offLeft,
+        });
+        expect(jumpLeft.type).toBe('jump');
+        if (jumpLeft.type === 'jump') {
+            expect(jumpLeft.scrollLeftPx).toBeCloseTo(10);
+        }
+    });
+
+    test('should unpin the playhead when follow scroll hits the end of the file', () => {
+        const zoomed = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        const follow = getPlayheadCameraAction({
+            insetPx: 40,
+            isPlaying: true,
+            playJustStarted: false,
+            timeSec: 7.5,
+            viewport: zoomed,
+        });
+
+        expect(follow.type).toBe('followRight');
+        if (follow.type === 'followRight') {
+            expect(follow.isPlayheadPinned).toBe(false);
+            expect(follow.scrollLeftPx).toBe(200);
+        }
+    });
+
+    test('should pin the playhead at the follow inset as a CSS percent', () => {
+        expect(getPinnedPlayheadLeft(200)).toBe(`${((200 - 200 / 3) / 200) * 100}%`);
+        expect(getPinnedPlayheadLeft(800)).toBe('75%');
+        expect(getPinnedPlayheadLeft(0)).toBe('0%');
+    });
+
+    test('should place the playhead as a CSS percent of the visible window', () => {
+        expect(timeLeftPercent(2, 8, overview)).toBe('25%');
+        expect(timeLeftPercent(2, 8, createWaveformViewport({ ...overview, widthPx: 0 }))).toBe('25%');
     });
 
     test('should cap max zoom at 24x, by peak density, and by the minimum window', () => {
