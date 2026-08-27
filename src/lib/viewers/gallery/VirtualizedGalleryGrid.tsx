@@ -381,6 +381,11 @@ const VirtualizedGalleryGrid = forwardRef<VirtualizedGalleryGridHandle, Virtuali
             const focal = focalRef.current;
             focalRef.current = null;
 
+            // Capture the anchor tile's position before the layout changes.
+            const focalTile = getPinchFocalTile(focal);
+            const anchorTile = focalTile || grid?.querySelector<HTMLElement>(`[data-page="${anchorPageRef.current}"]`);
+            const beforeRect = anchorTile?.getBoundingClientRect();
+
             adoptVirtualizedInnerWidth(innerRef.current, scale, layoutWidthRef, setLayoutWidth);
 
             const prevLayout = prevLayoutRef.current;
@@ -414,15 +419,23 @@ const VirtualizedGalleryGrid = forwardRef<VirtualizedGalleryGridHandle, Virtuali
             }
 
             capturePendingFocusIfGridActive(grid, pendingFocusRef, focusedPageRef.current);
-            restoreVirtualizedRowScroll(
-                grid,
-                pageFromFocalTile(getPinchFocalTile(focal), anchorPageRef.current),
-                pageCount,
-                prevLayout,
-                columns,
-                tileWidth,
-                getRatio,
-            );
+
+            // Prefer pixel-accurate rect delta when the anchor tile is mounted and has layout.
+            const afterRect = anchorTile?.getBoundingClientRect();
+            if (anchorTile && beforeRect && afterRect && (beforeRect.width > 0 || beforeRect.height > 0)) {
+                grid.scrollLeft += afterRect.left - beforeRect.left;
+                grid.scrollTop += afterRect.top - beforeRect.top;
+            } else {
+                restoreVirtualizedRowScroll(
+                    grid,
+                    pageFromFocalTile(focalTile, anchorPageRef.current),
+                    pageCount,
+                    prevLayout,
+                    columns,
+                    tileWidth,
+                    getRatio,
+                );
+            }
             handleScrollThrottled();
         }, [
             columns,
