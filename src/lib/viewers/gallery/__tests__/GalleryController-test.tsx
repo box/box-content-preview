@@ -298,7 +298,7 @@ describe('GalleryController', () => {
             }
         });
 
-        test('should wire the correct props into GalleryGrid', () => {
+        test('should wire the correct props into VirtualizedGalleryGrid when enhanced', () => {
             const { controller } = makeController({ currentPage: 3, hasTouch: true, pageCount: 25 });
             controller.toggle();
 
@@ -306,7 +306,6 @@ describe('GalleryController', () => {
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
-            expect(grid.props.isAriaGridEnabled).toBe(true);
             expect(grid.props.isPinchZoomEnabled).toBe(true);
             expect(grid.props.isTouchZoomEnabled).toBe(true);
             expect(grid.props.scale).toBe(1);
@@ -556,12 +555,9 @@ describe('GalleryController', () => {
             expect(requestUiUpdate).not.toHaveBeenCalled();
 
             const grid = mockLastRoot.render.mock.calls[0][0];
-            expect(grid.props.isPinchZoomEnabled).toBe(false);
-            expect(grid.props.isTouchZoomEnabled).toBe(false);
-            expect(grid.props.isAriaGridEnabled).toBe(false);
-
-            grid.props.onScaleChange(1.5);
-            expect(controller.scale).toBe(1);
+            expect(grid.props.isPinchZoomEnabled).toBeUndefined();
+            expect(grid.props.isTouchZoomEnabled).toBeUndefined();
+            expect(grid.props.onScaleChange).toBeUndefined();
         });
 
         test('should persist scale across close and reopen but reset on destroy', () => {

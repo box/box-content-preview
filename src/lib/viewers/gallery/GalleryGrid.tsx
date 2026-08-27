@@ -1,20 +1,10 @@
-import React, {
-    forwardRef,
-    useCallback,
-    useEffect,
-    useImperativeHandle,
-    useLayoutEffect,
-    useRef,
-    useState,
-} from 'react';
-import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
-import { decodeKeydown, replacePlaceholders } from '../../util';
-import HighResThumbnailStore, { HighResRenderTask } from './HighResThumbnailStore';
+import { decodeKeydown } from '../../util';
+import HighResThumbnailStore from './HighResThumbnailStore';
 import {
     CONCURRENT_LOADS,
-    GALLERY_GRID_PADDING_TOP,
     GALLERY_HIGH_RES_CONCURRENCY,
     GALLERY_HIGH_RES_MAX_BYTES,
     GALLERY_HIGH_RES_MAX_PAGES,
@@ -25,39 +15,20 @@ import {
     GALLERY_TILE_GAP,
     GALLERY_TILE_MIN_WIDTH,
     SCROLL_THROTTLE_MS,
-    GALLERY_VIRTUAL_OVERSCAN,
 } from './constants';
-import {
-    getGalleryLayout,
-    getOccupiedColumns,
-    getPagesInRow,
-    getRowHeight,
-    getRowStartOffset,
-    getRowTrackWidth,
-    resolvePageRatio,
-} from './galleryGridLayout';
-import { getColumnIndex, getPageAbove, getPageBelow, getRowCount, getRowIndex } from './galleryGridNavigation';
+import { getColumnIndex, getPageAbove, getPageBelow, getRowCount } from './galleryGridNavigation';
+import { GalleryTile, GalleryThumbnail } from './GalleryGridShared';
 import useGalleryPinch, { PinchDirection, PinchFocal } from './useGalleryPinch';
 import './GalleryGrid.scss';
 
-export interface GalleryThumbnail {
-    init: () => Promise<unknown>;
-    getImageFromCache: (itemIndex: number) => { image?: HTMLImageElement; inProgress: boolean } | null | undefined;
-    createThumbnailImage: (
-        itemIndex: number,
-        options: { createImgTag: boolean; thumbMaxWidth: number },
-    ) => Promise<HTMLImageElement | null>;
-    renderPageImage: (pageNum: number, options: { thumbMaxWidth: number }) => HighResRenderTask;
-    /** First-page width:height ratio, populated by init(). Used to size placeholders to the real page shape. */
-    pageRatio?: number;
-}
+export { GalleryThumbnail } from './GalleryGridShared';
 
 export type Props = {
     pageCount: number;
     currentPage: number;
     /** Per-page width:height ratio (null while unknown). Falls back to the first-page ratio. */
     getPageRatio?: (pageNum: number) => number | null;
-    /** Enhanced gallery: ARIA grid, 2D arrow navigation, and row virtualization. */
+    /** When true, use ARIA grid roles and 2D arrow navigation instead of listbox/option. */
     isAriaGridEnabled?: boolean;
     isPinchZoomEnabled?: boolean;
     isTouchZoomEnabled?: boolean;
@@ -70,287 +41,27 @@ export type Props = {
     thumbnail: GalleryThumbnail;
 };
 
-export type GalleryGridHandle = {
-    handleNavKey: (key: string) => void;
-};
-
-type PendingFocus = {
-    page: number;
-    from: Element | null;
-};
-
-function collectPageRatios(pageCount: number, getRatio: (pageNum: number) => number): number[] {
-    const ratios: number[] = new Array(pageCount + 1);
-    for (let page = 1; page <= pageCount; page += 1) {
-        ratios[page] = getRatio(page);
-    }
-    return ratios;
-}
-
-function isRowInScrollport(grid: HTMLElement, rowStart: number, rowEnd: number, scrollMargin: number): boolean {
-    const top = rowStart + scrollMargin;
-    const bottom = rowEnd + scrollMargin;
-    return grid.clientHeight > 0 && bottom > grid.scrollTop && top < grid.scrollTop + grid.clientHeight;
-}
-
-function shouldApplyPendingFocus(pending: PendingFocus, grid: HTMLElement | null): boolean {
-    const active = document.activeElement;
-    if (pending.from === active) {
-        return true;
-    }
-    if (grid && active && grid.contains(active)) {
-        return true;
-    }
-    // Unmounting a focused tile dumps focus to body; an explicit move to another control must not restore.
-    return !active || active === document.body || active === document.documentElement;
-}
-
-function getPinchFocalTile(focal: PinchFocal | null): HTMLElement | null {
-    if (!focal) {
-        return null;
-    }
-    return document.elementFromPoint?.(focal.x, focal.y)?.closest<HTMLElement>('[data-page]') ?? null;
-}
-
-function restoreListboxZoomAnchor(
-    grid: HTMLElement,
-    focal: PinchFocal | null,
-    anchorPage: number,
-    applyZoomLayout: () => void,
-): void {
-    const focalTile = getPinchFocalTile(focal);
-    const anchorTile = focalTile || grid.querySelector<HTMLElement>(`[data-page="${anchorPage}"]`);
-    const beforeRect = anchorTile?.getBoundingClientRect();
-    applyZoomLayout();
-    if (!anchorTile || !beforeRect) {
-        return;
-    }
-    const afterRect = anchorTile.getBoundingClientRect();
-    grid.scrollLeft += afterRect.left - beforeRect.left;
-    grid.scrollTop += afterRect.top - beforeRect.top;
-}
-
-function applyListboxScaleLayout(
-    grid: HTMLElement | null,
-    previousScale: number,
-    scale: number,
-    applyZoomLayout: () => void,
-    focal: PinchFocal | null,
-    anchorPage: number,
-    onRestored: () => void,
-): void {
-    if (!grid || previousScale === scale) {
-        applyZoomLayout();
-        return;
-    }
-    restoreListboxZoomAnchor(grid, focal, anchorPage, applyZoomLayout);
-    onRestored();
-}
-
-function adoptVirtualizedInnerWidth(
-    inner: HTMLElement | null,
-    scale: number,
-    layoutWidthRef: { current: number },
-    setLayoutWidth: (width: number) => void,
-): void {
-    if (!inner) {
-        return;
-    }
-    inner.style.setProperty('--bp-gallery-hover-scale', String(1 + 0.02 / scale));
-    const width = inner.clientWidth;
-    if (width > 0 && width !== layoutWidthRef.current) {
-        layoutWidthRef.current = width;
-        setLayoutWidth(width);
-    }
-}
-
-function pageFromFocalTile(focalTile: HTMLElement | null, fallbackPage: number): number {
-    const pageAttr = focalTile?.dataset.page;
-    return pageAttr ? Number.parseInt(pageAttr, 10) : fallbackPage;
-}
-
-function restoreVirtualizedRowScroll(
-    grid: HTMLElement,
-    page: number,
-    pageCount: number,
-    prevLayout: { columns: number; tileWidth: number },
-    columns: number,
-    tileWidth: number,
-    getRatio: (pageNum: number) => number,
-): void {
-    const prevStart = getRowStartOffset(
-        getRowIndex(page, prevLayout.columns) - 1,
-        pageCount,
-        prevLayout.columns,
-        prevLayout.tileWidth,
-        getRatio,
-    );
-    const nextStart = getRowStartOffset(getRowIndex(page, columns) - 1, pageCount, columns, tileWidth, getRatio);
-    grid.scrollTop += nextStart - prevStart;
-}
-
-function capturePendingFocusIfGridActive(
-    grid: HTMLElement,
-    pendingFocusRef: { current: PendingFocus | null },
-    focusedPage: number,
-): void {
-    if (!grid.contains(document.activeElement) || pendingFocusRef.current != null) {
-        return;
-    }
-    pendingFocusRef.current = { page: focusedPage, from: document.activeElement };
-}
-
-function adoptVirtualizedResizeWidth(
-    grid: HTMLElement,
-    inner: HTMLElement,
-    layoutWidthRef: { current: number },
-    pendingFocusRef: { current: PendingFocus | null },
-    focusedPage: number,
-    setLayoutWidth: (width: number) => void,
-): number {
-    // The initial observe() can already report a size the mount layout effect
-    // never saw, so always adopt a positive width. Scroll restore waits for the
-    // layout effect so it uses the committed column count.
-    const width = inner.clientWidth;
-    if (width <= 0 || width === layoutWidthRef.current) {
-        return width;
-    }
-    if (grid.contains(document.activeElement)) {
-        pendingFocusRef.current = pendingFocusRef.current ?? {
-            page: focusedPage,
-            from: document.activeElement,
-        };
-    }
-    layoutWidthRef.current = width;
-    setLayoutWidth(width);
-    return width;
-}
-
-function restoreListboxResizeAnchor(grid: HTMLElement, anchorPage: number): void {
-    const tile = grid.querySelector(`[data-page="${anchorPage}"]`) as HTMLElement | null;
-    if (tile) {
-        tile.scrollIntoView({ block: 'start' });
-    }
-}
-
-function completeFirstVirtualizedMeasure({
-    grid,
+export default function GalleryGrid({
     pageCount,
     currentPage,
-    columns,
-    getRatio,
-    hasMeasuredLayoutRef,
-    prevRatiosRef,
-    pendingFocusRef,
-    scrollToIndex,
-    onReady,
-}: {
-    grid: HTMLElement;
-    pageCount: number;
-    currentPage: number;
-    columns: number;
-    getRatio: (pageNum: number) => number;
-    hasMeasuredLayoutRef: { current: boolean };
-    prevRatiosRef: { current: number[] | undefined };
-    pendingFocusRef: { current: PendingFocus | null };
-    scrollToIndex: (index: number, options: { align: 'center' }) => void;
-    onReady: () => void;
-}): boolean {
-    if (hasMeasuredLayoutRef.current) {
-        return false;
-    }
-    if (grid.clientHeight <= 0 || pageCount <= 0) {
-        return true;
-    }
-    hasMeasuredLayoutRef.current = true;
-    prevRatiosRef.current = prevRatiosRef.current ?? collectPageRatios(pageCount, getRatio);
-    pendingFocusRef.current = pendingFocusRef.current ?? { page: currentPage, from: document.activeElement };
-    scrollToIndex(getRowIndex(currentPage, columns) - 1, { align: 'center' });
-    onReady();
-    return true;
-}
-
-interface TileProps {
-    pageNum: number;
-    isFocused: boolean;
-    ariaColIndex?: number;
-    imageSrc?: string;
-    onClick: (pageNum: number) => void;
-    onFocus: (pageNum: number) => void;
-    pageRatio?: number | null;
-    role: 'option' | 'gridcell';
-    width?: number;
-}
-
-const GalleryTile = React.memo(function GalleryTile({
-    pageNum,
-    isFocused,
-    ariaColIndex,
-    imageSrc,
-    onClick,
-    onFocus,
-    pageRatio,
-    role,
-    width,
-}: TileProps): JSX.Element {
-    const ratio = pageRatio && Number.isFinite(pageRatio) && pageRatio > 0 ? pageRatio : null;
-    const tileStyle = {
-        ...(ratio ? { aspectRatio: String(ratio) } : undefined),
-        ...(width != null ? { width } : undefined),
-    };
-    const contentStyle = ratio ? { height: '100%' } : undefined;
-    const placeholderStyle = ratio ? { ...contentStyle, paddingTop: 0 } : undefined;
-
-    return (
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-        <div
-            aria-colindex={ariaColIndex}
-            aria-label={replacePlaceholders(__('page_gallery_tile'), [String(pageNum)])}
-            aria-selected={isFocused}
-            className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
-            data-page={pageNum}
-            data-resin-target="galleryTile"
-            onClick={() => onClick(pageNum)}
-            onFocus={() => onFocus(pageNum)}
-            role={role}
-            style={tileStyle}
-            tabIndex={isFocused ? 0 : -1}
-        >
-            <span aria-hidden="true" className="bp-gallery-tile-badge">
-                {pageNum}
-            </span>
-            {imageSrc ? (
-                <img alt="" src={imageSrc} style={contentStyle} />
-            ) : (
-                <span className="bp-gallery-tile-placeholder" style={placeholderStyle} />
-            )}
-        </div>
-    );
-});
-
-const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
-    {
-        pageCount,
-        currentPage,
-        getPageRatio,
-        isAriaGridEnabled = false,
-        isPinchZoomEnabled = false,
-        isTouchZoomEnabled = false,
-        onClose,
-        onFocusChange,
-        onPageNavigate,
-        onPinchStart = noop,
-        onScaleChange = noop,
-        scale = 1,
-        thumbnail,
-    },
-    ref,
-) {
+    getPageRatio,
+    isAriaGridEnabled = false,
+    isPinchZoomEnabled = false,
+    isTouchZoomEnabled = false,
+    onClose,
+    onFocusChange,
+    onPageNavigate,
+    onPinchStart = noop,
+    onScaleChange = noop,
+    scale = 1,
+    thumbnail,
+}: Props): JSX.Element {
     const [loadedImages, setLoadedImages] = useState<Record<number, string>>({});
     const [highResImages, setHighResImages] = useState<Record<number, string>>({});
     const [focusedPage, setFocusedPage] = useState(currentPage);
     const [pageRatio, setPageRatio] = useState<number | null>(null);
-    const [layoutWidth, setLayoutWidth] = useState(0);
+    // Measured from the rendered layout; drives ARIA grid row/column numbers and 2D navigation.
+    const [columnCount, setColumnCount] = useState(1);
     // Topmost visible page — the scroll anchor used to restore the viewed area after a reflow.
     const anchorPageRef = useRef(currentPage);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -361,65 +72,12 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
     const isProcessingRef = useRef(false);
     const isMountedRef = useRef(true);
     const inFlightRef = useRef<Set<number>>(new Set());
-    const isQueueReadyRef = useRef(false);
     const highResStoreRef = useRef<HighResThumbnailStore | null>(null);
-    const pendingFocusRef = useRef<PendingFocus | null>(null);
-    const loadedImagesRef = useRef(loadedImages);
-    const focusedPageRef = useRef(focusedPage);
-    const layoutWidthRef = useRef(layoutWidth);
-    const pageCountRef = useRef(pageCount);
-    const currentPageRef = useRef(currentPage);
-    const isAriaGridEnabledRef = useRef(isAriaGridEnabled);
-
-    loadedImagesRef.current = loadedImages;
-    focusedPageRef.current = focusedPage;
-    layoutWidthRef.current = layoutWidth;
-    pageCountRef.current = pageCount;
-    currentPageRef.current = currentPage;
-    isAriaGridEnabledRef.current = isAriaGridEnabled;
-
-    const layout = getGalleryLayout(layoutWidth, scale);
-    const columns = getOccupiedColumns(layout.columns, pageCount);
-    const { tileWidth } = layout;
-    const columnsRef = useRef(columns);
-    const tileWidthRef = useRef(tileWidth);
-    columnsRef.current = columns;
-    tileWidthRef.current = tileWidth;
-
-    const getRatio = useCallback((pageNum: number): number => resolvePageRatio(pageNum, getPageRatio, pageRatio), [
-        getPageRatio,
-        pageRatio,
-    ]);
-    const getRatioRef = useRef(getRatio);
-    getRatioRef.current = getRatio;
-
-    const prevLayoutRef = useRef({ columns, tileWidth, scale });
-    const prevRatiosRef = useRef<number[] | undefined>(undefined);
-    const hasMeasuredLayoutRef = useRef(false);
-
-    const virtualizer = useVirtualizer({
-        count: isAriaGridEnabled ? getRowCount(pageCount, columns) : 0,
-        enabled: isAriaGridEnabled,
-        estimateSize: (rowIndex: number) => getRowHeight(rowIndex, pageCount, columns, tileWidth, getRatio),
-        gap: GALLERY_TILE_GAP,
-        getScrollElement: () => gridRef.current,
-        overscan: GALLERY_VIRTUAL_OVERSCAN,
-        // Top padding on the scroll container. Item offsets match scrollTop; subtract
-        // this from translateY so rows stay positioned inside the inner wrapper.
-        scrollMargin: GALLERY_GRID_PADDING_TOP,
-        // Keep the selected row mounted so scrolling it offscreen does not drop keyboard focus.
-        rangeExtractor: range => {
-            const indexes = defaultRangeExtractor(range);
-            const focusedRow = getRowIndex(focusedPageRef.current, columnsRef.current) - 1;
-            if (focusedRow >= 0 && focusedRow < range.count && indexes.indexOf(focusedRow) === -1) {
-                indexes.push(focusedRow);
-                indexes.sort((a, b) => a - b);
-            }
-            return indexes;
-        },
-    });
-    const virtualizerRef = useRef(virtualizer);
-    virtualizerRef.current = virtualizer;
+    const columnCountRef = useRef(1);
+    const restoreFocusRef = useRef(false);
+    // Anchor tile and its viewport top, captured together when a re-chunk is scheduled so the
+    // post-commit effect restores against the same tile even if the anchor page changes meanwhile.
+    const rechunkAnchorRef = useRef<{ page: number; top: number } | null>(null);
 
     const byDistanceFromAnchor = (a: number, b: number): number =>
         Math.abs(a - anchorPageRef.current) - Math.abs(b - anchorPageRef.current);
@@ -427,11 +85,6 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
     function getNeededThumbWidth(): number {
         if (scaleRef.current === 1) {
             return GALLERY_THUMB_MAX_WIDTH;
-        }
-
-        if (isAriaGridEnabledRef.current) {
-            const neededWidth = tileWidthRef.current * Math.min(window.devicePixelRatio || 1, GALLERY_THUMB_MAX_DPR);
-            return GALLERY_THUMB_WIDTH_TIERS.find(tier => tier >= neededWidth) || GALLERY_THUMB_MAX_TIER;
         }
 
         const tile = gridRef.current?.querySelector<HTMLElement>('[data-page]');
@@ -442,45 +95,10 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
     // Prioritize visible pages before spending work on the surrounding buffer.
     function getPagesNearViewport(
         marginRatio: number,
-        isEligible?: (pageNum: number, tile?: HTMLElement) => boolean,
+        isEligible?: (tile: HTMLElement, pageNum: number) => boolean,
     ): number[] {
         const grid = gridRef.current;
         if (!grid) return [];
-
-        if (isAriaGridEnabledRef.current) {
-            const { scrollTop, clientHeight } = grid;
-            if (clientHeight <= 0) {
-                return [];
-            }
-
-            const viewportBottom = scrollTop + clientHeight;
-            const margin = clientHeight * marginRatio;
-            const visible: number[] = [];
-            const nearby: number[] = [];
-            const columnCount = columnsRef.current;
-            const pages = pageCountRef.current;
-
-            virtualizerRef.current.getVirtualItems().forEach(item => {
-                const bottom = item.start + item.size;
-                let bucket: number[] | null = null;
-                if (bottom > scrollTop && item.start < viewportBottom) {
-                    bucket = visible;
-                } else if (bottom > scrollTop - margin && item.start < viewportBottom + margin) {
-                    bucket = nearby;
-                }
-                if (!bucket) {
-                    return;
-                }
-                const target = bucket;
-                getPagesInRow(item.index, columnCount, pages).forEach(pageNum => {
-                    if (!isEligible || isEligible(pageNum)) {
-                        target.push(pageNum);
-                    }
-                });
-            });
-
-            return [...visible.sort(byDistanceFromAnchor), ...nearby.sort(byDistanceFromAnchor)];
-        }
 
         const { scrollTop, clientHeight } = grid;
         const viewportBottom = scrollTop + clientHeight;
@@ -491,7 +109,7 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         grid.querySelectorAll<HTMLElement>('[data-page]').forEach(tile => {
             if (!tile.dataset.page) return;
             const pageNum = parseInt(tile.dataset.page, 10);
-            if (isEligible && !isEligible(pageNum, tile)) return;
+            if (isEligible && !isEligible(tile, pageNum)) return;
             const tileTop = tile.offsetTop;
             const tileBottom = tileTop + tile.offsetHeight;
 
@@ -507,27 +125,22 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
 
     function syncHighRes() {
         const store = highResStoreRef.current;
-        const { pageRatio: thumbRatio } = thumbnail;
-        if (!store || !thumbRatio) return;
+        const { pageRatio } = thumbnail;
+        if (!store || !pageRatio) return;
 
         const width = getNeededThumbWidth();
         if (width === GALLERY_THUMB_MAX_WIDTH) {
-            store.setRetained([], width, thumbRatio);
+            store.setRetained([], width, pageRatio);
         } else if (!isProcessingRef.current) {
-            store.setRetained(getPagesNearViewport(0.5), width, thumbRatio);
+            store.setRetained(getPagesNearViewport(0.5), width, pageRatio);
         }
     }
 
     function getUnloadedNearViewport(): number[] {
-        return getPagesNearViewport(3, (pageNum, tile) => {
-            if (inFlightRef.current.has(pageNum)) {
-                return false;
-            }
-            if (tile) {
-                return !tile.querySelector('img');
-            }
-            return !loadedImagesRef.current[pageNum];
-        });
+        return getPagesNearViewport(
+            3,
+            (tile, pageNum) => !inFlightRef.current.has(pageNum) && !tile.querySelector('img'),
+        );
     }
 
     function processQueue() {
@@ -580,9 +193,8 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
                         }
                         onComplete();
                     })
-                    .catch(err => {
+                    .catch(() => {
                         inFlightRef.current.delete(pageNum);
-                        console.error('Gallery thumbnail failed for page', pageNum, err); // eslint-disable-line no-console
                         onComplete();
                     });
             });
@@ -613,20 +225,14 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
     const handleScroll = useCallback(() => {
         const grid = gridRef.current;
         if (grid) {
-            if (isAriaGridEnabledRef.current) {
-                const pages = pageCountRef.current;
-                if (pages > 0) {
-                    const item = virtualizerRef.current.getVirtualItemForOffset(grid.scrollTop);
-                    if (item) {
-                        anchorPageRef.current = Math.min(item.index * columnsRef.current + 1, pages);
+            const tiles = grid.querySelectorAll<HTMLElement>('[data-page]');
+            for (let i = 0; i < tiles.length; i += 1) {
+                if (tiles[i].offsetTop + tiles[i].offsetHeight > grid.scrollTop) {
+                    const { page } = tiles[i].dataset;
+                    if (page) {
+                        anchorPageRef.current = parseInt(page, 10);
                     }
-                }
-            } else {
-                const tiles = Array.from(grid.querySelectorAll<HTMLElement>('[data-page]'));
-                const anchorTile = tiles.find(tile => tile.offsetTop + tile.offsetHeight > grid.scrollTop);
-                const page = anchorTile?.dataset.page;
-                if (page) {
-                    anchorPageRef.current = Number.parseInt(page, 10);
+                    break;
                 }
             }
         }
@@ -660,169 +266,85 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
 
         const width = inner.clientWidth;
         const columnPitch = GALLERY_TILE_MIN_WIDTH + GALLERY_TILE_GAP;
-        const layoutColumns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
-        const baseWidth = (width - (layoutColumns - 1) * GALLERY_TILE_GAP) / layoutColumns;
+        const columns = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
+        const baseWidth = (width - (columns - 1) * GALLERY_TILE_GAP) / columns;
         inner.style.gridTemplateColumns = `repeat(auto-fill, ${Math.min(width, baseWidth * currentScale)}px)`;
         inner.style.justifyContent = 'center';
     }, []);
 
-    // getPageRatio is a stable method whose return values change as PDF.js
-    // metadata arrives, so a dep on getRatio would miss mixed-size pages. Compare
-    // visible row sizes to live ratios after every commit. Skip when columns/width
-    // are changing — the restore effect below remaps scroll for that case.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useLayoutEffect(() => {
-        if (!isAriaGridEnabled || !hasMeasuredLayoutRef.current || layoutWidth <= 0) {
-            return;
-        }
-        const prev = prevLayoutRef.current;
-        if (prev.columns !== columns || prev.tileWidth !== tileWidth) {
-            return;
-        }
+    // Counts tiles sharing the first row's offsetTop instead of duplicating the CSS
+    // auto-fill math, so the stylesheet stays the only source of truth for the layout.
+    // Runs after every layout mutation: mount, container resize, and zoom changes.
+    const measureColumnCount = useCallback(() => {
         const grid = gridRef.current;
-        if (!grid) {
-            return;
-        }
-        const items = virtualizer.getVirtualItems();
-        const didVisibleSizeChange = items.some(
-            item => Math.abs(item.size - getRowHeight(item.index, pageCount, columns, tileWidth, getRatio)) > 0.5,
-        );
-        if (!didVisibleSizeChange) {
-            prevRatiosRef.current = prevRatiosRef.current ?? collectPageRatios(pageCount, getRatio);
+        const inner = innerRef.current;
+        if (!isAriaGridEnabled || !grid || !inner) {
             return;
         }
 
-        const prevRatios = prevRatiosRef.current;
-        virtualizer.measure();
-        if (prevRatios) {
-            const getPrevRatio = (pageNum: number): number => {
-                const previous = prevRatios[pageNum];
-                return previous ?? getRatio(pageNum);
-            };
-            const page = anchorPageRef.current;
-            const prevStart = getRowStartOffset(
-                getRowIndex(page, columns) - 1,
-                pageCount,
-                columns,
-                tileWidth,
-                getPrevRatio,
-            );
-            const nextStart = getRowStartOffset(
-                getRowIndex(page, columns) - 1,
-                pageCount,
-                columns,
-                tileWidth,
-                getRatio,
-            );
-            grid.scrollTop += nextStart - prevStart;
+        // Without a layout box (hidden host, zero-size container), offsetTop reads 0 for every
+        // tile and the count would balloon to the page count; keep the last measured value.
+        if (!inner.offsetWidth) {
+            return;
         }
-        prevRatiosRef.current = collectPageRatios(pageCount, getRatio);
-        handleScrollRef.current();
-    });
 
-    useLayoutEffect(() => {
-        if (isAriaGridEnabled) {
-            virtualizer.measure();
-            if (prevRatiosRef.current && prevRatiosRef.current.length !== pageCount + 1) {
-                prevRatiosRef.current = undefined;
-            }
+        const tiles = inner.querySelectorAll<HTMLElement>('[data-page]');
+        if (tiles.length === 0) {
+            return;
         }
-    }, [columns, getRatio, isAriaGridEnabled, pageCount, tileWidth, virtualizer]);
+
+        let count = 1;
+        while (count < tiles.length && tiles[count].offsetTop === tiles[0].offsetTop) {
+            count += 1;
+        }
+
+        if (count !== columnCountRef.current) {
+            // Re-chunking tiles into different rows recreates the focused tile's DOM node,
+            // which would silently drop focus to <body>; remember to restore it post-render.
+            restoreFocusRef.current = grid.contains(document.activeElement);
+            // Capture where the anchor tile sits now — after any zoom/resize scroll fixups that
+            // already ran — so the post-commit effect restores its position.
+            const anchorPage = anchorPageRef.current;
+            const anchorTile = grid.querySelector(`[data-page="${anchorPage}"]`);
+            rechunkAnchorRef.current = anchorTile
+                ? { page: anchorPage, top: anchorTile.getBoundingClientRect().top }
+                : null;
+            columnCountRef.current = count;
+            setColumnCount(count);
+        }
+    }, [isAriaGridEnabled]);
 
     useLayoutEffect(() => {
         const grid = gridRef.current;
         const previousScale = scaleRef.current;
         scaleRef.current = scale;
+
         const focal = focalRef.current;
         focalRef.current = null;
 
-        if (!isAriaGridEnabled) {
-            applyListboxScaleLayout(
-                grid,
-                previousScale,
-                scale,
-                applyZoomLayout,
-                focal,
-                anchorPageRef.current,
-                handleScrollRef.current,
-            );
+        if (!grid || previousScale === scale) {
+            applyZoomLayout();
+            measureColumnCount();
             return;
         }
 
-        adoptVirtualizedInnerWidth(innerRef.current, scale, layoutWidthRef, setLayoutWidth);
+        const focalTile = focal
+            ? document.elementFromPoint?.(focal.x, focal.y)?.closest<HTMLElement>('[data-page]')
+            : null;
+        const anchorTile = focalTile || grid.querySelector<HTMLElement>(`[data-page="${anchorPageRef.current}"]`);
+        const beforeRect = anchorTile && anchorTile.getBoundingClientRect();
 
-        const prevLayout = prevLayoutRef.current;
-        const didColumnsOrWidthChange = prevLayout.columns !== columns || prevLayout.tileWidth !== tileWidth;
-        const didScaleChange = previousScale !== scale;
-        prevLayoutRef.current = { columns, tileWidth, scale };
+        applyZoomLayout();
 
-        if (!grid || layoutWidth <= 0) {
-            return;
+        if (anchorTile && beforeRect) {
+            const afterRect = anchorTile.getBoundingClientRect();
+            grid.scrollLeft += afterRect.left - beforeRect.left;
+            grid.scrollTop += afterRect.top - beforeRect.top;
         }
 
-        if (
-            completeFirstVirtualizedMeasure({
-                grid,
-                pageCount,
-                currentPage,
-                columns,
-                getRatio,
-                hasMeasuredLayoutRef,
-                prevRatiosRef,
-                pendingFocusRef,
-                scrollToIndex: virtualizer.scrollToIndex,
-                onReady: handleScrollRef.current,
-            })
-        ) {
-            return;
-        }
-
-        // Restore after this commit so row indexes use the new column count. Restoring
-        // inside ResizeObserver would still see the stale columnsRef.
-        if (!didColumnsOrWidthChange && !didScaleChange) {
-            return;
-        }
-
-        capturePendingFocusIfGridActive(grid, pendingFocusRef, focusedPageRef.current);
-        restoreVirtualizedRowScroll(
-            grid,
-            pageFromFocalTile(getPinchFocalTile(focal), anchorPageRef.current),
-            pageCount,
-            prevLayout,
-            columns,
-            tileWidth,
-            getRatio,
-        );
         handleScrollRef.current();
-    }, [
-        applyZoomLayout,
-        columns,
-        currentPage,
-        getRatio,
-        isAriaGridEnabled,
-        layoutWidth,
-        pageCount,
-        scale,
-        tileWidth,
-        virtualizer,
-    ]);
-
-    useLayoutEffect(() => {
-        const pending = pendingFocusRef.current;
-        if (!pending) {
-            return;
-        }
-        const grid = gridRef.current;
-        if (!shouldApplyPendingFocus(pending, grid)) {
-            pendingFocusRef.current = null;
-            return;
-        }
-        const tile = grid?.querySelector<HTMLElement>(`[data-page="${pending.page}"]`);
-        if (tile) {
-            pendingFocusRef.current = null;
-            tile.focus({ preventScroll: true });
-        }
-    });
+        measureColumnCount();
+    }, [applyZoomLayout, measureColumnCount, scale]);
 
     useEffect(() => {
         const throttledScroll = handleScrollRef.current;
@@ -839,13 +361,17 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         });
         highResStoreRef.current = highResStore;
 
-        if (isAriaGridEnabled) {
-            pendingFocusRef.current = pendingFocusRef.current ?? { page: currentPage, from: document.activeElement };
-        } else if (gridRef.current) {
+        if (gridRef.current) {
             const tile = gridRef.current.querySelector(`[data-page="${currentPage}"]`) as HTMLElement;
             if (tile) {
                 tile.scrollIntoView({ block: 'center' });
                 tile.focus();
+                // The mount-time measurement may have captured this tile's position before this
+                // centering ran; refresh the capture so the re-chunk restore keeps the centering.
+                const anchor = rechunkAnchorRef.current;
+                if (anchor && anchor.page === currentPage) {
+                    anchor.top = tile.getBoundingClientRect().top;
+                }
             }
         }
 
@@ -854,9 +380,8 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
 
         for (let i = 1; i <= pageCount; i += 1) {
             const cached = thumbnail.getImageFromCache(i - 1);
-            const src = cached?.image?.src;
-            if (src) {
-                initialImages[i] = src;
+            if (cached && cached.image && cached.image.src) {
+                initialImages[i] = cached.image.src;
             } else {
                 uncachedPages.push(i);
             }
@@ -868,30 +393,20 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
 
         uncachedPages.sort((a, b) => Math.abs(a - currentPage) - Math.abs(b - currentPage));
         queueRef.current = uncachedPages;
-        isQueueReadyRef.current = true;
 
-        thumbnail
-            .init()
-            .then(() => {
-                if (!isMountedRef.current) return;
-                if (typeof thumbnail.pageRatio === 'number' && thumbnail.pageRatio > 0) {
-                    setPageRatio(thumbnail.pageRatio);
-                }
-                // Guarded start: the mount scroll can fire the scroll handler first, and a
-                // second unguarded pump would double the concurrent thumbnail renders.
-                startProcessing();
-                syncHighRes();
-            })
-            .catch(err => {
-                if (!isMountedRef.current) return;
-                console.error('Gallery thumbnail init failed', err); // eslint-disable-line no-console
-                startProcessing();
-            });
+        thumbnail.init().then(() => {
+            if (!isMountedRef.current) return;
+            if (typeof thumbnail.pageRatio === 'number' && thumbnail.pageRatio > 0) {
+                setPageRatio(thumbnail.pageRatio);
+            }
+            // Guarded start: the mount scrollIntoView can fire the scroll handler first, and a
+            // second unguarded pump would double the concurrent thumbnail renders.
+            startProcessing();
+            syncHighRes();
+        });
 
         return () => {
             isMountedRef.current = false;
-            isQueueReadyRef.current = false;
-            pendingFocusRef.current = null;
             queueRef.current = [];
             isProcessingRef.current = false;
             highResStore.destroy();
@@ -901,51 +416,30 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Listbox restores the viewed tile here. Virtualized only records width; scroll
-    // remap waits for the layout effect so it uses the committed column count.
+    // Keep the viewed area in place when the grid reflows (fullscreen enter/exit, window resize):
+    // the scroll offset is preserved while tile positions shift, drifting the view otherwise.
     useEffect(() => {
         const grid = gridRef.current;
-        const inner = innerRef.current;
-        if (!grid || !inner) return undefined;
+        if (!grid) return undefined;
 
         let isFirstObservation = true;
         const observer = new ResizeObserver(() => {
-            if (isAriaGridEnabled) {
-                const width = adoptVirtualizedResizeWidth(
-                    grid,
-                    inner,
-                    layoutWidthRef,
-                    pendingFocusRef,
-                    focusedPageRef.current,
-                    setLayoutWidth,
-                );
-                if (width > 0) {
-                    completeFirstVirtualizedMeasure({
-                        grid,
-                        pageCount: pageCountRef.current,
-                        currentPage: currentPageRef.current,
-                        columns: getOccupiedColumns(
-                            getGalleryLayout(width, scaleRef.current).columns,
-                            pageCountRef.current,
-                        ),
-                        getRatio: getRatioRef.current,
-                        hasMeasuredLayoutRef,
-                        prevRatiosRef,
-                        pendingFocusRef,
-                        scrollToIndex: virtualizerRef.current.scrollToIndex,
-                        onReady: handleScrollRef.current,
-                    });
-                }
-            } else {
-                applyZoomLayout();
-            }
+            // The initial fire on observe() can already report a size the mount-time layout
+            // effect never saw (e.g. a container that gained its size right after mount), so
+            // always re-apply layout and re-measure; only the scroll-anchor restore is skipped
+            // on that first delivery, since there is no viewed area to preserve yet.
+            applyZoomLayout();
             if (isFirstObservation) {
                 isFirstObservation = false;
+                measureColumnCount();
                 return;
             }
-            if (!isAriaGridEnabled) {
-                restoreListboxResizeAnchor(grid, anchorPageRef.current);
+            const tile = grid.querySelector(`[data-page="${anchorPageRef.current}"]`) as HTMLElement | null;
+            if (tile) {
+                tile.scrollIntoView({ block: 'start' });
             }
+            // Measure after the anchor restore so a scheduled re-chunk captures the restored position.
+            measureColumnCount();
             // A larger viewport (fullscreen enter, window resize) can reveal unloaded tiles
             // without any scroll event, so run the same catch-up the scroll handler does.
             handleScrollRef.current();
@@ -953,76 +447,56 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         observer.observe(grid);
 
         return () => observer.disconnect();
-    }, [applyZoomLayout, isAriaGridEnabled]);
+    }, [applyZoomLayout, measureColumnCount]);
 
-    const selectPage = useCallback(
+    const focusTile = useCallback((pageNum: number, options?: FocusOptions) => {
+        const grid = gridRef.current;
+        if (!grid) return;
+        const tile = grid.querySelector(`[data-page="${pageNum}"]`) as HTMLElement | null;
+        if (tile) {
+            tile.focus(options);
+        }
+    }, []);
+
+    // Re-chunk recreates the tile DOM nodes, which drops focus and can shift the scroll
+    // position; restore both after the new nodes commit.
+    const committedColumnCountRef = useRef(columnCount);
+    useLayoutEffect(() => {
+        const isRechunk = committedColumnCountRef.current !== columnCount;
+        committedColumnCountRef.current = columnCount;
+        if (!isRechunk) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (restoreFocusRef.current || !active || active === document.body) {
+            restoreFocusRef.current = false;
+            focusTile(focusedPage, { preventScroll: true });
+        }
+
+        const anchor = rechunkAnchorRef.current;
+        rechunkAnchorRef.current = null;
+
+        // Swapping the row DOM out from under the scroller can shift scrollTop. Restore the
+        // captured anchor tile to its captured viewport position by delta, preserving the mount
+        // centering and the zoom focal-point / resize fixups that already ran.
+        const grid = gridRef.current;
+        if (grid && anchor) {
+            const tile = grid.querySelector(`[data-page="${anchor.page}"]`) as HTMLElement | null;
+            if (tile) {
+                grid.scrollTop += tile.getBoundingClientRect().top - anchor.top;
+            }
+        }
+    }, [columnCount, focusedPage, focusTile]);
+
+    const handleTileFocus = useCallback(
         (pageNum: number) => {
-            focusedPageRef.current = pageNum;
             setFocusedPage(pageNum);
             if (onFocusChange) {
                 onFocusChange(pageNum);
             }
         },
         [onFocusChange],
-    );
-
-    const focusTile = useCallback(
-        (pageNum: number, options?: FocusOptions & { align?: 'auto' | 'start' | 'center' | 'end' }) => {
-            const grid = gridRef.current;
-            if (!grid) return;
-            selectPage(pageNum);
-
-            const preventScroll = Boolean(options?.preventScroll);
-            const align = options?.align ?? 'auto';
-
-            if (isAriaGridEnabled && !preventScroll) {
-                const rowIndex = getRowIndex(pageNum, columnsRef.current) - 1;
-                const columns = columnsRef.current;
-                const tileWidth = tileWidthRef.current;
-                const pages = pageCountRef.current;
-                const rowStart = getRowStartOffset(rowIndex, pages, columns, tileWidth, getRatioRef.current);
-                const rowEnd = rowStart + getRowHeight(rowIndex, pages, columns, tileWidth, getRatioRef.current);
-                // auto: only move the window when the target row is offscreen. A pinned
-                // offscreen tile is still in the DOM, so presence must not skip the jump.
-                const inView = align === 'auto' && isRowInScrollport(grid, rowStart, rowEnd, GALLERY_GRID_PADDING_TOP);
-                if (!inView) {
-                    pendingFocusRef.current = { page: pageNum, from: document.activeElement };
-                    virtualizer.scrollToIndex(rowIndex, { align });
-                    grid.dispatchEvent(new Event('scroll'));
-                    return;
-                }
-            }
-
-            const tile = grid.querySelector(`[data-page="${pageNum}"]`) as HTMLElement | null;
-            if (tile) {
-                if (isAriaGridEnabled || preventScroll) {
-                    tile.focus({ preventScroll: true });
-                    return;
-                }
-                // Arrow keys preventDefault, so native focus will not scroll the listbox.
-                tile.focus();
-                tile.scrollIntoView({
-                    block: align === 'auto' ? 'nearest' : align,
-                    inline: 'nearest',
-                });
-                return;
-            }
-
-            // Geometrically in view, but the virtualizer has not mounted the row yet.
-            if (isAriaGridEnabled && !preventScroll) {
-                pendingFocusRef.current = { page: pageNum, from: document.activeElement };
-                virtualizer.scrollToIndex(getRowIndex(pageNum, columnsRef.current) - 1, { align });
-                grid.dispatchEvent(new Event('scroll'));
-            }
-        },
-        [isAriaGridEnabled, selectPage, virtualizer],
-    );
-
-    const handleTileFocus = useCallback(
-        (pageNum: number) => {
-            selectPage(pageNum);
-        },
-        [selectPage],
     );
 
     const handleTileClick = useCallback(
@@ -1041,171 +515,131 @@ const GalleryGrid = forwardRef<GalleryGridHandle, Props>(function GalleryGrid(
         [focusedPage, focusTile],
     );
 
-    // Listbox: every arrow moves ±1 page. ARIA grid: Left/Right stay ±1 (across row
-    // edges, clamped at first/last page); Up/Down move one row (Down clamps on a short last row).
-    const handleNavKey = useCallback(
-        (key: string): boolean => {
-            const page = focusedPageRef.current;
-            const columnCount = columnsRef.current;
-            switch (key) {
-                case 'ArrowUp': {
-                    const target = isAriaGridEnabled ? getPageAbove(page, columnCount) : page - 1;
-                    if (target !== null && target >= 1) {
-                        focusTile(target);
-                    }
-                    return true;
-                }
-                case 'ArrowDown': {
-                    const target = isAriaGridEnabled ? getPageBelow(page, columnCount, pageCount) : page + 1;
-                    if (target !== null && target <= pageCount) {
-                        focusTile(target);
-                    }
-                    return true;
-                }
-                case 'ArrowLeft':
-                    if (page > 1) {
-                        focusTile(page - 1);
-                    }
-                    return true;
-                case 'ArrowRight':
-                    if (page < pageCount) {
-                        focusTile(page + 1);
-                    }
-                    return true;
-                case 'Home':
-                    focusTile(1, { align: 'start' });
-                    return true;
-                case 'End':
-                    focusTile(pageCount, { align: 'end' });
-                    return true;
-                case 'Enter':
-                case 'Space':
-                    onPageNavigate(page);
-                    return true;
-                default:
-                    return false;
-            }
-        },
-        [focusTile, isAriaGridEnabled, onPageNavigate, pageCount],
-    );
-
-    useImperativeHandle(ref, () => ({ handleNavKey }), [handleNavKey]);
-
     const handleGridKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
             const key = decodeKeydown(event);
 
-            if (key === 'Escape') {
-                event.preventDefault();
-                event.stopPropagation();
-                onClose();
-                return;
-            }
-
-            if (handleNavKey(key)) {
-                event.preventDefault();
-                event.stopPropagation();
+            switch (key) {
+                case 'Escape':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onClose();
+                    return;
+                // Listbox: every arrow moves ±1 page. ARIA grid: Left/Right stay ±1 (across row
+                // edges, clamped at first/last page); Up/Down move one row (Down clamps on a short last row).
+                case 'ArrowUp': {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const target = isAriaGridEnabled ? getPageAbove(focusedPage, columnCount) : focusedPage - 1;
+                    if (target !== null && target >= 1) {
+                        focusTile(target);
+                    }
+                    return;
+                }
+                case 'ArrowDown': {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const target = isAriaGridEnabled
+                        ? getPageBelow(focusedPage, columnCount, pageCount)
+                        : focusedPage + 1;
+                    if (target !== null && target <= pageCount) {
+                        focusTile(target);
+                    }
+                    return;
+                }
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (focusedPage > 1) {
+                        focusTile(focusedPage - 1);
+                    }
+                    return;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (focusedPage < pageCount) {
+                        focusTile(focusedPage + 1);
+                    }
+                    return;
+                case 'Home':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    focusTile(1);
+                    return;
+                case 'End':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    focusTile(pageCount);
+                    return;
+                case 'Enter':
+                case 'Space':
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onPageNavigate(focusedPage);
+                    break;
+                default:
             }
         },
-        [handleNavKey, onClose],
+        [columnCount, focusedPage, focusTile, isAriaGridEnabled, onClose, onPageNavigate, pageCount],
     );
 
-    const virtualItems = virtualizer.getVirtualItems();
+    const tiles = [];
+    for (let i = 1; i <= pageCount; i += 1) {
+        tiles.push(
+            <GalleryTile
+                key={i}
+                ariaColIndex={isAriaGridEnabled ? getColumnIndex(i, columnCount) : undefined}
+                imageSrc={highResImages[i] || loadedImages[i]}
+                isFocused={i === focusedPage}
+                onClick={handleTileClick}
+                onFocus={handleTileFocus}
+                pageNum={i}
+                pageRatio={(getPageRatio && getPageRatio(i)) || pageRatio}
+                role={isAriaGridEnabled ? 'gridcell' : 'option'}
+            />,
+        );
+    }
 
-    // Home/End scrollToIndex fires scroll before the new rows commit, so the
-    // throttled loader would see a stale range and go idle. Skip the mount
-    // run — init() already starts the queue — and pump on later focus moves.
-    const skipInitialFocusPumpRef = useRef(true);
-    useEffect(() => {
-        if (!isAriaGridEnabled || !isQueueReadyRef.current) {
-            return undefined;
-        }
-        if (skipInitialFocusPumpRef.current) {
-            skipInitialFocusPumpRef.current = false;
-            return undefined;
-        }
-        const pump = (): void => {
-            handleScroll();
-            handleScrollRef.current.flush();
-        };
-        pump();
-        const raf = requestAnimationFrame(pump);
-        return () => cancelAnimationFrame(raf);
-    }, [focusedPage, handleScroll, isAriaGridEnabled]);
-
-    const renderTile = (pageNum: number): JSX.Element => (
-        <GalleryTile
-            key={pageNum}
-            ariaColIndex={isAriaGridEnabled ? getColumnIndex(pageNum, columns) : undefined}
-            imageSrc={highResImages[pageNum] || loadedImages[pageNum]}
-            isFocused={pageNum === focusedPage}
-            onClick={handleTileClick}
-            onFocus={handleTileFocus}
-            pageNum={pageNum}
-            pageRatio={getPageRatio?.(pageNum) || pageRatio}
-            role={isAriaGridEnabled ? 'gridcell' : 'option'}
-            width={isAriaGridEnabled ? tileWidth : undefined}
-        />
-    );
-
-    let content: React.ReactNode;
-    const rowTrackWidth = getRowTrackWidth(columns, tileWidth);
-    const rowLeft = Math.max(0, (layoutWidth - rowTrackWidth) / 2);
-
+    // ARIA requires gridcells to live inside rows. The display: contents row wrappers add
+    // that level to the accessibility tree without generating boxes, so the tiles remain
+    // direct CSS-grid items and the visual layout is identical to the flat listbox.
+    let content: React.ReactNode = tiles;
     if (isAriaGridEnabled) {
-        content = virtualItems.map(virtualRow => {
-            const rowIndex = virtualRow.index + 1;
-            const pages = getPagesInRow(virtualRow.index, columns, pageCount);
-
-            return (
+        const rows = [];
+        for (let start = 0; start < tiles.length; start += columnCount) {
+            const rowIndex = start / columnCount + 1;
+            rows.push(
+                // Named with the row number so AT announces that instead of every tile in the row.
                 <div
-                    key={virtualRow.key}
+                    key={start}
                     aria-label={String(rowIndex)}
                     aria-rowindex={rowIndex}
                     className="bp-gallery-grid-row"
                     role="row"
-                    style={{
-                        height: `${virtualRow.size}px`,
-                        left: `${rowLeft}px`,
-                        transform: `translateY(${virtualRow.start - GALLERY_GRID_PADDING_TOP}px)`,
-                        width: `${rowTrackWidth}px`,
-                    }}
                 >
-                    {pages.map(renderTile)}
-                </div>
+                    {tiles.slice(start, start + columnCount)}
+                </div>,
             );
-        });
-    } else {
-        const tiles = [];
-        for (let i = 1; i <= pageCount; i += 1) {
-            tiles.push(renderTile(i));
         }
-        content = tiles;
+        content = rows;
     }
 
     return (
         <div
             ref={gridRef}
-            aria-colcount={isAriaGridEnabled ? columns : undefined}
+            aria-colcount={isAriaGridEnabled ? columnCount : undefined}
             aria-label={__('page_gallery')}
-            aria-rowcount={isAriaGridEnabled ? getRowCount(pageCount, columns) : undefined}
-            className={`bp-gallery-grid${isAriaGridEnabled ? ' bp-gallery-grid--virtualized' : ''}`}
+            aria-rowcount={isAriaGridEnabled ? getRowCount(pageCount, columnCount) : undefined}
+            className="bp-gallery-grid"
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
             onScroll={handleScroll}
             role={isAriaGridEnabled ? 'grid' : 'listbox'}
             tabIndex={-1}
         >
-            <div
-                ref={innerRef}
-                className="bp-gallery-grid-inner"
-                role="presentation"
-                style={isAriaGridEnabled ? { height: virtualizer.getTotalSize() } : undefined}
-            >
+            <div ref={innerRef} className="bp-gallery-grid-inner" role="presentation">
                 {content}
             </div>
         </div>
     );
-});
-
-export default GalleryGrid;
+}

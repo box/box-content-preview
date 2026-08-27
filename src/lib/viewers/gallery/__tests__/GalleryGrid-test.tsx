@@ -1,47 +1,18 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-    GALLERY_GRID_PADDING_TOP,
-    GALLERY_THUMB_MAX_WIDTH,
-    GALLERY_THUMB_WIDTH_TIERS,
-    GALLERY_TILE_DEFAULT_RATIO,
-    GALLERY_TILE_GAP,
-    GALLERY_TILE_MIN_WIDTH,
-} from '../constants';
+import { GALLERY_THUMB_MAX_WIDTH, GALLERY_THUMB_WIDTH_TIERS } from '../constants';
 import GalleryGrid from '../GalleryGrid';
-import { getGalleryLayout, getRowStartOffset, getRowTrackWidth } from '../galleryGridLayout';
-import { getRowIndex } from '../galleryGridNavigation';
 
 const observeMock = jest.fn();
 const disconnectMock = jest.fn();
-const resizeCallbacks: Array<(entries?: unknown[]) => void> = [];
+let resizeCallback: () => void;
 ((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = jest
     .fn()
-    .mockImplementation((callback: (entries?: unknown[]) => void) => {
-        resizeCallbacks.push(callback);
-        return { observe: observeMock, unobserve: jest.fn(), disconnect: disconnectMock };
+    .mockImplementation((callback: () => void) => {
+        resizeCallback = callback;
+        return { observe: observeMock, disconnect: disconnectMock };
     });
-
-const fireResize = (): void => {
-    act(() => {
-        resizeCallbacks.forEach(callback => callback([]));
-    });
-};
-
-// Width that yields 3 columns at scale 1; height large enough that 10-page tests mount every row.
-const DEFAULT_WIDTH = 920;
-const DEFAULT_HEIGHT = 4000;
-let mockWidth = DEFAULT_WIDTH;
-let mockHeight = DEFAULT_HEIGHT;
-
-const widthForColumns = (columns: number): number =>
-    columns * GALLERY_TILE_MIN_WIDTH + (columns - 1) * GALLERY_TILE_GAP;
-
-const setViewport = (width: number, height: number): void => {
-    mockWidth = width;
-    mockHeight = height;
-};
 
 describe('GalleryGrid', () => {
     const mockThumbnail = {
@@ -62,49 +33,7 @@ describe('GalleryGrid', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-        resizeCallbacks.length = 0;
-        setViewport(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
-        Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
-            configurable: true,
-            get() {
-                return mockWidth;
-            },
-        });
-        Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
-            configurable: true,
-            get() {
-                return mockHeight;
-            },
-        });
-        Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
-            configurable: true,
-            get() {
-                return mockWidth;
-            },
-        });
-        Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
-            configurable: true,
-            get() {
-                return mockHeight;
-            },
-        });
-        Object.defineProperty(HTMLElement.prototype, 'scrollHeight', {
-            configurable: true,
-            get(this: HTMLElement) {
-                const inner = this.firstElementChild as HTMLElement | null;
-                if (inner && inner.style && inner.style.height) {
-                    return parseFloat(inner.style.height) || mockHeight;
-                }
-                return mockHeight;
-            },
-        });
-
-        Element.prototype.scrollTo = jest.fn(function scrollTo(this: Element, arg?: ScrollToOptions | number) {
-            if (typeof arg === 'object' && arg && arg.top != null) {
-                Object.defineProperty(this, 'scrollTop', { configurable: true, writable: true, value: arg.top });
-            }
-        });
+        // Mock scrollIntoView
         Element.prototype.scrollIntoView = jest.fn();
     });
 
@@ -170,9 +99,9 @@ describe('GalleryGrid', () => {
             });
         });
 
-        test('should scroll the current page tile into view on mount', () => {
+        test('should scroll current page tile into view on mount', () => {
             getWrapper();
-            expect(Element.prototype.scrollIntoView).toHaveBeenCalled();
+            expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'center' });
         });
     });
 
@@ -185,7 +114,6 @@ describe('GalleryGrid', () => {
         });
 
         test('should still allow click navigation when thumbnail render failed (fallback tile)', async () => {
-            const errorSpy = jest.spyOn(console, 'error').mockImplementation();
             const failingThumbnail = {
                 ...mockThumbnail,
                 createThumbnailImage: jest.fn().mockRejectedValue(new Error('render failed')),
@@ -199,8 +127,6 @@ describe('GalleryGrid', () => {
 
             await userEvent.click(tile);
             expect(onPageNavigate).toHaveBeenCalledWith(7);
-            expect(errorSpy).toHaveBeenCalled();
-            errorSpy.mockRestore();
         });
     });
 
@@ -225,38 +151,6 @@ describe('GalleryGrid', () => {
             screen.getByLabelText('Page 3').focus();
             await userEvent.keyboard('{ArrowRight}');
             expect(screen.getByLabelText('Page 4')).toHaveFocus();
-        });
-
-        test('should scroll the focused tile into view when moving between listbox tiles', async () => {
-            getWrapper();
-            screen.getByLabelText('Page 3').focus();
-            const nextTile = screen.getByLabelText('Page 4');
-            const scrollIntoView = jest.fn();
-            nextTile.scrollIntoView = scrollIntoView;
-
-            await userEvent.keyboard('{ArrowRight}');
-
-            expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', inline: 'nearest' });
-            expect(nextTile).toHaveFocus();
-        });
-
-        test('should scroll Home and End listbox tiles to the start and end of the grid', async () => {
-            getWrapper();
-            screen.getByLabelText('Page 3').focus();
-            const firstTile = screen.getByLabelText('Page 1');
-            const lastTile = screen.getByLabelText('Page 10');
-            const scrollFirst = jest.fn();
-            const scrollLast = jest.fn();
-            firstTile.scrollIntoView = scrollFirst;
-            lastTile.scrollIntoView = scrollLast;
-
-            await userEvent.keyboard('{Home}');
-            expect(scrollFirst).toHaveBeenCalledWith({ block: 'start', inline: 'nearest' });
-            expect(firstTile).toHaveFocus();
-
-            await userEvent.keyboard('{End}');
-            expect(scrollLast).toHaveBeenCalledWith({ block: 'end', inline: 'nearest' });
-            expect(lastTile).toHaveFocus();
         });
 
         test('should move focus to previous tile on ArrowUp', async () => {
@@ -395,10 +289,10 @@ describe('GalleryGrid', () => {
                 tile.scrollIntoView = tile === screen.getByLabelText('Page 3') ? tile3Spy : otherTilesSpy;
             });
 
-            fireResize(); // initial fire on observe() is skipped
+            act(() => resizeCallback()); // initial fire on observe() is skipped
             expect(tile3Spy).not.toHaveBeenCalled();
 
-            fireResize();
+            act(() => resizeCallback());
             expect(tile3Spy).toHaveBeenCalledWith({ block: 'start' });
             expect(otherTilesSpy).not.toHaveBeenCalled();
         });
@@ -423,8 +317,8 @@ describe('GalleryGrid', () => {
                 tile.scrollIntoView = tile === screen.getByLabelText('Page 7') ? tile7Spy : otherTilesSpy;
             });
 
-            fireResize(); // skipped initial fire
-            fireResize();
+            act(() => resizeCallback()); // skipped initial fire
+            act(() => resizeCallback());
 
             expect(tile7Spy).toHaveBeenCalledWith({ block: 'start' });
             expect(otherTilesSpy).not.toHaveBeenCalled();
@@ -807,9 +701,8 @@ describe('GalleryGrid', () => {
                 ...mockThumbnail,
                 createThumbnailImage: jest.fn().mockResolvedValue({ src: 'data:image/png;test' }),
             };
-            // Prototype mocks otherwise report a tall viewport; zero height means nothing is nearby
-            // and the pump parks after its first batch (scroll/resize revive it).
-            setViewport(DEFAULT_WIDTH, 0);
+            // No layout: every tile reports zero geometry, so nothing registers as near the
+            // viewport and the pump parks after its first batch (scroll/resize revive it)
             getWrapper({ pageCount: 50, currentPage: 1, thumbnail });
 
             await waitFor(() => {
@@ -827,7 +720,6 @@ describe('GalleryGrid', () => {
                 ...mockThumbnail,
                 createThumbnailImage: jest.fn().mockResolvedValue(null),
             };
-            setViewport(DEFAULT_WIDTH, 0);
             getWrapper({ pageCount: 10, currentPage: 1, thumbnail });
 
             // No geometry yet, so only the first batch runs (and resolves no images)
@@ -837,10 +729,9 @@ describe('GalleryGrid', () => {
             thumbnail.createThumbnailImage.mockClear();
 
             // Simulate a resize (e.g. fullscreen enter) revealing the tiles
-            setViewport(DEFAULT_WIDTH, DEFAULT_HEIGHT);
             layoutGrid(500);
-            fireResize(); // initial fire on observe() is skipped
-            fireResize();
+            act(() => resizeCallback()); // initial fire on observe() is skipped
+            act(() => resizeCallback());
 
             await waitFor(() => {
                 expect(thumbnail.createThumbnailImage).toHaveBeenCalledTimes(10);
@@ -854,22 +745,6 @@ describe('GalleryGrid', () => {
             await waitFor(() => {
                 expect(mockThumbnail.init).toHaveBeenCalled();
             });
-        });
-
-        test('should still start the load queue when thumbnail.init rejects', async () => {
-            const errorSpy = jest.spyOn(console, 'error').mockImplementation();
-            const thumbnail = {
-                ...mockThumbnail,
-                init: jest.fn().mockRejectedValue(new Error('init failed')),
-                createThumbnailImage: jest.fn().mockResolvedValue({ src: 'data:image/png;test' }),
-            };
-            getWrapper({ thumbnail });
-
-            await waitFor(() => {
-                expect(thumbnail.createThumbnailImage).toHaveBeenCalled();
-            });
-            expect(errorSpy).toHaveBeenCalled();
-            errorSpy.mockRestore();
         });
 
         test('should check cache for each page on mount', () => {
@@ -946,37 +821,139 @@ describe('GalleryGrid', () => {
     });
 
     describe('ARIA grid', () => {
+        // jsdom has no layout, so geometry is mocked at the prototype level: offsetTop lays the
+        // tiles out row by row from a mutable column count, and offsetWidth reports a layout box
+        // only while a column count is set (the component skips measurement without one).
+        // Prototype getters survive the tile-node recreation re-chunking causes, unlike per-node stubs.
+        let mockColumns: number | null = null;
+        const originalOffsetTop = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetTop');
+        const originalOffsetWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth');
+
+        beforeEach(() => {
+            mockColumns = null;
+            Object.defineProperty(HTMLElement.prototype, 'offsetTop', {
+                configurable: true,
+                get(this: HTMLElement): number {
+                    const page = this.dataset ? this.dataset.page : undefined;
+                    if (!page || mockColumns === null) {
+                        return 0;
+                    }
+                    return Math.floor((parseInt(page, 10) - 1) / mockColumns) * 300;
+                },
+            });
+            Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+                configurable: true,
+                get: (): number => (mockColumns === null ? 0 : 800),
+            });
+        });
+
+        afterEach(() => {
+            if (originalOffsetTop) {
+                Object.defineProperty(HTMLElement.prototype, 'offsetTop', originalOffsetTop);
+            }
+            if (originalOffsetWidth) {
+                Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth);
+            }
+        });
+
+        // Renders the default 10 pages (current page 3) laid out in the given column count;
+        // the mount-time measurement picks it up immediately.
         const setupGrid = (columns: number, props = {}) => {
-            setViewport(widthForColumns(columns), DEFAULT_HEIGHT);
+            mockColumns = columns;
             return getWrapper({ isAriaGridEnabled: true, ...props });
         };
 
+        // Reflows to a new column count and fires a resize so the component re-measures.
         const layoutColumns = (columns: number) => {
-            setViewport(widthForColumns(columns), DEFAULT_HEIGHT);
-            fireResize();
+            mockColumns = columns;
+            act(() => resizeCallback());
         };
 
         const focusPage = (page: number) => act(() => screen.getByLabelText(`Page ${page}`).focus());
 
         describe('mount focus', () => {
-            test('should keep focus on the current page tile after mount', () => {
+            // The mount-time measurement re-chunks the grid, which unmounts the tile node the
+            // mount effect focused (React flushes pending passive effects before the sync
+            // re-render a layout-effect state update schedules). Focus must be reclaimed or
+            // arrow keys go dead until the user clicks.
+            test('should keep focus on the current page tile after the mount re-measure re-chunks the grid', () => {
                 setupGrid(3);
+                // Guard against the mount re-chunk never happening, which would make this vacuous
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
                 expect(screen.getByLabelText('Page 3')).toHaveFocus();
             });
+        });
 
-            test('should center the current page after the first positive layout width', async () => {
-                setViewport(widthForColumns(3), 400);
-                getWrapper({ isAriaGridEnabled: true, currentPage: 40, pageCount: 80 });
+        describe('scroll restore after re-chunk', () => {
+            // The component reads the anchor tile's getBoundingClientRect().top when it schedules
+            // a re-chunk (capture) and again after the new tile nodes commit (restore). jsdom
+            // returns all-zero rects, so feed each read from a per-page queue to simulate the
+            // tile drifting between the two reads; the last queue entry repeats.
+            const mockTileRectTops = (topsByPage: Record<string, number[]>) => {
+                jest.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function mockRect(
+                    this: Element,
+                ): DOMRect {
+                    const page = (this as HTMLElement).dataset?.page;
+                    const queue = page ? topsByPage[page] : undefined;
+                    let top = 0;
+                    if (queue && queue.length > 0) {
+                        top = queue.length > 1 ? (queue.shift() as number) : queue[0];
+                    }
+                    return {
+                        top,
+                        bottom: top,
+                        left: 0,
+                        right: 0,
+                        width: 0,
+                        height: 0,
+                        x: 0,
+                        y: top,
+                        toJSON: () => ({}),
+                    } as DOMRect;
+                });
+            };
+
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            test('should keep the mount-time centering instead of restoring the pre-centering capture', () => {
+                // Page 3 reads 0 at the pre-centering capture, then 300 once the mount effect has
+                // centered it; the restore after the mount re-chunk must see a zero delta.
+                mockTileRectTops({ '3': [0, 300] });
+                setupGrid(3);
 
                 const grid = screen.getByRole('grid');
+                // Guard against the mount re-chunk never happening, which would make this vacuous
                 expect(grid).toHaveAttribute('aria-colcount', '3');
-                fireEvent.scroll(grid);
-                await waitFor(() => {
-                    expect(screen.getByLabelText('Page 40')).toBeInTheDocument();
-                });
-                expect(screen.getByLabelText('Page 40')).toHaveFocus();
-                expect(screen.queryByLabelText('Page 80')).not.toBeInTheDocument();
+                expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'center' });
+                expect(grid.scrollTop).toBe(0);
+            });
+
+            test('should restore the scroll on the first re-chunk after a single-column mount', () => {
+                // A single-column mount schedules no re-chunk, so the first one comes from a
+                // later resize and its restore must not be mistaken for the mount re-chunk
+                setupGrid(1);
+                const grid = screen.getByRole('grid');
+                expect(grid).toHaveAttribute('aria-colcount', '1');
+
+                // Anchor page 3: captured at 100, found at 250 after the new rows commit
+                mockTileRectTops({ '3': [100, 250] });
+                layoutColumns(2);
+
+                expect(grid).toHaveAttribute('aria-colcount', '2');
+                expect(grid.scrollTop).toBe(150);
+            });
+
+            test('should shift the scroll by the anchor tile drift across a later re-chunk', () => {
+                setupGrid(3);
+                const grid = screen.getByRole('grid');
+                grid.scrollTop = 400;
+
+                mockTileRectTops({ '3': [100, 250] });
+                layoutColumns(2);
+
+                expect(grid.scrollTop).toBe(550);
             });
         });
 
@@ -1001,59 +978,11 @@ describe('GalleryGrid', () => {
                 });
                 expect(rows[0].querySelectorAll('[role="gridcell"]')).toHaveLength(3);
                 expect(rows[3].querySelectorAll('[role="gridcell"]')).toHaveLength(1);
-                expect(rows[0]).toHaveStyle({ transform: 'translateY(0px)' });
 
                 expect(screen.getAllByRole('gridcell')).toHaveLength(10);
                 expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-colindex', '1');
                 expect(screen.getByLabelText('Page 5')).toHaveAttribute('aria-colindex', '2');
                 expect(screen.getByLabelText('Page 10')).toHaveAttribute('aria-colindex', '1');
-            });
-
-            test('should not advertise empty columns when the document is shorter than the fitted row', async () => {
-                setupGrid(6, { currentPage: 1, pageCount: 2 });
-
-                const grid = screen.getByRole('grid');
-                expect(grid).toHaveAttribute('aria-colcount', '2');
-                expect(grid).toHaveAttribute('aria-rowcount', '1');
-                expect(screen.getAllByRole('row')).toHaveLength(1);
-                expect(screen.getByLabelText('Page 1')).toHaveAttribute('aria-colindex', '1');
-                expect(screen.getByLabelText('Page 2')).toHaveAttribute('aria-colindex', '2');
-
-                await userEvent.keyboard('{ArrowDown}');
-                expect(screen.getByLabelText('Page 1')).toHaveFocus();
-                await userEvent.keyboard('{ArrowRight}');
-                expect(screen.getByLabelText('Page 2')).toHaveFocus();
-                await userEvent.keyboard('{ArrowUp}');
-                expect(screen.getByLabelText('Page 2')).toHaveFocus();
-            });
-
-            test('should left-align leftover tiles in a short last row', () => {
-                const { rerender } = setupGrid(3, { pageCount: 8 });
-
-                const rows = screen.getAllByRole('row');
-                expect(rows).toHaveLength(3);
-                expect(rows[2].querySelectorAll('[role="gridcell"]')).toHaveLength(2);
-
-                const layout = getGalleryLayout(widthForColumns(3));
-                const trackWidth = getRowTrackWidth(layout.columns, layout.tileWidth);
-                rows.forEach(row => {
-                    expect(row).toHaveStyle({
-                        width: `${trackWidth}px`,
-                        left: '0px',
-                    });
-                });
-
-                rerender(<GalleryGrid {...defaultProps} isAriaGridEnabled pageCount={8} scale={1.5} />);
-
-                const zoomed = getGalleryLayout(widthForColumns(3), 1.5);
-                const zoomedTrackWidth = getRowTrackWidth(zoomed.columns, zoomed.tileWidth);
-                const zoomedLeft = (widthForColumns(3) - zoomedTrackWidth) / 2;
-                screen.getAllByRole('row').forEach(row => {
-                    expect(row).toHaveStyle({
-                        width: `${zoomedTrackWidth}px`,
-                        left: `${zoomedLeft}px`,
-                    });
-                });
             });
 
             test('should keep selection and roving tabindex semantics on gridcells', () => {
@@ -1085,52 +1014,11 @@ describe('GalleryGrid', () => {
                 expect(screen.getByLabelText('Page 5')).toHaveFocus();
             });
 
-            test('should not scroll on ArrowDown when the next row is already in view', async () => {
-                setupGrid(3);
-                const grid = screen.getByRole('grid');
-                Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
-                focusPage(2);
-
-                await userEvent.keyboard('{ArrowDown}');
-
-                expect(screen.getByLabelText('Page 5')).toHaveFocus();
-                expect(grid.scrollTop).toBe(0);
-            });
-
-            test('should scroll on ArrowDown when grid padding puts the next row below the fold', async () => {
-                const width = widthForColumns(3);
-                const { columns, tileWidth } = getGalleryLayout(width);
-                const nextRowStart = getRowStartOffset(1, 10, columns, tileWidth, () => GALLERY_TILE_DEFAULT_RATIO);
-                setViewport(width, Math.ceil(nextRowStart) + GALLERY_GRID_PADDING_TOP - 1);
-                getWrapper({ isAriaGridEnabled: true, currentPage: 2 });
-
-                const grid = screen.getByRole('grid');
-                Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
-                focusPage(2);
-
-                await userEvent.keyboard('{ArrowDown}');
-
-                expect(screen.getByLabelText('Page 5')).toHaveFocus();
-                expect(grid.scrollTop).toBeGreaterThan(0);
-            });
-
             test('should move up a row on ArrowUp', async () => {
                 setupGrid(3);
                 focusPage(5);
                 await userEvent.keyboard('{ArrowUp}');
                 expect(screen.getByLabelText('Page 2')).toHaveFocus();
-            });
-
-            test('should not scroll on ArrowUp when the previous row is already in view', async () => {
-                setupGrid(3);
-                const grid = screen.getByRole('grid');
-                Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
-                focusPage(5);
-
-                await userEvent.keyboard('{ArrowUp}');
-
-                expect(screen.getByLabelText('Page 2')).toHaveFocus();
-                expect(grid.scrollTop).toBe(0);
             });
 
             test('should not move on ArrowUp in the first row', async () => {
@@ -1216,33 +1104,6 @@ describe('GalleryGrid', () => {
         });
 
         describe('responsive column changes', () => {
-            test('should restore the anchored page using the new column count after a resize', () => {
-                const rowStart = (page: number, columnCount: number): number => {
-                    const { columns, tileWidth } = getGalleryLayout(widthForColumns(columnCount));
-                    return getRowStartOffset(
-                        getRowIndex(page, columns) - 1,
-                        10,
-                        columns,
-                        tileWidth,
-                        () => GALLERY_TILE_DEFAULT_RATIO,
-                    );
-                };
-
-                setupGrid(3, { currentPage: 7, pageCount: 10 });
-                const grid = screen.getByRole('grid');
-                // Viewed area is page 7's row at 3 columns; resize must remap that page, not the old row index.
-                Object.defineProperty(grid, 'scrollTop', {
-                    configurable: true,
-                    writable: true,
-                    value: rowStart(7, 3),
-                });
-
-                layoutColumns(2);
-
-                expect(grid.scrollTop).toBe(rowStart(7, 2));
-                expect(grid.scrollTop).not.toBe(rowStart(7, 3));
-            });
-
             test('should update metadata and keep focus on the same page when the column count changes', async () => {
                 setupGrid(3);
                 focusPage(5);
@@ -1287,10 +1148,11 @@ describe('GalleryGrid', () => {
                 document.body.removeChild(outside);
             });
 
-            test('should recompute the column count when the zoom scale changes', () => {
+            test('should re-measure the column count when the zoom scale changes', () => {
                 const { rerender } = setupGrid(3);
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
 
+                mockColumns = 2; // zoomed tiles are wider, so fewer fit per row
                 rerender(<GalleryGrid {...defaultProps} isAriaGridEnabled scale={1.5} />);
 
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '2');
@@ -1301,263 +1163,10 @@ describe('GalleryGrid', () => {
                 setupGrid(3);
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
 
-                setViewport(0, DEFAULT_HEIGHT);
-                fireResize();
+                mockColumns = null; // hidden host: no layout box, offsetTop reads 0 everywhere
+                act(() => resizeCallback());
 
                 expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
-            });
-        });
-
-        describe('page ratio remasure', () => {
-            test('should remasure row height when a per-page ratio becomes known', () => {
-                const ratios: Record<number, number | null> = {};
-                const getPageRatio = (pageNum: number): number | null => ratios[pageNum] ?? null;
-                const { rerender } = setupGrid(3, { currentPage: 1, getPageRatio, pageCount: 10 });
-                const { tileWidth } = getGalleryLayout(widthForColumns(3));
-
-                expect(parseFloat(screen.getAllByRole('row')[0].style.height)).toBeCloseTo(
-                    tileWidth / GALLERY_TILE_DEFAULT_RATIO,
-                );
-
-                ratios[2] = 0.5;
-                rerender(
-                    <GalleryGrid
-                        {...defaultProps}
-                        currentPage={1}
-                        getPageRatio={getPageRatio}
-                        isAriaGridEnabled
-                        pageCount={10}
-                    />,
-                );
-
-                expect(parseFloat(screen.getAllByRole('row')[0].style.height)).toBeCloseTo(tileWidth / 0.5);
-                expect(screen.getByLabelText('Page 2').style.aspectRatio).toBe(String(0.5));
-            });
-
-            test('should keep the anchored page in view when ratios above it change', () => {
-                const ratios: Record<number, number | null> = {};
-                const getPageRatio = (pageNum: number): number | null => ratios[pageNum] ?? null;
-                const { columns, tileWidth } = getGalleryLayout(widthForColumns(3));
-                const rowStart = (getRatio: (pageNum: number) => number): number =>
-                    getRowStartOffset(getRowIndex(7, columns) - 1, 10, columns, tileWidth, getRatio);
-
-                const { rerender } = setupGrid(3, { currentPage: 7, getPageRatio, pageCount: 10 });
-                const grid = screen.getByRole('grid');
-                Object.defineProperty(grid, 'scrollTop', {
-                    configurable: true,
-                    writable: true,
-                    value: rowStart(() => GALLERY_TILE_DEFAULT_RATIO),
-                });
-
-                ratios[1] = 0.5;
-                ratios[2] = 0.5;
-                ratios[3] = 0.5;
-                rerender(
-                    <GalleryGrid
-                        {...defaultProps}
-                        currentPage={7}
-                        getPageRatio={getPageRatio}
-                        isAriaGridEnabled
-                        pageCount={10}
-                    />,
-                );
-
-                expect(grid.scrollTop).toBe(rowStart(pageNum => ratios[pageNum] ?? GALLERY_TILE_DEFAULT_RATIO));
-                expect(screen.getByLabelText('Page 7')).toBeInTheDocument();
-            });
-
-            test('should remasure and re-anchor when the first-page ratio lands from init', async () => {
-                let resolveInit: ((value?: unknown) => void) | undefined;
-                const thumbnail = {
-                    ...mockThumbnail,
-                    pageRatio: 0.5,
-                    init: jest.fn(
-                        () =>
-                            new Promise(resolve => {
-                                resolveInit = resolve;
-                            }),
-                    ),
-                };
-                const { columns, tileWidth } = getGalleryLayout(widthForColumns(3));
-                const rowStart = (getRatio: (pageNum: number) => number): number =>
-                    getRowStartOffset(getRowIndex(7, columns) - 1, 10, columns, tileWidth, getRatio);
-
-                setupGrid(3, { currentPage: 7, pageCount: 10, thumbnail });
-                const grid = screen.getByRole('grid');
-                Object.defineProperty(grid, 'scrollTop', {
-                    configurable: true,
-                    writable: true,
-                    value: rowStart(() => GALLERY_TILE_DEFAULT_RATIO),
-                });
-
-                await act(async () => {
-                    resolveInit?.();
-                });
-
-                await waitFor(() => {
-                    expect(parseFloat(screen.getAllByRole('row')[2].style.height)).toBeCloseTo(tileWidth / 0.5);
-                });
-                expect(grid.scrollTop).toBe(rowStart(() => 0.5));
-                expect(screen.getByLabelText('Page 7')).toBeInTheDocument();
-            });
-        });
-    });
-
-    describe('virtualization', () => {
-        test('should mount every tile when the enhanced gallery flag is off', () => {
-            setViewport(400, 400);
-            getWrapper({ pageCount: 80, currentPage: 1 });
-
-            expect(screen.getAllByRole('option')).toHaveLength(80);
-            expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
-        });
-
-        test('should only mount visible and overscan rows when the enhanced gallery flag is on', () => {
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
-
-            const cells = screen.getAllByRole('gridcell');
-            expect(cells.length).toBeGreaterThan(0);
-            expect(cells.length).toBeLessThan(80);
-            expect(screen.getByLabelText('Page 1')).toBeInTheDocument();
-            expect(screen.queryByLabelText('Page 80')).not.toBeInTheDocument();
-        });
-
-        test('should mount new rows when scrolling', async () => {
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
-            expect(screen.queryByLabelText('Page 80')).not.toBeInTheDocument();
-
-            const grid = screen.getByRole('grid');
-            const inner = document.querySelector('.bp-gallery-grid-inner') as HTMLElement;
-            Object.defineProperty(grid, 'scrollTop', {
-                configurable: true,
-                writable: true,
-                value: parseFloat(inner.style.height),
-            });
-            fireEvent.scroll(grid);
-
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
-            });
-        });
-
-        test('should focus Home and End tiles after their rows mount', async () => {
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
-            screen.getByLabelText('Page 1').focus();
-
-            await userEvent.keyboard('{End}');
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 80')).toHaveFocus();
-            });
-
-            await userEvent.keyboard('{Home}');
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 1')).toHaveFocus();
-            });
-        });
-
-        test('should jump Home and End when the focused tile has been scrolled offscreen', async () => {
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
-            screen.getByLabelText('Page 1').focus();
-
-            const grid = screen.getByRole('grid');
-            const inner = document.querySelector('.bp-gallery-grid-inner') as HTMLElement;
-            Object.defineProperty(grid, 'scrollTop', {
-                configurable: true,
-                writable: true,
-                value: parseFloat(inner.style.height),
-            });
-            fireEvent.scroll(grid);
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
-            });
-            expect(screen.getByLabelText('Page 1')).toHaveFocus();
-
-            await userEvent.keyboard('{End}');
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 80')).toHaveFocus();
-            });
-
-            await userEvent.keyboard('{Home}');
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 1')).toHaveFocus();
-            });
-        });
-
-        test('should load thumbnails around the End row without a follow-up scroll', async () => {
-            const thumbnail = {
-                ...mockThumbnail,
-                createThumbnailImage: jest.fn().mockResolvedValue({ src: 'data:image/png;test' }),
-            };
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, currentPage: 1, pageCount: 80, thumbnail });
-            screen.getByLabelText('Page 1').focus();
-            thumbnail.createThumbnailImage.mockClear();
-
-            await userEvent.keyboard('{End}');
-
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
-            });
-            await waitFor(() => {
-                const pages = thumbnail.createThumbnailImage.mock.calls.map(([index]) => index + 1);
-                expect(pages.some(page => page >= 77)).toBe(true);
-            });
-        });
-
-        test('should open the End page even if that tile has not mounted yet', async () => {
-            const onPageNavigate = jest.fn();
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, onPageNavigate, pageCount: 80, currentPage: 1 });
-            screen.getByLabelText('Page 1').focus();
-
-            await userEvent.keyboard('{End}{Enter}');
-
-            expect(onPageNavigate).toHaveBeenCalledWith(80);
-        });
-
-        test('should not pull focus back into the grid after Home/End if the user has left it', async () => {
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
-            screen.getByLabelText('Page 1').focus();
-            await userEvent.keyboard('{End}');
-
-            const outside = document.createElement('button');
-            document.body.appendChild(outside);
-            act(() => outside.focus());
-
-            fireEvent.scroll(screen.getByRole('grid'));
-            expect(outside).toHaveFocus();
-
-            document.body.removeChild(outside);
-        });
-
-        test('should keep the focused tile mounted and navigable after it scrolls out of view', async () => {
-            setViewport(400, 400);
-            getWrapper({ isAriaGridEnabled: true, pageCount: 80, currentPage: 1 });
-            screen.getByLabelText('Page 1').focus();
-
-            const grid = screen.getByRole('grid');
-            const inner = document.querySelector('.bp-gallery-grid-inner') as HTMLElement;
-            Object.defineProperty(grid, 'scrollTop', {
-                configurable: true,
-                writable: true,
-                value: parseFloat(inner.style.height),
-            });
-            fireEvent.scroll(grid);
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 80')).toBeInTheDocument();
-            });
-            expect(screen.getByLabelText('Page 1')).toBeInTheDocument();
-            expect(screen.getByLabelText('Page 1')).toHaveFocus();
-
-            await userEvent.keyboard('{ArrowDown}');
-            fireEvent.scroll(grid);
-            await waitFor(() => {
-                expect(screen.getByLabelText('Page 2')).toHaveFocus();
             });
         });
     });
