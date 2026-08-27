@@ -124,13 +124,17 @@ export function zoomFromSliderValue(value: number, maxZoom: number = WAVEFORM_ZO
     return clampWaveformZoom(WAVEFORM_ZOOM_MIN + t * (max - WAVEFORM_ZOOM_MIN), max);
 }
 
+/** Max scroll that still shows a full window (no overscroll). */
+export function maxScrollLeft(viewport: WaveformViewport): number {
+    return Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
+}
+
 /** Scroll offset that still shows a full window (no overscroll). */
 function clampScrollLeft(scrollLeftPx: number, viewport: WaveformViewport): number {
-    const maxScroll = Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
     if (!Number.isFinite(scrollLeftPx)) {
         return 0;
     }
-    return Math.min(maxScroll, Math.max(0, scrollLeftPx));
+    return Math.min(maxScrollLeft(viewport), Math.max(0, scrollLeftPx));
 }
 
 /** Follow inset in CSS px, capped at one third of the view so a narrow player still has room. */
@@ -182,7 +186,7 @@ export function getPlayheadCameraAction({
         !(viewport.widthPx > 0) ||
         !(viewport.pixelsPerSecond > 0)
     ) {
-        return { kind: 'none' };
+        return { type: 'none' };
     }
 
     const inset = getFollowInsetPx(viewport.widthPx, insetPx);
@@ -192,24 +196,23 @@ export function getPlayheadCameraAction({
 
     if (viewX < 0) {
         if (!playJustStarted) {
-            return { kind: 'none' };
+            return { type: 'none' };
         }
-        return { kind: 'jump', scrollLeftPx: clampScrollLeft(playheadCanvasX - inset, viewport) };
+        return { type: 'jump', scrollLeftPx: clampScrollLeft(playheadCanvasX - inset, viewport) };
     }
 
     if (viewX >= followX) {
         const unclampedScroll = playheadCanvasX - followX;
         const scrollLeftPx = clampScrollLeft(unclampedScroll, viewport);
-        const maxScroll = Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
         if (playJustStarted && viewX > viewport.widthPx) {
-            return { kind: 'jump', scrollLeftPx };
+            return { type: 'jump', scrollLeftPx };
         }
         return {
-            kind: 'followRight',
-            isPlayheadPinned: unclampedScroll <= maxScroll,
+            type: 'followRight',
+            isPlayheadPinned: unclampedScroll <= maxScrollLeft(viewport),
             scrollLeftPx,
         };
     }
 
-    return { kind: 'none' };
+    return { type: 'none' };
 }

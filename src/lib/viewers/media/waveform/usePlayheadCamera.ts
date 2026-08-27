@@ -4,11 +4,11 @@ import { getCurrentTimeMs } from '../../../util';
 import { WAVEFORM_FOLLOW_SCROLL_SETTLE_MS, WAVEFORM_PLAYHEAD_JUMP_MS, WAVEFORM_ZOOM_MIN } from './constants';
 import { WaveformViewport } from './types';
 import {
-    getFollowInsetPx,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
     getViewportAtScroll,
-    positionPxFromTime,
+    maxScrollLeft,
+    timeLeftPercent,
 } from './viewport';
 
 function getScrollLeft(wavesurfer: WaveSurfer | null, fallback = 0): number {
@@ -48,8 +48,9 @@ export default function usePlayheadCamera({
     clearFollowPin: () => void;
     handleScroll: (onUserPan: (mediaTimeSec: number) => void) => void;
     isFollowPinned: () => boolean;
+    onSeek: (timeSec: number) => void;
+    onZoom: () => void;
     releaseUserPanHold: () => void;
-    shouldFreezeViewport: () => boolean;
 } {
     const onViewportCommitRef = useRef(onViewportCommit);
     onViewportCommitRef.current = onViewportCommit;
@@ -65,12 +66,11 @@ export default function usePlayheadCamera({
     const applyRef = useRef<((timeSec: number, playJustStarted?: boolean) => void) | null>(null);
 
     const isFollowPinned = useCallback((): boolean => isFollowPinnedRef.current, []);
-    const shouldFreezeViewport = useCallback(
-        (): boolean => isFollowPinnedRef.current || jumpAnimationRef.current !== 0,
-        [],
-    );
 
     const cancelJump = useCallback((): void => {
+        if (!jumpAnimationRef.current) {
+            return;
+        }
         window.cancelAnimationFrame(jumpAnimationRef.current);
         jumpAnimationRef.current = 0;
     }, []);
@@ -86,6 +86,31 @@ export default function usePlayheadCamera({
         userIsScrollingRef.current = false;
         holdFollowUntilInsetRef.current = false;
     }, []);
+
+    const readMediaTime = useCallback((): number => {
+        const live = mediaElRef.current?.currentTime;
+        if (typeof live === 'number' && Number.isFinite(live)) {
+            mediaTimeRef.current = live;
+            return live;
+        }
+        return mediaTimeRef.current;
+    }, [mediaElRef]);
+
+    const onSeek = useCallback(
+        (timeSec: number): void => {
+            mediaTimeRef.current = timeSec;
+            cancelJump();
+            clearFollowPin();
+        },
+        [cancelJump, clearFollowPin],
+    );
+
+    /** Unpin and hold follow so zoom setScroll (slider center or pinch origin) is not stolen. */
+    const onZoom = useCallback((): void => {
+        cancelJump();
+        isFollowPinnedRef.current = false;
+        holdFollowUntilInsetRef.current = true;
+    }, [cancelJump]);
 
     const applyScrollLeft = useCallback(
         (scrollLeftPx: number, shouldCommitState: boolean): void => {
@@ -129,7 +154,11 @@ export default function usePlayheadCamera({
             mediaTimeRef.current = timeSec;
             const wavesurfer = wavesurferRef.current;
             const viewport = viewportRef.current;
-            if (!wavesurfer || viewport.zoomLevel <= WAVEFORM_ZOOM_MIN) {
+            if (!wavesurfer) {
+                return;
+            }
+            if (viewport.zoomLevel <= WAVEFORM_ZOOM_MIN) {
+                clearFollowPin();
                 return;
             }
             if (userIsScrollingRef.current && !playJustStarted) {
@@ -140,22 +169,20 @@ export default function usePlayheadCamera({
             }
 
             const liveViewport = getViewportAtScroll(viewport, getScrollLeft(wavesurfer, viewport.scrollLeftPx));
-            if (holdFollowUntilInsetRef.current && !playJustStarted) {
-                const followX = liveViewport.widthPx - getFollowInsetPx(liveViewport.widthPx);
-                const viewX = positionPxFromTime(timeSec, liveViewport);
-                if (viewX >= followX) {
-                    return;
-                }
-                holdFollowUntilInsetRef.current = false;
-            }
-
             const action = getPlayheadCameraAction({
                 isPlaying: true,
                 playJustStarted,
                 timeSec,
                 viewport: liveViewport,
             });
-            if (action.kind === 'none') {
+            if (holdFollowUntilInsetRef.current && !playJustStarted) {
+                if (action.type !== 'none') {
+                    return;
+                }
+                holdFollowUntilInsetRef.current = false;
+            }
+
+            if (action.type === 'none') {
                 if (isFollowPinnedRef.current) {
                     isFollowPinnedRef.current = false;
                     applyScrollLeft(liveViewport.scrollLeftPx, true);
@@ -165,7 +192,7 @@ export default function usePlayheadCamera({
             }
 
             cancelJump();
-            if (action.kind === 'followRight') {
+            if (action.type === 'followRight') {
                 pinFollowPlayhead(playheadRef.current, liveViewport, action.isPlayheadPinned);
                 applyScrollLeft(action.scrollLeftPx, !action.isPlayheadPinned);
                 return;
@@ -189,7 +216,7 @@ export default function usePlayheadCamera({
                     timeSec: mediaTimeRef.current,
                     viewport: getViewportAtScroll(viewportRef.current, getScrollLeft(wavesurfer, from)),
                 });
-                const to = liveAction.kind === 'none' ? action.scrollLeftPx : liveAction.scrollLeftPx;
+                const to = liveAction.type === 'none' ? action.scrollLeftPx : liveAction.scrollLeftPx;
                 applyScrollLeft(from + (to - from) * (1 - (1 - t) * (1 - t)), false);
                 if (t < 1) {
                     jumpAnimationRef.current = window.requestAnimationFrame(tick);
@@ -201,9 +228,30 @@ export default function usePlayheadCamera({
             };
             jumpAnimationRef.current = window.requestAnimationFrame(tick);
         },
-        [applyScrollLeft, cancelJump, pinFollowPlayhead, playheadRef, viewportRef, wavesurferRef],
+        [applyScrollLeft, cancelJump, clearFollowPin, pinFollowPlayhead, playheadRef, viewportRef, wavesurferRef],
     );
     applyRef.current = apply;
+
+    /**
+     * Camera-owned: jumping; matching follow scroll; unpinned programmatic; clamp-to-max.
+     * User pan: pinned and |scroll - lastCamera| > 1, or any non-programmatic scroll while not jumping.
+     */
+    const isUserPan = useCallback(
+        (scrollLeftPx: number): boolean => {
+            const isCameraOwnedScroll = programmaticScrollRef.current || jumpAnimationRef.current !== 0;
+            const lastCameraScroll = lastCameraScrollRef.current;
+            const maxScroll = maxScrollLeft(viewportRef.current);
+            const isClampedToMax =
+                lastCameraScroll != null && scrollLeftPx >= maxScroll - 1 && lastCameraScroll >= maxScroll - 1;
+            const isFollowCameraScroll =
+                isFollowPinnedRef.current && lastCameraScroll != null && Math.abs(scrollLeftPx - lastCameraScroll) <= 1;
+            return !(
+                isCameraOwnedScroll &&
+                (jumpAnimationRef.current !== 0 || isFollowCameraScroll || isClampedToMax || !isFollowPinnedRef.current)
+            );
+        },
+        [viewportRef],
+    );
 
     const handleScroll = useCallback(
         (onUserPan: (mediaTimeSec: number) => void): void => {
@@ -212,18 +260,16 @@ export default function usePlayheadCamera({
                 return;
             }
             const scrollLeftPx = getScrollLeft(wavesurfer);
-            const isCameraOwnedScroll = programmaticScrollRef.current || jumpAnimationRef.current !== 0;
-            const lastCameraScroll = lastCameraScrollRef.current;
-            const isFollowCameraScroll =
-                isFollowPinnedRef.current && lastCameraScroll != null && Math.abs(scrollLeftPx - lastCameraScroll) <= 1;
-            // Jump, matching follow scroll, or unpinned programmatic → ours.
-            // Pinned + scroll ≠ lastCamera → user pan (programmatic stays true while pinned).
-            if (
-                isCameraOwnedScroll &&
-                (jumpAnimationRef.current !== 0 || isFollowCameraScroll || !isFollowPinnedRef.current)
-            ) {
+            if (!isUserPan(scrollLeftPx)) {
                 viewportRef.current = getViewportAtScroll(viewportRef.current, scrollLeftPx);
                 return;
+            }
+
+            viewportRef.current = getViewportAtScroll(viewportRef.current, scrollLeftPx);
+            const timeSec = readMediaTime();
+            const playhead = playheadRef.current;
+            if (playhead) {
+                playhead.style.left = timeLeftPercent(timeSec, viewportRef.current.durationSec, viewportRef.current);
             }
 
             userIsScrollingRef.current = true;
@@ -235,14 +281,14 @@ export default function usePlayheadCamera({
                 if (!mediaElRef.current || mediaElRef.current.paused) {
                     return;
                 }
-                applyRef.current?.(mediaTimeRef.current, false);
+                applyRef.current?.(readMediaTime(), false);
             }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
             cancelJump();
             isFollowPinnedRef.current = false;
             programmaticScrollRef.current = false;
-            onUserPan(mediaTimeRef.current);
+            onUserPan(timeSec);
         },
-        [cancelJump, mediaElRef, viewportRef, wavesurferRef],
+        [cancelJump, isUserPan, mediaElRef, playheadRef, readMediaTime, viewportRef, wavesurferRef],
     );
 
     useEffect(
@@ -260,7 +306,8 @@ export default function usePlayheadCamera({
         clearFollowPin,
         handleScroll,
         isFollowPinned,
+        onSeek,
+        onZoom,
         releaseUserPanHold,
-        shouldFreezeViewport,
     };
 }

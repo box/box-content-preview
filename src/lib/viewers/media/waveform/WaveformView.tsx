@@ -15,6 +15,7 @@ import {
     WAVEFORM_BAR_RADIUS,
     WAVEFORM_BAR_WIDTH,
     WAVEFORM_HEIGHT,
+    WAVEFORM_ZOOM_DISMISS_MS,
     WAVEFORM_ZOOM_MIN,
 } from './constants';
 import { formatTime, morphPeaks, toChannels, WAVEFORM_PEAK_TRANSITION_MS } from './peaks';
@@ -26,6 +27,7 @@ import {
     getViewportAtScroll,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
+    maxScrollLeft,
     timeFromPositionPx,
     timeLeftPercent,
 } from './viewport';
@@ -141,6 +143,8 @@ export default function WaveformView({
     // Zoom / pinch / tile tint (read from pointer + WaveSurfer handlers)
     const zoomOriginRef = useRef<ZoomOrigin | null>(null);
     const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null);
+    const pointerZoomRef = useRef(false);
+    const pointerZoomClearTimerRef = useRef(0);
     const bufferProgressRef = useRef(0);
     const hoverProgressRef = useRef<number | null>(null);
 
@@ -197,8 +201,9 @@ export default function WaveformView({
         clearFollowPin,
         handleScroll: handleCameraScroll,
         isFollowPinned,
+        onSeek: onPlayheadSeek,
+        onZoom,
         releaseUserPanHold,
-        shouldFreezeViewport,
     } = usePlayheadCamera({
         mediaElRef,
         onViewportCommit,
@@ -206,9 +211,17 @@ export default function WaveformView({
         viewportRef,
         wavesurferRef,
     });
-    viewportRef.current = shouldFreezeViewport()
-        ? getViewportAtScroll(viewport, viewportRef.current.scrollLeftPx)
-        : viewport;
+
+    useLayoutEffect(() => {
+        viewportRef.current = createWaveformViewport({
+            durationSec: viewport.durationSec,
+            heightPx: viewport.heightPx,
+            maxZoom: viewport.maxZoom,
+            scrollLeftPx: viewportRef.current.scrollLeftPx,
+            widthPx: viewport.widthPx,
+            zoomLevel: viewport.zoomLevel,
+        });
+    }, [viewport]);
 
     const setZoomLevel = useCallback(
         (nextZoom: number) => {
@@ -220,6 +233,15 @@ export default function WaveformView({
         },
         [isControlled, maxZoom, onZoomChange],
     );
+
+    const markPointerZoom = useCallback((): void => {
+        pointerZoomRef.current = true;
+        window.clearTimeout(pointerZoomClearTimerRef.current);
+        pointerZoomClearTimerRef.current = window.setTimeout(() => {
+            pointerZoomRef.current = false;
+            pointerZoomClearTimerRef.current = 0;
+        }, WAVEFORM_ZOOM_DISMISS_MS);
+    }, []);
 
     const syncViewport = useCallback(() => {
         const wavesurfer = wavesurferRef.current;
@@ -283,12 +305,8 @@ export default function WaveformView({
             onSeekRef.current?.(relativeX * durationSecRef.current);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
-            handleCameraScroll(timeSec => {
+            handleCameraScroll(() => {
                 syncViewport();
-                const playhead = playheadRef.current;
-                if (playhead) {
-                    playhead.style.left = timeLeftPercent(timeSec, durationSecRef.current, viewportRef.current);
-                }
             });
         });
         const unsubscribeZoom = wavesurfer.on('zoom', () => {
@@ -391,13 +409,26 @@ export default function WaveformView({
         zoomOriginRef.current = null;
         const didZoomChange = prevZoomRef.current !== zoomLevel;
         prevZoomRef.current = zoomLevel;
+        if (origin || didZoomChange) {
+            onZoom();
+        }
         if (minPxPerSec > 0) {
             if (origin) {
                 applyScrollLeft(origin.timeSec * minPxPerSec - origin.pointerX, true);
-            } else if (didZoomChange) {
-                const maxScroll = Math.max(0, durationSec * minPxPerSec - viewWidthPx);
+            } else if (didZoomChange && !pointerZoomRef.current) {
+                const zoomedViewport = createWaveformViewport({
+                    durationSec,
+                    heightPx: height,
+                    maxZoom,
+                    scrollLeftPx: 0,
+                    widthPx: viewWidthPx,
+                    zoomLevel,
+                });
                 applyScrollLeft(
-                    Math.min(maxScroll, Math.max(0, currentTimeRef.current * minPxPerSec - viewWidthPx / 2)),
+                    Math.min(
+                        maxScrollLeft(zoomedViewport),
+                        Math.max(0, currentTimeRef.current * minPxPerSec - viewWidthPx / 2),
+                    ),
                     true,
                 );
             }
@@ -405,14 +436,11 @@ export default function WaveformView({
 
         wavesurfer.setTime(currentTimeRef.current);
         syncViewport();
-    }, [applyScrollLeft, durationSec, maxZoom, syncViewport, zoomLevel]);
+        updatePlayheadPosition(currentTimeRef.current);
+    }, [applyScrollLeft, durationSec, height, maxZoom, onZoom, syncViewport, updatePlayheadPosition, zoomLevel]);
 
     useLayoutEffect(() => {
-        if (mediaEl && !mediaEl.paused) {
-            updatePlayheadPosition(mediaEl.currentTime);
-            return;
-        }
-        updatePlayheadPosition(currentTime);
+        updatePlayheadPosition(mediaEl ? mediaEl.currentTime : currentTime);
     }, [currentTime, durationSec, mediaEl, updatePlayheadPosition, viewport]);
 
     useEffect(() => {
@@ -446,7 +474,7 @@ export default function WaveformView({
         };
 
         const handleSeeked = (): void => {
-            clearFollowPin();
+            onPlayheadSeek(media.currentTime);
             updatePlayheadPosition(media.currentTime);
         };
 
@@ -473,6 +501,7 @@ export default function WaveformView({
         cancelJump,
         clearFollowPin,
         mediaEl,
+        onPlayheadSeek,
         releaseUserPanHold,
         syncViewport,
         updatePlayheadPosition,
@@ -544,6 +573,7 @@ export default function WaveformView({
                 durationSec,
                 rect.width,
             );
+            markPointerZoom();
         };
 
         /** Zoom origin at the midpoint of a two-finger pinch. */
@@ -573,6 +603,7 @@ export default function WaveformView({
             }
             zoomOriginRef.current = zoomOriginFromPinch(event.touches);
             pinchStartRef.current = { distance: touchDistance(event.touches), zoom: zoomRef.current };
+            markPointerZoom();
         };
 
         const onTouchMove = (event: TouchEvent): void => {
@@ -588,6 +619,7 @@ export default function WaveformView({
             }
             event.preventDefault();
             zoomOriginRef.current = zoomOriginFromPinch(event.touches);
+            markPointerZoom();
             setZoomLevel(pinch.zoom * (touchDistance(event.touches) / pinch.distance));
         };
 
@@ -603,13 +635,14 @@ export default function WaveformView({
         track.addEventListener('touchend', onTouchEnd);
         track.addEventListener('touchcancel', onTouchEnd);
         return () => {
+            window.clearTimeout(pointerZoomClearTimerRef.current);
             track.removeEventListener('wheel', onZoomWheel);
             track.removeEventListener('touchstart', onTouchStart);
             track.removeEventListener('touchmove', onTouchMove);
             track.removeEventListener('touchend', onTouchEnd);
             track.removeEventListener('touchcancel', onTouchEnd);
         };
-    }, [durationSec, setZoomLevel]);
+    }, [durationSec, markPointerZoom, setZoomLevel]);
 
     const onHoverMove = useCallback(
         (event: React.MouseEvent<HTMLDivElement>) => {
