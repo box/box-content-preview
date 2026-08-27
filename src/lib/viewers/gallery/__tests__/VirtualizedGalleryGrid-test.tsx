@@ -466,6 +466,157 @@ describe('VirtualizedGalleryGrid', () => {
         });
     });
 
+    describe('pinch gestures', () => {
+        let rafCallback: FrameRequestCallback | null = null;
+
+        const wheelEvent = (init: WheelEventInit): WheelEvent =>
+            new WheelEvent('wheel', { bubbles: true, cancelable: true, ...init });
+
+        const touchEvent = (type: string, xPositions: number[]): TouchEvent => {
+            const touches = xPositions.map(x => (({ clientX: x, clientY: 0, pageX: x, pageY: 0 } as unknown) as Touch));
+            return new TouchEvent(type, { bubbles: true, cancelable: true, touches });
+        };
+
+        beforeEach(() => {
+            rafCallback = null;
+            jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
+                rafCallback = callback;
+                return 1;
+            });
+        });
+
+        afterEach(() => {
+            jest.restoreAllMocks();
+            delete (document as { elementFromPoint?: unknown }).elementFromPoint;
+        });
+
+        test('should update scale from a ctrl+wheel trackpad pinch', () => {
+            const onScaleChange = jest.fn();
+            getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+            const grid = screen.getByRole('grid');
+            const event = wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 });
+
+            act(() => {
+                grid.dispatchEvent(event);
+            });
+            expect(event.defaultPrevented).toBe(true);
+
+            act(() => rafCallback!(0));
+            expect(onScaleChange).toHaveBeenCalledWith(1.2);
+        });
+
+        test('should anchor scroll to the focal tile after a pinch zoom', () => {
+            const onScaleChange = jest.fn();
+            const { rerender } = setupGrid(3, { isPinchZoomEnabled: true, onScaleChange });
+            const grid = screen.getByRole('grid');
+            Object.defineProperty(grid, 'scrollLeft', { configurable: true, writable: true, value: 0 });
+            Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 0 });
+
+            act(() => {
+                grid.dispatchEvent(wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 }));
+            });
+            act(() => rafCallback!(0));
+
+            const pinchTile = screen.getByLabelText('Page 5');
+            document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
+            jest.spyOn(pinchTile, 'getBoundingClientRect')
+                .mockReturnValueOnce({ left: 250, top: 180, width: 100, height: 130 } as DOMRect)
+                .mockReturnValueOnce({ left: 310, top: 260, width: 120, height: 156 } as DOMRect);
+
+            rerender(
+                <VirtualizedGalleryGrid
+                    {...defaultProps}
+                    isPinchZoomEnabled
+                    onScaleChange={onScaleChange}
+                    scale={1.2}
+                />,
+            );
+
+            expect(document.elementFromPoint).toHaveBeenCalledWith(300, 200);
+            expect(grid.scrollLeft).toBe(60);
+            expect(grid.scrollTop).toBe(80);
+        });
+
+        test('should fall back to row-offset restore when focal tile has no layout', () => {
+            const onScaleChange = jest.fn();
+            const { rerender } = setupGrid(3, { isPinchZoomEnabled: true, onScaleChange });
+            const grid = screen.getByRole('grid');
+            Object.defineProperty(grid, 'scrollTop', { configurable: true, writable: true, value: 100 });
+
+            act(() => {
+                grid.dispatchEvent(wheelEvent({ clientX: 300, clientY: 200, ctrlKey: true, deltaY: -20 }));
+            });
+            act(() => rafCallback!(0));
+
+            // elementFromPoint returns a tile with zero-size rect (no layout, e.g. JSDOM)
+            const pinchTile = screen.getByLabelText('Page 5');
+            document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
+            jest.spyOn(pinchTile, 'getBoundingClientRect').mockReturnValue({
+                left: 0,
+                top: 0,
+                width: 0,
+                height: 0,
+                right: 0,
+                bottom: 0,
+                x: 0,
+                y: 0,
+                toJSON() {
+                    return this;
+                },
+            } as DOMRect);
+
+            rerender(
+                <VirtualizedGalleryGrid
+                    {...defaultProps}
+                    isPinchZoomEnabled
+                    onScaleChange={onScaleChange}
+                    scale={1.2}
+                />,
+            );
+
+            // Falls back to row-offset math — scrollTop changes based on row position delta
+            expect(grid.scrollTop).not.toBe(100);
+        });
+
+        test('should update scale from a two-finger touch pinch', () => {
+            const onScaleChange = jest.fn();
+            getWrapper({ isTouchZoomEnabled: true, onScaleChange });
+            const grid = screen.getByRole('grid');
+
+            act(() => {
+                grid.dispatchEvent(touchEvent('touchstart', [0, 100]));
+                grid.dispatchEvent(touchEvent('touchmove', [0, 200]));
+            });
+
+            act(() => rafCallback!(0));
+            expect(onScaleChange).toHaveBeenCalledWith(2);
+        });
+
+        test('should ignore ctrl+wheel when pinch zoom is disabled', () => {
+            const onScaleChange = jest.fn();
+            getWrapper({ isPinchZoomEnabled: false, onScaleChange });
+            const grid = screen.getByRole('grid');
+
+            const event = wheelEvent({ ctrlKey: true, deltaY: -20 });
+            act(() => {
+                grid.dispatchEvent(event);
+            });
+
+            expect(event.defaultPrevented).toBe(false);
+            expect(onScaleChange).not.toHaveBeenCalled();
+        });
+
+        test('should reduce column count when zooming in', () => {
+            const { rerender } = setupGrid(3);
+            expect(screen.getByRole('grid')).toHaveAttribute('aria-colcount', '3');
+
+            rerender(<VirtualizedGalleryGrid {...defaultProps} scale={2} />);
+
+            const colCount = Number(screen.getByRole('grid').getAttribute('aria-colcount'));
+            expect(colCount).toBeLessThan(3);
+        });
+    });
+
     describe('virtualization', () => {
         test('should only mount visible and overscan rows', () => {
             setViewport(400, 400);
