@@ -22,8 +22,7 @@ export const GALLERY_HIGH_RES_MAX_PAGES = 16;
 export const GALLERY_HIGH_RES_CONCURRENCY = 2;
 
 // Gallery availability and zoom limits.
-// Hide the gallery toggle for files above this page count when enhanced gallery is off.
-// Virtualized enhanced gallery has no upper bound.
+// Hide the gallery toggle for files above this page count.
 export const GALLERY_MAX_PAGES = 200;
 export const GALLERY_MAX_SCALE = 3;
 export const GALLERY_MIN_SCALE = 0.5;
