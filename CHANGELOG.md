@@ -1,3 +1,7 @@
+## 3.84.0 (2026-08-27)
+
+* feat(audio): add waveform zoom (#1758) ([0a7973d](https://github.com/box/box-content-preview/commit/0a7973d)), closes [#1758](https://github.com/box/box-content-preview/issues/1758)
+
 ## 3.83.0 (2026-08-25)
 
 * feat(audio): decode client waveform peaks under size and duration caps (#1756) ([ec6e574](https://github.com/box/box-content-preview/commit/ec6e574)), closes [#1756](https://github.com/box/box-content-preview/issues/1756)
