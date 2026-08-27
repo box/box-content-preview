@@ -415,7 +415,6 @@ export default class GalleryController {
                 <GalleryGrid
                     currentPage={pdfViewer.currentPageNumber}
                     getPageRatio={this.getPageRatio}
-                    isAriaGridEnabled
                     onClose={this.toggle}
                     onFocusChange={this.handleFocusChange}
                     onPageNavigate={this.handleGalleryNavigate}
