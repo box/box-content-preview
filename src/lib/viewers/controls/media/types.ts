@@ -3,6 +3,8 @@ export type CommentMarker = {
     colorIndex?: number;
     id: string;
     initial?: string;
+    /** True when the host (activity feed) has this marker selected. */
+    selected?: boolean;
     time: number;
     type?: 'annotation' | 'comment';
 };

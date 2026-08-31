@@ -74,6 +74,29 @@ describe('MarkerAvatarStack', () => {
         });
     });
 
+    test('should forward size to each avatar', () => {
+        const { container } = render(<MarkerAvatarStack markers={markers} size={20} />);
+        container.querySelectorAll('.bp-MarkerAvatar').forEach(avatar => {
+            expect(avatar).toHaveStyle({ width: '20px', height: '20px' });
+        });
+    });
+
+    test('should set collapsed overlap as a CSS custom property', () => {
+        const { container } = render(<MarkerAvatarStack markers={markers} overlapPx={10} />);
+        expect(container.querySelector('.bp-MarkerAvatarStack')).toHaveStyle({
+            '--bp-marker-stack-overlap': '-10px',
+        });
+    });
+
+    test('should mark the selected avatar in a stack', () => {
+        const { container } = render(<MarkerAvatarStack markers={markers} selectedId="m2" />);
+        const items = container.querySelectorAll('.bp-MarkerAvatarStack-item');
+
+        expect(items[0]).not.toHaveClass('bp-MarkerAvatarStack-item--selected');
+        expect(items[1]).toHaveClass('bp-MarkerAvatarStack-item--selected');
+        expect(items[2]).not.toHaveClass('bp-MarkerAvatarStack-item--selected');
+    });
+
     test('should call onMarkerClick with correct marker when individual avatar is clicked', async () => {
         const user = userEvent.setup();
         const onMarkerClick = jest.fn();
