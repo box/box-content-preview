@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import buildClusters from '../../controls/media/buildClusters';
 import MarkerAvatar from '../../controls/media/MarkerAvatar';
 import MarkerAvatarStack from '../../controls/media/MarkerAvatarStack';
-import { CommentMarker } from '../../controls/media/types';
+import { ClusterData, CommentMarker } from '../../controls/media/types';
 import { percent } from '../../controls/media/utils';
 import { WAVEFORM_ZOOM_MIN } from './constants';
 import { WaveformViewport } from './types';
@@ -31,6 +31,31 @@ function markerLeftPercent(time: number, durationSec: number, viewport?: Wavefor
     return percent(time - origin, span);
 }
 
+/** Width is unknown until layout. Still place badges, and stack exact same timestamps. */
+function clustersByExactTime(markers: CommentMarker[], durationSec: number): ClusterData[] {
+    const sorted = [...markers].sort((a, b) => a.time - b.time);
+    const groups: CommentMarker[][] = [];
+    sorted.forEach(marker => {
+        const last = groups[groups.length - 1];
+        if (last && last[last.length - 1].time === marker.time) {
+            last.push(marker);
+        } else {
+            groups.push([marker]);
+        }
+    });
+    return groups.map(group => {
+        const leftPercent = percent(group[0].time, durationSec);
+        const rightPercent = percent(group[group.length - 1].time, durationSec);
+        return {
+            id: group.map(m => m.id).join('|'),
+            isSinglePoint: leftPercent === rightPercent,
+            leftPercent,
+            markers: group,
+            rightPercent,
+        };
+    });
+}
+
 export default function WaveformCommentMarkers({
     commentMarkers,
     durationSec,
@@ -39,6 +64,7 @@ export default function WaveformCommentMarkers({
     viewport = null,
 }: WaveformCommentMarkersProps): JSX.Element | null {
     const overlayRef = useRef<HTMLDivElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null);
     const [trackWidth, setTrackWidth] = useState(0);
     const [optimisticSelectedId, setOptimisticSelectedId] = useState<string | null>(null);
     const [isSelectionDismissed, setIsSelectionDismissed] = useState(false);
@@ -58,7 +84,7 @@ export default function WaveformCommentMarkers({
             return undefined;
         }
 
-        const el = overlayRef.current?.querySelector<HTMLDivElement>('.bp-WaveformCommentMarkers-track');
+        const el = trackRef.current;
         if (!el) {
             return undefined;
         }
@@ -76,6 +102,9 @@ export default function WaveformCommentMarkers({
 
     const clusters = useMemo(() => {
         const clusterWidth = trackWidth * Math.max(WAVEFORM_ZOOM_MIN, zoomLevel);
+        if (clusterWidth <= 0) {
+            return clustersByExactTime(commentMarkers, durationSec);
+        }
         return buildClusters(commentMarkers, durationSec, clusterWidth, WAVEFORM_MARKER_SIZE_PX);
     }, [commentMarkers, durationSec, trackWidth, zoomLevel]);
 
@@ -104,7 +133,7 @@ export default function WaveformCommentMarkers({
             return Boolean(selected && selected.contains(target));
         };
 
-        const clearSelection = (event: Event): void => {
+        const onDocumentPointerDown = (event: Event): void => {
             if (isEventInsideSelectedBadge(event.target)) {
                 return;
             }
@@ -116,9 +145,9 @@ export default function WaveformCommentMarkers({
             }
         };
 
-        document.addEventListener('pointerdown', clearSelection, true);
+        document.addEventListener('pointerdown', onDocumentPointerDown, true);
         return () => {
-            document.removeEventListener('pointerdown', clearSelection, true);
+            document.removeEventListener('pointerdown', onDocumentPointerDown, true);
         };
     }, [selectedId]);
 
@@ -132,7 +161,7 @@ export default function WaveformCommentMarkers({
             className={`bp-WaveformCommentMarkers${isZoomed ? ' bp-WaveformCommentMarkers--zoomed' : ''}`}
             data-testid="bp-waveform-comment-markers"
         >
-            <div className="bp-WaveformCommentMarkers-track">
+            <div ref={trackRef} className="bp-WaveformCommentMarkers-track">
                 {clusters.map(cluster => {
                     const marker = cluster.markers[0];
                     const isGroup = cluster.markers.length > 1;

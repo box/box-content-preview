@@ -84,6 +84,29 @@ describe('WaveformCommentMarkers', () => {
         expect(screen.getByText('B')).toBeInTheDocument();
     });
 
+    test('should place badges and stack exact timestamps before the track is measured', () => {
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 0 });
+        try {
+            render(
+                <WaveformCommentMarkers
+                    commentMarkers={[
+                        { colorIndex: 0, id: 'same-a', initial: 'A', time: 10, type: 'comment' },
+                        { colorIndex: 1, id: 'same-b', initial: 'B', time: 10, type: 'comment' },
+                        { colorIndex: 2, id: 'far', initial: 'C', time: 30, type: 'comment' },
+                    ]}
+                    durationSec={60}
+                />,
+            );
+
+            const badges = screen.getAllByTestId('bp-waveform-comment-marker');
+            expect(badges).toHaveLength(2);
+            expect(badges[0]).toHaveClass('bp-WaveformCommentMarkers-marker--group');
+            expect(badges[1]).not.toHaveClass('bp-WaveformCommentMarkers-marker--group');
+        } finally {
+            Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 600 });
+        }
+    });
+
     test('should use the video overflow chip when more than four markers share a cluster', () => {
         render(
             <WaveformCommentMarkers
@@ -176,20 +199,14 @@ describe('WaveformCommentMarkers', () => {
     });
 
     test('should show the ring when the host marks a comment selected', () => {
-        render(
-            <WaveformCommentMarkers
-                commentMarkers={[{ ...markers[0], selected: true }, markers[1]]}
-                durationSec={60}
-                selectedId="marker-1"
-            />,
-        );
+        render(<WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" />);
 
         expect(screen.getAllByTestId('bp-waveform-comment-marker')[0]).toHaveClass(
             'bp-WaveformCommentMarkers-marker--selected',
         );
     });
 
-    test('should drop the ring when pointer focus leaves the selected badge', async () => {
+    test('should drop the ring on pointerdown outside the selected badge', async () => {
         const user = userEvent.setup();
         render(<WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" />);
 

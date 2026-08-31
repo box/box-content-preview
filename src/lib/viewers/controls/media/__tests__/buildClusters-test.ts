@@ -6,15 +6,9 @@ describe('buildClusters', () => {
         expect(buildClusters([], 60, 600)).toHaveLength(0);
     });
 
-    test('should place unclustered markers when trackWidth is 0', () => {
-        const markers: CommentMarker[] = [
-            { id: 'm1', time: 10 },
-            { id: 'm2', time: 30 },
-        ];
-        const clusters = buildClusters(markers, 60, 0);
-        expect(clusters).toHaveLength(2);
-        expect(clusters[0].markers).toHaveLength(1);
-        expect(clusters[1].markers).toHaveLength(1);
+    test('should return empty array when trackWidth is 0', () => {
+        const markers: CommentMarker[] = [{ id: 'm1', time: 10 }];
+        expect(buildClusters(markers, 60, 0)).toHaveLength(0);
     });
 
     test('should return empty array when durationValue is 0', () => {
@@ -38,19 +32,6 @@ describe('buildClusters', () => {
         const clusters = buildClusters(markers, 60, 600);
         expect(clusters).toHaveLength(2);
         expect(clusters[0].markers).toHaveLength(1);
-        expect(clusters[1].markers).toHaveLength(1);
-    });
-
-    test('should cluster the same timestamp even when trackWidth is 0', () => {
-        const markers: CommentMarker[] = [
-            { id: 'm1', time: 10 },
-            { id: 'm2', time: 10 },
-            { id: 'm3', time: 30 },
-        ];
-        const clusters = buildClusters(markers, 60, 0);
-        expect(clusters).toHaveLength(2);
-        expect(clusters[0].markers).toHaveLength(2);
-        expect(clusters[0].isSinglePoint).toBe(true);
         expect(clusters[1].markers).toHaveLength(1);
     });
 

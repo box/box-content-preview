@@ -44,8 +44,6 @@
 // Expand avatars when parent container is hovered or focused
 .bp-TimeControlsV2-marker--group:hover,
 .bp-TimeControlsV2-marker--group:focus-visible,
-.bp-WaveformCommentMarkers-marker--group:hover,
-.bp-WaveformCommentMarkers-marker--group:focus-within,
 .bp-MarkerCluster:hover,
 .bp-MarkerCluster:focus-within {
     .bp-MarkerAvatarStack-item:not(:first-child) {

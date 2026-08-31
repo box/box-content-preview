@@ -103,6 +103,13 @@
 
 .bp-WaveformCommentMarkers-marker--group {
     width: auto;
+
+    &:hover,
+    &:focus-within {
+        .bp-MarkerAvatarStack-item:not(:first-child) {
+            margin-left: 2px;
+        }
+    }
 }
 
 .bp-WaveformCommentMarkers:hover .bp-MarkerAvatar::after,
