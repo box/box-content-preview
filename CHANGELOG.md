@@ -1,3 +1,7 @@
+## 3.85.0 (2026-08-28)
+
+* feat(audio): keep the zoomed playhead in view (#1759) ([3f8f7a5](https://github.com/box/box-content-preview/commit/3f8f7a5)), closes [#1759](https://github.com/box/box-content-preview/issues/1759)
+
 ## 3.84.0 (2026-08-27)
 
 * feat(audio): add waveform zoom (#1758) ([0a7973d](https://github.com/box/box-content-preview/commit/0a7973d)), closes [#1758](https://github.com/box/box-content-preview/issues/1758)
