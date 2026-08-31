@@ -94,7 +94,7 @@ export default function WaveformCommentMarkers({
             return undefined;
         }
 
-        const isOnSelectedMarker = (target: EventTarget | null): boolean => {
+        const isEventInsideSelectedBadge = (target: EventTarget | null): boolean => {
             if (!(target instanceof Element) || !overlayRef.current) {
                 return false;
             }
@@ -104,8 +104,8 @@ export default function WaveformCommentMarkers({
             return Boolean(selected && selected.contains(target));
         };
 
-        const dismiss = (event: Event): void => {
-            if (isOnSelectedMarker(event.target)) {
+        const clearSelection = (event: Event): void => {
+            if (isEventInsideSelectedBadge(event.target)) {
                 return;
             }
             setOptimisticSelectedId(null);
@@ -116,9 +116,9 @@ export default function WaveformCommentMarkers({
             }
         };
 
-        document.addEventListener('pointerdown', dismiss, true);
+        document.addEventListener('pointerdown', clearSelection, true);
         return () => {
-            document.removeEventListener('pointerdown', dismiss, true);
+            document.removeEventListener('pointerdown', clearSelection, true);
         };
     }, [selectedId]);
 
