@@ -1209,10 +1209,14 @@ class Preview extends EventEmitter {
         this.logger.setCached();
 
         const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
+        const needsTranscriptionRep =
+            isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+            this.isVideoFileByExtension() &&
+            !this.hasTranscriptionRep(this.file);
         // Captions are optional — do not treat a missing extracted_text rep like missing
         // dash/mp4. skipServerUpdate should still skip the refresh; default reopen already
         // calls loadFromServer() because skipServerUpdate is false.
-        const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps;
+        const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps || needsTranscriptionRep;
 
         // Play from cache immediately. Default reopen still refreshes file info in the
         // background; handleFileInfoResponse then updates the live viewer if extracted_text

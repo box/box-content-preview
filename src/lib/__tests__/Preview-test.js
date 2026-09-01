@@ -1779,8 +1779,7 @@ describe('lib/Preview', () => {
             expect(preview.loadFromServer).not.toHaveBeenCalled();
         });
 
-        test('should not refresh from server when skipServerUpdate even if transcription rep is missing', () => {
-            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+        test('should refresh from server when skipServerUpdate but video lacks transcription rep', () => {
             isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
             jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
             jest.spyOn(preview, 'hasTranscriptionRep').mockReturnValue(false);
@@ -1797,7 +1796,7 @@ describe('lib/Preview', () => {
             preview.loadFromCache();
 
             expect(stubs.loadViewer).toHaveBeenCalled();
-            expect(stubs.loadFromServer).not.toHaveBeenCalled();
+            expect(stubs.loadFromServer).toHaveBeenCalled();
         });
 
         test('should load the viewer immediately when skipServerUpdate but video lacks playable reps', () => {
