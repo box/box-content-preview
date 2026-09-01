@@ -19,7 +19,7 @@ import './MP3ControlsV2.scss';
 
 const PLACEHOLDER_PEAKS = placeholderPeaks();
 
-export type Props = DurationLabelsProps &
+export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
     MediaSettingsProps &
     PlayControlsProps &
     Pick<TimeControlsProps, 'onTimeChange'> &
