@@ -19,7 +19,7 @@
     transition: margin 150ms;
 
     &:not(:first-child) {
-        margin-left: -6px;
+        margin-left: var(--bp-marker-stack-overlap, -6px);
     }
 
     .bp-MarkerAvatar {

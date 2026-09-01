@@ -29,6 +29,7 @@ export default function buildClusters(
     markers: CommentMarker[],
     durationValue: number,
     trackWidth: number,
+    thresholdPx: number = CLUSTER_THRESHOLD_PX,
 ): ClusterData[] {
     if (durationValue <= 0 || markers.length === 0 || trackWidth <= 0) return [];
 
@@ -40,7 +41,7 @@ export default function buildClusters(
         const prevPx = (sorted[i - 1].time / durationValue) * trackWidth;
         const currPx = (sorted[i].time / durationValue) * trackWidth;
 
-        if (currPx - prevPx <= CLUSTER_THRESHOLD_PX) {
+        if (currPx - prevPx <= thresholdPx) {
             currentGroup.push(sorted[i]);
         } else {
             clusters.push(finalizeCluster(currentGroup, durationValue));

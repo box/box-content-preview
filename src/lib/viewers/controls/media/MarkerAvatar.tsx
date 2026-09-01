@@ -18,6 +18,8 @@ export type Props = {
     avatarUrl?: string;
     colorIndex?: number;
     initial?: string;
+    /** Diameter in CSS pixels. Video ticks use the stylesheet default (12px). */
+    size?: number;
 };
 
 function AnonymousAvatarIcon(): JSX.Element {
@@ -31,7 +33,7 @@ function AnonymousAvatarIcon(): JSX.Element {
     );
 }
 
-export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial }: Props): JSX.Element {
+export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial, size }: Props): JSX.Element {
     const safeIndex = Number.isFinite(colorIndex) ? Math.abs(colorIndex) % AVATAR_PALETTE.length : 0;
     const { bg: bgColor, fg: textColor } = AVATAR_PALETTE[safeIndex];
 
@@ -49,8 +51,17 @@ export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial }: Pro
         );
     }
 
+    const style: React.CSSProperties = {};
+    if (!showImage) {
+        style.backgroundColor = bgColor;
+    }
+    if (size) {
+        style.width = size;
+        style.height = size;
+    }
+
     return (
-        <span className="bp-MarkerAvatar" style={!showImage ? { backgroundColor: bgColor } : undefined}>
+        <span className="bp-MarkerAvatar" style={Object.keys(style).length > 0 ? style : undefined}>
             {avatar}
         </span>
     );
