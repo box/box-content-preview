@@ -137,6 +137,31 @@ function clampScrollLeft(scrollLeftPx: number, viewport: WaveformViewport): numb
     return Math.min(maxScrollLeft(viewport), Math.max(0, scrollLeftPx));
 }
 
+/** Center this time in the view, clamped so the window still fills the canvas. */
+export function getCenteredScrollLeft(timeSec: number, viewport: WaveformViewport): number {
+    return clampScrollLeft(timeSec * viewport.pixelsPerSecond - viewport.widthPx / 2, viewport);
+}
+
+/**
+ * Host/media seek while zoomed: jump so the time (and its comment avatar) is on screen.
+ * No-op at fit-to-width or when that time is already visible.
+ */
+export function getSeekCameraAction({
+    timeSec,
+    viewport,
+}: {
+    timeSec: number;
+    viewport: WaveformViewport;
+}): PlayheadCameraAction {
+    if (viewport.zoomLevel <= WAVEFORM_ZOOM_MIN || !(viewport.widthPx > 0) || !(viewport.pixelsPerSecond > 0)) {
+        return { type: 'none' };
+    }
+    if (isTimeInView(timeSec, viewport)) {
+        return { type: 'none' };
+    }
+    return { type: 'jump', scrollLeftPx: getCenteredScrollLeft(timeSec, viewport) };
+}
+
 /** Follow inset in CSS px, capped at one third of the view so a narrow player still has room. */
 export function getFollowInsetPx(widthPx: number, insetPx: number = WAVEFORM_FOLLOW_INSET_PX): number {
     if (!(widthPx > 0)) {

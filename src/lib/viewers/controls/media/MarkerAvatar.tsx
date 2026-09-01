@@ -38,13 +38,25 @@ export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial, size 
     const { bg: bgColor, fg: textColor } = AVATAR_PALETTE[safeIndex];
 
     const [imgFailed, setImgFailed] = React.useState(false);
-    const showImage = Boolean(avatarUrl) && !imgFailed;
+    const [loadedUrl, setLoadedUrl] = React.useState<string | null>(null);
+    const imgRef = React.useRef<HTMLImageElement | null>(null);
+    // Keep initial + palette until onLoad (and for cached complete). Shared with video ticks.
+    const showImage = Boolean(avatarUrl) && !imgFailed && loadedUrl === avatarUrl;
 
-    let avatar = <AnonymousAvatarIcon />;
-    if (showImage) {
-        avatar = <img alt="" onError={() => setImgFailed(true)} src={avatarUrl} />;
-    } else if (initial) {
-        avatar = (
+    React.useEffect(() => {
+        setImgFailed(false);
+    }, [avatarUrl]);
+
+    React.useLayoutEffect(() => {
+        const img = imgRef.current;
+        if (avatarUrl && img?.complete && img.naturalWidth > 0) {
+            setLoadedUrl(avatarUrl);
+        }
+    }, [avatarUrl]);
+
+    let fallback = <AnonymousAvatarIcon />;
+    if (initial) {
+        fallback = (
             <span className="bp-MarkerAvatar-initial" style={{ color: textColor }}>
                 {initial}
             </span>
@@ -62,7 +74,22 @@ export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial, size 
 
     return (
         <span className="bp-MarkerAvatar" style={Object.keys(style).length > 0 ? style : undefined}>
-            {avatar}
+            {avatarUrl && !imgFailed && (
+                <img
+                    ref={imgRef}
+                    alt=""
+                    onError={() => {
+                        setImgFailed(true);
+                    }}
+                    onLoad={() => {
+                        if (avatarUrl) {
+                            setLoadedUrl(avatarUrl);
+                        }
+                    }}
+                    src={avatarUrl}
+                />
+            )}
+            {!showImage && fallback}
         </span>
     );
 }

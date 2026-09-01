@@ -6,6 +6,7 @@ import { WaveformViewport } from './types';
 import {
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
+    getSeekCameraAction,
     getViewportAtScroll,
     maxScrollLeft,
     timeLeftPercent,
@@ -25,7 +26,7 @@ function prefersReducedMotion(): boolean {
 
 export type UsePlayheadCameraOptions = {
     mediaElRef: MutableRefObject<HTMLMediaElement | null | undefined>;
-    onViewportCommit: (scrollLeftPx: number, viewport: WaveformViewport) => void;
+    onViewportCommit: (scrollLeftPx: number, viewport: WaveformViewport, commitReactState?: boolean) => void;
     playheadRef: RefObject<HTMLDivElement | null>;
     viewportRef: MutableRefObject<WaveformViewport>;
     wavesurferRef: MutableRefObject<WaveSurfer | null>;
@@ -51,6 +52,7 @@ export default function usePlayheadCamera({
     onSeek: (timeSec: number) => void;
     onZoom: () => void;
     releaseUserPanHold: () => void;
+    seekTo: (timeSec: number) => void;
 } {
     const onViewportCommitRef = useRef(onViewportCommit);
     onViewportCommitRef.current = onViewportCommit;
@@ -131,9 +133,9 @@ export default function usePlayheadCamera({
                 }
                 programmaticScrollRef.current = false;
             });
-            if (shouldCommitState) {
-                onViewportCommitRef.current(appliedScrollLeft, viewportRef.current);
-            }
+            // Overlay always gets the live window. React scroll state only when not pinned,
+            // so WaveformView does not re-render every follow frame.
+            onViewportCommitRef.current(appliedScrollLeft, viewportRef.current, shouldCommitState);
         },
         [viewportRef, wavesurferRef],
     );
@@ -253,6 +255,59 @@ export default function usePlayheadCamera({
         [viewportRef],
     );
 
+    const seekTo = useCallback(
+        (timeSec: number): void => {
+            mediaTimeRef.current = timeSec;
+            const wavesurfer = wavesurferRef.current;
+            if (!wavesurfer) {
+                return;
+            }
+
+            releaseUserPanHold();
+            cancelJump();
+            isFollowPinnedRef.current = false;
+
+            const liveViewport = getViewportAtScroll(
+                viewportRef.current,
+                getScrollLeft(wavesurfer, viewportRef.current.scrollLeftPx),
+            );
+            const action = getSeekCameraAction({ timeSec, viewport: liveViewport });
+            if (action.type !== 'jump') {
+                return;
+            }
+
+            const from = liveViewport.scrollLeftPx;
+            const to = action.scrollLeftPx;
+            if (prefersReducedMotion() || typeof window.requestAnimationFrame !== 'function' || from === to) {
+                applyScrollLeft(to, true);
+                return;
+            }
+
+            programmaticScrollRef.current = true;
+            const start = getCurrentTimeMs();
+            const tick = (now: number): void => {
+                const t = Math.min(1, (now - start) / WAVEFORM_PLAYHEAD_JUMP_MS);
+                applyScrollLeft(from + (to - from) * (1 - (1 - t) * (1 - t)), false);
+                const playhead = playheadRef.current;
+                if (playhead) {
+                    playhead.style.left = timeLeftPercent(
+                        mediaTimeRef.current,
+                        viewportRef.current.durationSec,
+                        viewportRef.current,
+                    );
+                }
+                if (t < 1) {
+                    jumpAnimationRef.current = window.requestAnimationFrame(tick);
+                    return;
+                }
+                jumpAnimationRef.current = 0;
+                applyScrollLeft(to, true);
+            };
+            jumpAnimationRef.current = window.requestAnimationFrame(tick);
+        },
+        [applyScrollLeft, cancelJump, playheadRef, releaseUserPanHold, viewportRef, wavesurferRef],
+    );
+
     const handleScroll = useCallback(
         (onUserPan: (mediaTimeSec: number) => void): void => {
             const wavesurfer = wavesurferRef.current;
@@ -309,5 +364,6 @@ export default function usePlayheadCamera({
         onSeek,
         onZoom,
         releaseUserPanHold,
+        seekTo,
     };
 }

@@ -40,6 +40,7 @@ class MP3Viewer extends MediaBaseViewer {
         // Audio element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
         this.mediaEl.setAttribute('preload', 'auto');
+        this.commentMarkers = [];
     }
 
     /**
@@ -120,6 +121,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     destroy() {
+        this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
         this.abortClientWaveformDecode();
         super.destroy();
     }
@@ -173,6 +175,8 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
 
+        this.applyPendingHostSelectedSeek();
+
         // Play first so Safari has a user gesture before AudioContext is created.
         if (this.userRequestedPlay) {
             this.play();
@@ -193,6 +197,21 @@ class MP3Viewer extends MediaBaseViewer {
             this.isWaveformDecodeRetryPending = false;
             this.startClientWaveformDecode();
         }
+    };
+
+    /**
+     * Honor the requested play/pause state. The play button passes the next state;
+     * comment markers pass false so a click always pauses instead of toggling.
+     *
+     * @param {boolean} shouldPlay
+     * @return {void}
+     */
+    handlePlayPause = shouldPlay => {
+        if (shouldPlay) {
+            this.handlePlayRequest();
+            return;
+        }
+        this.pause(undefined, true);
     };
 
     /**
@@ -336,8 +355,63 @@ class MP3Viewer extends MediaBaseViewer {
             this.controls = new MP3ControlsRoot({ containerEl: this.mediaContainerEl });
         }
 
+        if (this.isAudioPlayerV2) {
+            this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
+            this.addListener('comment_markers', this.handleCommentMarkersUpdated);
+        }
+
         this.renderUI();
     }
+
+    handleCommentMarkersUpdated = (markers = []) => {
+        this.commentMarkers = markers;
+        const selected = markers.find(marker => marker.selected);
+        const selectedId = selected ? selected.id : null;
+
+        if (selectedId !== this.hostSelectedMarkerId) {
+            this.hostSelectedMarkerId = selectedId;
+            if (selected && Number.isFinite(selected.time)) {
+                this.pendingHostSelectedSeek = selected;
+                this.applyPendingHostSelectedSeek();
+            } else {
+                this.pendingHostSelectedSeek = null;
+            }
+        }
+
+        this.renderUI();
+    };
+
+    /**
+     * Seek+pause to a host-selected comment (feed / deeplink). Audio-only; video does not
+     * seek on comment_markers. No-ops until duration is known. Skips currentTime if the
+     * element is already there so a feed seek does not fire a second `seeked`.
+     *
+     * @return {void}
+     */
+    applyPendingHostSelectedSeek() {
+        const marker = this.pendingHostSelectedSeek;
+        if (!marker || !this.mediaEl || !(this.mediaEl.duration > 0) || !Number.isFinite(marker.time)) {
+            return;
+        }
+
+        this.pendingHostSelectedSeek = null;
+        this.mediaEl.pause();
+        if (this.mediaEl.currentTime !== marker.time) {
+            this.mediaEl.currentTime = marker.time;
+        }
+    }
+
+    handleCommentMarkerClick = marker => {
+        this.hostSelectedMarkerId = marker.id;
+        this.pendingHostSelectedSeek = null;
+        if (this.mediaEl) {
+            this.mediaEl.pause();
+            this.mediaEl.currentTime = marker.time;
+        }
+        // Overlay paints the ring from click optimism until the host re-emits selected.
+        this.emit('comment_marker_select', { id: marker.id, time: marker.time });
+        this.renderUI();
+    };
 
     /**
      * @inheritdoc
@@ -356,7 +430,7 @@ class MP3Viewer extends MediaBaseViewer {
             movePlayback: this.movePlayback,
             onAutoplayChange: this.setAutoplay,
             onMuteChange: this.toggleMute,
-            onPlayPause: this.isAudioPlayerV2 ? this.handlePlayRequest : this.togglePlay,
+            onPlayPause: this.isAudioPlayerV2 ? this.handlePlayPause : this.togglePlay,
             onRateChange: this.setRate,
             onTimeChange: this.handleTimeupdateFromMediaControls,
             onVolumeChange: this.setVolume,
@@ -375,7 +449,15 @@ class MP3Viewer extends MediaBaseViewer {
             }
 
             const Mp3ControlsV2 = this.MP3ControlsV2;
-            this.controls.render(<Mp3ControlsV2 {...sharedProps} mediaEl={this.mediaEl} peaks={this.waveformPeaks} />);
+            this.controls.render(
+                <Mp3ControlsV2
+                    {...sharedProps}
+                    commentMarkers={this.commentMarkers || []}
+                    mediaEl={this.mediaEl}
+                    onCommentMarkerClick={this.handleCommentMarkerClick}
+                    peaks={this.waveformPeaks}
+                />,
+            );
             return;
         }
 

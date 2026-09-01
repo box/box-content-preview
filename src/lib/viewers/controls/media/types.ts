@@ -3,6 +3,8 @@ export type CommentMarker = {
     colorIndex?: number;
     id: string;
     initial?: string;
+    /** Host / activity-feed selection. Drives the waveform ring and a seek+pause. */
+    selected?: boolean;
     time: number;
     type?: 'annotation' | 'comment';
 };
