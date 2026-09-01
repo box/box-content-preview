@@ -65,6 +65,7 @@ export default function WaveformCommentMarkers({
 }: WaveformCommentMarkersProps): JSX.Element | null {
     const overlayRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
+    const dismissedIdRef = useRef<string | null>(null);
     const [trackWidth, setTrackWidth] = useState(0);
     const [optimisticSelectedId, setOptimisticSelectedId] = useState<string | null>(null);
     const [isSelectionDismissed, setIsSelectionDismissed] = useState(false);
@@ -74,8 +75,13 @@ export default function WaveformCommentMarkers({
     const isZoomed = hasMappedWindow(viewport) && viewport.zoomLevel > WAVEFORM_ZOOM_MIN;
 
     useEffect(() => {
-        setIsSelectionDismissed(false);
         setOptimisticSelectedId(null);
+        // Host ack of the dismissed id must not bring the ring back.
+        if (dismissedIdRef.current && hostSelectedId === dismissedIdRef.current) {
+            return;
+        }
+        dismissedIdRef.current = null;
+        setIsSelectionDismissed(false);
     }, [hostSelectedId]);
 
     useLayoutEffect(() => {
@@ -111,6 +117,7 @@ export default function WaveformCommentMarkers({
     const handleMarkerClick = useCallback(
         (marker: CommentMarker, event?: React.MouseEvent) => {
             event?.stopPropagation();
+            dismissedIdRef.current = null;
             setIsSelectionDismissed(false);
             setOptimisticSelectedId(marker.id);
             onCommentMarkerClick?.(marker);
@@ -137,6 +144,7 @@ export default function WaveformCommentMarkers({
             if (isEventInsideSelectedBadge(event.target)) {
                 return;
             }
+            dismissedIdRef.current = selectedId;
             setOptimisticSelectedId(null);
             setIsSelectionDismissed(true);
             const active = document.activeElement;
