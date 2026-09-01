@@ -18,6 +18,8 @@ export type Props = {
 export default function MarkerAvatarStack({ markers, onMarkerClick, overlapPx, selectedId, size }: Props): JSX.Element {
     const hasOverflow = markers.length > MAX_VISIBLE_AVATARS;
     const visibleMarkers = hasOverflow ? markers.slice(0, MAX_VISIBLE_AVATARS - 1) : markers;
+    const overflowMarkers = hasOverflow ? markers.slice(MAX_VISIBLE_AVATARS - 1) : [];
+    const isOverflowSelected = overflowMarkers.some(marker => marker.id === selectedId);
     const style =
         overlapPx != null ? ({ '--bp-marker-stack-overlap': `-${overlapPx}px` } as React.CSSProperties) : undefined;
 
@@ -26,6 +28,8 @@ export default function MarkerAvatarStack({ markers, onMarkerClick, overlapPx, s
             {visibleMarkers.map(marker => (
                 <button
                     key={marker.id}
+                    aria-label={__('media_comment_marker')}
+                    aria-pressed={marker.id === selectedId}
                     className={`bp-MarkerAvatarStack-item${
                         marker.id === selectedId ? ' bp-MarkerAvatarStack-item--selected' : ''
                     }`}
@@ -46,7 +50,11 @@ export default function MarkerAvatarStack({ markers, onMarkerClick, overlapPx, s
             ))}
             {hasOverflow && (
                 <button
-                    className="bp-MarkerAvatarStack-item bp-MarkerAvatarStack-overflow"
+                    aria-label={__('media_comment_marker')}
+                    aria-pressed={isOverflowSelected}
+                    className={`bp-MarkerAvatarStack-item bp-MarkerAvatarStack-overflow${
+                        isOverflowSelected ? ' bp-MarkerAvatarStack-item--selected' : ''
+                    }`}
                     data-resin-target="commentMarkerStackAvatarOverflow"
                     onClick={(e): void => {
                         e.stopPropagation();

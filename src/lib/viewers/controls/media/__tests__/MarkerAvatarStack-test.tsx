@@ -95,6 +95,25 @@ describe('MarkerAvatarStack', () => {
         expect(items[0]).not.toHaveClass('bp-MarkerAvatarStack-item--selected');
         expect(items[1]).toHaveClass('bp-MarkerAvatarStack-item--selected');
         expect(items[2]).not.toHaveClass('bp-MarkerAvatarStack-item--selected');
+        expect(items[0]).toHaveAttribute('aria-pressed', 'false');
+        expect(items[1]).toHaveAttribute('aria-pressed', 'true');
+        expect(items[1]).toHaveAttribute('aria-label', __('media_comment_marker'));
+    });
+
+    test('should mark the overflow chip when the selected id is in the hidden slice', () => {
+        const manyMarkers: CommentMarker[] = [
+            { id: 'm1', time: 10, initial: 'A', colorIndex: 0 },
+            { id: 'm2', time: 10, initial: 'B', colorIndex: 1 },
+            { id: 'm3', time: 10, initial: 'C', colorIndex: 2 },
+            { id: 'm4', time: 10, initial: 'D', colorIndex: 3 },
+            { id: 'm5', time: 10, initial: 'E', colorIndex: 4 },
+        ];
+        const { container } = render(<MarkerAvatarStack markers={manyMarkers} selectedId="m5" />);
+        const overflow = container.querySelector('.bp-MarkerAvatarStack-overflow');
+
+        expect(overflow).toHaveClass('bp-MarkerAvatarStack-item--selected');
+        expect(overflow).toHaveAttribute('aria-pressed', 'true');
+        expect(container.querySelectorAll('.bp-MarkerAvatarStack-item--selected')).toHaveLength(1);
     });
 
     test('should call onMarkerClick with correct marker when individual avatar is clicked', async () => {

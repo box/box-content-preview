@@ -82,6 +82,10 @@ describe('WaveformCommentMarkers', () => {
         expect(badge.querySelectorAll('.bp-MarkerAvatarStack-item')).toHaveLength(2);
         expect(screen.getByText('A')).toBeInTheDocument();
         expect(screen.getByText('B')).toBeInTheDocument();
+        badge.querySelectorAll('.bp-MarkerAvatarStack-item').forEach(item => {
+            expect(item).toHaveAttribute('aria-label', __('media_comment_marker'));
+            expect(item).toHaveAttribute('aria-pressed', 'false');
+        });
     });
 
     test('should place badges and stack exact timestamps before the track is measured', () => {
@@ -234,6 +238,22 @@ describe('WaveformCommentMarkers', () => {
         expect(screen.getAllByTestId('bp-waveform-comment-marker')[1]).toHaveClass(
             'bp-WaveformCommentMarkers-marker--selected',
         );
+    });
+
+    test('should keep the ring off when the host acks the dismissed comment', async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(<WaveformCommentMarkers commentMarkers={markers} durationSec={60} />);
+
+        const badge = screen.getAllByTestId('bp-waveform-comment-marker')[0];
+        await user.click(badge);
+        expect(badge).toHaveClass('bp-WaveformCommentMarkers-marker--selected');
+
+        await user.click(document.body);
+        expect(badge).not.toHaveClass('bp-WaveformCommentMarkers-marker--selected');
+
+        rerender(<WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" />);
+
+        expect(badge).not.toHaveClass('bp-WaveformCommentMarkers-marker--selected');
     });
 
     test('should follow the visible window when the waveform viewport changes', () => {
