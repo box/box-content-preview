@@ -1,3 +1,7 @@
+## 3.86.0 (2026-09-02)
+
+* feat(audio): add waveform comment marker overlay (#1760) ([f7a077c](https://github.com/box/box-content-preview/commit/f7a077c)), closes [#1760](https://github.com/box/box-content-preview/issues/1760)
+
 ## 3.85.0 (2026-08-28)
 
 * feat(audio): keep the zoomed playhead in view (#1759) ([3f8f7a5](https://github.com/box/box-content-preview/commit/3f8f7a5)), closes [#1759](https://github.com/box/box-content-preview/issues/1759)
