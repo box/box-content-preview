@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import isFinite from 'lodash/isFinite';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
@@ -11,7 +11,7 @@ import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
 import { WaveformViewport } from './waveform/types';
-import { clampWaveformZoom } from './waveform/viewport';
+import { clampWaveformZoom, viewportEquals } from './waveform/viewport';
 import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
@@ -63,21 +63,7 @@ export default function MP3ControlsV2({
     const [viewport, setViewport] = useState<WaveformViewport | null>(null);
     const handleViewportChange = useCallback((next: WaveformViewport) => {
         setMaxZoom(prev => (prev === next.maxZoom ? prev : next.maxZoom));
-        setViewport(prev => {
-            if (
-                prev &&
-                prev.durationSec === next.durationSec &&
-                prev.endSec === next.endSec &&
-                prev.maxZoom === next.maxZoom &&
-                prev.scrollLeftPx === next.scrollLeftPx &&
-                prev.startSec === next.startSec &&
-                prev.widthPx === next.widthPx &&
-                prev.zoomLevel === next.zoomLevel
-            ) {
-                return prev;
-            }
-            return next;
-        });
+        setViewport(prev => (viewportEquals(prev, next) ? prev : next));
     }, []);
 
     const revealZoomControl = useCallback(() => {
@@ -116,8 +102,10 @@ export default function MP3ControlsV2({
         mediaEl?.closest<HTMLElement>('.bp-media-container')?.focus();
     }, [mediaEl, onPlayPause]);
 
-    const waveformMarkers = commentMarkers || [];
-    const selectedMarkerId = waveformMarkers.find(marker => marker.isSelected)?.id ?? null;
+    const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
+    const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
+        waveformMarkers,
+    ]);
     const handleCommentMarkerClick = useCallback(
         (marker: CommentMarker) => {
             setPlayRequested(true);

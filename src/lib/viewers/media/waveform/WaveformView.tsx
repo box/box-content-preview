@@ -64,7 +64,7 @@ function applyPeaks(wavesurfer: WaveSurfer, peaks: ArrayLike<number>, durationSe
     wavesurfer.load('', toChannels(peaks), durationSec);
 }
 
-/** WaveSurfer pans `.scroll` inside a shadow root; Chrome rubber-bands that node, not our canvas. */
+/** Stop the zoomed waveform from bouncing on trackpad overscroll. WaveSurfer's scroller is inside a shadow root, so SCSS uses `::part(scroll)` while zoomed and this sets the same property as soon as WaveSurfer exists. */
 function disableScrollOverscroll(container: HTMLElement): void {
     const host = container.firstElementChild;
     const scroll = host instanceof HTMLElement ? host.shadowRoot?.querySelector('.scroll') : null;

@@ -590,6 +590,74 @@ describe('WaveformView', () => {
         expect(screen.getByTestId('bp-waveform-playhead').style.left).toBe('50%');
     });
 
+    test('should jump immediately when reduced motion is preferred', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        const originalMatchMedia = window.matchMedia;
+        const matchMedia = jest.fn((query: string) => ({
+            addEventListener: jest.fn(),
+            addListener: jest.fn(),
+            dispatchEvent: jest.fn(),
+            matches: query === '(prefers-reduced-motion: reduce)',
+            media: query,
+            onchange: null,
+            removeEventListener: jest.fn(),
+            removeListener: jest.fn(),
+        }));
+        Object.defineProperty(window, 'matchMedia', { configurable: true, value: matchMedia });
+
+        try {
+            render(
+                <WaveformView
+                    currentTime={1}
+                    durationSec={8}
+                    mediaEl={mediaEl}
+                    peaks={new Array(800).fill(0.5)}
+                    zoomLevel={2}
+                />,
+            );
+
+            act(() => {
+                animationCallbacks.splice(0).forEach(cb => cb(0));
+            });
+            mockSetScroll.mockClear();
+
+            Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 6, writable: true });
+            act(() => {
+                mediaEl.dispatchEvent(new Event('seeked'));
+            });
+
+            expect(mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1][0]).toBeCloseTo(200);
+            const setScrollCallsAfterSeek = mockSetScroll.mock.calls.length;
+            act(() => {
+                animationCallbacks.splice(0).forEach(cb => cb(0));
+            });
+
+            expect(mockSetScroll.mock.calls).toHaveLength(setScrollCallsAfterSeek);
+            expect(screen.getByTestId('bp-waveform-playhead').style.left).toBe('50%');
+        } finally {
+            if (originalMatchMedia) {
+                Object.defineProperty(window, 'matchMedia', { configurable: true, value: originalMatchMedia });
+            } else {
+                delete (window as { matchMedia?: typeof window.matchMedia }).matchMedia;
+            }
+        }
+    });
+
     test('should not jump the zoomed window when a host seek is already in view', () => {
         const mediaEl = document.createElement('audio');
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });

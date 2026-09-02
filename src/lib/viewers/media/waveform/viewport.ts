@@ -40,6 +40,20 @@ export function getViewportAtScroll(viewport: WaveformViewport, scrollLeftPx: nu
     return createWaveformViewport({ ...viewport, scrollLeftPx });
 }
 
+/** True when the visible window has not moved — skip a React state update. */
+export function viewportEquals(prev: WaveformViewport | null, next: WaveformViewport): boolean {
+    return (
+        !!prev &&
+        prev.durationSec === next.durationSec &&
+        prev.endSec === next.endSec &&
+        prev.maxZoom === next.maxZoom &&
+        prev.scrollLeftPx === next.scrollLeftPx &&
+        prev.startSec === next.startSec &&
+        prev.widthPx === next.widthPx &&
+        prev.zoomLevel === next.zoomLevel
+    );
+}
+
 /** How many CSS pixels from the left of the visible window this time sits. */
 export function positionPxFromTime(timeSec: number, viewport: WaveformViewport): number {
     return (timeSec - viewport.startSec) * viewport.pixelsPerSecond;

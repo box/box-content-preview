@@ -12,6 +12,7 @@ import {
     sliderValueFromZoom,
     timeFromPositionPx,
     timeLeftPercent,
+    viewportEquals,
     zoomFromSliderValue,
 } from '../viewport';
 
@@ -23,6 +24,13 @@ describe('viewport', () => {
         scrollLeftPx: 0,
         widthPx: 200,
         zoomLevel: 1,
+    });
+
+    test('should treat matching visible-window fields as equal', () => {
+        expect(viewportEquals(overview, { ...overview })).toBe(true);
+        expect(viewportEquals(null, overview)).toBe(false);
+        expect(viewportEquals(overview, { ...overview, scrollLeftPx: 10 })).toBe(false);
+        expect(viewportEquals(overview, { ...overview, zoomLevel: 2 })).toBe(false);
     });
 
     test('should map time to the full width at zoom 1', () => {
