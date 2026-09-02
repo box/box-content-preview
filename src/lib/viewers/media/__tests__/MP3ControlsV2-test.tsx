@@ -426,7 +426,7 @@ describe('MP3ControlsV2', () => {
 
         test('should ring the host-selected comment marker', async () => {
             getWrapper({
-                commentMarkers: [{ ...hostCommentMarkers[0], selected: true }],
+                commentMarkers: [{ ...hostCommentMarkers[0], isSelected: true }],
                 durationTime: 180,
                 isPlaying: true,
                 peaks: [0.2, 0.8],

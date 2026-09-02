@@ -464,7 +464,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
             Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
 
-            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', selected: true, time: 41.2, type: 'comment' }]);
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
 
             expect(mp3.mediaEl.pause).toBeCalled();
             expect(mp3.mediaEl.currentTime).toBe(41.2);
@@ -476,7 +476,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.mediaEl = document.createElement('audio');
             jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
             Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
-            const markers = [{ id: 'comment-1', selected: true, time: 41.2, type: 'comment' }];
+            const markers = [{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }];
 
             mp3.handleCommentMarkersUpdated(markers);
             mp3.mediaEl.currentTime = 12;
@@ -494,7 +494,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
             Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
 
-            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', selected: true, time: 41.2, type: 'comment' }]);
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
 
             expect(mp3.mediaEl.pause).not.toBeCalled();
             expect(mp3.pendingHostSelectedSeek).toEqual(expect.objectContaining({ id: 'comment-1', time: 41.2 }));
@@ -519,7 +519,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 set: setTime,
             });
 
-            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', selected: true, time: 41.2, type: 'comment' }]);
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
 
             expect(mp3.mediaEl.pause).toBeCalled();
             expect(setTime).not.toBeCalled();
@@ -549,7 +549,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
             mp3.mediaEl.pause.mockClear();
 
-            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', selected: true, time: 41.2, type: 'comment' }]);
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
 
             expect(mp3.mediaEl.pause).not.toBeCalled();
             expect(mp3.mediaEl.currentTime).toBe(41.2);

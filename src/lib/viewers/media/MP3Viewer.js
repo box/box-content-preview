@@ -365,7 +365,7 @@ class MP3Viewer extends MediaBaseViewer {
 
     handleCommentMarkersUpdated = (markers = []) => {
         this.commentMarkers = markers;
-        const selected = markers.find(marker => marker.selected);
+        const selected = markers.find(marker => marker.isSelected);
         const selectedId = selected ? selected.id : null;
 
         if (selectedId !== this.hostSelectedMarkerId) {

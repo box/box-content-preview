@@ -117,7 +117,7 @@ export default function MP3ControlsV2({
     }, [mediaEl, onPlayPause]);
 
     const waveformMarkers = commentMarkers || [];
-    const selectedMarkerId = waveformMarkers.find(marker => marker.selected)?.id ?? null;
+    const selectedMarkerId = waveformMarkers.find(marker => marker.isSelected)?.id ?? null;
     const handleCommentMarkerClick = useCallback(
         (marker: CommentMarker) => {
             setPlayRequested(true);
