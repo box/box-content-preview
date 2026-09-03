@@ -73,6 +73,20 @@ export default function WaveformZoomControl({
             }}
             role="group"
         >
+            <MediaToggle
+                aria-disabled={isAtMaxZoom}
+                className="bp-WaveformZoomControl-button"
+                data-resin-target="waveformZoomIn"
+                data-testid="bp-waveform-zoom-in"
+                onClick={() => {
+                    if (!isAtMaxZoom) {
+                        handleStep(WAVEFORM_ZOOM_BUTTON_STEP);
+                    }
+                }}
+                title={__('zoom_in')}
+            >
+                <IconZoomIn24 />
+            </MediaToggle>
             <div
                 aria-hidden={!isOpen}
                 className={classNames('bp-WaveformZoomControl-flyout', { 'bp-is-open': isOpen })}
@@ -107,20 +121,6 @@ export default function WaveformZoomControl({
                     value={zoomValue}
                 />
             </div>
-            <MediaToggle
-                aria-disabled={isAtMaxZoom}
-                className="bp-WaveformZoomControl-button"
-                data-resin-target="waveformZoomIn"
-                data-testid="bp-waveform-zoom-in"
-                onClick={() => {
-                    if (!isAtMaxZoom) {
-                        handleStep(WAVEFORM_ZOOM_BUTTON_STEP);
-                    }
-                }}
-                title={__('zoom_in')}
-            >
-                <IconZoomIn24 />
-            </MediaToggle>
         </div>
     );
 }

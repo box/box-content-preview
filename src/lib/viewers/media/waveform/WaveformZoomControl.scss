@@ -36,6 +36,7 @@ $bp-WaveformZoom-open-width: $bp-WaveformZoom-padding * 2 + $bp-WaveformZoom-fly
 .bp-WaveformZoomControl-flyout {
     display: flex;
     flex: 0 0 auto;
+    order: -1;
     gap: $bp-WaveformZoom-gap;
     align-items: center;
     width: 0;

@@ -33,9 +33,13 @@ describe('WaveformZoomControl', () => {
 
         const slider = screen.getByRole('slider', { name: __('media_zoom_slider') });
         expect(slider).toHaveAttribute('data-resin-target', 'waveformZoomSlider');
-        act(() => {
-            slider.focus();
-        });
+
+        await user.tab();
+        expect(screen.getByRole('button', { name: __('zoom_in') })).toHaveFocus();
+        await user.tab();
+        expect(screen.getByRole('button', { name: __('zoom_out') })).toHaveFocus();
+        await user.tab();
+        expect(slider).toHaveFocus();
         await user.keyboard('{ArrowRight}');
 
         expect(onZoomChange).toHaveBeenCalled();
@@ -101,6 +105,11 @@ describe('WaveformZoomControl', () => {
         expect(zoomIn).toHaveFocus();
         expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: __('zoom_out') })).toBeInTheDocument();
+
+        await user.tab();
+        expect(screen.getByRole('button', { name: __('zoom_out') })).toHaveFocus();
+        await user.tab();
+        expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toHaveFocus();
     });
 
     test('should zoom in and out from the icon buttons', async () => {
@@ -128,8 +137,16 @@ describe('WaveformZoomControl', () => {
         expect(screen.getByTestId('bp-waveform-zoom-out')).toHaveAttribute('aria-disabled', 'true');
 
         rerender(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={4} />);
-        await user.click(screen.getByTestId('bp-waveform-zoom-in'));
+        const zoomIn = screen.getByTestId('bp-waveform-zoom-in');
+        await user.click(zoomIn);
         expect(onZoomChange).not.toHaveBeenCalled();
-        expect(screen.getByTestId('bp-waveform-zoom-in')).toHaveAttribute('aria-disabled', 'true');
+        expect(zoomIn).toHaveAttribute('aria-disabled', 'true');
+        expect(zoomIn).toHaveFocus();
+
+        act(() => {
+            zoomIn.blur();
+        });
+        await user.tab();
+        expect(zoomIn).toHaveFocus();
     });
 });
