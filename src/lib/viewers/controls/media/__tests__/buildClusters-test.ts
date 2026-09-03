@@ -35,6 +35,15 @@ describe('buildClusters', () => {
         expect(clusters[1].markers).toHaveLength(1);
     });
 
+    test('should honor a larger proximity threshold', () => {
+        const markers: CommentMarker[] = [
+            { id: 'm1', time: 10 },
+            { id: 'm2', time: 10.5 },
+        ];
+        expect(buildClusters(markers, 60, 600)).toHaveLength(2);
+        expect(buildClusters(markers, 60, 600, 20)).toHaveLength(1);
+    });
+
     test('should cluster markers at the same timestamp', () => {
         const markers: CommentMarker[] = [
             { id: 'm1', time: 10 },

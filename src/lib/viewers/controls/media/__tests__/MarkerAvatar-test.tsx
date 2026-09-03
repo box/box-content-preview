@@ -10,10 +10,25 @@ describe('MarkerAvatar', () => {
             expect(img).toHaveAttribute('src', 'https://example.com/avatar.jpg');
         });
 
+        test('should keep the initial until the image has loaded', () => {
+            const { container } = render(
+                <MarkerAvatar avatarUrl="https://example.com/avatar.jpg" colorIndex={0} initial="A" />,
+            );
+
+            expect(screen.getByText('A')).toBeInTheDocument();
+            expect(container.querySelector('.bp-MarkerAvatar')).toHaveStyle({ backgroundColor: '#7fb0ea' });
+
+            fireEvent.load(container.querySelector('img')!);
+
+            expect(screen.queryByText('A')).not.toBeInTheDocument();
+            expect(container.querySelector('.bp-MarkerAvatar')).not.toHaveStyle({ backgroundColor: '#7fb0ea' });
+        });
+
         test('should not apply background color when image is showing', () => {
             const { container } = render(<MarkerAvatar avatarUrl="https://example.com/avatar.jpg" colorIndex={3} />);
-            const avatar = container.querySelector('.bp-MarkerAvatar');
-            expect(avatar).not.toHaveAttribute('style');
+            fireEvent.load(container.querySelector('img')!);
+            const avatar = container.querySelector('.bp-MarkerAvatar') as HTMLElement;
+            expect(avatar.style.backgroundColor).toBe('');
         });
 
         test('should fall back to initial when image fails to load', () => {
@@ -54,6 +69,11 @@ describe('MarkerAvatar', () => {
             const { container } = render(<MarkerAvatar colorIndex={1} initial="D" />);
             const initialEl = container.querySelector('.bp-MarkerAvatar-initial');
             expect(initialEl).toHaveStyle({ color: '#fff' });
+        });
+
+        test('should apply an explicit size', () => {
+            const { container } = render(<MarkerAvatar initial="A" size={20} />);
+            expect(container.querySelector('.bp-MarkerAvatar')).toHaveStyle({ width: '20px', height: '20px' });
         });
 
         test('should wrap colorIndex using modulo', () => {

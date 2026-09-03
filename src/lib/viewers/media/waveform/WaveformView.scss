@@ -17,6 +17,11 @@
             overflow: hidden;
             -webkit-mask-image: linear-gradient(to right, transparent, #000 92px, #000 calc(100% - 92px), transparent);
             mask-image: linear-gradient(to right, transparent, #000 92px, #000 calc(100% - 92px), transparent);
+
+            // WaveSurfer `part="scroll"`. Also set in JS after create.
+            > *::part(scroll) {
+                overscroll-behavior-x: none;
+            }
         }
     }
 }

@@ -1,0 +1,173 @@
+@import '../../../boxuiVariables';
+
+.bp-WaveformCommentMarkers {
+    position: absolute;
+    top: -2px;
+    right: 0;
+    left: 0;
+    z-index: 4;
+    box-sizing: border-box;
+    height: 24px;
+    padding: 0 60px;
+    overflow: visible;
+    pointer-events: auto;
+}
+
+.bp-WaveformCommentMarkers--zoomed {
+    padding: 0;
+
+    // Pair clip + visible so this overlay does not become a scroll container
+    overflow: clip visible;
+}
+
+.bp-WaveformCommentMarkers-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.bp-WaveformCommentMarkers--zoomed .bp-WaveformCommentMarkers-track {
+    overflow: clip visible;
+}
+
+.bp-WaveformCommentMarkers-marker {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    appearance: none;
+    pointer-events: auto;
+    transition: transform 150ms, box-shadow 150ms;
+
+    .bp-MarkerAvatar,
+    .bp-MarkerAvatarStack .bp-MarkerAvatar {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        overflow: hidden;
+        isolation: isolate;
+        outline: none;
+        box-shadow: none;
+        transform: none;
+        transform-origin: center center;
+        cursor: pointer;
+
+        img {
+            cursor: pointer;
+        }
+
+        // Composite the dim onto this badge only, then paint the result as an opaque
+        // circle so overlapping avatars do not stack two translucent blacks.
+        &::after {
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            background: #000;
+            border-radius: 50%;
+            opacity: 0.4;
+            pointer-events: none;
+            content: '';
+            transition: opacity 150ms;
+        }
+    }
+
+    // Photo avatars only. Leave `.bp-MarkerAvatarStack-overflowBadge` on the
+    // video `$bdl-gray-65` fill — it still uses the dim overlay above.
+    .bp-MarkerAvatar:not(.bp-MarkerAvatarStack-overflowBadge),
+    .bp-MarkerAvatarStack .bp-MarkerAvatar:not(.bp-MarkerAvatarStack-overflowBadge) {
+        background-color: $black;
+    }
+
+    .bp-MarkerAvatar-initial {
+        font-size: 11px;
+    }
+
+    .bp-MarkerAvatarStack {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+    }
+}
+
+.bp-WaveformCommentMarkers-marker--group {
+    width: auto;
+
+    &:hover,
+    &:focus-within {
+        .bp-MarkerAvatarStack-item:not(:first-child) {
+            margin-left: 2px;
+        }
+    }
+}
+
+.bp-WaveformCommentMarkers:hover .bp-MarkerAvatar::after,
+.bp-WaveformCommentMarkers-marker:not(.bp-WaveformCommentMarkers-marker--group).bp-WaveformCommentMarkers-marker--selected .bp-MarkerAvatar::after,
+.bp-WaveformCommentMarkers .bp-MarkerAvatarStack-item--selected .bp-MarkerAvatar::after {
+    opacity: 0;
+}
+
+.bp-WaveformCommentMarkers-marker--selected {
+    z-index: 3;
+}
+
+.bp-WaveformCommentMarkers-marker:hover,
+.bp-WaveformCommentMarkers-marker:focus-within {
+    z-index: 4;
+}
+
+.bp-WaveformCommentMarkers-marker:not(.bp-WaveformCommentMarkers-marker--group):hover,
+.bp-WaveformCommentMarkers-marker:not(.bp-WaveformCommentMarkers-marker--group):focus-visible {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.bp-WaveformCommentMarkers .bp-MarkerAvatarStack-item {
+    border-radius: 50%;
+    transform-origin: center center;
+    cursor: pointer;
+    transition: margin 150ms, transform 150ms, box-shadow 150ms;
+
+    &:hover,
+    &:focus-visible {
+        z-index: 2;
+        transform: scale(1.2);
+    }
+}
+
+.bp-WaveformCommentMarkers-marker--selected:not(.bp-WaveformCommentMarkers-marker--group) {
+    box-shadow: 0 0 0 2px $white;
+}
+
+.bp-WaveformCommentMarkers .bp-MarkerAvatarStack-item--selected {
+    z-index: 2;
+    box-shadow: 0 0 0 2px $white;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-WaveformCommentMarkers-marker,
+    .bp-WaveformCommentMarkers .bp-MarkerAvatarStack-item,
+    .bp-WaveformCommentMarkers-marker .bp-MarkerAvatar::after {
+        transition: none;
+    }
+
+    .bp-WaveformCommentMarkers-marker:not(.bp-WaveformCommentMarkers-marker--group):hover,
+    .bp-WaveformCommentMarkers-marker:not(.bp-WaveformCommentMarkers-marker--group):focus-visible {
+        transform: translate(-50%, -50%);
+    }
+
+    .bp-WaveformCommentMarkers .bp-MarkerAvatarStack-item:hover,
+    .bp-WaveformCommentMarkers .bp-MarkerAvatarStack-item:focus-visible {
+        transform: none;
+    }
+}

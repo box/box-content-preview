@@ -188,6 +188,36 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.controls).toBeInstanceOf(MP3ControlsRoot);
             expect(mp3.renderUI).toBeCalled();
         });
+
+        test('should listen for comment_markers when audio player v2 is on', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.addListener = jest.fn();
+            mp3.mediaContainerEl = document.createElement('div');
+
+            mp3.loadUIReact();
+
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+        });
+
+        test('should not listen for comment_markers when audio player v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            mp3.addListener = jest.fn();
+            mp3.mediaContainerEl = document.createElement('div');
+
+            mp3.loadUIReact();
+
+            expect(mp3.addListener).not.toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+        });
+
+        test('should not stack comment_markers listeners when loadUIReact runs twice', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.mediaContainerEl = document.createElement('div');
+
+            mp3.loadUIReact();
+            mp3.loadUIReact();
+
+            expect(mp3.listenerCount('comment_markers')).toBe(1);
+        });
     });
 
     describe('ensureV2Controls()', () => {
@@ -241,6 +271,28 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
+    describe('handlePlayPause()', () => {
+        test('should play when asked to play', () => {
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(true);
+
+            expect(mp3.handlePlayRequest).toBeCalled();
+            expect(mp3.pause).not.toBeCalled();
+        });
+
+        test('should pause when asked to pause', () => {
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(false);
+
+            expect(mp3.pause).toBeCalledWith(undefined, true);
+            expect(mp3.handlePlayRequest).not.toBeCalled();
+        });
+    });
+
     describe('loadeddataHandler()', () => {
         test('should start playback when play was requested before metadata', () => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
@@ -276,6 +328,21 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.startClientWaveformDecode).toBeCalled();
         });
+
+        test('should apply a pending host-selected seek after metadata', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.pendingHostSelectedSeek = { id: 'comment-1', time: 41.2 };
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
     });
 
     describe('renderUI()', () => {
@@ -308,12 +375,14 @@ describe('lib/viewers/media/MP3Viewer', () => {
                     length: 0,
                     start: expect.any(Function),
                 },
+                commentMarkers: [],
                 currentTime: 0,
                 durationTime: 1000,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
+                onCommentMarkerClick: mp3.handleCommentMarkerClick,
                 onMuteChange: mp3.toggleMute,
-                onPlayPause: mp3.handlePlayRequest,
+                onPlayPause: mp3.handlePlayPause,
                 onRateChange: mp3.setRate,
                 onTimeChange: mp3.handleTimeupdateFromMediaControls,
                 onVolumeChange: mp3.setVolume,
@@ -357,6 +426,133 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 volume: 1,
             });
             expect(getProps(mp3).peaks).toBeUndefined();
+        });
+    });
+
+    describe('handleCommentMarkersUpdated()', () => {
+        test('should store host comment_markers and render', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            const markers = [
+                {
+                    avatarUrl: 'https://example.com/a.png',
+                    colorIndex: 9278424974,
+                    id: '507397',
+                    initial: 'A',
+                    time: 72.729,
+                    type: 'comment',
+                },
+            ];
+
+            mp3.handleCommentMarkersUpdated(markers);
+
+            expect(mp3.commentMarkers).toBe(markers);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should clear markers when the host emits an empty list', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.commentMarkers = [{ id: '507397', time: 72.729 }];
+
+            mp3.handleCommentMarkersUpdated();
+
+            expect(mp3.commentMarkers).toEqual([]);
+        });
+
+        test('should seek to a host-selected marker when duration is ready', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should not seek again when the same marker stays selected', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const markers = [{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }];
+
+            mp3.handleCommentMarkersUpdated(markers);
+            mp3.mediaEl.currentTime = 12;
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated(markers);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(12);
+        });
+
+        test('should wait for metadata when a host-selected marker arrives early', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.pendingHostSelectedSeek).toEqual(expect.objectContaining({ id: 'comment-1', time: 41.2 }));
+
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.applyPendingHostSelectedSeek();
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should not assign currentTime when the host-selected time is already current', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const setTime = jest.fn();
+            Object.defineProperty(mp3.mediaEl, 'currentTime', {
+                configurable: true,
+                get: () => 41.2,
+                set: setTime,
+            });
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(setTime).not.toBeCalled();
+        });
+    });
+
+    describe('handleCommentMarkerClick()', () => {
+        beforeEach(() => {
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'emit').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should pause, seek, and emit comment_marker_select', () => {
+            mp3.handleCommentMarkerClick({ id: '507397', time: 72.729, type: 'comment' });
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(72.729);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_marker_select', { id: '507397', time: 72.729 });
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should not seek again when the host acks the clicked marker', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
         });
     });
 
@@ -487,6 +683,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(signal.aborted).toBe(true);
             expect(mp3.waveformDecodeController).toBeNull();
+            superDestroy.mockRestore();
+        });
+
+        test('should remove the comment_markers listener on destroy', () => {
+            const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
+            jest.spyOn(mp3, 'removeListener');
+
+            mp3.destroy();
+
+            expect(mp3.removeListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
             superDestroy.mockRestore();
         });
     });

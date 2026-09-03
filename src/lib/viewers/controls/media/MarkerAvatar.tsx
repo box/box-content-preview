@@ -18,6 +18,8 @@ export type Props = {
     avatarUrl?: string;
     colorIndex?: number;
     initial?: string;
+    /** Diameter in CSS pixels. Video ticks use the stylesheet default (12px). */
+    size?: number;
 };
 
 function AnonymousAvatarIcon(): JSX.Element {
@@ -31,27 +33,63 @@ function AnonymousAvatarIcon(): JSX.Element {
     );
 }
 
-export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial }: Props): JSX.Element {
+export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial, size }: Props): JSX.Element {
     const safeIndex = Number.isFinite(colorIndex) ? Math.abs(colorIndex) % AVATAR_PALETTE.length : 0;
     const { bg: bgColor, fg: textColor } = AVATAR_PALETTE[safeIndex];
 
     const [imgFailed, setImgFailed] = React.useState(false);
-    const showImage = Boolean(avatarUrl) && !imgFailed;
+    const [loadedUrl, setLoadedUrl] = React.useState<string | null>(null);
+    const imgRef = React.useRef<HTMLImageElement | null>(null);
+    // Keep initial + palette until onLoad (and for cached complete). Shared with video ticks.
+    const showImage = Boolean(avatarUrl) && !imgFailed && loadedUrl === avatarUrl;
 
-    let avatar = <AnonymousAvatarIcon />;
-    if (showImage) {
-        avatar = <img alt="" onError={() => setImgFailed(true)} src={avatarUrl} />;
-    } else if (initial) {
-        avatar = (
+    React.useEffect(() => {
+        setImgFailed(false);
+    }, [avatarUrl]);
+
+    React.useLayoutEffect(() => {
+        const img = imgRef.current;
+        if (avatarUrl && img?.complete && img.naturalWidth > 0) {
+            setLoadedUrl(avatarUrl);
+        }
+    }, [avatarUrl]);
+
+    let fallback = <AnonymousAvatarIcon />;
+    if (initial) {
+        fallback = (
             <span className="bp-MarkerAvatar-initial" style={{ color: textColor }}>
                 {initial}
             </span>
         );
     }
 
+    const style: React.CSSProperties = {};
+    if (!showImage) {
+        style.backgroundColor = bgColor;
+    }
+    if (size) {
+        style.width = size;
+        style.height = size;
+    }
+
     return (
-        <span className="bp-MarkerAvatar" style={!showImage ? { backgroundColor: bgColor } : undefined}>
-            {avatar}
+        <span className="bp-MarkerAvatar" style={Object.keys(style).length > 0 ? style : undefined}>
+            {avatarUrl && !imgFailed && (
+                <img
+                    ref={imgRef}
+                    alt=""
+                    onError={() => {
+                        setImgFailed(true);
+                    }}
+                    onLoad={() => {
+                        if (avatarUrl) {
+                            setLoadedUrl(avatarUrl);
+                        }
+                    }}
+                    src={avatarUrl}
+                />
+            )}
+            {!showImage && fallback}
         </span>
     );
 }

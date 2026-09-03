@@ -29,9 +29,17 @@
     min-height: 0;
     pointer-events: none;
 
-    .bp-WaveformView {
+    .bp-WaveformView,
+    .bp-MP3ControlsV2-waveform,
+    .bp-WaveformCommentMarkers {
         pointer-events: auto;
     }
+}
+
+.bp-MP3ControlsV2-waveform {
+    position: relative;
+    width: 100%;
+    overflow: visible;
 }
 
 .bp-MP3ControlsV2-waveformZoom {
