@@ -1,3 +1,8 @@
+## 3.87.0 (2026-09-03)
+
+* feat(audio): waveform comment markers wiring (#1761) ([b929072](https://github.com/box/box-content-preview/commit/b929072)), closes [#1761](https://github.com/box/box-content-preview/issues/1761)
+* chore(i18n): update translations (#1727) ([a334a14](https://github.com/box/box-content-preview/commit/a334a14)), closes [#1727](https://github.com/box/box-content-preview/issues/1727)
+
 ## 3.86.0 (2026-09-02)
 
 * feat(audio): add waveform comment marker overlay (#1760) ([f7a077c](https://github.com/box/box-content-preview/commit/f7a077c)), closes [#1760](https://github.com/box/box-content-preview/issues/1760)
