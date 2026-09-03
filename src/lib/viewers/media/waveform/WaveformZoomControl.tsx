@@ -1,9 +1,10 @@
 import classNames from 'classnames';
-import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import IconZoom24 from '../../controls/icons/IconZoom24';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import IconZoomIn24 from '../../controls/icons/IconZoomIn24';
+import IconZoomOut24 from '../../controls/icons/IconZoomOut24';
 import MediaToggle from '../../controls/media/MediaToggle';
 import SliderControl from '../../controls/slider';
-import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_SLIDER_MAX } from './constants';
+import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_SLIDER_MAX } from './constants';
 import { WaveformZoomControlProps } from './types';
 import { clampWaveformZoom, sliderValueFromZoom, zoomFromSliderValue } from './viewport';
 import './WaveformZoomControl.scss';
@@ -17,12 +18,12 @@ export default function WaveformZoomControl({
     const [isHovered, setHovered] = useState(false);
     const [isFocused, setFocused] = useState(false);
     const dismissTimerRef = useRef(0);
-    const flyoutRef = useRef<HTMLDivElement>(null);
-    const shouldFocusSliderRef = useRef(false);
     const sliderId = `bp-waveform-zoom-slider${useId()}`;
     const zoom = clampWaveformZoom(zoomLevel, maxZoom);
     const zoomValue = Math.round(sliderValueFromZoom(zoom, maxZoom));
     const isOpen = isHovered || isFocused || isRevealed;
+    const isAtMinZoom = zoomValue <= 0;
+    const isAtMaxZoom = zoomValue >= WAVEFORM_ZOOM_SLIDER_MAX;
 
     const clearDismiss = useCallback(() => {
         window.clearTimeout(dismissTimerRef.current);
@@ -31,14 +32,6 @@ export default function WaveformZoomControl({
 
     useEffect(() => () => window.clearTimeout(dismissTimerRef.current), []);
 
-    useLayoutEffect(() => {
-        if (!isOpen || !shouldFocusSliderRef.current) {
-            return;
-        }
-        shouldFocusSliderRef.current = false;
-        flyoutRef.current?.querySelector<HTMLElement>('[role="slider"]')?.focus();
-    }, [isOpen]);
-
     const handleSlider = useCallback(
         (newValue: number): void => {
             onZoomChange(zoomFromSliderValue(newValue, maxZoom));
@@ -46,20 +39,16 @@ export default function WaveformZoomControl({
         [maxZoom, onZoomChange],
     );
 
-    const handleToggleClick = useCallback((): void => {
-        clearDismiss();
-        if (isOpen) {
-            shouldFocusSliderRef.current = false;
-            setFocused(false);
-            setHovered(false);
-            return;
-        }
-        shouldFocusSliderRef.current = true;
-        setFocused(true);
-    }, [clearDismiss, isOpen]);
+    const handleStep = useCallback(
+        (delta: number): void => {
+            onZoomChange(zoomFromSliderValue(zoomValue + delta, maxZoom));
+        },
+        [maxZoom, onZoomChange, zoomValue],
+    );
 
     return (
         <div
+            aria-label={__('media_zoom')}
             className={classNames('bp-WaveformZoomControl', { 'bp-is-open': isOpen })}
             data-testid="bp-waveform-zoom"
             onBlur={event => {
@@ -82,12 +71,27 @@ export default function WaveformZoomControl({
                     setHovered(false);
                 }, WAVEFORM_ZOOM_DISMISS_MS);
             }}
+            role="group"
         >
             <div
-                ref={flyoutRef}
                 aria-hidden={!isOpen}
                 className={classNames('bp-WaveformZoomControl-flyout', { 'bp-is-open': isOpen })}
             >
+                <MediaToggle
+                    aria-disabled={isAtMinZoom}
+                    className="bp-WaveformZoomControl-button"
+                    data-resin-target="waveformZoomOut"
+                    data-testid="bp-waveform-zoom-out"
+                    onClick={() => {
+                        if (!isAtMinZoom) {
+                            handleStep(-WAVEFORM_ZOOM_BUTTON_STEP);
+                        }
+                    }}
+                    tabIndex={isOpen ? 0 : -1}
+                    title={__('zoom_out')}
+                >
+                    <IconZoomOut24 />
+                </MediaToggle>
                 <SliderControl
                     aria-hidden={!isOpen}
                     className="bp-WaveformZoomControl-slider"
@@ -104,14 +108,18 @@ export default function WaveformZoomControl({
                 />
             </div>
             <MediaToggle
-                aria-controls={sliderId}
-                aria-expanded={isOpen}
-                className="bp-WaveformZoomControl-toggle"
-                data-resin-target="waveformZoom"
-                onClick={handleToggleClick}
-                title={__('media_zoom')}
+                aria-disabled={isAtMaxZoom}
+                className="bp-WaveformZoomControl-button"
+                data-resin-target="waveformZoomIn"
+                data-testid="bp-waveform-zoom-in"
+                onClick={() => {
+                    if (!isAtMaxZoom) {
+                        handleStep(WAVEFORM_ZOOM_BUTTON_STEP);
+                    }
+                }}
+                title={__('zoom_in')}
             >
-                <IconZoom24 />
+                <IconZoomIn24 />
             </MediaToggle>
         </div>
     );
