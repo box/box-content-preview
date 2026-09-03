@@ -64,6 +64,15 @@ function applyPeaks(wavesurfer: WaveSurfer, peaks: ArrayLike<number>, durationSe
     wavesurfer.load('', toChannels(peaks), durationSec);
 }
 
+/** Stop the zoomed waveform from bouncing on trackpad overscroll. WaveSurfer's scroller is inside a shadow root, so SCSS uses `::part(scroll)` while zoomed and this sets the same property as soon as WaveSurfer exists. */
+function disableScrollOverscroll(container: HTMLElement): void {
+    const host = container.firstElementChild;
+    const scroll = host instanceof HTMLElement ? host.shadowRoot?.querySelector('.scroll') : null;
+    if (scroll instanceof HTMLElement) {
+        scroll.style.overscrollBehaviorX = 'none';
+    }
+}
+
 /** Tint WaveSurfer's zoomed tiles with played/unplayed/hover/buffer colors. */
 function tintZoomedWaveform(wavesurfer: WaveSurfer, fills: WaveformFills, replaceSnapshot = false): void {
     const wrapper = wavesurfer.getWrapper ? wavesurfer.getWrapper() : null;
@@ -108,7 +117,7 @@ function zoomOriginAtPointer(
 /**
  * Renders V1 peaks with wavesurfer. Does not fetch audio or attach a media element.
  */
-export default function WaveformView({
+function WaveformView({
     bufferedRange,
     currentTime = 0,
     durationSec,
@@ -145,6 +154,9 @@ export default function WaveformView({
     const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null);
     const pointerZoomRef = useRef(false);
     const pointerZoomClearTimerRef = useRef(0);
+    const applyZoomWindowRef = useRef<(() => void) | null>(null);
+    // WaveSurfer `setOptions` fires zoom/scroll before we apply the intended scroll.
+    const suppressViewportSyncRef = useRef(false);
     const bufferProgressRef = useRef(0);
     const hoverProgressRef = useRef<number | null>(null);
 
@@ -190,10 +202,15 @@ export default function WaveformView({
         [canvasWidthPx, durationSec, height, maxZoom, scrollLeft, zoomLevel],
     );
     const viewportRef = useRef(viewport); // live scroll window; prefer this over render-state while the camera is moving
-    const onViewportCommit = useCallback((scrollLeftPx: number, nextViewport: WaveformViewport): void => {
-        onViewportChangeRef.current?.(nextViewport);
-        setScrollLeft(scrollLeftPx);
-    }, []);
+    const onViewportCommit = useCallback(
+        (scrollLeftPx: number, nextViewport: WaveformViewport, commitReactState = true): void => {
+            onViewportChangeRef.current?.(nextViewport);
+            if (commitReactState) {
+                setScrollLeft(scrollLeftPx);
+            }
+        },
+        [],
+    );
     const {
         apply: applyPlayheadCamera,
         applyScrollLeft,
@@ -204,6 +221,7 @@ export default function WaveformView({
         onSeek: onPlayheadSeek,
         onZoom,
         releaseUserPanHold,
+        seekTo,
     } = usePlayheadCamera({
         mediaElRef,
         onViewportCommit,
@@ -273,6 +291,67 @@ export default function WaveformView({
         [isFollowPinned],
     );
 
+    // Same zoom-window body as the zoom effect; extracted so resize can call it too.
+    const applyZoomWindow = useCallback((): void => {
+        const wavesurfer = wavesurferRef.current;
+        const container = containerRef.current;
+        if (!wavesurfer || !wavesurfer.setOptions || !container) {
+            return;
+        }
+
+        const viewWidthPx = wavesurfer.getWidth ? wavesurfer.getWidth() : container.clientWidth;
+        const minPxPerSec = getZoomedPixelsPerSecond({ durationSec, maxZoom, viewWidthPx, zoomLevel });
+        const origin = zoomOriginRef.current;
+        zoomOriginRef.current = null;
+        const didZoomChange = prevZoomRef.current !== zoomLevel;
+        if (origin || didZoomChange) {
+            onZoom();
+        }
+
+        suppressViewportSyncRef.current = true;
+        try {
+            wavesurfer.setOptions({
+                autoScroll: false,
+                minPxPerSec,
+                ...(zoomLevel > WAVEFORM_ZOOM_MIN
+                    ? {
+                          progressColor: WAVEFORM_COLOR_PLAYED,
+                          waveColor: WAVEFORM_COLOR_UNPLAYED,
+                      }
+                    : {}),
+            });
+            if (minPxPerSec > 0) {
+                if (origin) {
+                    applyScrollLeft(origin.timeSec * minPxPerSec - origin.pointerX, true);
+                } else if (didZoomChange && !pointerZoomRef.current) {
+                    const zoomedViewport = createWaveformViewport({
+                        durationSec,
+                        heightPx: height,
+                        maxZoom,
+                        scrollLeftPx: 0,
+                        widthPx: viewWidthPx,
+                        zoomLevel,
+                    });
+                    applyScrollLeft(
+                        Math.min(
+                            maxScrollLeft(zoomedViewport),
+                            Math.max(0, currentTimeRef.current * minPxPerSec - viewWidthPx / 2),
+                        ),
+                        true,
+                    );
+                }
+            }
+            wavesurfer.setTime(currentTimeRef.current);
+        } finally {
+            suppressViewportSyncRef.current = false;
+            prevZoomRef.current = zoomLevel;
+        }
+
+        syncViewport();
+        updatePlayheadPosition(currentTimeRef.current);
+    }, [applyScrollLeft, durationSec, height, maxZoom, onZoom, syncViewport, updatePlayheadPosition, zoomLevel]);
+    applyZoomWindowRef.current = applyZoomWindow;
+
     useEffect(() => {
         const container = containerRef.current;
         if (!container) {
@@ -305,11 +384,17 @@ export default function WaveformView({
             onSeekRef.current?.(relativeX * durationSecRef.current);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
+            if (suppressViewportSyncRef.current) {
+                return;
+            }
             handleCameraScroll(() => {
                 syncViewport();
             });
         });
         const unsubscribeZoom = wavesurfer.on('zoom', () => {
+            if (suppressViewportSyncRef.current) {
+                return;
+            }
             syncViewport();
         });
         const unsubscribeRedraw = wavesurfer.on('redrawcomplete', () => {
@@ -328,7 +413,9 @@ export default function WaveformView({
 
         wavesurferRef.current = wavesurfer;
         displayedPeaksRef.current = peaksRef.current;
+        disableScrollOverscroll(container);
         syncViewport();
+        applyZoomWindowRef.current?.();
 
         return () => {
             releaseUserPanHold();
@@ -374,7 +461,8 @@ export default function WaveformView({
     }, [internalZoom, isControlled, maxZoom, zoomLevelProp]);
 
     useEffect(() => {
-        onViewportChange?.(viewport);
+        // Follow skips React scrollLeft; emit the layout-refreshed live window instead.
+        onViewportChange?.(viewportRef.current);
     }, [onViewportChange, viewport]);
 
     useEffect(() => {
@@ -385,59 +473,9 @@ export default function WaveformView({
         wavesurfer.setOptions({ interact: interactive });
     }, [interactive]);
 
-    useEffect(() => {
-        const wavesurfer = wavesurferRef.current;
-        const container = containerRef.current;
-        if (!wavesurfer || !wavesurfer.setOptions || !container) {
-            return;
-        }
-
-        const viewWidthPx = wavesurfer.getWidth ? wavesurfer.getWidth() : container.clientWidth;
-        const minPxPerSec = getZoomedPixelsPerSecond({ durationSec, maxZoom, viewWidthPx, zoomLevel });
-        wavesurfer.setOptions({
-            autoScroll: false,
-            minPxPerSec,
-            ...(zoomLevel > WAVEFORM_ZOOM_MIN
-                ? {
-                      progressColor: WAVEFORM_COLOR_PLAYED,
-                      waveColor: WAVEFORM_COLOR_UNPLAYED,
-                  }
-                : {}),
-        });
-
-        const origin = zoomOriginRef.current;
-        zoomOriginRef.current = null;
-        const didZoomChange = prevZoomRef.current !== zoomLevel;
-        prevZoomRef.current = zoomLevel;
-        if (origin || didZoomChange) {
-            onZoom();
-        }
-        if (minPxPerSec > 0) {
-            if (origin) {
-                applyScrollLeft(origin.timeSec * minPxPerSec - origin.pointerX, true);
-            } else if (didZoomChange && !pointerZoomRef.current) {
-                const zoomedViewport = createWaveformViewport({
-                    durationSec,
-                    heightPx: height,
-                    maxZoom,
-                    scrollLeftPx: 0,
-                    widthPx: viewWidthPx,
-                    zoomLevel,
-                });
-                applyScrollLeft(
-                    Math.min(
-                        maxScrollLeft(zoomedViewport),
-                        Math.max(0, currentTimeRef.current * minPxPerSec - viewWidthPx / 2),
-                    ),
-                    true,
-                );
-            }
-        }
-
-        wavesurfer.setTime(currentTimeRef.current);
-        syncViewport();
-        updatePlayheadPosition(currentTimeRef.current);
-    }, [applyScrollLeft, durationSec, height, maxZoom, onZoom, syncViewport, updatePlayheadPosition, zoomLevel]);
+    useLayoutEffect(() => {
+        applyZoomWindow();
+    }, [applyZoomWindow]);
 
     useLayoutEffect(() => {
         updatePlayheadPosition(mediaEl ? mediaEl.currentTime : currentTime);
@@ -475,6 +513,7 @@ export default function WaveformView({
 
         const handleSeeked = (): void => {
             onPlayheadSeek(media.currentTime);
+            seekTo(media.currentTime);
             updatePlayheadPosition(media.currentTime);
         };
 
@@ -503,6 +542,7 @@ export default function WaveformView({
         mediaEl,
         onPlayheadSeek,
         releaseUserPanHold,
+        seekTo,
         syncViewport,
         updatePlayheadPosition,
     ]);
@@ -705,3 +745,5 @@ export default function WaveformView({
         </div>
     );
 }
+
+export default React.memo(WaveformView);

@@ -1,40 +1,46 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import isFinite from 'lodash/isFinite';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import TimestampControl from '../controls/media/TimestampControl';
+import { CommentMarker } from '../controls/media/types';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
 import { WaveformViewport } from './waveform/types';
-import { clampWaveformZoom } from './waveform/viewport';
+import { clampWaveformZoom, viewportEquals } from './waveform/viewport';
+import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
 import './MP3ControlsV2.scss';
 
 const PLACEHOLDER_PEAKS = placeholderPeaks();
 
-export type Props = DurationLabelsProps &
+export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
     MediaSettingsProps &
     PlayControlsProps &
     Pick<TimeControlsProps, 'onTimeChange'> &
     VolumeControlsProps & {
         bufferedRange?: TimeRanges;
+        commentMarkers?: CommentMarker[];
         mediaEl?: HTMLMediaElement | null;
+        onCommentMarkerClick?: (marker: CommentMarker) => void;
         peaks?: ArrayLike<number>;
     };
 
 export default function MP3ControlsV2({
     autoplay,
     bufferedRange,
+    commentMarkers,
     currentTime,
     durationTime,
     isPlaying,
     mediaEl,
     onAutoplayChange,
+    onCommentMarkerClick,
     onMuteChange,
     onPlayPause,
     onRateChange,
@@ -54,8 +60,10 @@ export default function MP3ControlsV2({
     const hasMetadata = durationValue > 0;
     const waveformDurationSec = hasMetadata ? durationValue : PLACEHOLDER_DURATION_SEC;
     const [playRequested, setPlayRequested] = useState(false);
-    const handleViewportChange = useCallback((viewport: WaveformViewport) => {
-        setMaxZoom(viewport.maxZoom);
+    const [viewport, setViewport] = useState<WaveformViewport | null>(null);
+    const handleViewportChange = useCallback((next: WaveformViewport) => {
+        setMaxZoom(prev => (prev === next.maxZoom ? prev : next.maxZoom));
+        setViewport(prev => (viewportEquals(prev, next) ? prev : next));
     }, []);
 
     const revealZoomControl = useCallback(() => {
@@ -90,7 +98,26 @@ export default function MP3ControlsV2({
     const handlePlayOverlayClick = useCallback(() => {
         setPlayRequested(true);
         onPlayPause(true);
-    }, [onPlayPause]);
+        // Overlay unmounts on click; without this, focus lands on body and Space is lost.
+        mediaEl?.closest<HTMLElement>('.bp-media-container')?.focus();
+    }, [mediaEl, onPlayPause]);
+
+    const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
+    const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
+        waveformMarkers,
+    ]);
+    const handleCommentMarkerClick = useCallback(
+        (marker: CommentMarker) => {
+            setPlayRequested(true);
+            onPlayPause(false);
+            if (onCommentMarkerClick) {
+                onCommentMarkerClick(marker);
+                return;
+            }
+            onTimeChange(marker.time);
+        },
+        [onCommentMarkerClick, onPlayPause, onTimeChange],
+    );
 
     const isWaveformInteractive = playRequested && hasMetadata;
     const isWaitingToPlay = playRequested && !hasMetadata;
@@ -101,18 +128,27 @@ export default function MP3ControlsV2({
     return (
         <div className="bp-MP3ControlsV2" data-testid="media-controls-wrapper-v2">
             <div className="bp-MP3ControlsV2-stage">
-                <WaveformView
-                    bufferedRange={bufferedRange}
-                    currentTime={currentTime}
-                    durationSec={waveformDurationSec}
-                    interactive={isWaveformInteractive}
-                    mediaEl={mediaEl}
-                    onSeek={isWaveformInteractive ? onTimeChange : undefined}
-                    onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
-                    onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
-                    peaks={waveformPeaks}
-                    zoomLevel={hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN}
-                />
+                <div className="bp-MP3ControlsV2-waveform">
+                    <WaveformView
+                        bufferedRange={bufferedRange}
+                        currentTime={currentTime}
+                        durationSec={waveformDurationSec}
+                        interactive={isWaveformInteractive}
+                        mediaEl={mediaEl}
+                        onSeek={isWaveformInteractive ? onTimeChange : undefined}
+                        onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
+                        onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
+                        peaks={waveformPeaks}
+                        zoomLevel={hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN}
+                    />
+                    <WaveformCommentMarkers
+                        commentMarkers={waveformMarkers}
+                        durationSec={hasMetadata ? durationValue : 0}
+                        onCommentMarkerClick={handleCommentMarkerClick}
+                        selectedId={selectedMarkerId}
+                        viewport={viewport}
+                    />
+                </div>
                 {hasZoomControl && (
                     <div className="bp-MP3ControlsV2-waveformZoom">
                         <WaveformZoomControl
@@ -131,6 +167,7 @@ export default function MP3ControlsV2({
                         dangerouslySetInnerHTML={{ __html: ICON_PLAY_LARGE }}
                         data-testid="bp-MP3ControlsV2-play-overlay"
                         onClick={handlePlayOverlayClick}
+                        onMouseDown={event => event.preventDefault()}
                         title={__('media_play')}
                         type="button"
                     />

@@ -40,6 +40,20 @@ export function getViewportAtScroll(viewport: WaveformViewport, scrollLeftPx: nu
     return createWaveformViewport({ ...viewport, scrollLeftPx });
 }
 
+/** True when the visible window has not moved — skip a React state update. */
+export function viewportEquals(prev: WaveformViewport | null, next: WaveformViewport): boolean {
+    return (
+        !!prev &&
+        prev.durationSec === next.durationSec &&
+        prev.endSec === next.endSec &&
+        prev.maxZoom === next.maxZoom &&
+        prev.scrollLeftPx === next.scrollLeftPx &&
+        prev.startSec === next.startSec &&
+        prev.widthPx === next.widthPx &&
+        prev.zoomLevel === next.zoomLevel
+    );
+}
+
 /** How many CSS pixels from the left of the visible window this time sits. */
 export function positionPxFromTime(timeSec: number, viewport: WaveformViewport): number {
     return (timeSec - viewport.startSec) * viewport.pixelsPerSecond;
@@ -135,6 +149,31 @@ function clampScrollLeft(scrollLeftPx: number, viewport: WaveformViewport): numb
         return 0;
     }
     return Math.min(maxScrollLeft(viewport), Math.max(0, scrollLeftPx));
+}
+
+/** Center this time in the view, clamped so the window still fills the canvas. */
+export function getCenteredScrollLeft(timeSec: number, viewport: WaveformViewport): number {
+    return clampScrollLeft(timeSec * viewport.pixelsPerSecond - viewport.widthPx / 2, viewport);
+}
+
+/**
+ * Host/media seek while zoomed: jump so the time (and its comment avatar) is on screen.
+ * No-op at fit-to-width or when that time is already visible.
+ */
+export function getSeekCameraAction({
+    timeSec,
+    viewport,
+}: {
+    timeSec: number;
+    viewport: WaveformViewport;
+}): PlayheadCameraAction {
+    if (viewport.zoomLevel <= WAVEFORM_ZOOM_MIN || !(viewport.widthPx > 0) || !(viewport.pixelsPerSecond > 0)) {
+        return { type: 'none' };
+    }
+    if (isTimeInView(timeSec, viewport)) {
+        return { type: 'none' };
+    }
+    return { type: 'jump', scrollLeftPx: getCenteredScrollLeft(timeSec, viewport) };
 }
 
 /** Follow inset in CSS px, capped at one third of the view so a narrow player still has room. */

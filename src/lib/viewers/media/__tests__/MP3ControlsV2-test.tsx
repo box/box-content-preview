@@ -6,25 +6,78 @@ import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
 
 jest.mock('../waveform/WaveformView', () => {
     function MockWaveformView({
+        durationSec = 0,
         interactive,
         onViewportChange,
         onZoomChange,
     }: {
+        durationSec?: number;
         interactive?: boolean;
-        onViewportChange?: (viewport: { maxZoom: number; widthPx: number }) => void;
+        onViewportChange?: (viewport: {
+            durationSec: number;
+            endSec: number;
+            heightPx: number;
+            maxZoom: number;
+            pixelsPerSecond: number;
+            scrollLeftPx: number;
+            startSec: number;
+            widthPx: number;
+            zoomLevel: number;
+        }) => void;
         onZoomChange?: (zoomLevel: number) => void;
     }): JSX.Element {
+        const overview = {
+            durationSec,
+            endSec: durationSec,
+            heightPx: 140,
+            maxZoom: 4,
+            pixelsPerSecond: durationSec > 0 ? 800 / durationSec : 0,
+            scrollLeftPx: 0,
+            startSec: 0,
+            widthPx: 800,
+            zoomLevel: 1,
+        };
         mockUseEffect(() => {
-            onViewportChange?.({ maxZoom: 4, widthPx: 800 });
-        }, [onViewportChange]);
+            onViewportChange?.(overview);
+        }, [durationSec, onViewportChange]);
         return (
             <div data-interactive={interactive ? 'true' : 'false'} data-testid="bp-waveform-view">
                 <button data-testid="bp-mock-waveform-zoom" onClick={() => onZoomChange?.(2)} type="button">
                     zoom
                 </button>
                 <button
+                    data-testid="bp-mock-waveform-viewport-zoom"
+                    onClick={() =>
+                        onViewportChange?.({
+                            ...overview,
+                            endSec: durationSec / 2,
+                            pixelsPerSecond: durationSec > 0 ? 800 / (durationSec / 2) : 0,
+                            zoomLevel: 2,
+                        })
+                    }
+                    type="button"
+                >
+                    viewport zoom
+                </button>
+                <button
+                    data-testid="bp-mock-waveform-viewport-pan"
+                    onClick={() =>
+                        onViewportChange?.({
+                            ...overview,
+                            endSec: durationSec,
+                            pixelsPerSecond: durationSec > 0 ? 800 / (durationSec / 2) : 0,
+                            scrollLeftPx: 800,
+                            startSec: durationSec / 2,
+                            zoomLevel: 2,
+                        })
+                    }
+                    type="button"
+                >
+                    viewport pan
+                </button>
+                <button
                     data-testid="bp-mock-waveform-max-zoom"
-                    onClick={() => onViewportChange?.({ maxZoom: 1.2, widthPx: 1600 })}
+                    onClick={() => onViewportChange?.({ ...overview, maxZoom: 1.2, widthPx: 1600 })}
                     type="button"
                 >
                     resize
@@ -36,10 +89,36 @@ jest.mock('../waveform/WaveformView', () => {
     return MockWaveformView;
 });
 
+const mockResizeObserver = jest.fn().mockImplementation(() => ({
+    disconnect: jest.fn(),
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+}));
+((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+
+beforeAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 600 });
+});
+
+afterAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 0 });
+});
+
 describe('MP3ControlsV2', () => {
     afterEach(() => {
         jest.useRealTimers();
     });
+
+    const hostCommentMarkers = [
+        {
+            avatarUrl: 'https://example.com/a.png',
+            colorIndex: 9278424974,
+            id: '507397',
+            initial: 'A',
+            time: 72.729,
+            type: 'comment' as const,
+        },
+    ];
 
     const getWrapper = (props: Partial<Props> = {}) =>
         render(
@@ -129,6 +208,21 @@ describe('MP3ControlsV2', () => {
             expect(onPlayPause).toHaveBeenCalledWith(true);
             expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
             expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-interactive', 'true');
+        });
+
+        test('should focus the media container after the play overlay is clicked', async () => {
+            const container = document.createElement('div');
+            container.className = 'bp-media-container';
+            container.tabIndex = -1;
+            const mediaEl = document.createElement('audio');
+            container.appendChild(mediaEl);
+            document.body.appendChild(container);
+
+            getWrapper({ durationTime: 8, mediaEl, onPlayPause: jest.fn(), peaks: [0.2, 0.8] });
+            await userEvent.click(await screen.findByTestId('bp-MP3ControlsV2-play-overlay'));
+
+            expect(document.activeElement).toBe(container);
+            container.remove();
         });
 
         test('should show the loading spinner when play is requested before metadata', async () => {
@@ -239,6 +333,177 @@ describe('MP3ControlsV2', () => {
 
             await user.click(screen.getByTestId('bp-mock-waveform-max-zoom'));
             expect(control).not.toHaveClass('bp-is-open');
+        });
+
+        test('should draw host comment_markers on the waveform', async () => {
+            getWrapper({ commentMarkers: hostCommentMarkers, durationTime: 180, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-comment-markers')).toBeInTheDocument();
+            const ticks = screen.getAllByTestId('bp-waveform-comment-marker');
+            expect(ticks).toHaveLength(1);
+            expect(ticks[0]).toHaveStyle({ left: `${(72.729 / 180) * 100}%` });
+            expect(ticks[0].querySelector('img')).toHaveAttribute('src', hostCommentMarkers[0].avatarUrl);
+        });
+
+        test('should slide host comment_markers with viewport zoom and pan without remounting the photo', async () => {
+            getWrapper({ commentMarkers: hostCommentMarkers, durationTime: 180, peaks: [0.2, 0.8] });
+
+            const badge = await screen.findByTestId('bp-waveform-comment-marker');
+            const photo = badge.querySelector('img');
+            expect(badge).toHaveStyle({ left: `${(72.729 / 180) * 100}%` });
+
+            await userEvent.click(screen.getByTestId('bp-mock-waveform-viewport-zoom'));
+
+            expect(screen.getByTestId('bp-waveform-comment-markers')).toHaveClass('bp-WaveformCommentMarkers--zoomed');
+            expect(badge).toHaveStyle({ left: `${(72.729 / 90) * 100}%` });
+            expect(badge.querySelector('img')).toBe(photo);
+
+            await userEvent.click(screen.getByTestId('bp-mock-waveform-viewport-pan'));
+
+            expect(badge).toHaveStyle({ left: `${((72.729 - 90) / 90) * 100}%` });
+            expect(badge.querySelector('img')).toBe(photo);
+        });
+
+        test('should keep comment markers clickable while the play overlay is showing', async () => {
+            const onPlayPause = jest.fn();
+            const onTimeChange = jest.fn();
+            getWrapper({
+                commentMarkers: hostCommentMarkers,
+                durationTime: 180,
+                onPlayPause,
+                onTimeChange,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-MP3ControlsV2-play-overlay')).toBeInTheDocument();
+
+            await userEvent.click(screen.getAllByTestId('bp-waveform-comment-marker')[0]);
+
+            expect(onPlayPause).toHaveBeenCalledWith(false);
+            expect(onTimeChange).toHaveBeenCalledWith(72.729);
+            expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+        });
+
+        test('should seek and pause when a host marker is clicked after play', async () => {
+            const onPlayPause = jest.fn();
+            const onTimeChange = jest.fn();
+            getWrapper({
+                commentMarkers: hostCommentMarkers,
+                durationTime: 180,
+                onPlayPause,
+                onTimeChange,
+                peaks: [0.2, 0.8],
+            });
+
+            await userEvent.click(await screen.findByTestId('bp-MP3ControlsV2-play-overlay'));
+            onPlayPause.mockClear();
+            await userEvent.click((await screen.findAllByTestId('bp-waveform-comment-marker'))[0]);
+
+            expect(onPlayPause).toHaveBeenCalledWith(false);
+            expect(onTimeChange).toHaveBeenCalledWith(72.729);
+        });
+
+        test('should pause even when the host supplies a marker click handler', async () => {
+            const onCommentMarkerClick = jest.fn();
+            const onPlayPause = jest.fn();
+            const onTimeChange = jest.fn();
+            getWrapper({
+                commentMarkers: hostCommentMarkers,
+                durationTime: 180,
+                isPlaying: true,
+                onCommentMarkerClick,
+                onPlayPause,
+                onTimeChange,
+                peaks: [0.2, 0.8],
+            });
+
+            await userEvent.click((await screen.findAllByTestId('bp-waveform-comment-marker'))[0]);
+
+            expect(onPlayPause).toHaveBeenCalledWith(false);
+            expect(onCommentMarkerClick).toHaveBeenCalledWith(hostCommentMarkers[0]);
+            expect(onTimeChange).not.toHaveBeenCalled();
+        });
+
+        test('should ring the host-selected comment marker', async () => {
+            getWrapper({
+                commentMarkers: [{ ...hostCommentMarkers[0], isSelected: true }],
+                durationTime: 180,
+                isPlaying: true,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-comment-marker')).toHaveClass(
+                'bp-WaveformCommentMarkers-marker--selected',
+            );
+        });
+
+        test('should hide ticks when the host passes an empty marker list', async () => {
+            getWrapper({ commentMarkers: [], durationTime: 10, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-comment-markers')).not.toBeInTheDocument();
+        });
+
+        test('should draw host comment_markers that arrive after the first render', async () => {
+            const { rerender } = getWrapper({ commentMarkers: [], durationTime: 180, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-comment-markers')).not.toBeInTheDocument();
+
+            rerender(
+                <MP3ControlsV2
+                    autoplay={false}
+                    commentMarkers={hostCommentMarkers}
+                    durationTime={180}
+                    onAutoplayChange={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    rate="1.0"
+                />,
+            );
+
+            expect(await screen.findByTestId('bp-waveform-comment-markers')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({
+                left: `${(72.729 / 180) * 100}%`,
+            });
+        });
+
+        test('should place late comment_markers in the current zoomed window', async () => {
+            const { rerender } = getWrapper({
+                commentMarkers: [],
+                durationTime: 180,
+                isPlaying: true,
+                peaks: [0.2, 0.8],
+            });
+
+            await userEvent.click(await screen.findByTestId('bp-mock-waveform-viewport-zoom'));
+            expect(screen.queryByTestId('bp-waveform-comment-markers')).not.toBeInTheDocument();
+
+            rerender(
+                <MP3ControlsV2
+                    autoplay={false}
+                    commentMarkers={hostCommentMarkers}
+                    durationTime={180}
+                    isPlaying
+                    onAutoplayChange={jest.fn()}
+                    onMuteChange={jest.fn()}
+                    onPlayPause={jest.fn()}
+                    onRateChange={jest.fn()}
+                    onTimeChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    rate="1.0"
+                />,
+            );
+
+            expect(screen.getByTestId('bp-waveform-comment-markers')).toHaveClass('bp-WaveformCommentMarkers--zoomed');
+            expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({
+                left: `${(72.729 / 90) * 100}%`,
+            });
         });
     });
 });

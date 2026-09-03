@@ -4,6 +4,7 @@ import {
     createWaveformViewport,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
+    getSeekCameraAction,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
     isTimeInView,
@@ -11,6 +12,7 @@ import {
     sliderValueFromZoom,
     timeFromPositionPx,
     timeLeftPercent,
+    viewportEquals,
     zoomFromSliderValue,
 } from '../viewport';
 
@@ -22,6 +24,13 @@ describe('viewport', () => {
         scrollLeftPx: 0,
         widthPx: 200,
         zoomLevel: 1,
+    });
+
+    test('should treat matching visible-window fields as equal', () => {
+        expect(viewportEquals(overview, { ...overview })).toBe(true);
+        expect(viewportEquals(null, overview)).toBe(false);
+        expect(viewportEquals(overview, { ...overview, scrollLeftPx: 10 })).toBe(false);
+        expect(viewportEquals(overview, { ...overview, zoomLevel: 2 })).toBe(false);
     });
 
     test('should map time to the full width at zoom 1', () => {
@@ -142,6 +151,40 @@ describe('viewport', () => {
         expect(jumpLeft.type).toBe('jump');
         if (jumpLeft.type === 'jump') {
             expect(jumpLeft.scrollLeftPx).toBeCloseTo(10);
+        }
+    });
+
+    test('should jump a host seek to center the time when it is off-screen while zoomed', () => {
+        const zoomed = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+
+        expect(getSeekCameraAction({ timeSec: 2, viewport: zoomed })).toEqual({ type: 'none' });
+        expect(getSeekCameraAction({ timeSec: 6, viewport: overview })).toEqual({ type: 'none' });
+
+        const jumpRight = getSeekCameraAction({ timeSec: 6, viewport: zoomed });
+        expect(jumpRight.type).toBe('jump');
+        if (jumpRight.type === 'jump') {
+            expect(jumpRight.scrollLeftPx).toBeCloseTo(200);
+        }
+
+        const offLeft = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 200,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        const jumpLeft = getSeekCameraAction({ timeSec: 1, viewport: offLeft });
+        expect(jumpLeft.type).toBe('jump');
+        if (jumpLeft.type === 'jump') {
+            expect(jumpLeft.scrollLeftPx).toBeCloseTo(0);
         }
     });
 
