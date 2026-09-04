@@ -1,14 +1,16 @@
 import React from 'react';
 import MarkerAvatarStack from './MarkerAvatarStack';
+import onMarkerGroupTickClick from './onMarkerGroupTickClick';
 import { ClusterData, CommentMarker } from './types';
 import './MarkerCluster.scss';
 
 export type Props = {
     cluster: ClusterData;
     onMarkerClick?: (marker: CommentMarker) => void;
+    selectedId?: string | null;
 };
 
-export default function MarkerCluster({ cluster, onMarkerClick }: Props): JSX.Element {
+export default function MarkerCluster({ cluster, onMarkerClick, selectedId }: Props): JSX.Element {
     const { markers, leftPercent, rightPercent } = cluster;
 
     const style: React.CSSProperties = {
@@ -17,18 +19,15 @@ export default function MarkerCluster({ cluster, onMarkerClick }: Props): JSX.El
     };
 
     return (
-        <div className="bp-MarkerCluster" data-testid="bp-marker-cluster" style={style}>
+        <div className="bp-MarkerCluster" data-bp-marker-group="" data-testid="bp-marker-cluster" style={style}>
             <button
                 aria-label={__('media_comment_marker')}
                 className="bp-MarkerCluster-tick"
                 data-resin-target="commentMarkerCluster"
-                onClick={(e): void => {
-                    e.stopPropagation();
-                    onMarkerClick?.(markers[0]);
-                }}
+                onClick={(e): void => onMarkerGroupTickClick(e, markers, selectedId, onMarkerClick)}
                 type="button"
             />
-            <MarkerAvatarStack markers={markers} onMarkerClick={onMarkerClick} />
+            <MarkerAvatarStack markers={markers} onMarkerClick={onMarkerClick} selectedId={selectedId} />
         </div>
     );
 }

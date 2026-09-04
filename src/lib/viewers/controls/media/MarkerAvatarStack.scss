@@ -12,40 +12,47 @@
 .bp-MarkerAvatarStack-item {
     position: relative;
     flex-shrink: 0;
+    box-sizing: content-box;
+    width: 20px;
+    height: 20px;
     padding: 0;
     background: none;
     border: 0;
+    border-radius: 50%;
+    outline: none;
+    overflow: visible;
     cursor: pointer;
+    appearance: none;
     transition: margin 150ms;
 
+    &:focus,
+    &:focus-visible {
+        outline: none;
+    }
+
     &:not(:first-child) {
-        margin-left: var(--bp-marker-stack-overlap, -6px);
+        margin-left: var(--bp-marker-stack-overlap, -10px);
     }
 
     .bp-MarkerAvatar {
-        position: relative;
+        position: absolute;
+        top: 50%;
         bottom: auto;
-        left: auto;
+        left: 50%;
         display: block;
-        transform: none;
+        transform: translate(-50%, -50%);
+        transform-origin: center center;
     }
 
+    // Hover or keyboard focus: raise above neighbors. Selected keeps DOM paint order.
     &:hover,
     &:focus-visible {
-        z-index: 1;
-
-        .bp-MarkerAvatar {
-            outline: 0 solid transparent;
-            box-shadow: 0 0 0 2px $white;
-        }
+        z-index: 3;
     }
 }
 
-// Expand avatars when parent container is hovered or focused
-.bp-TimeControlsV2-marker--group:hover,
-.bp-TimeControlsV2-marker--group:focus-visible,
-.bp-MarkerCluster:hover,
-.bp-MarkerCluster:focus-within {
+// Fan out on hover, or keyboard focus. Click-focus must not keep the stack open.
+:is(.bp-WaveformCommentMarkers-marker--group, .bp-TimeControlsV2-marker--group, .bp-MarkerCluster):is(:hover, :has(.bp-MarkerAvatarStack-item:focus-visible)) {
     .bp-MarkerAvatarStack-item:not(:first-child) {
         margin-left: 2px;
     }
@@ -56,5 +63,10 @@
 }
 
 .bp-MarkerAvatarStack-overflowBadge {
-    background-color: $bdl-gray-65;
+    background-color: #383838; // Gray/90
+    color: $white;
+
+    .bp-MarkerAvatar-initial {
+        color: $white;
+    }
 }

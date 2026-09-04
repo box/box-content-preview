@@ -8,7 +8,7 @@ const MAX_VISIBLE_AVATARS = 4;
 export type Props = {
     markers: CommentMarker[];
     onMarkerClick?: (marker: CommentMarker) => void;
-    /** Collapsed overlap in CSS pixels. Video ticks default to 6. */
+    /** Collapsed overlap in CSS pixels. Defaults to 10 (half of the 20px badge). */
     overlapPx?: number;
     selectedId?: string | null;
     /** Diameter in CSS pixels, forwarded to each avatar. */
@@ -33,6 +33,7 @@ export default function MarkerAvatarStack({ markers, onMarkerClick, overlapPx, s
                     className={`bp-MarkerAvatarStack-item${
                         marker.id === selectedId ? ' bp-MarkerAvatarStack-item--selected' : ''
                     }`}
+                    data-bp-marker-selected={marker.id === selectedId ? '' : undefined}
                     data-resin-target="commentMarkerStackAvatar"
                     onClick={(e): void => {
                         e.stopPropagation();
@@ -55,16 +56,19 @@ export default function MarkerAvatarStack({ markers, onMarkerClick, overlapPx, s
                     className={`bp-MarkerAvatarStack-item bp-MarkerAvatarStack-overflow${
                         isOverflowSelected ? ' bp-MarkerAvatarStack-item--selected' : ''
                     }`}
+                    data-bp-marker-selected={isOverflowSelected ? '' : undefined}
                     data-resin-target="commentMarkerStackAvatarOverflow"
                     onClick={(e): void => {
                         e.stopPropagation();
-                        onMarkerClick?.(markers[MAX_VISIBLE_AVATARS - 1]);
+                        const overflowTarget =
+                            overflowMarkers.find(marker => marker.id === selectedId) ?? overflowMarkers[0];
+                        onMarkerClick?.(overflowTarget);
                     }}
                     type="button"
                 >
                     <span
                         className="bp-MarkerAvatar bp-MarkerAvatarStack-overflowBadge"
-                        style={size ? { width: size, height: size } : undefined}
+                        style={size ? ({ '--bp-marker-avatar-size': `${size}px` } as React.CSSProperties) : undefined}
                     >
                         <span className="bp-MarkerAvatar-initial">+{markers.length - (MAX_VISIBLE_AVATARS - 1)}</span>
                     </span>

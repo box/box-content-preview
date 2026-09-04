@@ -1,19 +1,25 @@
 @import '../styles';
 
+$bp-marker-avatar-border: #101010;
+$bp-marker-avatar-size: 20px;
+$bp-marker-avatar-size-active: 24px;
+
+// Preview sets `box-sizing: border-box !important` on all descendants, so CSS
+// `border` would shrink the photo. Rings are box-shadows outside 20/24px.
 .bp-MarkerAvatar {
     position: absolute;
     bottom: calc(100% + 4px);
     left: 50%;
-    width: 12px;
-    height: 12px;
-    overflow: hidden;
+    width: var(--bp-marker-avatar-size, $bp-marker-avatar-size);
+    height: var(--bp-marker-avatar-size, $bp-marker-avatar-size);
+    overflow: visible;
     border: 0;
     border-radius: 50%;
-    outline: 2px solid rgb(0 0 0 / 50%);
-    box-shadow: 0 0 0 0 $white;
+    outline: none;
+    box-shadow: 0 0 0 1px $bp-marker-avatar-border;
     transform: translate(-50%, 0);
     transform-origin: bottom center;
-    transition: transform 150ms, box-shadow 150ms, outline 150ms;
+    transition: width 150ms, height 150ms, box-shadow 150ms;
 
     img {
         position: absolute;
@@ -23,6 +29,7 @@
         height: 100%;
         object-fit: cover;
         object-position: center;
+        border-radius: 50%;
     }
 }
 
@@ -31,7 +38,7 @@
     width: 100%;
     height: 100%;
     font-weight: bold;
-    font-size: 7px;
+    font-size: 10px;
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
@@ -42,4 +49,25 @@
     width: 100%;
     height: 100%;
     color: #222;
+}
+
+:is(.bp-WaveformCommentMarkers-marker:not(.bp-WaveformCommentMarkers-marker--group), .bp-TimeControlsV2-marker:not(.bp-TimeControlsV2-marker--group), .bp-MarkerAvatarStack-item):is(:hover, :focus-visible) .bp-MarkerAvatar {
+    width: $bp-marker-avatar-size-active;
+    height: $bp-marker-avatar-size-active;
+    box-shadow: 0 0 0 1px $white;
+
+    .bp-MarkerAvatar-initial {
+        font-size: 12px;
+    }
+}
+
+:is(.bp-WaveformCommentMarkers-marker--selected:not(.bp-WaveformCommentMarkers-marker--group), .bp-TimeControlsV2-marker--selected:not(.bp-TimeControlsV2-marker--group), .bp-MarkerAvatarStack-item--selected) .bp-MarkerAvatar,
+:is(.bp-WaveformCommentMarkers-marker--selected:not(.bp-WaveformCommentMarkers-marker--group), .bp-TimeControlsV2-marker--selected:not(.bp-TimeControlsV2-marker--group), .bp-MarkerAvatarStack-item--selected):is(:hover, :focus-visible) .bp-MarkerAvatar {
+    width: $bp-marker-avatar-size-active;
+    height: $bp-marker-avatar-size-active;
+    box-shadow: 0 0 0 2px $white, 0 0 0 3px $bp-marker-avatar-border;
+
+    .bp-MarkerAvatar-initial {
+        font-size: 12px;
+    }
 }

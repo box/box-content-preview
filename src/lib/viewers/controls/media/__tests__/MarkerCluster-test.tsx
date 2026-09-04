@@ -70,6 +70,17 @@ describe('MarkerCluster', () => {
         expect(onMarkerClick).toHaveBeenCalledWith(markers[0]);
     });
 
+    test('should not select the first marker when the tick is clicked and another member is selected', async () => {
+        const user = userEvent.setup();
+        const onMarkerClick = jest.fn();
+        const { container } = render(
+            <MarkerCluster cluster={rangeCluster} onMarkerClick={onMarkerClick} selectedId="m2" />,
+        );
+        const tick = container.querySelector('.bp-MarkerCluster-tick') as HTMLElement;
+        await user.click(tick);
+        expect(onMarkerClick).not.toHaveBeenCalled();
+    });
+
     test('should call onMarkerClick with specific marker when avatar is clicked', async () => {
         const user = userEvent.setup();
         const onMarkerClick = jest.fn();
