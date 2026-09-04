@@ -1,14 +1,15 @@
 @import '../../controls/media/styles';
 
 $bp-WaveformZoom-size: 48px;
-$bp-WaveformZoom-open-width: 178px;
 $bp-WaveformZoom-padding: 4px;
 $bp-WaveformZoom-gap: 8px;
 $bp-WaveformZoom-track-width: 103px;
 $bp-WaveformZoom-track-height: 8px;
 $bp-WaveformZoom-fill-range: $bp-WaveformZoom-track-width - $bp-WaveformZoom-track-height;
 $bp-WaveformZoom-icon: 40px;
-$bp-WaveformZoom-glyph: 24px;
+$bp-WaveformZoom-glyph: 20px;
+$bp-WaveformZoom-flyout-width: $bp-WaveformZoom-icon + $bp-WaveformZoom-gap + $bp-WaveformZoom-track-width;
+$bp-WaveformZoom-open-width: $bp-WaveformZoom-padding * 2 + $bp-WaveformZoom-flyout-width + $bp-WaveformZoom-gap + $bp-WaveformZoom-icon;
 
 .bp-WaveformZoomControl {
     display: flex;
@@ -33,14 +34,18 @@ $bp-WaveformZoom-glyph: 24px;
 }
 
 .bp-WaveformZoomControl-flyout {
+    display: flex;
     flex: 0 0 auto;
+    order: -1;
+    gap: $bp-WaveformZoom-gap;
+    align-items: center;
     width: 0;
-    height: $bp-WaveformZoom-track-height;
+    height: $bp-WaveformZoom-icon;
     overflow: hidden;
     transition: width 150ms ease-out;
 
     &.bp-is-open {
-        width: $bp-WaveformZoom-track-width;
+        width: $bp-WaveformZoom-flyout-width;
     }
 }
 
@@ -72,7 +77,7 @@ $bp-WaveformZoom-glyph: 24px;
     }
 }
 
-.bp-WaveformZoomControl-toggle {
+.bp-WaveformZoomControl-button {
     position: relative;
     z-index: 1;
     display: flex;
@@ -82,11 +87,16 @@ $bp-WaveformZoom-glyph: 24px;
     width: $bp-WaveformZoom-icon;
     height: $bp-WaveformZoom-icon;
     padding: 0;
-    color: rgb(255 255 255 / 80%);
+    color: $white;
     background: transparent;
     border: 0;
     border-radius: 50%;
     cursor: pointer;
+
+    &[aria-disabled='true'] {
+        cursor: default;
+        opacity: 0.3;
+    }
 
     svg {
         width: $bp-WaveformZoom-glyph;

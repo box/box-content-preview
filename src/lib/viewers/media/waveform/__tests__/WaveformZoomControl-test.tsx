@@ -18,18 +18,28 @@ describe('WaveformZoomControl', () => {
         const flyout = control.querySelector('.bp-WaveformZoomControl-flyout');
         expect(control).not.toHaveClass('bp-is-open');
         expect(flyout).not.toHaveClass('bp-is-open');
-        expect(screen.getByRole('button', { name: __('media_zoom') })).toHaveAttribute(
+        expect(screen.getByRole('button', { name: __('zoom_in') })).toHaveAttribute(
             'data-resin-target',
-            'waveformZoom',
+            'waveformZoomIn',
         );
 
         await user.hover(control);
         expect(control).toHaveClass('bp-is-open');
         expect(flyout).toHaveClass('bp-is-open');
+        expect(screen.getByRole('button', { name: __('zoom_out') })).toHaveAttribute(
+            'data-resin-target',
+            'waveformZoomOut',
+        );
 
         const slider = screen.getByRole('slider', { name: __('media_zoom_slider') });
         expect(slider).toHaveAttribute('data-resin-target', 'waveformZoomSlider');
+
         await user.tab();
+        expect(screen.getByRole('button', { name: __('zoom_in') })).toHaveFocus();
+        await user.tab();
+        expect(screen.getByRole('button', { name: __('zoom_out') })).toHaveFocus();
+        await user.tab();
+        expect(slider).toHaveFocus();
         await user.keyboard('{ArrowRight}');
 
         expect(onZoomChange).toHaveBeenCalled();
@@ -86,19 +96,57 @@ describe('WaveformZoomControl', () => {
         const user = userEvent.setup();
         render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1} />);
 
-        const toggle = screen.getByRole('button', { name: __('media_zoom') });
-        expect(toggle).toHaveAttribute('aria-expanded', 'false');
+        const zoomIn = screen.getByRole('button', { name: __('zoom_in') });
         expect(screen.queryByRole('slider', { name: __('media_zoom_slider') })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: __('zoom_out') })).not.toBeInTheDocument();
 
         await user.tab();
 
-        expect(toggle).toHaveFocus();
-        expect(toggle).toHaveAttribute('aria-expanded', 'true');
+        expect(zoomIn).toHaveFocus();
         expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: __('zoom_out') })).toBeInTheDocument();
 
-        await user.keyboard('{Enter}');
+        await user.tab();
+        expect(screen.getByRole('button', { name: __('zoom_out') })).toHaveFocus();
+        await user.tab();
+        expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toHaveFocus();
+    });
 
-        expect(toggle).toHaveAttribute('aria-expanded', 'false');
-        expect(screen.queryByRole('slider', { name: __('media_zoom_slider') })).not.toBeInTheDocument();
+    test('should zoom in and out from the icon buttons', async () => {
+        const user = userEvent.setup();
+        const onZoomChange = jest.fn();
+        render(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={2.5} />);
+
+        await user.click(screen.getByRole('button', { name: __('zoom_in') }));
+        expect(onZoomChange).toHaveBeenCalledWith(2.8);
+
+        onZoomChange.mockClear();
+        await user.click(screen.getByRole('button', { name: __('zoom_out') }));
+        expect(onZoomChange).toHaveBeenCalledWith(2.2);
+    });
+
+    test('should ignore zoom button clicks at the slider ends', async () => {
+        const user = userEvent.setup();
+        const onZoomChange = jest.fn();
+        const { rerender } = render(
+            <WaveformZoomControl isRevealed maxZoom={4} onZoomChange={onZoomChange} zoomLevel={1} />,
+        );
+
+        await user.click(screen.getByTestId('bp-waveform-zoom-out'));
+        expect(onZoomChange).not.toHaveBeenCalled();
+        expect(screen.getByTestId('bp-waveform-zoom-out')).toHaveAttribute('aria-disabled', 'true');
+
+        rerender(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={4} />);
+        const zoomIn = screen.getByTestId('bp-waveform-zoom-in');
+        await user.click(zoomIn);
+        expect(onZoomChange).not.toHaveBeenCalled();
+        expect(zoomIn).toHaveAttribute('aria-disabled', 'true');
+        expect(zoomIn).toHaveFocus();
+
+        act(() => {
+            zoomIn.blur();
+        });
+        await user.tab();
+        expect(zoomIn).toHaveFocus();
     });
 });
