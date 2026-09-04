@@ -6,8 +6,10 @@
 
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
+
+    // Keep in sync with GALLERY_GRID_PADDING_TOP.
     padding: 40px;
-    padding-bottom: 100px;
+    padding-bottom: 100px; // Toolbar gutter; CSS-only, not used by the virtualizer.
     overflow-y: auto;
     overscroll-behavior: none;
     background-color: $white;
@@ -24,10 +26,23 @@
     align-items: start;
 }
 
-// ARIA grid rows exist only for the accessibility tree: display: contents generates no
-// box, so tiles stay direct grid items of .bp-gallery-grid-inner and layout is unchanged.
-.bp-gallery-grid-row {
-    display: contents;
+.bp-gallery-grid--virtualized .bp-gallery-grid-inner {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.bp-gallery-grid--virtualized .bp-gallery-grid-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    gap: 16px;
+    align-items: start;
+
+    // Pack leftover tiles under the leftmost columns, like CSS auto-fill.
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .bp-gallery-tile {
@@ -96,6 +111,7 @@
     transition: opacity 0.15s;
 }
 
+// Default tile height is 129% of width (ratio 100/129). Keep in sync with GALLERY_TILE_DEFAULT_RATIO.
 .bp-gallery-tile-placeholder {
     display: block;
     width: 100%;
