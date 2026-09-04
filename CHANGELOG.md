@@ -1,3 +1,8 @@
+## 3.88.0 (2026-09-04)
+
+* feat(audio): split waveform zoom into in and out icons (#1764) ([c52a649](https://github.com/box/box-content-preview/commit/c52a649)), closes [#1764](https://github.com/box/box-content-preview/issues/1764)
+* chore(deps): bump fast-uri from 3.1.5 to 3.1.7 (#1763) ([cccbcea](https://github.com/box/box-content-preview/commit/cccbcea)), closes [#1763](https://github.com/box/box-content-preview/issues/1763)
+
 ## 3.87.0 (2026-09-03)
 
 * feat(audio): waveform comment markers wiring (#1761) ([b929072](https://github.com/box/box-content-preview/commit/b929072)), closes [#1761](https://github.com/box/box-content-preview/issues/1761)
