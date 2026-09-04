@@ -35,6 +35,7 @@ import {
     uncacheFile,
     isWatermarked,
     getCachedFile,
+    getRepresentation,
     normalizeFileVersion,
     canDownload,
     shouldDownloadWM,
@@ -1220,11 +1221,22 @@ class Preview extends EventEmitter {
         // Log cache hit
         this.logger.setCached();
 
-        // Finally load the viewer
+        const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
+        const needsTranscriptionRep =
+            isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+            this.isVideoFileByExtension() &&
+            !this.hasTranscriptionRep(this.file);
+        // Captions are optional — do not treat a missing extracted_text rep like missing
+        // dash/mp4. skipServerUpdate should still skip the refresh; default reopen already
+        // calls loadFromServer() because skipServerUpdate is false.
+        const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps || needsTranscriptionRep;
+
+        // Play from cache immediately. Default reopen still refreshes file info in the
+        // background; handleFileInfoResponse then updates the live viewer if extracted_text
+        // arrived. A failed captions-only refresh must not uncache or destroy playback.
         this.loadViewer();
 
-        const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
-        if (!this.options.skipServerUpdate || needsVideoReps) {
+        if (needsServerRefresh) {
             this.loadFromServer();
         }
     }
@@ -1256,7 +1268,14 @@ class Preview extends EventEmitter {
         this.api
             .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
-            .catch(this.handleFetchError);
+            .catch(err => {
+                // Captions are optional. If a cache-hit viewer is already playing dash/mp4,
+                // a failed background file-info refresh must not uncache or triggerError.
+                if (this.viewer && this.hasPlayableVideoReps(this.file)) {
+                    return;
+                }
+                this.handleFetchError(err);
+            });
     }
 
     /**
@@ -1349,6 +1368,13 @@ class Preview extends EventEmitter {
                 throw new PreviewError(ERROR_CODE.ACCOUNT, __('error_account'));
             }
 
+            const needsTranscriptionReload =
+                this.canUseDash() &&
+                isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+                this.isVideoFileByExtension() &&
+                !this.hasTranscriptionRep(cachedFile) &&
+                this.hasTranscriptionRep(file);
+
             // Should load viewer for first time if:
             //   - File isn't cached OR
             //   - Cached file doesn't have a valid structure
@@ -1361,6 +1387,18 @@ class Preview extends EventEmitter {
             } else if (cachedFile.file_version.sha1 !== file.file_version.sha1 || isFileWatermarked) {
                 this.logger.setCacheStale(); // Log that cache is stale
                 this.reload(true); // Reload viewer without fetching updated file info from server
+            } else if (needsTranscriptionReload) {
+                // Cache was valid but lacked extracted_text (e.g. prefetch without the hint).
+                // Server refresh now has the rep — update the already-playing viewer so
+                // loadTranscription can attach captions. Only call it after loadeddata;
+                // calling earlier duplicates the Auto-generated Shaka track and can throw
+                // if UI is not ready. If loadeddata has not fired, the handler uses this file.
+                if (this.viewer) {
+                    this.viewer.options.file = this.file;
+                    if (this.viewer.isLoaded() && typeof this.viewer.loadTranscription === 'function') {
+                        this.viewer.loadTranscription();
+                    }
+                }
             }
         } catch (err) {
             const error =
@@ -1489,6 +1527,31 @@ class Preview extends EventEmitter {
                 viewer => VIDEO_VIEWER_NAMES.indexOf(viewer.NAME) > -1 && viewer.EXT && viewer.EXT.indexOf(ext) > -1,
             );
         });
+    }
+
+    /**
+     * Returns true if file has an extracted_text transcription rep with a content URL.
+     *
+     * @private
+     * @param {Object} file - File object
+     * @return {boolean}
+     */
+    hasTranscriptionRep(file) {
+        if (!file?.representations?.entries) {
+            return false;
+        }
+        const extractedText = getRepresentation(file, 'extracted_text');
+        return !!extractedText?.content?.url_template;
+    }
+
+    /**
+     * Returns true when Dash playback is available and not disabled.
+     *
+     * @private
+     * @return {boolean}
+     */
+    canUseDash() {
+        return Browser.canPlayDash() && !this.disabledViewers.Dash;
     }
 
     /**
@@ -1993,7 +2056,7 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
+        const isDash = this.canUseDash();
         let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
 
         if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
