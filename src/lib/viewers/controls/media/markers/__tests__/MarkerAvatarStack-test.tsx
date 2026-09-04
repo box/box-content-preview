@@ -72,12 +72,23 @@ describe('MarkerAvatarStack', () => {
             await user.click(overflow);
             expect(onMarkerClick).toHaveBeenCalledWith(manyMarkers[3]);
         });
+
+        test('should click the selected overflow marker when it is not the first hidden one', async () => {
+            const user = userEvent.setup();
+            const onMarkerClick = jest.fn();
+            const { container } = render(
+                <MarkerAvatarStack markers={manyMarkers} onMarkerClick={onMarkerClick} selectedId="m6" />,
+            );
+            const overflow = container.querySelector('.bp-MarkerAvatarStack-overflow') as HTMLElement;
+            await user.click(overflow);
+            expect(onMarkerClick).toHaveBeenCalledWith(manyMarkers[5]);
+        });
     });
 
     test('should forward size to each avatar', () => {
         const { container } = render(<MarkerAvatarStack markers={markers} size={20} />);
         container.querySelectorAll('.bp-MarkerAvatar').forEach(avatar => {
-            expect(avatar).toHaveStyle({ width: '20px', height: '20px' });
+            expect(avatar).toHaveStyle({ '--bp-marker-avatar-size': '20px' });
         });
     });
 
@@ -94,6 +105,7 @@ describe('MarkerAvatarStack', () => {
 
         expect(items[0]).not.toHaveClass('bp-MarkerAvatarStack-item--selected');
         expect(items[1]).toHaveClass('bp-MarkerAvatarStack-item--selected');
+        expect(items[1]).toHaveAttribute('data-bp-marker-selected');
         expect(items[2]).not.toHaveClass('bp-MarkerAvatarStack-item--selected');
         expect(items[0]).toHaveAttribute('aria-pressed', 'false');
         expect(items[1]).toHaveAttribute('aria-pressed', 'true');
@@ -112,6 +124,7 @@ describe('MarkerAvatarStack', () => {
         const overflow = container.querySelector('.bp-MarkerAvatarStack-overflow');
 
         expect(overflow).toHaveClass('bp-MarkerAvatarStack-item--selected');
+        expect(overflow).toHaveAttribute('data-bp-marker-selected');
         expect(overflow).toHaveAttribute('aria-pressed', 'true');
         expect(container.querySelectorAll('.bp-MarkerAvatarStack-item--selected')).toHaveLength(1);
     });

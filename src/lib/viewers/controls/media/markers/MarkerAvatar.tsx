@@ -18,7 +18,7 @@ export type Props = {
     avatarUrl?: string;
     colorIndex?: number;
     initial?: string;
-    /** Diameter in CSS pixels. Video ticks use the stylesheet default (12px). */
+    /** Diameter in CSS pixels. Defaults to 20px for audio and video badges. */
     size?: number;
 };
 
@@ -68,8 +68,7 @@ export default function MarkerAvatar({ avatarUrl, colorIndex = 0, initial, size 
         style.backgroundColor = bgColor;
     }
     if (size) {
-        style.width = size;
-        style.height = size;
+        Object.assign(style, { '--bp-marker-avatar-size': `${size}px` });
     }
 
     return (

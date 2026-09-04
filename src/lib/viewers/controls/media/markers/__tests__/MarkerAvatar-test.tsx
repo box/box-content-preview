@@ -73,7 +73,9 @@ describe('MarkerAvatar', () => {
 
         test('should apply an explicit size', () => {
             const { container } = render(<MarkerAvatar initial="A" size={20} />);
-            expect(container.querySelector('.bp-MarkerAvatar')).toHaveStyle({ width: '20px', height: '20px' });
+            expect(container.querySelector('.bp-MarkerAvatar')).toHaveStyle({
+                '--bp-marker-avatar-size': '20px',
+            });
         });
 
         test('should wrap colorIndex using modulo', () => {

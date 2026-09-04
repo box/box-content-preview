@@ -1,8 +1,12 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import buildClusters from '../../controls/media/buildClusters';
-import MarkerAvatar from '../../controls/media/MarkerAvatar';
-import MarkerAvatarStack from '../../controls/media/MarkerAvatarStack';
-import { ClusterData, CommentMarker } from '../../controls/media/types';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+    buildClusters,
+    ClusterData,
+    CommentMarker,
+    MarkerAvatar,
+    MarkerAvatarStack,
+    useDismissableMarkerSelection,
+} from '../../controls/media/markers';
 import { percent } from '../../controls/media/utils';
 import { WAVEFORM_ZOOM_MIN } from './constants';
 import { WaveformViewport } from './types';
@@ -63,26 +67,12 @@ export default function WaveformCommentMarkers({
     selectedId: hostSelectedId = null,
     viewport = null,
 }: WaveformCommentMarkersProps): JSX.Element | null {
-    const overlayRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
-    const dismissedIdRef = useRef<string | null>(null);
+    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId);
     const [trackWidth, setTrackWidth] = useState(0);
-    const [optimisticSelectedId, setOptimisticSelectedId] = useState<string | null>(null);
-    const [isSelectionDismissed, setIsSelectionDismissed] = useState(false);
-    const selectedId = optimisticSelectedId ?? (isSelectionDismissed ? null : hostSelectedId);
     const canShowTrack = durationSec > 0 && commentMarkers.length > 0;
     const zoomLevel = viewport?.zoomLevel ?? WAVEFORM_ZOOM_MIN;
     const isZoomed = hasMappedWindow(viewport) && viewport.zoomLevel > WAVEFORM_ZOOM_MIN;
-
-    useEffect(() => {
-        setOptimisticSelectedId(null);
-        // Host ack of the dismissed id must not bring the ring back.
-        if (dismissedIdRef.current && hostSelectedId === dismissedIdRef.current) {
-            return;
-        }
-        dismissedIdRef.current = null;
-        setIsSelectionDismissed(false);
-    }, [hostSelectedId]);
 
     useLayoutEffect(() => {
         if (!canShowTrack) {
@@ -117,47 +107,11 @@ export default function WaveformCommentMarkers({
     const handleMarkerClick = useCallback(
         (marker: CommentMarker, event?: React.MouseEvent) => {
             event?.stopPropagation();
-            dismissedIdRef.current = null;
-            setIsSelectionDismissed(false);
-            setOptimisticSelectedId(marker.id);
+            selectMarker(marker.id);
             onCommentMarkerClick?.(marker);
         },
-        [onCommentMarkerClick],
+        [onCommentMarkerClick, selectMarker],
     );
-
-    useEffect(() => {
-        if (!selectedId) {
-            return undefined;
-        }
-
-        const isEventInsideSelectedBadge = (target: EventTarget | null): boolean => {
-            if (!(target instanceof Element) || !overlayRef.current) {
-                return false;
-            }
-            const selected = overlayRef.current.querySelector(
-                '.bp-WaveformCommentMarkers-marker--selected, .bp-MarkerAvatarStack-item--selected',
-            );
-            return Boolean(selected && selected.contains(target));
-        };
-
-        const onDocumentPointerDown = (event: Event): void => {
-            if (isEventInsideSelectedBadge(event.target)) {
-                return;
-            }
-            dismissedIdRef.current = selectedId;
-            setOptimisticSelectedId(null);
-            setIsSelectionDismissed(true);
-            const active = document.activeElement;
-            if (active instanceof HTMLElement && overlayRef.current?.contains(active)) {
-                active.blur();
-            }
-        };
-
-        document.addEventListener('pointerdown', onDocumentPointerDown, true);
-        return () => {
-            document.removeEventListener('pointerdown', onDocumentPointerDown, true);
-        };
-    }, [selectedId]);
 
     if (!(durationSec > 0) || commentMarkers.length === 0) {
         return null;
@@ -165,7 +119,7 @@ export default function WaveformCommentMarkers({
 
     return (
         <div
-            ref={overlayRef}
+            ref={containerRef}
             className={`bp-WaveformCommentMarkers${isZoomed ? ' bp-WaveformCommentMarkers--zoomed' : ''}`}
             data-testid="bp-waveform-comment-markers"
         >
@@ -184,6 +138,7 @@ export default function WaveformCommentMarkers({
                             <div
                                 key={cluster.id}
                                 className={className}
+                                data-bp-marker-group=""
                                 data-testid="bp-waveform-comment-marker"
                                 style={{ left }}
                             >
@@ -192,7 +147,6 @@ export default function WaveformCommentMarkers({
                                     onMarkerClick={handleMarkerClick}
                                     overlapPx={WAVEFORM_MARKER_SIZE_PX / 2}
                                     selectedId={selectedId}
-                                    size={WAVEFORM_MARKER_SIZE_PX}
                                 />
                             </div>
                         );
@@ -204,6 +158,7 @@ export default function WaveformCommentMarkers({
                             aria-label={__('media_comment_marker')}
                             aria-pressed={isSelected}
                             className={className}
+                            data-bp-marker-selected={isSelected ? '' : undefined}
                             data-resin-target="commentMarker"
                             data-testid="bp-waveform-comment-marker"
                             onClick={event => handleMarkerClick(marker, event)}
@@ -214,7 +169,6 @@ export default function WaveformCommentMarkers({
                                 avatarUrl={marker.avatarUrl}
                                 colorIndex={marker.colorIndex}
                                 initial={marker.initial}
-                                size={WAVEFORM_MARKER_SIZE_PX}
                             />
                         </button>
                     );

@@ -2,12 +2,9 @@ import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
 import { white } from 'box-ui-elements/es/styles/variables';
-import buildClusters from './buildClusters';
 import FilmstripV2 from './FilmstripV2';
-import MarkerCluster from './MarkerCluster';
-import MarkerTick from './MarkerTick';
+import { buildClusters, CommentMarker, MarkerCluster, MarkerTick, useDismissableMarkerSelection } from './markers';
 import SliderControl from '../slider';
-import { CommentMarker } from './types';
 import { percent } from './utils';
 import './TimeControlsV2.scss';
 
@@ -45,6 +42,10 @@ export default function TimeControlsV2({
     const [hoverTime, setHoverTime] = React.useState(0);
     const [trackWidth, setTrackWidth] = React.useState(0);
     const scrubberRef = React.useRef<HTMLDivElement>(null);
+    const hostSelectedId = React.useMemo(() => commentMarkers.find(marker => marker.isSelected)?.id ?? null, [
+        commentMarkers,
+    ]);
+    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId);
     const currentValue = isFinite(currentTime) ? currentTime : 0;
     const durationValue = isFinite(durationTime) ? durationTime : 0;
     const currentPercentage = percent(currentValue, durationValue);
@@ -65,6 +66,14 @@ export default function TimeControlsV2({
         observer.observe(el);
         return () => observer.disconnect();
     }, []);
+
+    const handleMarkerClick = React.useCallback(
+        (marker: CommentMarker): void => {
+            selectMarker(marker.id);
+            onCommentMarkerClick?.(marker);
+        },
+        [onCommentMarkerClick, selectMarker],
+    );
 
     const clusters = React.useMemo(() => buildClusters(commentMarkers, durationValue, trackWidth), [
         commentMarkers,
@@ -100,7 +109,7 @@ export default function TimeControlsV2({
     };
 
     return (
-        <div className="bp-TimeControlsV2" data-testid="bp-time-controls-v2">
+        <div ref={containerRef} className="bp-TimeControlsV2" data-testid="bp-time-controls-v2">
             {!!filmstripInterval && (
                 <FilmstripV2
                     aspectRatio={aspectRatio}
@@ -140,11 +149,17 @@ export default function TimeControlsV2({
                             <MarkerTick
                                 key={cluster.id}
                                 markers={cluster.markers}
-                                onMarkerClick={onCommentMarkerClick}
+                                onMarkerClick={handleMarkerClick}
                                 position={cluster.leftPercent}
+                                selectedId={selectedId}
                             />
                         ) : (
-                            <MarkerCluster key={cluster.id} cluster={cluster} onMarkerClick={onCommentMarkerClick} />
+                            <MarkerCluster
+                                key={cluster.id}
+                                cluster={cluster}
+                                onMarkerClick={handleMarkerClick}
+                                selectedId={selectedId}
+                            />
                         ),
                     )}
             </div>

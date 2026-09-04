@@ -11,11 +11,6 @@
     &:hover,
     &:focus-within {
         z-index: 2;
-        transform: translate(-2px, -50%) scale(1.5);
-
-        .bp-MarkerCluster-tick {
-            transform: none;
-        }
     }
 }
 

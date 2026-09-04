@@ -47,29 +47,40 @@
     border-radius: 2px;
     transform: translate(-50%, -50%);
     cursor: pointer;
-    transition: transform 150ms;
 
     &:hover,
-    &:focus-visible {
+    &:focus-visible,
+    &:has(:focus-visible),
+    &--selected {
         z-index: 2;
-        transform: translate(-50%, -50%) scale(1.7);
-
-        > .bp-MarkerAvatar {
-            outline: 0 solid transparent;
-            box-shadow: 0 0 0 2px $white;
-            transform: translate(-50%, calc(5px / 1.7));
-        }
     }
 
     &:focus-visible {
-        outline: 2px solid $white;
-        outline-offset: 2px;
+        outline: none;
     }
 
-    &--group {
-        &:hover,
-        &:focus-visible {
-            transform: translate(-50%, -50%) scale(1.5);
-        }
+    > .bp-MarkerAvatar {
+        transform: translate(-50%, 0);
+    }
+}
+
+.bp-TimeControlsV2-marker--group {
+    background: none;
+}
+
+.bp-TimeControlsV2-marker-tick {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background: $white;
+    border: 0;
+    border-radius: 2px;
+    cursor: pointer;
+    appearance: none;
+
+    &:focus,
+    &:focus-visible {
+        outline: none;
     }
 }

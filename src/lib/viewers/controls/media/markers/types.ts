@@ -3,7 +3,7 @@ export type CommentMarker = {
     colorIndex?: number;
     id: string;
     initial?: string;
-    /** Host / activity-feed selection. Drives the waveform ring and a seek+pause. */
+    /** Host / activity-feed selection. The painted ring follows the dismiss hook's selectedId. */
     isSelected?: boolean;
     time: number;
     type?: 'annotation' | 'comment';
