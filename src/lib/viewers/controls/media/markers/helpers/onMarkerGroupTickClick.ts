@@ -1,5 +1,5 @@
 import { MouseEvent } from 'react';
-import { CommentMarker } from './types';
+import { CommentMarker } from '../types';
 
 /** Click the range/group tick: first member, unless one is already selected. */
 export default function onMarkerGroupTickClick(

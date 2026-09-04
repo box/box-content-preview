@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { CommentMarker } from '../../../controls/media/types';
+import { CommentMarker } from '../../../controls/media/markers';
 import { createWaveformViewport } from '../viewport';
 import WaveformCommentMarkers from '../WaveformCommentMarkers';
 

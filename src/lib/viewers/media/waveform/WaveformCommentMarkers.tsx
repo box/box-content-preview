@@ -1,9 +1,12 @@
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import buildClusters from '../../controls/media/buildClusters';
-import MarkerAvatar from '../../controls/media/MarkerAvatar';
-import MarkerAvatarStack from '../../controls/media/MarkerAvatarStack';
-import useDismissableMarkerSelection from '../../controls/media/useDismissableMarkerSelection';
-import { ClusterData, CommentMarker } from '../../controls/media/types';
+import {
+    buildClusters,
+    ClusterData,
+    CommentMarker,
+    MarkerAvatar,
+    MarkerAvatarStack,
+    useDismissableMarkerSelection,
+} from '../../controls/media/markers';
 import { percent } from '../../controls/media/utils';
 import { WAVEFORM_ZOOM_MIN } from './constants';
 import { WaveformViewport } from './types';

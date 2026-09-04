@@ -5,7 +5,7 @@ import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/Me
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import TimestampControl from '../controls/media/TimestampControl';
-import { CommentMarker } from '../controls/media/types';
+import { CommentMarker } from '../controls/media/markers';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';

@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import TimeControlsV2 from '../TimeControlsV2';
 import SliderControl from '../../slider/SliderControl';
-import { CommentMarker } from '../types';
+import { CommentMarker } from '../markers';
 
 jest.mock('../../slider/SliderControl', () => {
     return jest.fn(props => (

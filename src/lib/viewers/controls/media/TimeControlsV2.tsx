@@ -2,13 +2,9 @@ import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
 import { white } from 'box-ui-elements/es/styles/variables';
-import buildClusters from './buildClusters';
 import FilmstripV2 from './FilmstripV2';
-import MarkerCluster from './MarkerCluster';
-import MarkerTick from './MarkerTick';
+import { buildClusters, CommentMarker, MarkerCluster, MarkerTick, useDismissableMarkerSelection } from './markers';
 import SliderControl from '../slider';
-import useDismissableMarkerSelection from './useDismissableMarkerSelection';
-import { CommentMarker } from './types';
 import { percent } from './utils';
 import './TimeControlsV2.scss';
 

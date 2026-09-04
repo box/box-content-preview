@@ -1,7 +1,7 @@
 import React from 'react';
 import MarkerAvatar from './MarkerAvatar';
 import MarkerAvatarStack from './MarkerAvatarStack';
-import onMarkerGroupTickClick from './onMarkerGroupTickClick';
+import onMarkerGroupTickClick from './helpers/onMarkerGroupTickClick';
 import { CommentMarker } from './types';
 
 export type Props = {

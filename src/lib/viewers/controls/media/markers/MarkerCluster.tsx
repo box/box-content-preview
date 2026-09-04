@@ -1,6 +1,6 @@
 import React from 'react';
 import MarkerAvatarStack from './MarkerAvatarStack';
-import onMarkerGroupTickClick from './onMarkerGroupTickClick';
+import onMarkerGroupTickClick from './helpers/onMarkerGroupTickClick';
 import { ClusterData, CommentMarker } from './types';
 import './MarkerCluster.scss';
 
