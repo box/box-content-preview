@@ -1,3 +1,7 @@
+## 3.89.0 (2026-09-07)
+
+* feat(media): add comment-marker hover, focus, and selected badge states (#1765) ([a52f827](https://github.com/box/box-content-preview/commit/a52f827)), closes [#1765](https://github.com/box/box-content-preview/issues/1765)
+
 ## 3.88.0 (2026-09-04)
 
 * feat(audio): split waveform zoom into in and out icons (#1764) ([c52a649](https://github.com/box/box-content-preview/commit/c52a649)), closes [#1764](https://github.com/box/box-content-preview/issues/1764)
