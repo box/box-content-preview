@@ -51,14 +51,16 @@ export default function MP3ControlsV2({
     volume,
 }: Props): JSX.Element {
     const durationValue = typeof durationTime === 'number' && isFinite(durationTime) ? durationTime : 0;
+    const mediaDuration = mediaEl ? mediaEl.duration : NaN;
+    const hasMediaMetadata = typeof mediaDuration === 'number' && Number.isFinite(mediaDuration) && mediaDuration > 0;
+    const hasWaveformDuration = durationValue > 0;
     const [zoomLevel, setZoomLevel] = useState(WAVEFORM_ZOOM_MIN);
     const [maxZoom, setMaxZoom] = useState(WAVEFORM_ZOOM_MIN);
     const [isZoomRevealed, setIsZoomRevealed] = useState(false);
     const zoomRevealTimerRef = useRef(0);
     const hasRealPeaks = !!(peaks && peaks.length);
     const waveformPeaks = hasRealPeaks ? peaks : PLACEHOLDER_PEAKS;
-    const hasMetadata = durationValue > 0;
-    const waveformDurationSec = hasMetadata ? durationValue : PLACEHOLDER_DURATION_SEC;
+    const waveformDurationSec = hasWaveformDuration ? durationValue : PLACEHOLDER_DURATION_SEC;
     const [playRequested, setPlayRequested] = useState(false);
     const [viewport, setViewport] = useState<WaveformViewport | null>(null);
     const handleViewportChange = useCallback((next: WaveformViewport) => {
@@ -119,11 +121,11 @@ export default function MP3ControlsV2({
         [onCommentMarkerClick, onPlayPause, onTimeChange],
     );
 
-    const isWaveformInteractive = playRequested && hasMetadata;
-    const isWaitingToPlay = playRequested && !hasMetadata;
+    const isWaveformInteractive = playRequested && hasMediaMetadata;
+    const isWaitingToPlay = playRequested && !hasMediaMetadata;
     const showPlayOverlay = !playRequested && !isPlaying;
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
-    const hasZoomControl = hasZoomHandlers && hasMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
+    const hasZoomControl = hasZoomHandlers && hasMediaMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
 
     return (
         <div className="bp-MP3ControlsV2" data-testid="media-controls-wrapper-v2">
@@ -143,7 +145,7 @@ export default function MP3ControlsV2({
                     />
                     <WaveformCommentMarkers
                         commentMarkers={waveformMarkers}
-                        durationSec={hasMetadata ? durationValue : 0}
+                        durationSec={hasWaveformDuration ? durationValue : 0}
                         onCommentMarkerClick={handleCommentMarkerClick}
                         selectedId={selectedMarkerId}
                         viewport={viewport}
@@ -176,7 +178,7 @@ export default function MP3ControlsV2({
                     <div className="bp-media-buffering-spinner" data-testid="bp-MP3ControlsV2-loading" />
                 )}
             </div>
-            {hasMetadata && (
+            {hasMediaMetadata && (
                 <div className="bp-MP3ControlsV2-bar" data-testid="bp-MP3ControlsV2-bar">
                     <div className="bp-MP3ControlsV2-group">
                         <PlayPauseToggle hasSkipButtons={false} isPlaying={isPlaying} onPlayPause={onPlayPause} />

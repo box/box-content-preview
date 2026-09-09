@@ -6,6 +6,11 @@ import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
 import { VIEWER_EVENT } from '../../../events';
+import {
+    CLIENT_DECODE_MAX_COMPRESSED_BYTES,
+    CLIENT_DECODE_MAX_DURATION_SEC,
+    DURATION_MISMATCH_TOLERANCE_SEC,
+} from '../waveform/constants';
 import { loadPeaks } from '../waveform/decode';
 
 jest.mock('../waveform/decode', () => ({
@@ -74,6 +79,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.importWaveformDecode).toBeCalled();
         });
 
+        test('should listen for comment_markers on the loading shell when v2 is on', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(mp3, 'addListener');
+
+            mp3.setup();
+
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+        });
+
         test('should not apply v2 classes when React controls are off', () => {
             mp3.options.features = { audioPlayerV2: { enabled: true } };
             jest.spyOn(mp3, 'useReactControls').mockReturnValue(false);
@@ -123,6 +138,25 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.emitFirstRenderMetric).toBeCalled();
             expect(mp3.emit).toBeCalledWith(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
             expect(MediaBaseViewer.prototype.load).toBeCalled();
+        });
+
+        test('should start conversion waveform load for v2', () => {
+            mp3.isAudioPlayerV2 = true;
+            jest.spyOn(mp3, 'showAudioLoadingShell').mockImplementation();
+            jest.spyOn(mp3, 'startConversionWaveformLoad').mockImplementation();
+
+            mp3.load();
+
+            expect(mp3.startConversionWaveformLoad).toBeCalled();
+        });
+
+        test('should not start conversion waveform load when v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            jest.spyOn(mp3, 'startConversionWaveformLoad').mockImplementation();
+
+            mp3.load();
+
+            expect(mp3.startConversionWaveformLoad).not.toBeCalled();
         });
 
         test('should not mount the v2 loading shell when audio player v2 is off', () => {
@@ -225,6 +259,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.options.features = { audioPlayerV2: { enabled: true } };
             jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
             mp3.importV2Controls.mockRejectedValue(new Error('chunk failed'));
+            jest.spyOn(mp3, 'abortConversionWaveformLoad');
+            jest.spyOn(mp3, 'abortClientWaveformDecode');
             mp3.setup();
             mp3.controls = {
                 destroy: jest.fn(),
@@ -241,6 +277,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.wrapperEl).not.toHaveClass('bp-media--v2');
             expect(mp3.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
             expect(mp3.mp3ControlsV2Promise).toBeNull();
+            expect(mp3.abortConversionWaveformLoad).toBeCalled();
+            expect(mp3.abortClientWaveformDecode).toBeCalled();
             expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
         });
     });
@@ -257,9 +295,10 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.startClientWaveformDecode).not.toBeCalled();
         });
 
-        test('should retry decode once after a retryable failure', () => {
+        test('should retry decode once after a retryable failure when conversion is still pending', () => {
             jest.spyOn(mp3, 'togglePlay').mockImplementation();
             jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(true);
             mp3.isWaveformDecodeRetryPending = true;
 
             mp3.handlePlayRequest();
@@ -268,6 +307,17 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.startClientWaveformDecode).toBeCalledTimes(1);
             expect(mp3.hasUsedWaveformDecodePlayRetry).toBe(true);
             expect(mp3.isWaveformDecodeRetryPending).toBe(false);
+        });
+
+        test('should not retry decode when peaks are already applied', () => {
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(false);
+            mp3.isWaveformDecodeRetryPending = true;
+
+            mp3.handlePlayRequest();
+
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
         });
     });
 
@@ -300,6 +350,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.userRequestedPlay = true;
             const order = [];
             jest.spyOn(mp3, 'play').mockImplementation(() => order.push('play'));
+            jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(true);
             jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation(() => order.push('decode'));
 
             mp3.loadeddataHandler();
@@ -318,17 +369,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.play).not.toBeCalled();
         });
 
-        test('should start client decode for v2 after metadata', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
-            mp3.isAudioPlayerV2 = true;
-            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
-            jest.spyOn(mp3, 'play').mockImplementation();
-
-            mp3.loadeddataHandler();
-
-            expect(mp3.startClientWaveformDecode).toBeCalled();
-        });
-
         test('should apply a pending host-selected seek after metadata', () => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
             mp3.isAudioPlayerV2 = true;
@@ -342,6 +382,55 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.mediaEl.currentTime).toBe(41.2);
             expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should start client decode after metadata when peaks are not applied yet', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should drop conversion peaks when media duration mismatches', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaks = [0.2, 0.8];
+            mp3.waveformPeaksSource = 'conversion';
+            mp3.waveformDurationSec = 180;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should keep conversion peaks when media duration is within tolerance', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaks = [0.2, 0.8];
+            mp3.waveformPeaksSource = 'conversion';
+            mp3.waveformDurationSec = 30 + DURATION_MISMATCH_TOLERANCE_SEC;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.waveformPeaks).toEqual([0.2, 0.8]);
+            expect(mp3.waveformPeaksSource).toBe('conversion');
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
         });
     });
 
@@ -392,6 +481,17 @@ describe('lib/viewers/media/MP3Viewer', () => {
             });
         });
 
+        test('should use conversion duration when the audio blob has no metadata yet', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            mp3.waveformDurationSec = 180;
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.renderUI();
+
+            expect(getProps(mp3).durationTime).toBe(180);
+        });
+
         test('should wait for the v2 controls chunk before rendering', () => {
             mp3.isAudioPlayerV2 = true;
             mp3.ensureV2Controls = jest.fn().mockReturnValue(new Promise(() => {}));
@@ -399,14 +499,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.ensureV2Controls).toBeCalled();
             expect(mp3.controls.render).not.toBeCalled();
-        });
-
-        test('should render MP3ControlsV2 when audio player v2 is on', () => {
-            mp3.isAudioPlayerV2 = true;
-            mp3.MP3ControlsV2 = MP3ControlsV2;
-            mp3.renderUI();
-
-            expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3ControlsV2 }));
         });
 
         test('should render MP3Controls when audio player v2 is off', () => {
@@ -535,12 +627,40 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should pause, seek, and emit comment_marker_select', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
             mp3.handleCommentMarkerClick({ id: '507397', time: 72.729, type: 'comment' });
 
             expect(mp3.mediaEl.pause).toBeCalled();
             expect(mp3.mediaEl.currentTime).toBe(72.729);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
             expect(mp3.emit).toHaveBeenCalledWith('comment_marker_select', { id: '507397', time: 72.729 });
             expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should queue a marker click until media duration is known', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(0);
+            expect(mp3.pendingHostSelectedSeek).toEqual(expect.objectContaining({ id: 'comment-1', time: 41.2 }));
+            expect(mp3.emit).toHaveBeenCalledWith('comment_marker_select', { id: 'comment-1', time: 41.2 });
+        });
+
+        test('should seek to a marker clicked before metadata once duration is known', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.loadeddataHandler();
+
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
         });
 
         test('should not seek again when the host acks the clicked marker', () => {
@@ -587,12 +707,62 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
+    describe('shouldRaceClientWaveformDecode()', () => {
+        beforeEach(() => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+        });
+
+        test('should race when size and duration are under the cap and peaks are not applied', () => {
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(true);
+        });
+
+        test('should not race when conversion peaks are already applied', () => {
+            mp3.waveformPeaksSource = 'conversion';
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when client peaks are already applied', () => {
+            mp3.waveformPeaksSource = 'client';
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when compressed size is over the cap', () => {
+            mp3.options.file = { id: 1, size: CLIENT_DECODE_MAX_COMPRESSED_BYTES + 1 };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when duration is over the cap', () => {
+            mp3.mediaEl = { duration: CLIENT_DECODE_MAX_DURATION_SEC + 1 };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when file size is missing', () => {
+            mp3.options.file = { id: 1 };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when duration is not yet known', () => {
+            mp3.mediaEl = { duration: Number.NaN };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+    });
+
     describe('startClientWaveformDecode()', () => {
         beforeEach(() => {
             loadPeaks.mockReset();
             loadPeaks.mockResolvedValue({ error: { code: 'CAP_EXCEEDED', message: 'skip' }, status: 'capped' });
             mp3.isAudioPlayerV2 = true;
             mp3.waveformPeaks = [];
+            mp3.waveformPeaksSource = null;
             mp3.mediaEl = { duration: 30 };
             mp3.options.file = { id: 1, size: 1024 };
             jest.spyOn(mp3, 'renderUI').mockImplementation();
@@ -607,6 +777,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             await mp3.startClientWaveformDecode();
 
             expect(mp3.waveformPeaks).toEqual([0.2, 0.8]);
+            expect(mp3.waveformPeaksSource).toBe('client');
             expect(mp3.renderUI).toBeCalled();
         });
 
@@ -694,6 +865,262 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.removeListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
             superDestroy.mockRestore();
+        });
+    });
+
+    describe('startConversionWaveformLoad()', () => {
+        const WAVEFORM_TEMPLATE = 'https://dl.boxcloud.com/waveform/content/{+asset_path}';
+        const WAVEFORM_URL = 'https://dl.boxcloud.com/waveform/content/';
+        const WAVEFORM_JSON = { version: 1, durationSec: 8, peaks: [0.2, 0.8] };
+
+        const conversionRep = (overrides = {}) => ({
+            representation: 'waveform',
+            content: { url_template: WAVEFORM_TEMPLATE },
+            status: { state: 'success' },
+            ...overrides,
+        });
+
+        beforeEach(() => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaks = [];
+            mp3.waveformPeaksSource = null;
+            mp3.mediaEl = { duration: 8 };
+            mp3.options.file = {
+                id: 1,
+                size: 1024,
+                representations: {
+                    entries: [conversionRep()],
+                },
+            };
+            mp3.api = { get: jest.fn().mockResolvedValue(WAVEFORM_JSON) };
+            jest.spyOn(mp3, 'createContentUrlV2').mockReturnValue(WAVEFORM_URL);
+            jest.spyOn(mp3, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token' });
+            jest.spyOn(mp3, 'getRepStatus').mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => Promise.resolve(),
+                removeListener: jest.fn(),
+            });
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'abortClientWaveformDecode');
+            jest.spyOn(mp3, 'startClientWaveformDecode');
+        });
+
+        test('should not fetch when v2 is off', async () => {
+            mp3.isAudioPlayerV2 = false;
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+        });
+
+        test('should not fetch when the waveform representation is missing', async () => {
+            mp3.options.file.representations.entries = [];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should not fetch when the content URL template is missing', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ content: {} })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should fall back to client decode when conversion status is error', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'error' } })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should fall back to client decode when conversion status data is missing', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: undefined })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should poll the waveform rep then fetch JSON with header auth', async () => {
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).toHaveBeenCalledWith(expect.objectContaining({ representation: 'waveform' }));
+            expect(mp3.waveformStatus.removeListener).toHaveBeenCalledWith('conversionpending', mp3.resetLoadTimeout);
+            expect(mp3.createContentUrlV2).toHaveBeenCalledWith(WAVEFORM_TEMPLATE);
+            expect(mp3.api.get).toHaveBeenCalledWith(WAVEFORM_URL, {
+                headers: { Authorization: 'Bearer token' },
+                signal: expect.any(AbortSignal),
+            });
+            expect(mp3.waveformPeaks).toEqual(Float32Array.from([0.2, 0.8]));
+            expect(mp3.waveformPeaksSource).toBe('conversion');
+            expect(mp3.waveformDurationSec).toBe(8);
+            expect(mp3.abortClientWaveformDecode).toBeCalled();
+            expect(mp3.renderUI).toBeCalled();
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should keep empty peaks when conversion status rejects', async () => {
+            mp3.getRepStatus.mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => Promise.reject(new Error('conversion failed')),
+                removeListener: jest.fn(),
+            });
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should keep empty peaks when the JSON fetch fails', async () => {
+            mp3.api.get.mockRejectedValue(new Error('network'));
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should keep empty peaks when the payload is invalid', async () => {
+            mp3.api.get.mockResolvedValue({ version: 1 });
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should fall back to client decode when conversion duration mismatches media', async () => {
+            mp3.mediaEl = { duration: 30 };
+            mp3.api.get.mockResolvedValue({ version: 1, durationSec: 180, peaks: [0.2, 0.8] });
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should not apply peaks after destroy mid-fetch', async () => {
+            let resolveFetch;
+            mp3.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+            const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
+
+            const pending = mp3.startConversionWaveformLoad();
+            mp3.destroy();
+            resolveFetch(WAVEFORM_JSON);
+            await pending;
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            superDestroy.mockRestore();
+        });
+
+        test('should not let a later client decode overwrite conversion peaks', async () => {
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.9, 0.1] },
+                status: 'ready',
+            });
+
+            await mp3.startConversionWaveformLoad();
+            await mp3.startClientWaveformDecode();
+
+            expect(loadPeaks).not.toBeCalled();
+            expect(mp3.waveformPeaks).toEqual(Float32Array.from([0.2, 0.8]));
+            expect(mp3.waveformPeaksSource).toBe('conversion');
+        });
+
+        test('should keep client peaks when client decode wins the race', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'pending' } })];
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.9, 0.1] },
+                status: 'ready',
+            });
+            let resolveStatus;
+            const status = {
+                destroy: jest.fn(),
+                getPromise: () =>
+                    new Promise(resolve => {
+                        resolveStatus = resolve;
+                    }),
+                removeListener: jest.fn(),
+            };
+            mp3.getRepStatus.mockReturnValue(status);
+
+            const conversion = mp3.startConversionWaveformLoad();
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+
+            mp3.abortClientWaveformDecode.mockClear();
+            resolveStatus();
+            await conversion;
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+            expect(mp3.api.get).not.toBeCalled();
+            expect(status.destroy).not.toBeCalled();
+            expect(mp3.abortClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should keep client peaks when client decode wins while conversion JSON is in flight', async () => {
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.9, 0.1] },
+                status: 'ready',
+            });
+            let resolveFetch;
+            mp3.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+            const status = {
+                destroy: jest.fn(),
+                getPromise: () => Promise.resolve(),
+                removeListener: jest.fn(),
+            };
+            mp3.getRepStatus.mockReturnValue(status);
+
+            const conversion = mp3.startConversionWaveformLoad();
+            await Promise.resolve();
+            expect(mp3.api.get).toBeCalled();
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+
+            resolveFetch(WAVEFORM_JSON);
+            await conversion;
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+            expect(status.destroy).not.toBeCalled();
         });
     });
 
