@@ -3259,12 +3259,38 @@ describe('lib/Preview', () => {
 
         test('should add extracted_text hint when ai transcription for video subtitles is enabled', () => {
             stubs.canPlayDash.mockReturnValue(true);
-            isFeatureEnabled.mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'aiTranscriptionForVideoSubtitles');
             stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip][extracted_text]';
 
             preview.getRequestHeaders();
             expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
             expect(isFeatureEnabled).toHaveBeenCalledWith(preview.options.features, 'aiTranscriptionForVideoSubtitles');
+        });
+
+        test('should add waveform hint when audio player v2 is enabled', () => {
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'audioPlayerV2.enabled');
+            stubs.headers['X-Rep-Hints'] += '[mp4][waveform]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(isFeatureEnabled).toHaveBeenCalledWith(preview.options.features, 'audioPlayerV2.enabled');
+        });
+
+        test('should add waveform hint with dash filmstrip when audio player v2 is enabled', () => {
+            stubs.canPlayDash.mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'audioPlayerV2.enabled');
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip][waveform]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
+        test('should not add waveform hint when audio player v2 is disabled', () => {
+            isFeatureEnabled.mockReturnValue(false);
+            stubs.headers['X-Rep-Hints'] += '[mp4]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
         });
 
         test('should not add extracted_text hint when ai transcription for video subtitles is disabled', () => {

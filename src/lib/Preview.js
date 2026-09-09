@@ -54,7 +54,9 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT,
     X_REP_HINT_VIDEO_MP4,
+    X_REP_HINT_WAVEFORM,
     AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
+    AUDIO_PLAYER_V2,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -2000,8 +2002,13 @@ class Preview extends EventEmitter {
             videoHint += X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT;
         }
 
+        let hints = `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`;
+        if (isFeatureEnabled(this.options.features, AUDIO_PLAYER_V2)) {
+            hints += X_REP_HINT_WAVEFORM;
+        }
+
         const headers = {
-            'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`,
+            'X-Rep-Hints': hints,
         };
 
         return getHeaders(
