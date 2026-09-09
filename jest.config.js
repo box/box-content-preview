@@ -31,5 +31,5 @@ module.exports = {
         '^.+\\.[jt]sx?$': 'babel-jest',
         '^.+\\.(svg|html)$': '<rootDir>/build/jest/stringLoader.js',
     },
-    transformIgnorePatterns: ['node_modules/(?!(box-ui-elements|react-virtualized)/)'],
+    transformIgnorePatterns: ['node_modules/(?!(box-ui-elements|react-virtualized|@tanstack)/)'],
 };

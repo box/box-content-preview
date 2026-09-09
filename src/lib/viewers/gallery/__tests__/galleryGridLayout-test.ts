@@ -1,0 +1,82 @@
+import { GALLERY_TILE_DEFAULT_RATIO, GALLERY_TILE_GAP, GALLERY_TILE_MIN_WIDTH } from '../constants';
+import {
+    getGalleryLayout,
+    getOccupiedColumns,
+    getPagesInRow,
+    getRowHeight,
+    getRowStartOffset,
+    getRowTrackWidth,
+    resolvePageRatio,
+} from '../galleryGridLayout';
+
+describe('galleryGridLayout', () => {
+    describe('getGalleryLayout', () => {
+        test('should use a single min-width column when the container has no width', () => {
+            expect(getGalleryLayout(0)).toEqual({ columns: 1, tileWidth: GALLERY_TILE_MIN_WIDTH });
+            expect(getGalleryLayout(-10, 2)).toEqual({ columns: 1, tileWidth: GALLERY_TILE_MIN_WIDTH });
+        });
+
+        test('should stretch tiles like auto-fill minmax(220px, 1fr) at scale 1', () => {
+            expect(getGalleryLayout(920)).toEqual({ columns: 3, tileWidth: 296 });
+            expect(getGalleryLayout(692)).toEqual({ columns: 3, tileWidth: GALLERY_TILE_MIN_WIDTH });
+            expect(getGalleryLayout(456)).toEqual({ columns: 2, tileWidth: GALLERY_TILE_MIN_WIDTH });
+            expect(getGalleryLayout(200)).toEqual({ columns: 1, tileWidth: 200 });
+            // Widths that do not divide cleanly used to lose a column to floating-point floor.
+            expect(getGalleryLayout(1522).columns).toBe(6);
+        });
+
+        test('should keep scale-1 columns equal to the auto-fill count across common widths', () => {
+            const columnPitch = GALLERY_TILE_MIN_WIDTH + GALLERY_TILE_GAP;
+            for (let width = 200; width <= 2000; width += 1) {
+                const expected = Math.max(1, Math.floor((width + GALLERY_TILE_GAP) / columnPitch));
+                expect(getGalleryLayout(width).columns).toBe(expected);
+            }
+        });
+
+        test('should scale tile width and reduce columns when zoomed in', () => {
+            expect(getGalleryLayout(920, 1.5)).toEqual({ columns: 2, tileWidth: 444 });
+            expect(getGalleryLayout(200, 2)).toEqual({ columns: 1, tileWidth: 200 });
+        });
+    });
+
+    describe('getOccupiedColumns', () => {
+        test('should drop empty columns when the document is shorter than a fitted row', () => {
+            expect(getOccupiedColumns(6, 2)).toBe(2);
+            expect(getOccupiedColumns(3, 10)).toBe(3);
+            expect(getOccupiedColumns(3, 0)).toBe(1);
+        });
+    });
+
+    describe('resolvePageRatio', () => {
+        test('should prefer the per-page ratio, then the first-page ratio, then the placeholder ratio', () => {
+            expect(resolvePageRatio(2, page => (page === 2 ? 16 / 9 : null), 3 / 4)).toBe(16 / 9);
+            expect(resolvePageRatio(5, page => (page === 2 ? 16 / 9 : null), 3 / 4)).toBe(3 / 4);
+            expect(resolvePageRatio(1, undefined, null)).toBe(GALLERY_TILE_DEFAULT_RATIO);
+        });
+    });
+
+    describe('row geometry', () => {
+        const getRatio = (): number => 1;
+
+        test('should list the pages that belong to a row', () => {
+            expect(getPagesInRow(0, 3, 10)).toEqual([1, 2, 3]);
+            expect(getPagesInRow(3, 3, 10)).toEqual([10]);
+        });
+
+        test('should size a full row track so leftover tiles pack under the left columns', () => {
+            expect(getRowTrackWidth(3, 296)).toBe(3 * 296 + 2 * GALLERY_TILE_GAP);
+            expect(getRowTrackWidth(1, 220)).toBe(220);
+            expect(getRowTrackWidth(0, 296)).toBe(0);
+        });
+
+        test('should size a row from the tallest tile in it', () => {
+            const mixed = (page: number): number => (page === 2 ? 2 : 1);
+            expect(getRowHeight(0, 10, 3, 300, mixed)).toBe(300);
+        });
+
+        test('should accumulate row offsets including the inter-row gap', () => {
+            expect(getRowStartOffset(0, 10, 3, 300, getRatio)).toBe(0);
+            expect(getRowStartOffset(1, 10, 3, 300, getRatio)).toBe(300 + GALLERY_TILE_GAP);
+        });
+    });
+});

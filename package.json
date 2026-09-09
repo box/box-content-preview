@@ -32,6 +32,7 @@
         "access": "public"
     },
     "dependencies": {
+        "@tanstack/react-virtual": "^3.14.10",
         "pdfjs-dist": "4.3.136",
         "wavesurfer.js": "7.12.11"
     },
