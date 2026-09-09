@@ -19,7 +19,7 @@ import {
     MediaInfo,
     WaveformCaps,
 } from './types';
-import { isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';
+import { isPositiveFinite, isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';
 
 type DecodeAudioContext = {
     close: () => Promise<void>;
@@ -34,10 +34,6 @@ const EMPTY_TIMINGS: DecodeTimings = { attemptMs: null, extractMs: null };
 
 function createAbortError(): DOMException {
     return new DOMException('Aborted', 'AbortError');
-}
-
-function isPositiveFinite(value: unknown): value is number {
-    return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
 function getAudioContextConstructor(): (new () => DecodeAudioContext) | undefined {

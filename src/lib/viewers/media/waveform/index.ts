@@ -17,4 +17,4 @@ export {
     WaveformLoadError,
 } from './createWaveformLoader';
 export { isWaveformErrorCode, WAVEFORM_ERROR_CODES } from './types';
-export { isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';
+export { isPositiveFinite, isRetryableWaveformError, validateWaveformPayload } from './validateWaveformPayload';

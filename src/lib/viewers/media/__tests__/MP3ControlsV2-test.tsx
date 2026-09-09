@@ -41,7 +41,11 @@ jest.mock('../waveform/WaveformView', () => {
             onViewportChange?.(overview);
         }, [durationSec, onViewportChange]);
         return (
-            <div data-interactive={interactive ? 'true' : 'false'} data-testid="bp-waveform-view">
+            <div
+                data-duration-sec={String(durationSec)}
+                data-interactive={interactive ? 'true' : 'false'}
+                data-testid="bp-waveform-view"
+            >
                 <button data-testid="bp-mock-waveform-zoom" onClick={() => onZoomChange?.(2)} type="button">
                     zoom
                 </button>
@@ -120,20 +124,31 @@ describe('MP3ControlsV2', () => {
         },
     ];
 
-    const getWrapper = (props: Partial<Props> = {}) =>
-        render(
-            <MP3ControlsV2
-                autoplay={false}
-                onAutoplayChange={jest.fn()}
-                onMuteChange={jest.fn()}
-                onPlayPause={jest.fn()}
-                onRateChange={jest.fn()}
-                onTimeChange={jest.fn()}
-                onVolumeChange={jest.fn()}
-                rate="1.0"
-                {...props}
-            />,
-        );
+    const defaultControlsProps = {
+        autoplay: false,
+        onAutoplayChange: jest.fn(),
+        onMuteChange: jest.fn(),
+        onPlayPause: jest.fn(),
+        onRateChange: jest.fn(),
+        onTimeChange: jest.fn(),
+        onVolumeChange: jest.fn(),
+        rate: '1.0',
+    };
+
+    function mediaElWithDuration(durationSec: number): HTMLAudioElement {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'duration', { configurable: true, value: durationSec });
+        return mediaEl;
+    }
+
+    const getWrapper = (props: Partial<Props> = {}) => {
+        const nextProps = { ...props };
+        if (!('mediaEl' in props) && typeof props.durationTime === 'number' && props.durationTime > 0) {
+            nextProps.mediaEl = mediaElWithDuration(props.durationTime);
+        }
+
+        return render(<MP3ControlsV2 {...defaultControlsProps} {...nextProps} />);
+    };
 
     describe('render', () => {
         test('should return a valid v2 wrapper', async () => {
@@ -179,6 +194,30 @@ describe('MP3ControlsV2', () => {
             expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toBeInTheDocument();
             expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();
             expect(screen.queryByTestId('bp-MP3ControlsV2-loading')).not.toBeInTheDocument();
+        });
+
+        test('should lay out conversion duration without unlocking the bar before media metadata', async () => {
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'duration', { configurable: true, value: NaN });
+            getWrapper({ durationTime: 180, mediaEl, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-duration-sec', '180');
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-interactive', 'false');
+            expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toBeInTheDocument();
+        });
+
+        test('should keep the waveform inert after overlay click until media metadata', async () => {
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'duration', { configurable: true, value: NaN });
+            getWrapper({ durationTime: 180, mediaEl, peaks: [0.2, 0.8] });
+
+            await userEvent.click(await screen.findByTestId('bp-MP3ControlsV2-play-overlay'));
+
+            expect(defaultControlsProps.onPlayPause).toHaveBeenCalledWith(true);
+            expect(screen.getByTestId('bp-MP3ControlsV2-loading')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-interactive', 'false');
+            expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();
         });
 
         test('should keep the waveform inert after metadata until play is requested', async () => {
@@ -245,17 +284,11 @@ describe('MP3ControlsV2', () => {
 
             rerender(
                 <MP3ControlsV2
-                    autoplay={false}
+                    {...defaultControlsProps}
                     durationTime={8}
                     isPlaying={false}
-                    onAutoplayChange={jest.fn()}
-                    onMuteChange={jest.fn()}
-                    onPlayPause={jest.fn()}
-                    onRateChange={jest.fn()}
-                    onTimeChange={jest.fn()}
-                    onVolumeChange={jest.fn()}
+                    mediaEl={mediaElWithDuration(8)}
                     peaks={[0.2, 0.8]}
-                    rate="1.0"
                 />,
             );
 
@@ -452,17 +485,11 @@ describe('MP3ControlsV2', () => {
 
             rerender(
                 <MP3ControlsV2
-                    autoplay={false}
+                    {...defaultControlsProps}
                     commentMarkers={hostCommentMarkers}
                     durationTime={180}
-                    onAutoplayChange={jest.fn()}
-                    onMuteChange={jest.fn()}
-                    onPlayPause={jest.fn()}
-                    onRateChange={jest.fn()}
-                    onTimeChange={jest.fn()}
-                    onVolumeChange={jest.fn()}
+                    mediaEl={mediaElWithDuration(180)}
                     peaks={[0.2, 0.8]}
-                    rate="1.0"
                 />,
             );
 
@@ -485,18 +512,12 @@ describe('MP3ControlsV2', () => {
 
             rerender(
                 <MP3ControlsV2
-                    autoplay={false}
+                    {...defaultControlsProps}
                     commentMarkers={hostCommentMarkers}
                     durationTime={180}
                     isPlaying
-                    onAutoplayChange={jest.fn()}
-                    onMuteChange={jest.fn()}
-                    onPlayPause={jest.fn()}
-                    onRateChange={jest.fn()}
-                    onTimeChange={jest.fn()}
-                    onVolumeChange={jest.fn()}
+                    mediaEl={mediaElWithDuration(180)}
                     peaks={[0.2, 0.8]}
-                    rate="1.0"
                 />,
             );
 

@@ -30,6 +30,10 @@ function fail(code: WaveformError['code'], message: string, retryable = false): 
     return { ok: false, error: { code, message }, retryable };
 }
 
+export function isPositiveFinite(value: unknown): value is number {
+    return typeof value === 'number' && Number.isFinite(value) && value > 0;
+}
+
 function isPlainObject(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
@@ -129,7 +133,7 @@ function checkVersion(raw: Record<string, unknown>): WaveformValidationFailure |
 }
 
 function checkDuration(payload: WaveformPayloadV1, expectedDurationSec?: number): WaveformValidationFailure | null {
-    if (!Number.isFinite(payload.durationSec) || payload.durationSec <= 0) {
+    if (!isPositiveFinite(payload.durationSec)) {
         return fail('INVALID_DURATION', 'durationSec must be a positive finite number');
     }
 

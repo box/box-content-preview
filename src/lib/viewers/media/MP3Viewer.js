@@ -1,8 +1,17 @@
 import React from 'react';
+import { AUDIO_PLAYER_V2, STATUS_ERROR, WAVEFORM_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
+import { getRepresentation } from '../../file';
 import MediaBaseViewer from './MediaBaseViewer';
 import MP3Controls from './MP3Controls';
 import MP3ControlsRoot from './MP3ControlsRoot';
+import {
+    CLIENT_DECODE_MAX_COMPRESSED_BYTES,
+    CLIENT_DECODE_MAX_DURATION_SEC,
+    DURATION_MISMATCH_TOLERANCE_SEC,
+} from './waveform/constants';
+import { createWaveformLoader } from './waveform/createWaveformLoader';
+import { isPositiveFinite } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
@@ -30,17 +39,30 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.isAudioPlayerV2 = this.getIsAudioPlayerV2();
         this.waveformPeaks = [];
+        this.waveformPeaksSource = null;
+        this.waveformDurationSec = 0;
         if (this.isAudioPlayerV2) {
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
             this.ensureV2Controls();
             this.importWaveformDecode();
+            // Listen on the loading shell. The waveform is on
+            // screen before the audio blob is playable; getViewer() is still null.
+            this.bindCommentMarkersListener();
         }
 
         // Audio element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
         this.mediaEl.setAttribute('preload', 'auto');
         this.commentMarkers = [];
+    }
+
+    bindCommentMarkersListener() {
+        if (!this.isAudioPlayerV2) {
+            return;
+        }
+        this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
+        this.addListener('comment_markers', this.handleCommentMarkersUpdated);
     }
 
     /**
@@ -50,7 +72,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {boolean} whether v2 treatment is on
      */
     getIsAudioPlayerV2() {
-        return this.featureEnabled('audioPlayerV2.enabled') && this.useReactControls();
+        return this.featureEnabled(AUDIO_PLAYER_V2) && this.useReactControls();
     }
 
     /**
@@ -86,6 +108,7 @@ class MP3Viewer extends MediaBaseViewer {
      */
     fallbackToV1Controls() {
         this.isAudioPlayerV2 = false;
+        this.abortWaveformLoads();
         if (this.wrapperEl) {
             this.wrapperEl.classList.remove('bp-media--v2');
         }
@@ -122,7 +145,7 @@ class MP3Viewer extends MediaBaseViewer {
      */
     destroy() {
         this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
-        this.abortClientWaveformDecode();
+        this.abortWaveformLoads();
         super.destroy();
     }
 
@@ -132,6 +155,7 @@ class MP3Viewer extends MediaBaseViewer {
     load() {
         if (this.isAudioPlayerV2) {
             this.showAudioLoadingShell();
+            this.startConversionWaveformLoad();
         }
 
         return super.load();
@@ -169,6 +193,10 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     loadeddataHandler() {
+        if (this.isAudioPlayerV2) {
+            this.dropConversionPeaksOnDurationMismatch();
+        }
+
         super.loadeddataHandler();
 
         if (!this.isAudioPlayerV2) {
@@ -182,7 +210,193 @@ class MP3Viewer extends MediaBaseViewer {
             this.play();
         }
 
-        this.startClientWaveformDecode();
+        if (this.shouldRaceClientWaveformDecode()) {
+            this.startClientWaveformDecode();
+        }
+    }
+
+    /**
+     * Client decode races conversion until some source applies peaks. Size and
+     * duration caps still apply. First source to apply peaks wins; later
+     * results are ignored.
+     *
+     * @return {boolean}
+     */
+    shouldRaceClientWaveformDecode() {
+        if (!this.isAudioPlayerV2 || this.destroyed || this.waveformPeaksSource) {
+            return false;
+        }
+
+        const compressedBytes = this.options.file?.size;
+        const durationSec = this.mediaEl?.duration;
+        return (
+            isPositiveFinite(compressedBytes) &&
+            compressedBytes <= CLIENT_DECODE_MAX_COMPRESSED_BYTES &&
+            isPositiveFinite(durationSec) &&
+            durationSec <= CLIENT_DECODE_MAX_DURATION_SEC
+        );
+    }
+
+    /**
+     * @param {number} durationSec
+     * @return {boolean}
+     */
+    isConversionDurationMismatch(durationSec) {
+        const mediaDuration = this.mediaEl?.duration;
+        return (
+            isPositiveFinite(mediaDuration) &&
+            isPositiveFinite(durationSec) &&
+            Math.abs(durationSec - mediaDuration) > DURATION_MISMATCH_TOLERANCE_SEC
+        );
+    }
+
+    /**
+     * Conversion JSON fetched before metadata skipped duration matching. Drop
+     * those peaks once media duration is known if they disagree.
+     *
+     * @return {void}
+     */
+    dropConversionPeaksOnDurationMismatch() {
+        if (this.waveformPeaksSource !== 'conversion' || !this.isConversionDurationMismatch(this.waveformDurationSec)) {
+            return;
+        }
+
+        this.waveformPeaks = [];
+        this.waveformPeaksSource = null;
+        this.waveformDurationSec = 0;
+        this.renderUI();
+    }
+
+    /**
+     * Poll the conversion waveform representation and fetch its JSON.
+     * Missing, failed, or unloadable conversion falls back to client decode
+     * when the file is under size and duration caps.
+     *
+     * @return {Promise<void>}
+     */
+    async startConversionWaveformLoad() {
+        if (!this.isAudioPlayerV2 || this.destroyed) {
+            return;
+        }
+
+        const { file } = this.options;
+        const waveform = file?.representations?.entries ? getRepresentation(file, WAVEFORM_REP_NAME) : null;
+        const template = waveform?.content?.url_template;
+        const conversionStatus = waveform?.status;
+        const statusState = conversionStatus && typeof conversionStatus === 'object' ? conversionStatus.state : null;
+        if (!waveform || !template || !statusState || statusState === STATUS_ERROR) {
+            this.startClientWaveformDecode();
+            return;
+        }
+
+        this.abortConversionWaveformLoad();
+        this.waveformStatus = this.getRepStatus(waveform);
+        this.waveformStatus.removeListener('conversionpending', this.resetLoadTimeout);
+        const status = this.waveformStatus;
+
+        try {
+            await status.getPromise();
+            if (this.destroyed || this.waveformStatus !== status || this.waveformPeaksSource) {
+                return;
+            }
+            const result = await this.loadConversionWaveformPayload(template);
+            this.handleConversionWaveformResult(result, status);
+        } catch {
+            this.startClientWaveformDecode();
+        }
+    }
+
+    /**
+     * Fetch and validate conversion waveform JSON after the rep is ready.
+     * `{+asset_path}` is empty. Auth is a header, not a query token.
+     *
+     * @param {string} template - content URL template
+     * @return {Promise<import('./waveform/types').WaveformLoadState>}
+     */
+    loadConversionWaveformPayload(template) {
+        const url = this.createContentUrlV2(template);
+        const durationSec = this.mediaEl?.duration;
+        const source = createWaveformLoader(
+            signal =>
+                this.api.get(url, {
+                    headers: this.appendAuthHeader(),
+                    signal,
+                }),
+            Number.isFinite(durationSec) ? { expectedDurationSec: durationSec } : {},
+        );
+        this.waveformSource = source;
+        return source.load();
+    }
+
+    abortWaveformLoads() {
+        this.abortConversionWaveformLoad();
+        this.abortClientWaveformDecode();
+    }
+
+    abortConversionWaveformLoad() {
+        if (this.waveformSource) {
+            this.waveformSource.abort();
+            this.waveformSource = null;
+        }
+        if (this.waveformStatus) {
+            this.waveformStatus.destroy();
+            this.waveformStatus = null;
+        }
+    }
+
+    /**
+     * First source to apply peaks wins. Later results are ignored.
+     *
+     * @param {'conversion'|'client'} source
+     * @param {{ peaks: ArrayLike<number>, durationSec?: number }} payload
+     * @return {boolean} true when this source claimed peaks
+     */
+    applyWaveformPeaks(source, payload) {
+        if (this.waveformPeaksSource) {
+            return false;
+        }
+
+        this.waveformPeaks = payload.peaks;
+        this.waveformPeaksSource = source;
+        this.isWaveformDecodeRetryPending = false;
+        if (source === 'conversion') {
+            this.waveformDurationSec = payload.durationSec;
+            this.abortClientWaveformDecode();
+        } else if (this.waveformSource) {
+            // RepStatus.destroy() does not reject getPromise().
+            this.waveformSource.abort();
+            this.waveformSource = null;
+        }
+        this.renderUI();
+        return true;
+    }
+
+    /**
+     * Apply conversion peaks when the load is still current. Ignored if client
+     * decode already applied peaks.
+     *
+     * @param {import('./waveform/types').WaveformLoadState} result
+     * @param {Object} status - RepStatus instance that started this load
+     * @return {void}
+     */
+    handleConversionWaveformResult(result, status) {
+        if (!result || this.destroyed || !this.isAudioPlayerV2 || this.waveformStatus !== status) {
+            return;
+        }
+
+        if (result.status !== 'ready') {
+            if (result.status !== 'cancelled') {
+                this.startClientWaveformDecode();
+            }
+            return;
+        }
+
+        if (this.isConversionDurationMismatch(result.payload.durationSec)) {
+            this.startClientWaveformDecode();
+            return;
+        }
+
+        this.applyWaveformPeaks('conversion', result.payload);
     }
 
     /**
@@ -192,7 +406,11 @@ class MP3Viewer extends MediaBaseViewer {
         this.userRequestedPlay = true;
         this.togglePlay();
 
-        if (this.isWaveformDecodeRetryPending && !this.hasUsedWaveformDecodePlayRetry) {
+        if (
+            this.shouldRaceClientWaveformDecode() &&
+            this.isWaveformDecodeRetryPending &&
+            !this.hasUsedWaveformDecodePlayRetry
+        ) {
             this.hasUsedWaveformDecodePlayRetry = true;
             this.isWaveformDecodeRetryPending = false;
             this.startClientWaveformDecode();
@@ -258,17 +476,21 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Decode peaks in the background when the file is under size and duration caps.
-     * Does not block playback. Capped or failed decode keeps the placeholder waveform.
+     * Decode peaks in the background until conversion or client decode applies
+     * them, when the file is under size and duration caps. Does not block
+     * playback. First source to apply peaks wins.
      *
      * @return {Promise<void>}
      */
     async startClientWaveformDecode() {
-        if (!this.isAudioPlayerV2 || this.destroyed) {
+        if (!this.shouldRaceClientWaveformDecode()) {
             return;
         }
 
-        this.abortClientWaveformDecode();
+        if (this.waveformDecodeController && !this.waveformDecodeController.signal.aborted) {
+            return;
+        }
+
         const controller = new AbortController();
         this.waveformDecodeController = controller;
         const { signal } = controller;
@@ -321,9 +543,7 @@ class MP3Viewer extends MediaBaseViewer {
         }
 
         if (result.status === 'ready') {
-            this.waveformPeaks = result.payload.peaks;
-            this.isWaveformDecodeRetryPending = false;
-            this.renderUI();
+            this.applyWaveformPeaks('client', result.payload);
             return;
         }
 
@@ -355,11 +575,7 @@ class MP3Viewer extends MediaBaseViewer {
             this.controls = new MP3ControlsRoot({ containerEl: this.mediaContainerEl });
         }
 
-        if (this.isAudioPlayerV2) {
-            this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
-            this.addListener('comment_markers', this.handleCommentMarkersUpdated);
-        }
-
+        this.bindCommentMarkersListener();
         this.renderUI();
     }
 
@@ -403,11 +619,11 @@ class MP3Viewer extends MediaBaseViewer {
 
     handleCommentMarkerClick = marker => {
         this.hostSelectedMarkerId = marker.id;
-        this.pendingHostSelectedSeek = null;
+        this.pendingHostSelectedSeek = marker;
         if (this.mediaEl) {
             this.mediaEl.pause();
-            this.mediaEl.currentTime = marker.time;
         }
+        this.applyPendingHostSelectedSeek();
         // Overlay paints the ring from click optimism until the host re-emits selected.
         this.emit('comment_marker_select', { id: marker.id, time: marker.time });
         this.renderUI();
@@ -421,11 +637,15 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
 
+        const mediaDuration = this.mediaEl.duration;
+        const durationTime =
+            typeof mediaDuration === 'number' && mediaDuration > 0 ? mediaDuration : this.waveformDurationSec;
+
         const sharedProps = {
             autoplay: this.isAutoplayEnabled(),
             bufferedRange: this.mediaEl.buffered,
             currentTime: this.mediaEl.currentTime,
-            durationTime: this.mediaEl.duration,
+            durationTime,
             isPlaying: !this.mediaEl.paused,
             movePlayback: this.movePlayback,
             onAutoplayChange: this.setAutoplay,

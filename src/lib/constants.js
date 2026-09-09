@@ -89,6 +89,7 @@ export const APP_HOST = 'https://app.box.com';
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'jpg';
 export const PRELOAD_PAGED_REP_NAME = 'webp';
+export const WAVEFORM_REP_NAME = 'waveform';
 export const VIDEO_VIEWER_NAMES = ['Dash', 'MP4'];
 export const STATUS_ERROR = 'error';
 export const STATUS_NONE = 'none';
@@ -105,6 +106,7 @@ export const X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT = '[extracted_text]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
 export const AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES = 'aiTranscriptionForVideoSubtitles';
+export const AUDIO_PLAYER_V2 = 'audioPlayerV2.enabled';
 
 export const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
 export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
