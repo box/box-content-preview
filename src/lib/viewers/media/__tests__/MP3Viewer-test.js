@@ -344,14 +344,22 @@ describe('lib/viewers/media/MP3Viewer', () => {
     });
 
     describe('loadeddataHandler()', () => {
-        test('should start playback when play was requested before metadata', () => {
+        beforeEach(() => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
             mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should start playback when play was requested before metadata', () => {
             mp3.userRequestedPlay = true;
             const order = [];
             jest.spyOn(mp3, 'play').mockImplementation(() => order.push('play'));
             jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(true);
-            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation(() => order.push('decode'));
+            mp3.startClientWaveformDecode.mockImplementation(() => order.push('decode'));
 
             mp3.loadeddataHandler();
 
@@ -360,8 +368,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should not auto-start playback when play was not requested', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
-            mp3.isAudioPlayerV2 = true;
             jest.spyOn(mp3, 'play').mockImplementation();
 
             mp3.loadeddataHandler();
@@ -370,9 +376,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should apply a pending host-selected seek after metadata', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
-            mp3.isAudioPlayerV2 = true;
-            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
             mp3.mediaEl = document.createElement('audio');
             jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
             Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
@@ -385,28 +388,15 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should start client decode after metadata when peaks are not applied yet', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
-            mp3.isAudioPlayerV2 = true;
-            mp3.waveformPeaksSource = null;
-            mp3.options.file = { id: 1, size: 1024 };
-            mp3.mediaEl = { duration: 30 };
-            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
-
             mp3.loadeddataHandler();
 
             expect(mp3.startClientWaveformDecode).toBeCalled();
         });
 
         test('should drop conversion peaks when media duration mismatches', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
-            mp3.isAudioPlayerV2 = true;
             mp3.waveformPeaks = [0.2, 0.8];
             mp3.waveformPeaksSource = 'conversion';
             mp3.waveformDurationSec = 180;
-            mp3.options.file = { id: 1, size: 1024 };
-            mp3.mediaEl = { duration: 30 };
-            jest.spyOn(mp3, 'renderUI').mockImplementation();
-            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
 
             mp3.loadeddataHandler();
 
@@ -416,15 +406,9 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should keep conversion peaks when media duration is within tolerance', () => {
-            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
-            mp3.isAudioPlayerV2 = true;
             mp3.waveformPeaks = [0.2, 0.8];
             mp3.waveformPeaksSource = 'conversion';
             mp3.waveformDurationSec = 30 + DURATION_MISMATCH_TOLERANCE_SEC;
-            mp3.options.file = { id: 1, size: 1024 };
-            mp3.mediaEl = { duration: 30 };
-            jest.spyOn(mp3, 'renderUI').mockImplementation();
-            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
 
             mp3.loadeddataHandler();
 

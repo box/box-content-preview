@@ -142,12 +142,12 @@ describe('MP3ControlsV2', () => {
     }
 
     const getWrapper = (props: Partial<Props> = {}) => {
-        const resolved = { ...props };
+        const nextProps = { ...props };
         if (!('mediaEl' in props) && typeof props.durationTime === 'number' && props.durationTime > 0) {
-            resolved.mediaEl = mediaElWithDuration(props.durationTime);
+            nextProps.mediaEl = mediaElWithDuration(props.durationTime);
         }
 
-        return render(<MP3ControlsV2 {...defaultControlsProps} {...resolved} />);
+        return render(<MP3ControlsV2 {...defaultControlsProps} {...nextProps} />);
     };
 
     describe('render', () => {
@@ -210,12 +210,11 @@ describe('MP3ControlsV2', () => {
         test('should keep the waveform inert after overlay click until media metadata', async () => {
             const mediaEl = document.createElement('audio');
             Object.defineProperty(mediaEl, 'duration', { configurable: true, value: NaN });
-            const onPlayPause = jest.fn();
-            getWrapper({ durationTime: 180, mediaEl, onPlayPause, peaks: [0.2, 0.8] });
+            getWrapper({ durationTime: 180, mediaEl, peaks: [0.2, 0.8] });
 
             await userEvent.click(await screen.findByTestId('bp-MP3ControlsV2-play-overlay'));
 
-            expect(onPlayPause).toHaveBeenCalledWith(true);
+            expect(defaultControlsProps.onPlayPause).toHaveBeenCalledWith(true);
             expect(screen.getByTestId('bp-MP3ControlsV2-loading')).toBeInTheDocument();
             expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-interactive', 'false');
             expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();

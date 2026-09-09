@@ -11,6 +11,7 @@ import {
     DURATION_MISMATCH_TOLERANCE_SEC,
 } from './waveform/constants';
 import { createWaveformLoader } from './waveform/createWaveformLoader';
+import { isPositiveFinite } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
@@ -19,10 +20,6 @@ function createLoadFailedError(message) {
     const error = new Error(message);
     error.name = 'LOAD_FAILED';
     return error;
-}
-
-function isPositiveFinite(value) {
-    return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
 class MP3Viewer extends MediaBaseViewer {
