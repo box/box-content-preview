@@ -81,18 +81,66 @@ export function getBufferedProgress(bufferedRange: TimeRanges | undefined, durat
     return clampTo0And1(bufferedRange.end(bufferedRange.length - 1) / durationSec);
 }
 
+function rangeFills({
+    buffer,
+    hover,
+    rangeEnd,
+    rangeStart,
+}: {
+    buffer: number;
+    hover: number | null;
+    rangeEnd: number;
+    rangeStart: number;
+}): WaveformFills {
+    const start = clampTo0And1(rangeStart);
+    const end = clampTo0And1(rangeEnd);
+    const hoverInside = hover != null && hover > start && hover < end;
+    const outsideAfter = [
+        { color: WAVEFORM_COLOR_UNPLAYED, end: Math.max(end, buffer), start: end },
+        { color: WAVEFORM_COLOR_BUFFER, end: 1, start: Math.max(end, buffer) },
+    ];
+
+    const ranges: ColorRange[] = hoverInside
+        ? [
+              { color: WAVEFORM_COLOR_UNPLAYED, end: start, start: 0 },
+              { color: WAVEFORM_COLOR_HOVER_PLAYED, end: hover as number, start },
+              { color: WAVEFORM_COLOR_HOVER_AREA, end, start: hover as number },
+              ...outsideAfter,
+          ]
+        : [
+              { color: WAVEFORM_COLOR_UNPLAYED, end: start, start: 0 },
+              { color: WAVEFORM_COLOR_PLAYED, end, start },
+              ...outsideAfter,
+          ];
+
+    const fill = gradientStopsFromColorRanges(ranges);
+    return { progressColor: fill, waveColor: fill };
+}
+
 /**
  * progressColor paints left of the playhead (clipped by wavesurfer).
  * waveColor paints right of the playhead, including buffered vs not-yet-buffered.
+ * An open comment range replaces the played/unplayed split with in-range / out-of-range.
  */
 export function getWaveformFills({
     bufferProgress,
     hoverProgress,
+    rangeProgress,
 }: {
     bufferProgress: number;
     hoverProgress: number | null;
+    rangeProgress?: { end: number; start: number } | null;
 }): WaveformFills {
     const buffer = clampTo0And1(bufferProgress);
+
+    if (rangeProgress && rangeProgress.end > rangeProgress.start) {
+        return rangeFills({
+            buffer,
+            hover: hoverProgress == null ? null : clampTo0And1(hoverProgress),
+            rangeEnd: rangeProgress.end,
+            rangeStart: rangeProgress.start,
+        });
+    }
 
     if (hoverProgress == null) {
         return {
