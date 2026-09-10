@@ -1,3 +1,4 @@
+import { CommentRangeDraft } from '../../controls/media/types';
 import { WAVEFORM_PAYLOAD_VERSION } from './constants';
 
 /**
@@ -188,10 +189,14 @@ export type WaveformViewProps = {
     isPlaying?: boolean;
     mediaEl?: HTMLMediaElement | null;
     onPlayPause?: (isPlaying: boolean) => void;
+    onRangeChange?: (range: { endMs: number; startMs: number }) => void;
+    onRangeDragChange?: (isDragging: boolean) => void;
     onSeek?: (timeSec: number) => void;
     onViewportChange?: (viewport: WaveformViewport) => void;
     onZoomChange?: (zoomLevel: number) => void;
     peaks: ArrayLike<number>;
+    /** Checkbox-driven draft. Nothing renders until this is set. */
+    range?: CommentRangeDraft | null;
     zoomLevel?: number;
 };
 
