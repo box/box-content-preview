@@ -1,3 +1,8 @@
+## 3.90.0 (2026-09-10)
+
+* feat(audio): load waveform peaks from conversion JSON (#1768) ([e52b0b7](https://github.com/box/box-content-preview/commit/e52b0b7)), closes [#1768](https://github.com/box/box-content-preview/issues/1768)
+* feat(audio): request waveform representation when v2 is enabled (#1769) ([e6da958](https://github.com/box/box-content-preview/commit/e6da958)), closes [#1769](https://github.com/box/box-content-preview/issues/1769)
+
 ## 3.89.0 (2026-09-07)
 
 * feat(media): add comment-marker hover, focus, and selected badge states (#1765) ([a52f827](https://github.com/box/box-content-preview/commit/a52f827)), closes [#1765](https://github.com/box/box-content-preview/issues/1765)
