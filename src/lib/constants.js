@@ -104,6 +104,7 @@ export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
 export const X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT = '[extracted_text]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
+export const X_REP_HINT_WAVEFORM = '[waveform]';
 
 export const AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES = 'aiTranscriptionForVideoSubtitles';
 export const AUDIO_PLAYER_V2 = 'audioPlayerV2.enabled';
