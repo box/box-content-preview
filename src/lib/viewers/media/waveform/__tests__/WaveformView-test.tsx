@@ -398,7 +398,9 @@ describe('WaveformView', () => {
         expect(playhead).toHaveStyle({ left: '25%' });
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         expect(playhead).toHaveStyle({ left: '25%' });
     });
@@ -559,7 +561,9 @@ describe('WaveformView', () => {
         });
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         expect(animationCallbacks.length).toBeGreaterThan(0);
         act(() => {
@@ -748,7 +752,9 @@ describe('WaveformView', () => {
         const pinnedLeft = getPinnedPlayheadLeft(200);
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         expect(playhead.style.left).toBe(pinnedLeft);
         expect(mockSetTime).toHaveBeenCalledWith(3.5);
@@ -787,7 +793,9 @@ describe('WaveformView', () => {
         });
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
         act(() => {
             animationCallbacks.splice(0).forEach(cb => cb(0));
@@ -814,7 +822,9 @@ describe('WaveformView', () => {
         const pinnedLeft = getPinnedPlayheadLeft(200);
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
         expect(playhead.style.left).toBe(pinnedLeft);
 
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
@@ -870,7 +880,9 @@ describe('WaveformView', () => {
         const pinnedLeft = getPinnedPlayheadLeft(200);
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
         act(() => {
@@ -1051,6 +1063,58 @@ describe('WaveformView', () => {
         expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
             left: `calc(25% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
         });
+    });
+
+    test('should hide collapsed range handles while playing', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        render(
+            <WaveformView
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+    });
+
+    test('should show collapsed range handles again after pause', () => {
+        let paused = false;
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, get: () => paused });
+        render(
+            <WaveformView
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+
+        paused = true;
+        act(() => {
+            mediaEl.dispatchEvent(new Event('pause'));
+        });
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+    });
+
+    test('should keep an open range visible while playing', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        render(
+            <WaveformView
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'false');
     });
 
     test('should keep a draft range glued through zoom and pan', () => {
