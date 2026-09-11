@@ -23,7 +23,7 @@ import {
     WAVEFORM_ZOOM_MIN,
 } from './constants';
 import { formatTime, morphPeaks, toChannels, WAVEFORM_PEAK_TRANSITION_MS } from './peaks';
-import { durationMsFromSec, isPointerOverRange, rangeProgress, resolveRange } from './range';
+import { durationMsFromSec, isPointerOverRange, isRangeCollapsed, rangeProgress, resolveRange } from './range';
 import { WaveformFills, WaveformViewProps, WaveformViewport } from './types';
 import usePlayheadCamera from './usePlayheadCamera';
 import WaveformRangeSelection, { WaveformRangeSelectionHandle } from './WaveformRangeSelection';
@@ -234,6 +234,7 @@ function WaveformView({
     const [canvasWidthPx, setCanvasWidthPx] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [previewRange, setPreviewRange] = useState<WaveformViewProps['range']>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
     const [isRangeDragging, setIsRangeDragging] = useState(false);
     const isRangeDraggingRef = useRef(false);
     const skipNextSeekRef = useRef(false);
@@ -704,6 +705,7 @@ function WaveformView({
         };
 
         const startLoop = (): void => {
+            setIsPlaying(true);
             window.cancelAnimationFrame(playheadAnimationRef.current);
             releaseUserPanHold();
             applyPlayheadCamera(media.currentTime, true);
@@ -711,6 +713,7 @@ function WaveformView({
         };
 
         const stopLoop = (): void => {
+            setIsPlaying(false);
             window.cancelAnimationFrame(playheadAnimationRef.current);
             cancelJump();
             releaseUserPanHold();
@@ -731,6 +734,8 @@ function WaveformView({
 
         if (!media.paused) {
             startLoop();
+        } else {
+            setIsPlaying(false);
         }
 
         media.addEventListener('play', startLoop);
@@ -742,6 +747,7 @@ function WaveformView({
             window.cancelAnimationFrame(playheadAnimationRef.current);
             cancelJump();
             releaseUserPanHold();
+            setIsPlaying(false);
             media.removeEventListener('play', startLoop);
             media.removeEventListener('playing', startLoop);
             media.removeEventListener('pause', stopLoop);
@@ -967,6 +973,8 @@ function WaveformView({
             ? null
             : timeLeftPercent(hoverProgress * durationSec, durationSec, viewportRef.current);
 
+    const showRangeOverlay = Boolean(range) && (isRangeDragging || !isPlaying || !isRangeCollapsed(range));
+
     const scrubTimeChip =
         isTape && scrubPreviewTimeSec != null ? (
             <div className="bp-WaveformView-hover bp-WaveformView-hover--tape" data-testid="bp-waveform-hover">
@@ -1020,7 +1028,7 @@ function WaveformView({
                     className="bp-WaveformView-playhead"
                     data-testid="bp-waveform-playhead"
                 />
-                {range && (
+                {showRangeOverlay && range && (
                     <WaveformRangeSelection
                         ref={rangeLayerRef}
                         currentTimeSec={currentTime}
