@@ -24,7 +24,7 @@ import {
     visualRangeHandlePx,
 } from './range';
 import { WaveformViewport } from './types';
-import { timeLeftPercent } from './viewport';
+import { createWaveformViewport, timeLeftPercent } from './viewport';
 import './WaveformRangeSelection.scss';
 
 export type WaveformRangeSelectionHandle = {
@@ -116,6 +116,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const regionRef = useRef<HTMLDivElement>(null);
         const startHandleRef = useRef<HTMLDivElement>(null);
         const endHandleRef = useRef<HTMLDivElement>(null);
+        const tooltipRef = useRef<HTMLDivElement>(null);
         const dragRef = useRef<DragState | null>(null);
         const rangeRef = useRef(range);
         const displayedRef = useRef<ResolvedRange>(resolveRange(range, durationMsFromSec(durationSec)));
@@ -127,14 +128,15 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const getPlayheadSecRef = useRef(getPlayheadSec);
         const [dragRange, setDragRange] = useState<ResolvedRange | null>(null);
         const [activeHandle, setActiveHandle] = useState<RangeHandle | null>(null);
+        const activeHandleRef = useRef<RangeHandle | null>(null);
 
         rangeRef.current = range;
-        viewportRef.current = viewport;
         durationSecRef.current = durationSec;
         onDragChangeRef.current = onDragChange;
         onPreviewChangeRef.current = onPreviewChange;
         onRangeChangeRef.current = onRangeChange;
         getPlayheadSecRef.current = getPlayheadSec;
+        activeHandleRef.current = activeHandle;
 
         const durationMs = durationMsFromSec(durationSec);
         const displayed = dragRange ?? resolveRange(range, durationMs);
@@ -166,6 +168,12 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     nextViewport,
                     collapsed ? WAVEFORM_RANGE_COLLAPSED_OFFSET_PX : 0,
                 );
+                const tooltip = tooltipRef.current;
+                if (tooltip) {
+                    const tooltipHandle = activeHandleRef.current ?? 'end';
+                    const tooltipMs = tooltipHandle === 'start' ? next.startMs : next.endMs;
+                    tooltip.style.left = timeLeftPercent(tooltipMs / 1000, nextDurationSec, nextViewport);
+                }
             },
             [],
         );
@@ -182,8 +190,27 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         );
 
         useLayoutEffect(() => {
-            syncPositions(displayed, viewport, durationSec);
-        }, [displayed, durationSec, syncPositions, viewport]);
+            syncPositions(displayedRef.current, viewportRef.current, durationSec);
+        }, [activeHandle, displayed.endMs, displayed.startMs, durationSec, syncPositions]);
+        useLayoutEffect(() => {
+            const next = createWaveformViewport({
+                durationSec: viewport.durationSec,
+                heightPx: viewport.heightPx,
+                maxZoom: viewport.maxZoom,
+                scrollLeftPx: viewportRef.current.scrollLeftPx,
+                widthPx: viewport.widthPx,
+                zoomLevel: viewport.zoomLevel,
+            });
+            viewportRef.current = next;
+            syncPositions(displayedRef.current, next, durationSecRef.current);
+        }, [
+            syncPositions,
+            viewport.durationSec,
+            viewport.heightPx,
+            viewport.maxZoom,
+            viewport.widthPx,
+            viewport.zoomLevel,
+        ]);
 
         const endDrag = useCallback((event: PointerEvent | React.PointerEvent): void => {
             const drag = dragRef.current;
@@ -321,7 +348,6 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
 
         const tooltipHandle = activeHandle ?? 'end';
         const tooltipMs = tooltipHandle === 'start' ? displayed.startMs : displayed.endMs;
-        const tooltipLeft = timeLeftPercent(tooltipMs / 1000, durationSec, viewport);
         const collapsed = displayed.startMs === displayed.endMs;
         const highlight = isHighlighted || collapsed;
 
@@ -359,11 +385,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     <div className="bp-WaveformRange-handleGrip" />
                 </div>
                 {activeHandle && (
-                    <div
-                        className="bp-WaveformRange-tooltip"
-                        data-testid="bp-waveform-range-tooltip"
-                        style={{ left: tooltipLeft }}
-                    >
+                    <div ref={tooltipRef} className="bp-WaveformRange-tooltip" data-testid="bp-waveform-range-tooltip">
                         <div className="bp-WaveformRange-tooltipTime">{formatTime(tooltipMs / 1000)}</div>
                     </div>
                 )}

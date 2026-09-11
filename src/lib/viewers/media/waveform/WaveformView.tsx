@@ -238,6 +238,7 @@ function WaveformView({
     const [isRangeDragging, setIsRangeDragging] = useState(false);
     const isRangeDraggingRef = useRef(false);
     const skipNextSeekRef = useRef(false);
+    const lastSetTimeSecRef = useRef<number | null>(null);
     const [isRangeHovered, setIsRangeHovered] = useState(false);
     const isControlled = typeof zoomLevelProp === 'number';
     const maxZoom = getWaveformZoomMax({
@@ -260,9 +261,18 @@ function WaveformView({
     const activeRange = isRangeDragging ? previewRange ?? range : range;
     const activeRangeRef = useRef(activeRange);
     activeRangeRef.current = activeRange;
-    const activeRangeProgress = activeRange
-        ? rangeProgress(resolveRange(activeRange, durationMsFromSec(durationSec)), durationMsFromSec(durationSec))
-        : null;
+    const durationMs = durationMsFromSec(durationSec);
+    const rangeStartMs = activeRange?.startMs;
+    const rangeEndMs = activeRange?.endMs;
+    const activeRangeProgress = useMemo(() => {
+        if (rangeStartMs == null || !Number.isFinite(rangeStartMs)) {
+            return null;
+        }
+        return rangeProgress(
+            resolveRange({ endMs: rangeEndMs ?? null, startMs: rangeStartMs }, durationMs),
+            durationMs,
+        );
+    }, [durationMs, rangeEndMs, rangeStartMs]);
     rangeProgressRef.current = activeRangeProgress;
 
     const viewport = useMemo(
@@ -427,7 +437,8 @@ function WaveformView({
             rangeLayerRef.current?.applyViewport(viewportRef.current);
 
             const wavesurfer = wavesurferRef.current;
-            if (wavesurfer && wavesurfer.setTime) {
+            if (wavesurfer && wavesurfer.setTime && lastSetTimeSecRef.current !== timeSec) {
+                lastSetTimeSecRef.current = timeSec;
                 wavesurfer.setTime(timeSec);
             }
         },
@@ -488,6 +499,7 @@ function WaveformView({
                     applyScrollLeft(getCenteredScrollLeft(currentTimeRef.current, windowViewport), true);
                 }
             }
+            lastSetTimeSecRef.current = currentTimeRef.current;
             wavesurfer.setTime(currentTimeRef.current);
         } finally {
             suppressViewportSyncRef.current = false;
@@ -595,6 +607,7 @@ function WaveformView({
 
         wavesurferRef.current = wavesurfer;
         displayedPeaksRef.current = peaksRef.current;
+        lastSetTimeSecRef.current = null;
         disableScrollOverscroll(container);
         syncViewport();
         applyZoomWindowRef.current?.();
@@ -613,6 +626,7 @@ function WaveformView({
             wavesurfer.destroy();
             wavesurferRef.current = null;
             displayedPeaksRef.current = null;
+            lastSetTimeSecRef.current = null;
         };
     }, [cancelJump, handleCameraScroll, handleTapeSwipe, height, isUserPanning, releaseUserPanHold, syncViewport]);
 
@@ -819,6 +833,7 @@ function WaveformView({
             progressColor: toCanvasFill(fills.progressColor, devicePixelWidth(canvasWidthPx)),
             waveColor: toCanvasFill(fills.waveColor, devicePixelWidth(canvasWidthPx)),
         });
+        lastSetTimeSecRef.current = currentTimeRef.current;
         wavesurfer.setTime(currentTimeRef.current);
     }, [activeRangeProgress, bufferProgress, canvasWidthPx, hoverProgress, isRangeDragging, isScrollableWindow, isTape, isZoomed]);
 

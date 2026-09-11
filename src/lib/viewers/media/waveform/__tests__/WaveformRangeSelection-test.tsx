@@ -2,7 +2,7 @@ import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from '../constants';
 import { createWaveformViewport } from '../viewport';
-import WaveformRangeSelection from '../WaveformRangeSelection';
+import WaveformRangeSelection, { WaveformRangeSelectionHandle } from '../WaveformRangeSelection';
 
 if (typeof PointerEvent === 'undefined') {
     class PointerEventPolyfill extends MouseEvent {
@@ -130,8 +130,14 @@ describe('WaveformRangeSelection', () => {
     });
 
     test('should keep times glued under zoom and pan', () => {
+        const rangeRef = React.createRef<WaveformRangeSelectionHandle>();
         const { rerender } = render(
-            <WaveformRangeSelection durationSec={8} range={{ endMs: 4000, startMs: 2000 }} viewport={viewport} />,
+            <WaveformRangeSelection
+                ref={rangeRef}
+                durationSec={8}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
         );
 
         const zoomed = createWaveformViewport({
@@ -142,7 +148,14 @@ describe('WaveformRangeSelection', () => {
             widthPx: 200,
             zoomLevel: 2,
         });
-        rerender(<WaveformRangeSelection durationSec={8} range={{ endMs: 4000, startMs: 2000 }} viewport={zoomed} />);
+        rerender(
+            <WaveformRangeSelection
+                ref={rangeRef}
+                durationSec={8}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={zoomed}
+            />,
+        );
         expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '50%' });
         expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '100%' });
 
@@ -154,7 +167,63 @@ describe('WaveformRangeSelection', () => {
             widthPx: 200,
             zoomLevel: 2,
         });
-        rerender(<WaveformRangeSelection durationSec={8} range={{ endMs: 4000, startMs: 2000 }} viewport={panned} />);
+        act(() => {
+            rangeRef.current?.applyViewport(panned);
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+    });
+
+    test('should keep handles on the live viewport when React scroll is stale', () => {
+        const rangeRef = React.createRef<WaveformRangeSelectionHandle>();
+        const { rerender } = render(
+            <WaveformRangeSelection
+                ref={rangeRef}
+                durationSec={8}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        const zoomed = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        rerender(
+            <WaveformRangeSelection
+                ref={rangeRef}
+                durationSec={8}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={zoomed}
+            />,
+        );
+
+        const panned = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 200,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        act(() => {
+            rangeRef.current?.applyViewport(panned);
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+
+        rerender(
+            <WaveformRangeSelection
+                ref={rangeRef}
+                durationSec={8}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={zoomed}
+            />,
+        );
         expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
         expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
     });
