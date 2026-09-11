@@ -14,9 +14,6 @@ export type CommentRangeChange = {
     startMs: number;
 };
 
-/** Highlight a posted comment's range. Same payload shape as a committed drag. */
-export type CommentRangeSelect = CommentRangeChange;
-
 /** Sidebar → viewer: show or update the draft handles. */
 export const EVENT_COMMENT_RANGE_DRAFT = 'comment_range_draft';
 
