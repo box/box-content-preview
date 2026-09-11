@@ -42,3 +42,22 @@ export const WAVEFORM_BAR_RADIUS = WAVEFORM_BAR_WIDTH / 2;
 /** Total bar height so the top and bottom radii meet as a circle on the mirror. */
 export const WAVEFORM_BAR_MIN_HEIGHT = WAVEFORM_BAR_WIDTH;
 export const WAVEFORM_HEIGHT = 140;
+
+/** Hit target centered on each range handle line. */
+export const WAVEFORM_RANGE_HIT_AREA_PX = 24;
+/** Visible handle line and playhead width. */
+export const WAVEFORM_RANGE_HANDLE_LINE_PX = 2;
+/** Screen gap between the playhead and each collapsed handle line. */
+export const WAVEFORM_RANGE_PLAYHEAD_GAP_PX = 1;
+/**
+ * Offset of each collapsed handle from the timestamp/playhead center so the
+ * 2px lines sit 1px left and right of the 2px playhead.
+ */
+export const WAVEFORM_RANGE_COLLAPSED_OFFSET_PX =
+    WAVEFORM_RANGE_HANDLE_LINE_PX / 2 + WAVEFORM_RANGE_PLAYHEAD_GAP_PX + WAVEFORM_RANGE_HANDLE_LINE_PX / 2;
+/** Snap a dragging handle to the playhead when this close. */
+export const WAVEFORM_RANGE_SNAP_PX = 8;
+/** Shortest committed range. Collapsed drafts (`endMs: null`) are exempt. */
+export const WAVEFORM_RANGE_MIN_DURATION_MS = 250;
+export const WAVEFORM_RANGE_GRIP_IN_MS = 150;
+export const WAVEFORM_RANGE_GRIP_OUT_MS = 100;

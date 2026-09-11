@@ -80,6 +80,35 @@ describe('colors', () => {
         expect(getBufferedProgress(undefined, 8)).toBe(1);
         expect(getBufferedProgress(mockBufferedRange(4), 8)).toBe(0.5);
     });
+
+    test('should paint in-range bars brighter than outside when a range is open', () => {
+        const fills = getWaveformFills({
+            bufferProgress: 1,
+            hoverProgress: null,
+            rangeProgress: { end: 0.5, start: 0.25 },
+        });
+
+        expect(fills.progressColor).toEqual(fills.waveColor);
+        expect(fills.waveColor).toEqual([
+            { color: WAVEFORM_COLOR_UNPLAYED, offset: 0 },
+            { color: WAVEFORM_COLOR_UNPLAYED, offset: 0.25 },
+            { color: WAVEFORM_COLOR_PLAYED, offset: 0.25 },
+            { color: WAVEFORM_COLOR_PLAYED, offset: 0.5 },
+            { color: WAVEFORM_COLOR_UNPLAYED, offset: 0.5 },
+            { color: WAVEFORM_COLOR_UNPLAYED, offset: 1 },
+        ]);
+    });
+
+    test('should ignore a collapsed range and keep the played / unplayed split', () => {
+        const fills = getWaveformFills({
+            bufferProgress: 1,
+            hoverProgress: null,
+            rangeProgress: { end: 0.25, start: 0.25 },
+        });
+
+        expect(fills.progressColor).toBe(WAVEFORM_COLOR_PLAYED);
+        expect(fills.waveColor).toBe(WAVEFORM_COLOR_UNPLAYED);
+    });
 });
 
 describe('tintWaveformTiles', () => {

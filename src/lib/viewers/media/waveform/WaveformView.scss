@@ -86,4 +86,12 @@
     .bp-WaveformView-track {
         cursor: default;
     }
+
+    .bp-WaveformRange-handle {
+        pointer-events: auto;
+    }
+}
+
+.bp-WaveformView:not(:hover) .bp-WaveformRange:not(.bp-WaveformRange--persist) {
+    opacity: 0.4;
 }

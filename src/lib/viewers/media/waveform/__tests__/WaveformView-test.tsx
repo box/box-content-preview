@@ -9,6 +9,7 @@ import {
     WAVEFORM_FOLLOW_SCROLL_SETTLE_MS,
     WAVEFORM_HEIGHT,
     WAVEFORM_PLAYHEAD_JUMP_MS,
+    WAVEFORM_RANGE_COLLAPSED_OFFSET_PX,
 } from '../constants';
 import { WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
 import { getPinnedPlayheadLeft } from '../viewport';
@@ -295,6 +296,43 @@ describe('WaveformView', () => {
         expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
     });
 
+    test('should highlight the range while the pointer is over it', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} range={{ endMs: 4000, startMs: 2000 }} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'false');
+
+        fireEvent.mouseMove(track, { clientX: 75 });
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'true');
+
+        fireEvent.mouseMove(track, { clientX: 160 });
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'false');
+
+        fireEvent.mouseMove(track, { clientX: 75 });
+        fireEvent.mouseLeave(track);
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'false');
+    });
+
+    test('should keep a collapsed draft highlighted when the pointer leaves', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.mouseLeave(track);
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'true');
+    });
+
     test('should seek from a wavesurfer click', () => {
         const onSeek = jest.fn();
         render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
@@ -360,7 +398,9 @@ describe('WaveformView', () => {
         expect(playhead).toHaveStyle({ left: '25%' });
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         expect(playhead).toHaveStyle({ left: '25%' });
     });
@@ -521,7 +561,9 @@ describe('WaveformView', () => {
         });
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         expect(animationCallbacks.length).toBeGreaterThan(0);
         act(() => {
@@ -710,7 +752,9 @@ describe('WaveformView', () => {
         const pinnedLeft = getPinnedPlayheadLeft(200);
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         expect(playhead.style.left).toBe(pinnedLeft);
         expect(mockSetTime).toHaveBeenCalledWith(3.5);
@@ -749,7 +793,9 @@ describe('WaveformView', () => {
         });
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
         act(() => {
             animationCallbacks.splice(0).forEach(cb => cb(0));
@@ -776,7 +822,9 @@ describe('WaveformView', () => {
         const pinnedLeft = getPinnedPlayheadLeft(200);
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
         expect(playhead.style.left).toBe(pinnedLeft);
 
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
@@ -832,7 +880,9 @@ describe('WaveformView', () => {
         const pinnedLeft = getPinnedPlayheadLeft(200);
 
         Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        mediaEl.dispatchEvent(new Event('play'));
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
 
         Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
         act(() => {
@@ -994,5 +1044,162 @@ describe('WaveformView', () => {
             />,
         );
         expect(playhead.style.left).toBe('50%');
+    });
+
+    test('should not draw range handles until a draft is supplied', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />);
+
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+    });
+
+    test('should draw collapsed range handles at the draft time', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />);
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'true');
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({
+            left: `calc(25% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
+            left: `calc(25% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+    });
+
+    test('should hide collapsed range handles while playing', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        render(
+            <WaveformView
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+    });
+
+    test('should show collapsed range handles again after pause', () => {
+        let paused = false;
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, get: () => paused });
+        render(
+            <WaveformView
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+
+        paused = true;
+        act(() => {
+            mediaEl.dispatchEvent(new Event('pause'));
+        });
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+    });
+
+    test('should keep an open range visible while playing', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        render(
+            <WaveformView
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'false');
+    });
+
+    test('should keep a draft range glued through zoom and pan', () => {
+        const { rerender } = render(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={1}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '25%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '50%' });
+
+        rerender(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={2}
+            />,
+        );
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '100%' });
+
+        mockSetTime.mockClear();
+        mockSetOptions.mockClear();
+        mockGetScroll.mockReturnValue(200);
+        act(() => {
+            scrollHandler?.();
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+        expect(mockSetTime).not.toHaveBeenCalled();
+        expect(mockSetOptions).not.toHaveBeenCalled();
+
+        rerender(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={2}
+            />,
+        );
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+    });
+
+    test('should not seek while a range handle is dragging', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.releasePointerCapture) {
+            HTMLElement.prototype.releasePointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.hasPointerCapture) {
+            HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
+        }
+        const onSeek = jest.fn();
+        render(
+            <WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />,
+        );
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.pointerDown(screen.getByTestId('bp-waveform-range-handle-end'), {
+            button: 0,
+            clientX: 50,
+            pointerId: 1,
+        });
+        clickHandler?.(0.5);
+        expect(onSeek).not.toHaveBeenCalled();
+
+        fireEvent.pointerUp(window, { clientX: 50, pointerId: 1 });
+        clickHandler?.(0.5);
+        expect(onSeek).not.toHaveBeenCalled();
     });
 });
