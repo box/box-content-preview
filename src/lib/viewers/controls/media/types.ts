@@ -22,6 +22,3 @@ export const EVENT_COMMENT_RANGE_DRAFT_CLEAR = 'comment_range_draft_clear';
 
 /** Viewer → sidebar: a handle drag finished. Emitted on pointer-up only. */
 export const EVENT_COMMENT_RANGE_DRAFT_CHANGE = 'comment_range_draft_change';
-
-/** Sidebar → viewer: highlight a posted comment's range. */
-export const EVENT_COMMENT_RANGE_SELECT = 'comment_range_select';
