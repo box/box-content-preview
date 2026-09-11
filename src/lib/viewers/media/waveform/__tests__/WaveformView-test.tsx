@@ -1141,10 +1141,25 @@ describe('WaveformView', () => {
         expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '50%' });
         expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '100%' });
 
+        mockSetTime.mockClear();
+        mockSetOptions.mockClear();
         mockGetScroll.mockReturnValue(200);
         act(() => {
             scrollHandler?.();
         });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+        expect(mockSetTime).not.toHaveBeenCalled();
+        expect(mockSetOptions).not.toHaveBeenCalled();
+
+        rerender(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={2}
+            />,
+        );
         expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
         expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
     });
