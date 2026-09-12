@@ -1,15 +1,17 @@
 import {
     WAVEFORM_FOLLOW_INSET_PX,
     WAVEFORM_MIN_VIEW_WINDOW_SEC,
+    WAVEFORM_TAPE_DEFAULT_WINDOW_SEC,
     WAVEFORM_ZOOM_MAX,
     WAVEFORM_ZOOM_MIN,
     WAVEFORM_ZOOM_SLIDER_MAX,
 } from './constants';
-import { PlayheadCameraAction, WaveformViewport, WaveformViewportInput } from './types';
+import { PlayheadCameraAction, PlayheadCameraMode, WaveformViewport, WaveformViewportInput } from './types';
 
 /** Visible window: start/end times, pixels-per-second, and the current zoom. */
 export function createWaveformViewport({
     durationSec,
+    gutterPx = 0,
     heightPx,
     maxZoom,
     scrollLeftPx,
@@ -19,12 +21,21 @@ export function createWaveformViewport({
     const zoom = Number.isFinite(zoomLevel) && zoomLevel > 0 ? zoomLevel : WAVEFORM_ZOOM_MIN;
     const viewDurationSec = durationSec > 0 ? durationSec / zoom : 0; // seconds visible at this zoom
     const pixelsPerSecond = viewDurationSec > 0 && widthPx > 0 ? widthPx / viewDurationSec : 0;
-    const maxStartSec = Math.max(0, durationSec - viewDurationSec); // last start that still fills the window
-    const startSec = pixelsPerSecond > 0 ? Math.min(maxStartSec, Math.max(0, scrollLeftPx / pixelsPerSecond)) : 0;
+    const leadingGutterPx = Number.isFinite(gutterPx) && gutterPx > 0 ? gutterPx : 0;
+    const unclampedStartSec = pixelsPerSecond > 0 ? (scrollLeftPx - leadingGutterPx) / pixelsPerSecond : 0;
+    const gutterDurationSec = pixelsPerSecond > 0 ? leadingGutterPx / pixelsPerSecond : 0;
+    const latestWindowStartSec =
+        leadingGutterPx > 0
+            ? durationSec + gutterDurationSec - viewDurationSec
+            : Math.max(0, durationSec - viewDurationSec);
+    const earliestWindowStartSec = leadingGutterPx > 0 ? -gutterDurationSec : 0;
+    const startSec =
+        pixelsPerSecond > 0 ? Math.min(latestWindowStartSec, Math.max(earliestWindowStartSec, unclampedStartSec)) : 0;
 
     return {
         durationSec,
         endSec: startSec + viewDurationSec,
+        gutterPx: leadingGutterPx,
         heightPx,
         maxZoom,
         pixelsPerSecond,
@@ -46,6 +57,7 @@ export function viewportEquals(prev: WaveformViewport | null, next: WaveformView
         !!prev &&
         prev.durationSec === next.durationSec &&
         prev.endSec === next.endSec &&
+        prev.gutterPx === next.gutterPx &&
         prev.maxZoom === next.maxZoom &&
         prev.scrollLeftPx === next.scrollLeftPx &&
         prev.startSec === next.startSec &&
@@ -102,20 +114,38 @@ export function clampWaveformZoom(zoomLevel: number, maxZoom: number = WAVEFORM_
 /** WaveSurfer zoom density. 0 = fit the whole file in the view. */
 export function getZoomedPixelsPerSecond({
     durationSec,
+    isTape = false,
     maxZoom = WAVEFORM_ZOOM_MIN,
     viewWidthPx,
     zoomLevel,
 }: {
     durationSec: number;
+    isTape?: boolean;
     maxZoom?: number;
     viewWidthPx: number;
     zoomLevel: number;
 }): number {
     const zoom = clampWaveformZoom(zoomLevel, maxZoom);
-    if (zoom <= WAVEFORM_ZOOM_MIN || !(durationSec > 0) || !(viewWidthPx > 0)) {
+    if (!(durationSec > 0) || !(viewWidthPx > 0)) {
+        return 0;
+    }
+    if (!isTape && zoom <= WAVEFORM_ZOOM_MIN) {
         return 0;
     }
     return (viewWidthPx / durationSec) * zoom;
+}
+
+/** Half-view empty space so t=0 and duration can sit under the center pin. */
+export function getTapeGutterPx(widthPx: number): number {
+    return widthPx > 0 ? widthPx / 2 : 0;
+}
+
+/** Tape first paint: 10s on screen, or 1× when the file is shorter than that. */
+export function getTapeDefaultZoom(durationSec: number, maxZoom: number = WAVEFORM_ZOOM_MIN): number {
+    if (!(durationSec > 0)) {
+        return WAVEFORM_ZOOM_MIN;
+    }
+    return clampWaveformZoom(durationSec / WAVEFORM_TAPE_DEFAULT_WINDOW_SEC, maxZoom);
 }
 
 /** Map zoom (1…max) onto the 0–100 slider. */
@@ -138,9 +168,10 @@ export function zoomFromSliderValue(value: number, maxZoom: number = WAVEFORM_ZO
     return clampWaveformZoom(WAVEFORM_ZOOM_MIN + t * (max - WAVEFORM_ZOOM_MIN), max);
 }
 
-/** Max scroll that still shows a full window (no overscroll). */
+/** Max scroll that still shows a full window (no overscroll). Gutters add empty lead/trail. */
 export function maxScrollLeft(viewport: WaveformViewport): number {
-    return Math.max(0, viewport.durationSec * viewport.pixelsPerSecond - viewport.widthPx);
+    const gutterPx = viewport.gutterPx || 0;
+    return Math.max(0, viewport.durationSec * viewport.pixelsPerSecond + 2 * gutterPx - viewport.widthPx);
 }
 
 /** Scroll offset that still shows a full window (no overscroll). */
@@ -153,7 +184,10 @@ function clampScrollLeft(scrollLeftPx: number, viewport: WaveformViewport): numb
 
 /** Center this time in the view, clamped so the window still fills the canvas. */
 export function getCenteredScrollLeft(timeSec: number, viewport: WaveformViewport): number {
-    return clampScrollLeft(timeSec * viewport.pixelsPerSecond - viewport.widthPx / 2, viewport);
+    return clampScrollLeft(
+        timeSec * viewport.pixelsPerSecond + (viewport.gutterPx || 0) - viewport.widthPx / 2,
+        viewport,
+    );
 }
 
 /**
@@ -161,19 +195,49 @@ export function getCenteredScrollLeft(timeSec: number, viewport: WaveformViewpor
  * No-op at fit-to-width or when that time is already visible.
  */
 export function getSeekCameraAction({
+    cameraMode = 'desktop',
     timeSec,
     viewport,
 }: {
+    cameraMode?: PlayheadCameraMode;
     timeSec: number;
     viewport: WaveformViewport;
 }): PlayheadCameraAction {
-    if (viewport.zoomLevel <= WAVEFORM_ZOOM_MIN || !(viewport.widthPx > 0) || !(viewport.pixelsPerSecond > 0)) {
+    if (!(viewport.widthPx > 0) || !(viewport.pixelsPerSecond > 0)) {
+        return { type: 'none' };
+    }
+    if (cameraMode === 'tape') {
+        const scrollLeftPx = getCenteredScrollLeft(timeSec, viewport);
+        if (Math.abs(scrollLeftPx - viewport.scrollLeftPx) < 1) {
+            return { type: 'none' };
+        }
+        return { type: 'jump', scrollLeftPx };
+    }
+    if (viewport.zoomLevel <= WAVEFORM_ZOOM_MIN) {
         return { type: 'none' };
     }
     if (isTimeInView(timeSec, viewport)) {
         return { type: 'none' };
     }
     return { type: 'jump', scrollLeftPx: getCenteredScrollLeft(timeSec, viewport) };
+}
+
+/** Always keep this time under the center pin. Reuses followRight so the camera hook can pin. */
+export function getTapeCameraAction({
+    timeSec,
+    viewport,
+}: {
+    timeSec: number;
+    viewport: WaveformViewport;
+}): PlayheadCameraAction {
+    if (!(viewport.widthPx > 0) || !(viewport.pixelsPerSecond > 0)) {
+        return { type: 'none' };
+    }
+    return {
+        isPlayheadPinned: true,
+        scrollLeftPx: getCenteredScrollLeft(timeSec, viewport),
+        type: 'followRight',
+    };
 }
 
 /** Follow inset in CSS px, capped at one third of the view so a narrow player still has room. */
@@ -193,6 +257,11 @@ export function getPinnedPlayheadLeft(widthPx: number, insetPx: number = WAVEFOR
     return `${((widthPx - inset) / widthPx) * 100}%`;
 }
 
+/** CSS left for a playhead locked to the center of the view. */
+export function getTapePinnedPlayheadLeft(): string {
+    return '50%';
+}
+
 /** CSS left % of the playhead from the left of the visible window. */
 export function timeLeftPercent(timeSec: number, durationSec: number, viewport: WaveformViewport): string {
     if (viewport.widthPx > 0 && viewport.pixelsPerSecond > 0) {
@@ -207,18 +276,23 @@ export function timeLeftPercent(timeSec: number, durationSec: number, viewport: 
  * Off-screen at play start jumps in; off-screen right while playing keeps following.
  */
 export function getPlayheadCameraAction({
+    cameraMode = 'desktop',
     insetPx = WAVEFORM_FOLLOW_INSET_PX,
     isPlaying,
     playJustStarted,
     timeSec,
     viewport,
 }: {
+    cameraMode?: PlayheadCameraMode;
     insetPx?: number;
     isPlaying: boolean;
     playJustStarted: boolean;
     timeSec: number;
     viewport: WaveformViewport;
 }): PlayheadCameraAction {
+    if (cameraMode === 'tape') {
+        return getTapeCameraAction({ timeSec, viewport });
+    }
     if (
         !isPlaying ||
         viewport.zoomLevel <= WAVEFORM_ZOOM_MIN ||

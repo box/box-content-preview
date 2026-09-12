@@ -30,6 +30,14 @@ describe('colors', () => {
         expect(rgbChannel(WAVEFORM_COLOR_PLAYED)).toBeGreaterThan(rgbChannel(WAVEFORM_COLOR_UNPLAYED));
     });
 
+    test('should use only brightest played and unplayed fills on tape', () => {
+        const fills = getWaveformFills({ bufferProgress: 0.5, hoverProgress: 0.4, isTape: true });
+
+        expect(fills.progressColor).toBe(WAVEFORM_COLOR_HOVER_PLAYED);
+        expect(rgbChannel(WAVEFORM_COLOR_HOVER_PLAYED)).toBeGreaterThan(rgbChannel(WAVEFORM_COLOR_PLAYED));
+        expect(fills.waveColor).toBe(WAVEFORM_COLOR_UNPLAYED);
+    });
+
     test('should use played / unplayed / buffer tokens at rest', () => {
         const fills = getWaveformFills({ bufferProgress: 0.5, hoverProgress: null });
 

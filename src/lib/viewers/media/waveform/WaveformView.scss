@@ -8,8 +8,10 @@
     padding: 0 60px;
     overflow: visible;
     background: none;
+    -webkit-tap-highlight-color: transparent;
 
-    &.bp-WaveformView--zoomed {
+    &.bp-WaveformView--zoomed,
+    &.bp-WaveformView--tape {
         padding: 0;
         touch-action: none;
 
@@ -22,6 +24,26 @@
             > *::part(scroll) {
                 overscroll-behavior-x: none;
             }
+        }
+    }
+
+    &.bp-WaveformView--tape {
+        flex: 1 1 auto;
+        height: 100%;
+        min-height: 0;
+
+        .bp-WaveformView-canvas {
+            height: 100%;
+
+            // Beat WaveSurfer's inline overflow-x:hidden at tape 1x so gutter margins can pan.
+            > *::part(scroll) {
+                overflow-x: auto !important;
+                scrollbar-width: none;
+            }
+        }
+
+        .bp-WaveformView-playhead {
+            height: calc(100% + 10px);
         }
     }
 }
@@ -64,6 +86,14 @@
     margin-top: 4px;
     pointer-events: none;
     transform: translateX(-50%);
+}
+
+.bp-WaveformView-hover--tape {
+    // Center on the 24px comment row (12px gap + 12px to row midpoint).
+    top: -24px;
+    z-index: 5;
+    margin-top: 0;
+    transform: translate(-50%, -50%);
 }
 
 .bp-WaveformView-hoverTime {

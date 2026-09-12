@@ -13,11 +13,18 @@
     pointer-events: auto;
 }
 
-.bp-WaveformCommentMarkers--zoomed {
+.bp-WaveformCommentMarkers--zoomed,
+.bp-WaveformCommentMarkers--tape {
     padding: 0;
 
     // Pair clip + visible so this overlay does not become a scroll container
     overflow: clip visible;
+}
+
+.bp-WaveformCommentMarkers--tape {
+    top: auto;
+    bottom: 100%;
+    margin-bottom: 12px;
 }
 
 .bp-WaveformCommentMarkers-track {
@@ -27,7 +34,8 @@
     overflow: visible;
 }
 
-.bp-WaveformCommentMarkers--zoomed .bp-WaveformCommentMarkers-track {
+.bp-WaveformCommentMarkers--zoomed .bp-WaveformCommentMarkers-track,
+.bp-WaveformCommentMarkers--tape .bp-WaveformCommentMarkers-track {
     overflow: clip visible;
 }
 

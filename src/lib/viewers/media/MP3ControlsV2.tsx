@@ -8,10 +8,11 @@ import TimestampControl from '../controls/media/TimestampControl';
 import { CommentMarker } from '../controls/media/markers';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
-import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
+import { WAVEFORM_HEIGHT, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
 import { WaveformViewport } from './waveform/types';
-import { clampWaveformZoom, viewportEquals } from './waveform/viewport';
+import { clampWaveformZoom, getTapeDefaultZoom, viewportEquals } from './waveform/viewport';
+import useTapeWaveform from './waveform/useTapeWaveform';
 import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
@@ -57,12 +58,15 @@ export default function MP3ControlsV2({
     const [zoomLevel, setZoomLevel] = useState(WAVEFORM_ZOOM_MIN);
     const [maxZoom, setMaxZoom] = useState(WAVEFORM_ZOOM_MIN);
     const [isZoomRevealed, setIsZoomRevealed] = useState(false);
-    const zoomRevealTimerRef = useRef(0);
+    const zoomRevealTimerRef = useRef(0); // hides the zoom flyout after WAVEFORM_ZOOM_DISMISS_MS
     const hasRealPeaks = !!(peaks && peaks.length);
     const waveformPeaks = hasRealPeaks ? peaks : PLACEHOLDER_PEAKS;
     const waveformDurationSec = hasWaveformDuration ? durationValue : PLACEHOLDER_DURATION_SEC;
     const [playRequested, setPlayRequested] = useState(false);
     const [viewport, setViewport] = useState<WaveformViewport | null>(null);
+    const isTape = useTapeWaveform();
+    const hasAppliedTapeDefaultZoomRef = useRef(false); // ~10s window applied; reset to 1× when leaving tape
+    const userChangedTapeZoomRef = useRef(false); // pinch/wheel zoom; skip re-applying the 10s default
     const handleViewportChange = useCallback((next: WaveformViewport) => {
         setMaxZoom(prev => (prev === next.maxZoom ? prev : next.maxZoom));
         setViewport(prev => (viewportEquals(prev, next) ? prev : next));
@@ -79,6 +83,7 @@ export default function MP3ControlsV2({
 
     const handleWaveformZoom = useCallback(
         (nextZoom: number) => {
+            userChangedTapeZoomRef.current = true;
             setZoomLevel(nextZoom);
             revealZoomControl();
         },
@@ -88,6 +93,27 @@ export default function MP3ControlsV2({
     useEffect(() => {
         setZoomLevel(prev => clampWaveformZoom(prev, maxZoom));
     }, [maxZoom]);
+
+    useEffect(() => {
+        if (!isTape) {
+            if (hasAppliedTapeDefaultZoomRef.current) {
+                hasAppliedTapeDefaultZoomRef.current = false;
+                userChangedTapeZoomRef.current = false;
+                setZoomLevel(WAVEFORM_ZOOM_MIN);
+            }
+            return;
+        }
+        if (!hasWaveformDuration || !hasRealPeaks || !viewport || !(viewport.widthPx > 0)) {
+            return;
+        }
+        if (userChangedTapeZoomRef.current) {
+            hasAppliedTapeDefaultZoomRef.current = true;
+            return;
+        }
+        const nextZoom = getTapeDefaultZoom(durationValue, Math.max(maxZoom, viewport.maxZoom));
+        hasAppliedTapeDefaultZoomRef.current = true;
+        setZoomLevel(prev => (prev === nextZoom ? prev : nextZoom));
+    }, [durationValue, hasRealPeaks, hasWaveformDuration, isTape, maxZoom, viewport]);
 
     useEffect(() => () => window.clearTimeout(zoomRevealTimerRef.current), []);
 
@@ -126,26 +152,35 @@ export default function MP3ControlsV2({
     const showPlayOverlay = !playRequested && !isPlaying;
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
     const hasZoomControl = hasZoomHandlers && hasMediaMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
+    const waveformZoomLevel = isTape || hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN;
 
     return (
-        <div className="bp-MP3ControlsV2" data-testid="media-controls-wrapper-v2">
+        <div
+            className="bp-MP3ControlsV2"
+            data-testid="media-controls-wrapper-v2"
+            style={{ '--bp-waveform-bar-min': `${WAVEFORM_HEIGHT}px` } as React.CSSProperties}
+        >
             <div className="bp-MP3ControlsV2-stage">
                 <div className="bp-MP3ControlsV2-waveform">
                     <WaveformView
                         bufferedRange={bufferedRange}
+                        cameraMode={isTape ? 'tape' : 'desktop'}
                         currentTime={currentTime}
                         durationSec={waveformDurationSec}
                         interactive={isWaveformInteractive}
+                        isPlaying={isPlaying}
                         mediaEl={mediaEl}
+                        onPlayPause={isWaveformInteractive ? onPlayPause : undefined}
                         onSeek={isWaveformInteractive ? onTimeChange : undefined}
                         onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
                         onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
                         peaks={waveformPeaks}
-                        zoomLevel={hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN}
+                        zoomLevel={waveformZoomLevel}
                     />
                     <WaveformCommentMarkers
                         commentMarkers={waveformMarkers}
                         durationSec={hasWaveformDuration ? durationValue : 0}
+                        isTape={isTape}
                         onCommentMarkerClick={handleCommentMarkerClick}
                         selectedId={selectedMarkerId}
                         viewport={viewport}
@@ -156,7 +191,7 @@ export default function MP3ControlsV2({
                         <WaveformZoomControl
                             isRevealed={isZoomRevealed}
                             maxZoom={maxZoom}
-                            onZoomChange={setZoomLevel}
+                            onZoomChange={handleWaveformZoom}
                             zoomLevel={zoomLevel}
                         />
                     </div>

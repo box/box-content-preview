@@ -81,6 +81,11 @@ export function getBufferedProgress(bufferedRange: TimeRanges | undefined, durat
     return clampTo0And1(bufferedRange.end(bufferedRange.length - 1) / durationSec);
 }
 
+/** Played bars: rest token on desktop, hover-played (brightest) on tape. Tape never uses hover or buffer fills. */
+export function getPlayedWaveformColor(isTape = false): string {
+    return isTape ? WAVEFORM_COLOR_HOVER_PLAYED : WAVEFORM_COLOR_PLAYED;
+}
+
 /**
  * progressColor paints left of the playhead (clipped by wavesurfer).
  * waveColor paints right of the playhead, including buffered vs not-yet-buffered.
@@ -88,15 +93,25 @@ export function getBufferedProgress(bufferedRange: TimeRanges | undefined, durat
 export function getWaveformFills({
     bufferProgress,
     hoverProgress,
+    isTape = false,
 }: {
     bufferProgress: number;
     hoverProgress: number | null;
+    isTape?: boolean;
 }): WaveformFills {
     const buffer = clampTo0And1(bufferProgress);
+    const playedColor = getPlayedWaveformColor(isTape);
+
+    if (isTape) {
+        return {
+            progressColor: playedColor,
+            waveColor: WAVEFORM_COLOR_UNPLAYED,
+        };
+    }
 
     if (hoverProgress == null) {
         return {
-            progressColor: WAVEFORM_COLOR_PLAYED,
+            progressColor: playedColor,
             waveColor: gradientStopsFromColorRanges([
                 { color: WAVEFORM_COLOR_UNPLAYED, end: buffer, start: 0 },
                 { color: WAVEFORM_COLOR_BUFFER, end: 1, start: buffer },

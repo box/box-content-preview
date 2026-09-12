@@ -1,13 +1,18 @@
-import { WAVEFORM_MIN_VIEW_WINDOW_SEC, WAVEFORM_ZOOM_MAX } from '../constants';
+import { WAVEFORM_MIN_VIEW_WINDOW_SEC, WAVEFORM_TAPE_DEFAULT_WINDOW_SEC, WAVEFORM_ZOOM_MAX } from '../constants';
 import {
     clampWaveformZoom,
     createWaveformViewport,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
     getSeekCameraAction,
+    getTapeCameraAction,
+    getTapeDefaultZoom,
+    getTapeGutterPx,
+    getTapePinnedPlayheadLeft,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
     isTimeInView,
+    maxScrollLeft,
     positionPxFromTime,
     sliderValueFromZoom,
     timeFromPositionPx,
@@ -275,5 +280,95 @@ describe('viewport', () => {
     test('should keep the slider at fit-to-width when zoom cannot exceed 1x', () => {
         expect(sliderValueFromZoom(1, 1)).toBe(0);
         expect(zoomFromSliderValue(100, 1)).toBe(1);
+    });
+
+    test('should add half-view gutters so t=0 sits at the center pin', () => {
+        const tape = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+
+        expect(tape.startSec).toBe(-4);
+        expect(tape.endSec).toBe(4);
+        expect(positionPxFromTime(0, tape)).toBe(100);
+        expect(timeFromPositionPx(100, tape)).toBe(0);
+        expect(timeLeftPercent(0, 8, tape)).toBe('50%');
+        expect(maxScrollLeft(tape)).toBe(200);
+        expect(getTapeGutterPx(200)).toBe(100);
+        expect(getTapePinnedPlayheadLeft()).toBe('50%');
+    });
+
+    test('should keep the playhead centered while following in tape mode', () => {
+        const tape = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+
+        const follow = getPlayheadCameraAction({
+            cameraMode: 'tape',
+            isPlaying: true,
+            playJustStarted: false,
+            timeSec: 2,
+            viewport: tape,
+        });
+        expect(follow).toEqual(getTapeCameraAction({ timeSec: 2, viewport: tape }));
+        expect(follow.type).toBe('followRight');
+        if (follow.type === 'followRight') {
+            expect(follow.isPlayheadPinned).toBe(true);
+            expect(follow.scrollLeftPx).toBeCloseTo(50);
+        }
+
+        const paused = getPlayheadCameraAction({
+            cameraMode: 'tape',
+            isPlaying: false,
+            playJustStarted: false,
+            timeSec: 0,
+            viewport: tape,
+        });
+        expect(paused.type).toBe('followRight');
+        if (paused.type === 'followRight') {
+            expect(paused.scrollLeftPx).toBe(0);
+        }
+    });
+
+    test('should jump a tape seek to the center pin even when the time is already on screen', () => {
+        const tape = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+
+        const jump = getSeekCameraAction({ cameraMode: 'tape', timeSec: 2, viewport: tape });
+        expect(jump.type).toBe('jump');
+        if (jump.type === 'jump') {
+            expect(jump.scrollLeftPx).toBeCloseTo(50);
+        }
+
+        const centered = createWaveformViewport({ ...tape, scrollLeftPx: 50 });
+        expect(getSeekCameraAction({ cameraMode: 'tape', timeSec: 2, viewport: centered })).toEqual({ type: 'none' });
+    });
+
+    test('should default tape zoom to a 10s window and still allow 1x', () => {
+        expect(getTapeDefaultZoom(8, 24)).toBe(1);
+        expect(getTapeDefaultZoom(100, 24)).toBe(100 / WAVEFORM_TAPE_DEFAULT_WINDOW_SEC);
+        expect(getTapeDefaultZoom(100, 4)).toBe(4);
+        expect(
+            getZoomedPixelsPerSecond({ durationSec: 8, isTape: true, maxZoom: 4, viewWidthPx: 200, zoomLevel: 1 }),
+        ).toBe(25);
+        expect(getZoomedPixelsPerSecond({ durationSec: 8, maxZoom: 4, viewWidthPx: 200, zoomLevel: 1 })).toBe(0);
     });
 });

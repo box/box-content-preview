@@ -2,13 +2,15 @@ import { MutableRefObject, RefObject, useCallback, useEffect, useRef } from 'rea
 import WaveSurfer from 'wavesurfer.js';
 import { getCurrentTimeMs } from '../../../util';
 import { WAVEFORM_FOLLOW_SCROLL_SETTLE_MS, WAVEFORM_PLAYHEAD_JUMP_MS, WAVEFORM_ZOOM_MIN } from './constants';
-import { WaveformViewport } from './types';
+import { PlayheadCameraMode, WaveformViewport } from './types';
 import {
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
     getSeekCameraAction,
+    getTapePinnedPlayheadLeft,
     getViewportAtScroll,
     maxScrollLeft,
+    timeFromPositionPx,
     timeLeftPercent,
 } from './viewport';
 
@@ -25,6 +27,7 @@ function prefersReducedMotion(): boolean {
 }
 
 export type UsePlayheadCameraOptions = {
+    cameraMode?: PlayheadCameraMode;
     mediaElRef: MutableRefObject<HTMLMediaElement | null | undefined>;
     onViewportCommit: (scrollLeftPx: number, viewport: WaveformViewport, commitReactState?: boolean) => void;
     playheadRef: RefObject<HTMLDivElement | null>;
@@ -37,6 +40,7 @@ export type UsePlayheadCameraOptions = {
  * every frame. WaveformView owns WaveSurfer, zoom, and the media rAF loop.
  */
 export default function usePlayheadCamera({
+    cameraMode = 'desktop',
     mediaElRef,
     onViewportCommit,
     playheadRef,
@@ -49,6 +53,7 @@ export default function usePlayheadCamera({
     clearFollowPin: () => void;
     handleScroll: (onUserPan: (mediaTimeSec: number) => void) => void;
     isFollowPinned: () => boolean;
+    isUserPanning: () => boolean;
     onSeek: (timeSec: number) => void;
     onZoom: () => void;
     releaseUserPanHold: () => void;
@@ -56,6 +61,8 @@ export default function usePlayheadCamera({
 } {
     const onViewportCommitRef = useRef(onViewportCommit);
     onViewportCommitRef.current = onViewportCommit;
+    const cameraModeRef = useRef(cameraMode);
+    cameraModeRef.current = cameraMode;
 
     const programmaticScrollRef = useRef(false);
     const jumpAnimationRef = useRef(0);
@@ -68,6 +75,8 @@ export default function usePlayheadCamera({
     const applyRef = useRef<((timeSec: number, playJustStarted?: boolean) => void) | null>(null);
 
     const isFollowPinned = useCallback((): boolean => isFollowPinnedRef.current, []);
+    const isUserPanning = useCallback((): boolean => userIsScrollingRef.current, []);
+    const isTape = useCallback((): boolean => cameraModeRef.current === 'tape', []);
 
     const cancelJump = useCallback((): void => {
         if (!jumpAnimationRef.current) {
@@ -102,17 +111,24 @@ export default function usePlayheadCamera({
         (timeSec: number): void => {
             mediaTimeRef.current = timeSec;
             cancelJump();
-            clearFollowPin();
+            if (!isTape()) {
+                clearFollowPin();
+            }
         },
-        [cancelJump, clearFollowPin],
+        [cancelJump, clearFollowPin, isTape],
     );
 
     /** Unpin and hold follow so zoom setScroll (slider center or pinch origin) is not stolen. */
     const onZoom = useCallback((): void => {
         cancelJump();
+        if (isTape()) {
+            isFollowPinnedRef.current = true;
+            holdFollowUntilInsetRef.current = false;
+            return;
+        }
         isFollowPinnedRef.current = false;
         holdFollowUntilInsetRef.current = true;
-    }, [cancelJump]);
+    }, [cancelJump, isTape]);
 
     const applyScrollLeft = useCallback(
         (scrollLeftPx: number, shouldCommitState: boolean): void => {
@@ -146,9 +162,9 @@ export default function usePlayheadCamera({
             if (!playhead || !isPinned || !(viewport.widthPx > 0)) {
                 return;
             }
-            playhead.style.left = getPinnedPlayheadLeft(viewport.widthPx);
+            playhead.style.left = isTape() ? getTapePinnedPlayheadLeft() : getPinnedPlayheadLeft(viewport.widthPx);
         },
-        [],
+        [isTape],
     );
 
     const apply = useCallback(
@@ -159,7 +175,7 @@ export default function usePlayheadCamera({
             if (!wavesurfer) {
                 return;
             }
-            if (viewport.zoomLevel <= WAVEFORM_ZOOM_MIN) {
+            if (!isTape() && viewport.zoomLevel <= WAVEFORM_ZOOM_MIN) {
                 clearFollowPin();
                 return;
             }
@@ -172,12 +188,13 @@ export default function usePlayheadCamera({
 
             const liveViewport = getViewportAtScroll(viewport, getScrollLeft(wavesurfer, viewport.scrollLeftPx));
             const action = getPlayheadCameraAction({
+                cameraMode: cameraModeRef.current,
                 isPlaying: true,
                 playJustStarted,
                 timeSec,
                 viewport: liveViewport,
             });
-            if (holdFollowUntilInsetRef.current && !playJustStarted) {
+            if (!isTape() && holdFollowUntilInsetRef.current && !playJustStarted) {
                 if (action.type !== 'none') {
                     return;
                 }
@@ -213,6 +230,7 @@ export default function usePlayheadCamera({
             const tick = (now: number): void => {
                 const t = Math.min(1, (now - start) / WAVEFORM_PLAYHEAD_JUMP_MS);
                 const liveAction = getPlayheadCameraAction({
+                    cameraMode: cameraModeRef.current,
                     isPlaying: true,
                     playJustStarted: true,
                     timeSec: mediaTimeRef.current,
@@ -230,7 +248,16 @@ export default function usePlayheadCamera({
             };
             jumpAnimationRef.current = window.requestAnimationFrame(tick);
         },
-        [applyScrollLeft, cancelJump, clearFollowPin, pinFollowPlayhead, playheadRef, viewportRef, wavesurferRef],
+        [
+            applyScrollLeft,
+            cancelJump,
+            clearFollowPin,
+            isTape,
+            pinFollowPlayhead,
+            playheadRef,
+            viewportRef,
+            wavesurferRef,
+        ],
     );
     applyRef.current = apply;
 
@@ -265,13 +292,19 @@ export default function usePlayheadCamera({
 
             releaseUserPanHold();
             cancelJump();
-            isFollowPinnedRef.current = false;
+            if (!isTape()) {
+                isFollowPinnedRef.current = false;
+            }
 
             const liveViewport = getViewportAtScroll(
                 viewportRef.current,
                 getScrollLeft(wavesurfer, viewportRef.current.scrollLeftPx),
             );
-            const action = getSeekCameraAction({ timeSec, viewport: liveViewport });
+            const action = getSeekCameraAction({
+                cameraMode: cameraModeRef.current,
+                timeSec,
+                viewport: liveViewport,
+            });
             if (action.type !== 'jump') {
                 return;
             }
@@ -290,11 +323,9 @@ export default function usePlayheadCamera({
                 applyScrollLeft(from + (to - from) * (1 - (1 - t) * (1 - t)), false);
                 const playhead = playheadRef.current;
                 if (playhead) {
-                    playhead.style.left = timeLeftPercent(
-                        mediaTimeRef.current,
-                        viewportRef.current.durationSec,
-                        viewportRef.current,
-                    );
+                    playhead.style.left = isTape()
+                        ? getTapePinnedPlayheadLeft()
+                        : timeLeftPercent(mediaTimeRef.current, viewportRef.current.durationSec, viewportRef.current);
                 }
                 if (t < 1) {
                     jumpAnimationRef.current = window.requestAnimationFrame(tick);
@@ -305,7 +336,7 @@ export default function usePlayheadCamera({
             };
             jumpAnimationRef.current = window.requestAnimationFrame(tick);
         },
-        [applyScrollLeft, cancelJump, playheadRef, releaseUserPanHold, viewportRef, wavesurferRef],
+        [applyScrollLeft, cancelJump, isTape, playheadRef, releaseUserPanHold, viewportRef, wavesurferRef],
     );
 
     const handleScroll = useCallback(
@@ -321,8 +352,32 @@ export default function usePlayheadCamera({
             }
 
             viewportRef.current = getViewportAtScroll(viewportRef.current, scrollLeftPx);
-            const timeSec = readMediaTime();
             const playhead = playheadRef.current;
+            if (isTape()) {
+                if (playhead) {
+                    playhead.style.left = getTapePinnedPlayheadLeft();
+                }
+                const pinTimeSec = Math.min(
+                    viewportRef.current.durationSec,
+                    Math.max(0, timeFromPositionPx(viewportRef.current.widthPx / 2, viewportRef.current)),
+                );
+                userIsScrollingRef.current = true;
+                window.clearTimeout(scrollSettleTimerRef.current);
+                scrollSettleTimerRef.current = window.setTimeout(() => {
+                    userIsScrollingRef.current = false;
+                    scrollSettleTimerRef.current = 0;
+                    if (!mediaElRef.current || mediaElRef.current.paused) {
+                        return;
+                    }
+                    applyRef.current?.(readMediaTime(), false);
+                }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+                cancelJump();
+                programmaticScrollRef.current = false;
+                onUserPan(pinTimeSec);
+                return;
+            }
+
+            const timeSec = readMediaTime();
             if (playhead) {
                 playhead.style.left = timeLeftPercent(timeSec, viewportRef.current.durationSec, viewportRef.current);
             }
@@ -343,7 +398,7 @@ export default function usePlayheadCamera({
             programmaticScrollRef.current = false;
             onUserPan(timeSec);
         },
-        [cancelJump, isUserPan, mediaElRef, playheadRef, readMediaTime, viewportRef, wavesurferRef],
+        [cancelJump, isTape, isUserPan, mediaElRef, playheadRef, readMediaTime, viewportRef, wavesurferRef],
     );
 
     useEffect(
@@ -361,6 +416,7 @@ export default function usePlayheadCamera({
         clearFollowPin,
         handleScroll,
         isFollowPinned,
+        isUserPanning,
         onSeek,
         onZoom,
         releaseUserPanHold,

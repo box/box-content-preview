@@ -27,6 +27,8 @@ export const WAVEFORM_ZOOM_MIN = 1;
 export const WAVEFORM_ZOOM_MAX = 24;
 /** Visible window never shorter than this. */
 export const WAVEFORM_MIN_VIEW_WINDOW_SEC = 4;
+/** Tape (phone/tablet) default: seconds of audio visible in the viewport. */
+export const WAVEFORM_TAPE_DEFAULT_WINDOW_SEC = 10;
 export const WAVEFORM_ZOOM_SLIDER_MAX = 100;
 /** One click on zoom in/out moves this many units on the 0–100 slider. */
 export const WAVEFORM_ZOOM_BUTTON_STEP = 10;
@@ -35,6 +37,8 @@ export const WAVEFORM_FOLLOW_INSET_PX = 200;
 export const WAVEFORM_PLAYHEAD_JUMP_MS = 400;
 /** After the last user pan, wait this long before the camera may pin again. */
 export const WAVEFORM_FOLLOW_SCROLL_SETTLE_MS = 150;
+/** Ignore a WaveSurfer click after a tape swipe (iOS delayed click). Must outlast the scrub-chip hide. */
+export const WAVEFORM_TAPE_CLICK_SUPPRESS_MS = 200;
 
 export const WAVEFORM_BAR_GAP = 2;
 export const WAVEFORM_BAR_WIDTH = 2;

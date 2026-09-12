@@ -42,11 +42,21 @@
     overflow: visible;
 }
 
+// Tape: at least the desktop bar height (140px), and at least 25% of the player
+// stage (same box as `.bp-media-container`). Percentage on `.bp-WaveformView`
+// itself would resolve against this wrapper's shrink-wrapped height and collapse.
+.bp-MP3ControlsV2-stage:has(.bp-WaveformView--tape) .bp-MP3ControlsV2-waveform {
+    display: flex;
+    flex-direction: column;
+    height: max(var(--bp-waveform-bar-min, 140px), 25%);
+    min-height: 0;
+}
+
 .bp-MP3ControlsV2-waveformZoom {
     position: absolute;
     top: 48px;
     right: 48px;
-    z-index: 3;
+    z-index: 6;
     pointer-events: none;
 
     .bp-WaveformZoomControl {

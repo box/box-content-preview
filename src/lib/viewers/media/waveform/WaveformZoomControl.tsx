@@ -17,11 +17,14 @@ export default function WaveformZoomControl({
 }: WaveformZoomControlProps): JSX.Element {
     const [isHovered, setHovered] = useState(false);
     const [isFocused, setFocused] = useState(false);
-    const dismissTimerRef = useRef(0);
+    const [isPinned, setPinned] = useState(false);
+    const wasFlyoutOpenOnPointerDownRef = useRef(true); // first tap on + pins the flyout instead of zooming
+    const zoomControlElRef = useRef<HTMLDivElement>(null); // root; outside pointerdown unpins the flyout
+    const dismissTimerRef = useRef(0); // delay before hover-close of the flyout
     const sliderId = `bp-waveform-zoom-slider${useId()}`;
     const zoom = clampWaveformZoom(zoomLevel, maxZoom);
     const zoomValue = Math.round(sliderValueFromZoom(zoom, maxZoom));
-    const isOpen = isHovered || isFocused || isRevealed;
+    const isOpen = isHovered || isFocused || isRevealed || isPinned;
     const isAtMinZoom = zoomValue <= 0;
     const isAtMaxZoom = zoomValue >= WAVEFORM_ZOOM_SLIDER_MAX;
 
@@ -31,6 +34,25 @@ export default function WaveformZoomControl({
     }, []);
 
     useEffect(() => () => window.clearTimeout(dismissTimerRef.current), []);
+
+    useEffect(() => {
+        if (!isPinned) {
+            return undefined;
+        }
+
+        const closeIfOutside = (event: PointerEvent): void => {
+            const zoomControlEl = zoomControlElRef.current;
+            if (!zoomControlEl || zoomControlEl.contains(event.target as Node | null)) {
+                return;
+            }
+            setPinned(false);
+            setFocused(false);
+            setHovered(false);
+        };
+
+        document.addEventListener('pointerdown', closeIfOutside);
+        return () => document.removeEventListener('pointerdown', closeIfOutside);
+    }, [isPinned]);
 
     const handleSlider = useCallback(
         (newValue: number): void => {
@@ -46,8 +68,23 @@ export default function WaveformZoomControl({
         [maxZoom, onZoomChange, zoomValue],
     );
 
+    const handleZoomInPointerDown = useCallback((): void => {
+        wasFlyoutOpenOnPointerDownRef.current = isHovered || isFocused || isRevealed || isPinned;
+    }, [isFocused, isHovered, isPinned, isRevealed]);
+
+    const handleZoomInClick = useCallback((): void => {
+        if (!wasFlyoutOpenOnPointerDownRef.current) {
+            setPinned(true);
+            return;
+        }
+        if (!isAtMaxZoom) {
+            handleStep(WAVEFORM_ZOOM_BUTTON_STEP);
+        }
+    }, [handleStep, isAtMaxZoom]);
+
     return (
         <div
+            ref={zoomControlElRef}
             aria-label={__('media_zoom')}
             className={classNames('bp-WaveformZoomControl', { 'bp-is-open': isOpen })}
             data-testid="bp-waveform-zoom"
@@ -56,6 +93,7 @@ export default function WaveformZoomControl({
                     return;
                 }
                 setFocused(false);
+                setPinned(false);
             }}
             onFocus={() => {
                 clearDismiss();
@@ -74,15 +112,12 @@ export default function WaveformZoomControl({
             role="group"
         >
             <MediaToggle
-                aria-disabled={isAtMaxZoom}
+                aria-disabled={isOpen && isAtMaxZoom}
                 className="bp-WaveformZoomControl-button"
                 data-resin-target="waveformZoomIn"
                 data-testid="bp-waveform-zoom-in"
-                onClick={() => {
-                    if (!isAtMaxZoom) {
-                        handleStep(WAVEFORM_ZOOM_BUTTON_STEP);
-                    }
-                }}
+                onClick={handleZoomInClick}
+                onPointerDown={handleZoomInPointerDown}
                 title={__('zoom_in')}
             >
                 <IconZoomIn24 />
