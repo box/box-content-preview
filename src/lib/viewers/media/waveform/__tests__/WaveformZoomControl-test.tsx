@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../constants';
 import WaveformZoomControl from '../WaveformZoomControl';
@@ -123,6 +123,43 @@ describe('WaveformZoomControl', () => {
         onZoomChange.mockClear();
         await user.click(screen.getByRole('button', { name: __('zoom_out') }));
         expect(onZoomChange).toHaveBeenCalledWith(2.2);
+    });
+
+    test('should open the slider on the first collapsed press and zoom on the next', () => {
+        const onZoomChange = jest.fn();
+        render(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={2.5} />);
+
+        const control = screen.getByTestId('bp-waveform-zoom');
+        const zoomIn = screen.getByTestId('bp-waveform-zoom-in');
+        expect(control).not.toHaveClass('bp-is-open');
+
+        fireEvent.pointerDown(zoomIn, { pointerType: 'touch' });
+        fireEvent.click(zoomIn);
+        expect(control).toHaveClass('bp-is-open');
+        expect(onZoomChange).not.toHaveBeenCalled();
+        expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toBeInTheDocument();
+
+        const zoomOut = screen.getByRole('button', { name: __('zoom_out') });
+        fireEvent.pointerDown(zoomIn, { pointerType: 'touch' });
+        fireEvent.click(zoomIn);
+        expect(onZoomChange).toHaveBeenCalledWith(2.8);
+
+        onZoomChange.mockClear();
+        fireEvent.click(zoomOut);
+        expect(onZoomChange).toHaveBeenCalledWith(2.2);
+    });
+
+    test('should collapse a pinned zoom flyout when tapping outside', () => {
+        render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />);
+
+        const control = screen.getByTestId('bp-waveform-zoom');
+        const zoomIn = screen.getByTestId('bp-waveform-zoom-in');
+        fireEvent.pointerDown(zoomIn, { pointerType: 'touch' });
+        fireEvent.click(zoomIn);
+        expect(control).toHaveClass('bp-is-open');
+
+        fireEvent.pointerDown(document.body);
+        expect(control).not.toHaveClass('bp-is-open');
     });
 
     test('should ignore zoom button clicks at the slider ends', async () => {

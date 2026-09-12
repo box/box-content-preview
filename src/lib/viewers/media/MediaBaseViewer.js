@@ -207,10 +207,9 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
 
-        if (Browser.isIOS()) {
-            // iOS doesn't fire loadeddata event until some data loads
-            // Adding autoplay prevents this but won't actually autoplay the video.
-            // https://webkit.org/blog/6784/new-video-policies-for-ios/
+        if (Browser.isIOS() && this.mediaEl.tagName === 'VIDEO') {
+            // Unblocks loadeddata on iOS <video>. Do not set this on <audio>:
+            // after tap-to-open, Safari will start playback.
             this.mediaEl.autoplay = true;
         }
 

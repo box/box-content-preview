@@ -10,7 +10,7 @@ import {
     WAVEFORM_HEIGHT,
     WAVEFORM_PLAYHEAD_JUMP_MS,
 } from '../constants';
-import { WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
+import { WAVEFORM_COLOR_HOVER_PLAYED, WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
 import { getPinnedPlayheadLeft } from '../viewport';
 
 const mockDestroy = jest.fn();
@@ -49,6 +49,25 @@ function spyFollowScrollSettle(onSettle: (fn: () => void) => void): void {
         }
         return 0;
     }) as typeof window.setTimeout);
+}
+
+/** jsdom does not flush WaveSurfer scroll's rAF-queued tape seek. */
+function swipeTape(): void {
+    const queued: FrameRequestCallback[] = [];
+    const raf = jest.spyOn(window, 'requestAnimationFrame').mockImplementation(((cb: FrameRequestCallback) => {
+        queued.push(cb);
+        return queued.length;
+    }) as typeof requestAnimationFrame);
+    try {
+        act(() => {
+            scrollHandler?.();
+        });
+        act(() => {
+            queued.splice(0).forEach(cb => cb(0));
+        });
+    } finally {
+        raf.mockRestore();
+    }
 }
 
 function renderZoomedWaveform({
@@ -250,6 +269,26 @@ describe('WaveformView', () => {
 
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
         expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should not apply hover fills from a touch pointer', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.pointerMove(track, { clientX: 50, pointerType: 'touch' });
+
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
     });
 
     test('should show the hover time chip while zoomed', () => {
@@ -994,5 +1033,318 @@ describe('WaveformView', () => {
             />,
         );
         expect(playhead.style.left).toBe('50%');
+    });
+
+    test('should pin the playhead at center and not seek from a tap in tape mode', () => {
+        const onPlayPause = jest.fn();
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                isPlaying={false}
+                onPlayPause={onPlayPause}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--tape');
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
+        expect(WaveSurfer.create).toHaveBeenCalledWith(
+            expect.objectContaining({ interact: false, progressColor: WAVEFORM_COLOR_HOVER_PLAYED }),
+        );
+        expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ minPxPerSec: 25 }));
+
+        clickHandler?.(0.25);
+        fireEvent.pointerUp(
+            screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement,
+            { button: 0, pointerType: 'touch' },
+        );
+
+        expect(onSeek).not.toHaveBeenCalled();
+        expect(onPlayPause).toHaveBeenCalledWith(true);
+        expect(onPlayPause).toHaveBeenCalledTimes(1);
+    });
+
+    test('should size tape WaveSurfer bars to the canvas box when the stage is taller than 206px', () => {
+        render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
+
+        mockSetOptions.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { height: 320, width: 200 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ height: 320 }));
+    });
+
+    test('should size tape WaveSurfer from the canvas height on first paint', () => {
+        Object.defineProperty(HTMLElement.prototype, 'clientHeight', { configurable: true, value: 260 });
+        try {
+            render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
+
+            expect(WaveSurfer.create).toHaveBeenCalledWith(expect.objectContaining({ height: 260 }));
+        } finally {
+            Object.defineProperty(HTMLElement.prototype, 'clientHeight', { configurable: true, value: 0 });
+        }
+    });
+
+    test('should not recenter the tape playhead when only the canvas size changes', () => {
+        render(<WaveformView cameraMode="tape" currentTime={2} durationSec={8} peaks={new Array(800).fill(0.5)} />);
+
+        mockSetScroll.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { height: 320, width: 200 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetScroll).not.toHaveBeenCalled();
+    });
+
+    test('should seek to the time under the center pin when the tape waveform is swiped', () => {
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        expect(onSeek).toHaveBeenCalledWith(2);
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
+        const chip = screen.getByTestId('bp-waveform-hover');
+        expect(chip).toHaveClass('bp-WaveformView-hover--tape');
+        expect(chip).toHaveStyle({ left: '50%' });
+        expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+    });
+
+    test('should keep the tape scroller pan-able at 1x so gutter swipes can seek', () => {
+        const onSeek = jest.fn();
+        const scrollStyle: { overflowX?: string; scrollbarWidth?: string } = {};
+        mockGetWrapper.mockReturnValue({
+            clientWidth: 200,
+            parentElement: { style: scrollStyle },
+            style: {},
+        });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={1}
+            />,
+        );
+
+        expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ fillParent: false, minPxPerSec: 25 }));
+        expect(scrollStyle.overflowX).toBe('auto');
+        expect(scrollStyle.scrollbarWidth).toBe('none');
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
+    test('should seek once per frame while the tape is swiped', () => {
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        const queued: FrameRequestCallback[] = [];
+        const raf = jest.spyOn(window, 'requestAnimationFrame').mockImplementation(((cb: FrameRequestCallback) => {
+            queued.push(cb);
+            return queued.length;
+        }) as typeof requestAnimationFrame);
+
+        try {
+            mockGetScroll.mockReturnValue(50);
+            act(() => {
+                scrollHandler?.();
+            });
+            mockGetScroll.mockReturnValue(75);
+            act(() => {
+                scrollHandler?.();
+            });
+
+            expect(onSeek).not.toHaveBeenCalled();
+
+            act(() => {
+                queued.forEach(cb => cb(0));
+            });
+
+            expect(onSeek).toHaveBeenCalledTimes(1);
+            expect(onSeek).toHaveBeenCalledWith(3);
+        } finally {
+            raf.mockRestore();
+        }
+    });
+
+    test('should not toggle play from a delayed click after a tape swipe', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    peaks={new Array(800).fill(0.5)}
+                />,
+            );
+
+            mockGetScroll.mockReturnValue(50);
+            swipeTape();
+
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+            });
+            clickHandler?.(0.25);
+            expect(onPlayPause).not.toHaveBeenCalled();
+
+            clickHandler?.(0.25);
+            expect(onPlayPause).toHaveBeenCalledTimes(1);
+            expect(onPlayPause).toHaveBeenCalledWith(true);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not toggle play from a delayed click after a tape pinch', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onZoomChange = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={100}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onZoomChange={onZoomChange}
+                    peaks={new Array(800).fill(0.5)}
+                />,
+            );
+
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+            fireEvent.touchStart(track, {
+                touches: [
+                    { clientX: 40, clientY: 20, identifier: 1 },
+                    { clientX: 120, clientY: 20, identifier: 2 },
+                ],
+            });
+            fireEvent.touchEnd(track, { touches: [] });
+
+            clickHandler?.(0.25);
+            fireEvent.pointerUp(track, { button: 0 });
+            expect(onPlayPause).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not show a hover time chip from pointer move in tape mode', () => {
+        render(<WaveformView cameraMode="tape" durationSec={8} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+    });
+
+    test('should hide the tape seek time chip after the swipe settles', () => {
+        jest.useFakeTimers();
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        mockGetScroll.mockReturnValue(50);
+        act(() => {
+            scrollHandler?.();
+        });
+        expect(screen.getByTestId('bp-waveform-hover-time')).toBeInTheDocument();
+
+        act(() => {
+            jest.advanceTimersByTime(WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+        });
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+        jest.useRealTimers();
     });
 });

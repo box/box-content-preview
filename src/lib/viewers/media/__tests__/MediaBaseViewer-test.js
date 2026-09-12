@@ -151,6 +151,18 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             });
         });
 
+        test('should not enable html autoplay on iOS for audio', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue('blob:media');
+            media.mediaEl = document.createElement('audio');
+
+            return media.load().then(() => {
+                expect(media.mediaEl.autoplay).toBe(false);
+            });
+        });
+
         test('should invoke startLoadTimer()', () => {
             jest.spyOn(media, 'startLoadTimer');
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });

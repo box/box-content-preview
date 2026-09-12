@@ -171,6 +171,53 @@ describe('WaveformCommentMarkers', () => {
         expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({ left: '0%' });
     });
 
+    test('should place a file-start marker at the center pin when the tape viewport has half-view gutters', () => {
+        const tape = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+        render(
+            <WaveformCommentMarkers
+                commentMarkers={[{ ...hostCommentMarker, id: 'start', time: 0 }]}
+                durationSec={8}
+                isTape
+                viewport={tape}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-comment-markers')).toHaveClass('bp-WaveformCommentMarkers--zoomed');
+        expect(screen.getByTestId('bp-waveform-comment-markers')).toHaveClass('bp-WaveformCommentMarkers--tape');
+        expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({ left: '50%' });
+    });
+
+    test('should not treat half-view gutters as tape without isTape', () => {
+        const windowed = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+        render(
+            <WaveformCommentMarkers
+                commentMarkers={[{ ...hostCommentMarker, id: 'start', time: 0 }]}
+                durationSec={8}
+                viewport={windowed}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-comment-markers')).not.toHaveClass('bp-WaveformCommentMarkers--tape');
+        expect(screen.getByTestId('bp-waveform-comment-markers')).not.toHaveClass('bp-WaveformCommentMarkers--zoomed');
+        expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({ left: '50%' });
+    });
+
     test('should place a host comment_markers entry at time over duration', () => {
         render(<WaveformCommentMarkers commentMarkers={[hostCommentMarker]} durationSec={180} />);
 
@@ -275,6 +322,7 @@ describe('WaveformCommentMarkers', () => {
         rerender(<WaveformCommentMarkers commentMarkers={[hostCommentMarker]} durationSec={180} viewport={zoomed} />);
 
         expect(screen.getByTestId('bp-waveform-comment-markers')).toHaveClass('bp-WaveformCommentMarkers--zoomed');
+        expect(screen.getByTestId('bp-waveform-comment-markers')).not.toHaveClass('bp-WaveformCommentMarkers--tape');
         expect(badge).toHaveStyle({
             left: `${(72.729 / 90) * 100}%`,
         });

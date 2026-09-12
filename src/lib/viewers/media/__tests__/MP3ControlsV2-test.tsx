@@ -3,19 +3,31 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MP3ControlsV2, { Props } from '../MP3ControlsV2';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
+import useTapeWaveform from '../waveform/useTapeWaveform';
+
+jest.mock('../waveform/useTapeWaveform', () => ({
+    __esModule: true,
+    default: jest.fn(() => false),
+}));
+
+const mockMountViewport = { maxZoom: 4, widthPx: 800 };
 
 jest.mock('../waveform/WaveformView', () => {
     function MockWaveformView({
+        cameraMode,
         durationSec = 0,
         interactive,
         onViewportChange,
         onZoomChange,
+        zoomLevel = 1,
     }: {
+        cameraMode?: string;
         durationSec?: number;
         interactive?: boolean;
         onViewportChange?: (viewport: {
             durationSec: number;
             endSec: number;
+            gutterPx: number;
             heightPx: number;
             maxZoom: number;
             pixelsPerSecond: number;
@@ -25,16 +37,19 @@ jest.mock('../waveform/WaveformView', () => {
             zoomLevel: number;
         }) => void;
         onZoomChange?: (zoomLevel: number) => void;
+        zoomLevel?: number;
     }): JSX.Element {
         const overview = {
             durationSec,
             endSec: durationSec,
+            gutterPx: 0,
             heightPx: 140,
-            maxZoom: 4,
-            pixelsPerSecond: durationSec > 0 ? 800 / durationSec : 0,
+            maxZoom: mockMountViewport.maxZoom,
+            pixelsPerSecond:
+                durationSec > 0 && mockMountViewport.widthPx > 0 ? mockMountViewport.widthPx / durationSec : 0,
             scrollLeftPx: 0,
             startSec: 0,
-            widthPx: 800,
+            widthPx: mockMountViewport.widthPx,
             zoomLevel: 1,
         };
         mockUseEffect(() => {
@@ -42,9 +57,12 @@ jest.mock('../waveform/WaveformView', () => {
         }, [durationSec, onViewportChange]);
         return (
             <div
+                className={cameraMode === 'tape' ? 'bp-WaveformView--tape' : undefined}
+                data-camera-mode={cameraMode || 'desktop'}
                 data-duration-sec={String(durationSec)}
                 data-interactive={interactive ? 'true' : 'false'}
                 data-testid="bp-waveform-view"
+                data-zoom-level={String(zoomLevel)}
             >
                 <button data-testid="bp-mock-waveform-zoom" onClick={() => onZoomChange?.(2)} type="button">
                     zoom
@@ -80,6 +98,20 @@ jest.mock('../waveform/WaveformView', () => {
                     viewport pan
                 </button>
                 <button
+                    data-testid="bp-mock-waveform-viewport-ready"
+                    onClick={() =>
+                        onViewportChange?.({
+                            ...overview,
+                            maxZoom: 4,
+                            pixelsPerSecond: durationSec > 0 ? 800 / durationSec : 0,
+                            widthPx: 800,
+                        })
+                    }
+                    type="button"
+                >
+                    ready
+                </button>
+                <button
                     data-testid="bp-mock-waveform-max-zoom"
                     onClick={() => onViewportChange?.({ ...overview, maxZoom: 1.2, widthPx: 1600 })}
                     type="button"
@@ -111,6 +143,9 @@ afterAll(() => {
 describe('MP3ControlsV2', () => {
     afterEach(() => {
         jest.useRealTimers();
+        mockMountViewport.maxZoom = 4;
+        mockMountViewport.widthPx = 800;
+        (useTapeWaveform as jest.Mock).mockReturnValue(false);
     });
 
     const hostCommentMarkers = [
@@ -155,6 +190,9 @@ describe('MP3ControlsV2', () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
             expect(await screen.findByTestId('media-controls-wrapper-v2')).toHaveClass('bp-MP3ControlsV2');
+            expect(
+                screen.getByTestId('media-controls-wrapper-v2').style.getPropertyValue('--bp-waveform-bar-min'),
+            ).toBe('140px');
         });
 
         test('should render the waveform instead of the time slider', async () => {
@@ -322,6 +360,79 @@ describe('MP3ControlsV2', () => {
             expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-interactive', 'true');
             expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
             expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should use the tape camera, a 10s default window, and keep the zoom control collapsed', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({
+                commentMarkers: hostCommentMarkers,
+                durationTime: 100,
+                isPlaying: true,
+                peaks: new Array(800).fill(0.5),
+            });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-camera-mode', 'tape');
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '4');
+            expect(screen.getByTestId('bp-waveform-zoom')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-zoom')).not.toHaveClass('bp-is-open');
+            expect(screen.getByTestId('bp-waveform-comment-markers')).toHaveClass('bp-WaveformCommentMarkers--tape');
+        });
+
+        test('should load tape zoom at the 10s window before play', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({ durationTime: 100, peaks: new Array(800).fill(0.5) });
+
+            expect(await screen.findByTestId('bp-MP3ControlsV2-play-overlay')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-camera-mode', 'tape');
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '4');
+        });
+
+        test('should load tape zoom at the 10s window before audio metadata', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'duration', { configurable: true, value: NaN });
+            getWrapper({ durationTime: 100, mediaEl, peaks: new Array(800).fill(0.5) });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-duration-sec', '100');
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '4');
+            expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();
+        });
+
+        test('should default short tape files to 1x zoom', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({ durationTime: 8, isPlaying: true, peaks: new Array(800).fill(0.5) });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '1');
+        });
+
+        test('should apply the tape 10s window after the canvas reports a width', async () => {
+            mockMountViewport.maxZoom = 1;
+            mockMountViewport.widthPx = 0;
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({ durationTime: 100, isPlaying: true, peaks: new Array(800).fill(0.5) });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '1');
+
+            await userEvent.click(screen.getByTestId('bp-mock-waveform-viewport-ready'));
+
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '4');
+        });
+
+        test('should keep overlay zoom on tape after a later viewport pan', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({ durationTime: 100, isPlaying: true, peaks: new Array(800).fill(0.5) });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '4');
+
+            await userEvent.click(screen.getByTestId('bp-waveform-zoom-in'));
+            await userEvent.click(screen.getByTestId('bp-waveform-zoom-out'));
+
+            const zoomedOut = screen.getByTestId('bp-waveform-view').getAttribute('data-zoom-level');
+            expect(zoomedOut).not.toBe('4');
+
+            await userEvent.click(screen.getByTestId('bp-mock-waveform-viewport-pan'));
+
+            expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', zoomedOut);
         });
 
         test('should open the zoom slider on waveform zoom and dismiss after the delay', async () => {
