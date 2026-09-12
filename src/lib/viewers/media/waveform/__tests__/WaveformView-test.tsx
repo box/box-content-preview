@@ -19,7 +19,11 @@ const mockSetOptions = jest.fn();
 const mockSetTime = jest.fn();
 const mockGetScroll = jest.fn(() => 0);
 const mockGetWidth = jest.fn(() => 200);
-const mockGetWrapper = jest.fn(() => ({ clientWidth: 200 }));
+const mockGetWrapper = jest.fn((): {
+    clientWidth: number;
+    parentElement?: { style: { overflowX?: string; scrollbarWidth?: string } } | null;
+    style?: Record<string, string>;
+} => ({ clientWidth: 200 }));
 const mockSetScroll = jest.fn();
 const mockSetScrollTime = jest.fn();
 const mockObserve = jest.fn();

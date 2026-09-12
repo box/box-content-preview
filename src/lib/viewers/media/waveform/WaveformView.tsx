@@ -92,7 +92,11 @@ function applyWaveformGutters(wavesurfer: WaveSurfer, gutterPx: number): void {
     const scroll = wrapper.parentElement;
     if (scroll && scroll.style) {
         scroll.style.overflowX = gutterPx > 0 ? 'auto' : '';
-        scroll.style.scrollbarWidth = gutterPx > 0 ? 'none' : '';
+        if (gutterPx > 0) {
+            scroll.style.setProperty('scrollbar-width', 'none');
+        } else {
+            scroll.style.removeProperty('scrollbar-width');
+        }
     }
 }
 
