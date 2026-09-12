@@ -91,12 +91,9 @@ function applyWaveformGutters(wavesurfer: WaveSurfer, gutterPx: number): void {
     // (tape 1x). Gutters live in these margins, so the scroller must stay pan-able.
     const scroll = wrapper.parentElement;
     if (scroll && scroll.style) {
-        scroll.style.overflowX = gutterPx > 0 ? 'auto' : '';
-        if (gutterPx > 0) {
-            scroll.style.setProperty('scrollbar-width', 'none');
-        } else {
-            scroll.style.removeProperty('scrollbar-width');
-        }
+        const scrollStyle = scroll.style as CSSStyleDeclaration & { scrollbarWidth?: string };
+        scrollStyle.overflowX = gutterPx > 0 ? 'auto' : '';
+        scrollStyle.scrollbarWidth = gutterPx > 0 ? 'none' : '';
     }
 }
 
