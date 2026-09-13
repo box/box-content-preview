@@ -7,7 +7,14 @@ import {
     EVENT_COMMENT_RANGE_DRAFT_DISMISS,
     isValidCommentRangeDraft,
 } from '../controls/media/types';
-import { AUDIO_PLAYER_V2, STATUS_ERROR, STATUS_SUCCESS, STATUS_VIEWABLE, WAVEFORM_REP_NAME } from '../../constants';
+import {
+    AUDIO_PLAYER_V2,
+    CLASS_DARK,
+    STATUS_ERROR,
+    STATUS_SUCCESS,
+    STATUS_VIEWABLE,
+    WAVEFORM_REP_NAME,
+} from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import MediaBaseViewer from './MediaBaseViewer';
@@ -106,6 +113,9 @@ class MP3Viewer extends MediaBaseViewer {
         if (this.isAudioPlayerV2) {
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
+            if (this.rootEl) {
+                this.rootEl.classList.add(CLASS_DARK);
+            }
             this.ensureV2Controls();
             this.importWaveformDecode();
             // Listen on the loading shell. The waveform is on
@@ -423,6 +433,9 @@ class MP3Viewer extends MediaBaseViewer {
         if (this.mediaContainerEl) {
             this.mediaContainerEl.classList.remove('bp-media-container--v2');
         }
+        if (this.rootEl) {
+            this.rootEl.classList.remove(CLASS_DARK);
+        }
     }
 
     /**
@@ -463,6 +476,9 @@ class MP3Viewer extends MediaBaseViewer {
         this.shuttleDirection = null;
         this.shuttleRate = 0;
         this.abortWaveformLoads();
+        if (this.rootEl) {
+            this.rootEl.classList.remove(CLASS_DARK);
+        }
         super.destroy();
     }
 

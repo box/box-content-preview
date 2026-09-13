@@ -22,13 +22,13 @@ describe('lib/file', () => {
     describe('getURL()', () => {
         test('should return the correct api url', () => {
             expect(getURL('id', '', 'api')).toEqual(
-                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available',
+                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available,version_number,modified_at,modified_by',
             );
         });
 
         test('should return the correct API url for file version', () => {
             expect(getURL('id', 'versionId', 'api')).toEqual(
-                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available',
+                'api/2.0/files/id/versions/versionId?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url,is_download_available,version_number,modified_at,modified_by',
             );
         });
     });
