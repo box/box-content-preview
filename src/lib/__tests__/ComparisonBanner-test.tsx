@@ -53,22 +53,20 @@ describe('lib/ComparisonBanner', () => {
 
         test('should render badge, timestamp, and author for the current pane', () => {
             const { container } = render(<ComparisonBanner file={file} locale="en-US" />);
-            const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`);
+            const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`) as HTMLElement;
 
-            expect(bannerEl).not.toBeNull();
-            expect(bannerEl.getAttribute('role')).toBe('status');
-            expect(bannerEl.getAttribute('aria-label')).toBe(__('comparison_banner_current'));
-            expect(bannerEl.querySelector('.bp-version-banner-badge').textContent).toBe('12');
-            expect(bannerEl.querySelector('.bp-version-banner-time').textContent).toMatch(/Aug/);
-            expect(bannerEl.querySelector('.bp-version-banner-author').textContent).toBe('Emily Huang');
+            expect(bannerEl).toHaveAttribute('role', 'status');
+            expect(bannerEl).toHaveAttribute('aria-label', __('comparison_banner_current'));
+            expect(bannerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('12');
+            expect(bannerEl.querySelector('.bp-version-banner-time')).toHaveTextContent(/Aug/);
+            expect(bannerEl.querySelector('.bp-version-banner-author')).toHaveTextContent('Emily Huang');
         });
 
         test('should use the previous-version aria label on the compared pane', () => {
             const { container } = render(<ComparisonBanner file={file} isComparedPreview />);
+            const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`) as HTMLElement;
 
-            expect(container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`).getAttribute('aria-label')).toBe(
-                __('comparison_banner_previous'),
-            );
+            expect(bannerEl).toHaveAttribute('aria-label', __('comparison_banner_previous'));
         });
 
         test('should omit missing fields', () => {
@@ -87,13 +85,13 @@ describe('lib/ComparisonBanner', () => {
             act(() => {
                 root.render({ version_number: '1' });
             });
-            expect(containerEl.querySelector('.bp-version-banner-badge').textContent).toBe('1');
+            expect(containerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('1');
 
             act(() => {
                 root.render({ version_number: '2' });
             });
             expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`)).toHaveLength(1);
-            expect(containerEl.querySelector('.bp-version-banner-badge').textContent).toBe('2');
+            expect(containerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('2');
 
             act(() => {
                 root.destroy();
