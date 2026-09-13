@@ -275,3 +275,112 @@ $header-height: 48px;
 .bp-container .bp-btn-primary {
     color: #fff;
 }
+
+// Overlay banner. Pad scrollable viewers so the first page can sit below it.
+.bp.bp-is-comparing {
+    --bp-comparison-banner-height: 4.5rem;
+
+    &:not(.bp-is-fullscreen) {
+        .bp-doc,
+        .bp-document-preload-wrapper,
+        .bp-image,
+        .bp-images,
+        .bp-text-plain {
+            padding-top: var(--bp-comparison-banner-height);
+        }
+    }
+
+    &.bp-is-fullscreen .bp-version-banner {
+        display: none;
+    }
+}
+
+.bp-version-banner {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 3;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    height: var(--bp-comparison-banner-height, 4.5rem);
+    padding: 16px;
+    pointer-events: none;
+    background: linear-gradient(180deg, #f5f5f5 19.61%, rgb(255 255 255 / 0%) 100%);
+}
+
+.bp-version-banner-badge {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 20px;
+    background-color: #26c281;
+    border: 1px solid rgb(0 0 0 / 12%);
+    border-radius: 50%;
+}
+
+.bp-is-compared .bp-version-banner-badge {
+    color: #000;
+    font-weight: bold;
+    background-color: rgb(255 255 255 / 70%);
+}
+
+.bp-version-banner-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.bp-version-banner-time {
+    overflow: hidden;
+    color: #000;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.bp-is-compared .bp-version-banner-time {
+    color: #222;
+}
+
+.bp-version-banner-author {
+    overflow: hidden;
+    color: #000;
+    font-size: 12px;
+    line-height: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+// Video lowers lights on .bp. MP3/MP4 v2 keep the dark stage on .bp-media--v2
+// (a descendant of .bp-content, not an ancestor of the overlay banner).
+:is(.bp-dark, .bp-theme-dark, .bp:has(.bp-media--v2)) {
+    .bp-version-banner {
+        background: linear-gradient(180deg, rgb(0 0 0 / 90%) 19.61%, rgb(0 0 0 / 0%) 100%);
+    }
+
+    .bp-version-banner-time {
+        color: #fff;
+    }
+
+    .bp-version-banner-author {
+        color: rgb(255 255 255 / 70%);
+    }
+}
+
+:is(.bp-dark, .bp:has(.bp-media--v2)).bp-is-compared .bp-version-banner-badge,
+.bp-theme-dark .bp-is-compared .bp-version-banner-badge {
+    color: #fff;
+    background-color: rgb(255 255 255 / 30%);
+    border-color: rgb(255 255 255 / 12%);
+}

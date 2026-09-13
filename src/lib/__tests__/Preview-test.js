@@ -266,6 +266,41 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('setComparisonMode()', () => {
+        beforeEach(() => {
+            preview.options = {};
+            preview.file = { id: '123', version_number: '4' };
+            preview.location = { locale: 'en-US' };
+            preview.ui = {
+                previewContainer: document.createElement('div'),
+                showComparisonBanner: jest.fn(),
+                hideComparisonBanner: jest.fn(),
+            };
+            preview.viewer = { rootEl: document.createElement('div') };
+        });
+
+        test('should add comparison classes and show the banner', () => {
+            preview.setComparisonMode({ isComparing: true, isComparedPreview: true });
+
+            expect(preview.options.isComparing).toBe(true);
+            expect(preview.options.isComparedPreview).toBe(true);
+            expect(preview.viewer.rootEl).toHaveClass('bp-is-comparing');
+            expect(preview.viewer.rootEl).toHaveClass('bp-is-compared');
+            expect(preview.ui.showComparisonBanner).toHaveBeenCalledWith(preview.file, {
+                isComparedPreview: true,
+                locale: 'en-US',
+            });
+        });
+
+        test('should remove comparison chrome when comparison ends', () => {
+            preview.setComparisonMode({ isComparing: true });
+            preview.setComparisonMode({ isComparing: false });
+
+            expect(preview.viewer.rootEl).not.toHaveClass('bp-is-comparing');
+            expect(preview.ui.hideComparisonBanner).toHaveBeenCalled();
+        });
+    });
+
     describe('hide()', () => {
         beforeEach(() => {
             stubs.destroy = jest.spyOn(preview, 'destroy').mockImplementation();
@@ -1499,6 +1534,22 @@ describe('lib/Preview', () => {
 
             preview.setupUI();
         });
+
+        test('should show the comparison banner when isComparing', () => {
+            preview.options.isComparing = true;
+            preview.options.isComparedPreview = true;
+            preview.file = { id: '123', version_number: '12' };
+            preview.location = { locale: 'en-US' };
+            const previewUIMock = sandbox.mock(preview.ui);
+            previewUIMock.expects('setup');
+            previewUIMock.expects('showLoadingIcon');
+            previewUIMock.expects('showLoadingIndicator');
+            previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
+            previewUIMock.expects('showComparisonBanner').atLeast(1);
+
+            preview.setupUI();
+        });
     });
 
     describe('parseOptions()', () => {
@@ -1754,6 +1805,22 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.pdfjs).toEqual({});
         });
+
+        test('should persist comparison flags when the host sets them', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                isComparing: true,
+                isComparedPreview: true,
+            });
+            expect(preview.options.isComparing).toBe(true);
+            expect(preview.options.isComparedPreview).toBe(true);
+        });
+
+        test('should default comparison flags to false when omitted', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.isComparing).toBe(false);
+            expect(preview.options.isComparedPreview).toBe(false);
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -1912,6 +1979,20 @@ describe('lib/Preview', () => {
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).toBe(stubs.file);
             expect(preview.logger.setFile).toHaveBeenCalled();
+        });
+
+        test('should refresh the comparison banner when isComparing', () => {
+            preview.options.isComparing = true;
+            preview.options.isComparedPreview = true;
+            preview.location = { locale: 'en-US' };
+            preview.ui.showComparisonBanner = jest.fn();
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(preview.ui.showComparisonBanner).toHaveBeenCalledWith(stubs.file, {
+                isComparedPreview: true,
+                locale: 'en-US',
+            });
         });
 
         test('should get the latest cache, then update it with the new file', () => {

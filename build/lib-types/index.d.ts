@@ -85,6 +85,8 @@ export class Preview {
 
     show(fileIdOrFile: string | BoxFile, token: BoxToken, options?: PreviewOptions): void;
 
+    setComparisonMode(flags?: { isComparing?: boolean; isComparedPreview?: boolean }): void;
+
     hide(): void;
 
     reload(skipServerUpdate?: boolean): void;

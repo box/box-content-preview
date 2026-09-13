@@ -43,6 +43,8 @@ import {
     ANNOTATOR_VIEW_MODES,
     API_HOST,
     APP_HOST,
+    CLASS_BOX_PREVIEW_IS_COMPARED,
+    CLASS_BOX_PREVIEW_IS_COMPARING,
     CLASS_NAVIGATION_VISIBILITY,
     ERROR_CODE_403_FORBIDDEN_BY_POLICY,
     PERMISSION_PREVIEW,
@@ -272,6 +274,79 @@ class Preview extends EventEmitter {
 
         // Load the preview
         this.load(fileIdOrFile);
+    }
+
+    /**
+     * Turns comparison chrome on or off without reloading.
+     *
+     * @public
+     * @param {Object} [flags]
+     * @param {boolean} [flags.isComparing]
+     * @param {boolean} [flags.isComparedPreview]
+     * @return {void}
+     */
+    setComparisonMode({ isComparing = false, isComparedPreview = false } = {}) {
+        this.options.isComparing = !!isComparing;
+        this.options.isComparedPreview = !!isComparedPreview;
+
+        const rootEl = (this.viewer && this.viewer.rootEl) || (this.ui && this.ui.previewContainer);
+        if (rootEl) {
+            rootEl.classList.toggle(CLASS_BOX_PREVIEW_IS_COMPARING, this.options.isComparing);
+            rootEl.classList.toggle(CLASS_BOX_PREVIEW_IS_COMPARED, this.options.isComparedPreview);
+        }
+
+        if (!this.ui) {
+            return;
+        }
+
+        if (this.options.isComparing) {
+            this.paintComparisonBanner();
+        } else {
+            this.ui.hideComparisonBanner();
+        }
+    }
+
+    /**
+     * Renders the comparison banner from this.file. Cached current-file objects often
+     * omit version_number / modified_*; fetch those fields once so the current pane
+     * can show the same badge, time, and author as the compared pane.
+     *
+     * @private
+     * @return {void}
+     */
+    paintComparisonBanner() {
+        if (!this.options.isComparing || !this.ui) {
+            return;
+        }
+
+        const bannerOptions = {
+            isComparedPreview: !!this.options.isComparedPreview,
+            locale: this.location && this.location.locale,
+        };
+        this.ui.showComparisonBanner(this.file, bannerOptions);
+
+        if (!this.file || this.file.version_number != null || !this.file.id) {
+            return;
+        }
+
+        const { apiHost } = this.options;
+        const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
+        this.api
+            .get(getURL(this.file.id, fileVersionId, apiHost), { headers: this.getRequestHeaders() })
+            .then(response => {
+                if (!this.options.isComparing || !this.file) {
+                    return;
+                }
+                const file = fileVersionId ? normalizeFileVersion(response, this.file.id) : response;
+                this.file = {
+                    ...this.file,
+                    version_number: file.version_number,
+                    modified_at: file.modified_at,
+                    modified_by: file.modified_by,
+                };
+                this.ui.showComparisonBanner(this.file, bannerOptions);
+            })
+            .catch(() => {});
     }
 
     /**
@@ -1020,6 +1095,8 @@ class Preview extends EventEmitter {
         this.ui.showLoadingIcon(this.file.extension);
         this.ui.showLoadingIndicator();
 
+        this.paintComparisonBanner();
+
         // Start the preview duration timer when the user starts to perceive preview's load
         const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
         Timer.start(previewDurationTag);
@@ -1180,6 +1257,10 @@ class Preview extends EventEmitter {
 
         this.options.pdfjs = options.pdfjs || {};
 
+        // parseOptions is an allowlist — copy host comparison flags onto this.options.
+        this.options.isComparing = !!options.isComparing;
+        this.options.isComparedPreview = !!options.isComparedPreview;
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
@@ -1326,6 +1407,7 @@ class Preview extends EventEmitter {
             // Set current file to file data from server and update file in logger
             this.file = file;
             this.logger.setFile(file);
+            this.paintComparisonBanner();
 
             // Keep reference to previously cached file version
             const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });
