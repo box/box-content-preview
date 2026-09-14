@@ -1529,8 +1529,15 @@ describe('WaveformView', () => {
             HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
         }
         const onSeek = jest.fn();
+        const onRangeDragChange = jest.fn();
         render(
-            <WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />,
+            <WaveformView
+                durationSec={8}
+                onRangeDragChange={onRangeDragChange}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
         );
         jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
             bottom: 140,
@@ -1553,7 +1560,11 @@ describe('WaveformView', () => {
         expect(onSeek).not.toHaveBeenCalled();
 
         fireEvent.pointerUp(window, { clientX: 50, pointerId: 1 });
+        expect(onRangeDragChange).toHaveBeenCalledWith(false);
         clickHandler?.(0.5);
         expect(onSeek).not.toHaveBeenCalled();
+
+        clickHandler?.(0.5);
+        expect(onSeek).toHaveBeenCalledWith(4);
     });
 });

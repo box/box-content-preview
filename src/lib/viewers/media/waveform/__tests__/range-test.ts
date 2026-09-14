@@ -124,6 +124,21 @@ describe('range', () => {
         });
     });
 
+    test('should keep an open range at the minimum span instead of collapsing', () => {
+        const snapped = dragRangeHandle({
+            durationMs,
+            handle: 'end',
+            pointerMs: 2000,
+            range: { endMs: 4000, startMs: 2000 },
+        });
+
+        expect(snapped).toEqual({
+            handle: 'end',
+            range: { endMs: 2000 + WAVEFORM_RANGE_MIN_DURATION_MS, startMs: 2000 },
+        });
+        expect(commitRangeChange(snapped.range)).toEqual(snapped.range);
+    });
+
     test('should map a pointer through the zoomed viewport into milliseconds', () => {
         const viewport = createWaveformViewport({
             durationSec: 8,

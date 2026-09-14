@@ -47,6 +47,7 @@ export type WaveformRangeSelectionProps = {
 type DragState = {
     handle: RangeHandle;
     originMs: number;
+    originRange: ResolvedRange;
     pointerId: number;
     range: ResolvedRange;
 };
@@ -226,6 +227,11 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             setActiveHandle(null);
             setDragRange(null);
             onDragChangeRef.current?.(false);
+            const didChange =
+                drag.range.startMs !== drag.originRange.startMs || drag.range.endMs !== drag.originRange.endMs;
+            if (!didChange) {
+                return;
+            }
             const committed = commitRangeChange(drag.range);
             if (committed) {
                 onRangeChangeRef.current?.(committed);
@@ -285,6 +291,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             dragRef.current = {
                 handle,
                 originMs: handle === 'start' ? resolved.startMs : resolved.endMs,
+                originRange: { endMs: resolved.endMs, startMs: resolved.startMs },
                 pointerId: event.pointerId,
                 range: resolved,
             };
@@ -341,6 +348,16 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 window.removeEventListener('pointercancel', onUp);
             };
         }, [endDrag, moveDrag]);
+
+        useEffect(() => {
+            return () => {
+                if (!dragRef.current) {
+                    return;
+                }
+                dragRef.current = null;
+                onDragChangeRef.current?.(false);
+            };
+        }, []);
 
         if (!(durationSec > 0) || !(durationMs >= 0)) {
             return null;

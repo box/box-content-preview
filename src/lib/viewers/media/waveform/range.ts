@@ -130,7 +130,8 @@ export function snapTimeMs({
 /**
  * Move one edge. Crossing the other edge swaps roles so a collapsed pair can
  * expand in either direction. Enforces `[0, duration]` and the minimum span
- * once the drag has actually opened a range.
+ * once the drag has actually opened a range. An already-open range stays a
+ * span — snapping one edge onto the other clamps to the minimum duration.
  */
 export function dragRangeHandle({
     durationMs,
@@ -164,7 +165,8 @@ export function dragRangeHandle({
         endMs = pointer;
     }
 
-    const opened = startMs !== endMs;
+    const wasOpen = range.startMs !== range.endMs;
+    const opened = wasOpen || startMs !== endMs;
     if (opened && endMs - startMs < WAVEFORM_RANGE_MIN_DURATION_MS) {
         if (nextHandle === 'end') {
             endMs = clampTimeMs(startMs + WAVEFORM_RANGE_MIN_DURATION_MS, duration);

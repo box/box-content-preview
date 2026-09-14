@@ -315,4 +315,47 @@ describe('WaveformRangeSelection', () => {
 
         expect(onRangeChange).not.toHaveBeenCalled();
     });
+
+    test('should not emit when an open range is clicked without a drag', () => {
+        const onRangeChange = jest.fn();
+        const onDragChange = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragChange={onDragChange}
+                onRangeChange={onRangeChange}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        dispatchPointer(screen.getByTestId('bp-waveform-range-handle-end'), 'pointerdown', 100);
+        dispatchPointer(window, 'pointerup', 100);
+
+        expect(onDragChange).toHaveBeenCalledWith(true);
+        expect(onDragChange).toHaveBeenCalledWith(false);
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should end the drag when the range layer unmounts', () => {
+        const onDragChange = jest.fn();
+        const onRangeChange = jest.fn();
+        const { unmount } = render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragChange={onDragChange}
+                onRangeChange={onRangeChange}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        dispatchPointer(screen.getByTestId('bp-waveform-range-handle-end'), 'pointerdown', 100);
+        expect(onDragChange).toHaveBeenCalledWith(true);
+
+        unmount();
+
+        expect(onDragChange).toHaveBeenCalledWith(false);
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
 });
