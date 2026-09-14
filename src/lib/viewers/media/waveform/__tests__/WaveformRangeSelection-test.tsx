@@ -316,6 +316,29 @@ describe('WaveformRangeSelection', () => {
         expect(onRangeChange).not.toHaveBeenCalled();
     });
 
+    test('should not start a drag when the waveform is not interactive', () => {
+        const onRangeChange = jest.fn();
+        const onDragChange = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                interactive={false}
+                onDragChange={onDragChange}
+                onRangeChange={onRangeChange}
+                range={{ endMs: null, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        dispatchPointer(screen.getByTestId('bp-waveform-range-handle-end'), 'pointerdown', 50);
+        dispatchPointer(window, 'pointermove', 100);
+        dispatchPointer(window, 'pointerup', 100);
+
+        expect(onDragChange).not.toHaveBeenCalled();
+        expect(onRangeChange).not.toHaveBeenCalled();
+        expect(screen.queryByTestId('bp-waveform-range-tooltip')).not.toBeInTheDocument();
+    });
+
     test('should not emit when an open range is clicked without a drag', () => {
         const onRangeChange = jest.fn();
         const onDragChange = jest.fn();

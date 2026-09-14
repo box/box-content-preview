@@ -1049,11 +1049,12 @@ function WaveformView({
                         currentTimeSec={currentTime}
                         durationSec={durationSec}
                         getPlayheadSec={getPlayheadSec}
+                        interactive={interactive}
                         isHighlighted={isRangeDragging || isRangeHovered}
                         keepHighlight
                         onDragChange={handleRangeDragChange}
                         onPreviewChange={setPreviewRange}
-                        onRangeChange={onRangeChange}
+                        onRangeChange={interactive ? onRangeChange : undefined}
                         range={range}
                         viewport={viewport}
                     />

@@ -411,6 +411,35 @@ describe('WaveformView', () => {
         expect(onSeek).not.toHaveBeenCalled();
     });
 
+    test('should not create a range from handles while inert', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        const onRangeChange = jest.fn();
+        const onRangeDragChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                interactive={false}
+                onRangeChange={onRangeChange}
+                onRangeDragChange={onRangeDragChange}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        fireEvent.pointerDown(screen.getByTestId('bp-waveform-range-handle-end'), {
+            button: 0,
+            clientX: 50,
+            pointerId: 1,
+        });
+        fireEvent.pointerMove(window, { clientX: 100, pointerId: 1 });
+        fireEvent.pointerUp(window, { clientX: 100, pointerId: 1 });
+
+        expect(onRangeDragChange).not.toHaveBeenCalled();
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
     test('should keep the wavesurfer instance when duration changes from the placeholder', () => {
         const peaks = [0.2, 0.8];
         const { rerender } = render(<WaveformView durationSec={1} peaks={peaks} />);

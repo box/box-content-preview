@@ -117,7 +117,8 @@
     }
 
     .bp-WaveformRange-handle {
-        pointer-events: auto;
+        pointer-events: none;
+        cursor: default;
     }
 }
 

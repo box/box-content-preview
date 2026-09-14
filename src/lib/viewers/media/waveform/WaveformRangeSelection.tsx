@@ -35,6 +35,7 @@ export type WaveformRangeSelectionProps = {
     currentTimeSec?: number;
     durationSec: number;
     getPlayheadSec?: () => number;
+    interactive?: boolean;
     isHighlighted?: boolean;
     keepHighlight?: boolean;
     onDragChange?: (isDragging: boolean) => void;
@@ -103,6 +104,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             currentTimeSec = 0,
             durationSec,
             getPlayheadSec,
+            interactive = true,
             isHighlighted = false,
             keepHighlight = true,
             onDragChange,
@@ -281,29 +283,32 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             [currentTimeSec, syncPositions],
         );
 
-        const startDrag = useCallback((handle: RangeHandle, event: React.PointerEvent<HTMLDivElement>): void => {
-            if (event.button > 1 || event.ctrlKey || event.metaKey) {
-                return;
-            }
-            event.preventDefault();
-            event.stopPropagation();
-            const resolved = resolveRange(rangeRef.current, durationMsFromSec(durationSecRef.current));
-            dragRef.current = {
-                handle,
-                originMs: handle === 'start' ? resolved.startMs : resolved.endMs,
-                originRange: { endMs: resolved.endMs, startMs: resolved.startMs },
-                pointerId: event.pointerId,
-                range: resolved,
-            };
-            event.currentTarget.setPointerCapture(event.pointerId);
-            setActiveHandle(handle);
-            setDragRange(resolved);
-            onDragChangeRef.current?.(true);
-            onPreviewChangeRef.current?.({
-                endMs: isRangeCollapsed(rangeRef.current) ? null : resolved.endMs,
-                startMs: resolved.startMs,
-            });
-        }, []);
+        const startDrag = useCallback(
+            (handle: RangeHandle, event: React.PointerEvent<HTMLDivElement>): void => {
+                if (!interactive || event.button > 1 || event.ctrlKey || event.metaKey) {
+                    return;
+                }
+                event.preventDefault();
+                event.stopPropagation();
+                const resolved = resolveRange(rangeRef.current, durationMsFromSec(durationSecRef.current));
+                dragRef.current = {
+                    handle,
+                    originMs: handle === 'start' ? resolved.startMs : resolved.endMs,
+                    originRange: { endMs: resolved.endMs, startMs: resolved.startMs },
+                    pointerId: event.pointerId,
+                    range: resolved,
+                };
+                event.currentTarget.setPointerCapture(event.pointerId);
+                setActiveHandle(handle);
+                setDragRange(resolved);
+                onDragChangeRef.current?.(true);
+                onPreviewChangeRef.current?.({
+                    endMs: isRangeCollapsed(rangeRef.current) ? null : resolved.endMs,
+                    startMs: resolved.startMs,
+                });
+            },
+            [interactive],
+        );
 
         const onHandlePointerDown = useCallback(
             (event: React.PointerEvent<HTMLDivElement>): void => {
