@@ -35,9 +35,7 @@
         .bp-WaveformView-canvas {
             height: 100%;
 
-            // Beat WaveSurfer's inline overflow-x:hidden at tape 1x so gutter margins can pan.
             > *::part(scroll) {
-                overflow-x: auto !important;
                 scrollbar-width: none;
             }
         }
@@ -91,6 +89,7 @@
 .bp-WaveformView-hover--tape {
     // Center on the 24px comment row (12px gap + 12px to row midpoint).
     top: -24px;
+    left: 50%;
     z-index: 5;
     margin-top: 0;
     transform: translate(-50%, -50%);

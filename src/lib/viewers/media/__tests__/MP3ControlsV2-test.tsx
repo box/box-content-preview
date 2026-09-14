@@ -190,9 +190,6 @@ describe('MP3ControlsV2', () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
             expect(await screen.findByTestId('media-controls-wrapper-v2')).toHaveClass('bp-MP3ControlsV2');
-            expect(
-                screen.getByTestId('media-controls-wrapper-v2').style.getPropertyValue('--bp-waveform-bar-min'),
-            ).toBe('140px');
         });
 
         test('should render the waveform instead of the time slider', async () => {

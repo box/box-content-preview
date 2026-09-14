@@ -1145,7 +1145,6 @@ describe('WaveformView', () => {
         expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
         const chip = screen.getByTestId('bp-waveform-hover');
         expect(chip).toHaveClass('bp-WaveformView-hover--tape');
-        expect(chip).toHaveStyle({ left: '50%' });
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
     });
 

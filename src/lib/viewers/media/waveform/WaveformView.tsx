@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WaveSurfer from 'wavesurfer.js';
@@ -170,55 +171,54 @@ function WaveformView({
 }: WaveformViewProps): JSX.Element {
     // DOM / WaveSurfer
     const containerRef = useRef<HTMLDivElement>(null); // WaveSurfer canvas host
-    const trackRef = useRef<HTMLDivElement>(null); // hover / tap target around the canvas
-    const playheadRef = useRef<HTMLDivElement>(null); // playhead element the camera positions
     const playheadAnimationRef = useRef(0); // animation frame id while the playhead follows playback
+    const playheadRef = useRef<HTMLDivElement>(null); // playhead element the camera positions
+    const trackRef = useRef<HTMLDivElement>(null); // hover / tap target around the canvas
     const wavesurferRef = useRef<WaveSurfer | null>(null); // WaveSurfer instance
 
     // Latest props for WaveSurfer + media listeners that must not re-subscribe each render.
-    const onSeekRef = useRef(onSeek); // latest onSeek; click/scroll handlers must not re-bind
-    const onPlayPauseRef = useRef(onPlayPause); // latest play/pause; tape tap must not re-bind
+    const cameraModeRef = useRef(cameraMode); // latest tape/desktop; WaveSurfer create() deps stay empty
+    const currentTimeRef = useRef(currentTime); // latest media time; zoom recenter reads this
+    const durationSecRef = useRef(durationSec); // latest duration; click-to-seek reads this
+    const hasZoomHandlersRef = useRef(false); // parent can zoom; wheel/pinch check this
     const interactiveRef = useRef(interactive); // latest interactive; WaveSurfer listeners read this
     const isPlayingRef = useRef(isPlaying); // latest isPlaying; tape tap toggles from this
-    const cameraModeRef = useRef(cameraMode); // latest tape/desktop; WaveSurfer create() deps stay empty
-    const hasZoomHandlersRef = useRef(false); // parent can zoom; wheel/pinch check this
-    const currentTimeRef = useRef(currentTime); // latest media time; zoom recenter reads this
-    const peaksRef = useRef(peaks); // latest peaks; WaveSurfer create() + morph read this
-    const durationSecRef = useRef(durationSec); // latest duration; click-to-seek reads this
     const mediaElRef = useRef(mediaEl); // latest <audio>/<video>; camera + playhead tick read this
+    const onPlayPauseRef = useRef(onPlayPause); // latest play/pause; tape tap must not re-bind
+    const onSeekRef = useRef(onSeek); // latest onSeek; click/scroll handlers must not re-bind
     const onViewportChangeRef = useRef(onViewportChange); // latest viewport callback; camera commits here
+    const peaksRef = useRef(peaks); // latest peaks; WaveSurfer create() + morph read this
 
     const displayedPeaksRef = useRef<ArrayLike<number> | null>(null); // peaks currently drawn (for morph)
     const peakTransitionAnimationRef = useRef(0); // animation frame id while peaks morph in
     // Zoom / pinch / tile tint (read from pointer + WaveSurfer handlers)
-    const zoomOriginRef = useRef<ZoomOrigin | null>(null); // pointer+time so zoom keeps that point fixed
-    const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null); // two-finger distance and zoom at pinch start
-    const pointerZoomRef = useRef(false); // pinch/wheel in progress; skip play/pause and tape recenter
-    const pointerZoomClearTimerRef = useRef(0); // clears pointerZoomRef after WAVEFORM_ZOOM_DISMISS_MS
+    const applyZoomWindowRef = useRef<(() => void) | null>(null); // latest applyZoomWindow; resize observer calls this
+    const bufferProgressRef = useRef(0); // latest buffer fill; zoomed tile tint reads this
     const hideScrubTimeChipTimerRef = useRef(0); // hides the tape scrub time chip after scroll settles
+    const hoverProgressRef = useRef<number | null>(null); // latest hover fill; zoomed tile tint reads this
+    const lastObservedWidthRef = useRef(0); // last ResizeObserver width; skip no-op resizes
+    const liveHeightRef = useRef(height); // canvas height last applied to WaveSurfer
+    const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null); // two-finger distance and zoom at pinch start
+    const pointerZoomClearTimerRef = useRef(0); // clears pointerZoomRef after WAVEFORM_ZOOM_DISMISS_MS
+    const pointerZoomRef = useRef(false); // pinch/wheel in progress; skip play/pause and tape recenter
+    const queuedTapeSeekTimeSecRef = useRef<number | null>(null); // seek time waiting for the next animation frame
     const suppressNextTapPlayPauseRef = useRef(false); // swallow play/pause after a swipe or pinch
     const suppressNextTapPlayPauseTimerRef = useRef(0); // clears suppressNextTapPlayPauseRef
-    const tapeSeekAnimationRef = useRef(0); // coalesces swipe seeks to one seek per animation frame
-    const queuedTapeSeekTimeSecRef = useRef<number | null>(null); // seek time waiting for the next animation frame
-    const applyZoomWindowRef = useRef<(() => void) | null>(null); // latest applyZoomWindow; resize observer calls this
-    const liveHeightRef = useRef(height); // canvas height last applied to WaveSurfer
-    const lastObservedWidthRef = useRef(0); // last ResizeObserver width; skip no-op resizes
-    const toggleTapePlaybackRef = useRef<(() => void) | null>(null); // latest tap play/pause; click/pointerup call this
-    // WaveSurfer `setOptions` fires zoom/scroll before we apply the intended scroll.
     const suppressViewportSyncRef = useRef(false); // ignore WaveSurfer zoom/scroll while we setOptions
-    const bufferProgressRef = useRef(0); // latest buffer fill; zoomed tile tint reads this
-    const hoverProgressRef = useRef<number | null>(null); // latest hover fill; zoomed tile tint reads this
+    const tapeSeekAnimationRef = useRef(0); // coalesces swipe seeks to one seek per animation frame
+    const toggleTapePlaybackRef = useRef<(() => void) | null>(null); // latest tap play/pause; click/pointerup call this
+    const zoomOriginRef = useRef<ZoomOrigin | null>(null); // pointer+time so zoom keeps that point fixed
 
-    onSeekRef.current = onSeek;
-    onPlayPauseRef.current = onPlayPause;
-    interactiveRef.current = interactive;
-    isPlayingRef.current = isPlaying;
     cameraModeRef.current = cameraMode;
     currentTimeRef.current = currentTime;
-    peaksRef.current = peaks;
     durationSecRef.current = durationSec;
+    interactiveRef.current = interactive;
+    isPlayingRef.current = isPlaying;
     mediaElRef.current = mediaEl;
+    onPlayPauseRef.current = onPlayPause;
+    onSeekRef.current = onSeek;
     onViewportChangeRef.current = onViewportChange;
+    peaksRef.current = peaks;
 
     const [internalZoom, setInternalZoom] = useState(WAVEFORM_ZOOM_MIN);
     const [hoverProgress, setHoverProgress] = useState<number | null>(null);
@@ -342,6 +342,41 @@ function WaveformView({
             pointerZoomRef.current = false;
             pointerZoomClearTimerRef.current = 0;
         }, WAVEFORM_ZOOM_DISMISS_MS);
+    }, []);
+
+    /**
+     * Seek the time under the pin (one seek per frame). Swallow the delayed iOS click;
+     * show the scrub chip until the swipe settles.
+     */
+    const handleTapeSwipe = useCallback((timeSec: number): void => {
+        // Swallow the click WaveSurfer/iOS fires after a swipe or pinch.
+        suppressNextTapPlayPauseRef.current = true;
+        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
+        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
+            suppressNextTapPlayPauseRef.current = false;
+            suppressNextTapPlayPauseTimerRef.current = 0;
+        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
+        queuedTapeSeekTimeSecRef.current = timeSec;
+        if (!tapeSeekAnimationRef.current) {
+            // One seek per frame; later scrolls just update the queued time.
+            tapeSeekAnimationRef.current = window.requestAnimationFrame(() => {
+                tapeSeekAnimationRef.current = 0;
+                const next = queuedTapeSeekTimeSecRef.current;
+                queuedTapeSeekTimeSecRef.current = null;
+                if (next != null) {
+                    onSeekRef.current?.(next);
+                }
+            });
+        }
+        if (interactiveRef.current) {
+            // Show the time under the pin; hide once scrolling has settled.
+            setScrubPreviewTimeSec(timeSec);
+            window.clearTimeout(hideScrubTimeChipTimerRef.current);
+            hideScrubTimeChipTimerRef.current = window.setTimeout(() => {
+                setScrubPreviewTimeSec(null);
+                hideScrubTimeChipTimerRef.current = 0;
+            }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+        }
     }, []);
 
     const syncViewport = useCallback(() => {
@@ -500,33 +535,10 @@ function WaveformView({
             if (suppressViewportSyncRef.current) {
                 return;
             }
+            // User pan: map scroll to the time under the playhead, then tape seeks it.
             handleCameraScroll(timeSec => {
                 if (cameraModeRef.current === 'tape' && !pointerZoomRef.current) {
-                    suppressNextTapPlayPauseRef.current = true;
-                    window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
-                    suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
-                        suppressNextTapPlayPauseRef.current = false;
-                        suppressNextTapPlayPauseTimerRef.current = 0;
-                    }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
-                    queuedTapeSeekTimeSecRef.current = timeSec;
-                    if (!tapeSeekAnimationRef.current) {
-                        tapeSeekAnimationRef.current = window.requestAnimationFrame(() => {
-                            tapeSeekAnimationRef.current = 0;
-                            const next = queuedTapeSeekTimeSecRef.current;
-                            queuedTapeSeekTimeSecRef.current = null;
-                            if (next != null) {
-                                onSeekRef.current?.(next);
-                            }
-                        });
-                    }
-                    if (interactiveRef.current) {
-                        setScrubPreviewTimeSec(timeSec);
-                        window.clearTimeout(hideScrubTimeChipTimerRef.current);
-                        hideScrubTimeChipTimerRef.current = window.setTimeout(() => {
-                            setScrubPreviewTimeSec(null);
-                            hideScrubTimeChipTimerRef.current = 0;
-                        }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
-                    }
+                    handleTapeSwipe(timeSec);
                 }
                 syncViewport();
             });
@@ -573,7 +585,7 @@ function WaveformView({
             wavesurferRef.current = null;
             displayedPeaksRef.current = null;
         };
-    }, [cancelJump, handleCameraScroll, height, isUserPanning, releaseUserPanHold, syncViewport]);
+    }, [cancelJump, handleCameraScroll, handleTapeSwipe, height, isUserPanning, releaseUserPanHold, syncViewport]);
 
     useLayoutEffect(() => {
         const el = containerRef.current;
@@ -711,13 +723,13 @@ function WaveformView({
         applyPlayheadCamera,
         cancelJump,
         clearFollowPin,
+        isUserPanning,
         mediaEl,
         onPlayheadSeek,
         releaseUserPanHold,
         seekTo,
         syncViewport,
         updatePlayheadPosition,
-        isUserPanning,
     ]);
 
     useEffect(() => {
@@ -897,11 +909,7 @@ function WaveformView({
         hoverProgress == null ? null : timeLeftPercent(hoverProgress * durationSec, durationSec, viewportRef.current);
     const scrubTimeChip =
         isTape && scrubPreviewTimeSec != null ? (
-            <div
-                className="bp-WaveformView-hover bp-WaveformView-hover--tape"
-                data-testid="bp-waveform-hover"
-                style={{ left: getTapePinnedPlayheadLeft() }}
-            >
+            <div className="bp-WaveformView-hover bp-WaveformView-hover--tape" data-testid="bp-waveform-hover">
                 <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
                     {formatTime(scrubPreviewTimeSec)}
                 </div>
@@ -911,9 +919,11 @@ function WaveformView({
     return (
         <div
             ref={bindOverlayPortalHost}
-            className={`bp-WaveformView${interactive ? '' : ' bp-WaveformView--inert'}${
-                isZoomed ? ' bp-WaveformView--zoomed' : ''
-            }${isTape ? ' bp-WaveformView--tape' : ''}`}
+            className={classNames('bp-WaveformView', {
+                'bp-WaveformView--inert': !interactive,
+                'bp-WaveformView--tape': isTape,
+                'bp-WaveformView--zoomed': isZoomed,
+            })}
             data-testid="bp-waveform-view"
         >
             <div

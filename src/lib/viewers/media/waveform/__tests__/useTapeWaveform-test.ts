@@ -3,13 +3,13 @@ import useTapeWaveform, {
     isCoarsePrimaryPointer,
     isIPadNavigator,
     isTapeWaveformInput,
-    TAPE_POINTER_MQ,
+    TAPE_POINTER_MEDIA_QUERY,
     TapeDetectionWindow,
     TapeNavigator,
 } from '../useTapeWaveform';
 
 describe('useTapeWaveform', () => {
-    const coarseQuery = TAPE_POINTER_MQ;
+    const coarseQuery = TAPE_POINTER_MEDIA_QUERY;
 
     function nav(overrides: Partial<TapeNavigator> = {}): TapeNavigator {
         return {

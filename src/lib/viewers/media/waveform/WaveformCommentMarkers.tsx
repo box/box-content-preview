@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
     buildClusters,
@@ -124,9 +125,10 @@ export default function WaveformCommentMarkers({
     return (
         <div
             ref={containerRef}
-            className={`bp-WaveformCommentMarkers${
-                alignsMarkersToVisibleWindow ? ' bp-WaveformCommentMarkers--zoomed' : ''
-            }${isTape ? ' bp-WaveformCommentMarkers--tape' : ''}`}
+            className={classNames('bp-WaveformCommentMarkers', {
+                'bp-WaveformCommentMarkers--tape': isTape,
+                'bp-WaveformCommentMarkers--zoomed': alignsMarkersToVisibleWindow,
+            })}
             data-testid="bp-waveform-comment-markers"
         >
             <div ref={trackRef} className="bp-WaveformCommentMarkers-track">
@@ -134,9 +136,10 @@ export default function WaveformCommentMarkers({
                     const marker = cluster.markers[0];
                     const isGroup = cluster.markers.length > 1;
                     const isSelected = cluster.markers.some(entry => entry.id === selectedId);
-                    const className = `bp-WaveformCommentMarkers-marker${
-                        isSelected ? ' bp-WaveformCommentMarkers-marker--selected' : ''
-                    }${isGroup ? ' bp-WaveformCommentMarkers-marker--group' : ''}`;
+                    const className = classNames('bp-WaveformCommentMarkers-marker', {
+                        'bp-WaveformCommentMarkers-marker--group': isGroup,
+                        'bp-WaveformCommentMarkers-marker--selected': isSelected,
+                    });
                     const left = `${markerLeftPercent(marker.time, durationSec, viewport)}%`;
 
                     if (isGroup) {

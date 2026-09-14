@@ -8,7 +8,7 @@ import TimestampControl from '../controls/media/TimestampControl';
 import { CommentMarker } from '../controls/media/markers';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
-import { WAVEFORM_HEIGHT, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
+import { WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
 import { WaveformViewport } from './waveform/types';
 import { clampWaveformZoom, getTapeDefaultZoom, viewportEquals } from './waveform/viewport';
@@ -155,11 +155,7 @@ export default function MP3ControlsV2({
     const waveformZoomLevel = isTape || hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN;
 
     return (
-        <div
-            className="bp-MP3ControlsV2"
-            data-testid="media-controls-wrapper-v2"
-            style={{ '--bp-waveform-bar-min': `${WAVEFORM_HEIGHT}px` } as React.CSSProperties}
-        >
+        <div className="bp-MP3ControlsV2" data-testid="media-controls-wrapper-v2">
             <div className="bp-MP3ControlsV2-stage">
                 <div className="bp-MP3ControlsV2-waveform">
                     <WaveformView

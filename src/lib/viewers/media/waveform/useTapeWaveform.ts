@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 /** Primary pointer is a finger, not a mouse/trackpad. */
-export const TAPE_POINTER_MQ = '(hover: none) and (pointer: coarse)';
+export const TAPE_POINTER_MEDIA_QUERY = '(hover: none) and (pointer: coarse)';
 
 /** Navigator fields used to detect iPad, including iPadOS reporting itself as Mac. */
 export type TapeNavigator = Pick<Navigator, 'maxTouchPoints' | 'platform' | 'userAgent'>;
@@ -14,7 +14,7 @@ export function isIPadNavigator(nav: TapeNavigator): boolean {
 }
 
 export function isCoarsePrimaryPointer(win: Pick<Window, 'matchMedia'>): boolean {
-    return typeof win.matchMedia === 'function' && win.matchMedia(TAPE_POINTER_MQ).matches;
+    return typeof win.matchMedia === 'function' && win.matchMedia(TAPE_POINTER_MEDIA_QUERY).matches;
 }
 
 /**
@@ -36,7 +36,7 @@ export default function useTapeWaveform(): boolean {
             return undefined;
         }
 
-        const mediaQuery = window.matchMedia(TAPE_POINTER_MQ);
+        const mediaQuery = window.matchMedia(TAPE_POINTER_MEDIA_QUERY);
         const sync = (): void => {
             setIsTape(isTapeWaveformInput(window));
         };
