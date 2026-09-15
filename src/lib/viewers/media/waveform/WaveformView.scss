@@ -40,7 +40,9 @@
             }
         }
 
-        .bp-WaveformView-playhead {
+        .bp-WaveformView-playhead,
+        .bp-WaveformRange-region,
+        .bp-WaveformRange-handle {
             height: calc(100% + 10px);
         }
     }
@@ -115,4 +117,13 @@
     .bp-WaveformView-track {
         cursor: default;
     }
+
+    .bp-WaveformRange-handle {
+        pointer-events: none;
+        cursor: default;
+    }
+}
+
+.bp-WaveformView:not(:hover) .bp-WaveformRange:not(.bp-WaveformRange--persist) {
+    opacity: 0.4;
 }
