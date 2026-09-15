@@ -1449,53 +1449,31 @@ describe('WaveformView', () => {
     });
 
     test('should hide collapsed range handles while playing', () => {
-        const mediaEl = document.createElement('audio');
-        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        render(
-            <WaveformView
-                durationSec={8}
-                mediaEl={mediaEl}
-                peaks={[0.2, 0.8]}
-                range={{ endMs: null, startMs: 2000 }}
-            />,
-        );
+        render(<WaveformView durationSec={8} isPlaying peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />);
 
         expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
     });
 
     test('should show collapsed range handles again after pause', () => {
-        let paused = false;
-        const mediaEl = document.createElement('audio');
-        Object.defineProperty(mediaEl, 'paused', { configurable: true, get: () => paused });
-        render(
+        const { rerender } = render(
+            <WaveformView durationSec={8} isPlaying peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+
+        rerender(
             <WaveformView
                 durationSec={8}
-                mediaEl={mediaEl}
+                isPlaying={false}
                 peaks={[0.2, 0.8]}
                 range={{ endMs: null, startMs: 2000 }}
             />,
         );
-        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
-
-        paused = true;
-        act(() => {
-            mediaEl.dispatchEvent(new Event('pause'));
-        });
 
         expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
     });
 
     test('should keep an open range visible while playing', () => {
-        const mediaEl = document.createElement('audio');
-        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
-        render(
-            <WaveformView
-                durationSec={8}
-                mediaEl={mediaEl}
-                peaks={[0.2, 0.8]}
-                range={{ endMs: 4000, startMs: 2000 }}
-            />,
-        );
+        render(<WaveformView durationSec={8} isPlaying peaks={[0.2, 0.8]} range={{ endMs: 4000, startMs: 2000 }} />);
 
         expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'false');
     });

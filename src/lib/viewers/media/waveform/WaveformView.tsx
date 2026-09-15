@@ -234,7 +234,6 @@ function WaveformView({
     const [canvasWidthPx, setCanvasWidthPx] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [previewRange, setPreviewRange] = useState<WaveformViewProps['range']>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [isRangeDragging, setIsRangeDragging] = useState(false);
     const isRangeDraggingRef = useRef(false);
     const skipNextSeekRef = useRef(false);
@@ -719,7 +718,6 @@ function WaveformView({
         };
 
         const startLoop = (): void => {
-            setIsPlaying(true);
             window.cancelAnimationFrame(playheadAnimationRef.current);
             releaseUserPanHold();
             applyPlayheadCamera(media.currentTime, true);
@@ -727,7 +725,6 @@ function WaveformView({
         };
 
         const stopLoop = (): void => {
-            setIsPlaying(false);
             window.cancelAnimationFrame(playheadAnimationRef.current);
             cancelJump();
             releaseUserPanHold();
@@ -748,8 +745,6 @@ function WaveformView({
 
         if (!media.paused) {
             startLoop();
-        } else {
-            setIsPlaying(false);
         }
 
         media.addEventListener('play', startLoop);
@@ -761,7 +756,6 @@ function WaveformView({
             window.cancelAnimationFrame(playheadAnimationRef.current);
             cancelJump();
             releaseUserPanHold();
-            setIsPlaying(false);
             media.removeEventListener('play', startLoop);
             media.removeEventListener('playing', startLoop);
             media.removeEventListener('pause', stopLoop);
