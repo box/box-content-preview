@@ -71,10 +71,12 @@ describe('lib/viewers/media/MP3Viewer', () => {
         test('should apply v2 classes when audioPlayerV2 is enabled', () => {
             mp3.options.features = { audioPlayerV2: { enabled: true } };
             jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.rootEl = document.createElement('div');
             mp3.setup();
 
             expect(mp3.wrapperEl).toHaveClass('bp-media--v2');
             expect(mp3.mediaContainerEl).toHaveClass('bp-media-container--v2');
+            expect(mp3.rootEl).toHaveClass('bp-dark');
             expect(mp3.isAudioPlayerV2).toBe(true);
             expect(mp3.importWaveformDecode).toBeCalled();
         });
@@ -261,6 +263,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.importV2Controls.mockRejectedValue(new Error('chunk failed'));
             jest.spyOn(mp3, 'abortConversionWaveformLoad');
             jest.spyOn(mp3, 'abortClientWaveformDecode');
+            mp3.rootEl = document.createElement('div');
             mp3.setup();
             mp3.controls = {
                 destroy: jest.fn(),
@@ -276,6 +279,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.isAudioPlayerV2).toBe(false);
             expect(mp3.wrapperEl).not.toHaveClass('bp-media--v2');
             expect(mp3.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
+            expect(mp3.rootEl).not.toHaveClass('bp-dark');
             expect(mp3.mp3ControlsV2Promise).toBeNull();
             expect(mp3.abortConversionWaveformLoad).toBeCalled();
             expect(mp3.abortClientWaveformDecode).toBeCalled();

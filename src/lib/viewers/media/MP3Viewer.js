@@ -1,5 +1,5 @@
 import React from 'react';
-import { AUDIO_PLAYER_V2, STATUS_ERROR, WAVEFORM_REP_NAME } from '../../constants';
+import { AUDIO_PLAYER_V2, CLASS_DARK, STATUS_ERROR, WAVEFORM_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import MediaBaseViewer from './MediaBaseViewer';
@@ -44,6 +44,9 @@ class MP3Viewer extends MediaBaseViewer {
         if (this.isAudioPlayerV2) {
             this.wrapperEl.classList.add('bp-media--v2');
             this.mediaContainerEl.classList.add('bp-media-container--v2');
+            if (this.rootEl) {
+                this.rootEl.classList.add(CLASS_DARK);
+            }
             this.ensureV2Controls();
             this.importWaveformDecode();
             // Listen on the loading shell. The waveform is on
@@ -114,6 +117,9 @@ class MP3Viewer extends MediaBaseViewer {
         }
         if (this.mediaContainerEl) {
             this.mediaContainerEl.classList.remove('bp-media-container--v2');
+        }
+        if (this.rootEl) {
+            this.rootEl.classList.remove(CLASS_DARK);
         }
     }
 

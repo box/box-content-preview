@@ -20,6 +20,9 @@ const FILE_FIELDS = [
     'is_download_available',
 ];
 
+// Banner metadata. Keep out of FILE_FIELDS — checkFileValid would fail on cached files.
+const FILE_VERSION_METADATA_FIELDS = ['version_number', 'modified_at', 'modified_by'];
+
 /**
  * Returns the Box file Content API URL with relevant fields
  *
@@ -31,7 +34,10 @@ const FILE_FIELDS = [
  */
 export function getURL(fileId, fileVersionId, apiHost) {
     const versionFrag = fileVersionId ? `/versions/${fileVersionId}` : '';
-    return `${apiHost}/2.0/files/${fileId}${versionFrag}?fields=${FILE_FIELDS.join(',')}`;
+    return `${apiHost}/2.0/files/${fileId}${versionFrag}?fields=${[
+        ...FILE_FIELDS,
+        ...FILE_VERSION_METADATA_FIELDS,
+    ].join(',')}`;
 }
 
 /**
