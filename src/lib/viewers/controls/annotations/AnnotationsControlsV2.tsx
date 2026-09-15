@@ -1,6 +1,6 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
+import { bdlBoxBlue, white } from 'box-ui-elements/es/styles/variables';
 import { Toolbar, Tooltip } from '@box/blueprint-web';
 import DashedSquareBubble from '@box/blueprint-web-assets/icons/Medium/DashedSquareBubble';
 import PencilScribble from '@box/blueprint-web-assets/icons/Medium/PencilScribble';
@@ -26,12 +26,8 @@ export default function AnnotationsControlsV2({
     const showHighlight = !isFullscreen && hasHighlight;
     const showRegion = !isFullscreen && hasRegion;
 
-    const handleModeChange = (mode: string): void => {
-        onAnnotationModeClick({ mode: (mode as AnnotationMode) || AnnotationMode.NONE });
-    };
-
-    const handleExitClick = (): void => {
-        onAnnotationModeClick({ mode: AnnotationMode.NONE });
+    const handleModeClick = (mode: AnnotationMode): void => {
+        onAnnotationModeClick({ mode: annotationMode === mode ? AnnotationMode.NONE : mode });
     };
 
     React.useEffect(() => {
@@ -59,6 +55,10 @@ export default function AnnotationsControlsV2({
         return null;
     }
 
+    const isDrawingActive = annotationMode === AnnotationMode.DRAWING;
+    const isHighlightActive = annotationMode === AnnotationMode.HIGHLIGHT;
+    const isRegionActive = annotationMode === AnnotationMode.REGION;
+
     return (
         <>
             {!isVideo && (
@@ -67,53 +67,56 @@ export default function AnnotationsControlsV2({
                         aria-label={__('exit_annotations')}
                         data-resin-target="exit"
                         data-testid="bp-annotations-controls-exit-btn"
-                        onClick={handleExitClick}
+                        onClick={(): void => handleModeClick(AnnotationMode.NONE)}
                     >
                         <Toolbar.Icon icon={XMark} />
                     </Toolbar.Button>
                 </Tooltip>
             )}
-            <Toolbar.ToggleGroup
-                data-testid="bp-annotations-controls"
-                onValueChange={handleModeChange}
-                type="single"
-                value={annotationMode}
-            >
-                {showDrawing && (
-                    <Tooltip content={__('drawing_comment')}>
-                        <Toolbar.ToggleItem
-                            aria-label={__('drawing_comment')}
-                            color={annotationMode === AnnotationMode.DRAWING ? annotationColor : undefined}
-                            data-resin-target="draw"
-                            data-testid="bp-AnnotationsControls-drawBtn"
-                            icon={PencilScribble}
-                            value={AnnotationMode.DRAWING}
-                        />
-                    </Tooltip>
-                )}
-                {showRegion && (
-                    <AnnotationsTargetedTooltip isEnabled={showRegion}>
-                        <Toolbar.ToggleItem
-                            aria-label={__('region_comment')}
-                            data-resin-target="highlightRegion"
-                            data-testid="bp-AnnotationsControls-regionBtn"
-                            icon={DashedSquareBubble}
-                            value={AnnotationMode.REGION}
-                        />
-                    </AnnotationsTargetedTooltip>
-                )}
-                {showHighlight && (
-                    <Tooltip content={__('highlight_text')}>
-                        <Toolbar.ToggleItem
-                            aria-label={__('highlight_text')}
-                            data-resin-target="highlightText"
-                            data-testid="bp-AnnotationsControls-highlightBtn"
-                            icon={TextHighlight}
-                            value={AnnotationMode.HIGHLIGHT}
-                        />
-                    </Tooltip>
-                )}
-            </Toolbar.ToggleGroup>
+            {showDrawing && (
+                <Tooltip content={__('drawing_comment')}>
+                    <Toolbar.DropdownTriggerButton
+                        aria-label={__('drawing_comment')}
+                        // The mock fills the active mode with the current annotation color, so the
+                        // icon has to flip to white to stay legible on it.
+                        backgroundColor={isDrawingActive ? annotationColor : undefined}
+                        data-resin-target="draw"
+                        data-testid="bp-AnnotationsControls-drawBtn"
+                        onClick={(): void => handleModeClick(AnnotationMode.DRAWING)}
+                        selected={isDrawingActive}
+                    >
+                        <Toolbar.Icon color={isDrawingActive ? white : undefined} icon={PencilScribble} />
+                    </Toolbar.DropdownTriggerButton>
+                </Tooltip>
+            )}
+            {showRegion && (
+                <AnnotationsTargetedTooltip isEnabled={showRegion}>
+                    <Toolbar.DropdownTriggerButton
+                        aria-label={__('region_comment')}
+                        backgroundColor={isRegionActive ? bdlBoxBlue : undefined}
+                        data-resin-target="highlightRegion"
+                        data-testid="bp-AnnotationsControls-regionBtn"
+                        onClick={(): void => handleModeClick(AnnotationMode.REGION)}
+                        selected={isRegionActive}
+                    >
+                        <Toolbar.Icon color={isRegionActive ? white : undefined} icon={DashedSquareBubble} />
+                    </Toolbar.DropdownTriggerButton>
+                </AnnotationsTargetedTooltip>
+            )}
+            {showHighlight && (
+                <Tooltip content={__('highlight_text')}>
+                    <Toolbar.DropdownTriggerButton
+                        aria-label={__('highlight_text')}
+                        backgroundColor={isHighlightActive ? bdlBoxBlue : undefined}
+                        data-resin-target="highlightText"
+                        data-testid="bp-AnnotationsControls-highlightBtn"
+                        onClick={(): void => handleModeClick(AnnotationMode.HIGHLIGHT)}
+                        selected={isHighlightActive}
+                    >
+                        <Toolbar.Icon color={isHighlightActive ? white : undefined} icon={TextHighlight} />
+                    </Toolbar.DropdownTriggerButton>
+                </Tooltip>
+            )}
         </>
     );
 }

@@ -9,9 +9,20 @@
                 align-items: center;
                 background: #f4f4f4;
                 display: flex;
+                flex-direction: column;
+                gap: 8px;
                 justify-content: center;
                 margin: 0;
                 min-height: 220px;
+            }
+
+            /* Let each bar hug its contents the way the mock does instead of stretching to the
+               width of the widest one. */
+            #poc {
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
             }
         </style>
     </head>

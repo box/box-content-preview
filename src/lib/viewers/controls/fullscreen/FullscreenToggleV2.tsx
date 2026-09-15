@@ -1,34 +1,24 @@
 import React from 'react';
 import { Toolbar, Tooltip } from '@box/blueprint-web';
-import ArrowsMaximize from '@box/blueprint-web-assets/icons/Medium/ArrowsMaximize';
-import ArrowsMinimize from '@box/blueprint-web-assets/icons/Medium/ArrowsMinimize';
+import Expand from '@box/blueprint-web-assets/icons/Medium/Expand';
+import Minimize from '@box/blueprint-web-assets/icons/Medium/Minimize';
 import useFullscreen from '../hooks/useFullscreen';
 import { Props } from './FullscreenToggle';
 
 export default function FullscreenToggleV2({ onFullscreenToggle, ...rest }: Props): JSX.Element {
     const isFullscreen = useFullscreen();
-    const icon = isFullscreen ? ArrowsMinimize : ArrowsMaximize;
+    const icon = isFullscreen ? Minimize : Expand;
     const label = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
 
-    const handleValueChange = (): void => {
+    const handleClick = (): void => {
         onFullscreenToggle(!isFullscreen, document.activeElement);
     };
 
     return (
-        <Toolbar.ToggleGroup
-            onValueChange={handleValueChange}
-            type="multiple"
-            value={isFullscreen ? ['fullscreen'] : []}
-        >
-            <Tooltip content={label}>
-                <Toolbar.ToggleItem
-                    aria-label={label}
-                    data-resin-target="fullscreen"
-                    icon={icon}
-                    value="fullscreen"
-                    {...rest}
-                />
-            </Tooltip>
-        </Toolbar.ToggleGroup>
+        <Tooltip content={label}>
+            <Toolbar.Button aria-label={label} data-resin-target="fullscreen" onClick={handleClick} {...rest}>
+                <Toolbar.Icon icon={icon} />
+            </Toolbar.Button>
+        </Tooltip>
     );
 }

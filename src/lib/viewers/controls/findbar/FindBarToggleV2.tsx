@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toolbar, Tooltip } from '@box/blueprint-web';
-import Search from '@box/blueprint-web-assets/icons/Medium/Search';
+import FileSearch from '@box/blueprint-web-assets/icons/Medium/FileSearch';
 import { Props } from './FindBarToggle';
 
 export default function FindBarToggleV2({ onFindBarToggle }: Props): JSX.Element | null {
@@ -15,7 +15,7 @@ export default function FindBarToggleV2({ onFindBarToggle }: Props): JSX.Element
                 data-resin-target="findBar"
                 onClick={({ target }): void => onFindBarToggle(target)}
             >
-                <Toolbar.Icon icon={Search} />
+                <Toolbar.Icon icon={FileSearch} />
             </Toolbar.Button>
         </Tooltip>
     );

@@ -65,16 +65,28 @@ describe('DocControlsV2', () => {
         const props = getDefaults();
         const { rerender } = render(<DocControlsV2 {...props} hasHighlight />);
 
-        // Annotation modes are exclusive, so Blueprint renders them as a radio group rather than
-        // as the pressed buttons the legacy bar used.
-        await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
+        await user.click(screen.getByRole('button', { name: 'Highlight and Comment' }));
 
         expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.HIGHLIGHT });
 
         rerender(<DocControlsV2 {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
-        await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
+
+        expect(screen.getByRole('button', { name: 'Highlight and Comment' })).toHaveAttribute('aria-pressed', 'true');
+
+        await user.click(screen.getByRole('button', { name: 'Highlight and Comment' }));
 
         expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+    });
+
+    test('should pick a color from the swatches shown while drawing', async () => {
+        const user = userEvent.setup();
+        const props = getDefaults();
+        render(<DocControlsV2 {...props} annotationMode={AnnotationMode.DRAWING} hasDrawing />);
+
+        const swatches = screen.getAllByTestId('bp-ColorPickerControl-swatch');
+        await user.click(swatches[1]);
+
+        expect(props.onAnnotationColorChange).toHaveBeenCalledWith(swatches[1].getAttribute('aria-label'));
     });
 
     test('should exit annotation mode on Escape', () => {
