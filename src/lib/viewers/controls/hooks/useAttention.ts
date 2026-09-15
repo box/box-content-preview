@@ -9,7 +9,8 @@ export type handlers = {
 
 export type isActive = boolean;
 
-function isInside(event: { currentTarget: EventTarget; relatedTarget: EventTarget | null }): boolean {
+/** True when focus/hover is moving to a descendant, not leaving the host. */
+function isRelatedTargetInside(event: { currentTarget: EventTarget; relatedTarget: EventTarget | null }): boolean {
     return (event.currentTarget as Node).contains(event.relatedTarget as Node | null);
 }
 
@@ -18,14 +19,14 @@ export default function useAttention(): [isActive, handlers] {
     const [isHovered, setHovered] = React.useState(false);
 
     const handleBlur = (event: React.FocusEvent<HTMLElement>): void => {
-        if (isInside(event)) {
+        if (isRelatedTargetInside(event)) {
             return;
         }
         setFocused(false);
     };
     const handleFocus = (): void => setFocused(true);
     const handleMouseOut = (event: React.MouseEvent<HTMLElement>): void => {
-        if (isInside(event)) {
+        if (isRelatedTargetInside(event)) {
             return;
         }
         setHovered(false);

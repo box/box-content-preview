@@ -13,9 +13,10 @@ import VolumeSliderControl from '../slider/VolumeSliderControl';
 export const VOLUME_FLYOUT_DISMISS_MS = 1000;
 
 export type Props = {
+    /** Bump counter from keyboard volume. 0 means no keyboard reveal; each increment re-opens the flyout. */
+    keyboardVolumeStep?: number;
     onMuteChange: (isMuted: boolean) => void;
     onVolumeChange: (volume: number) => void;
-    revealStep?: number;
     volume?: number;
 };
 
@@ -34,9 +35,9 @@ export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) 
 }
 
 export default function VolumeControls({
+    keyboardVolumeStep = 0,
     onMuteChange,
     onVolumeChange,
-    revealStep = 0,
     volume = 1,
 }: Props): JSX.Element {
     const [isActive, handlers] = useAttention();
@@ -49,7 +50,7 @@ export default function VolumeControls({
     const isOpen = isActive || isRevealed;
 
     useEffect(() => {
-        if (!revealStep) {
+        if (!keyboardVolumeStep) {
             return;
         }
         setIsRevealed(true);
@@ -58,7 +59,7 @@ export default function VolumeControls({
             setIsRevealed(false);
             revealTimerRef.current = 0;
         }, VOLUME_FLYOUT_DISMISS_MS);
-    }, [revealStep]);
+    }, [keyboardVolumeStep]);
 
     useEffect(() => () => window.clearTimeout(revealTimerRef.current), []);
 

@@ -280,6 +280,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.abortConversionWaveformLoad).toBeCalled();
             expect(mp3.abortClientWaveformDecode).toBeCalled();
             expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
+            expect(mp3.getIsAudioPlayerV2()).toBe(true);
+
+            jest.spyOn(mp3, 'quickSeek');
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-10);
         });
     });
 
@@ -340,6 +345,46 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.pause).toBeCalledWith(undefined, true);
             expect(mp3.handlePlayRequest).not.toBeCalled();
+        });
+
+        test('should exit shuttle before play or pause', () => {
+            jest.spyOn(mp3, 'exitShuttle');
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(true);
+            expect(mp3.exitShuttle).toBeCalled();
+
+            mp3.exitShuttle.mockClear();
+            mp3.handlePlayPause(false);
+            expect(mp3.exitShuttle).toBeCalled();
+            expect(mp3.pause).toBeCalledWith(undefined, true);
+        });
+
+        test('should exit reverse shuttle when play is requested', () => {
+            jest.useFakeTimers();
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            mp3.cache.get.mockReturnValue(1);
+            mp3.mediaEl.currentTime = 10;
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 100 });
+            jest.spyOn(mp3, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'quickSeek').mockImplementation();
+
+            mp3.shuttle('reverse');
+            expect(mp3.shuttleDirection).toBe('reverse');
+
+            mp3.handlePlayPause(true);
+
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.togglePlay).toBeCalled();
+            expect(mp3.userRequestedPlay).toBe(true);
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
         });
     });
 
@@ -451,6 +496,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 commentMarkers: [],
                 currentTime: 0,
                 durationTime: 1000,
+                hasStartedPlayback: false,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
@@ -502,6 +548,19 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 volume: 1,
             });
             expect(getProps(mp3).peaks).toBeUndefined();
+        });
+
+        test('should hide the play overlay once shuttle has started, even while paused', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: true });
+            mp3.userRequestedPlay = true;
+            mp3.shuttleDirection = 'reverse';
+
+            mp3.renderUI();
+
+            expect(getProps(mp3).hasStartedPlayback).toBe(true);
+            expect(getProps(mp3).isPlaying).toBe(false);
         });
     });
 
@@ -1317,6 +1376,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.onKeydown('l')).toBe(true);
             expect(mp3.play).toHaveBeenCalled();
+            expect(mp3.userRequestedPlay).toBe(true);
             expect(mp3.mediaEl.playbackRate).toBe(2);
             expect(mp3.onKeydown('l')).toBe(true);
             expect(mp3.mediaEl.playbackRate).toBe(4);
@@ -1347,6 +1407,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             enableV2();
 
             expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.userRequestedPlay).toBe(true);
             expect(mp3.quickSeek).not.toHaveBeenCalledWith(-10);
             jest.advanceTimersByTime(50);
             expect(mp3.quickSeek).toHaveBeenCalledWith(-0.1);

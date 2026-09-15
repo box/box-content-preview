@@ -24,10 +24,10 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
     MediaSettingsProps &
     PlayControlsProps &
     Pick<TimeControlsProps, 'onTimeChange'> &
-    Omit<VolumeControlsProps, 'revealStep'> & {
+    VolumeControlsProps & {
         bufferedRange?: TimeRanges;
         commentMarkers?: CommentMarker[];
-        keyboardVolumeStep?: number;
+        hasStartedPlayback?: boolean;
         keyboardZoomStep?: number;
         mediaEl?: HTMLMediaElement | null;
         onCommentMarkerClick?: (marker: CommentMarker) => void;
@@ -40,6 +40,7 @@ export default function MP3ControlsV2({
     commentMarkers,
     currentTime,
     durationTime,
+    hasStartedPlayback = false,
     isPlaying,
     keyboardVolumeStep = 0,
     keyboardZoomStep = 0,
@@ -66,7 +67,7 @@ export default function MP3ControlsV2({
     const hasRealPeaks = !!(peaks && peaks.length);
     const waveformPeaks = hasRealPeaks ? peaks : PLACEHOLDER_PEAKS;
     const waveformDurationSec = hasWaveformDuration ? durationValue : PLACEHOLDER_DURATION_SEC;
-    const [playRequested, setPlayRequested] = useState(false);
+    const [playRequested, setPlayRequested] = useState(hasStartedPlayback);
     const [viewport, setViewport] = useState<WaveformViewport | null>(null);
     const isTape = useTapeWaveform();
     const hasAppliedTapeDefaultZoomRef = useRef(false); // ~10s window applied; reset to 1× when leaving tape
@@ -137,10 +138,10 @@ export default function MP3ControlsV2({
     useEffect(() => () => window.clearTimeout(zoomRevealTimerRef.current), []);
 
     useEffect(() => {
-        if (isPlaying) {
+        if (isPlaying || hasStartedPlayback) {
             setPlayRequested(true);
         }
-    }, [isPlaying]);
+    }, [hasStartedPlayback, isPlaying]);
 
     const handlePlayOverlayClick = useCallback(() => {
         setPlayRequested(true);
@@ -166,9 +167,10 @@ export default function MP3ControlsV2({
         [onCommentMarkerClick, onPlayPause, onTimeChange],
     );
 
-    const isWaveformInteractive = playRequested && hasMediaMetadata;
-    const isWaitingToPlay = playRequested && !hasMediaMetadata;
-    const showPlayOverlay = !playRequested && !isPlaying;
+    const hasStarted = playRequested || hasStartedPlayback;
+    const isWaveformInteractive = hasStarted && hasMediaMetadata;
+    const isWaitingToPlay = hasStarted && !hasMediaMetadata;
+    const showPlayOverlay = !hasStarted && !isPlaying;
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
     const hasZoomControl = hasZoomHandlers && hasMediaMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
     const waveformZoomLevel = isTape || hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN;
@@ -238,9 +240,9 @@ export default function MP3ControlsV2({
 
                     <div className="bp-MP3ControlsV2-group">
                         <VolumeControls
+                            keyboardVolumeStep={keyboardVolumeStep}
                             onMuteChange={onMuteChange}
                             onVolumeChange={onVolumeChange}
-                            revealStep={keyboardVolumeStep}
                             volume={volume}
                         />
                         <MediaSettings

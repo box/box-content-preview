@@ -79,14 +79,21 @@ describe('VolumeControls', () => {
             jest.useRealTimers();
         });
 
-        test('should open the volume flyout on revealStep and dismiss after the delay', () => {
+        test('should open the volume flyout on keyboardVolumeStep and dismiss after the delay', () => {
             jest.useFakeTimers();
             const { rerender } = getWrapper();
             const flyout = screen.getByTestId('bp-volume-controls').querySelector('.bp-VolumeControls-flyout');
 
             expect(flyout).not.toHaveClass('bp-is-open');
 
-            rerender(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} revealStep={1} volume={1} />);
+            rerender(
+                <VolumeControls
+                    keyboardVolumeStep={1}
+                    onMuteChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    volume={1}
+                />,
+            );
             expect(flyout).toHaveClass('bp-is-open');
 
             act(() => {
@@ -100,9 +107,9 @@ describe('VolumeControls', () => {
             expect(flyout).not.toHaveClass('bp-is-open');
         });
 
-        test('should keep the flyout open when revealStep is bumped again', () => {
+        test('should keep the flyout open when keyboardVolumeStep is bumped again', () => {
             jest.useFakeTimers();
-            const { rerender } = getWrapper({ revealStep: 1 });
+            const { rerender } = getWrapper({ keyboardVolumeStep: 1 });
             const flyout = screen.getByTestId('bp-volume-controls').querySelector('.bp-VolumeControls-flyout');
 
             expect(flyout).toHaveClass('bp-is-open');
@@ -110,7 +117,14 @@ describe('VolumeControls', () => {
             act(() => {
                 jest.advanceTimersByTime(VOLUME_FLYOUT_DISMISS_MS - 1);
             });
-            rerender(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} revealStep={2} volume={1} />);
+            rerender(
+                <VolumeControls
+                    keyboardVolumeStep={2}
+                    onMuteChange={jest.fn()}
+                    onVolumeChange={jest.fn()}
+                    volume={1}
+                />,
+            );
 
             act(() => {
                 jest.advanceTimersByTime(VOLUME_FLYOUT_DISMISS_MS - 1);

@@ -330,6 +330,12 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
         });
 
+        test('should hide the play overlay once playback has started even if paused', () => {
+            getWrapper({ durationTime: 8, hasStartedPlayback: true, isPlaying: false, peaks: [0.2, 0.8] });
+
+            expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+        });
+
         test('should not show zoom while the play overlay is visible', async () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 

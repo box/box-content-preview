@@ -20,6 +20,13 @@ const AUDIO_V2_SHUTTLE_TICK_MS = 50;
 const AUDIO_V2_SKIP_SEC = 1;
 const AUDIO_V2_SHIFT_SKIP_SEC = 5;
 
+/**
+ * Next J/L shuttle rate. Opposite direction starts at 2×.
+ *
+ * @param {number} currentRate
+ * @param {boolean} sameDirection
+ * @return {number} 2, 4, 8, or 16
+ */
 function nextShuttleRate(currentRate, sameDirection) {
     if (!sameDirection) {
         return AUDIO_V2_SHUTTLE_RATES[0];
@@ -31,6 +38,16 @@ function nextShuttleRate(currentRate, sameDirection) {
     return AUDIO_V2_SHUTTLE_RATES[Math.min(index + 1, AUDIO_V2_SHUTTLE_RATES.length - 1)];
 }
 
+/**
+ * Next/previous comment marker for ↑/↓. Walks by id so same-time stacks each get a stop.
+ *
+ * @param {Array<Object>} markers
+ * @param {Object} options
+ * @param {number} options.direction -1 previous, 1 next
+ * @param {string|null} options.selectedId
+ * @param {number} options.time current playhead
+ * @return {Object|null} marker to select
+ */
 function nextCommentMarker(markers, { direction, selectedId, time }) {
     const sorted = (markers || [])
         .filter(marker => Number.isFinite(marker.time))
@@ -125,7 +142,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {boolean} consumed
      */
     onKeydown(key, event) {
-        if (this.getIsAudioPlayerV2() && this.handleKeydownAudioV2(key, event)) {
+        if (this.isAudioPlayerV2 && this.handleKeydownAudioV2(key, event)) {
             return true;
         }
         return super.onKeydown(key, event);
@@ -238,6 +255,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.stopReverseShuttle();
         this.shuttleDirection = 'forward';
         this.shuttleRate = rate;
+        this.userRequestedPlay = true;
         const playPromise = this.play();
         if (this.mediaEl) {
             this.mediaEl.playbackRate = this.shuttleRate;
@@ -257,6 +275,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.stopReverseShuttle();
         this.shuttleDirection = 'reverse';
         this.shuttleRate = rate;
+        this.userRequestedPlay = true;
         this.pause(undefined, true);
         this.handleRate();
         this.reverseShuttleTimer = window.setInterval(() => {
@@ -665,6 +684,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     handlePlayRequest = () => {
+        this.exitShuttle();
         this.userRequestedPlay = true;
         this.togglePlay();
 
@@ -687,6 +707,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {void}
      */
     handlePlayPause = shouldPlay => {
+        this.exitShuttle();
         if (shouldPlay) {
             this.handlePlayRequest();
             return;
@@ -941,6 +962,7 @@ class MP3Viewer extends MediaBaseViewer {
                 <Mp3ControlsV2
                     {...sharedProps}
                     commentMarkers={this.commentMarkers || []}
+                    hasStartedPlayback={!!this.userRequestedPlay}
                     keyboardVolumeStep={this.keyboardVolumeStep}
                     keyboardZoomStep={this.keyboardZoomStep}
                     mediaEl={this.mediaEl}
