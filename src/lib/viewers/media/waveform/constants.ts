@@ -29,6 +29,8 @@ export const WAVEFORM_ZOOM_MAX = 24;
 export const WAVEFORM_MIN_VIEW_WINDOW_SEC = 4;
 /** Tape (phone/tablet) default: seconds of audio visible in the viewport. */
 export const WAVEFORM_TAPE_DEFAULT_WINDOW_SEC = 10;
+/** Primary pointer is a finger, not a mouse/trackpad. */
+export const TAPE_POINTER_MEDIA_QUERY = '(hover: none) and (pointer: coarse)';
 export const WAVEFORM_ZOOM_SLIDER_MAX = 100;
 /** One click on zoom in/out moves this many units on the 0–100 slider. */
 export const WAVEFORM_ZOOM_BUTTON_STEP = 10;

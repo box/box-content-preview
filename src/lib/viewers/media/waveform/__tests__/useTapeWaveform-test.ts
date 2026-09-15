@@ -1,17 +1,12 @@
 import { act, renderHook } from '@testing-library/react';
-import useTapeWaveform, {
-    isCoarsePrimaryPointer,
-    isIPadNavigator,
-    isTapeWaveformInput,
-    TAPE_POINTER_MEDIA_QUERY,
-    TapeDetectionWindow,
-    TapeNavigator,
-} from '../useTapeWaveform';
+import { TAPE_POINTER_MEDIA_QUERY } from '../constants';
+import { TapeDetectionWindow, TapeNavigator } from '../types';
+import useTapeWaveform, { isCoarsePrimaryPointer, isIPadNavigator, isTapeWaveformInput } from '../useTapeWaveform';
 
 describe('useTapeWaveform', () => {
     const coarseQuery = TAPE_POINTER_MEDIA_QUERY;
 
-    function nav(overrides: Partial<TapeNavigator> = {}): TapeNavigator {
+    function createTapeNavigator(overrides: Partial<TapeNavigator> = {}): TapeNavigator {
         return {
             maxTouchPoints: 0,
             platform: 'MacIntel',
@@ -20,7 +15,7 @@ describe('useTapeWaveform', () => {
         };
     }
 
-    function win(matches: boolean, tapeNavigator = nav()): TapeDetectionWindow {
+    function createTapeWindow(matches: boolean, tapeNavigator = createTapeNavigator()): TapeDetectionWindow {
         return {
             matchMedia: (jest.fn((query: string) => ({
                 matches: query === coarseQuery && matches,
@@ -30,20 +25,24 @@ describe('useTapeWaveform', () => {
     }
 
     test('should treat coarse primary pointer as tape', () => {
-        expect(isCoarsePrimaryPointer(win(true))).toBe(true);
-        expect(isTapeWaveformInput(win(true, nav({ platform: 'Win32' })))).toBe(true);
+        expect(isCoarsePrimaryPointer(createTapeWindow(true))).toBe(true);
+        expect(isTapeWaveformInput(createTapeWindow(true, createTapeNavigator({ platform: 'Win32' })))).toBe(true);
     });
 
     test('should not treat a fine pointer laptop as tape', () => {
-        expect(isCoarsePrimaryPointer(win(false))).toBe(false);
-        expect(isTapeWaveformInput(win(false))).toBe(false);
+        expect(isCoarsePrimaryPointer(createTapeWindow(false))).toBe(false);
+        expect(isTapeWaveformInput(createTapeWindow(false))).toBe(false);
     });
 
     test('should treat iPad UA and iPadOS-as-Mac as tape even when the pointer is fine', () => {
-        expect(isIPadNavigator(nav({ userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0)' }))).toBe(true);
-        expect(isIPadNavigator(nav({ maxTouchPoints: 5, platform: 'MacIntel' }))).toBe(true);
-        expect(isTapeWaveformInput(win(false, nav({ maxTouchPoints: 5, platform: 'MacIntel' })))).toBe(true);
-        expect(isIPadNavigator(nav({ maxTouchPoints: 10, platform: 'Win32' }))).toBe(false);
+        expect(isIPadNavigator(createTapeNavigator({ userAgent: 'Mozilla/5.0 (iPad; CPU OS 17_0)' }))).toBe(true);
+        expect(isIPadNavigator(createTapeNavigator({ maxTouchPoints: 5, platform: 'MacIntel' }))).toBe(true);
+        expect(
+            isTapeWaveformInput(
+                createTapeWindow(false, createTapeNavigator({ maxTouchPoints: 5, platform: 'MacIntel' })),
+            ),
+        ).toBe(true);
+        expect(isIPadNavigator(createTapeNavigator({ maxTouchPoints: 10, platform: 'Win32' }))).toBe(false);
     });
 
     test('should subscribe to the pointer media query', () => {
@@ -69,7 +68,7 @@ describe('useTapeWaveform', () => {
         Object.defineProperty(window, 'matchMedia', { configurable: true, value: matchMedia });
         Object.defineProperty(window, 'navigator', {
             configurable: true,
-            value: nav({ platform: 'Win32' }),
+            value: createTapeNavigator({ platform: 'Win32' }),
         });
 
         try {

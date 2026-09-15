@@ -164,6 +164,12 @@ export type WaveformViewportInput = Omit<WaveformViewport, 'endSec' | 'gutterPx'
     gutterPx?: number;
 };
 
+/** Navigator fields used to detect iPad, including iPadOS reporting itself as Mac. */
+export type TapeNavigator = Pick<Navigator, 'maxTouchPoints' | 'platform' | 'userAgent'>;
+
+/** Window bits needed to choose tape vs desktop (coarse pointer + iPad). */
+export type TapeDetectionWindow = Pick<Window, 'matchMedia'> & { navigator: TapeNavigator };
+
 /** Desktop walks then pins near the right inset. Tape keeps the playhead at center. */
 export type PlayheadCameraMode = 'desktop' | 'tape';
 

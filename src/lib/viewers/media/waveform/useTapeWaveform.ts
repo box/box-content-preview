@@ -1,20 +1,16 @@
 import { useEffect, useState } from 'react';
+import { TAPE_POINTER_MEDIA_QUERY } from './constants';
+import { TapeDetectionWindow, TapeNavigator } from './types';
 
-/** Primary pointer is a finger, not a mouse/trackpad. */
-export const TAPE_POINTER_MEDIA_QUERY = '(hover: none) and (pointer: coarse)';
-
-/** Navigator fields used to detect iPad, including iPadOS reporting itself as Mac. */
-export type TapeNavigator = Pick<Navigator, 'maxTouchPoints' | 'platform' | 'userAgent'>;
-
-/** Window bits needed to choose tape vs desktop (coarse pointer + iPad). */
-export type TapeDetectionWindow = Pick<Window, 'matchMedia'> & { navigator: TapeNavigator };
-
-export function isIPadNavigator(nav: TapeNavigator): boolean {
-    return /iPad/i.test(nav.userAgent || '') || (nav.platform === 'MacIntel' && (nav.maxTouchPoints || 0) > 1);
+export function isIPadNavigator(tapeNavigator: TapeNavigator): boolean {
+    return (
+        /iPad/i.test(tapeNavigator.userAgent || '') ||
+        (tapeNavigator.platform === 'MacIntel' && (tapeNavigator.maxTouchPoints || 0) > 1)
+    );
 }
 
-export function isCoarsePrimaryPointer(win: Pick<Window, 'matchMedia'>): boolean {
-    return typeof win.matchMedia === 'function' && win.matchMedia(TAPE_POINTER_MEDIA_QUERY).matches;
+export function isCoarsePrimaryPointer(tapeWindow: Pick<Window, 'matchMedia'>): boolean {
+    return typeof tapeWindow.matchMedia === 'function' && tapeWindow.matchMedia(TAPE_POINTER_MEDIA_QUERY).matches;
 }
 
 /**
@@ -22,8 +18,8 @@ export function isCoarsePrimaryPointer(win: Pick<Window, 'matchMedia'>): boolean
  * (including iPadOS reporting itself as Mac). Not width, not hasTouch,
  * not Browser.isMobile().
  */
-export function isTapeWaveformInput(win: TapeDetectionWindow = window): boolean {
-    return isCoarsePrimaryPointer(win) || isIPadNavigator(win.navigator);
+export function isTapeWaveformInput(tapeWindow: TapeDetectionWindow = window): boolean {
+    return isCoarsePrimaryPointer(tapeWindow) || isIPadNavigator(tapeWindow.navigator);
 }
 
 /** Subscribe to the pointer media query; re-read the iPad heuristic on change. */
