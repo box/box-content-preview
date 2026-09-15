@@ -40,7 +40,9 @@
             }
         }
 
-        .bp-WaveformView-playhead {
+        .bp-WaveformView-playhead,
+        .bp-WaveformRange-region,
+        .bp-WaveformRange-handle {
             height: calc(100% + 10px);
         }
     }
