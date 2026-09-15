@@ -77,7 +77,7 @@ describe('MP3Controls', () => {
             const onMuteChange = jest.fn();
             const onVolumeChange = jest.fn();
             getWrapper({ onMuteChange, onVolumeChange });
-            const volume = await screen.findByRole('slider', { name: __('media_volume_slider') });
+            const volume = await screen.findByRole('slider', { hidden: true, name: __('media_volume_slider') });
             const muteButton = await screen.findByTitle(__('media_mute'));
 
             fireEvent.keyDown(volume, { key: 'ArrowUp' });

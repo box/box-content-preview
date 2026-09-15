@@ -6,7 +6,7 @@ import MediaToggle from '../../controls/media/MediaToggle';
 import SliderControl from '../../controls/slider';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_SLIDER_MAX } from './constants';
 import { WaveformZoomControlProps } from './types';
-import { clampWaveformZoom, sliderValueFromZoom, zoomFromSliderValue } from './viewport';
+import { clampWaveformZoom, sliderValueFromZoom, stepWaveformZoom, zoomFromSliderValue } from './viewport';
 import './WaveformZoomControl.scss';
 
 export default function WaveformZoomControl({
@@ -63,9 +63,9 @@ export default function WaveformZoomControl({
 
     const handleStep = useCallback(
         (delta: number): void => {
-            onZoomChange(zoomFromSliderValue(zoomValue + delta, maxZoom));
+            onZoomChange(stepWaveformZoom(zoom, maxZoom, delta));
         },
-        [maxZoom, onZoomChange, zoomValue],
+        [maxZoom, onZoomChange, zoom],
     );
 
     const handleZoomInPointerDown = useCallback((): void => {

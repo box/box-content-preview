@@ -1,32 +1,56 @@
 import * as React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import useAttention from '../useAttention';
 
 describe('useAttention', () => {
     function TestComponent(): React.JSX.Element {
         const [isActive, handlers] = useAttention();
-        return <div className={isActive ? 'active' : ''} data-testid="test-div" {...handlers} />;
+        return (
+            <div className={isActive ? 'active' : ''} data-testid="test-div" {...handlers}>
+                <button type="button">child</button>
+            </div>
+        );
     }
 
-    const getWrapper = () => render(<TestComponent />);
-    const getElement = async () => screen.findByTestId('test-div');
+    test('should return isActive based on hover state', async () => {
+        const user = userEvent.setup();
+        render(<TestComponent />);
+        const element = screen.getByTestId('test-div');
 
-    test('should return isActive based on focus and/or hover state', async () => {
-        getWrapper();
-        const element = await getElement();
+        expect(element).not.toHaveClass('active');
 
-        expect(element).not.toHaveClass('active'); // Default
+        await user.hover(element);
+        expect(element).toHaveClass('active');
 
-        fireEvent.focus(element);
-        expect(element).toHaveClass('active'); // Focus
+        await user.unhover(element);
+        expect(element).not.toHaveClass('active');
+    });
 
-        fireEvent.mouseOver(element);
-        expect(element).toHaveClass('active'); // Focus & Hover
+    test('should stay active when focus moves to a child', async () => {
+        const user = userEvent.setup();
+        render(<TestComponent />);
+        const element = screen.getByTestId('test-div');
+        const child = screen.getByRole('button', { name: 'child' });
 
-        fireEvent.blur(element);
-        expect(element).toHaveClass('active'); // Hover
+        await user.tab();
+        expect(child).toHaveFocus();
+        expect(element).toHaveClass('active');
+    });
 
-        fireEvent.mouseOut(element);
-        expect(element).not.toHaveClass('active'); // Default
+    test('should ignore blur when relatedTarget is inside the current target', () => {
+        const { result } = renderHook(() => useAttention());
+        const currentTarget = document.createElement('div');
+        const relatedTarget = document.createElement('button');
+        currentTarget.appendChild(relatedTarget);
+
+        act(() => {
+            result.current[1].onFocus();
+        });
+        act(() => {
+            result.current[1].onBlur(({ currentTarget, relatedTarget } as unknown) as React.FocusEvent<HTMLElement>);
+        });
+
+        expect(result.current[0]).toBe(true);
     });
 });

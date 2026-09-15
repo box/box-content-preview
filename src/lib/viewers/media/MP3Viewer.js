@@ -15,6 +15,58 @@ import { isPositiveFinite } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
+const AUDIO_V2_SHUTTLE_RATES = [2, 4, 8, 16];
+const AUDIO_V2_SHUTTLE_TICK_MS = 50;
+const AUDIO_V2_SKIP_SEC = 1;
+const AUDIO_V2_SHIFT_SKIP_SEC = 5;
+
+/**
+ * Next J/L shuttle rate. Opposite direction starts at 2×.
+ *
+ * @param {number} currentRate
+ * @param {boolean} sameDirection
+ * @return {number} 2, 4, 8, or 16
+ */
+function nextShuttleRate(currentRate, sameDirection) {
+    if (!sameDirection) {
+        return AUDIO_V2_SHUTTLE_RATES[0];
+    }
+    const index = AUDIO_V2_SHUTTLE_RATES.indexOf(currentRate);
+    if (index < 0) {
+        return AUDIO_V2_SHUTTLE_RATES[0];
+    }
+    return AUDIO_V2_SHUTTLE_RATES[Math.min(index + 1, AUDIO_V2_SHUTTLE_RATES.length - 1)];
+}
+
+/**
+ * Next/previous comment marker for ↑/↓. Walks by id so same-time stacks each get a stop.
+ *
+ * @param {Array<Object>} markers
+ * @param {Object} options
+ * @param {number} options.direction -1 previous, 1 next
+ * @param {string|null} options.selectedId
+ * @param {number} options.time current playhead
+ * @return {Object|null} marker to select
+ */
+function nextCommentMarker(markers, { direction, selectedId, time }) {
+    const sorted = (markers || [])
+        .filter(marker => Number.isFinite(marker.time))
+        .sort((left, right) => left.time - right.time || String(left.id).localeCompare(String(right.id)));
+    if (!sorted.length) {
+        return null;
+    }
+
+    const selectedIndex = sorted.findIndex(marker => marker.id === selectedId);
+    if (selectedIndex >= 0) {
+        return sorted[Math.max(0, Math.min(sorted.length - 1, selectedIndex + direction))];
+    }
+
+    if (direction > 0) {
+        return sorted.find(marker => marker.time >= time) || sorted[sorted.length - 1];
+    }
+
+    return [...sorted].reverse().find(marker => marker.time <= time) || sorted[0];
+}
 
 function createLoadFailedError(message) {
     const error = new Error(message);
@@ -55,6 +107,12 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
         this.mediaEl.setAttribute('preload', 'auto');
         this.commentMarkers = [];
+        this.hostSelectedMarkerId = null;
+        this.shuttleDirection = null;
+        this.shuttleRate = 0;
+        this.reverseShuttleTimer = 0;
+        this.keyboardVolumeStep = 0;
+        this.keyboardZoomStep = 0;
     }
 
     bindCommentMarkersListener() {
@@ -73,6 +131,226 @@ class MP3Viewer extends MediaBaseViewer {
      */
     getIsAudioPlayerV2() {
         return this.featureEnabled(AUDIO_PLAYER_V2) && this.useReactControls();
+    }
+
+    /**
+     * V2 audio keymap. Flag off and video keep MediaBaseViewer.handleKeydownReact.
+     * Alt is not in Preview's key decoder — read it from the native event.
+     *
+     * @param {string} key
+     * @param {KeyboardEvent} [event]
+     * @return {boolean} consumed
+     */
+    onKeydown(key, event) {
+        if (this.isAudioPlayerV2 && this.handleKeydownAudioV2(key, event)) {
+            return true;
+        }
+        return super.onKeydown(key, event);
+    }
+
+    handleKeydownAudioV2(key, event) {
+        const decoded = (key || '').toLowerCase();
+        const altKey = !!(event && event.altKey);
+
+        switch (decoded) {
+            case 'space':
+                this.toggleV2Play();
+                return true;
+            case 'k':
+                this.exitShuttle();
+                this.pause(undefined, true);
+                return true;
+            case 'j':
+                this.shuttle('reverse');
+                return true;
+            case 'l':
+                this.shuttle('forward');
+                return true;
+            case 'arrowleft':
+                this.quickSeek(-AUDIO_V2_SKIP_SEC);
+                return true;
+            case 'arrowright':
+                this.quickSeek(AUDIO_V2_SKIP_SEC);
+                return true;
+            case ',':
+                this.frameStep('back');
+                return true;
+            case '.':
+                this.frameStep('forward');
+                return true;
+            case 'arrowup':
+                if (altKey || !(this.commentMarkers || []).some(marker => Number.isFinite(marker.time))) {
+                    this.stepKeyboardVolume(1);
+                    return true;
+                }
+                this.jumpToCommentMarker(-1);
+                return true;
+            case 'arrowdown':
+                if (altKey || !(this.commentMarkers || []).some(marker => Number.isFinite(marker.time))) {
+                    this.stepKeyboardVolume(-1);
+                    return true;
+                }
+                this.jumpToCommentMarker(1);
+                return true;
+            case 'end':
+                if (!this.mediaEl || !Number.isFinite(this.mediaEl.duration)) {
+                    return false;
+                }
+                this.exitShuttle();
+                this.setMediaTime(this.mediaEl.duration);
+                return true;
+            case '0':
+            case 'home':
+                this.exitShuttle();
+                return false;
+            case 'shift+arrowleft':
+                this.quickSeek(-AUDIO_V2_SHIFT_SKIP_SEC);
+                return true;
+            case 'shift+arrowright':
+                this.quickSeek(AUDIO_V2_SHIFT_SKIP_SEC);
+                return true;
+            case 'i':
+            case 'o':
+            case '/':
+            case 'shift+l':
+                // Range UI is not on this branch yet. Consume so I/O/loop cannot
+                // fall through to shuttle or Preview navigation.
+                return true;
+            case 'shift++':
+            case '+':
+            case '=':
+                this.stepKeyboardZoom(1);
+                return true;
+            case '-':
+            case 'shift+_':
+                this.stepKeyboardZoom(-1);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    toggleV2Play() {
+        const reverseShuttle = this.shuttleDirection === 'reverse';
+        const wasPlaying = !!(this.mediaEl && !this.mediaEl.paused);
+        this.exitShuttle();
+        if (reverseShuttle || wasPlaying) {
+            this.pause(undefined, true);
+            return;
+        }
+        this.handlePlayRequest();
+    }
+
+    shuttle(direction) {
+        const sameDirection = this.shuttleDirection === direction;
+        const rate = nextShuttleRate(this.shuttleRate, sameDirection);
+        if (direction === 'forward') {
+            this.startForwardShuttle(rate);
+            return;
+        }
+        this.startReverseShuttle(rate);
+    }
+
+    startForwardShuttle(rate) {
+        this.stopReverseShuttle();
+        this.shuttleDirection = 'forward';
+        this.shuttleRate = rate;
+        this.userRequestedPlay = true;
+        const playPromise = this.play();
+        if (this.mediaEl) {
+            this.mediaEl.playbackRate = this.shuttleRate;
+        }
+        if (playPromise && typeof playPromise.then === 'function') {
+            playPromise
+                .then(() => {
+                    if (this.mediaEl && this.shuttleDirection === 'forward') {
+                        this.mediaEl.playbackRate = this.shuttleRate;
+                    }
+                })
+                .catch(() => {});
+        }
+    }
+
+    startReverseShuttle(rate) {
+        this.stopReverseShuttle();
+        this.shuttleDirection = 'reverse';
+        this.shuttleRate = rate;
+        this.userRequestedPlay = true;
+        this.pause(undefined, true);
+        this.handleRate();
+        this.reverseShuttleTimer = window.setInterval(() => {
+            if (!this.mediaEl || this.mediaEl.currentTime <= 0) {
+                this.exitShuttle();
+                return;
+            }
+            this.quickSeek(-((this.shuttleRate * AUDIO_V2_SHUTTLE_TICK_MS) / 1000));
+            if (this.mediaEl.currentTime <= 0) {
+                this.exitShuttle();
+            }
+        }, AUDIO_V2_SHUTTLE_TICK_MS);
+    }
+
+    stopReverseShuttle() {
+        if (this.reverseShuttleTimer) {
+            window.clearInterval(this.reverseShuttleTimer);
+            this.reverseShuttleTimer = 0;
+        }
+    }
+
+    exitShuttle() {
+        const wasShuttling = !!this.shuttleDirection;
+        this.stopReverseShuttle();
+        this.shuttleDirection = null;
+        this.shuttleRate = 0;
+        if (wasShuttling) {
+            this.handleRate();
+        }
+    }
+
+    /**
+     * Keep the settings rate unless forward shuttle owns playbackRate.
+     *
+     * @inheritdoc
+     */
+    handleRate() {
+        if (this.shuttleDirection === 'forward' && this.shuttleRate > 0 && this.mediaEl) {
+            this.mediaEl.playbackRate = this.shuttleRate;
+            if (this.controls) {
+                this.renderUI();
+            }
+            return;
+        }
+        super.handleRate();
+    }
+
+    jumpToCommentMarker(direction) {
+        if (!this.mediaEl) {
+            return;
+        }
+
+        const target = nextCommentMarker(this.commentMarkers, {
+            direction,
+            selectedId: this.hostSelectedMarkerId,
+            time: this.mediaEl.currentTime,
+        });
+        if (!target || target.id === this.hostSelectedMarkerId) {
+            return;
+        }
+        this.handleCommentMarkerClick(target);
+    }
+
+    stepKeyboardVolume(direction) {
+        this.keyboardVolumeStep += 1;
+        if (direction > 0) {
+            this.increaseVolume();
+            return;
+        }
+        this.decreaseVolume();
+    }
+
+    stepKeyboardZoom(direction) {
+        this.keyboardZoomStep += direction;
+        this.renderUI();
     }
 
     /**
@@ -145,6 +423,9 @@ class MP3Viewer extends MediaBaseViewer {
      */
     destroy() {
         this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
+        this.stopReverseShuttle();
+        this.shuttleDirection = null;
+        this.shuttleRate = 0;
         this.abortWaveformLoads();
         super.destroy();
     }
@@ -403,6 +684,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     handlePlayRequest = () => {
+        this.exitShuttle();
         this.userRequestedPlay = true;
         this.togglePlay();
 
@@ -425,6 +707,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {void}
      */
     handlePlayPause = shouldPlay => {
+        this.exitShuttle();
         if (shouldPlay) {
             this.handlePlayRequest();
             return;
@@ -582,16 +865,20 @@ class MP3Viewer extends MediaBaseViewer {
     handleCommentMarkersUpdated = (markers = []) => {
         this.commentMarkers = markers;
         const selected = markers.find(marker => marker.isSelected);
-        const selectedId = selected ? selected.id : null;
 
-        if (selectedId !== this.hostSelectedMarkerId) {
-            this.hostSelectedMarkerId = selectedId;
-            if (selected && Number.isFinite(selected.time)) {
-                this.pendingHostSelectedSeek = selected;
-                this.applyPendingHostSelectedSeek();
-            } else {
-                this.pendingHostSelectedSeek = null;
+        // Host echoes often omit isSelected. Keep hostSelectedMarkerId so ↑/↓ can
+        // still walk other comments at the same time. Clear only when that id is gone.
+        if (selected) {
+            if (selected.id !== this.hostSelectedMarkerId) {
+                this.hostSelectedMarkerId = selected.id;
+                if (Number.isFinite(selected.time)) {
+                    this.pendingHostSelectedSeek = selected;
+                    this.applyPendingHostSelectedSeek();
+                }
             }
+        } else if (this.hostSelectedMarkerId && !markers.some(marker => marker.id === this.hostSelectedMarkerId)) {
+            this.hostSelectedMarkerId = null;
+            this.pendingHostSelectedSeek = null;
         }
 
         this.renderUI();
@@ -611,6 +898,7 @@ class MP3Viewer extends MediaBaseViewer {
         }
 
         this.pendingHostSelectedSeek = null;
+        this.exitShuttle();
         this.mediaEl.pause();
         if (this.mediaEl.currentTime !== marker.time) {
             this.mediaEl.currentTime = marker.time;
@@ -618,6 +906,7 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     handleCommentMarkerClick = marker => {
+        this.exitShuttle();
         this.hostSelectedMarkerId = marker.id;
         this.pendingHostSelectedSeek = marker;
         if (this.mediaEl) {
@@ -673,6 +962,9 @@ class MP3Viewer extends MediaBaseViewer {
                 <Mp3ControlsV2
                     {...sharedProps}
                     commentMarkers={this.commentMarkers || []}
+                    hasStartedPlayback={!!this.userRequestedPlay}
+                    keyboardVolumeStep={this.keyboardVolumeStep}
+                    keyboardZoomStep={this.keyboardZoomStep}
                     mediaEl={this.mediaEl}
                     onCommentMarkerClick={this.handleCommentMarkerClick}
                     peaks={this.waveformPeaks}
