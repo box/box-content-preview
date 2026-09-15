@@ -1,7 +1,7 @@
 import React from 'react';
 import { BlueprintProvider, Toolbar, TooltipProvider, useNoopTreatment } from '@box/blueprint-web';
 import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2';
-import ControlsBarV2 from '../controls/controls-bar/ControlsBarV2';
+import ControlsBarV2, { ControlsBarV2Stack } from '../controls/controls-bar/ControlsBarV2';
 import DrawingControlsV2 from '../controls/annotations/DrawingControlsV2';
 import ExperiencesProvider from '../controls/experiences';
 import FindBarToggleV2 from '../controls/findbar/FindBarToggleV2';
@@ -46,65 +46,67 @@ export default function DocControlsV2({
         <BlueprintProvider useTreatment={useNoopTreatment}>
             <TooltipProvider>
                 <ExperiencesProvider experiences={experiences}>
-                    <ControlsBarV2>
-                        {!isGalleryOpen && (
-                            <>
-                                <ThumbnailsToggleV2
-                                    isThumbnailsOpen={isThumbnailsOpen}
-                                    onThumbnailsToggle={onThumbnailsToggle}
+                    <ControlsBarV2Stack>
+                        {!isGalleryOpen && annotationMode === AnnotationMode.DRAWING && (
+                            <ControlsBarV2>
+                                <DrawingControlsV2
+                                    annotationColor={annotationColor}
+                                    annotationMode={annotationMode}
+                                    onAnnotationColorChange={onAnnotationColorChange}
                                 />
-                                <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />
-                                <Toolbar.Separator />
-                                <PageControlsV2
-                                    onPageChange={onPageChange}
-                                    onPageSubmit={onPageSubmit}
-                                    pageCount={pageCount}
-                                    pageNumber={pageNumber}
-                                />
-                                <Toolbar.Separator />
-                            </>
+                            </ControlsBarV2>
                         )}
-                        {(!isGalleryOpen || hasGalleryZoom) && (
-                            <ZoomControlsV2
-                                maxScale={maxScale}
-                                minScale={minScale}
-                                onZoomIn={onZoomIn}
-                                onZoomOut={onZoomOut}
-                                resinTargetZoomIn={isGalleryOpen ? 'galleryZoomIn' : undefined}
-                                resinTargetZoomOut={isGalleryOpen ? 'galleryZoomOut' : undefined}
-                                scale={scale}
-                            />
-                        )}
-                        {!isGalleryOpen && onRotateLeft && (
-                            <>
-                                <Toolbar.Separator />
-                                <RotateControlV2 onRotateLeft={onRotateLeft} />
-                            </>
-                        )}
-                        <Toolbar.Separator />
-                        <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
-                        <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />
-                        {!isGalleryOpen && (
-                            <AnnotationsControlsV2
-                                annotationColor={annotationColor}
-                                annotationMode={annotationMode}
-                                hasDrawing={hasDrawing}
-                                hasHighlight={hasHighlight}
-                                hasRegion={hasRegion}
-                                onAnnotationModeClick={onAnnotationModeClick}
-                                onAnnotationModeEscape={onAnnotationModeEscape}
-                            />
-                        )}
-                    </ControlsBarV2>
-                    {!isGalleryOpen && annotationMode === AnnotationMode.DRAWING && (
                         <ControlsBarV2>
-                            <DrawingControlsV2
-                                annotationColor={annotationColor}
-                                annotationMode={annotationMode}
-                                onAnnotationColorChange={onAnnotationColorChange}
-                            />
+                            {!isGalleryOpen && (
+                                <>
+                                    <ThumbnailsToggleV2
+                                        isThumbnailsOpen={isThumbnailsOpen}
+                                        onThumbnailsToggle={onThumbnailsToggle}
+                                    />
+                                    <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />
+                                    <Toolbar.Separator />
+                                    <PageControlsV2
+                                        onPageChange={onPageChange}
+                                        onPageSubmit={onPageSubmit}
+                                        pageCount={pageCount}
+                                        pageNumber={pageNumber}
+                                    />
+                                    <Toolbar.Separator />
+                                </>
+                            )}
+                            {(!isGalleryOpen || hasGalleryZoom) && (
+                                <ZoomControlsV2
+                                    maxScale={maxScale}
+                                    minScale={minScale}
+                                    onZoomIn={onZoomIn}
+                                    onZoomOut={onZoomOut}
+                                    resinTargetZoomIn={isGalleryOpen ? 'galleryZoomIn' : undefined}
+                                    resinTargetZoomOut={isGalleryOpen ? 'galleryZoomOut' : undefined}
+                                    scale={scale}
+                                />
+                            )}
+                            {!isGalleryOpen && onRotateLeft && (
+                                <>
+                                    <Toolbar.Separator />
+                                    <RotateControlV2 onRotateLeft={onRotateLeft} />
+                                </>
+                            )}
+                            <Toolbar.Separator />
+                            <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
+                            <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />
+                            {!isGalleryOpen && (
+                                <AnnotationsControlsV2
+                                    annotationColor={annotationColor}
+                                    annotationMode={annotationMode}
+                                    hasDrawing={hasDrawing}
+                                    hasHighlight={hasHighlight}
+                                    hasRegion={hasRegion}
+                                    onAnnotationModeClick={onAnnotationModeClick}
+                                    onAnnotationModeEscape={onAnnotationModeEscape}
+                                />
+                            )}
                         </ControlsBarV2>
-                    )}
+                    </ControlsBarV2Stack>
                 </ExperiencesProvider>
             </TooltipProvider>
         </BlueprintProvider>

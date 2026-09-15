@@ -5,6 +5,7 @@ import ChevronUp from '@box/blueprint-web-assets/icons/Medium/ChevronUp';
 import { decodeKeydown } from '../../../util';
 import { ENTER, ESCAPE } from './PageControlsForm';
 import { Props } from './PageControls';
+import './PageControlsV2.scss';
 
 export default function PageControlsV2({
     onPageChange,
@@ -109,6 +110,7 @@ export default function PageControlsV2({
                     <Toolbar.Button
                         ref={buttonElRef}
                         aria-label={__('enter_page_num')}
+                        className="bp-PageControlsV2-button"
                         data-resin-target="pageNumberOpen"
                         data-testid="bp-PageControlsForm-button"
                         disabled={pageCount <= 1}

@@ -1,0 +1,5 @@
+// Without this the "1 / 12" label wraps onto a second line as the bar narrows, which grows the
+// height of the whole controls bar.
+.bp-PageControlsV2-button {
+    white-space: nowrap;
+}
