@@ -1,9 +1,13 @@
 import React from 'react';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
 import { SelectMenu } from '@box/blueprint-web';
+import { AnnotationColor } from '../../../AnnotationModule';
 import { Props } from './ColorPickerControl';
 
-export default function ColorPickerControlV2({ activeColor = bdlBoxBlue, colors, onColorSelect }: Props): JSX.Element {
+export default function ColorPickerControlV2({
+    activeColor = AnnotationColor.BOX_BLUE,
+    colors,
+    onColorSelect,
+}: Props): JSX.Element {
     return (
         <>
             {colors.map(color => (

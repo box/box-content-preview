@@ -5,5 +5,24 @@
     flex: 0 0 auto;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: var(--bp-space-020);
+}
+
+// The mock is 48px tall. Blueprint pads its 32px items by 4px for 42px and exposes no size prop,
+// so pin the height here until Toolbar.Root supports one.
+// Blueprint's toolbar is content-box, so the height has to include its padding and border
+// explicitly, otherwise this reads as 48px plus another 10px of chrome.
+.bp-ControlsBarV2 {
+    min-height: var(--bp-size-120);
+    box-sizing: border-box;
+}
+
+// Blueprint paints every toolbar item with the primary on-light token; the mock uses the secondary
+// one for the page label. Scoped under the bar so it outweighs Blueprint's own .toolbarItem rule.
+.bp-ControlsBarV2 .bp-PageControlsV2-button {
+    color: var(--bp-text-text-on-light-secondary);
+
+    // Without this the "1 / 12" label wraps onto a second line as the bar narrows, which grows the
+    // height of the whole bar.
+    white-space: nowrap;
 }

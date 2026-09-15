@@ -5,7 +5,6 @@ import ChevronUp from '@box/blueprint-web-assets/icons/Medium/ChevronUp';
 import { decodeKeydown } from '../../../util';
 import { ENTER, ESCAPE } from './PageControlsForm';
 import { Props } from './PageControls';
-import './PageControlsV2.scss';
 
 export default function PageControlsV2({
     onPageChange,

@@ -16,7 +16,7 @@ export default function ControlsBarV2({ children, ...rest }: Props): JSX.Element
     }
 
     return (
-        <Toolbar.Root data-testid="bp-ControlsBar" {...rest}>
+        <Toolbar.Root className="bp-ControlsBarV2" data-testid="bp-ControlsBar" {...rest}>
             {children}
         </Toolbar.Root>
     );

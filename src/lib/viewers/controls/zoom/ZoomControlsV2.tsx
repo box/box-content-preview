@@ -31,7 +31,12 @@ export default function ZoomControlsV2({
                     <Toolbar.Icon icon={Minus} />
                 </Toolbar.Button>
             </Tooltip>
-            <Text as="span" data-testid="bp-ZoomControls-current" variant="bodyDefaultSemibold">
+            <Text
+                as="span"
+                color="textOnLightSecondary"
+                data-testid="bp-ZoomControls-current"
+                variant="bodyDefaultSemibold"
+            >
                 {`${Math.round(currentScale * 100)}%`}
             </Text>
             <Tooltip content={__('zoom_in')}>

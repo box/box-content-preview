@@ -1,6 +1,6 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import { bdlBoxBlue, white } from 'box-ui-elements/es/styles/variables';
+import { IconIconOnDark, SurfaceFilterSurfaceSelected } from '@box/blueprint-web-assets/tokens/tokens';
 import { Toolbar, Tooltip } from '@box/blueprint-web';
 import DashedSquareBubble from '@box/blueprint-web-assets/icons/Medium/DashedSquareBubble';
 import PencilScribble from '@box/blueprint-web-assets/icons/Medium/PencilScribble';
@@ -8,11 +8,12 @@ import TextHighlight from '@box/blueprint-web-assets/icons/Medium/TextHighlight'
 import XMark from '@box/blueprint-web-assets/icons/Medium/XMark';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import useFullscreen from '../hooks/useFullscreen';
+import { AnnotationColor } from '../../../AnnotationModule';
 import { AnnotationMode } from '../../../types';
 import { Props } from './AnnotationsControls';
 
 export default function AnnotationsControlsV2({
-    annotationColor = bdlBoxBlue,
+    annotationColor = AnnotationColor.BOX_BLUE,
     annotationMode = AnnotationMode.NONE,
     hasDrawing = false,
     hasHighlight = false,
@@ -85,7 +86,7 @@ export default function AnnotationsControlsV2({
                         onClick={(): void => handleModeClick(AnnotationMode.DRAWING)}
                         selected={isDrawingActive}
                     >
-                        <Toolbar.Icon color={isDrawingActive ? white : undefined} icon={PencilScribble} />
+                        <Toolbar.Icon color={isDrawingActive ? IconIconOnDark : undefined} icon={PencilScribble} />
                     </Toolbar.DropdownTriggerButton>
                 </Tooltip>
             )}
@@ -93,13 +94,13 @@ export default function AnnotationsControlsV2({
                 <AnnotationsTargetedTooltip isEnabled={showRegion}>
                     <Toolbar.DropdownTriggerButton
                         aria-label={__('region_comment')}
-                        backgroundColor={isRegionActive ? bdlBoxBlue : undefined}
+                        backgroundColor={isRegionActive ? SurfaceFilterSurfaceSelected : undefined}
                         data-resin-target="highlightRegion"
                         data-testid="bp-AnnotationsControls-regionBtn"
                         onClick={(): void => handleModeClick(AnnotationMode.REGION)}
                         selected={isRegionActive}
                     >
-                        <Toolbar.Icon color={isRegionActive ? white : undefined} icon={DashedSquareBubble} />
+                        <Toolbar.Icon color={isRegionActive ? IconIconOnDark : undefined} icon={DashedSquareBubble} />
                     </Toolbar.DropdownTriggerButton>
                 </AnnotationsTargetedTooltip>
             )}
@@ -107,13 +108,13 @@ export default function AnnotationsControlsV2({
                 <Tooltip content={__('highlight_text')}>
                     <Toolbar.DropdownTriggerButton
                         aria-label={__('highlight_text')}
-                        backgroundColor={isHighlightActive ? bdlBoxBlue : undefined}
+                        backgroundColor={isHighlightActive ? SurfaceFilterSurfaceSelected : undefined}
                         data-resin-target="highlightText"
                         data-testid="bp-AnnotationsControls-highlightBtn"
                         onClick={(): void => handleModeClick(AnnotationMode.HIGHLIGHT)}
                         selected={isHighlightActive}
                     >
-                        <Toolbar.Icon color={isHighlightActive ? white : undefined} icon={TextHighlight} />
+                        <Toolbar.Icon color={isHighlightActive ? IconIconOnDark : undefined} icon={TextHighlight} />
                     </Toolbar.DropdownTriggerButton>
                 </Tooltip>
             )}
