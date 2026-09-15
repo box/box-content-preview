@@ -1,10 +1,11 @@
 // ControlsLayer lays its children out in a row, so two sibling bars sit side by side and the
 // markup bar steals width from the main one. Stack them instead, markup bar on top.
+// The palette sits above the bar and flush with its right edge, over the markup button that opens it.
 .bp-ControlsBarV2-stack {
     display: flex;
     flex: 0 0 auto;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
     gap: var(--bp-space-020);
 }
 
@@ -30,6 +31,11 @@
 
 .bp-ControlsBarV2 button:not([data-state='on']):hover svg * {
     fill: var(--bp-icon-icon-on-light);
+}
+
+// Tooltip wrappers must not introduce inline layout between the bar and its items.
+.bp-ControlsBarV2 .bp-ToggleTooltipV2 {
+    display: flex;
 }
 
 // Parity with the legacy bar: the exit button is only revealed by _docBase.scss in the

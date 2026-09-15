@@ -64,14 +64,12 @@ export default function DocControlsV2({
                                         onThumbnailsToggle={onThumbnailsToggle}
                                     />
                                     <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />
-                                    <Toolbar.Separator />
                                     <PageControlsV2
                                         onPageChange={onPageChange}
                                         onPageSubmit={onPageSubmit}
                                         pageCount={pageCount}
                                         pageNumber={pageNumber}
                                     />
-                                    <Toolbar.Separator />
                                 </>
                             )}
                             {(!isGalleryOpen || hasGalleryZoom) && (
@@ -85,18 +83,11 @@ export default function DocControlsV2({
                                     scale={scale}
                                 />
                             )}
-                            {!isGalleryOpen && onRotateLeft && (
-                                <>
-                                    <Toolbar.Separator />
-                                    <RotateControlV2 onRotateLeft={onRotateLeft} />
-                                </>
-                            )}
-                            <Toolbar.Separator />
+                            {!isGalleryOpen && onRotateLeft && <RotateControlV2 onRotateLeft={onRotateLeft} />}
                             <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
                             <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />
                             {!isGalleryOpen && (
                                 <AnnotationsControlsV2
-                                    annotationColor={annotationColor}
                                     annotationMode={annotationMode}
                                     hasDrawing={hasDrawing}
                                     hasHighlight={hasHighlight}

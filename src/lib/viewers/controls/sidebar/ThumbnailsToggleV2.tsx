@@ -1,7 +1,8 @@
 import React from 'react';
-import { Toolbar, Tooltip } from '@box/blueprint-web';
+import { Toolbar } from '@box/blueprint-web';
 import Nav from '@box/blueprint-web-assets/icons/Medium/Nav';
 import NavFilled from '@box/blueprint-web-assets/icons/MediumFilled/Nav';
+import ToggleTooltipV2 from '../tooltip/ToggleTooltipV2';
 import { Props } from './ThumbnailsToggle';
 
 export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggle }: Props): JSX.Element | null {
@@ -15,7 +16,7 @@ export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggl
             type="multiple"
             value={isThumbnailsOpen ? ['thumbnails'] : []}
         >
-            <Tooltip content={__('toggle_thumbnails')}>
+            <ToggleTooltipV2 content={__('toggle_thumbnails')}>
                 <Toolbar.ToggleItem
                     aria-expanded={isThumbnailsOpen}
                     aria-label={__('toggle_thumbnails')}
@@ -23,7 +24,7 @@ export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggl
                     icon={isThumbnailsOpen ? NavFilled : Nav}
                     value="thumbnails"
                 />
-            </Tooltip>
+            </ToggleTooltipV2>
         </Toolbar.ToggleGroup>
     );
 }

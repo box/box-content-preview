@@ -65,15 +65,19 @@ describe('DocControlsV2', () => {
         const props = getDefaults();
         const { rerender } = render(<DocControlsV2 {...props} hasHighlight />);
 
-        await user.click(screen.getByRole('button', { name: 'Highlight and Comment' }));
+        // Annotation modes are exclusive, so Blueprint's toggle group renders them as radios rather
+        // than the pressed buttons the legacy bar used.
+        await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
 
         expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.HIGHLIGHT });
 
         rerender(<DocControlsV2 {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
 
-        expect(screen.getByRole('button', { name: 'Highlight and Comment' })).toHaveAttribute('aria-pressed', 'true');
+        // Guards the Tooltip/ToggleItem data-state clash: a wrapper keeps the tooltip from
+        // overwriting the selected state that paints the active styling.
+        expect(screen.getByRole('radio', { name: 'Highlight and Comment' })).toHaveAttribute('data-state', 'on');
 
-        await user.click(screen.getByRole('button', { name: 'Highlight and Comment' }));
+        await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
 
         expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
     });

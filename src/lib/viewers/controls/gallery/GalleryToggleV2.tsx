@@ -1,6 +1,7 @@
 import React from 'react';
-import { Toolbar, Tooltip } from '@box/blueprint-web';
+import { Toolbar } from '@box/blueprint-web';
 import GridView from '@box/blueprint-web-assets/icons/Medium/GridView';
+import ToggleTooltipV2 from '../tooltip/ToggleTooltipV2';
 import { Props } from './GalleryToggle';
 
 export default function GalleryToggleV2({ isGalleryOpen, onGalleryToggle }: Props): JSX.Element | null {
@@ -10,14 +11,14 @@ export default function GalleryToggleV2({ isGalleryOpen, onGalleryToggle }: Prop
 
     return (
         <Toolbar.ToggleGroup onValueChange={onGalleryToggle} type="multiple" value={isGalleryOpen ? ['gallery'] : []}>
-            <Tooltip content={__('gallery_view')}>
+            <ToggleTooltipV2 content={__('gallery_view')}>
                 <Toolbar.ToggleItem
                     aria-label={__('gallery_view')}
                     data-resin-target="galleryView"
                     icon={GridView}
                     value="gallery"
                 />
-            </Tooltip>
+            </ToggleTooltipV2>
         </Toolbar.ToggleGroup>
     );
 }
