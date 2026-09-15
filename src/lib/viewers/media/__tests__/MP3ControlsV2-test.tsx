@@ -330,6 +330,12 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
         });
 
+        test('should hide the play overlay once playback has started even if paused', () => {
+            getWrapper({ durationTime: 8, hasStartedPlayback: true, isPlaying: false, peaks: [0.2, 0.8] });
+
+            expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+        });
+
         test('should not show zoom while the play overlay is visible', async () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
@@ -430,6 +436,45 @@ describe('MP3ControlsV2', () => {
             await userEvent.click(screen.getByTestId('bp-mock-waveform-viewport-pan'));
 
             expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', zoomedOut);
+        });
+
+        test('should apply a keyboard zoom step from the viewer', async () => {
+            const { rerender } = getWrapper({ durationTime: 8, isPlaying: true, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '1');
+
+            const zoomProps = {
+                ...defaultControlsProps,
+                durationTime: 8,
+                isPlaying: true,
+                mediaEl: mediaElWithDuration(8),
+                peaks: [0.2, 0.8],
+            };
+            rerender(<MP3ControlsV2 {...zoomProps} keyboardZoomStep={1} />);
+            const afterFirst = screen.getByTestId('bp-waveform-view').getAttribute('data-zoom-level');
+            expect(afterFirst).not.toBe('1');
+
+            rerender(<MP3ControlsV2 {...zoomProps} keyboardZoomStep={2} />);
+            expect(screen.getByTestId('bp-waveform-view').getAttribute('data-zoom-level')).not.toBe(afterFirst);
+        });
+
+        test('should open the volume slider from a keyboard volume step', async () => {
+            const { rerender } = getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
+            const flyout = (await screen.findByTestId('bp-volume-controls')).querySelector('.bp-VolumeControls-flyout');
+
+            expect(flyout).not.toHaveClass('bp-is-open');
+
+            rerender(
+                <MP3ControlsV2
+                    {...defaultControlsProps}
+                    durationTime={8}
+                    keyboardVolumeStep={1}
+                    mediaEl={mediaElWithDuration(8)}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+
+            expect(flyout).toHaveClass('bp-is-open');
         });
 
         test('should open the zoom slider on waveform zoom and dismiss after the delay', async () => {

@@ -168,6 +168,11 @@ export function zoomFromSliderValue(value: number, maxZoom: number = WAVEFORM_ZO
     return clampWaveformZoom(WAVEFORM_ZOOM_MIN + t * (max - WAVEFORM_ZOOM_MIN), max);
 }
 
+/** One zoom-in/out button step on the 0–100 slider, mapped back to zoom. */
+export function stepWaveformZoom(zoomLevel: number, maxZoom: number, sliderDelta: number): number {
+    return zoomFromSliderValue(Math.round(sliderValueFromZoom(zoomLevel, maxZoom)) + sliderDelta, maxZoom);
+}
+
 /** Max scroll that still shows a full window (no overscroll). Gutters add empty lead/trail. */
 export function maxScrollLeft(viewport: WaveformViewport): number {
     const gutterPx = viewport.gutterPx || 0;

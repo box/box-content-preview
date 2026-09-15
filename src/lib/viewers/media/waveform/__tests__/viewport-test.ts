@@ -15,6 +15,7 @@ import {
     maxScrollLeft,
     positionPxFromTime,
     sliderValueFromZoom,
+    stepWaveformZoom,
     timeFromPositionPx,
     timeLeftPercent,
     viewportEquals,
@@ -370,5 +371,12 @@ describe('viewport', () => {
             getZoomedPixelsPerSecond({ durationSec: 8, isTape: true, maxZoom: 4, viewWidthPx: 200, zoomLevel: 1 }),
         ).toBe(25);
         expect(getZoomedPixelsPerSecond({ durationSec: 8, maxZoom: 4, viewWidthPx: 200, zoomLevel: 1 })).toBe(0);
+    });
+
+    test('should step zoom along the slider, not by raw zoom units', () => {
+        expect(stepWaveformZoom(1, 4, 10)).toBe(zoomFromSliderValue(10, 4));
+        expect(stepWaveformZoom(4, 4, 10)).toBe(4);
+        expect(stepWaveformZoom(1, 4, -10)).toBe(1);
+        expect(stepWaveformZoom(2.51, 4, 10)).toBe(zoomFromSliderValue(60, 4));
     });
 });
