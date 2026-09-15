@@ -21,13 +21,8 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -36,8 +31,8 @@
         "wavesurfer.js": "7.12.11"
     },
     "peerDependencies": {
-        "@box/blueprint-web": "^14.32.1",
-        "@box/blueprint-web-assets": "^4.119.2",
+        "@box/blueprint-web": "^17.11.3",
+        "@box/blueprint-web-assets": "^5.10.10",
         "@box/react-virtualized": "9.22.3-rc-box.2",
         "axios": "^0.33.0",
         "box-annotations": "^5.2.1-beta.0",
@@ -53,8 +48,8 @@
         "@babel/preset-env": "^7.24.7",
         "@babel/preset-react": "^7.18.6",
         "@babel/preset-typescript": "^7.18.6",
-        "@box/blueprint-web": "^14.41.0",
-        "@box/blueprint-web-assets": "^4.119.2",
+        "@box/blueprint-web": "^17.11.3",
+        "@box/blueprint-web-assets": "^5.10.10",
         "@box/frontend": "^6.4.0",
         "@box/languages": "^1.0.0",
         "@box/react-virtualized": "9.22.3-rc-box.2",
