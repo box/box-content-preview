@@ -125,6 +125,42 @@ describe('WaveformZoomControl', () => {
         expect(onZoomChange).toHaveBeenCalledWith(2.2);
     });
 
+    test('should open the slider on the first collapsed press and zoom on the next', async () => {
+        const user = userEvent.setup();
+        const onZoomChange = jest.fn();
+        render(<WaveformZoomControl maxZoom={4} onZoomChange={onZoomChange} zoomLevel={2.5} />);
+
+        const control = screen.getByTestId('bp-waveform-zoom');
+        const zoomIn = screen.getByTestId('bp-waveform-zoom-in');
+        expect(control).not.toHaveClass('bp-is-open');
+
+        await user.pointer({ keys: '[TouchA]', target: zoomIn });
+        expect(control).toHaveClass('bp-is-open');
+        expect(onZoomChange).not.toHaveBeenCalled();
+        expect(screen.getByRole('slider', { name: __('media_zoom_slider') })).toBeInTheDocument();
+
+        const zoomOut = screen.getByRole('button', { name: __('zoom_out') });
+        await user.pointer({ keys: '[TouchA]', target: zoomIn });
+        expect(onZoomChange).toHaveBeenCalledWith(2.8);
+
+        onZoomChange.mockClear();
+        await user.pointer({ keys: '[TouchA]', target: zoomOut });
+        expect(onZoomChange).toHaveBeenCalledWith(2.2);
+    });
+
+    test('should collapse a pinned zoom flyout when tapping outside', async () => {
+        const user = userEvent.setup();
+        render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />);
+
+        const control = screen.getByTestId('bp-waveform-zoom');
+        const zoomIn = screen.getByTestId('bp-waveform-zoom-in');
+        await user.pointer({ keys: '[TouchA]', target: zoomIn });
+        expect(control).toHaveClass('bp-is-open');
+
+        await user.pointer({ keys: '[TouchA>]', target: document.body });
+        expect(control).not.toHaveClass('bp-is-open');
+    });
+
     test('should ignore zoom button clicks at the slider ends', async () => {
         const user = userEvent.setup();
         const onZoomChange = jest.fn();

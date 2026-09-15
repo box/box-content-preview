@@ -149,6 +149,8 @@ export type WaveformLoaderFactory = (
 export type WaveformViewport = {
     durationSec: number;
     endSec: number;
+    /** Empty leading/trailing px so t=0 and duration can sit under a center pin. */
+    gutterPx: number;
     heightPx: number;
     maxZoom: number;
     pixelsPerSecond: number;
@@ -158,7 +160,18 @@ export type WaveformViewport = {
     zoomLevel: number;
 };
 
-export type WaveformViewportInput = Omit<WaveformViewport, 'endSec' | 'pixelsPerSecond' | 'startSec'>;
+export type WaveformViewportInput = Omit<WaveformViewport, 'endSec' | 'gutterPx' | 'pixelsPerSecond' | 'startSec'> & {
+    gutterPx?: number;
+};
+
+/** Navigator fields used to detect iPad, including iPadOS reporting itself as Mac. */
+export type TapeNavigator = Pick<Navigator, 'maxTouchPoints' | 'platform' | 'userAgent'>;
+
+/** Window bits needed to choose tape vs desktop (coarse pointer + iPad). */
+export type TapeDetectionWindow = Pick<Window, 'matchMedia'> & { navigator: TapeNavigator };
+
+/** Desktop walks then pins near the right inset. Tape keeps the playhead at center. */
+export type PlayheadCameraMode = 'desktop' | 'tape';
 
 export type PlayheadCameraAction =
     | { type: 'none' }
@@ -167,11 +180,14 @@ export type PlayheadCameraAction =
 
 export type WaveformViewProps = {
     bufferedRange?: TimeRanges;
+    cameraMode?: PlayheadCameraMode;
     currentTime?: number;
     durationSec: number;
     height?: number;
     interactive?: boolean;
+    isPlaying?: boolean;
     mediaEl?: HTMLMediaElement | null;
+    onPlayPause?: (isPlaying: boolean) => void;
     onSeek?: (timeSec: number) => void;
     onViewportChange?: (viewport: WaveformViewport) => void;
     onZoomChange?: (zoomLevel: number) => void;

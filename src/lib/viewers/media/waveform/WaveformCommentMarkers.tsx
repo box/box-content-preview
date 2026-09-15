@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
     buildClusters,
@@ -17,6 +18,8 @@ const WAVEFORM_MARKER_SIZE_PX = 20;
 export type WaveformCommentMarkersProps = {
     commentMarkers: CommentMarker[];
     durationSec: number;
+    /** Tape camera: badges sit above the wave. Do not infer this from gutterPx. */
+    isTape?: boolean;
     onCommentMarkerClick?: (marker: CommentMarker) => void;
     /** Host-selected marker (activity feed / BUE). */
     selectedId?: string | null;
@@ -63,16 +66,18 @@ function clustersByExactTime(markers: CommentMarker[], durationSec: number): Clu
 export default function WaveformCommentMarkers({
     commentMarkers,
     durationSec,
+    isTape = false,
     onCommentMarkerClick,
     selectedId: hostSelectedId = null,
     viewport = null,
 }: WaveformCommentMarkersProps): JSX.Element | null {
-    const trackRef = useRef<HTMLDivElement>(null);
+    const trackRef = useRef<HTMLDivElement>(null); // width source for clustering overlapping badges
     const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId);
     const [trackWidth, setTrackWidth] = useState(0);
     const canShowTrack = durationSec > 0 && commentMarkers.length > 0;
     const zoomLevel = viewport?.zoomLevel ?? WAVEFORM_ZOOM_MIN;
-    const isZoomed = hasMappedWindow(viewport) && viewport.zoomLevel > WAVEFORM_ZOOM_MIN;
+    const alignsMarkersToVisibleWindow =
+        hasMappedWindow(viewport) && (viewport.zoomLevel > WAVEFORM_ZOOM_MIN || isTape);
 
     useLayoutEffect(() => {
         if (!canShowTrack) {
@@ -120,7 +125,10 @@ export default function WaveformCommentMarkers({
     return (
         <div
             ref={containerRef}
-            className={`bp-WaveformCommentMarkers${isZoomed ? ' bp-WaveformCommentMarkers--zoomed' : ''}`}
+            className={classNames('bp-WaveformCommentMarkers', {
+                'bp-WaveformCommentMarkers--tape': isTape,
+                'bp-WaveformCommentMarkers--zoomed': alignsMarkersToVisibleWindow,
+            })}
             data-testid="bp-waveform-comment-markers"
         >
             <div ref={trackRef} className="bp-WaveformCommentMarkers-track">
@@ -128,9 +136,10 @@ export default function WaveformCommentMarkers({
                     const marker = cluster.markers[0];
                     const isGroup = cluster.markers.length > 1;
                     const isSelected = cluster.markers.some(entry => entry.id === selectedId);
-                    const className = `bp-WaveformCommentMarkers-marker${
-                        isSelected ? ' bp-WaveformCommentMarkers-marker--selected' : ''
-                    }${isGroup ? ' bp-WaveformCommentMarkers-marker--group' : ''}`;
+                    const className = classNames('bp-WaveformCommentMarkers-marker', {
+                        'bp-WaveformCommentMarkers-marker--group': isGroup,
+                        'bp-WaveformCommentMarkers-marker--selected': isSelected,
+                    });
                     const left = `${markerLeftPercent(marker.time, durationSec, viewport)}%`;
 
                     if (isGroup) {
