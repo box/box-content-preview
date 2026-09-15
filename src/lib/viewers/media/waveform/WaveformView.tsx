@@ -23,8 +23,10 @@ import {
     WAVEFORM_ZOOM_MIN,
 } from './constants';
 import { formatTime, morphPeaks, toChannels, WAVEFORM_PEAK_TRANSITION_MS } from './peaks';
+import { durationMsFromSec, isPointerOverRange, isRangeCollapsed, rangeProgress, resolveRange } from './range';
 import { WaveformFills, WaveformViewProps, WaveformViewport } from './types';
 import usePlayheadCamera from './usePlayheadCamera';
+import WaveformRangeSelection, { WaveformRangeSelectionHandle } from './WaveformRangeSelection';
 import {
     clampWaveformZoom,
     createWaveformViewport,
@@ -163,10 +165,13 @@ function WaveformView({
     isPlaying = false,
     mediaEl,
     onPlayPause,
+    onRangeChange,
+    onRangeDragChange,
     onSeek,
     onViewportChange,
     onZoomChange,
     peaks,
+    range = null,
     zoomLevel: zoomLevelProp,
 }: WaveformViewProps): JSX.Element {
     // DOM / WaveSurfer
@@ -175,6 +180,7 @@ function WaveformView({
     const playheadRef = useRef<HTMLDivElement>(null); // playhead element the camera positions
     const trackRef = useRef<HTMLDivElement>(null); // hover / tap target around the canvas
     const wavesurferRef = useRef<WaveSurfer | null>(null); // WaveSurfer instance
+    const rangeLayerRef = useRef<WaveformRangeSelectionHandle>(null);
 
     // Latest props for WaveSurfer + media listeners that must not re-subscribe each render.
     const cameraModeRef = useRef(cameraMode); // latest tape/desktop; WaveSurfer create() deps stay empty
@@ -202,6 +208,7 @@ function WaveformView({
     const pointerZoomClearTimerRef = useRef(0); // clears pointerZoomRef after WAVEFORM_ZOOM_DISMISS_MS
     const pointerZoomRef = useRef(false); // pinch/wheel in progress; skip play/pause and tape recenter
     const queuedTapeSeekTimeSecRef = useRef<number | null>(null); // seek time waiting for the next animation frame
+    const rangeProgressRef = useRef<ReturnType<typeof rangeProgress>>(null); // latest range progress; zoomed tile tint reads this
     const suppressNextTapPlayPauseRef = useRef(false); // swallow play/pause after a swipe or pinch
     const suppressNextTapPlayPauseTimerRef = useRef(0); // clears suppressNextTapPlayPauseRef
     const suppressViewportSyncRef = useRef(false); // ignore WaveSurfer zoom/scroll while we setOptions
@@ -226,6 +233,12 @@ function WaveformView({
     const [overlayPortalHost, setOverlayPortalHost] = useState<HTMLElement | null>(null);
     const [canvasWidthPx, setCanvasWidthPx] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [previewRange, setPreviewRange] = useState<WaveformViewProps['range']>(null);
+    const [isRangeDragging, setIsRangeDragging] = useState(false);
+    const isRangeDraggingRef = useRef(false);
+    const skipNextSeekRef = useRef(false);
+    const lastSetTimeSecRef = useRef<number | null>(null);
+    const [isRangeHovered, setIsRangeHovered] = useState(false);
     const isControlled = typeof zoomLevelProp === 'number';
     const maxZoom = getWaveformZoomMax({
         durationSec,
@@ -243,7 +256,23 @@ function WaveformView({
     const isScrollableWindow = isZoomed || isTape;
     const bufferProgress = getBufferedProgress(bufferedRange, durationSec);
     bufferProgressRef.current = bufferProgress;
-    hoverProgressRef.current = hoverProgress;
+    hoverProgressRef.current = isRangeDragging ? null : hoverProgress;
+    const activeRange = isRangeDragging ? previewRange ?? range : range;
+    const activeRangeRef = useRef(activeRange);
+    activeRangeRef.current = activeRange;
+    const durationMs = durationMsFromSec(durationSec);
+    const rangeStartMs = activeRange?.startMs;
+    const rangeEndMs = activeRange?.endMs;
+    const activeRangeProgress = useMemo(() => {
+        if (rangeStartMs == null || !Number.isFinite(rangeStartMs)) {
+            return null;
+        }
+        return rangeProgress(
+            resolveRange({ endMs: rangeEndMs ?? null, startMs: rangeStartMs }, durationMs),
+            durationMs,
+        );
+    }, [durationMs, rangeEndMs, rangeStartMs]);
+    rangeProgressRef.current = activeRangeProgress;
 
     const viewport = useMemo(
         () =>
@@ -261,6 +290,7 @@ function WaveformView({
     const viewportRef = useRef(viewport); // live scroll window; prefer this over render-state while the camera is moving
     const onViewportCommit = useCallback(
         (scrollLeftPx: number, nextViewport: WaveformViewport, commitReactState = true): void => {
+            rangeLayerRef.current?.applyViewport(nextViewport);
             onViewportChangeRef.current?.(nextViewport);
             if (commitReactState) {
                 setScrollLeft(scrollLeftPx);
@@ -386,6 +416,7 @@ function WaveformView({
         }
         const scrollLeftPx = getScrollLeft(wavesurfer);
         viewportRef.current = getViewportAtScroll(viewportRef.current, scrollLeftPx);
+        rangeLayerRef.current?.applyViewport(viewportRef.current);
         onViewportChangeRef.current?.(viewportRef.current);
         setScrollLeft(scrollLeftPx);
     }, []);
@@ -402,9 +433,11 @@ function WaveformView({
             } else if (!isFollowPinned()) {
                 playhead.style.left = timeLeftPercent(timeSec, durationSecRef.current, viewportRef.current);
             }
+            rangeLayerRef.current?.applyViewport(viewportRef.current);
 
             const wavesurfer = wavesurferRef.current;
-            if (wavesurfer && wavesurfer.setTime) {
+            if (wavesurfer && wavesurfer.setTime && lastSetTimeSecRef.current !== timeSec) {
+                lastSetTimeSecRef.current = timeSec;
                 wavesurfer.setTime(timeSec);
             }
         },
@@ -465,6 +498,7 @@ function WaveformView({
                     applyScrollLeft(getCenteredScrollLeft(currentTimeRef.current, windowViewport), true);
                 }
             }
+            lastSetTimeSecRef.current = currentTimeRef.current;
             wavesurfer.setTime(currentTimeRef.current);
         } finally {
             suppressViewportSyncRef.current = false;
@@ -522,7 +556,11 @@ function WaveformView({
         });
 
         const unsubscribeClick = wavesurfer.on('click', (relativeX: number) => {
-            if (!interactiveRef.current) {
+            if (skipNextSeekRef.current) {
+                skipNextSeekRef.current = false;
+                return;
+            }
+            if (!interactiveRef.current || isRangeDraggingRef.current) {
                 return;
             }
             if (cameraModeRef.current === 'tape') {
@@ -542,6 +580,7 @@ function WaveformView({
                 }
                 syncViewport();
             });
+            rangeLayerRef.current?.applyViewport(viewportRef.current);
         });
         const unsubscribeZoom = wavesurfer.on('zoom', () => {
             if (suppressViewportSyncRef.current) {
@@ -559,6 +598,7 @@ function WaveformView({
                     bufferProgress: bufferProgressRef.current,
                     hoverProgress: cameraModeRef.current === 'tape' ? null : hoverProgressRef.current,
                     isTape: cameraModeRef.current === 'tape',
+                    rangeProgress: rangeProgressRef.current,
                 }),
                 true,
             );
@@ -566,6 +606,7 @@ function WaveformView({
 
         wavesurferRef.current = wavesurfer;
         displayedPeaksRef.current = peaksRef.current;
+        lastSetTimeSecRef.current = null;
         disableScrollOverscroll(container);
         syncViewport();
         applyZoomWindowRef.current?.();
@@ -584,6 +625,7 @@ function WaveformView({
             wavesurfer.destroy();
             wavesurferRef.current = null;
             displayedPeaksRef.current = null;
+            lastSetTimeSecRef.current = null;
         };
     }, [cancelJump, handleCameraScroll, handleTapeSwipe, height, isUserPanning, releaseUserPanHold, syncViewport]);
 
@@ -774,6 +816,7 @@ function WaveformView({
             bufferProgress,
             hoverProgress: isTape ? null : hoverProgress,
             isTape,
+            rangeProgress: activeRangeProgress,
         });
         if (isScrollableWindow) {
             tintZoomedWaveform(wavesurfer, fills);
@@ -784,8 +827,18 @@ function WaveformView({
             progressColor: toCanvasFill(fills.progressColor, devicePixelWidth(canvasWidthPx)),
             waveColor: toCanvasFill(fills.waveColor, devicePixelWidth(canvasWidthPx)),
         });
+        lastSetTimeSecRef.current = currentTimeRef.current;
         wavesurfer.setTime(currentTimeRef.current);
-    }, [bufferProgress, canvasWidthPx, hoverProgress, isScrollableWindow, isTape]);
+    }, [
+        activeRangeProgress,
+        bufferProgress,
+        canvasWidthPx,
+        hoverProgress,
+        isRangeDragging,
+        isScrollableWindow,
+        isTape,
+        isZoomed,
+    ]);
 
     useEffect(() => {
         const track = trackRef.current;
@@ -875,11 +928,11 @@ function WaveformView({
 
     const onHoverMove = useCallback(
         (event: React.MouseEvent<HTMLDivElement> | React.PointerEvent<HTMLDivElement>) => {
-            if (!interactive || isTape || isTouchHoverInput(event)) {
+            if (isTape || isTouchHoverInput(event)) {
                 return;
             }
             const rect = event.currentTarget.getBoundingClientRect();
-            if (!(rect.width > 0) || !(durationSec > 0)) {
+            if (!(rect.width > 0)) {
                 return;
             }
             const pointerX = event.clientX - rect.left;
@@ -887,6 +940,11 @@ function WaveformView({
                 return;
             }
             const vp = viewportRef.current;
+            const draft = activeRangeRef.current;
+            setIsRangeHovered(!!draft && isPointerOverRange({ pointerX, range: draft, viewport: vp }));
+            if (!interactive || isRangeDraggingRef.current || !(durationSec > 0)) {
+                return;
+            }
             if (vp.pixelsPerSecond > 0) {
                 setHoverProgress(Math.min(1, Math.max(0, timeFromPositionPx(pointerX, vp) / durationSec)));
                 return;
@@ -898,6 +956,29 @@ function WaveformView({
 
     const onHoverLeave = useCallback(() => {
         setHoverProgress(null);
+        setIsRangeHovered(false);
+    }, []);
+
+    const handleRangeDragChange = useCallback(
+        (isDragging: boolean) => {
+            isRangeDraggingRef.current = isDragging;
+            setIsRangeDragging(isDragging);
+            if (isDragging) {
+                setHoverProgress(null);
+            } else {
+                skipNextSeekRef.current = true;
+                window.setTimeout(() => {
+                    skipNextSeekRef.current = false;
+                }, 0);
+                setPreviewRange(null);
+            }
+            onRangeDragChange?.(isDragging);
+        },
+        [onRangeDragChange],
+    );
+
+    const getPlayheadSec = useCallback(() => {
+        return mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
     }, []);
 
     const bindOverlayPortalHost = useCallback((node: HTMLDivElement | null) => {
@@ -906,7 +987,12 @@ function WaveformView({
     }, []);
 
     const hoverLeft =
-        hoverProgress == null ? null : timeLeftPercent(hoverProgress * durationSec, durationSec, viewportRef.current);
+        isRangeDragging || hoverProgress == null
+            ? null
+            : timeLeftPercent(hoverProgress * durationSec, durationSec, viewportRef.current);
+
+    const showRangeOverlay = Boolean(range) && (isRangeDragging || !isPlaying || !isRangeCollapsed(range));
+
     const scrubTimeChip =
         isTape && scrubPreviewTimeSec != null ? (
             <div className="bp-WaveformView-hover bp-WaveformView-hover--tape" data-testid="bp-waveform-hover">
@@ -960,7 +1046,23 @@ function WaveformView({
                     className="bp-WaveformView-playhead"
                     data-testid="bp-waveform-playhead"
                 />
-                {hoverLeft != null && hoverProgress != null && (
+                {showRangeOverlay && range && (
+                    <WaveformRangeSelection
+                        ref={rangeLayerRef}
+                        currentTimeSec={currentTime}
+                        durationSec={durationSec}
+                        getPlayheadSec={getPlayheadSec}
+                        interactive={interactive}
+                        isHighlighted={isRangeDragging || isRangeHovered}
+                        keepHighlight
+                        onDragChange={handleRangeDragChange}
+                        onPreviewChange={setPreviewRange}
+                        onRangeChange={interactive ? onRangeChange : undefined}
+                        range={range}
+                        viewport={viewport}
+                    />
+                )}
+                {hoverLeft != null && hoverProgress != null && !isRangeDragging && (
                     <div className="bp-WaveformView-hover" data-testid="bp-waveform-hover" style={{ left: hoverLeft }}>
                         <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
                             {formatTime(hoverProgress * durationSec)}

@@ -1,3 +1,8 @@
+## 3.91.0 (2026-09-15)
+
+* chore(deps): Bump joi, svgo, and js-yaml to patched releases (#1773) ([acdbd14](https://github.com/box/box-content-preview/commit/acdbd14)), closes [#1773](https://github.com/box/box-content-preview/issues/1773)
+* feat(audio): add a pin-centered tape waveform for touch devices (#1771) ([77cef10](https://github.com/box/box-content-preview/commit/77cef10)), closes [#1771](https://github.com/box/box-content-preview/issues/1771)
+
 ## 3.90.0 (2026-09-10)
 
 * feat(audio): load waveform peaks from conversion JSON (#1768) ([e52b0b7](https://github.com/box/box-content-preview/commit/e52b0b7)), closes [#1768](https://github.com/box/box-content-preview/issues/1768)
