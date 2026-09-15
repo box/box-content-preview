@@ -143,9 +143,16 @@
                         return fileid.trim();
                     });
 
+                // POC only: ?bpControlsBar=true renders the Blueprint controls bar so it can be
+                // demoed side by side with the existing one.
+                var isBlueprintControlsBar = window.location.search.indexOf('bpControlsBar=true') !== -1;
+
                 var previewOptions = options || {
                     collection,
                     enableThumbnailsSidebar: true,
+                    features: {
+                        blueprintMigrationControlsBar: { enabled: isBlueprintControlsBar },
+                    },
                     showAnnotations: true,
                     showDownload: true,
                 };
