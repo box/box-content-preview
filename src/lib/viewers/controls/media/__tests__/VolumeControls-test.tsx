@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import VolumeControls from '../VolumeControls';
+import VolumeControls, { VOLUME_FLYOUT_DISMISS_MS } from '../VolumeControls';
 
 describe('VolumeControls', () => {
     const getWrapper = (props = {}) =>
@@ -68,7 +68,103 @@ describe('VolumeControls', () => {
 
             const sliderTrack = await screen.findByTestId('bp-volume-slider-control-track');
 
-            expect(sliderTrack).toHaveStyle({ height: `${value}%` });
+            expect(sliderTrack.querySelector('.bp-VolumeVerticalSliderControl-track')).toHaveStyle({
+                height: `${value}%`,
+            });
+        });
+    });
+
+    describe('keyboard reveal', () => {
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test('should open the volume flyout on revealStep and dismiss after the delay', () => {
+            jest.useFakeTimers();
+            const { rerender } = getWrapper();
+            const flyout = screen.getByTestId('bp-volume-controls').querySelector('.bp-VolumeControls-flyout');
+
+            expect(flyout).not.toHaveClass('bp-is-open');
+
+            rerender(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} revealStep={1} volume={1} />);
+            expect(flyout).toHaveClass('bp-is-open');
+
+            act(() => {
+                jest.advanceTimersByTime(VOLUME_FLYOUT_DISMISS_MS - 1);
+            });
+            expect(flyout).toHaveClass('bp-is-open');
+
+            act(() => {
+                jest.advanceTimersByTime(1);
+            });
+            expect(flyout).not.toHaveClass('bp-is-open');
+        });
+
+        test('should keep the flyout open when revealStep is bumped again', () => {
+            jest.useFakeTimers();
+            const { rerender } = getWrapper({ revealStep: 1 });
+            const flyout = screen.getByTestId('bp-volume-controls').querySelector('.bp-VolumeControls-flyout');
+
+            expect(flyout).toHaveClass('bp-is-open');
+
+            act(() => {
+                jest.advanceTimersByTime(VOLUME_FLYOUT_DISMISS_MS - 1);
+            });
+            rerender(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} revealStep={2} volume={1} />);
+
+            act(() => {
+                jest.advanceTimersByTime(VOLUME_FLYOUT_DISMISS_MS - 1);
+            });
+            expect(flyout).toHaveClass('bp-is-open');
+
+            act(() => {
+                jest.advanceTimersByTime(1);
+            });
+            expect(flyout).not.toHaveClass('bp-is-open');
+        });
+    });
+
+    describe('tab order', () => {
+        test('should tab from the mute button to the slider when the flyout is open', async () => {
+            const user = userEvent.setup();
+            const onVolumeChange = jest.fn();
+            getWrapper({ onVolumeChange, volume: 0.5 });
+
+            const slider = screen.getByRole('slider', { hidden: true, name: __('media_volume_slider') });
+            expect(slider).toHaveAttribute('tabIndex', '-1');
+
+            await user.tab();
+            expect(await getToggle()).toHaveFocus();
+            expect(slider).toHaveAttribute('tabIndex', '0');
+
+            await user.tab();
+            expect(slider).toHaveFocus();
+
+            await user.keyboard('{ArrowUp}');
+            expect(onVolumeChange).toHaveBeenCalled();
+        });
+
+        test('should close the flyout when tabbing out', async () => {
+            const user = userEvent.setup();
+            render(
+                <>
+                    <VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} volume={0.5} />
+                    <button type="button">next</button>
+                </>,
+            );
+            const flyout = screen.getByTestId('bp-volume-controls').querySelector('.bp-VolumeControls-flyout');
+
+            await user.tab();
+            expect(await getToggle()).toHaveFocus();
+            expect(flyout).toHaveClass('bp-is-open');
+
+            await user.tab();
+            expect(screen.getByRole('slider', { name: __('media_volume_slider') })).toHaveFocus();
+            expect(flyout).toHaveClass('bp-is-open');
+
+            await user.tab();
+            expect(screen.getByRole('button', { name: 'next' })).toHaveFocus();
+            expect(flyout).not.toHaveClass('bp-is-open');
         });
     });
 });

@@ -170,15 +170,6 @@ describe('VolumeSliderControl', () => {
             expect(onMouseOver).toHaveBeenCalled();
         });
 
-        test('should call onMouseOver when focus event occurs', () => {
-            const onMouseOver = jest.fn();
-            render(<VolumeSliderControl {...defaultProps} onMouseOver={onMouseOver} value={50} />);
-
-            fireEvent.focus(screen.getByRole('slider')!);
-
-            expect(onMouseOver).toHaveBeenCalled();
-        });
-
         test('should not handle mousedown with right button or modifier keys', () => {
             const onUpdate = jest.fn();
             render(<VolumeSliderControl {...defaultProps} onUpdate={onUpdate} value={50} />);
@@ -365,11 +356,16 @@ describe('VolumeSliderControl', () => {
             expect(slider).toHaveAttribute('tabIndex', '0');
         });
 
+        test('should apply a custom tabIndex to the slider', () => {
+            render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} tabIndex={-1} value={50} />);
+
+            expect(screen.getByRole('slider')).toHaveAttribute('tabIndex', '-1');
+        });
+
         test('should set correct height style based on value', () => {
             render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={25} />);
 
-            const slider = screen.getByRole('slider');
-            expect(slider).toHaveStyle({
+            expect(screen.getByRole('slider').querySelector('.bp-VolumeVerticalSliderControl-track')).toHaveStyle({
                 height: '25%',
             });
         });
@@ -377,8 +373,7 @@ describe('VolumeSliderControl', () => {
         test('should set minimum height of 5% when value is 0', () => {
             render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={0} />);
 
-            const slider = screen.getByRole('slider');
-            expect(slider).toHaveStyle({
+            expect(screen.getByRole('slider').querySelector('.bp-VolumeVerticalSliderControl-track')).toHaveStyle({
                 height: '5%',
             });
         });

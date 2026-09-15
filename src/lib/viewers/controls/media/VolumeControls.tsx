@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import IconVolumeMed24 from '../icons/IconVolumeMed24';
 import IconVolumeLow24 from '../icons/IconVolumeLow24';
@@ -9,9 +9,13 @@ import './VolumeControls.scss';
 import IconVolumeMax24 from '../icons/IconVolumeMax24';
 import VolumeSliderControl from '../slider/VolumeSliderControl';
 
+/** Keyboard volume keeps the flyout open longer than the 200ms max-width transition. */
+export const VOLUME_FLYOUT_DISMISS_MS = 1000;
+
 export type Props = {
     onMuteChange: (isMuted: boolean) => void;
     onVolumeChange: (volume: number) => void;
+    revealStep?: number;
     volume?: number;
 };
 
@@ -29,14 +33,36 @@ export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) 
     return Icon;
 }
 
-export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 1 }: Props): JSX.Element {
+export default function VolumeControls({
+    onMuteChange,
+    onVolumeChange,
+    revealStep = 0,
+    volume = 1,
+}: Props): JSX.Element {
     const [isActive, handlers] = useAttention();
+    const [isRevealed, setIsRevealed] = useState(false);
+    const revealTimerRef = useRef(0);
     const isMuted = !volume;
     const Icon = isMuted ? IconVolumeMuted24 : getIcon(volume);
     const title = isMuted ? __('media_unmute') : __('media_mute');
     const value = Math.round(volume * 100);
+    const isOpen = isActive || isRevealed;
 
-    const handleVolume = React.useCallback(
+    useEffect(() => {
+        if (!revealStep) {
+            return;
+        }
+        setIsRevealed(true);
+        window.clearTimeout(revealTimerRef.current);
+        revealTimerRef.current = window.setTimeout(() => {
+            setIsRevealed(false);
+            revealTimerRef.current = 0;
+        }, VOLUME_FLYOUT_DISMISS_MS);
+    }, [revealStep]);
+
+    useEffect(() => () => window.clearTimeout(revealTimerRef.current), []);
+
+    const handleVolume = useCallback(
         (newValue: number): void => {
             const newValueToUse = newValue <= 5 ? 0 : newValue;
             // make sure the value is always between 0 and 1 since the value passed in could be
@@ -51,7 +77,15 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
         <div
             className="bp-VolumeControls"
             data-testid="bp-volume-controls"
-            onBlur={handlers.onBlur}
+            onBlur={event => {
+                handlers.onBlur(event);
+                if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    return;
+                }
+                window.clearTimeout(revealTimerRef.current);
+                revealTimerRef.current = 0;
+                setIsRevealed(false);
+            }}
             onFocus={handlers.onFocus}
             onMouseOut={handlers.onMouseOut}
             onMouseOver={handlers.onMouseOver}
@@ -61,19 +95,20 @@ export default function VolumeControls({ onMuteChange, onVolumeChange, volume = 
                 data-resin-target="volumeToggle"
                 onClick={(): void => onMuteChange(!isMuted)}
                 title={title}
-                {...handlers}
             >
                 <Icon />
             </MediaToggle>
-            <div className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isActive })}>
+            <div aria-hidden={!isOpen} className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isOpen })}>
                 <VolumeSliderControl
+                    aria-hidden={!isOpen}
                     className="bp-VolumeControls-slider"
                     max={100}
+                    onMouseOver={handlers.onMouseOver}
                     onUpdate={handleVolume}
                     step={1}
+                    tabIndex={isOpen ? 0 : -1}
                     title={__('media_volume_slider')}
                     value={value}
-                    {...handlers}
                 />
             </div>
         </div>
