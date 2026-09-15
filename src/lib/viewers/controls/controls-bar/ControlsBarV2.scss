@@ -13,8 +13,29 @@
 // Blueprint's toolbar is content-box, so the height has to include its padding and border
 // explicitly, otherwise this reads as 48px plus another 10px of chrome.
 .bp-ControlsBarV2 {
+    // The mock fills the bar with white at 90% so the content shows through. Only the surface is
+    // translucent, so this overrides the token rather than the element's opacity.
+    --bp-surface-toolbar-surface: rgb(255 255 255 / 90%);
+
     min-height: var(--bp-size-120);
     box-sizing: border-box;
+}
+
+// Toolbar.Icon defaults to the legacy #222222 constant, but the mock draws icons with the BP2
+// secondary token and darkens them to the primary one on hover. Selected items are excluded so
+// they keep their own on-state fill.
+.bp-ControlsBarV2 button:not([data-state='on']) svg * {
+    fill: var(--bp-icon-icon-on-light-secondary);
+}
+
+.bp-ControlsBarV2 button:not([data-state='on']):hover svg * {
+    fill: var(--bp-icon-icon-on-light);
+}
+
+// Parity with the legacy bar: the exit button is only revealed by _docBase.scss in the
+// annotations-only experience.
+.bp-ControlsBarV2 .bp-AnnotationsControls-exitBtn {
+    display: none;
 }
 
 // Blueprint paints every toolbar item with the primary on-light token; the mock uses the secondary

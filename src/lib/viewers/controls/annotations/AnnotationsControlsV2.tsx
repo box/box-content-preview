@@ -66,6 +66,7 @@ export default function AnnotationsControlsV2({
                 <Tooltip content={__('exit_annotations')}>
                     <Toolbar.Button
                         aria-label={__('exit_annotations')}
+                        className="bp-AnnotationsControls-exitBtn"
                         data-resin-target="exit"
                         data-testid="bp-annotations-controls-exit-btn"
                         onClick={(): void => handleModeClick(AnnotationMode.NONE)}
