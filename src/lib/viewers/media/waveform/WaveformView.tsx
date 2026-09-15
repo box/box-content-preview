@@ -835,7 +835,16 @@ function WaveformView({
         });
         lastSetTimeSecRef.current = currentTimeRef.current;
         wavesurfer.setTime(currentTimeRef.current);
-    }, [activeRangeProgress, bufferProgress, canvasWidthPx, hoverProgress, isRangeDragging, isScrollableWindow, isTape, isZoomed]);
+    }, [
+        activeRangeProgress,
+        bufferProgress,
+        canvasWidthPx,
+        hoverProgress,
+        isRangeDragging,
+        isScrollableWindow,
+        isTape,
+        isZoomed,
+    ]);
 
     useEffect(() => {
         const track = trackRef.current;

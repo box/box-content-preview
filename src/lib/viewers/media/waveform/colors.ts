@@ -84,7 +84,8 @@ export function getBufferedProgress(bufferedRange: TimeRanges | undefined, durat
 /** Played bars: rest token on desktop, hover-played (brightest) on tape. Tape never uses hover or buffer fills. */
 export function getPlayedWaveformColor(isTape = false): string {
     return isTape ? WAVEFORM_COLOR_HOVER_PLAYED : WAVEFORM_COLOR_PLAYED;
-    
+}
+
 function rangeFills({
     buffer,
     hover,
