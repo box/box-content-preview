@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import { setPreviewResin } from '../../../../resin';
 import SliderControl from '../SliderControl';
 
 const getTouchEventDefaults = () => ({
@@ -272,6 +273,96 @@ describe('SliderControl', () => {
             expect(screen.getByTestId('bp-slider-control-track')).toHaveStyle({
                 backgroundImage: track,
             });
+        });
+    });
+
+    describe('resin', () => {
+        let recordAction;
+
+        beforeEach(() => {
+            recordAction = jest.fn();
+            setPreviewResin({ recordAction });
+        });
+
+        afterEach(() => {
+            setPreviewResin(null);
+        });
+
+        test('should record one programmatic event at the start of a mouse scrub', () => {
+            render(
+                <div data-resin-component="toolbar" data-resin-fileextension="mp4" data-resin-fileid="123">
+                    <SliderControl
+                        data-resin-target="timeScrubber"
+                        max={100}
+                        min={0}
+                        onUpdate={jest.fn()}
+                        step={1}
+                        title="Slider"
+                        value={0}
+                    />
+                </div>,
+            );
+
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+            fireEvent(
+                document,
+                new MouseEventExtended('mousemove', {
+                    bubbles: true,
+                    pageX: 100,
+                }),
+            );
+
+            expect(recordAction).toHaveBeenCalledTimes(1);
+            expect(recordAction).toHaveBeenCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                fileExtension: 'mp4',
+                fileId: '123',
+                target: 'timeScrubber',
+            });
+        });
+
+        test('should record again after the previous scrub ends', () => {
+            render(
+                <SliderControl
+                    data-resin-target="timeScrubber"
+                    max={100}
+                    min={0}
+                    onUpdate={jest.fn()}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
+
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+            fireEvent.mouseUp(document);
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+
+            expect(recordAction).toHaveBeenCalledTimes(2);
+        });
+
+        test('should record a programmatic event on arrow key seek', () => {
+            render(
+                <SliderControl
+                    data-resin-target="timeScrubber"
+                    max={100}
+                    min={0}
+                    onUpdate={jest.fn()}
+                    step={1}
+                    title="Slider"
+                    value={10}
+                />,
+            );
+
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowRight' });
+
+            expect(recordAction).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    action: 'programmatic',
+                    target: 'timeScrubber',
+                }),
+            );
         });
     });
 });

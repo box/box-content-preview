@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import React from 'react';
+import { setPreviewResin } from '../../../../resin';
 import VolumeSliderControl from '../VolumeSliderControl';
 
 const getTouchEventDefaults = () => ({
@@ -442,6 +443,35 @@ describe('VolumeSliderControl', () => {
 
             fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowUp' });
             expect(onUpdate).toHaveBeenCalledWith(100);
+        });
+    });
+
+    describe('resin', () => {
+        let recordAction;
+
+        beforeEach(() => {
+            recordAction = jest.fn();
+            setPreviewResin({ recordAction });
+        });
+
+        afterEach(() => {
+            setPreviewResin(null);
+        });
+
+        test('should record one programmatic event at the start of a volume scrub', () => {
+            render(
+                <VolumeSliderControl {...defaultProps} max={100} min={0} onUpdate={jest.fn()} step={1} value={50} />,
+            );
+
+            fireEvent.mouseDown(screen.getByRole('slider'));
+            fireEvent.mouseMove(document);
+
+            expect(recordAction).toHaveBeenCalledTimes(1);
+            expect(recordAction).toHaveBeenCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'volumeSlider',
+            });
         });
     });
 });
