@@ -1,3 +1,8 @@
+## 3.92.0 (2026-09-16)
+
+* feat(audio): add draft range handles on the waveform (#1770) ([42efa70](https://github.com/box/box-content-preview/commit/42efa70)), closes [#1770](https://github.com/box/box-content-preview/issues/1770)
+* feat(audio): add v2 keyboard shortcuts for shuttle, volume, and zoom (#1774) ([a8cd8ed](https://github.com/box/box-content-preview/commit/a8cd8ed)), closes [#1774](https://github.com/box/box-content-preview/issues/1774)
+
 ## 3.91.0 (2026-09-15)
 
 * chore(deps): Bump joi, svgo, and js-yaml to patched releases (#1773) ([acdbd14](https://github.com/box/box-content-preview/commit/acdbd14)), closes [#1773](https://github.com/box/box-content-preview/issues/1773)
