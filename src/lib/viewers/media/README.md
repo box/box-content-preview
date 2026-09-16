@@ -119,8 +119,6 @@ The host also sends these events to the MP3 viewer (audio player v2 only). Nothi
 | comment_range_draft       | Host → viewer | `{ startMs, endMs }`. `endMs: null` is a collapsed timestamp. Invalid payloads are ignored. |
 | comment_range_draft_clear | Host → viewer | Hide handles. A file-version switch is a clear, not a resync.                               |
 
-`comment_range_select` is reserved for highlighting a posted comment and is not handled here.
-
 ## Methods
 
 The following methods are available for the MP3 viewer.

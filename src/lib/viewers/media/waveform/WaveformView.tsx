@@ -567,11 +567,11 @@ function WaveformView({
             if (!interactiveRef.current || isRangeDraggingRef.current) {
                 return;
             }
-            const draft = activeRangeRef.current;
+            const rangeDraft = activeRangeRef.current;
             const timeSec = relativeX * durationSecRef.current;
-            if (draft && !isRangeCollapsed(draft)) {
+            if (rangeDraft && !isRangeCollapsed(rangeDraft)) {
                 const pointerX = positionPxFromTime(timeSec, viewportRef.current);
-                if (!isPointerOverRange({ pointerX, range: draft, viewport: viewportRef.current })) {
+                if (!isPointerOverRange({ pointerX, range: rangeDraft, viewport: viewportRef.current })) {
                     onRangeClearRef.current?.();
                     return;
                 }
@@ -953,8 +953,8 @@ function WaveformView({
                 return;
             }
             const vp = viewportRef.current;
-            const draft = activeRangeRef.current;
-            setIsRangeHovered(!!draft && isPointerOverRange({ pointerX, range: draft, viewport: vp }));
+            const rangeDraft = activeRangeRef.current;
+            setIsRangeHovered(!!rangeDraft && isPointerOverRange({ pointerX, range: rangeDraft, viewport: vp }));
             if (!interactive || isRangeDraggingRef.current || !(durationSec > 0)) {
                 return;
             }
