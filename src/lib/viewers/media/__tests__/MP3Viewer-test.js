@@ -87,6 +87,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.setup();
 
             expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft_clear', mp3.handleCommentRangeDraftClear);
         });
 
         test('should not apply v2 classes when React controls are off', () => {
@@ -231,6 +233,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUIReact();
 
             expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft_clear', mp3.handleCommentRangeDraftClear);
         });
 
         test('should not listen for comment_markers when audio player v2 is off', () => {
@@ -241,6 +245,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUIReact();
 
             expect(mp3.addListener).not.toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.addListener).not.toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.addListener).not.toHaveBeenCalledWith(
+                'comment_range_draft_clear',
+                mp3.handleCommentRangeDraftClear,
+            );
         });
 
         test('should not stack comment_markers listeners when loadUIReact runs twice', () => {
@@ -251,6 +260,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUIReact();
 
             expect(mp3.listenerCount('comment_markers')).toBe(1);
+            expect(mp3.listenerCount('comment_range_draft')).toBe(1);
+            expect(mp3.listenerCount('comment_range_draft_clear')).toBe(1);
         });
     });
 
@@ -494,12 +505,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
                     start: expect.any(Function),
                 },
                 commentMarkers: [],
+                commentRangeDraft: null,
                 currentTime: 0,
                 durationTime: 1000,
                 hasStartedPlayback: false,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
+                onCommentRangeChange: mp3.handleCommentRangeChange,
+                onCommentRangeClear: mp3.handleCommentRangeClear,
+                onCommentRangeDragChange: mp3.handleCommentRangeDragChange,
                 onMuteChange: mp3.toggleMute,
                 onPlayPause: mp3.handlePlayPause,
                 onRateChange: mp3.setRate,
@@ -719,6 +734,102 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
+    describe('comment range draft', () => {
+        beforeEach(() => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emit').mockImplementation();
+        });
+
+        test('should store a collapsed draft and render', () => {
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should store an open draft', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+        });
+
+        test('should reject an invalid draft and keep the previous one', () => {
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+
+            mp3.handleCommentRangeDraft({ endMs: 1000, startMs: 2000 });
+            mp3.handleCommentRangeDraft({ startMs: Number.NaN });
+            mp3.handleCommentRangeDraft(null);
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.renderUI).not.toBeCalled();
+        });
+
+        test('should ignore inbound drafts while a handle is dragging', () => {
+            mp3.commentRangeDraft = { endMs: null, startMs: 2000 };
+            mp3.isCommentRangeDragging = true;
+
+            mp3.handleCommentRangeDraft({ endMs: 5000, startMs: 1000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
+            expect(mp3.renderUI).not.toBeCalled();
+        });
+
+        test('should hide handles on comment_range_draft_clear', () => {
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+            mp3.isCommentRangeDragging = true;
+
+            mp3.handleCommentRangeDraftClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeDragging).toBe(false);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should emit comment_range_draft_change on pointer-up and keep the local draft', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_change', { endMs: 4000, startMs: 2000 });
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should emit comment_range_draft_dismiss when the waveform is clicked outside an open range', () => {
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should not emit a viewer dismiss for a collapsed draft', () => {
+            mp3.commentRangeDraft = { endMs: null, startMs: 2000 };
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
+            expect(mp3.emit).not.toBeCalled();
+        });
+
+        test('should treat a file reload as a local clear without notifying the host', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+            mp3.isCommentRangeDragging = true;
+            jest.spyOn(mp3, 'showAudioLoadingShell').mockImplementation();
+            jest.spyOn(mp3, 'startConversionWaveformLoad').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'load').mockReturnValue(Promise.resolve());
+
+            mp3.load();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeDragging).toBe(false);
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_clear');
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
+            MediaBaseViewer.prototype.load.mockRestore();
+        });
+    });
+
     describe('getIsAudioPlayerV2()', () => {
         test('should default off when the host has not passed a gate', () => {
             expect(mp3.getIsAudioPlayerV2()).toBe(false);
@@ -907,6 +1018,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.destroy();
 
             expect(mp3.removeListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.removeListener).toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.removeListener).toHaveBeenCalledWith(
+                'comment_range_draft_clear',
+                mp3.handleCommentRangeDraftClear,
+            );
             superDestroy.mockRestore();
         });
     });
