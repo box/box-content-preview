@@ -277,7 +277,7 @@ describe('SliderControl', () => {
     });
 
     describe('resin', () => {
-        let recordAction;
+        let recordAction: jest.Mock;
 
         beforeEach(() => {
             recordAction = jest.fn();
