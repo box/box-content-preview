@@ -6,6 +6,7 @@ import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/P
 import { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import TimestampControl from '../controls/media/TimestampControl';
 import { CommentMarker } from '../controls/media/markers';
+import { CommentRangeDraft } from '../controls/media/types';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
@@ -27,10 +28,14 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
     VolumeControlsProps & {
         bufferedRange?: TimeRanges;
         commentMarkers?: CommentMarker[];
+        commentRangeDraft?: CommentRangeDraft | null;
         hasStartedPlayback?: boolean;
         keyboardZoomStep?: number;
         mediaEl?: HTMLMediaElement | null;
         onCommentMarkerClick?: (marker: CommentMarker) => void;
+        onCommentRangeChange?: (range: { endMs: number; startMs: number }) => void;
+        onCommentRangeClear?: () => void;
+        onCommentRangeDragChange?: (isDragging: boolean) => void;
         peaks?: ArrayLike<number>;
     };
 
@@ -38,6 +43,7 @@ export default function MP3ControlsV2({
     autoplay,
     bufferedRange,
     commentMarkers,
+    commentRangeDraft = null,
     currentTime,
     durationTime,
     hasStartedPlayback = false,
@@ -47,6 +53,9 @@ export default function MP3ControlsV2({
     mediaEl,
     onAutoplayChange,
     onCommentMarkerClick,
+    onCommentRangeChange,
+    onCommentRangeClear,
+    onCommentRangeDragChange,
     onMuteChange,
     onPlayPause,
     onRateChange,
@@ -188,10 +197,14 @@ export default function MP3ControlsV2({
                         isPlaying={isPlaying}
                         mediaEl={mediaEl}
                         onPlayPause={isWaveformInteractive ? onPlayPause : undefined}
+                        onRangeChange={isWaveformInteractive ? onCommentRangeChange : undefined}
+                        onRangeClear={isWaveformInteractive ? onCommentRangeClear : undefined}
+                        onRangeDragChange={onCommentRangeDragChange}
                         onSeek={isWaveformInteractive ? onTimeChange : undefined}
                         onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
                         onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
                         peaks={waveformPeaks}
+                        range={commentRangeDraft}
                         zoomLevel={waveformZoomLevel}
                     />
                     <WaveformCommentMarkers
