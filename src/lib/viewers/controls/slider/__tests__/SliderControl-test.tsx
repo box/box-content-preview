@@ -290,17 +290,15 @@ describe('SliderControl', () => {
 
         test('should record one programmatic event at the start of a mouse scrub', () => {
             render(
-                <div data-resin-component="toolbar" data-resin-fileextension="mp4" data-resin-fileid="123">
-                    <SliderControl
-                        data-resin-target="timeScrubber"
-                        max={100}
-                        min={0}
-                        onUpdate={jest.fn()}
-                        step={1}
-                        title="Slider"
-                        value={0}
-                    />
-                </div>,
+                <SliderControl
+                    data-resin-target="timeScrubber"
+                    max={100}
+                    min={0}
+                    onUpdate={jest.fn()}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
             );
 
             fireEvent.mouseDown(screen.getByRole('slider')!);
@@ -316,8 +314,6 @@ describe('SliderControl', () => {
             expect(recordAction).toHaveBeenCalledWith({
                 action: 'programmatic',
                 component: 'toolbar',
-                fileExtension: 'mp4',
-                fileId: '123',
                 target: 'timeScrubber',
             });
         });

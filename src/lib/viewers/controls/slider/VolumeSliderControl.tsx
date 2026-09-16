@@ -1,9 +1,8 @@
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 import React from 'react';
-import { recordScrubResin } from '../../../resin';
+import { recordProgrammaticResin } from '../../../resin';
 import { decodeKeydown } from '../../../util';
-import useScrubGestureResin from './useScrubGestureResin';
 import './VolumeSliderControl.scss';
 
 const MIN_VOLUME_HEIGHT = 5;
@@ -42,7 +41,6 @@ export default function VolumeSliderControl({
 }: Props): JSX.Element {
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
-    const { logScrubStart, resetScrubGesture } = useScrubGestureResin(sliderElRef, 'volumeSlider');
 
     const getPositionRelativeToSlider = React.useCallback((clientY: number) => {
         const { current: sliderEl } = sliderElRef;
@@ -74,13 +72,13 @@ export default function VolumeSliderControl({
         const key = decodeKeydown(event);
         if (key === 'ArrowDown') {
             event.stopPropagation(); // Prevents global key handling
-            recordScrubResin(sliderElRef.current, 'volumeSlider');
+            recordProgrammaticResin('volumeSlider');
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
         if (key === 'ArrowUp') {
             event.stopPropagation(); // Prevents global key handling
-            recordScrubResin(sliderElRef.current, 'volumeSlider');
+            recordProgrammaticResin('volumeSlider');
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
     };
@@ -88,7 +86,7 @@ export default function VolumeSliderControl({
     const handleMouseDown = (event: React.MouseEvent<Ref>): void => {
         const { button, ctrlKey, metaKey, pageY, clientY } = event;
         if (button > 1 || ctrlKey || metaKey) return;
-        logScrubStart();
+        recordProgrammaticResin('volumeSlider');
         onUpdate(getPositionValue(pageY, clientY));
         setIsScrubbing(true);
         // Prevent clicking on the slider from triggering the mouse down event on the parent slider track
@@ -102,16 +100,13 @@ export default function VolumeSliderControl({
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
-        logScrubStart();
+        recordProgrammaticResin('volumeSlider');
         onUpdate(getPositionValue(touches[0].pageY, touches[0].clientY));
         setIsScrubbing(true);
     };
 
     React.useEffect(() => {
-        const handleDocumentMoveStop = (): void => {
-            resetScrubGesture();
-            setIsScrubbing(false);
-        };
+        const handleDocumentMoveStop = (): void => setIsScrubbing(false);
         const handleDocumentMouseMove = (event: MouseEvent): void => {
             if (!isScrubbing || event.button > 1 || event.ctrlKey || event.metaKey) return;
 
@@ -138,7 +133,7 @@ export default function VolumeSliderControl({
             document.removeEventListener('touchend', handleDocumentMoveStop);
             document.removeEventListener('touchmove', handleDocumentTouchMove);
         };
-    }, [isScrubbing, getPositionRelativeToSlider, onUpdate, resetScrubGesture]);
+    }, [isScrubbing, getPositionRelativeToSlider, onUpdate]);
 
     const heightValueBasedOnVolume = value === 0 ? MIN_VOLUME_HEIGHT : value;
     return (

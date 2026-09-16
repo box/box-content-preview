@@ -1,9 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
-import { recordScrubResin } from '../../../resin';
+import { recordProgrammaticResin } from '../../../resin';
 import { decodeKeydown } from '../../../util';
-import useScrubGestureResin from './useScrubGestureResin';
 import './SliderControl.scss';
 
 export type Ref = HTMLDivElement;
@@ -34,7 +33,10 @@ export default function SliderControl({
 }: Props): JSX.Element {
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
-    const { logScrubStart, resetScrubGesture } = useScrubGestureResin(sliderElRef);
+
+    const logScrub = (): void => {
+        recordProgrammaticResin(sliderElRef.current?.getAttribute('data-resin-target'));
+    };
 
     const getPosition = React.useCallback((pageX: number) => {
         const { current: sliderEl } = sliderElRef;
@@ -63,13 +65,13 @@ export default function SliderControl({
 
         if (key === 'ArrowLeft') {
             event.stopPropagation(); // Prevents global key handling
-            recordScrubResin(sliderElRef.current);
+            logScrub();
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
         if (key === 'ArrowRight') {
             event.stopPropagation(); // Prevents global key handling
-            recordScrubResin(sliderElRef.current);
+            logScrub();
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
     };
@@ -77,7 +79,7 @@ export default function SliderControl({
     const handleMouseDown = ({ button, ctrlKey, metaKey, pageX }: React.MouseEvent<Ref>): void => {
         if (button > 1 || ctrlKey || metaKey) return;
 
-        logScrubStart();
+        logScrub();
         onUpdate(getPositionValue(pageX));
         setIsScrubbing(true);
     };
@@ -90,16 +92,13 @@ export default function SliderControl({
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
-        logScrubStart();
+        logScrub();
         onUpdate(getPositionValue(touches[0].pageX));
         setIsScrubbing(true);
     };
 
     React.useEffect(() => {
-        const handleDocumentMoveStop = (): void => {
-            resetScrubGesture();
-            setIsScrubbing(false);
-        };
+        const handleDocumentMoveStop = (): void => setIsScrubbing(false);
         const handleDocumentMouseMove = (event: MouseEvent): void => {
             if (!isScrubbing || event.button > 1 || event.ctrlKey || event.metaKey) return;
 
@@ -126,7 +125,7 @@ export default function SliderControl({
             document.removeEventListener('touchend', handleDocumentMoveStop);
             document.removeEventListener('touchmove', handleDocumentTouchMove);
         };
-    }, [isScrubbing, getPositionValue, onUpdate, resetScrubGesture]);
+    }, [isScrubbing, getPositionValue, onUpdate]);
 
     return (
         <div
