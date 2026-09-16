@@ -242,6 +242,94 @@ describe('SliderControl', () => {
         });
     });
 
+    describe('resin', () => {
+        const recordAction = jest.fn();
+
+        beforeEach(() => {
+            recordAction.mockClear();
+            window.Box = { Preview: { resin: { recordAction } } };
+        });
+
+        afterEach(() => {
+            delete window.Box;
+        });
+
+        test.each(['mousedown', 'touchstart'] as const)(
+            'should record a programmatic action on %s when data-resin-target is set',
+            eventName => {
+                render(
+                    <SliderControl
+                        data-resin-target="timeScrubber"
+                        max={100}
+                        min={0}
+                        step={1}
+                        title="Slider"
+                        value={0}
+                    />,
+                );
+
+                if (eventName === 'mousedown') {
+                    fireEvent.mouseDown(screen.getByRole('slider')!);
+                } else {
+                    fireEvent.touchStart(screen.getByRole('slider')!, {
+                        touches: [{ ...getTouchEventDefaults(), pageX: 100 }],
+                    });
+                }
+
+                expect(recordAction).toHaveBeenCalledTimes(1);
+                expect(recordAction).toHaveBeenCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'timeScrubber',
+                });
+            },
+        );
+
+        test.each(['ArrowLeft', 'ArrowRight'])(
+            'should record a programmatic action on %s when data-resin-target is set',
+            key => {
+                render(
+                    <SliderControl
+                        data-resin-target="waveformZoomSlider"
+                        max={100}
+                        min={0}
+                        step={1}
+                        title="Slider"
+                        value={10}
+                    />,
+                );
+
+                fireEvent.keyDown(screen.getByRole('slider')!, { key });
+
+                expect(recordAction).toHaveBeenCalledTimes(1);
+                expect(recordAction).toHaveBeenCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'waveformZoomSlider',
+                });
+            },
+        );
+
+        test('should not record resin when data-resin-target is missing', () => {
+            render(<SliderControl max={100} min={0} step={1} title="Slider" value={0} />);
+
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowRight' });
+
+            expect(recordAction).not.toHaveBeenCalled();
+        });
+
+        test('should not record resin on mousemove', () => {
+            render(
+                <SliderControl data-resin-target="timeScrubber" max={100} min={0} step={1} title="Slider" value={0} />,
+            );
+
+            fireEvent.mouseMove(screen.getByRole('slider')!);
+
+            expect(recordAction).not.toHaveBeenCalled();
+        });
+    });
+
     describe('render', () => {
         test('should return a valid wrapper', () => {
             render(<SliderControl max={100} min={0} onChange={jest.fn()} step={1} title="Slider" value={0} />);

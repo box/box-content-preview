@@ -42,6 +42,14 @@ export default function VolumeSliderControl({
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
 
+    const recordScrub = (): void => {
+        window.Box?.Preview?.resin?.recordAction({
+            action: 'programmatic',
+            component: 'toolbar',
+            target: 'volumeSlider',
+        });
+    };
+
     const getPositionRelativeToSlider = React.useCallback((clientY: number) => {
         const { current: sliderEl } = sliderElRef;
         if (!sliderEl) return 0;
@@ -72,11 +80,13 @@ export default function VolumeSliderControl({
         const key = decodeKeydown(event);
         if (key === 'ArrowDown') {
             event.stopPropagation(); // Prevents global key handling
+            recordScrub();
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
         if (key === 'ArrowUp') {
             event.stopPropagation(); // Prevents global key handling
+            recordScrub();
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
     };
@@ -84,6 +94,7 @@ export default function VolumeSliderControl({
     const handleMouseDown = (event: React.MouseEvent<Ref>): void => {
         const { button, ctrlKey, metaKey, pageY, clientY } = event;
         if (button > 1 || ctrlKey || metaKey) return;
+        recordScrub();
         onUpdate(getPositionValue(pageY, clientY));
         setIsScrubbing(true);
         // Prevent clicking on the slider from triggering the mouse down event on the parent slider track
@@ -97,6 +108,7 @@ export default function VolumeSliderControl({
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
+        recordScrub();
         onUpdate(getPositionValue(touches[0].pageY, touches[0].clientY));
         setIsScrubbing(true);
     };
@@ -152,13 +164,6 @@ export default function VolumeSliderControl({
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseOver={onMouseOver}
-                    onPointerDown={(): void => {
-                        window.Box?.Preview?.resin?.recordAction({
-                            action: 'programmatic',
-                            component: 'toolbar',
-                            target: 'volumeSlider',
-                        });
-                    }}
                     onTouchStart={handleTouchStart}
                     role="slider"
                     tabIndex={tabIndex}

@@ -78,13 +78,6 @@ export default function TimeControls({
                 onMouseOut={(): void => setIsSliderHovered(false)}
                 onMouseOver={(): void => setIsSliderHovered(true)}
                 onMove={handleMouseMove}
-                onPointerDown={(): void => {
-                    window.Box?.Preview?.resin?.recordAction({
-                        action: 'programmatic',
-                        component: 'toolbar',
-                        target: 'timeScrubber',
-                    });
-                }}
                 onUpdate={onTimeChange}
                 step={fps ? 1 / fps : 5}
                 title={__('media_time_slider')}
