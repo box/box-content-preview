@@ -17,13 +17,18 @@ jest.mock('../waveform/WaveformView', () => {
         cameraMode,
         durationSec = 0,
         interactive,
+        onRangeChange,
+        onRangeClear,
         onViewportChange,
         onZoomChange,
+        range,
         zoomLevel = 1,
     }: {
         cameraMode?: string;
         durationSec?: number;
         interactive?: boolean;
+        onRangeChange?: (range: { endMs: number; startMs: number }) => void;
+        onRangeClear?: () => void;
         onViewportChange?: (viewport: {
             durationSec: number;
             endSec: number;
@@ -37,6 +42,7 @@ jest.mock('../waveform/WaveformView', () => {
             zoomLevel: number;
         }) => void;
         onZoomChange?: (zoomLevel: number) => void;
+        range?: { endMs: number | null; startMs: number } | null;
         zoomLevel?: number;
     }): JSX.Element {
         const overview = {
@@ -117,6 +123,23 @@ jest.mock('../waveform/WaveformView', () => {
                     type="button"
                 >
                     resize
+                </button>
+                {range && (
+                    <div
+                        data-end={range.endMs == null ? '' : String(range.endMs)}
+                        data-start={String(range.startMs)}
+                        data-testid="bp-waveform-range"
+                    />
+                )}
+                <button
+                    data-testid="bp-mock-range-change"
+                    onClick={() => onRangeChange?.({ endMs: 4000, startMs: 2000 })}
+                    type="button"
+                >
+                    change
+                </button>
+                <button data-testid="bp-mock-range-clear" onClick={() => onRangeClear?.()} type="button">
+                    clear
                 </button>
             </div>
         );
@@ -330,6 +353,12 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
         });
 
+        test('should hide the play overlay once playback has started even if paused', () => {
+            getWrapper({ durationTime: 8, hasStartedPlayback: true, isPlaying: false, peaks: [0.2, 0.8] });
+
+            expect(screen.queryByTestId('bp-MP3ControlsV2-play-overlay')).not.toBeInTheDocument();
+        });
+
         test('should not show zoom while the play overlay is visible', async () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
@@ -430,6 +459,45 @@ describe('MP3ControlsV2', () => {
             await userEvent.click(screen.getByTestId('bp-mock-waveform-viewport-pan'));
 
             expect(screen.getByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', zoomedOut);
+        });
+
+        test('should apply a keyboard zoom step from the viewer', async () => {
+            const { rerender } = getWrapper({ durationTime: 8, isPlaying: true, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-zoom-level', '1');
+
+            const zoomProps = {
+                ...defaultControlsProps,
+                durationTime: 8,
+                isPlaying: true,
+                mediaEl: mediaElWithDuration(8),
+                peaks: [0.2, 0.8],
+            };
+            rerender(<MP3ControlsV2 {...zoomProps} keyboardZoomStep={1} />);
+            const afterFirst = screen.getByTestId('bp-waveform-view').getAttribute('data-zoom-level');
+            expect(afterFirst).not.toBe('1');
+
+            rerender(<MP3ControlsV2 {...zoomProps} keyboardZoomStep={2} />);
+            expect(screen.getByTestId('bp-waveform-view').getAttribute('data-zoom-level')).not.toBe(afterFirst);
+        });
+
+        test('should open the volume slider from a keyboard volume step', async () => {
+            const { rerender } = getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
+            const flyout = (await screen.findByTestId('bp-volume-controls')).querySelector('.bp-VolumeControls-flyout');
+
+            expect(flyout).not.toHaveClass('bp-is-open');
+
+            rerender(
+                <MP3ControlsV2
+                    {...defaultControlsProps}
+                    durationTime={8}
+                    keyboardVolumeStep={1}
+                    mediaEl={mediaElWithDuration(8)}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+
+            expect(flyout).toHaveClass('bp-is-open');
         });
 
         test('should open the zoom slider on waveform zoom and dismiss after the delay', async () => {
@@ -633,6 +701,43 @@ describe('MP3ControlsV2', () => {
             expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({
                 left: `${(72.729 / 90) * 100}%`,
             });
+        });
+
+        test('should not draw range handles until a draft is supplied', async () => {
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+        });
+
+        test('should draw a checkbox-driven range draft on the waveform', async () => {
+            getWrapper({
+                commentRangeDraft: { endMs: null, startMs: 8055 },
+                durationTime: 8,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-start', '8055');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-end', '');
+        });
+
+        test('should pass range handle commits and click-outside clears through', async () => {
+            const onCommentRangeChange = jest.fn();
+            const onCommentRangeClear = jest.fn();
+            getWrapper({
+                commentRangeDraft: { endMs: 4000, startMs: 2000 },
+                durationTime: 8,
+                isPlaying: true,
+                onCommentRangeChange,
+                onCommentRangeClear,
+                peaks: [0.2, 0.8],
+            });
+
+            await userEvent.click(await screen.findByTestId('bp-mock-range-change'));
+            expect(onCommentRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 2000 });
+
+            await userEvent.click(screen.getByTestId('bp-mock-range-clear'));
+            expect(onCommentRangeClear).toHaveBeenCalledTimes(1);
         });
     });
 });

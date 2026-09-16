@@ -87,6 +87,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.setup();
 
             expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft_clear', mp3.handleCommentRangeDraftClear);
         });
 
         test('should not apply v2 classes when React controls are off', () => {
@@ -231,6 +233,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUIReact();
 
             expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_range_draft_clear', mp3.handleCommentRangeDraftClear);
         });
 
         test('should not listen for comment_markers when audio player v2 is off', () => {
@@ -241,6 +245,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUIReact();
 
             expect(mp3.addListener).not.toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.addListener).not.toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.addListener).not.toHaveBeenCalledWith(
+                'comment_range_draft_clear',
+                mp3.handleCommentRangeDraftClear,
+            );
         });
 
         test('should not stack comment_markers listeners when loadUIReact runs twice', () => {
@@ -251,6 +260,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.loadUIReact();
 
             expect(mp3.listenerCount('comment_markers')).toBe(1);
+            expect(mp3.listenerCount('comment_range_draft')).toBe(1);
+            expect(mp3.listenerCount('comment_range_draft_clear')).toBe(1);
         });
     });
 
@@ -280,6 +291,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.abortConversionWaveformLoad).toBeCalled();
             expect(mp3.abortClientWaveformDecode).toBeCalled();
             expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
+            expect(mp3.getIsAudioPlayerV2()).toBe(true);
+
+            jest.spyOn(mp3, 'quickSeek');
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-10);
         });
     });
 
@@ -340,6 +356,46 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.pause).toBeCalledWith(undefined, true);
             expect(mp3.handlePlayRequest).not.toBeCalled();
+        });
+
+        test('should exit shuttle before play or pause', () => {
+            jest.spyOn(mp3, 'exitShuttle');
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(true);
+            expect(mp3.exitShuttle).toBeCalled();
+
+            mp3.exitShuttle.mockClear();
+            mp3.handlePlayPause(false);
+            expect(mp3.exitShuttle).toBeCalled();
+            expect(mp3.pause).toBeCalledWith(undefined, true);
+        });
+
+        test('should exit reverse shuttle when play is requested', () => {
+            jest.useFakeTimers();
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            mp3.cache.get.mockReturnValue(1);
+            mp3.mediaEl.currentTime = 10;
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 100 });
+            jest.spyOn(mp3, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'quickSeek').mockImplementation();
+
+            mp3.shuttle('reverse');
+            expect(mp3.shuttleDirection).toBe('reverse');
+
+            mp3.handlePlayPause(true);
+
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.togglePlay).toBeCalled();
+            expect(mp3.userRequestedPlay).toBe(true);
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
         });
     });
 
@@ -449,11 +505,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
                     start: expect.any(Function),
                 },
                 commentMarkers: [],
+                commentRangeDraft: null,
                 currentTime: 0,
                 durationTime: 1000,
+                hasStartedPlayback: false,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
+                onCommentRangeChange: mp3.handleCommentRangeChange,
+                onCommentRangeClear: mp3.handleCommentRangeClear,
+                onCommentRangeDragChange: mp3.handleCommentRangeDragChange,
                 onMuteChange: mp3.toggleMute,
                 onPlayPause: mp3.handlePlayPause,
                 onRateChange: mp3.setRate,
@@ -502,6 +563,19 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 volume: 1,
             });
             expect(getProps(mp3).peaks).toBeUndefined();
+        });
+
+        test('should hide the play overlay once shuttle has started, even while paused', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: true });
+            mp3.userRequestedPlay = true;
+            mp3.shuttleDirection = 'reverse';
+
+            mp3.renderUI();
+
+            expect(getProps(mp3).hasStartedPlayback).toBe(true);
+            expect(getProps(mp3).isPlaying).toBe(false);
         });
     });
 
@@ -657,6 +731,102 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.mediaEl.pause).not.toBeCalled();
             expect(mp3.mediaEl.currentTime).toBe(41.2);
+        });
+    });
+
+    describe('comment range draft', () => {
+        beforeEach(() => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emit').mockImplementation();
+        });
+
+        test('should store a collapsed draft and render', () => {
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should store an open draft', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+        });
+
+        test('should reject an invalid draft and keep the previous one', () => {
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+
+            mp3.handleCommentRangeDraft({ endMs: 1000, startMs: 2000 });
+            mp3.handleCommentRangeDraft({ startMs: Number.NaN });
+            mp3.handleCommentRangeDraft(null);
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.renderUI).not.toBeCalled();
+        });
+
+        test('should ignore inbound drafts while a handle is dragging', () => {
+            mp3.commentRangeDraft = { endMs: null, startMs: 2000 };
+            mp3.isCommentRangeDragging = true;
+
+            mp3.handleCommentRangeDraft({ endMs: 5000, startMs: 1000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
+            expect(mp3.renderUI).not.toBeCalled();
+        });
+
+        test('should hide handles on comment_range_draft_clear', () => {
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+            mp3.isCommentRangeDragging = true;
+
+            mp3.handleCommentRangeDraftClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeDragging).toBe(false);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should emit comment_range_draft_change on pointer-up and keep the local draft', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_change', { endMs: 4000, startMs: 2000 });
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should emit comment_range_draft_dismiss when the waveform is clicked outside an open range', () => {
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should not emit a viewer dismiss for a collapsed draft', () => {
+            mp3.commentRangeDraft = { endMs: null, startMs: 2000 };
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
+            expect(mp3.emit).not.toBeCalled();
+        });
+
+        test('should treat a file reload as a local clear without notifying the host', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+            mp3.isCommentRangeDragging = true;
+            jest.spyOn(mp3, 'showAudioLoadingShell').mockImplementation();
+            jest.spyOn(mp3, 'startConversionWaveformLoad').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'load').mockReturnValue(Promise.resolve());
+
+            mp3.load();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeDragging).toBe(false);
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_clear');
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
+            MediaBaseViewer.prototype.load.mockRestore();
         });
     });
 
@@ -848,6 +1018,11 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.destroy();
 
             expect(mp3.removeListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            expect(mp3.removeListener).toHaveBeenCalledWith('comment_range_draft', mp3.handleCommentRangeDraft);
+            expect(mp3.removeListener).toHaveBeenCalledWith(
+                'comment_range_draft_clear',
+                mp3.handleCommentRangeDraftClear,
+            );
             superDestroy.mockRestore();
         });
     });
@@ -1162,6 +1337,278 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 signal,
                 type: 'arraybuffer',
             });
+        });
+    });
+
+    describe('onKeydown()', () => {
+        function enableV2() {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            mp3.controls = { destroy: jest.fn(), render: jest.fn() };
+            mp3.cache.get.mockReturnValue(1);
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 100 });
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: true });
+            mp3.mediaEl.currentTime = 10;
+            mp3.mediaEl.pause = jest.fn();
+            jest.spyOn(mp3, 'play').mockResolvedValue();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'toggleMute').mockImplementation();
+            jest.spyOn(mp3, 'increaseVolume').mockImplementation();
+            jest.spyOn(mp3, 'decreaseVolume').mockImplementation();
+            jest.spyOn(mp3, 'quickSeek').mockImplementation();
+            jest.spyOn(mp3, 'frameStep').mockImplementation();
+            jest.spyOn(mp3, 'setMediaTime').mockImplementation();
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'handleCommentMarkerClick').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        }
+
+        test('should keep the shared React map when audio v2 is off', () => {
+            mp3.setup();
+            mp3.controls = { destroy: jest.fn(), render: jest.fn() };
+            jest.spyOn(mp3, 'quickSeek');
+
+            expect(mp3.onKeydown('ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-5);
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-10);
+        });
+
+        test('should skip 1s on arrows and one frame on comma/period', () => {
+            enableV2();
+
+            expect(mp3.onKeydown('ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-1);
+            expect(mp3.frameStep).not.toHaveBeenCalled();
+            expect(mp3.onKeydown(',')).toBe(true);
+            expect(mp3.frameStep).toHaveBeenCalledWith('back');
+            expect(mp3.onKeydown('ArrowRight')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(1);
+            expect(mp3.onKeydown('.')).toBe(true);
+            expect(mp3.frameStep).toHaveBeenCalledWith('forward');
+        });
+
+        test('should use the v2 keymap before controls mount', () => {
+            enableV2();
+            mp3.controls = null;
+
+            expect(mp3.onKeydown('ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-1);
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).not.toHaveBeenCalledWith(-10);
+        });
+
+        test('should mute on m and seek Home through the shared React map', () => {
+            enableV2();
+            mp3.commentMarkers = [{ id: '1', time: 4 }];
+
+            expect(mp3.onKeydown('m')).toBe(true);
+            expect(mp3.toggleMute).toHaveBeenCalled();
+            expect(mp3.handleCommentMarkerClick).not.toHaveBeenCalled();
+            expect(mp3.onKeydown('Shift+M')).toBe(true);
+            expect(mp3.onKeydown('Home')).toBe(true);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(0);
+        });
+
+        test('should walk comment markers on up/down and change volume on alt+arrows', () => {
+            enableV2();
+            mp3.commentMarkers = [
+                { id: 'a', time: 4 },
+                { id: 'b', time: 20 },
+            ];
+            mp3.mediaEl.currentTime = 10;
+
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'b', time: 20 });
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a', time: 4 });
+            expect(mp3.onKeydown('ArrowUp', { altKey: true })).toBe(true);
+            expect(mp3.increaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(1);
+            expect(mp3.onKeydown('ArrowDown', { altKey: true })).toBe(true);
+            expect(mp3.decreaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(2);
+        });
+
+        test('should change volume on up/down when there are no comment markers', () => {
+            enableV2();
+            mp3.commentMarkers = [];
+
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.increaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(1);
+            expect(mp3.handleCommentMarkerClick).not.toHaveBeenCalled();
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.decreaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(2);
+        });
+
+        test('should walk every comment marker in a cluster on up/down', () => {
+            enableV2();
+            mp3.commentMarkers = [
+                { id: 'a1', time: 20 },
+                { id: 'a2', time: 20 },
+                { id: 'a3', time: 21 },
+                { id: 'b', time: 40 },
+            ];
+            mp3.handleCommentMarkerClick.mockImplementation(marker => {
+                mp3.hostSelectedMarkerId = marker.id;
+                mp3.mediaEl.currentTime = marker.time;
+            });
+
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a1', time: 20 });
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'a2', time: 20 });
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'a3', time: 21 });
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'b', time: 40 });
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'a3', time: 21 });
+        });
+
+        test('should enter a cluster at the playhead when nothing is selected', () => {
+            enableV2();
+            mp3.commentMarkers = [
+                { id: 'a1', time: 20 },
+                { id: 'a2', time: 20 },
+                { id: 'a3', time: 21 },
+            ];
+            mp3.mediaEl.currentTime = 20;
+
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a1', time: 20 });
+
+            mp3.handleCommentMarkerClick.mockClear();
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a2', time: 20 });
+        });
+
+        test('should shuttle forward with ramping playbackRate and pause on k', () => {
+            enableV2();
+            mp3.mediaEl.playbackRate = 1;
+
+            expect(mp3.onKeydown('l')).toBe(true);
+            expect(mp3.play).toHaveBeenCalled();
+            expect(mp3.userRequestedPlay).toBe(true);
+            expect(mp3.mediaEl.playbackRate).toBe(2);
+            expect(mp3.onKeydown('l')).toBe(true);
+            expect(mp3.mediaEl.playbackRate).toBe(4);
+            expect(mp3.onKeydown('k')).toBe(true);
+            expect(mp3.pause).toHaveBeenCalled();
+            expect(mp3.shuttleDirection).toBe(null);
+        });
+
+        test('should stop reverse shuttle on destroy without restoring rate', () => {
+            jest.useFakeTimers();
+            enableV2();
+            jest.spyOn(mp3, 'handleRate');
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            mp3.handleRate.mockClear();
+            const seeksBeforeDestroy = mp3.quickSeek.mock.calls.length;
+            mp3.destroy();
+
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.handleRate).not.toHaveBeenCalled();
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeksBeforeDestroy);
+            jest.useRealTimers();
+        });
+
+        test('should shuttle reverse by seeking, not by seeking 10s', () => {
+            jest.useFakeTimers();
+            enableV2();
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.userRequestedPlay).toBe(true);
+            expect(mp3.quickSeek).not.toHaveBeenCalledWith(-10);
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-0.1);
+            jest.useRealTimers();
+        });
+
+        test('should exit reverse shuttle at the start of the file', () => {
+            jest.useFakeTimers();
+            enableV2();
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            mp3.mediaEl.currentTime = 0;
+            jest.advanceTimersByTime(50);
+
+            expect(mp3.shuttleDirection).toBe(null);
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
+        });
+
+        test('should exit shuttle on comment jump, Home, and End', () => {
+            jest.useFakeTimers();
+            enableV2();
+            mp3.handleCommentMarkerClick.mockRestore();
+            mp3.commentMarkers = [{ id: 'a', time: 4 }];
+            mp3.mediaEl.currentTime = 10;
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.shuttleDirection).toBe('reverse');
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.hostSelectedMarkerId).toBe('a');
+
+            expect(mp3.onKeydown('l')).toBe(true);
+            expect(mp3.shuttleDirection).toBe('forward');
+            expect(mp3.onKeydown('Home')).toBe(true);
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(0);
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.onKeydown('End')).toBe(true);
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(100);
+
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
+        });
+
+        test('should jump 5s on shift+arrows, to the end on End, and consume in/out/loop', () => {
+            enableV2();
+            jest.spyOn(MediaBaseViewer.prototype, 'onKeydown');
+
+            expect(mp3.onKeydown('Shift+ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-5);
+            expect(mp3.onKeydown('Shift+ArrowRight')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(5);
+            expect(mp3.onKeydown('End')).toBe(true);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(100);
+            expect(mp3.onKeydown('i')).toBe(true);
+            expect(mp3.onKeydown('o')).toBe(true);
+            expect(mp3.onKeydown('/')).toBe(true);
+            expect(mp3.onKeydown('Shift+L')).toBe(true);
+            expect(MediaBaseViewer.prototype.onKeydown).not.toHaveBeenCalled();
+        });
+
+        test('should not consume End when duration is unknown', () => {
+            enableV2();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+            jest.spyOn(MediaBaseViewer.prototype, 'onKeydown').mockReturnValue(false);
+
+            expect(mp3.onKeydown('End')).toBe(false);
+            expect(mp3.setMediaTime).not.toHaveBeenCalled();
+            expect(MediaBaseViewer.prototype.onKeydown).toHaveBeenCalled();
+        });
+
+        test('should step waveform zoom from + and -', () => {
+            enableV2();
+
+            expect(mp3.onKeydown('Shift++')).toBe(true);
+            expect(mp3.keyboardZoomStep).toBe(1);
+            expect(mp3.onKeydown('-')).toBe(true);
+            expect(mp3.keyboardZoomStep).toBe(0);
         });
     });
 });

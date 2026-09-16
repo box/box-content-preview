@@ -190,6 +190,7 @@ export type WaveformViewProps = {
     mediaEl?: HTMLMediaElement | null;
     onPlayPause?: (isPlaying: boolean) => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
+    onRangeClear?: () => void;
     onRangeDragChange?: (isDragging: boolean) => void;
     onSeek?: (timeSec: number) => void;
     onViewportChange?: (viewport: WaveformViewport) => void;
