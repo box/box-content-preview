@@ -79,7 +79,7 @@ export default function TimeControls({
                 onMouseOver={(): void => setIsSliderHovered(true)}
                 onMove={handleMouseMove}
                 onPointerDown={(): void => {
-                    (window as any).Box?.Preview?.resin?.recordAction({
+                    window.Box?.Preview?.resin?.recordAction({
                         action: 'programmatic',
                         component: 'toolbar',
                         target: 'timeScrubber',
