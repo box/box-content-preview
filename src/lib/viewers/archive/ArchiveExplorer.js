@@ -12,7 +12,6 @@ import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
-import { recordProgrammaticResin } from '../../resin';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
@@ -50,18 +49,6 @@ class ArchiveExplorer extends React.Component {
             view: VIEW_FOLDER,
         };
     }
-
-    setExplorerEl = el => {
-        if (this.explorerEl) {
-            this.explorerEl.removeEventListener('click', this.handleExplorerClick);
-        }
-
-        this.explorerEl = el;
-
-        if (el) {
-            el.addEventListener('click', this.handleExplorerClick);
-        }
-    };
 
     /**
      * Filter itemlist for target folder
@@ -102,9 +89,12 @@ class ArchiveExplorer extends React.Component {
                 isExternal: false,
                 name,
                 type,
-                dataAttributes: {
-                    'data-resin-target': type,
-                },
+                dataAttributes:
+                    type === 'folder'
+                        ? {
+                              'data-resin-target': 'folder',
+                          }
+                        : undefined,
             },
             [KEY_MODIFIED_AT]: modifiedAt,
             [KEY_SIZE]: type === 'folder' ? null : size,
@@ -113,46 +103,12 @@ class ArchiveExplorer extends React.Component {
     };
 
     /**
-     * Handle item click event, update fullPath state, reset search and view.
-     * File rows are not navigable (no item_collection); do not change path.
+     * Handle item click event, update fullPath state, reset search and view
      *
      * @param {Object} cellValue - the cell being clicked
      * @return {void}
      */
-    handleItemClick = ({ fullPath, type }) => {
-        if (type === 'file') {
-            return;
-        }
-
-        this.setState({ view: VIEW_FOLDER, fullPath, searchQuery: '' });
-    };
-
-    /**
-     * Record resin for archive file name clicks without changing cursor or navigation.
-     * Folder names are buttons and already autolog data-resin-target=folder.
-     *
-     * @param {MouseEvent} event
-     * @return {void}
-     */
-    handleExplorerClick = event => {
-        const node = event.target instanceof Element ? event.target : event.target.parentElement;
-        if (!node) {
-            return;
-        }
-
-        const nameCell = node.closest('.bdl-ItemNameCell');
-        const fileEl =
-            node.closest('[data-resin-target="file"]') ||
-            (nameCell && nameCell.querySelector('[data-resin-target="file"]'));
-        if (!fileEl) {
-            return;
-        }
-
-        recordProgrammaticResin({
-            feature: 'archive',
-            target: 'file',
-        });
-    };
+    handleItemClick = ({ fullPath }) => this.setState({ view: VIEW_FOLDER, fullPath, searchQuery: '' });
 
     /**
      * Handle breadcrumb click event, update fullPath state
@@ -257,12 +213,7 @@ class ArchiveExplorer extends React.Component {
 
         return (
             <Internationalize language={language} messages={elementsMessages}>
-                <div
-                    ref={this.setExplorerEl}
-                    className="bp-ArchiveExplorer"
-                    data-resin-feature="archive"
-                    data-testid="bp-archive-explorer"
-                >
+                <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
                     <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <Breadcrumbs
                         filename={filename}

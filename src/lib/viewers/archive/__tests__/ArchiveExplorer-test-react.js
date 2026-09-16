@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { setPreviewResin } from '../../../resin';
 import ArchiveExplorer from '../ArchiveExplorer';
 
 describe('lib/viewers/archive/ArchiveExplorer', () => {
@@ -128,6 +127,13 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             ).toHaveAttribute('aria-colindex', '2');
             expect(screen.getByRole('gridcell', { name: '1 Bytes' })).toHaveAttribute('aria-colindex', '3');
         });
+
+        test('should resin-tag folder names but not file names', () => {
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            expect(screen.getByText('test')).toHaveAttribute('data-resin-target', 'folder');
+            expect(screen.getByText('level-0.txt')).not.toHaveAttribute('data-resin-target');
+        });
     });
 
     describe('Search', () => {
@@ -194,46 +200,6 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder');
             expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
             expect(screen.getAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
-        });
-    });
-
-    describe('resin', () => {
-        let recordAction;
-
-        beforeEach(() => {
-            recordAction = jest.fn();
-            setPreviewResin({ recordAction });
-        });
-
-        afterEach(() => {
-            setPreviewResin(null);
-        });
-
-        test('should record a programmatic event when a file name is clicked without navigating', async () => {
-            const user = userEvent.setup();
-            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
-
-            await user.click(screen.getByText('level-0.txt'));
-
-            expect(recordAction).toHaveBeenCalledWith({
-                action: 'programmatic',
-                feature: 'archive',
-                target: 'file',
-            });
-            expect(screen.getByRole('gridcell', { name: 'test' })).toBeInTheDocument();
-            expect(screen.getByRole('gridcell', { name: 'level-0.txt' })).toBeInTheDocument();
-            expect(screen.getByText('level-0.txt').closest('button')).toBeNull();
-        });
-
-        test('should still navigate on folder click and not record a file event', async () => {
-            const user = userEvent.setup();
-            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
-
-            await user.click(screen.getByText('test'));
-
-            expect(recordAction).not.toHaveBeenCalled();
-            expect(screen.getByText('subfolder')).toBeInTheDocument();
-            expect(screen.getByText('pdf-level-1.pdf')).toBeInTheDocument();
         });
     });
 });
