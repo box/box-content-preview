@@ -1052,19 +1052,19 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@box/blueprint-web-assets@^4.119.2", "@box/blueprint-web-assets@^4.121.0":
-  version "4.121.0"
-  resolved "https://registry.npmjs.org/@box/blueprint-web-assets/-/blueprint-web-assets-4.121.0.tgz"
-  integrity sha512-jc7jwqOssUsglaR3q1GPfpD6CKOMUVC1R5LTNX0IhvLICXlgIJJU7IOEZlL+wfA8ZUleElcO4EaFLU8lslrhxg==
+"@box/blueprint-web-assets@^5.10.10", "@box/blueprint-web-assets@^5.10.21":
+  version "5.10.21"
+  resolved "https://registry.yarnpkg.com/@box/blueprint-web-assets/-/blueprint-web-assets-5.10.21.tgz#2ed03c221db00275bc3dd432da86912dfe0ccf56"
+  integrity sha512-s3JN/iHdbcuT6v0eVSNIcNdsKWMZbFUZTi1nUhNez20nH7cipJ10OgFO7fC4Fksftp1hC6m8ZIvCSSOUKGq2RQ==
 
-"@box/blueprint-web@^14.41.0":
-  version "14.41.0"
-  resolved "https://registry.npmjs.org/@box/blueprint-web/-/blueprint-web-14.41.0.tgz"
-  integrity sha512-coNCVzpw4d0tJzdHfZT0f15cgwIMjBJs+Jl8s/CYOGO7HBMvNWjqEkgqM0zMDUHtFZY8a8ZfCOCmDy5NY1OKWQ==
+"@box/blueprint-web@^17.11.3":
+  version "17.14.2"
+  resolved "https://registry.yarnpkg.com/@box/blueprint-web/-/blueprint-web-17.14.2.tgz#b2585361c886a1419d1b8c13959a224b6ba14b91"
+  integrity sha512-KVWMio1graCtWdn0Na3BVVL+ENRKhHXNgSj1M9PUDcc6NIvpeeMj54dk7+viHBZDm0jyWJ/E7W1QnWOGPEE66w==
   dependencies:
     "@ariakit/react" "0.4.21"
     "@ariakit/react-core" "0.4.21"
-    "@box/blueprint-web-assets" "^4.121.0"
+    "@box/blueprint-web-assets" "^5.10.21"
     "@internationalized/date" "^3.12.0"
     "@radix-ui/react-accordion" "1.1.2"
     "@radix-ui/react-checkbox" "1.0.4"
@@ -1088,7 +1088,6 @@
     "@react-aria/utils" "3.33.1"
     clsx "^1.2.1"
     color "2.0.1"
-    lodash "^4.17.15"
     react-aria "3.47.0"
     react-aria-components "1.16.0"
     type-fest "^3.2.0"
