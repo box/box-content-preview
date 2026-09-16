@@ -1,4 +1,11 @@
 import React from 'react';
+import {
+    EVENT_COMMENT_RANGE_DRAFT,
+    EVENT_COMMENT_RANGE_DRAFT_CHANGE,
+    EVENT_COMMENT_RANGE_DRAFT_CLEAR,
+    EVENT_COMMENT_RANGE_DRAFT_DISMISS,
+    isValidCommentRangeDraft,
+} from '../controls/media/types';
 import { AUDIO_PLAYER_V2, STATUS_ERROR, WAVEFORM_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
@@ -101,13 +108,16 @@ class MP3Viewer extends MediaBaseViewer {
             // Listen on the loading shell. The waveform is on
             // screen before the audio blob is playable; getViewer() is still null.
             this.bindCommentMarkersListener();
+            this.bindCommentRangeDraftListeners();
         }
 
         // Audio element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
         this.mediaEl.setAttribute('preload', 'auto');
         this.commentMarkers = [];
+        this.commentRangeDraft = null;
         this.hostSelectedMarkerId = null;
+        this.isCommentRangeDragging = false;
         this.shuttleDirection = null;
         this.shuttleRate = 0;
         this.reverseShuttleTimer = 0;
@@ -121,6 +131,16 @@ class MP3Viewer extends MediaBaseViewer {
         }
         this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
         this.addListener('comment_markers', this.handleCommentMarkersUpdated);
+    }
+
+    bindCommentRangeDraftListeners() {
+        if (!this.isAudioPlayerV2) {
+            return;
+        }
+        this.removeListener(EVENT_COMMENT_RANGE_DRAFT, this.handleCommentRangeDraft);
+        this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
+        this.addListener(EVENT_COMMENT_RANGE_DRAFT, this.handleCommentRangeDraft);
+        this.addListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
     }
 
     /**
@@ -423,6 +443,10 @@ class MP3Viewer extends MediaBaseViewer {
      */
     destroy() {
         this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
+        this.removeListener(EVENT_COMMENT_RANGE_DRAFT, this.handleCommentRangeDraft);
+        this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
+        this.commentRangeDraft = null;
+        this.isCommentRangeDragging = false;
         this.stopReverseShuttle();
         this.shuttleDirection = null;
         this.shuttleRate = 0;
@@ -435,6 +459,9 @@ class MP3Viewer extends MediaBaseViewer {
      */
     load() {
         if (this.isAudioPlayerV2) {
+            // A file-version switch is a clear, not a resync of the previous draft.
+            this.commentRangeDraft = null;
+            this.isCommentRangeDragging = false;
             this.showAudioLoadingShell();
             this.startConversionWaveformLoad();
         }
@@ -859,6 +886,7 @@ class MP3Viewer extends MediaBaseViewer {
         }
 
         this.bindCommentMarkersListener();
+        this.bindCommentRangeDraftListeners();
         this.renderUI();
     }
 
@@ -904,6 +932,47 @@ class MP3Viewer extends MediaBaseViewer {
             this.mediaEl.currentTime = marker.time;
         }
     }
+
+    handleCommentRangeDraft = draft => {
+        if (this.isCommentRangeDragging || !isValidCommentRangeDraft(draft)) {
+            return;
+        }
+        this.commentRangeDraft = { endMs: draft.endMs == null ? null : draft.endMs, startMs: draft.startMs };
+        this.renderUI();
+    };
+
+    handleCommentRangeDraftClear = () => {
+        this.commentRangeDraft = null;
+        this.isCommentRangeDragging = false;
+        this.renderUI();
+    };
+
+    handleCommentRangeChange = range => {
+        if (
+            !range ||
+            !Number.isFinite(range.startMs) ||
+            !Number.isFinite(range.endMs) ||
+            range.endMs <= range.startMs
+        ) {
+            return;
+        }
+        this.commentRangeDraft = { endMs: range.endMs, startMs: range.startMs };
+        this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: range.endMs, startMs: range.startMs });
+        this.renderUI();
+    };
+
+    handleCommentRangeDragChange = isDragging => {
+        this.isCommentRangeDragging = !!isDragging;
+    };
+
+    handleCommentRangeClear = () => {
+        if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
+            return;
+        }
+        this.commentRangeDraft = null;
+        this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        this.renderUI();
+    };
 
     handleCommentMarkerClick = marker => {
         this.exitShuttle();
@@ -962,11 +1031,15 @@ class MP3Viewer extends MediaBaseViewer {
                 <Mp3ControlsV2
                     {...sharedProps}
                     commentMarkers={this.commentMarkers || []}
+                    commentRangeDraft={this.commentRangeDraft || null}
                     hasStartedPlayback={!!this.userRequestedPlay}
                     keyboardVolumeStep={this.keyboardVolumeStep}
                     keyboardZoomStep={this.keyboardZoomStep}
                     mediaEl={this.mediaEl}
                     onCommentMarkerClick={this.handleCommentMarkerClick}
+                    onCommentRangeChange={this.handleCommentRangeChange}
+                    onCommentRangeClear={this.handleCommentRangeClear}
+                    onCommentRangeDragChange={this.handleCommentRangeDragChange}
                     peaks={this.waveformPeaks}
                 />,
             );

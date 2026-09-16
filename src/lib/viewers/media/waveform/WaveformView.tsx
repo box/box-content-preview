@@ -36,6 +36,7 @@ import {
     getViewportAtScroll,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
+    positionPxFromTime,
     timeFromPositionPx,
     timeLeftPercent,
 } from './viewport';
@@ -166,6 +167,7 @@ function WaveformView({
     mediaEl,
     onPlayPause,
     onRangeChange,
+    onRangeClear,
     onRangeDragChange,
     onSeek,
     onViewportChange,
@@ -192,6 +194,7 @@ function WaveformView({
     const mediaElRef = useRef(mediaEl); // latest <audio>/<video>; camera + playhead tick read this
     const onPlayPauseRef = useRef(onPlayPause); // latest play/pause; tape tap must not re-bind
     const onSeekRef = useRef(onSeek); // latest onSeek; click/scroll handlers must not re-bind
+    const onRangeClearRef = useRef(onRangeClear); // latest click-outside clear; WaveSurfer click must not re-bind
     const onViewportChangeRef = useRef(onViewportChange); // latest viewport callback; camera commits here
     const peaksRef = useRef(peaks); // latest peaks; WaveSurfer create() + morph read this
 
@@ -224,6 +227,7 @@ function WaveformView({
     mediaElRef.current = mediaEl;
     onPlayPauseRef.current = onPlayPause;
     onSeekRef.current = onSeek;
+    onRangeClearRef.current = onRangeClear;
     onViewportChangeRef.current = onViewportChange;
     peaksRef.current = peaks;
 
@@ -563,11 +567,20 @@ function WaveformView({
             if (!interactiveRef.current || isRangeDraggingRef.current) {
                 return;
             }
+            const draft = activeRangeRef.current;
+            const timeSec = relativeX * durationSecRef.current;
+            if (draft && !isRangeCollapsed(draft)) {
+                const pointerX = positionPxFromTime(timeSec, viewportRef.current);
+                if (!isPointerOverRange({ pointerX, range: draft, viewport: viewportRef.current })) {
+                    onRangeClearRef.current?.();
+                    return;
+                }
+            }
             if (cameraModeRef.current === 'tape') {
                 toggleTapePlaybackRef.current?.();
                 return;
             }
-            onSeekRef.current?.(relativeX * durationSecRef.current);
+            onSeekRef.current?.(timeSec);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
             if (suppressViewportSyncRef.current) {
