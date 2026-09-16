@@ -17,13 +17,18 @@ jest.mock('../waveform/WaveformView', () => {
         cameraMode,
         durationSec = 0,
         interactive,
+        onRangeChange,
+        onRangeClear,
         onViewportChange,
         onZoomChange,
+        range,
         zoomLevel = 1,
     }: {
         cameraMode?: string;
         durationSec?: number;
         interactive?: boolean;
+        onRangeChange?: (range: { endMs: number; startMs: number }) => void;
+        onRangeClear?: () => void;
         onViewportChange?: (viewport: {
             durationSec: number;
             endSec: number;
@@ -37,6 +42,7 @@ jest.mock('../waveform/WaveformView', () => {
             zoomLevel: number;
         }) => void;
         onZoomChange?: (zoomLevel: number) => void;
+        range?: { endMs: number | null; startMs: number } | null;
         zoomLevel?: number;
     }): JSX.Element {
         const overview = {
@@ -117,6 +123,23 @@ jest.mock('../waveform/WaveformView', () => {
                     type="button"
                 >
                     resize
+                </button>
+                {range && (
+                    <div
+                        data-end={range.endMs == null ? '' : String(range.endMs)}
+                        data-start={String(range.startMs)}
+                        data-testid="bp-waveform-range"
+                    />
+                )}
+                <button
+                    data-testid="bp-mock-range-change"
+                    onClick={() => onRangeChange?.({ endMs: 4000, startMs: 2000 })}
+                    type="button"
+                >
+                    change
+                </button>
+                <button data-testid="bp-mock-range-clear" onClick={() => onRangeClear?.()} type="button">
+                    clear
                 </button>
             </div>
         );
@@ -678,6 +701,43 @@ describe('MP3ControlsV2', () => {
             expect(screen.getByTestId('bp-waveform-comment-marker')).toHaveStyle({
                 left: `${(72.729 / 90) * 100}%`,
             });
+        });
+
+        test('should not draw range handles until a draft is supplied', async () => {
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+        });
+
+        test('should draw a checkbox-driven range draft on the waveform', async () => {
+            getWrapper({
+                commentRangeDraft: { endMs: null, startMs: 8055 },
+                durationTime: 8,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-start', '8055');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-end', '');
+        });
+
+        test('should pass range handle commits and click-outside clears through', async () => {
+            const onCommentRangeChange = jest.fn();
+            const onCommentRangeClear = jest.fn();
+            getWrapper({
+                commentRangeDraft: { endMs: 4000, startMs: 2000 },
+                durationTime: 8,
+                isPlaying: true,
+                onCommentRangeChange,
+                onCommentRangeClear,
+                peaks: [0.2, 0.8],
+            });
+
+            await userEvent.click(await screen.findByTestId('bp-mock-range-change'));
+            expect(onCommentRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 2000 });
+
+            await userEvent.click(screen.getByTestId('bp-mock-range-clear'));
+            expect(onCommentRangeClear).toHaveBeenCalledTimes(1);
         });
     });
 });

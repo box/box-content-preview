@@ -386,6 +386,63 @@ describe('WaveformView', () => {
         expect(onSeek).toHaveBeenCalledWith(2);
     });
 
+    test('should clear an open range when clicking the waveform outside it', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should seek when clicking inside an open range', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.375);
+
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(3);
+    });
+
+    test('should seek when clicking the waveform with only a collapsed draft', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(6);
+    });
+
     test('should ignore hover and clicks while inert', () => {
         const onSeek = jest.fn();
         render(<WaveformView durationSec={8} interactive={false} onSeek={onSeek} peaks={[0.2, 0.8]} />);
