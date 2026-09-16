@@ -51,7 +51,7 @@ export default function VideoFullscreenButton({ mediaEl, onFullscreenToggle }: P
         <button
             ref={ref}
             className="bp-VideoFullscreenButton"
-            data-resin-target="videoFullscreen"
+            data-resin-target="mediaFullscreen"
             onClick={handleClick}
             style={position ? { top: position.top, right: position.right } : undefined}
             title={title}

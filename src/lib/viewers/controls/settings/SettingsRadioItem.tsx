@@ -19,6 +19,11 @@ function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>
     const displayedValue = label || value.toString();
 
     const handleClick = (): void => {
+        window.Box?.Preview?.resin?.recordAction({
+            action: 'programmatic',
+            component: 'toolbar',
+            target: 'settingsRadioItem',
+        });
         onChange(value);
     };
 
@@ -29,6 +34,11 @@ function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>
             return;
         }
 
+        window.Box?.Preview?.resin?.recordAction({
+            action: 'programmatic',
+            component: 'toolbar',
+            target: 'settingsRadioItem',
+        });
         onChange(value);
     };
 
