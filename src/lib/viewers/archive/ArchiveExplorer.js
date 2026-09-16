@@ -89,12 +89,9 @@ class ArchiveExplorer extends React.Component {
                 isExternal: false,
                 name,
                 type,
-                dataAttributes:
-                    type === 'folder'
-                        ? {
-                              'data-resin-target': 'folder',
-                          }
-                        : undefined,
+                dataAttributes: {
+                    'data-resin-target': type,
+                },
             },
             [KEY_MODIFIED_AT]: modifiedAt,
             [KEY_SIZE]: type === 'folder' ? null : size,

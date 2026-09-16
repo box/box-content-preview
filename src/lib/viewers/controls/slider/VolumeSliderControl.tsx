@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import noop from 'lodash/noop';
 import React from 'react';
-import { recordProgrammaticResin } from '../../../resin';
 import { decodeKeydown } from '../../../util';
 import './VolumeSliderControl.scss';
 
@@ -72,13 +71,11 @@ export default function VolumeSliderControl({
         const key = decodeKeydown(event);
         if (key === 'ArrowDown') {
             event.stopPropagation(); // Prevents global key handling
-            recordProgrammaticResin('volumeSlider');
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
         if (key === 'ArrowUp') {
             event.stopPropagation(); // Prevents global key handling
-            recordProgrammaticResin('volumeSlider');
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
     };
@@ -86,7 +83,6 @@ export default function VolumeSliderControl({
     const handleMouseDown = (event: React.MouseEvent<Ref>): void => {
         const { button, ctrlKey, metaKey, pageY, clientY } = event;
         if (button > 1 || ctrlKey || metaKey) return;
-        recordProgrammaticResin('volumeSlider');
         onUpdate(getPositionValue(pageY, clientY));
         setIsScrubbing(true);
         // Prevent clicking on the slider from triggering the mouse down event on the parent slider track
@@ -100,7 +96,6 @@ export default function VolumeSliderControl({
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
-        recordProgrammaticResin('volumeSlider');
         onUpdate(getPositionValue(touches[0].pageY, touches[0].clientY));
         setIsScrubbing(true);
     };
@@ -162,6 +157,13 @@ export default function VolumeSliderControl({
                         onMouseDown={handleMouseDown}
                         onMouseMove={handleMouseMove}
                         onMouseOver={onMouseOver}
+                        onPointerDown={(): void => {
+                            (window as any).Box?.Preview?.resin?.recordAction({
+                                action: 'programmatic',
+                                component: 'toolbar',
+                                target: 'volumeSlider',
+                            });
+                        }}
                         onTouchStart={handleTouchStart}
                         role="slider"
                         style={{

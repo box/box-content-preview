@@ -3,7 +3,6 @@ import EventEmitter from 'events';
 import cloneDeep from 'lodash/cloneDeep';
 import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
-import { setPreviewResin } from './resin';
 import Api from './api';
 import Browser from './Browser';
 import Logger from './Logger';
@@ -223,7 +222,7 @@ class Preview extends EventEmitter {
         }
 
         this.viewer = undefined;
-        setPreviewResin(null);
+        Preview.resin = null;
     }
 
     /**
@@ -1124,7 +1123,7 @@ class Preview extends EventEmitter {
 
         // Optional resin analytics instance for tracking user interactions
         this.options.resin = options.resin;
-        setPreviewResin(options.resin);
+        Preview.resin = options.resin;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};

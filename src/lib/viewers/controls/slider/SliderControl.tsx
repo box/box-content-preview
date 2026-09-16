@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import noop from 'lodash/noop';
-import { recordProgrammaticResin } from '../../../resin';
 import { decodeKeydown } from '../../../util';
 import './SliderControl.scss';
 
@@ -34,10 +33,6 @@ export default function SliderControl({
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
 
-    const logScrub = (): void => {
-        recordProgrammaticResin(sliderElRef.current?.getAttribute('data-resin-target'));
-    };
-
     const getPosition = React.useCallback((pageX: number) => {
         const { current: sliderEl } = sliderElRef;
 
@@ -65,13 +60,11 @@ export default function SliderControl({
 
         if (key === 'ArrowLeft') {
             event.stopPropagation(); // Prevents global key handling
-            logScrub();
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
         if (key === 'ArrowRight') {
             event.stopPropagation(); // Prevents global key handling
-            logScrub();
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
     };
@@ -79,7 +72,6 @@ export default function SliderControl({
     const handleMouseDown = ({ button, ctrlKey, metaKey, pageX }: React.MouseEvent<Ref>): void => {
         if (button > 1 || ctrlKey || metaKey) return;
 
-        logScrub();
         onUpdate(getPositionValue(pageX));
         setIsScrubbing(true);
     };
@@ -92,7 +84,6 @@ export default function SliderControl({
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
-        logScrub();
         onUpdate(getPositionValue(touches[0].pageX));
         setIsScrubbing(true);
     };

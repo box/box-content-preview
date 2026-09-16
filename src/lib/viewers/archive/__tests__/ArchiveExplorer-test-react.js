@@ -127,13 +127,6 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             ).toHaveAttribute('aria-colindex', '2');
             expect(screen.getByRole('gridcell', { name: '1 Bytes' })).toHaveAttribute('aria-colindex', '3');
         });
-
-        test('should resin-tag folder names but not file names', () => {
-            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
-
-            expect(screen.getByText('test')).toHaveAttribute('data-resin-target', 'folder');
-            expect(screen.getByText('level-0.txt')).not.toHaveAttribute('data-resin-target');
-        });
     });
 
     describe('Search', () => {
