@@ -474,13 +474,9 @@ class BaseViewer extends EventEmitter {
             template = this.api.reachability.constructor.replaceDownloadHostWithDefault(template);
         }
 
-        // Cache-buster only needed when auth is header-based; the in-URL token otherwise
-        // varies the cache key on its own.
-        const resolveCacheBuster = this.featureEnabled('migrateAccessTokenToHeader');
-
-        // Append optional query params
+        // Auth is header-based, so re-resolve the cache-buster per request.
         const { queryParams } = this.options;
-        return appendQueryParams(createContentUrl(template, asset, resolveCacheBuster), queryParams);
+        return appendQueryParams(createContentUrl(template, asset, true), queryParams);
     }
 
     /**
@@ -494,11 +490,7 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
-        const urlWithAuthParams = this.appendAuthParams(this.createContentUrl(template, asset));
-
-        // Append optional query params
-        const { queryParams } = this.options;
-        return appendQueryParams(urlWithAuthParams, queryParams);
+        return this.createContentUrlV2(template, asset);
     }
 
     /**
@@ -938,7 +930,6 @@ class BaseViewer extends EventEmitter {
             sharedLinkPassword,
             fileId: file.id,
             logger: representation ? null : logger, // Do not log to main preview status if rep is passed in
-            migrateAccessTokenToHeader: this.featureEnabled('migrateAccessTokenToHeader'),
         });
 
         // Don't time out while conversion is pending

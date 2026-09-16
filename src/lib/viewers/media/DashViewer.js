@@ -1,6 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { CLASS_INVISIBLE, MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME, SUBTITLES_OFF } from '../../constants';
+import {
+    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
+    MEDIA_STATIC_ASSETS_VERSION,
+    PRELOAD_REP_NAME,
+    SUBTITLES_OFF,
+} from '../../constants';
 import { ERROR_CODE, MEDIA_METRIC, MEDIA_METRIC_EVENTS, VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import getLanguageName from '../../lang';
@@ -37,6 +42,9 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {Object} - Status of the filmstrip representation */
     filmstripStatus;
+
+    /** @property {Object} - Status of the extracted_text (transcription) representation */
+    transcriptionStatus;
 
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
@@ -103,8 +111,6 @@ class DashViewer extends VideoBaseViewer {
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
-
-        this.isVideoPlayerV2 = this.featureEnabled('videoPlayerV2.enabled');
     }
 
     /**
@@ -125,9 +131,13 @@ class DashViewer extends VideoBaseViewer {
             this.filmstripStatus.destroy();
         }
 
-        // Release blob: URL allocated for the filmstrip when migrateAccessTokenToHeader is on
+        // Release blob: URL allocated for the filmstrip
         if (this.filmstripUrl && this.filmstripUrl.startsWith('blob:')) {
             URL.revokeObjectURL(this.filmstripUrl);
+        }
+
+        if (this.transcriptionStatus) {
+            this.transcriptionStatus.destroy();
         }
 
         clearInterval(this.statsIntervalId);
@@ -164,7 +174,7 @@ class DashViewer extends VideoBaseViewer {
             this.showPreload();
             return Promise.resolve();
         }
-        if (!this.preloader?.wrapperEl) this.showPreload();
+        if (!this.preloader?.wrapperEl && !this.preloader?.showPreloadPromise) this.showPreload();
         this.mediaUrl = this.options.representation.content.url_template;
         this.watermarkCacheBust = Date.now();
 
@@ -197,12 +207,8 @@ class DashViewer extends VideoBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                const contentUrl = this.createContentUrlV2(template, MANIFEST);
-                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
-            } else {
-                this.api.get(this.createContentUrlWithAuthParams(template, MANIFEST), { type: 'document' });
-            }
+            const contentUrl = this.createContentUrlV2(template, MANIFEST);
+            this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
         }
     }
 
@@ -330,7 +336,7 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * A networking filter to append representation URLs with tokens
+     * Rewrites representation URIs without an access token and attaches Authorization headers.
      * Manifest type will use an asset name. Segments will not.
      *
      * @private
@@ -341,24 +347,14 @@ class DashViewer extends VideoBaseViewer {
     requestFilter(type, request) {
         const asset = type === shaka.net.NetworkingEngine.RequestType.MANIFEST ? MANIFEST : undefined;
         /* eslint-disable no-param-reassign */
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            request.uris = request.uris.map(uri => {
-                let newUri = this.createContentUrlV2(uri, asset);
-                if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
-                    newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
-                }
-                return newUri;
-            });
-            Object.assign(request.headers, this.appendAuthHeader());
-        } else {
-            request.uris = request.uris.map(uri => {
-                let newUri = this.createContentUrlWithAuthParams(uri, asset);
-                if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
-                    newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
-                }
-                return newUri;
-            });
-        }
+        request.uris = request.uris.map(uri => {
+            let newUri = this.createContentUrlV2(uri, asset);
+            if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
+                newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
+            }
+            return newUri;
+        });
+        request.headers = Object.assign(request.headers || {}, this.appendAuthHeader());
         /* eslint-enable no-param-reassign */
     }
 
@@ -653,6 +649,21 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Returns the display-friendly name for a text track's language.
+     * Maps the undetermined language code 'und' to a localized "Auto-Generated" label.
+     *
+     * @param {Object} track - A Shaka text track object
+     * @return {string} Localized language name or the raw language code
+     */
+    getTrackDisplayLanguage(track) {
+        if (this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) && track.language === 'und') {
+            return __('auto_generated');
+        }
+
+        return getLanguageName(track.language) || track.language;
+    }
+
+    /**
      * Loads captions/subtitles into the settings menu
      *
      * @return {void}
@@ -666,7 +677,7 @@ class DashViewer extends VideoBaseViewer {
                 this.initSubtitles();
             } else {
                 this.mediaControls.initSubtitles(
-                    this.textTracks.map(track => getLanguageName(track.language) || track.language),
+                    this.textTracks.map(track => this.getTrackDisplayLanguage(track)),
                     getLanguageName(this.options.location.locale.substring(0, 2)),
                 );
             }
@@ -706,7 +717,7 @@ class DashViewer extends VideoBaseViewer {
 
         this.textTracks = this.textTracks.map(track => ({
             ...track,
-            displayLanguage: getLanguageName(track.language) || track.language,
+            displayLanguage: this.getTrackDisplayLanguage(track),
         }));
 
         // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
@@ -844,9 +855,7 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
-        if (!this.preloader?.wrapperEl) {
-            this.mediaEl.classList.remove(CLASS_INVISIBLE);
-        }
+        this.syncInstantPreviewWithLoadedVideo();
         this.calculateVideoDimensions();
         if (this.useReactControls()) {
             this.loadUIReact();
@@ -863,6 +872,7 @@ class DashViewer extends VideoBaseViewer {
         this.startBandwidthTracking();
         this.loadFilmStrip();
         this.loadSubtitles();
+        this.loadTranscription();
         this.loadAlternateAudio();
         this.showPlayButton();
 
@@ -945,36 +955,19 @@ class DashViewer extends VideoBaseViewer {
         const filmstripInterval = filmstrip && filmstrip.metadata && filmstrip.metadata.interval;
 
         if (filmstripInterval > 0) {
-            const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
             const useReactControls = this.useReactControls();
-            const url = useHeaders
-                ? this.createContentUrlV2(filmstrip.content.url_template)
-                : this.createContentUrlWithAuthParams(filmstrip.content.url_template);
+            const url = this.createContentUrlV2(filmstrip.content.url_template);
 
             this.filmstripInterval = filmstripInterval;
             this.filmstripStatus = this.getRepStatus(filmstrip);
-            // When useHeaders is on, the URL has no token and would 401 if rendered as <img src>.
-            // Defer setting filmstripUrl until the blob: URL is ready below.
-            this.filmstripUrl = useHeaders ? null : url;
-
-            // Legacy controls have a synchronous init path when the URL already carries a token.
-            if (!useHeaders && !useReactControls) {
-                this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstripInterval);
-                return;
-            }
+            this.filmstripUrl = null;
 
             this.filmstripStatus
                 .getPromise()
-                .then(() => (useHeaders ? this.fetchContentAsBlobUrl(url) : url))
+                .then(() => this.fetchContentAsBlobUrl(url))
                 .then(filmstripUrl => {
-                    // <img src> can't carry an Authorization header, so when the access-token has
-                    // been migrated out of the URL we expose the rep as a blob: URL instead.
-                    // If the viewer was destroyed while we were fetching, release the blob now —
-                    // destroy() can't see it because filmstripUrl was still null when it ran.
                     if (this.destroyed) {
-                        if (useHeaders) {
-                            URL.revokeObjectURL(filmstripUrl);
-                        }
+                        URL.revokeObjectURL(filmstripUrl);
                         return;
                     }
                     this.filmstripUrl = filmstripUrl;
@@ -989,12 +982,82 @@ class DashViewer extends VideoBaseViewer {
                         );
                     }
                 })
-                // Filmstrip is a non-critical scrubbing-preview enhancement, so any failure
-                // (rep status reject, blob fetch reject) is swallowed rather than failing
-                // the whole viewer. Warn so prod 401s leave a breadcrumb in DevTools.
+                // Filmstrip is a non-critical scrubbing-preview enhancement.
+                // Warn so prod 401s leave a breadcrumb in DevTools.
                 .catch(err => {
                     console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
                 });
+        }
+    }
+
+    /**
+     * Loads the extracted_text transcription (.vtt) as a text track when available
+     *
+     * @private
+     * @return {void}
+     */
+    async loadTranscription() {
+        if (!this.featureEnabled(AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
+            return;
+        }
+
+        const extractedText = getRepresentation(this.options.file, 'extracted_text');
+        if (!extractedText?.content?.url_template) {
+            return;
+        }
+
+        const transcriptionUrl = this.createContentUrlV2(extractedText.content.url_template);
+        this.transcriptionStatus = this.getRepStatus(extractedText);
+
+        try {
+            await this.transcriptionStatus.getPromise();
+
+            if (this.isDestroyed() || !this.player) {
+                return;
+            }
+
+            await this.player.addTextTrackAsync(
+                transcriptionUrl,
+                'und',
+                'subtitles',
+                'text/vtt',
+                undefined,
+                __('auto_generated'),
+            );
+
+            if (this.isDestroyed()) {
+                return;
+            }
+
+            if (this.textTracks.length > 0) {
+                // Subtitles were already initialized — append only the new track(s) at the
+                // end of `this.textTracks`. We must not re-sort: in the non-React path, the
+                // user's selection is cached as an INDEX into `this.textTracks` (see
+                // handleSubtitle) and Settings menu items use the same number as their
+                // `data-value`, so reordering would silently swap which track plays.
+                const existingIds = new Set(this.textTracks.map(t => t.id));
+                const newTracks = this.player.getTextTracks().filter(t => !existingIds.has(t.id));
+
+                if (this.useReactControls()) {
+                    this.textTracks = [...this.textTracks, ...newTracks].map(track => ({
+                        ...track,
+                        displayLanguage: this.getTrackDisplayLanguage(track),
+                    }));
+                    this.renderUI();
+                } else {
+                    newTracks.forEach(track => {
+                        this.textTracks.push(track);
+                        this.mediaControls.settings.addSubtitle(
+                            this.getTrackDisplayLanguage(track),
+                            this.textTracks.length - 1,
+                        );
+                    });
+                }
+            } else {
+                this.loadSubtitles();
+            }
+        } catch {
+            // Transcription is non-critical; allow the viewer to continue without it
         }
     }
 

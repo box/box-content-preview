@@ -470,11 +470,13 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
         test('should get and return the blob', () => {
             office.api = api;
+            const mockHeaders = { Authorization: 'Bearer token' };
+            stubs.appendAuthHeader.mockReturnValue(mockHeaders);
 
             office.fetchPrintBlob('url');
 
             return stubs.promise.then(blob => {
-                expect(stubs.get).toBeCalled();
+                expect(stubs.get).toBeCalledWith('url', { type: 'blob', headers: mockHeaders });
                 expect(blob.blob).toBe('blob');
             });
         });
@@ -482,7 +484,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
     describe('setupPDFUrl', () => {
         beforeEach(() => {
-            stubs.createContentUrl = jest.spyOn(office, 'createContentUrlWithAuthParams');
+            stubs.createContentUrl = jest.spyOn(office, 'createContentUrlV2');
         });
 
         test('should not attempt to set pdfUrl if no pdf rep exist', () => {

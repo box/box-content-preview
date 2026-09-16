@@ -38,6 +38,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         doc.pdfViewer = {
             currentPageNumber: 0,
             cleanup: jest.fn(),
+            setDocument: jest.fn(),
         };
         doc.controls = {
             add: jest.fn(),
@@ -109,7 +110,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             Object.defineProperty(DocBaseViewer.prototype, 'load', {
                 value: jest.fn().mockImplementation(() => Promise.resolve()),
             });
-            jest.spyOn(doc, 'createContentUrlWithAuthParams').mockImplementation();
+            jest.spyOn(doc, 'createContentUrlV2').mockImplementation();
             jest.spyOn(doc, 'handleAssetAndRepLoad').mockImplementation();
             jest.spyOn(doc, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
             jest.spyOn(doc, 'loadAssets').mockImplementation();
@@ -224,6 +225,27 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             expect(result2).toBe(true);
 
             expect(docbaseStub).toBeCalledTimes(2);
+        });
+
+        test('should defer paging and zoom shortcuts to the gallery while it is open', () => {
+            doc.galleryController = {
+                isOpen: true,
+                isEnhancedGalleryEnabled: true,
+                handleArrowKey: jest.fn(),
+                handleEscape: jest.fn(),
+                zoomIn: jest.fn(),
+                zoomOut: jest.fn(),
+                destroy: jest.fn(),
+            };
+
+            const arrowResult = doc.onKeydown('ArrowUp', { defaultPrevented: false });
+            expect(stubs.previousPage).not.toBeCalled();
+            expect(arrowResult).toBe(true);
+
+            const zoomResult = doc.onKeydown('Shift++', { defaultPrevented: false });
+            expect(stubs.zoomIn).not.toBeCalled();
+            expect(doc.galleryController.zoomIn).toBeCalledTimes(1);
+            expect(zoomResult).toBe(true);
         });
     });
 

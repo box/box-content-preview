@@ -693,6 +693,27 @@ class Settings extends EventEmitter {
     }
 
     /**
+     * Appends a single subtitle entry to the settings menu without disturbing
+     * existing items or the user's current selection.
+     *
+     * @param {string} subtitle - Display name for the subtitle track
+     * @param {number} idx - data-value index for the new menu item
+     * @return {void}
+     */
+    addSubtitle(subtitle, idx) {
+        const subtitlesSubMenu = this.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
+        insertTemplate(
+            subtitlesSubMenu,
+            SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'subtitles').replace(/{{dataValue}}/g, idx),
+        );
+        const languageNode = subtitlesSubMenu.lastChild.querySelector('.bp-media-settings-value');
+        languageNode.textContent = subtitle;
+
+        this.subtitles.push(subtitle);
+        this.reset();
+    }
+
+    /**
      * Takes an ordered list of audio languages and populates the settings menu
      *
      * @param {Array} audioLanguages - An ordered list of languages of the audio tracks

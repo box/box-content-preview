@@ -82,16 +82,11 @@ class CSVViewer extends TextBaseViewer {
                     });
                 };
 
-                if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                    const contentUrl = this.createContentUrlV2(template);
-                    return this.fetchContentAsBlobUrl(contentUrl).then(blobUrl => {
-                        this.blobUrl = blobUrl;
-                        parseCSV(blobUrl);
-                    });
-                }
-
-                parseCSV(this.createContentUrlWithAuthParams(template));
-                return undefined;
+                const contentUrl = this.createContentUrlV2(template);
+                return this.fetchContentAsBlobUrl(contentUrl).then(blobUrl => {
+                    this.blobUrl = blobUrl;
+                    parseCSV(blobUrl);
+                });
             })
             .catch(this.handleAssetError);
     }
@@ -141,12 +136,8 @@ class CSVViewer extends TextBaseViewer {
         const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
-            if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                const contentUrl = this.createContentUrlV2(template);
-                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
-            } else {
-                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
-            }
+            const contentUrl = this.createContentUrlV2(template);
+            this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
         }
     }
 

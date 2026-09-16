@@ -102,5 +102,17 @@ describe('ZoomControls', () => {
             expect(zoomOut).toBeInTheDocument();
             expect(currentZoom).toBeInTheDocument();
         });
+
+        test('should default the resin targets', async () => {
+            getWrapper();
+            expect(await getZoomIn()).toHaveAttribute('data-resin-target', 'zoomIn');
+            expect(await getZoomOut()).toHaveAttribute('data-resin-target', 'zoomOut');
+        });
+
+        test('should allow hosts to override the resin targets', async () => {
+            getWrapper({ resinTargetZoomIn: 'galleryZoomIn', resinTargetZoomOut: 'galleryZoomOut' });
+            expect(await getZoomIn()).toHaveAttribute('data-resin-target', 'galleryZoomIn');
+            expect(await getZoomOut()).toHaveAttribute('data-resin-target', 'galleryZoomOut');
+        });
     });
 });

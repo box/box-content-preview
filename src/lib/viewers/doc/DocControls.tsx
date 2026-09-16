@@ -20,13 +20,16 @@ export type Props = AnnotationsControlsProps &
     PageControlsProps &
     Partial<RotateControlProps> &
     ThumbnailsToggleProps &
-    ZoomControlsProps;
+    ZoomControlsProps & {
+        hasGalleryZoom?: boolean;
+    };
 
 export default function DocControls({
     annotationColor,
     annotationMode,
     experiences,
     hasDrawing,
+    hasGalleryZoom = false,
     hasHighlight,
     hasRegion,
     isGalleryOpen,
@@ -69,21 +72,25 @@ export default function DocControls({
                                 pageNumber={pageNumber}
                             />
                         </ControlsBarGroup>
-                        <ControlsBarGroup isDistinct>
-                            <ZoomControls
-                                maxScale={maxScale}
-                                minScale={minScale}
-                                onZoomIn={onZoomIn}
-                                onZoomOut={onZoomOut}
-                                scale={scale}
-                            />
-                        </ControlsBarGroup>
-                        {onRotateLeft && (
-                            <ControlsBarGroup>
-                                <RotateControl onRotateLeft={onRotateLeft} />
-                            </ControlsBarGroup>
-                        )}
                     </>
+                )}
+                {(!isGalleryOpen || hasGalleryZoom) && (
+                    <ControlsBarGroup isDistinct>
+                        <ZoomControls
+                            maxScale={maxScale}
+                            minScale={minScale}
+                            onZoomIn={onZoomIn}
+                            onZoomOut={onZoomOut}
+                            resinTargetZoomIn={isGalleryOpen ? 'galleryZoomIn' : undefined}
+                            resinTargetZoomOut={isGalleryOpen ? 'galleryZoomOut' : undefined}
+                            scale={scale}
+                        />
+                    </ControlsBarGroup>
+                )}
+                {!isGalleryOpen && onRotateLeft && (
+                    <ControlsBarGroup>
+                        <RotateControl onRotateLeft={onRotateLeft} />
+                    </ControlsBarGroup>
                 )}
                 <ControlsBarGroup>
                     <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />

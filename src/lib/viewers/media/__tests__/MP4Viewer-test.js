@@ -1,4 +1,6 @@
 import MP4Viewer from '../MP4Viewer';
+import VideoControls from '../VideoControls';
+import VideoControlsV2 from '../VideoControlsV2';
 import BaseViewer from '../../BaseViewer';
 import { VIEWER_EVENT } from '../../../events';
 import { PRELOAD_REP_NAME } from '../../../constants';
@@ -97,6 +99,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'emit').mockImplementation();
             jest.spyOn(mp4, 'showAndHideReactControls').mockImplementation();
             jest.spyOn(mp4, 'setMediaTime').mockImplementation();
+            jest.spyOn(mp4, 'syncInstantPreviewWithLoadedVideo').mockImplementation();
         });
 
         test('should do nothing if the player is destroyed', () => {
@@ -104,12 +107,14 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'showMedia');
             mp4.loadeddataHandler();
             expect(mp4.showMedia).not.toHaveBeenCalled();
+            expect(mp4.syncInstantPreviewWithLoadedVideo).not.toHaveBeenCalled();
         });
 
         test('should load the metadata for the media element, show the media/play button, load subs, check for autoplay, and set focus without react controls', () => {
             mp4.options.autoFocus = true;
             mp4.startTimeInSeconds = 10;
             mp4.loadeddataHandler();
+            expect(mp4.syncInstantPreviewWithLoadedVideo).toHaveBeenCalled();
             expect(mp4.autoplay).toHaveBeenCalled();
             expect(mp4.showMedia).toHaveBeenCalled();
             expect(mp4.showPlayButton).toHaveBeenCalled();
@@ -162,6 +167,32 @@ describe('lib/viewers/media/MP4Viewer', () => {
 
             expect(mp4.showPreload).toHaveBeenCalled();
             expect(mp4.emit).not.toHaveBeenCalledWith(VIEWER_EVENT.load);
+        });
+    });
+
+    describe('renderUI()', () => {
+        beforeEach(() => {
+            mp4.controls = { render: jest.fn() };
+            mp4.annotationModule = { getColor: jest.fn() };
+            mp4.options = { showAnnotationsDrawingCreate: false };
+            mp4.aspect = 1.78;
+            jest.spyOn(mp4, 'areNewAnnotationsEnabled').mockReturnValue(false);
+            jest.spyOn(mp4, 'hasAnnotationCreatePermission').mockReturnValue(false);
+            jest.spyOn(mp4, 'isAutoplayEnabled').mockReturnValue(false);
+            jest.spyOn(mp4, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(mp4, 'getRate').mockReturnValue(1);
+        });
+
+        test('should render VideoControlsV2 when isVideoPlayerV2 is true', () => {
+            mp4.isVideoPlayerV2 = true;
+            mp4.renderUI();
+            expect(mp4.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: VideoControlsV2 }));
+        });
+
+        test('should render VideoControls when isVideoPlayerV2 is false', () => {
+            mp4.isVideoPlayerV2 = false;
+            mp4.renderUI();
+            expect(mp4.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: VideoControls }));
         });
     });
 

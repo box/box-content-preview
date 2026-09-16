@@ -7,15 +7,14 @@
     display: none;
     min-width: 184px;
     max-width: 400px;
-    overflow-x: hidden;
-    overflow-y: hidden; // Prevent scrollbar from showing on hover in IE/Edge
+    overflow: hidden; // Prevent scrollbar from showing on hover in IE/Edge
     color: $fours;
     font-size: 13px;
     line-height: normal;
     background: $bp-controls-settings-flyout-background;
     border: 1px solid $bdl-gray-10;
     border-radius: 20px;
-    box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgb(0 0 0 / 10%);
     transform: translateY(-100%);
     backdrop-filter: blur(16px);
     transition: width 200ms, height 200ms;
@@ -42,7 +41,7 @@
         background: $white;
         border: 0;
         border-radius: 16px;
-        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, .15);
+        box-shadow: 0 4px 12px 0 rgb(0 0 0 / 15%);
         backdrop-filter: none;
     }
 }

@@ -1,24 +1,26 @@
 const crypto = require('crypto');
 
 module.exports = {
-    getCacheKey(fileData, filePath, configStr, options) {
+    getCacheKey(sourceText, sourcePath, options) {
         return crypto
             .createHash('md5')
-            .update(fileData)
+            .update(sourceText)
             .update('\0', 'utf8')
-            .update(filePath)
+            .update(sourcePath)
             .update('\0', 'utf8')
-            .update(configStr)
+            .update(options.configString)
             .update('\0', 'utf8')
-            .update(JSON.stringify(options))
+            .update(options.instrument ? 'instrument' : '')
             .digest('hex');
     },
 
-    process: content => {
-        // escape newlines
-        const json = JSON.stringify(content)
+    process(sourceText) {
+        // Escape U+2028/U+2029 so the emitted module source stays single-line safe
+        const json = JSON.stringify(sourceText)
             .replace(/\u2028/g, '\\u2028')
             .replace(/\u2029/g, '\\u2029');
-        return `module.exports = ${json};`;
+        return {
+            code: `module.exports = ${json};`,
+        };
     },
 };

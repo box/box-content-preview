@@ -50,5 +50,16 @@ describe('GalleryToggle', () => {
             await userEvent.click(screen.getByRole('button'));
             expect(onToggle).toHaveBeenCalled();
         });
+
+        test.each([
+            ['Enter', '{Enter}'],
+            ['Space', ' '],
+        ])('should call onGalleryToggle on %s', async (name, key) => {
+            const onToggle = jest.fn();
+            getWrapper({ onGalleryToggle: onToggle });
+            await userEvent.tab();
+            await userEvent.keyboard(key);
+            expect(onToggle).toHaveBeenCalled();
+        });
     });
 });

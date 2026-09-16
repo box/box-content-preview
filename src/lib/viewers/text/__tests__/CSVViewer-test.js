@@ -124,11 +124,13 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
 
-            const csvUrlWithAuth = `csvUrl/?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`;
+            const blobUrl = 'blob:csv';
+            jest.spyOn(csv, 'createContentUrlV2').mockReturnValue('csvUrl');
+            jest.spyOn(csv, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
 
             return csv.load().then(() => {
                 expect(window.Papa.parse).toBeCalledWith(
-                    csvUrlWithAuth,
+                    blobUrl,
                     expect.objectContaining({
                         download: true,
                         error: expect.any(Function),
@@ -145,6 +147,8 @@ describe('lib/viewers/text/CSVViewer', () => {
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
+            jest.spyOn(csv, 'createContentUrlV2').mockReturnValue('csvUrl');
+            jest.spyOn(csv, 'fetchContentAsBlobUrl').mockResolvedValue('blob:csv');
             jest.spyOn(csv, 'startLoadTimer');
 
             return csv.load().then(() => {
@@ -152,44 +156,20 @@ describe('lib/viewers/text/CSVViewer', () => {
             });
         });
 
-        test('should use fetchContentAsBlobUrl and pass blob URL to PapaParse when migrateAccessTokenToHeader flag is enabled', () => {
+        test('should use fetchContentAsBlobUrl and pass blob URL to PapaParse', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
             const contentUrl = 'someContentUrl';
             const blobUrl = 'blob:http://localhost/abc123';
 
-            jest.spyOn(csv, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(csv, 'createContentUrlV2').mockReturnValue(contentUrl);
             jest.spyOn(csv, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
 
             return csv.load().then(() => {
-                expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
                 expect(csv.createContentUrlV2).toBeCalled();
                 expect(csv.fetchContentAsBlobUrl).toBeCalledWith(contentUrl);
                 expect(csv.blobUrl).toBe(blobUrl);
                 expect(window.Papa.parse).toBeCalledWith(
                     blobUrl,
-                    expect.objectContaining({
-                        download: true,
-                        error: expect.any(Function),
-                        complete: expect.any(Function),
-                        worker: true,
-                    }),
-                );
-            });
-        });
-
-        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is disabled', () => {
-            Object.defineProperty(TextBaseViewer.prototype, 'load', { value: jest.fn() });
-            const contentUrlWithAuth = 'contentUrlWithAuth';
-
-            jest.spyOn(csv, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(csv, 'createContentUrlWithAuthParams').mockReturnValue(contentUrlWithAuth);
-
-            return csv.load().then(() => {
-                expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
-                expect(csv.createContentUrlWithAuthParams).toBeCalled();
-                expect(window.Papa.parse).toBeCalledWith(
-                    contentUrlWithAuth,
                     expect.objectContaining({
                         download: true,
                         error: expect.any(Function),
@@ -210,13 +190,15 @@ describe('lib/viewers/text/CSVViewer', () => {
 
         test('should prefetch content if content is true and representation is ready', () => {
             const contentUrl = 'someContentUrl';
-            jest.spyOn(csv, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            const headers = { Authorization: 'Bearer token' };
+            jest.spyOn(csv, 'createContentUrlV2').mockReturnValue(contentUrl);
+            jest.spyOn(csv, 'appendAuthHeader').mockReturnValue(headers);
             jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(true);
             jest.spyOn(csv.api, 'get').mockResolvedValue(undefined);
 
             csv.prefetch({ assets: false, content: true });
 
-            expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document' });
+            expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document', headers });
         });
 
         test('should not prefetch content if content is true but representation is not ready', () => {
@@ -228,10 +210,9 @@ describe('lib/viewers/text/CSVViewer', () => {
             expect(csv.api.get).not.toBeCalled();
         });
 
-        test('should prefetch content with auth header when migrateAccessTokenToHeader flag is enabled', () => {
+        test('should prefetch content with Authorization headers', () => {
             const contentUrl = 'someContentUrl';
             const headers = { Authorization: 'Bearer token' };
-            jest.spyOn(csv, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(csv, 'createContentUrlV2').mockReturnValue(contentUrl);
             jest.spyOn(csv, 'appendAuthHeader').mockReturnValue(headers);
             jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(true);
@@ -239,24 +220,9 @@ describe('lib/viewers/text/CSVViewer', () => {
 
             csv.prefetch({ assets: false, content: true });
 
-            expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
             expect(csv.createContentUrlV2).toBeCalled();
             expect(csv.appendAuthHeader).toBeCalled();
             expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document', headers });
-        });
-
-        test('should prefetch content with auth params when migrateAccessTokenToHeader flag is disabled', () => {
-            const contentUrl = 'someContentUrl';
-            jest.spyOn(csv, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(csv, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
-            jest.spyOn(csv, 'isRepresentationReady').mockReturnValue(true);
-            jest.spyOn(csv.api, 'get').mockResolvedValue(undefined);
-
-            csv.prefetch({ assets: false, content: true });
-
-            expect(csv.featureEnabled).toBeCalledWith('migrateAccessTokenToHeader');
-            expect(csv.createContentUrlWithAuthParams).toBeCalled();
-            expect(csv.api.get).toBeCalledWith(contentUrl, { type: 'document' });
         });
     });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { bdlBoxBlue } from 'box-ui-elements/es/styles/variables';
+import { white } from 'box-ui-elements/es/styles/variables';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AnnotationsControls from '../AnnotationsControls';
@@ -179,6 +179,26 @@ describe('AnnotationsControls', () => {
             expect(screen.getByTestId('IconPencilScribbleMedium24')).toBeInTheDocument();
             expect(screen.getByTestId('IconTextHighlightMedium24')).toBeInTheDocument();
             expect(screen.getByTestId('IconDashedSquareBubbleMedium24')).toBeInTheDocument();
+        });
+
+        test('should tint the pencil scribble with the annotation color while drawing mode is active', () => {
+            render(
+                <AnnotationsControls
+                    annotationColor="#f5b31b"
+                    annotationMode={AnnotationMode.DRAWING}
+                    hasDrawing
+                    hasHighlight
+                    hasRegion
+                />,
+            );
+
+            expect(screen.getByTestId('IconPencilScribbleMedium24')).toHaveStyle({ color: '#f5b31b' });
+        });
+
+        test('should render the pencil scribble in white when drawing mode is not active', () => {
+            render(<AnnotationsControls annotationColor="#f5b31b" hasDrawing hasHighlight hasRegion />);
+
+            expect(screen.getByTestId('IconPencilScribbleMedium24')).toHaveStyle({ color: white });
         });
     });
 });

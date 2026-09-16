@@ -49,13 +49,20 @@ module.exports = {
         filename: '[name].js',
         library: { type: 'module' },
         module: true,
-        environment: { module: true, dynamicImport: true },
+        // chunkLoading: false stops webpack from emitting `import("./" + chunkId)`, which
+        // downstream webpack builds re-parse as a context module over dist/lib/ and choke
+        // on .bin / .d.ts files. publicPath: 'auto' lets new URL(..., import.meta.url)
+        // resolve relative to the chunk's runtime location.
+        environment: { module: true, dynamicImport: false },
+        chunkLoading: false,
+        publicPath: 'auto',
         clean: true,
     },
     experiments: {
         outputModule: true,
     },
     externals: [
+        'axios',
         'react',
         'react-dom',
         'react-dom/client',
@@ -103,10 +110,21 @@ module.exports = {
                     filename: 'assets/[name][ext]',
                 },
             },
+            {
+                test: /pdf\.worker\.min\.mjs$/,
+                type: 'asset/resource',
+                include: [path.resolve('node_modules/pdfjs-dist/build')],
+                generator: {
+                    filename: 'pdf.worker.min.mjs',
+                },
+            },
         ],
     },
     optimization: {
         minimize: false,
+        // Inline dynamic imports into the single bundle so no chunk-loading runtime is needed.
+        splitChunks: false,
+        runtimeChunk: false,
     },
     ignoreWarnings: [
         // pdfjs-dist contains an internal dynamic require that webpack flags as a critical
@@ -116,6 +134,7 @@ module.exports = {
     plugins: [
         new BannerPlugin(license),
         new DefinePlugin({
+            __BCP_NPM_BUILD__: JSON.stringify(true),
             __LANGUAGE__: JSON.stringify(language),
             __NAME__: JSON.stringify(pkg.name),
             __VERSION__: JSON.stringify(pkg.version),

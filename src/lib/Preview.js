@@ -52,7 +52,11 @@ import {
     X_REP_HINT_DOC_THUMBNAIL,
     X_REP_HINT_IMAGE,
     X_REP_HINT_VIDEO_DASH,
+    X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT,
     X_REP_HINT_VIDEO_MP4,
+    X_REP_HINT_WAVEFORM,
+    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
+    AUDIO_PLAYER_V2,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -89,7 +93,14 @@ const SUPPORT_URL = 'https://support.box.com';
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+// findScriptLocation throws when there is no preview.js <script> tag in the DOM;
+// npm consumers have no such tag and populate this via Preview.show({ location }).
+let PREVIEW_LOCATION;
+try {
+    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+} catch (e) {
+    PREVIEW_LOCATION = {};
+}
 
 class Preview extends EventEmitter {
     /** @property {Api} - Previews Api instance used for XHR calls  */
@@ -240,7 +251,12 @@ class Preview extends EventEmitter {
         // Token can also be null or undefined for offline use case.
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
-            this.previewOptions = { ...options, token };
+            // npm consumers have no CDN-served pdfjs at runtime; force the bundled npm pdfjs path.
+            const finalOptions =
+                typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__
+                    ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
+                    : options;
+            this.previewOptions = { ...finalOptions, token };
         } else {
             throw new Error('Bad access token!');
         }
@@ -628,11 +644,29 @@ class Preview extends EventEmitter {
             // This allows the browser to download representation content
             const params = { response_content_disposition_type: 'attachment', ...queryParams };
             const downloadUrl = appendQueryParams(
-                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.getAssetPath()),
+                this.viewer.createContentUrlV2(contentUrlTemplate, this.viewer.getAssetPath()),
                 params,
             );
 
-            this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
+            this.api
+                .get(downloadUrl, { type: 'blob', headers: this.getRequestHeaders() })
+                .then(data => {
+                    const blob = data instanceof Blob ? data : new Blob([data]);
+                    const blobUrl = URL.createObjectURL(blob);
+                    const anchor = document.createElement('a');
+                    anchor.href = blobUrl;
+                    anchor.download = (this.file && this.file.name) || 'download';
+                    document.body.appendChild(anchor);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                    URL.revokeObjectURL(blobUrl);
+                })
+                .catch(error => {
+                    const code = getProp(error, 'response.data.code');
+                    const msg =
+                        code === ERROR_CODE_403_FORBIDDEN_BY_POLICY ? downloadErrorDueToPolicyMsg : downloadErrorMsg;
+                    this.ui.showNotification(msg);
+                });
 
             // Otherwise, get the content download URL of the original file and download
         } else {
@@ -708,7 +742,6 @@ class Preview extends EventEmitter {
         preload = false,
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
-        isAccessTokenHeaderEnabled = false,
     }) {
         let file;
         let loader;
@@ -749,10 +782,6 @@ class Preview extends EventEmitter {
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
             options.docFirstPagesConfig = docFirstPagesConfig;
-            options.features = {
-                ...this.options.features,
-                migrateAccessTokenToHeader: isAccessTokenHeaderEnabled,
-            };
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
@@ -1145,6 +1174,14 @@ class Preview extends EventEmitter {
         // all of the viewers for different files
         this.options.features = options.features || {};
 
+        // npm consumers supply staticBaseURI / version / locale here since there is no
+        // preview.js <script> tag for findScriptLocation to read.
+        if (options.location) {
+            this.location = { ...this.location, ...options.location };
+        }
+
+        this.options.pdfjs = options.pdfjs || {};
+
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
             const isDisabled = this.options.viewers[viewerName].disabled;
@@ -1307,6 +1344,13 @@ class Preview extends EventEmitter {
             // return so we don't run the generic cache/viewer logic below.
             if (this.tryUpgradeVideoPreloadToPlayable(file)) {
                 return;
+            }
+
+            // Server file info is authoritative: a video with no dash/mp4 will never play for this
+            // account (HD video is paid). Instant Preview may have mounted a jpg-only viewer from
+            // cache; throw error_account instead of waiting forever on an empty player.
+            if (this.isVideoFileByExtension() && !this.hasPlayableVideoReps(file)) {
+                throw new PreviewError(ERROR_CODE.ACCOUNT, __('error_account'));
             }
 
             // Should load viewer for first time if:
@@ -1953,10 +1997,20 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHint =
-            Browser.canPlayDash() && !this.disabledViewers.Dash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
+        const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
+        let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
+
+        if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
+            videoHint += X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT;
+        }
+
+        let hints = `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`;
+        if (isFeatureEnabled(this.options.features, AUDIO_PLAYER_V2)) {
+            hints += X_REP_HINT_WAVEFORM;
+        }
+
         const headers = {
-            'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`,
+            'X-Rep-Hints': hints,
         };
 
         return getHeaders(

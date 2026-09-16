@@ -39,4 +39,24 @@ describe('Presentation Viewer', () => {
 
         cy.getPreviewPage(3).should('be.visible');
     });
+
+    it('Should keep links clickable when PDF.js inserts the annotation layer before the text layer', () => {
+        cy.showPreview(token, fileWithLinksId, {
+            enableAnnotationsDiscoverability: true,
+            showAnnotations: true,
+            showAnnotationsControls: true,
+        });
+
+        cy.get('.ba-RegionCreation-creator').should('exist');
+        cy.get('.annotationLayer .linkAnnotation > a').then($link => {
+            const annotationLayer = $link[0].closest('.annotationLayer');
+            const textLayer = annotationLayer.parentElement.querySelector('.textLayer');
+
+            // npm PDF.js inserts the annotation layer earlier than the vendored build.
+            annotationLayer.parentElement.insertBefore(annotationLayer, textLayer);
+        });
+        cy.get('.annotationLayer .linkAnnotation > a').click();
+
+        cy.getPreviewPage(3).should('be.visible');
+    });
 });

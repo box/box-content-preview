@@ -1,3 +1,9 @@
+import {
+    GALLERY_MAX_PAGES,
+    GALLERY_MAX_SCALE,
+    GALLERY_MIN_SCALE,
+    THUMBNAILS_SIDEBAR_TRANSITION_TIME,
+} from '../constants';
 import GalleryController, { GalleryControllerOptions } from '../GalleryController';
 
 jest.mock('../../../Thumbnail', () => {
@@ -20,8 +26,6 @@ jest.mock('react-dom/client', () => ({
     }),
 }));
 
-const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301;
-
 type Sidebar = { isOpen: boolean; setCurrentPage: jest.Mock };
 
 interface Harness {
@@ -35,6 +39,7 @@ interface Harness {
     focusToggle: jest.Mock;
     onBeforeOpen: jest.Mock;
     onAfterClose: jest.Mock;
+    onClose: jest.Mock;
 }
 
 function makeController(
@@ -44,9 +49,19 @@ function makeController(
         pageCount?: number;
         currentPage?: number;
         flagOn?: boolean;
+        hasTouch?: boolean;
+        enhancedGalleryEnabled?: boolean;
     } = {},
 ): Harness {
-    const { sidebarOpen = false, sidebarPresent = true, pageCount = 10, currentPage = 1, flagOn = true } = overrides;
+    const {
+        sidebarOpen = false,
+        sidebarPresent = true,
+        pageCount = 10,
+        currentPage = 1,
+        flagOn = true,
+        hasTouch = false,
+        enhancedGalleryEnabled = true,
+    } = overrides;
 
     const containerEl = document.createElement('div');
     document.body.appendChild(containerEl);
@@ -63,10 +78,17 @@ function makeController(
     const focusToggle = jest.fn();
     const onBeforeOpen = jest.fn();
     const onAfterClose = jest.fn();
+    const onClose = jest.fn();
+    const onZoomGesture = jest.fn();
 
     const opts: GalleryControllerOptions = {
         containerEl,
-        features: { galleryView: { enabled: flagOn } },
+        features: {
+            galleryView: { enabled: flagOn },
+            galleryViewV2: { enabled: enhancedGalleryEnabled },
+            pinchToZoom: { enabled: true },
+        },
+        hasTouch,
         getPdfViewer: () => pdfViewer,
         getPreloader: () => null,
         getThumbnailsSidebar: () => sidebar,
@@ -76,6 +98,8 @@ function makeController(
         focusToggle,
         onBeforeOpen,
         onAfterClose,
+        onClose,
+        onZoomGesture,
     };
 
     return {
@@ -89,6 +113,7 @@ function makeController(
         focusToggle,
         onBeforeOpen,
         onAfterClose,
+        onClose,
     };
 }
 
@@ -128,12 +153,12 @@ describe('GalleryController', () => {
 
     describe('canRender', () => {
         test.each`
-            pages  | flag     | expected
-            ${1}   | ${true}  | ${false}
-            ${2}   | ${true}  | ${true}
-            ${200} | ${true}  | ${true}
-            ${201} | ${true}  | ${false}
-            ${50}  | ${false} | ${false}
+            pages                    | flag     | expected
+            ${1}                     | ${true}  | ${false}
+            ${2}                     | ${true}  | ${true}
+            ${GALLERY_MAX_PAGES}     | ${true}  | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false}
+            ${50}                    | ${false} | ${false}
         `('should return $expected when pages=$pages and flag=$flag', ({ pages, flag, expected }) => {
             const { controller } = makeController({ flagOn: flag });
             expect(controller.canRender(pages)).toBe(expected);
@@ -147,6 +172,14 @@ describe('GalleryController', () => {
             expect(controller.isOpen).toBe(true);
             expect(containerEl.children).toHaveLength(1);
             expect(requestUiUpdate).toHaveBeenCalledTimes(1);
+        });
+
+        test('should tag the gallery root with a resin component', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            controller.toggle();
+
+            const galleryEl = containerEl.firstElementChild as HTMLElement;
+            expect(galleryEl.getAttribute('data-resin-component')).toBe('gallery');
         });
 
         test('should not call focusToggle on open', () => {
@@ -179,18 +212,143 @@ describe('GalleryController', () => {
             expect(onAfterClose).toHaveBeenCalledTimes(1);
         });
 
+        describe('gallery open state', () => {
+            function seedDoc(containerEl: HTMLElement) {
+                const doc = document.createElement('div');
+                doc.className = 'bp-doc';
+                containerEl.appendChild(doc);
+                return doc;
+            }
+
+            test('should add the container class and mark bp-doc inert on open', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: false });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(true);
+                expect(doc.hasAttribute('inert')).toBe(true);
+            });
+
+            test('should clear the container class and bp-doc inert on close', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: false });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+                controller.toggle();
+
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(false);
+                expect(doc.hasAttribute('inert')).toBe(false);
+            });
+
+            test('should clear the container class and bp-doc inert on destroy while gallery is open', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: false });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(true);
+                expect(doc.hasAttribute('inert')).toBe(true);
+
+                controller.destroy();
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(false);
+                expect(doc.hasAttribute('inert')).toBe(false);
+            });
+
+            test('should apply the open state immediately even when grid mount is deferred behind the sidebar', () => {
+                const { controller, containerEl } = makeController({ sidebarOpen: true });
+                const doc = seedDoc(containerEl);
+
+                controller.toggle();
+
+                // Grid mount is deferred (only the seeded .bp-doc is present), but the open state applies right away
+                expect(containerEl.children).toHaveLength(1);
+                expect(containerEl.classList.contains('bp-is-gallery-open')).toBe(true);
+                expect(doc.hasAttribute('inert')).toBe(true);
+            });
+        });
+
+        // Tab is intentionally not trapped: with .bp-doc inert, natural tab order flows from
+        // the gallery controls out to the host's sidebar/header. Verify keys pressed inside
+        // the container bubble freely so DocBaseViewer.onKeydown (via the host) can own the
+        // gallery-wide Escape/arrow policy.
+        test('should not intercept keydown events on containerEl while the gallery is open', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = document.createElement('button');
+            toggle.className = 'bp-GalleryToggle';
+            containerEl.appendChild(toggle);
+            controller.toggle();
+
+            const documentSpy = jest.fn();
+            document.addEventListener('keydown', documentSpy);
+            try {
+                ['Tab', 'Escape', 'ArrowDown', '['].forEach(key => {
+                    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+                    toggle.dispatchEvent(event);
+                    expect(event.defaultPrevented).toBe(false);
+                });
+                expect(documentSpy).toHaveBeenCalledTimes(4);
+                expect(controller.isOpen).toBe(true);
+            } finally {
+                document.removeEventListener('keydown', documentSpy);
+            }
+        });
+
         test('should wire the correct props into GalleryGrid', () => {
-            const { controller } = makeController({ currentPage: 3, pageCount: 25, sidebarOpen: false });
+            const { controller } = makeController({ currentPage: 3, hasTouch: true, pageCount: 25 });
             controller.toggle();
 
             expect(mockLastRoot.render).toHaveBeenCalledTimes(1);
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
+            expect(grid.props.isAriaGridEnabled).toBe(true);
+            expect(grid.props.isPinchZoomEnabled).toBe(true);
+            expect(grid.props.isTouchZoomEnabled).toBe(true);
+            expect(grid.props.scale).toBe(1);
             expect(grid.props.thumbnail).toBeDefined();
             expect(grid.props.onClose).toBe(controller.toggle);
             expect(typeof grid.props.onPageNavigate).toBe('function');
             expect(typeof grid.props.onFocusChange).toBe('function');
+            expect(typeof grid.props.onPinchStart).toBe('function');
+            expect(typeof grid.props.onScaleChange).toBe('function');
+            expect(typeof grid.props.getPageRatio).toBe('function');
+        });
+
+        describe('getPageRatio prop', () => {
+            function getGridGetPageRatio(controller: GalleryController): (pageNum: number) => number | null {
+                controller.toggle();
+                return mockLastRoot.render.mock.calls[0][0].props.getPageRatio;
+            }
+
+            test('should return the page ratio from fetched PDF.js page metadata', () => {
+                const { controller, pdfViewer } = makeController({ sidebarOpen: false });
+                (pdfViewer as { getPageView?: unknown }).getPageView = (index: number) =>
+                    index === 1 ? { pdfPage: {}, viewport: { width: 1600, height: 900 } } : undefined;
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(2)).toBeCloseTo(16 / 9);
+            });
+
+            test('should return null while the page metadata has not been fetched', () => {
+                const { controller, pdfViewer } = makeController({ sidebarOpen: false });
+                // pdfPage missing: the view still carries the first page's default viewport
+                (pdfViewer as { getPageView?: unknown }).getPageView = () => ({
+                    viewport: { width: 800, height: 600 },
+                });
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(2)).toBeNull();
+            });
+
+            test('should return null when the viewer does not expose getPageView', () => {
+                const { controller } = makeController({ sidebarOpen: false });
+
+                const getPageRatio = getGridGetPageRatio(controller);
+
+                expect(getPageRatio(1)).toBeNull();
+            });
         });
 
         test('should close sidebar first and defer grid mount by half the transition time when sidebar is open', () => {
@@ -248,6 +406,191 @@ describe('GalleryController', () => {
         });
     });
 
+    describe('outcome reporting', () => {
+        test('should report the picked page when one is chosen from the grid', () => {
+            const { controller, onClose } = makeController({ currentPage: 1, sidebarOpen: false });
+            controller.toggle();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onPageNavigate(8);
+
+            expect(onClose).toHaveBeenCalledWith(8);
+        });
+
+        test('should report a pick when the chosen page is already the current page', () => {
+            const { controller, onClose, setPage } = makeController({ currentPage: 3 });
+            controller.toggle();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onPageNavigate(3);
+
+            // No page change, but the user still found their page — that is a pick, not a bail
+            expect(setPage).not.toHaveBeenCalled();
+            expect(onClose).toHaveBeenCalledWith(3);
+        });
+
+        test('should report no landing on Escape', () => {
+            const { controller, onClose } = makeController();
+            controller.toggle();
+            controller.handleEscape();
+
+            expect(onClose).toHaveBeenCalledWith(null);
+        });
+
+        // Closing commits whichever page was browsed to, so the user has landed on it even though
+        // they never picked it outright — reported as a landing to match what the document does.
+        test('should report the browsed page when closed after arrowing to it', () => {
+            const { controller, onClose, setPage } = makeController({ currentPage: 1, sidebarOpen: false });
+            controller.toggle();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onFocusChange(5);
+            controller.toggle();
+
+            expect(setPage).toHaveBeenCalledWith(5);
+            expect(onClose).toHaveBeenCalledWith(5);
+        });
+
+        test('should report no landing when closed without the page changing', () => {
+            const { controller, onClose, setPage } = makeController({ currentPage: 3, sidebarOpen: false });
+            controller.toggle();
+
+            // Focus starts on the current page and never moves off it
+            controller.toggle();
+
+            expect(setPage).not.toHaveBeenCalled();
+            expect(onClose).toHaveBeenCalledWith(null);
+        });
+
+        test('should report no landing when destroyed while open', () => {
+            const { controller, onClose } = makeController({ sidebarOpen: false });
+            controller.toggle();
+            controller.destroy();
+
+            expect(onClose).toHaveBeenCalledTimes(1);
+            expect(onClose).toHaveBeenCalledWith(null);
+        });
+
+        test('should not report anything when destroyed while closed', () => {
+            const { controller, onClose } = makeController();
+            controller.destroy();
+
+            expect(onClose).not.toHaveBeenCalled();
+        });
+
+        test('should report exactly one outcome per open across repeated use', () => {
+            const { controller, onClose } = makeController({ currentPage: 1, sidebarOpen: false });
+
+            controller.toggle();
+            controller.toggle();
+
+            controller.toggle();
+            mockLastRoot.render.mock.calls[0][0].props.onPageNavigate(4);
+
+            controller.toggle();
+            controller.handleEscape();
+
+            expect(onClose.mock.calls).toEqual([[null], [4], [null]]);
+        });
+    });
+
+    describe('zoom', () => {
+        test('should step by exactly 10% from the current value and clamp to the gallery limits', () => {
+            const { controller, requestUiUpdate } = makeController();
+            controller.toggle();
+            expect(controller.isEnhancedGalleryEnabled).toBe(true);
+            expect(controller.scale).toBe(1);
+
+            controller.zoomIn();
+            expect(controller.scale).toBe(1.1);
+            expect(requestUiUpdate).toHaveBeenCalledTimes(2); // open + zoom
+
+            for (let i = 0; i < 40; i += 1) controller.zoomIn();
+            expect(controller.scale).toBe(GALLERY_MAX_SCALE);
+
+            for (let i = 0; i < 40; i += 1) controller.zoomOut();
+            expect(controller.scale).toBe(GALLERY_MIN_SCALE);
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            grid.props.onScaleChange(0.83);
+            controller.zoomIn();
+            expect(controller.scale).toBe(0.93);
+            controller.zoomOut();
+            controller.zoomOut();
+            expect(controller.scale).toBe(0.73);
+        });
+
+        test('should clamp continuous pinch updates from the grid and re-render it', () => {
+            const { controller } = makeController();
+            controller.toggle();
+            const grid = mockLastRoot.render.mock.calls[0][0];
+
+            expect(grid.props.onScaleChange(1.234)).toBe(true);
+            expect(controller.scale).toBe(1.234);
+
+            expect(grid.props.onScaleChange(99)).toBe(true);
+            expect(controller.scale).toBe(GALLERY_MAX_SCALE);
+            expect(grid.props.onScaleChange(99)).toBe(false);
+
+            const lastRenderCalls = mockLastRoot.render.mock.calls;
+            expect(lastRenderCalls[lastRenderCalls.length - 1][0].props.scale).toBe(GALLERY_MAX_SCALE);
+        });
+
+        test('should disable zoom entirely unless both gallery flags are on', () => {
+            expect(
+                makeController({ flagOn: false, enhancedGalleryEnabled: true }).controller.isEnhancedGalleryEnabled,
+            ).toBe(false);
+
+            const { controller, requestUiUpdate } = makeController({ hasTouch: true, enhancedGalleryEnabled: false });
+            controller.toggle();
+            requestUiUpdate.mockClear();
+
+            expect(controller.isEnhancedGalleryEnabled).toBe(false);
+            controller.zoomIn();
+            expect(controller.scale).toBe(1);
+            expect(requestUiUpdate).not.toHaveBeenCalled();
+
+            const grid = mockLastRoot.render.mock.calls[0][0];
+            expect(grid.props.isPinchZoomEnabled).toBe(false);
+            expect(grid.props.isTouchZoomEnabled).toBe(false);
+            expect(grid.props.isAriaGridEnabled).toBe(false);
+
+            grid.props.onScaleChange(1.5);
+            expect(controller.scale).toBe(1);
+        });
+
+        test('should persist scale across close and reopen but reset on destroy', () => {
+            const { controller } = makeController();
+            controller.toggle();
+            controller.zoomIn();
+            controller.zoomIn();
+            expect(controller.scale).toBe(1.2);
+
+            controller.toggle();
+            controller.toggle();
+            const renderCalls = mockLastRoot.render.mock.calls;
+            expect(renderCalls[renderCalls.length - 1][0].props.scale).toBe(1.2);
+
+            controller.destroy();
+            expect(controller.scale).toBe(1);
+        });
+    });
+
+    describe('isEnhancedGalleryEnabled', () => {
+        test.each`
+            flagOn   | enhancedGalleryEnabled | expected
+            ${true}  | ${true}                | ${true}
+            ${true}  | ${false}               | ${false}
+            ${false} | ${true}                | ${false}
+        `(
+            'should return $expected when flagOn=$flagOn and enhancedGalleryEnabled=$enhancedGalleryEnabled',
+            ({ flagOn, enhancedGalleryEnabled, expected }) => {
+                const { controller } = makeController({ flagOn, enhancedGalleryEnabled });
+                expect(controller.isEnhancedGalleryEnabled).toBe(expected);
+            },
+        );
+    });
+
     describe('handleEscape', () => {
         test('should return false when gallery is closed', () => {
             const { controller } = makeController();
@@ -260,6 +603,92 @@ describe('GalleryController', () => {
             controller.toggle();
             expect(controller.handleEscape()).toBe(true);
             expect(controller.isOpen).toBe(false);
+        });
+    });
+
+    describe('handleArrowKey', () => {
+        // Adds the selected tile to the gallery root (mounted before .bp-ControlsRoot; with no
+        // controls seeded it lands as containerEl's last child).
+        function seedSelectedTile(containerEl: HTMLElement, role = 'option'): HTMLElement {
+            const galleryEl = containerEl.lastElementChild as HTMLElement;
+            const tile = document.createElement('div');
+            tile.setAttribute('role', role);
+            tile.setAttribute('tabindex', '0');
+            galleryEl.appendChild(tile);
+            return tile;
+        }
+
+        function seedToggle(containerEl: HTMLElement): HTMLElement {
+            const toggle = document.createElement('button');
+            toggle.className = 'bp-GalleryToggle';
+            containerEl.appendChild(toggle);
+            return toggle;
+        }
+
+        test('should refocus the selected tile and replay the arrow into the grid', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl);
+            const tileKeydown = jest.fn();
+            tile.addEventListener('keydown', tileKeydown);
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
+
+            expect(document.activeElement).toBe(tile);
+            expect(tileKeydown).toHaveBeenCalledTimes(1);
+            expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
+        });
+
+        test('should redirect into a gridcell tile', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl, 'gridcell');
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
+
+            expect(document.activeElement).toBe(tile);
+        });
+
+        test('should not redirect focus for non-grid-nav keys', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            seedSelectedTile(containerEl);
+
+            toggle.focus();
+            controller.handleArrowKey('[');
+
+            expect(document.activeElement).toBe(toggle);
+        });
+
+        test.each(['Home', 'End'])('should redirect %s into the selected tile', key => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+            controller.toggle();
+            const tile = seedSelectedTile(containerEl);
+            const tileKeydown = jest.fn();
+            tile.addEventListener('keydown', tileKeydown);
+
+            toggle.focus();
+            controller.handleArrowKey(key);
+
+            expect(document.activeElement).toBe(tile);
+            expect(tileKeydown).toHaveBeenCalledTimes(1);
+            expect(tileKeydown.mock.calls[0][0].key).toBe(key);
+        });
+
+        test('should be a no-op when the gallery is closed', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            const toggle = seedToggle(containerEl);
+
+            toggle.focus();
+            controller.handleArrowKey('ArrowDown');
+
+            expect(document.activeElement).toBe(toggle);
         });
     });
 

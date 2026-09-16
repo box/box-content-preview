@@ -1,8 +1,21 @@
 /* eslint-disable no-unused-expressions */
 import BaseViewer from '../../BaseViewer';
+import MP3Controls from '../MP3Controls';
+import MP3ControlsV2 from '../MP3ControlsV2';
 import MP3ControlsRoot from '../MP3ControlsRoot';
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
+import { VIEWER_EVENT } from '../../../events';
+import {
+    CLIENT_DECODE_MAX_COMPRESSED_BYTES,
+    CLIENT_DECODE_MAX_DURATION_SEC,
+    DURATION_MISMATCH_TOLERANCE_SEC,
+} from '../waveform/constants';
+import { loadPeaks } from '../waveform/decode';
+
+jest.mock('../waveform/decode', () => ({
+    loadPeaks: jest.fn(() => Promise.resolve({ error: { code: 'CAP_EXCEEDED', message: 'skip' }, status: 'capped' })),
+}));
 
 let mp3;
 
@@ -26,6 +39,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             set: jest.fn(),
         };
         mp3.containerEl = containerEl;
+        jest.spyOn(MP3Viewer.prototype, 'importV2Controls').mockResolvedValue({ default: MP3ControlsV2 });
+        jest.spyOn(MP3Viewer.prototype, 'importWaveformDecode').mockResolvedValue({ loadPeaks });
     });
 
     afterEach(() => {
@@ -45,8 +60,118 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.setup();
 
             expect(mp3.wrapperEl).toHaveClass('bp-media-mp3');
+            expect(mp3.wrapperEl).not.toHaveClass('bp-media--v2');
+            expect(mp3.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
             expect(mp3.mediaEl).toBeInstanceOf(HTMLElement);
             expect(mp3.mediaEl).toHaveAttribute('preload', 'auto');
+            expect(mp3.isAudioPlayerV2).toBe(false);
+            expect(mp3.waveformPeaks).toEqual([]);
+        });
+
+        test('should apply v2 classes when audioPlayerV2 is enabled', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+
+            expect(mp3.wrapperEl).toHaveClass('bp-media--v2');
+            expect(mp3.mediaContainerEl).toHaveClass('bp-media-container--v2');
+            expect(mp3.isAudioPlayerV2).toBe(true);
+            expect(mp3.importWaveformDecode).toBeCalled();
+        });
+
+        test('should listen for comment_markers on the loading shell when v2 is on', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(mp3, 'addListener');
+
+            mp3.setup();
+
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+        });
+
+        test('should not apply v2 classes when React controls are off', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(false);
+            mp3.setup();
+
+            expect(mp3.wrapperEl).not.toHaveClass('bp-media--v2');
+            expect(mp3.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
+            expect(mp3.isAudioPlayerV2).toBe(false);
+        });
+
+        test('should not apply v2 classes when audioPlayerV2 is explicitly disabled', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: false } };
+            mp3.setup();
+
+            expect(mp3.wrapperEl).not.toHaveClass('bp-media--v2');
+            expect(mp3.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
+            expect(mp3.isAudioPlayerV2).toBe(false);
+            expect(mp3.waveformPeaks).toEqual([]);
+        });
+    });
+
+    describe('load()', () => {
+        beforeEach(() => {
+            mp3.setup();
+            jest.spyOn(MediaBaseViewer.prototype, 'load').mockReturnValue(Promise.resolve());
+        });
+
+        afterEach(() => {
+            MediaBaseViewer.prototype.load.mockRestore();
+        });
+
+        test('should show the v2 loading shell before audio metadata arrives', async () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(mp3, 'showMedia').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emitFirstRenderMetric').mockImplementation();
+            jest.spyOn(mp3, 'emit');
+
+            mp3.load();
+            await Promise.resolve();
+
+            expect(mp3.showMedia).toBeCalled();
+            expect(mp3.controls).toBeInstanceOf(MP3ControlsRoot);
+            expect(mp3.renderUI).toBeCalled();
+            expect(mp3.emitFirstRenderMetric).toBeCalled();
+            expect(mp3.emit).toBeCalledWith(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
+            expect(MediaBaseViewer.prototype.load).toBeCalled();
+        });
+
+        test('should start conversion waveform load for v2', () => {
+            mp3.isAudioPlayerV2 = true;
+            jest.spyOn(mp3, 'showAudioLoadingShell').mockImplementation();
+            jest.spyOn(mp3, 'startConversionWaveformLoad').mockImplementation();
+
+            mp3.load();
+
+            expect(mp3.startConversionWaveformLoad).toBeCalled();
+        });
+
+        test('should not start conversion waveform load when v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            jest.spyOn(mp3, 'startConversionWaveformLoad').mockImplementation();
+
+            mp3.load();
+
+            expect(mp3.startConversionWaveformLoad).not.toBeCalled();
+        });
+
+        test('should not mount the v2 loading shell when audio player v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(mp3, 'showMedia').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emit');
+
+            mp3.load();
+
+            expect(mp3.showMedia).not.toBeCalled();
+            expect(mp3.controls).toBeUndefined();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.emit).not.toBeCalledWith(VIEWER_EVENT.default, { event: VIEWER_EVENT.preload, data: {} });
         });
     });
 
@@ -80,12 +205,261 @@ describe('lib/viewers/media/MP3Viewer', () => {
             jest.spyOn(mp3, 'renderUI').mockImplementation();
         });
 
-        test('should create the controls root and render the controls', () => {
+        test('should create the controls root and render', () => {
             mp3.mediaContainerEl = document.createElement('div');
             mp3.loadUIReact();
 
             expect(mp3.controls).toBeInstanceOf(MP3ControlsRoot);
             expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should reuse an existing controls root from the loading shell', () => {
+            mp3.mediaContainerEl = document.createElement('div');
+            mp3.controls = new MP3ControlsRoot({ containerEl: mp3.mediaContainerEl });
+
+            mp3.loadUIReact();
+
+            expect(mp3.controls).toBeInstanceOf(MP3ControlsRoot);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should listen for comment_markers when audio player v2 is on', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.addListener = jest.fn();
+            mp3.mediaContainerEl = document.createElement('div');
+
+            mp3.loadUIReact();
+
+            expect(mp3.addListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+        });
+
+        test('should not listen for comment_markers when audio player v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            mp3.addListener = jest.fn();
+            mp3.mediaContainerEl = document.createElement('div');
+
+            mp3.loadUIReact();
+
+            expect(mp3.addListener).not.toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+        });
+
+        test('should not stack comment_markers listeners when loadUIReact runs twice', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.mediaContainerEl = document.createElement('div');
+
+            mp3.loadUIReact();
+            mp3.loadUIReact();
+
+            expect(mp3.listenerCount('comment_markers')).toBe(1);
+        });
+    });
+
+    describe('ensureV2Controls()', () => {
+        test('should fall back to v1 when the v2 chunk fails to load', async () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.importV2Controls.mockRejectedValue(new Error('chunk failed'));
+            jest.spyOn(mp3, 'abortConversionWaveformLoad');
+            jest.spyOn(mp3, 'abortClientWaveformDecode');
+            mp3.setup();
+            mp3.controls = {
+                destroy: jest.fn(),
+                render: jest.fn(),
+            };
+            mp3.mediaEl = document.createElement('audio');
+            mp3.cache = { get: jest.fn(key => key) };
+
+            const result = await mp3.ensureV2Controls();
+            mp3.renderUI();
+
+            expect(result).toBeNull();
+            expect(mp3.isAudioPlayerV2).toBe(false);
+            expect(mp3.wrapperEl).not.toHaveClass('bp-media--v2');
+            expect(mp3.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
+            expect(mp3.mp3ControlsV2Promise).toBeNull();
+            expect(mp3.abortConversionWaveformLoad).toBeCalled();
+            expect(mp3.abortClientWaveformDecode).toBeCalled();
+            expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
+            expect(mp3.getIsAudioPlayerV2()).toBe(true);
+
+            jest.spyOn(mp3, 'quickSeek');
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-10);
+        });
+    });
+
+    describe('handlePlayRequest()', () => {
+        test('should remember the play request and toggle playback', () => {
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+
+            mp3.handlePlayRequest();
+
+            expect(mp3.userRequestedPlay).toBe(true);
+            expect(mp3.togglePlay).toBeCalled();
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should retry decode once after a retryable failure when conversion is still pending', () => {
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(true);
+            mp3.isWaveformDecodeRetryPending = true;
+
+            mp3.handlePlayRequest();
+            mp3.handlePlayRequest();
+
+            expect(mp3.startClientWaveformDecode).toBeCalledTimes(1);
+            expect(mp3.hasUsedWaveformDecodePlayRetry).toBe(true);
+            expect(mp3.isWaveformDecodeRetryPending).toBe(false);
+        });
+
+        test('should not retry decode when peaks are already applied', () => {
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(false);
+            mp3.isWaveformDecodeRetryPending = true;
+
+            mp3.handlePlayRequest();
+
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+    });
+
+    describe('handlePlayPause()', () => {
+        test('should play when asked to play', () => {
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(true);
+
+            expect(mp3.handlePlayRequest).toBeCalled();
+            expect(mp3.pause).not.toBeCalled();
+        });
+
+        test('should pause when asked to pause', () => {
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(false);
+
+            expect(mp3.pause).toBeCalledWith(undefined, true);
+            expect(mp3.handlePlayRequest).not.toBeCalled();
+        });
+
+        test('should exit shuttle before play or pause', () => {
+            jest.spyOn(mp3, 'exitShuttle');
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+
+            mp3.handlePlayPause(true);
+            expect(mp3.exitShuttle).toBeCalled();
+
+            mp3.exitShuttle.mockClear();
+            mp3.handlePlayPause(false);
+            expect(mp3.exitShuttle).toBeCalled();
+            expect(mp3.pause).toBeCalledWith(undefined, true);
+        });
+
+        test('should exit reverse shuttle when play is requested', () => {
+            jest.useFakeTimers();
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            mp3.cache.get.mockReturnValue(1);
+            mp3.mediaEl.currentTime = 10;
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 100 });
+            jest.spyOn(mp3, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'togglePlay').mockImplementation();
+            jest.spyOn(mp3, 'quickSeek').mockImplementation();
+
+            mp3.shuttle('reverse');
+            expect(mp3.shuttleDirection).toBe('reverse');
+
+            mp3.handlePlayPause(true);
+
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.togglePlay).toBeCalled();
+            expect(mp3.userRequestedPlay).toBe(true);
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
+        });
+    });
+
+    describe('loadeddataHandler()', () => {
+        beforeEach(() => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should start playback when play was requested before metadata', () => {
+            mp3.userRequestedPlay = true;
+            const order = [];
+            jest.spyOn(mp3, 'play').mockImplementation(() => order.push('play'));
+            jest.spyOn(mp3, 'shouldRaceClientWaveformDecode').mockReturnValue(true);
+            mp3.startClientWaveformDecode.mockImplementation(() => order.push('decode'));
+
+            mp3.loadeddataHandler();
+
+            expect(MediaBaseViewer.prototype.loadeddataHandler).toBeCalled();
+            expect(order).toEqual(['play', 'decode']);
+        });
+
+        test('should not auto-start playback when play was not requested', () => {
+            jest.spyOn(mp3, 'play').mockImplementation();
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.play).not.toBeCalled();
+        });
+
+        test('should apply a pending host-selected seek after metadata', () => {
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.pendingHostSelectedSeek = { id: 'comment-1', time: 41.2 };
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should start client decode after metadata when peaks are not applied yet', () => {
+            mp3.loadeddataHandler();
+
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should drop conversion peaks when media duration mismatches', () => {
+            mp3.waveformPeaks = [0.2, 0.8];
+            mp3.waveformPeaksSource = 'conversion';
+            mp3.waveformDurationSec = 180;
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should keep conversion peaks when media duration is within tolerance', () => {
+            mp3.waveformPeaks = [0.2, 0.8];
+            mp3.waveformPeaksSource = 'conversion';
+            mp3.waveformDurationSec = 30 + DURATION_MISMATCH_TOLERANCE_SEC;
+
+            mp3.loadeddataHandler();
+
+            expect(mp3.waveformPeaks).toEqual([0.2, 0.8]);
+            expect(mp3.waveformPeaksSource).toBe('conversion');
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
         });
     });
 
@@ -106,8 +480,12 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should render the react controls with the correct props', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            mp3.waveformPeaks = [0.2, 0.8];
             mp3.renderUI();
 
+            expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3ControlsV2 }));
             expect(getProps(mp3)).toMatchObject({
                 autoplay: false,
                 bufferedRange: {
@@ -115,18 +493,252 @@ describe('lib/viewers/media/MP3Viewer', () => {
                     length: 0,
                     start: expect.any(Function),
                 },
+                commentMarkers: [],
                 currentTime: 0,
                 durationTime: 1000,
+                hasStartedPlayback: false,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
+                onCommentMarkerClick: mp3.handleCommentMarkerClick,
                 onMuteChange: mp3.toggleMute,
-                onPlayPause: mp3.togglePlay,
+                onPlayPause: mp3.handlePlayPause,
                 onRateChange: mp3.setRate,
                 onTimeChange: mp3.handleTimeupdateFromMediaControls,
                 onVolumeChange: mp3.setVolume,
+                peaks: [0.2, 0.8],
                 rate: 'media-speed',
                 volume: 1,
             });
+        });
+
+        test('should use conversion duration when the audio blob has no metadata yet', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            mp3.waveformDurationSec = 180;
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.renderUI();
+
+            expect(getProps(mp3).durationTime).toBe(180);
+        });
+
+        test('should wait for the v2 controls chunk before rendering', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.ensureV2Controls = jest.fn().mockReturnValue(new Promise(() => {}));
+            mp3.renderUI();
+
+            expect(mp3.ensureV2Controls).toBeCalled();
+            expect(mp3.controls.render).not.toBeCalled();
+        });
+
+        test('should render MP3Controls when audio player v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            mp3.renderUI();
+
+            expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
+        });
+
+        test('should omit waveform peaks when v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            mp3.waveformPeaks = [];
+            mp3.renderUI();
+
+            expect(getProps(mp3)).toMatchObject({
+                rate: 'media-speed',
+                volume: 1,
+            });
+            expect(getProps(mp3).peaks).toBeUndefined();
+        });
+
+        test('should hide the play overlay once shuttle has started, even while paused', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: true });
+            mp3.userRequestedPlay = true;
+            mp3.shuttleDirection = 'reverse';
+
+            mp3.renderUI();
+
+            expect(getProps(mp3).hasStartedPlayback).toBe(true);
+            expect(getProps(mp3).isPlaying).toBe(false);
+        });
+    });
+
+    describe('handleCommentMarkersUpdated()', () => {
+        test('should store host comment_markers and render', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            const markers = [
+                {
+                    avatarUrl: 'https://example.com/a.png',
+                    colorIndex: 9278424974,
+                    id: '507397',
+                    initial: 'A',
+                    time: 72.729,
+                    type: 'comment',
+                },
+            ];
+
+            mp3.handleCommentMarkersUpdated(markers);
+
+            expect(mp3.commentMarkers).toBe(markers);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should clear markers when the host emits an empty list', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.commentMarkers = [{ id: '507397', time: 72.729 }];
+
+            mp3.handleCommentMarkersUpdated();
+
+            expect(mp3.commentMarkers).toEqual([]);
+        });
+
+        test('should seek to a host-selected marker when duration is ready', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should not seek again when the same marker stays selected', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const markers = [{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }];
+
+            mp3.handleCommentMarkersUpdated(markers);
+            mp3.mediaEl.currentTime = 12;
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated(markers);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(12);
+        });
+
+        test('should wait for metadata when a host-selected marker arrives early', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.pendingHostSelectedSeek).toEqual(expect.objectContaining({ id: 'comment-1', time: 41.2 }));
+
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.applyPendingHostSelectedSeek();
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should not assign currentTime when the host-selected time is already current', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const setTime = jest.fn();
+            Object.defineProperty(mp3.mediaEl, 'currentTime', {
+                configurable: true,
+                get: () => 41.2,
+                set: setTime,
+            });
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(setTime).not.toBeCalled();
+        });
+    });
+
+    describe('handleCommentMarkerClick()', () => {
+        beforeEach(() => {
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'emit').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should pause, seek, and emit comment_marker_select', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkerClick({ id: '507397', time: 72.729, type: 'comment' });
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(72.729);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+            expect(mp3.emit).toHaveBeenCalledWith('comment_marker_select', { id: '507397', time: 72.729 });
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should queue a marker click until media duration is known', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(0);
+            expect(mp3.pendingHostSelectedSeek).toEqual(expect.objectContaining({ id: 'comment-1', time: 41.2 }));
+            expect(mp3.emit).toHaveBeenCalledWith('comment_marker_select', { id: 'comment-1', time: 41.2 });
+        });
+
+        test('should seek to a marker clicked before metadata once duration is known', () => {
+            Object.defineProperty(MediaBaseViewer.prototype, 'loadeddataHandler', { value: jest.fn() });
+            mp3.isAudioPlayerV2 = true;
+            jest.spyOn(mp3, 'startClientWaveformDecode').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+
+            mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.loadeddataHandler();
+
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.pendingHostSelectedSeek).toBeNull();
+        });
+
+        test('should not seek again when the host acks the clicked marker', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkerClick({ id: 'comment-1', time: 41.2, type: 'comment' });
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' }]);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+        });
+    });
+
+    describe('getIsAudioPlayerV2()', () => {
+        test('should default off when the host has not passed a gate', () => {
+            expect(mp3.getIsAudioPlayerV2()).toBe(false);
+        });
+
+        test('should honor an explicit enabled flag', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            expect(mp3.getIsAudioPlayerV2()).toBe(true);
+        });
+
+        test('should stay off when React controls are disabled', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(false);
+            expect(mp3.getIsAudioPlayerV2()).toBe(false);
+        });
+
+        test('should honor an explicit disabled flag', () => {
+            mp3.options.features = { audioPlayerV2: { enabled: false } };
+            expect(mp3.getIsAudioPlayerV2()).toBe(false);
         });
     });
 
@@ -135,6 +747,752 @@ describe('lib/viewers/media/MP3Viewer', () => {
             jest.spyOn(mp3, 'pause').mockImplementation();
             mp3.handleAutoplayFail();
             expect(mp3.pause).toBeCalled();
+        });
+    });
+
+    describe('shouldRaceClientWaveformDecode()', () => {
+        beforeEach(() => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.options.file = { id: 1, size: 1024 };
+            mp3.mediaEl = { duration: 30 };
+        });
+
+        test('should race when size and duration are under the cap and peaks are not applied', () => {
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(true);
+        });
+
+        test('should not race when conversion peaks are already applied', () => {
+            mp3.waveformPeaksSource = 'conversion';
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when client peaks are already applied', () => {
+            mp3.waveformPeaksSource = 'client';
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when compressed size is over the cap', () => {
+            mp3.options.file = { id: 1, size: CLIENT_DECODE_MAX_COMPRESSED_BYTES + 1 };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when duration is over the cap', () => {
+            mp3.mediaEl = { duration: CLIENT_DECODE_MAX_DURATION_SEC + 1 };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when file size is missing', () => {
+            mp3.options.file = { id: 1 };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+
+        test('should not race when duration is not yet known', () => {
+            mp3.mediaEl = { duration: Number.NaN };
+
+            expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+    });
+
+    describe('startClientWaveformDecode()', () => {
+        beforeEach(() => {
+            loadPeaks.mockReset();
+            loadPeaks.mockResolvedValue({ error: { code: 'CAP_EXCEEDED', message: 'skip' }, status: 'capped' });
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaks = [];
+            mp3.waveformPeaksSource = null;
+            mp3.mediaEl = { duration: 30 };
+            mp3.options.file = { id: 1, size: 1024 };
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should apply decoded peaks when loadPeaks is ready', async () => {
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.2, 0.8] },
+                status: 'ready',
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([0.2, 0.8]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should keep empty peaks when decode is skipped as capped', async () => {
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.renderUI).not.toBeCalled();
+        });
+
+        test('should keep empty peaks when metadata is missing', async () => {
+            loadPeaks.mockResolvedValue({
+                error: { code: 'UNAVAILABLE', message: 'missing' },
+                reason: 'missing_metadata',
+                status: 'unavailable',
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
+        });
+
+        test('should keep empty peaks when decode fails', async () => {
+            loadPeaks.mockResolvedValue({
+                error: { code: 'LOAD_FAILED', message: 'network' },
+                retryable: true,
+                status: 'failed',
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.isWaveformDecodeRetryPending).toBe(true);
+        });
+
+        test('should not decode when v2 is off', async () => {
+            mp3.isAudioPlayerV2 = false;
+
+            await mp3.startClientWaveformDecode();
+
+            expect(loadPeaks).not.toBeCalled();
+        });
+
+        test('should map a decode-chunk load failure to LOAD_FAILED', async () => {
+            mp3.importWaveformDecode.mockRejectedValue(new Error('chunk failed'));
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.isWaveformDecodeRetryPending).toBe(true);
+        });
+
+        test('should not retry overlay play when decode failure is not retryable', async () => {
+            loadPeaks.mockResolvedValue({
+                error: { code: 'INVALID_PAYLOAD', message: 'bad payload' },
+                retryable: false,
+                status: 'failed',
+            });
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.isWaveformDecodeRetryPending).toBeUndefined();
+        });
+
+        test('should abort an in-flight decode on destroy', () => {
+            loadPeaks.mockReturnValue(new Promise(() => undefined));
+            const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
+
+            mp3.startClientWaveformDecode();
+            const { signal } = mp3.waveformDecodeController;
+            mp3.destroy();
+
+            expect(signal.aborted).toBe(true);
+            expect(mp3.waveformDecodeController).toBeNull();
+            superDestroy.mockRestore();
+        });
+
+        test('should remove the comment_markers listener on destroy', () => {
+            const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
+            jest.spyOn(mp3, 'removeListener');
+
+            mp3.destroy();
+
+            expect(mp3.removeListener).toHaveBeenCalledWith('comment_markers', mp3.handleCommentMarkersUpdated);
+            superDestroy.mockRestore();
+        });
+    });
+
+    describe('startConversionWaveformLoad()', () => {
+        const WAVEFORM_TEMPLATE = 'https://dl.boxcloud.com/waveform/content/{+asset_path}';
+        const WAVEFORM_URL = 'https://dl.boxcloud.com/waveform/content/';
+        const WAVEFORM_JSON = { version: 1, durationSec: 8, peaks: [0.2, 0.8] };
+
+        const conversionRep = (overrides = {}) => ({
+            representation: 'waveform',
+            content: { url_template: WAVEFORM_TEMPLATE },
+            status: { state: 'success' },
+            ...overrides,
+        });
+
+        beforeEach(() => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaks = [];
+            mp3.waveformPeaksSource = null;
+            mp3.mediaEl = { duration: 8 };
+            mp3.options.file = {
+                id: 1,
+                size: 1024,
+                representations: {
+                    entries: [conversionRep()],
+                },
+            };
+            mp3.api = { get: jest.fn().mockResolvedValue(WAVEFORM_JSON) };
+            jest.spyOn(mp3, 'createContentUrlV2').mockReturnValue(WAVEFORM_URL);
+            jest.spyOn(mp3, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token' });
+            jest.spyOn(mp3, 'getRepStatus').mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => Promise.resolve(),
+                removeListener: jest.fn(),
+            });
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'abortClientWaveformDecode');
+            jest.spyOn(mp3, 'startClientWaveformDecode');
+        });
+
+        test('should not fetch when v2 is off', async () => {
+            mp3.isAudioPlayerV2 = false;
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+        });
+
+        test('should not fetch when the waveform representation is missing', async () => {
+            mp3.options.file.representations.entries = [];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should not fetch when the content URL template is missing', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ content: {} })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should fall back to client decode when conversion status is error', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'error' } })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should fall back to client decode when conversion status data is missing', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: undefined })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).not.toBeCalled();
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should poll the waveform rep then fetch JSON with header auth', async () => {
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.getRepStatus).toHaveBeenCalledWith(expect.objectContaining({ representation: 'waveform' }));
+            expect(mp3.waveformStatus.removeListener).toHaveBeenCalledWith('conversionpending', mp3.resetLoadTimeout);
+            expect(mp3.createContentUrlV2).toHaveBeenCalledWith(WAVEFORM_TEMPLATE);
+            expect(mp3.api.get).toHaveBeenCalledWith(WAVEFORM_URL, {
+                headers: { Authorization: 'Bearer token' },
+                signal: expect.any(AbortSignal),
+            });
+            expect(mp3.waveformPeaks).toEqual(Float32Array.from([0.2, 0.8]));
+            expect(mp3.waveformPeaksSource).toBe('conversion');
+            expect(mp3.waveformDurationSec).toBe(8);
+            expect(mp3.abortClientWaveformDecode).toBeCalled();
+            expect(mp3.renderUI).toBeCalled();
+            expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should keep empty peaks when conversion status rejects', async () => {
+            mp3.getRepStatus.mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => Promise.reject(new Error('conversion failed')),
+                removeListener: jest.fn(),
+            });
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.api.get).not.toBeCalled();
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should keep empty peaks when the JSON fetch fails', async () => {
+            mp3.api.get.mockRejectedValue(new Error('network'));
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should keep empty peaks when the payload is invalid', async () => {
+            mp3.api.get.mockResolvedValue({ version: 1 });
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.renderUI).not.toBeCalled();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should fall back to client decode when conversion duration mismatches media', async () => {
+            mp3.mediaEl = { duration: 30 };
+            mp3.api.get.mockResolvedValue({ version: 1, durationSec: 180, peaks: [0.2, 0.8] });
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            expect(mp3.startClientWaveformDecode).toBeCalled();
+        });
+
+        test('should not apply peaks after destroy mid-fetch', async () => {
+            let resolveFetch;
+            mp3.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+            const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
+
+            const pending = mp3.startConversionWaveformLoad();
+            mp3.destroy();
+            resolveFetch(WAVEFORM_JSON);
+            await pending;
+
+            expect(mp3.waveformPeaks).toEqual([]);
+            expect(mp3.waveformPeaksSource).toBeNull();
+            superDestroy.mockRestore();
+        });
+
+        test('should not let a later client decode overwrite conversion peaks', async () => {
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.9, 0.1] },
+                status: 'ready',
+            });
+
+            await mp3.startConversionWaveformLoad();
+            await mp3.startClientWaveformDecode();
+
+            expect(loadPeaks).not.toBeCalled();
+            expect(mp3.waveformPeaks).toEqual(Float32Array.from([0.2, 0.8]));
+            expect(mp3.waveformPeaksSource).toBe('conversion');
+        });
+
+        test('should keep client peaks when client decode wins the race', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'pending' } })];
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.9, 0.1] },
+                status: 'ready',
+            });
+            let resolveStatus;
+            const status = {
+                destroy: jest.fn(),
+                getPromise: () =>
+                    new Promise(resolve => {
+                        resolveStatus = resolve;
+                    }),
+                removeListener: jest.fn(),
+            };
+            mp3.getRepStatus.mockReturnValue(status);
+
+            const conversion = mp3.startConversionWaveformLoad();
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+
+            mp3.abortClientWaveformDecode.mockClear();
+            resolveStatus();
+            await conversion;
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+            expect(mp3.api.get).not.toBeCalled();
+            expect(status.destroy).not.toBeCalled();
+            expect(mp3.abortClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should keep client peaks when client decode wins while conversion JSON is in flight', async () => {
+            loadPeaks.mockResolvedValue({
+                payload: { peaks: [0.9, 0.1] },
+                status: 'ready',
+            });
+            let resolveFetch;
+            mp3.api.get.mockReturnValue(
+                new Promise(resolve => {
+                    resolveFetch = resolve;
+                }),
+            );
+            const status = {
+                destroy: jest.fn(),
+                getPromise: () => Promise.resolve(),
+                removeListener: jest.fn(),
+            };
+            mp3.getRepStatus.mockReturnValue(status);
+
+            const conversion = mp3.startConversionWaveformLoad();
+            await Promise.resolve();
+            expect(mp3.api.get).toBeCalled();
+
+            await mp3.startClientWaveformDecode();
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+
+            resolveFetch(WAVEFORM_JSON);
+            await conversion;
+
+            expect(mp3.waveformPeaks).toEqual([0.9, 0.1]);
+            expect(mp3.waveformPeaksSource).toBe('client');
+            expect(status.destroy).not.toBeCalled();
+        });
+    });
+
+    describe('fetchAudioArrayBuffer()', () => {
+        const originalFetch = global.fetch;
+
+        afterEach(() => {
+            global.fetch = originalFetch;
+        });
+
+        test('should prefer an existing blob URL over a second API GET', async () => {
+            mp3.mediaBlobUrl = 'blob:audio';
+            mp3.api = { get: jest.fn() };
+            global.fetch = jest.fn().mockResolvedValue({
+                ok: true,
+                arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+            });
+
+            const buffer = await mp3.fetchAudioArrayBuffer(new AbortController().signal);
+
+            expect(buffer).toBeInstanceOf(ArrayBuffer);
+            expect(global.fetch).toHaveBeenCalledWith(
+                'blob:audio',
+                expect.objectContaining({ signal: expect.any(AbortSignal) }),
+            );
+            expect(mp3.api.get).not.toHaveBeenCalled();
+        });
+
+        test('should reject when neither a blob URL nor a representation URL is available', async () => {
+            mp3.mediaBlobUrl = null;
+            mp3.options.representation = {};
+
+            await expect(mp3.fetchAudioArrayBuffer(new AbortController().signal)).rejects.toMatchObject({
+                name: 'LOAD_FAILED',
+            });
+        });
+
+        test('should fetch via authenticated GET when no blob URL is available', async () => {
+            const buffer = new ArrayBuffer(8);
+            const { signal } = new AbortController();
+            mp3.mediaBlobUrl = null;
+            mp3.options.representation = {
+                content: { url_template: 'https://example.com/audio.mp3' },
+            };
+            mp3.api = { get: jest.fn().mockResolvedValue(buffer) };
+            jest.spyOn(mp3, 'createContentUrlV2').mockReturnValue('https://example.com/audio.mp3?auth');
+            jest.spyOn(mp3, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer t' });
+
+            const result = await mp3.fetchAudioArrayBuffer(signal);
+
+            expect(result).toBe(buffer);
+            expect(mp3.createContentUrlV2).toHaveBeenCalledWith('https://example.com/audio.mp3');
+            expect(mp3.api.get).toHaveBeenCalledWith('https://example.com/audio.mp3?auth', {
+                headers: { Authorization: 'Bearer t' },
+                signal,
+                type: 'arraybuffer',
+            });
+        });
+    });
+
+    describe('onKeydown()', () => {
+        function enableV2() {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            mp3.controls = { destroy: jest.fn(), render: jest.fn() };
+            mp3.cache.get.mockReturnValue(1);
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 100 });
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: true });
+            mp3.mediaEl.currentTime = 10;
+            mp3.mediaEl.pause = jest.fn();
+            jest.spyOn(mp3, 'play').mockResolvedValue();
+            jest.spyOn(mp3, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'toggleMute').mockImplementation();
+            jest.spyOn(mp3, 'increaseVolume').mockImplementation();
+            jest.spyOn(mp3, 'decreaseVolume').mockImplementation();
+            jest.spyOn(mp3, 'quickSeek').mockImplementation();
+            jest.spyOn(mp3, 'frameStep').mockImplementation();
+            jest.spyOn(mp3, 'setMediaTime').mockImplementation();
+            jest.spyOn(mp3, 'handlePlayRequest').mockImplementation();
+            jest.spyOn(mp3, 'handleCommentMarkerClick').mockImplementation();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+        }
+
+        test('should keep the shared React map when audio v2 is off', () => {
+            mp3.setup();
+            mp3.controls = { destroy: jest.fn(), render: jest.fn() };
+            jest.spyOn(mp3, 'quickSeek');
+
+            expect(mp3.onKeydown('ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-5);
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-10);
+        });
+
+        test('should skip 1s on arrows and one frame on comma/period', () => {
+            enableV2();
+
+            expect(mp3.onKeydown('ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-1);
+            expect(mp3.frameStep).not.toHaveBeenCalled();
+            expect(mp3.onKeydown(',')).toBe(true);
+            expect(mp3.frameStep).toHaveBeenCalledWith('back');
+            expect(mp3.onKeydown('ArrowRight')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(1);
+            expect(mp3.onKeydown('.')).toBe(true);
+            expect(mp3.frameStep).toHaveBeenCalledWith('forward');
+        });
+
+        test('should use the v2 keymap before controls mount', () => {
+            enableV2();
+            mp3.controls = null;
+
+            expect(mp3.onKeydown('ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-1);
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.quickSeek).not.toHaveBeenCalledWith(-10);
+        });
+
+        test('should mute on m and seek Home through the shared React map', () => {
+            enableV2();
+            mp3.commentMarkers = [{ id: '1', time: 4 }];
+
+            expect(mp3.onKeydown('m')).toBe(true);
+            expect(mp3.toggleMute).toHaveBeenCalled();
+            expect(mp3.handleCommentMarkerClick).not.toHaveBeenCalled();
+            expect(mp3.onKeydown('Shift+M')).toBe(true);
+            expect(mp3.onKeydown('Home')).toBe(true);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(0);
+        });
+
+        test('should walk comment markers on up/down and change volume on alt+arrows', () => {
+            enableV2();
+            mp3.commentMarkers = [
+                { id: 'a', time: 4 },
+                { id: 'b', time: 20 },
+            ];
+            mp3.mediaEl.currentTime = 10;
+
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'b', time: 20 });
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a', time: 4 });
+            expect(mp3.onKeydown('ArrowUp', { altKey: true })).toBe(true);
+            expect(mp3.increaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(1);
+            expect(mp3.onKeydown('ArrowDown', { altKey: true })).toBe(true);
+            expect(mp3.decreaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(2);
+        });
+
+        test('should change volume on up/down when there are no comment markers', () => {
+            enableV2();
+            mp3.commentMarkers = [];
+
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.increaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(1);
+            expect(mp3.handleCommentMarkerClick).not.toHaveBeenCalled();
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.decreaseVolume).toHaveBeenCalled();
+            expect(mp3.keyboardVolumeStep).toBe(2);
+        });
+
+        test('should walk every comment marker in a cluster on up/down', () => {
+            enableV2();
+            mp3.commentMarkers = [
+                { id: 'a1', time: 20 },
+                { id: 'a2', time: 20 },
+                { id: 'a3', time: 21 },
+                { id: 'b', time: 40 },
+            ];
+            mp3.handleCommentMarkerClick.mockImplementation(marker => {
+                mp3.hostSelectedMarkerId = marker.id;
+                mp3.mediaEl.currentTime = marker.time;
+            });
+
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a1', time: 20 });
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'a2', time: 20 });
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'a3', time: 21 });
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'b', time: 40 });
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenLastCalledWith({ id: 'a3', time: 21 });
+        });
+
+        test('should enter a cluster at the playhead when nothing is selected', () => {
+            enableV2();
+            mp3.commentMarkers = [
+                { id: 'a1', time: 20 },
+                { id: 'a2', time: 20 },
+                { id: 'a3', time: 21 },
+            ];
+            mp3.mediaEl.currentTime = 20;
+
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a1', time: 20 });
+
+            mp3.handleCommentMarkerClick.mockClear();
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a2', time: 20 });
+        });
+
+        test('should shuttle forward with ramping playbackRate and pause on k', () => {
+            enableV2();
+            mp3.mediaEl.playbackRate = 1;
+
+            expect(mp3.onKeydown('l')).toBe(true);
+            expect(mp3.play).toHaveBeenCalled();
+            expect(mp3.userRequestedPlay).toBe(true);
+            expect(mp3.mediaEl.playbackRate).toBe(2);
+            expect(mp3.onKeydown('l')).toBe(true);
+            expect(mp3.mediaEl.playbackRate).toBe(4);
+            expect(mp3.onKeydown('k')).toBe(true);
+            expect(mp3.pause).toHaveBeenCalled();
+            expect(mp3.shuttleDirection).toBe(null);
+        });
+
+        test('should stop reverse shuttle on destroy without restoring rate', () => {
+            jest.useFakeTimers();
+            enableV2();
+            jest.spyOn(mp3, 'handleRate');
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            mp3.handleRate.mockClear();
+            const seeksBeforeDestroy = mp3.quickSeek.mock.calls.length;
+            mp3.destroy();
+
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.handleRate).not.toHaveBeenCalled();
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeksBeforeDestroy);
+            jest.useRealTimers();
+        });
+
+        test('should shuttle reverse by seeking, not by seeking 10s', () => {
+            jest.useFakeTimers();
+            enableV2();
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.userRequestedPlay).toBe(true);
+            expect(mp3.quickSeek).not.toHaveBeenCalledWith(-10);
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-0.1);
+            jest.useRealTimers();
+        });
+
+        test('should exit reverse shuttle at the start of the file', () => {
+            jest.useFakeTimers();
+            enableV2();
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            mp3.mediaEl.currentTime = 0;
+            jest.advanceTimersByTime(50);
+
+            expect(mp3.shuttleDirection).toBe(null);
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
+        });
+
+        test('should exit shuttle on comment jump, Home, and End', () => {
+            jest.useFakeTimers();
+            enableV2();
+            mp3.handleCommentMarkerClick.mockRestore();
+            mp3.commentMarkers = [{ id: 'a', time: 4 }];
+            mp3.mediaEl.currentTime = 10;
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.shuttleDirection).toBe('reverse');
+            expect(mp3.onKeydown('ArrowUp')).toBe(true);
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.hostSelectedMarkerId).toBe('a');
+
+            expect(mp3.onKeydown('l')).toBe(true);
+            expect(mp3.shuttleDirection).toBe('forward');
+            expect(mp3.onKeydown('Home')).toBe(true);
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(0);
+
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.onKeydown('End')).toBe(true);
+            expect(mp3.shuttleDirection).toBe(null);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(100);
+
+            const seeks = mp3.quickSeek.mock.calls.length;
+            jest.advanceTimersByTime(50);
+            expect(mp3.quickSeek).toHaveBeenCalledTimes(seeks);
+            jest.useRealTimers();
+        });
+
+        test('should jump 5s on shift+arrows, to the end on End, and consume in/out/loop', () => {
+            enableV2();
+            jest.spyOn(MediaBaseViewer.prototype, 'onKeydown');
+
+            expect(mp3.onKeydown('Shift+ArrowLeft')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(-5);
+            expect(mp3.onKeydown('Shift+ArrowRight')).toBe(true);
+            expect(mp3.quickSeek).toHaveBeenCalledWith(5);
+            expect(mp3.onKeydown('End')).toBe(true);
+            expect(mp3.setMediaTime).toHaveBeenCalledWith(100);
+            expect(mp3.onKeydown('i')).toBe(true);
+            expect(mp3.onKeydown('o')).toBe(true);
+            expect(mp3.onKeydown('/')).toBe(true);
+            expect(mp3.onKeydown('Shift+L')).toBe(true);
+            expect(MediaBaseViewer.prototype.onKeydown).not.toHaveBeenCalled();
+        });
+
+        test('should not consume End when duration is unknown', () => {
+            enableV2();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
+            jest.spyOn(MediaBaseViewer.prototype, 'onKeydown').mockReturnValue(false);
+
+            expect(mp3.onKeydown('End')).toBe(false);
+            expect(mp3.setMediaTime).not.toHaveBeenCalled();
+            expect(MediaBaseViewer.prototype.onKeydown).toHaveBeenCalled();
+        });
+
+        test('should step waveform zoom from + and -', () => {
+            enableV2();
+
+            expect(mp3.onKeydown('Shift++')).toBe(true);
+            expect(mp3.keyboardZoomStep).toBe(1);
+            expect(mp3.onKeydown('-')).toBe(true);
+            expect(mp3.keyboardZoomStep).toBe(0);
         });
     });
 });

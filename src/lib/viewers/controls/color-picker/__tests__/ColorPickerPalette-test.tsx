@@ -7,8 +7,7 @@ describe('ColorPickerPalette', () => {
     const defaultColor = '#fff';
     const colors = [defaultColor];
 
-    const getWrapper = (props = {}) =>
-        render(<ColorPickerPalette colors={colors} onBlur={jest.fn()} onSelect={jest.fn()} {...props} />);
+    const getWrapper = (props = {}) => render(<ColorPickerPalette colors={colors} onSelect={jest.fn()} {...props} />);
 
     describe('render', () => {
         test('should render a single color swatch', async () => {

@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import TimeControlsV2 from '../TimeControlsV2';
 import SliderControl from '../../slider/SliderControl';
-import { CommentMarker } from '../types';
+import { CommentMarker } from '../markers';
 
 jest.mock('../../slider/SliderControl', () => {
     return jest.fn(props => (
@@ -100,6 +100,32 @@ describe('TimeControlsV2', () => {
             render(<TimeControlsV2 {...defaultProps} commentMarkers={markersWithInitial} durationTime={60} />);
             expect(screen.getByText('Z')).toBeInTheDocument();
         });
+
+        test('should ring a marker after click and drop the ring on pointerdown outside', async () => {
+            const user = userEvent.setup();
+            render(<TimeControlsV2 {...defaultProps} commentMarkers={markers} durationTime={60} />);
+
+            const markerEl = screen.getAllByTestId('bp-time-controls-marker')[0];
+            await user.click(markerEl);
+            expect(markerEl).toHaveClass('bp-TimeControlsV2-marker--selected');
+
+            await user.click(document.body);
+            expect(markerEl).not.toHaveClass('bp-TimeControlsV2-marker--selected');
+        });
+
+        test('should show the ring when the host marks a comment selected', () => {
+            render(
+                <TimeControlsV2
+                    {...defaultProps}
+                    commentMarkers={[{ ...markers[0], isSelected: true }, markers[1]]}
+                    durationTime={60}
+                />,
+            );
+
+            expect(screen.getAllByTestId('bp-time-controls-marker')[0]).toHaveClass(
+                'bp-TimeControlsV2-marker--selected',
+            );
+        });
     });
 
     describe('clustering', () => {
@@ -155,7 +181,7 @@ describe('TimeControlsV2', () => {
                     onCommentMarkerClick={onCommentMarkerClick}
                 />,
             );
-            const groupTick = container.querySelector('.bp-TimeControlsV2-marker--group') as HTMLElement;
+            const groupTick = container.querySelector('.bp-TimeControlsV2-marker-tick') as HTMLElement;
             await user.click(groupTick);
             expect(onCommentMarkerClick).toHaveBeenCalledWith(markers[0]);
         });

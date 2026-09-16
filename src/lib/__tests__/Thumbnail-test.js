@@ -12,7 +12,9 @@ describe('Thumbnail', () => {
 
     beforeEach(() => {
         stubs.getViewport = jest.fn();
+        stubs.cancelRender = jest.fn();
         stubs.render = jest.fn(() => ({
+            cancel: stubs.cancelRender,
             promise: Promise.resolve(),
         }));
         page = {
@@ -43,6 +45,7 @@ describe('Thumbnail', () => {
         test('should initialize properties', () => {
             expect(thumbnail.pdfViewer).toBe(pdfViewer);
             expect(thumbnail.thumbnailImageCache.cache).toEqual({});
+            expect(thumbnail.renderTasks).toEqual(new Set());
             expect(thumbnail.scale).toBeUndefined();
             expect(thumbnail.pageRatio).toBeUndefined();
         });
@@ -128,6 +131,50 @@ describe('Thumbnail', () => {
         test('should clean up the instance properties', () => {
             thumbnail.destroy();
             expect(thumbnail.thumbnailImageCache).toBeNull();
+            expect(thumbnail.pdfViewer).toBeNull();
+            expect(thumbnail.preloader).toBeNull();
+            expect(thumbnail.renderTasks).toBeNull();
+        });
+
+        test('should safely handle repeated calls', () => {
+            thumbnail.destroy();
+            expect(() => thumbnail.destroy()).not.toThrow();
+        });
+
+        test('should not initialize after being destroyed', async () => {
+            thumbnail.destroy();
+
+            await expect(thumbnail.init()).resolves.toBeNull();
+            expect(stubs.getPage).not.toBeCalled();
+        });
+
+        test('should ignore an in-flight initialization after being destroyed', async () => {
+            let resolvePage;
+            pagePromise = new Promise(resolve => {
+                resolvePage = resolve;
+            });
+
+            const initPromise = thumbnail.init();
+            thumbnail.destroy();
+            resolvePage(page);
+
+            await expect(initPromise).resolves.toBeNull();
+            expect(stubs.getViewport).not.toBeCalled();
+        });
+
+        test('should ignore an in-flight thumbnail render after being destroyed', async () => {
+            let resolvePage;
+            pagePromise = new Promise(resolve => {
+                resolvePage = resolve;
+            });
+
+            const dataUrlPromise = thumbnail.getThumbnailDataURL(1);
+            thumbnail.destroy();
+            resolvePage(page);
+            await dataUrlPromise;
+
+            expect(stubs.getViewport).not.toBeCalled();
+            expect(stubs.render).not.toBeCalled();
         });
     });
 
@@ -149,7 +196,7 @@ describe('Thumbnail', () => {
 
     describe('createThumbnailImage', () => {
         beforeEach(() => {
-            stubs.getThumbnailDataURL = jest.spyOn(thumbnail, 'getThumbnailDataURL').mockResolvedValue(undefined);
+            stubs.getThumbnailDataURL = jest.spyOn(thumbnail, 'getThumbnailDataURL').mockResolvedValue('dataurl');
             stubs.createImageEl = jest.spyOn(thumbnail, 'createImageEl').mockImplementation();
             stubs.getCacheEntry = jest.spyOn(thumbnail.thumbnailImageCache, 'get').mockImplementation();
             stubs.setCacheEntry = jest.spyOn(thumbnail.thumbnailImageCache, 'set').mockImplementation();
@@ -170,7 +217,10 @@ describe('Thumbnail', () => {
 
             return thumbnail.createThumbnailImage(0).then(imageEl => {
                 expect(stubs.createImageEl).toBeCalled();
-                expect(stubs.setCacheEntry).toBeCalledWith(0, { inProgress: false, image: imageEl });
+                expect(stubs.setCacheEntry).toBeCalledWith(0, {
+                    image: imageEl,
+                    inProgress: false,
+                });
             });
         });
 
@@ -183,6 +233,39 @@ describe('Thumbnail', () => {
                 expect(stubs.createImageEl).not.toBeCalled();
                 expect(imageEl).toBeNull();
             });
+        });
+
+        test('should clear the in-progress entry when rendering is cancelled', async () => {
+            stubs.getThumbnailDataURL.mockResolvedValue(null);
+
+            await expect(thumbnail.createThumbnailImage(0)).resolves.toBeNull();
+            expect(stubs.setCacheEntry).toHaveBeenLastCalledWith(0, { inProgress: false });
+            expect(stubs.createImageEl).not.toHaveBeenCalled();
+        });
+
+        test('should resolve with null after being destroyed', async () => {
+            thumbnail.destroy();
+
+            await expect(thumbnail.createThumbnailImage(0)).resolves.toBeNull();
+            expect(stubs.getThumbnailDataURL).not.toBeCalled();
+        });
+
+        test('should ignore an in-flight image after being destroyed', async () => {
+            let resolveDataUrl;
+            stubs.getThumbnailDataURL.mockReturnValue(
+                new Promise(resolve => {
+                    resolveDataUrl = resolve;
+                }),
+            );
+
+            const imagePromise = thumbnail.createThumbnailImage(0);
+            thumbnail.destroy();
+            stubs.setCacheEntry.mockClear();
+            resolveDataUrl('image');
+
+            await expect(imagePromise).resolves.toBeNull();
+            expect(stubs.createImageEl).not.toBeCalled();
+            expect(stubs.setCacheEntry).not.toBeCalled();
         });
     });
 
@@ -264,6 +347,57 @@ describe('Thumbnail', () => {
                 expect(stubs.getPage).not.toHaveBeenCalled();
                 expect(stubs.getViewport).not.toHaveBeenCalled();
             });
+        });
+    });
+
+    describe('renderPageImage()', () => {
+        beforeEach(() => {
+            thumbnail.pageRatio = 1;
+            stubs.getViewport.mockReturnValue({ width: 10, height: 10 });
+        });
+
+        test('should return dimensions and release the canvas backing store', async () => {
+            const canvas = document.createElement('canvas');
+            const createElement = jest.spyOn(document, 'createElement').mockReturnValue(canvas);
+
+            const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
+            await expect(task.promise).resolves.toMatchObject({
+                dataUrl: expect.stringContaining('data:image/png'),
+                height: 20,
+                width: 20,
+            });
+            expect(canvas.width).toBe(0);
+            expect(canvas.height).toBe(0);
+            expect(thumbnail.renderTasks.size).toBe(0);
+            createElement.mockRestore();
+        });
+
+        test('should cancel an active PDF render and discard its result', async () => {
+            let rejectRender;
+            stubs.render.mockReturnValue({
+                cancel: stubs.cancelRender,
+                promise: new Promise((resolve, reject) => {
+                    rejectRender = reject;
+                }),
+            });
+
+            const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
+            await pagePromise;
+            await Promise.resolve();
+            task.cancel();
+            rejectRender(new Error('Rendering cancelled'));
+
+            expect(stubs.cancelRender).toHaveBeenCalled();
+            await expect(task.promise).resolves.toBeNull();
+        });
+
+        test('should bypass preloaded images for an uncached high-resolution render', async () => {
+            thumbnail = new Thumbnail(pdfViewer, { preloadedImages: { 1: 'dataurl' } });
+            thumbnail.pageRatio = 1;
+
+            const task = thumbnail.renderPageImage(1, { thumbMaxWidth: 20 });
+            await expect(task.promise).resolves.toMatchObject({ width: 20 });
+            expect(stubs.getPage).toHaveBeenCalled();
         });
     });
 });

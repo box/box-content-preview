@@ -9,6 +9,8 @@ export type Props = {
     minScale?: number;
     onZoomIn: () => void;
     onZoomOut: () => void;
+    resinTargetZoomIn?: string;
+    resinTargetZoomOut?: string;
     scale?: number;
 };
 
@@ -20,6 +22,8 @@ export default function ZoomControls({
     minScale = MIN_SCALE,
     onZoomIn,
     onZoomOut,
+    resinTargetZoomIn = 'zoomIn',
+    resinTargetZoomOut = 'zoomOut',
     scale = 1,
 }: Props): JSX.Element {
     const currentScale = Math.round((scale + Number.EPSILON) * 100) / 100;
@@ -30,7 +34,7 @@ export default function ZoomControls({
         <div className="bp-ZoomControls">
             <button
                 className="bp-ZoomControls-button"
-                data-resin-target="zoomOut"
+                data-resin-target={resinTargetZoomOut}
                 data-testid="bp-ZoomControls-out"
                 disabled={currentScale <= minScaleValue}
                 onClick={onZoomOut}
@@ -46,7 +50,7 @@ export default function ZoomControls({
             >{`${Math.round(currentScale * 100)}%`}</div>
             <button
                 className="bp-ZoomControls-button"
-                data-resin-target="zoomIn"
+                data-resin-target={resinTargetZoomIn}
                 data-testid="bp-ZoomControls-in"
                 disabled={currentScale >= maxScaleValue}
                 onClick={onZoomIn}

@@ -744,7 +744,6 @@ describe('lib/Preview', () => {
                 sharedLinkPassword,
                 isDocFirstPrefetchEnabled: false,
                 docFirstPagesConfig: null,
-                features: { migrateAccessTokenToHeader: false },
             });
         });
 
@@ -805,43 +804,6 @@ describe('lib/Preview', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
 
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
-        });
-
-        test('should pass migrateAccessTokenToHeader feature to viewer options when isAccessTokenHeaderEnabled is true', () => {
-            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
-            jest.spyOn(preview, 'createViewerOptions');
-            preview.options.features = { existingFeature: true };
-
-            preview.prefetch({
-                fileId,
-                token,
-                sharedLink,
-                sharedLinkPassword,
-                preload: true,
-                isAccessTokenHeaderEnabled: true,
-            });
-
-            expect(preview.createViewerOptions).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    features: { existingFeature: true, migrateAccessTokenToHeader: true },
-                }),
-            );
-            expect(preview.options.features).toEqual({ existingFeature: true });
-        });
-
-        test('should pass migrateAccessTokenToHeader=false to viewer options when isAccessTokenHeaderEnabled is false', () => {
-            jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
-            jest.spyOn(preview, 'createViewerOptions');
-            preview.options.features = { existingFeature: true };
-
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
-
-            expect(preview.createViewerOptions).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    features: { existingFeature: true, migrateAccessTokenToHeader: false },
-                }),
-            );
-            expect(preview.options.features).toEqual({ existingFeature: true });
         });
     });
 
@@ -1097,7 +1059,7 @@ describe('lib/Preview', () => {
                 getRepresentation: jest.fn(),
                 getAssetPath: jest.fn(),
                 getLoadStatus: jest.fn(),
-                createContentUrlWithAuthParams: jest.fn(),
+                createContentUrlV2: jest.fn(),
                 options: {
                     viewer: {
                         ASSET: '',
@@ -1145,19 +1107,73 @@ describe('lib/Preview', () => {
                 },
             };
             const url = 'someurl';
+            const blobUrl = 'blob:http://localhost/watermarked';
+            const blob = new Blob(['wm']);
+            const click = jest.fn();
+            const realCreateElement = document.createElement.bind(document);
+            let anchor;
 
+            preview.file = { name: 'watermarked.jpg' };
             preview.viewer.getRepresentation.mockReturnValue(representation);
             preview.viewer.getAssetPath.mockReturnValue('1.jpg');
-            preview.viewer.createContentUrlWithAuthParams.mockReturnValue(url);
-
+            preview.viewer.createContentUrlV2.mockReturnValue(url);
+            preview.getRequestHeaders.mockReturnValue({ Authorization: 'Bearer token' });
             util.appendQueryParams.mockReturnValue(url);
+            Api.prototype.get.mockResolvedValue(blob);
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue(blobUrl);
+            jest.spyOn(URL, 'revokeObjectURL');
+            jest.spyOn(document, 'createElement').mockImplementation(tagName => {
+                const el = realCreateElement(tagName);
+                if (tagName === 'a') {
+                    anchor = el;
+                    el.click = click;
+                }
+                return el;
+            });
 
             preview.download();
 
             expect(util.appendQueryParams).toHaveBeenCalledWith(url, {
                 response_content_disposition_type: 'attachment',
             });
-            expect(stubs.downloadReachability.downloadWithReachabilityCheck).toHaveBeenCalledWith(url);
+
+            return Promise.resolve().then(() => {
+                expect(Api.prototype.get).toHaveBeenCalledWith(url, {
+                    type: 'blob',
+                    headers: { Authorization: 'Bearer token' },
+                });
+                expect(click).toHaveBeenCalled();
+                expect(anchor.download).toBe('watermarked.jpg');
+                expect(anchor.href).toBe(blobUrl);
+                expect(URL.revokeObjectURL).toHaveBeenCalledWith(blobUrl);
+                expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
+            });
+        });
+
+        test('should show a policy error when watermarked download is forbidden', () => {
+            file.canDownload.mockReturnValue(true);
+            file.shouldDownloadWM.mockReturnValue(true);
+            preview.viewer.getRepresentation.mockReturnValue({
+                content: { url_template: 'someTemplate' },
+            });
+            preview.viewer.getAssetPath.mockReturnValue('1.jpg');
+            preview.viewer.createContentUrlV2.mockReturnValue('someurl');
+            util.appendQueryParams.mockReturnValue('someurl');
+            preview.getRequestHeaders.mockReturnValue({ Authorization: 'Bearer token' });
+            Api.prototype.get.mockRejectedValue({
+                response: { data: { code: 'forbidden_by_policy' } },
+            });
+
+            preview.download();
+
+            return Promise.resolve()
+                .then(() => Promise.resolve())
+                .then(() => {
+                    expect(preview.ui.showNotification).toHaveBeenCalledWith(
+                        __('notification_cannot_download_due_to_policy'),
+                    );
+                    expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
+                });
         });
 
         test('should download original file if file should not be downloaded as watermarked', () => {
@@ -1705,6 +1721,39 @@ describe('lib/Preview', () => {
                 'Bad annotatorToken!',
             );
         });
+
+        test('should merge options.location into this.location', () => {
+            preview.location = { baseURI: 'preserved/' };
+            preview.parseOptions({
+                ...preview.previewOptions,
+                location: { staticBaseURI: 'static/', locale: 'en-US', version: '1.2.3' },
+            });
+            expect(preview.location).toEqual({
+                baseURI: 'preserved/',
+                staticBaseURI: 'static/',
+                locale: 'en-US',
+                version: '1.2.3',
+            });
+        });
+
+        test('should leave this.location unchanged when options.location is omitted', () => {
+            preview.location = { baseURI: 'preserved/' };
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.location).toEqual({ baseURI: 'preserved/' });
+        });
+
+        test('should stash options.pdfjs on this.options.pdfjs', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                pdfjs: { workerSrc: 'https://cdn.example/pdf.worker.mjs' },
+            });
+            expect(preview.options.pdfjs).toEqual({ workerSrc: 'https://cdn.example/pdf.worker.mjs' });
+        });
+
+        test('should default this.options.pdfjs to an empty object when omitted', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.pdfjs).toEqual({});
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -1922,6 +1971,54 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
 
+            expect(stubs.loadViewer).toHaveBeenCalled();
+        });
+
+        test('should trigger account error when video file has only preload rep and no playable reps', () => {
+            stubs.file.extension = 'mp4';
+            stubs.file.representations.entries = [{ representation: PRELOAD_REP_NAME }];
+            stubs.getCachedFile.mockReturnValue(null);
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).toHaveBeenCalledWith(expect.any(PreviewError));
+            expect(stubs.triggerError.mock.calls[0][0].code).toBe(ERROR_CODE.ACCOUNT);
+            expect(stubs.triggerError.mock.calls[0][0].message).toBe(__('error_account'));
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should trigger account error when Instant Preview viewer is showing jpg but server file has no playable reps', () => {
+            preview.viewer = {
+                options: {
+                    viewer: { NAME: 'Dash' },
+                    representation: { representation: PRELOAD_REP_NAME },
+                },
+            };
+            stubs.file.extension = 'mp4';
+            stubs.file.representations.entries = [{ representation: PRELOAD_REP_NAME }];
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: stubs.file.file_version.sha1 },
+            });
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).toHaveBeenCalledWith(expect.any(PreviewError));
+            expect(stubs.triggerError.mock.calls[0][0].code).toBe(ERROR_CODE.ACCOUNT);
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should not trigger account error when video file has pending dash rep', () => {
+            stubs.loadViewer.mockImplementation(() => {});
+            stubs.file.extension = 'mp4';
+            stubs.file.representations.entries = [
+                { representation: PRELOAD_REP_NAME },
+                { representation: 'dash', status: { state: 'pending' } },
+            ];
+            stubs.getCachedFile.mockReturnValue(null);
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).not.toHaveBeenCalled();
             expect(stubs.loadViewer).toHaveBeenCalled();
         });
 
@@ -3154,6 +3251,51 @@ describe('lib/Preview', () => {
 
         test('should add dash hints if the browser supports dash', () => {
             stubs.canPlayDash.mockReturnValue(true);
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
+        test('should add extracted_text hint when ai transcription for video subtitles is enabled', () => {
+            stubs.canPlayDash.mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'aiTranscriptionForVideoSubtitles');
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip][extracted_text]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(isFeatureEnabled).toHaveBeenCalledWith(preview.options.features, 'aiTranscriptionForVideoSubtitles');
+        });
+
+        test('should add waveform hint when audio player v2 is enabled', () => {
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'audioPlayerV2.enabled');
+            stubs.headers['X-Rep-Hints'] += '[mp4][waveform]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(isFeatureEnabled).toHaveBeenCalledWith(preview.options.features, 'audioPlayerV2.enabled');
+        });
+
+        test('should add waveform hint with dash filmstrip when audio player v2 is enabled', () => {
+            stubs.canPlayDash.mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'audioPlayerV2.enabled');
+            stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip][waveform]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
+        test('should not add waveform hint when audio player v2 is disabled', () => {
+            isFeatureEnabled.mockReturnValue(false);
+            stubs.headers['X-Rep-Hints'] += '[mp4]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).toHaveBeenCalledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
+        test('should not add extracted_text hint when ai transcription for video subtitles is disabled', () => {
+            stubs.canPlayDash.mockReturnValue(true);
+            isFeatureEnabled.mockReturnValue(false);
             stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
 
             preview.getRequestHeaders();

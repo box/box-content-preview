@@ -6,6 +6,7 @@ import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocFindBar from './DocFindBar';
 import GalleryController from '../gallery/GalleryController';
+import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -49,6 +50,7 @@ import {
     RENDER_EVENT,
     RENDER_METRIC,
     REPORT_ACI,
+    USER_DOCUMENT_GALLERY_EVENTS,
     USER_DOCUMENT_THUMBNAIL_EVENTS,
     VIEWER_EVENT,
 } from '../../events';
@@ -157,6 +159,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
+        this.handleGalleryZoomGesture = this.handleGalleryZoomGesture.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
         this.onThumbnailSelectHandler = this.onThumbnailSelectHandler.bind(this);
         this.pagechangingHandler = this.pagechangingHandler.bind(this);
@@ -238,6 +241,7 @@ class DocBaseViewer extends BaseViewer {
         this.galleryController = new GalleryController({
             containerEl: this.containerEl,
             features: this.options.features,
+            hasTouch: this.hasTouch,
             getPdfViewer: () => this.pdfViewer,
             getPreloader: () => this.preloader,
             getThumbnailsSidebar: () => this.thumbnailsSidebar,
@@ -252,6 +256,8 @@ class DocBaseViewer extends BaseViewer {
             },
             onBeforeOpen: () => this.handleGalleryEnter(),
             onAfterClose: () => this.handleGalleryExit(),
+            onClose: landedPage => this.handleGalleryClose(landedPage),
+            onZoomGesture: this.handleGalleryZoomGesture,
         });
     }
 
@@ -285,6 +291,15 @@ class DocBaseViewer extends BaseViewer {
             this.galleryController.destroy();
         }
 
+        if (this.thumbnailsSidebar) {
+            this.thumbnailsSidebar.destroy();
+        }
+
+        if (this.advancedInsightsThumbs) {
+            this.advancedInsightsThumbs.destroy();
+            this.advancedInsightsThumbs = null;
+        }
+
         // Clean up PDF network requests
         if (this.pdfLoadingTask) {
             try {
@@ -294,17 +309,21 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        // Clean up viewer
+        // Clean up and detach the PDF.js document so retained viewer instances
+        // do not keep page views and document resources alive.
         if (this.pdfViewer) {
             this.pdfViewer.cleanup();
+            this.pdfViewer.setDocument(null);
         }
+
+        if (this.pdfLinkService) {
+            this.pdfLinkService.setDocument(null);
+        }
+
+        this.doc = null;
 
         if (this.printPopup) {
             this.printPopup.destroy();
-        }
-
-        if (this.thumbnailsSidebar) {
-            this.thumbnailsSidebar.destroy();
         }
 
         if (this.thumbnailsSidebarEl) {
@@ -409,14 +428,11 @@ class DocBaseViewer extends BaseViewer {
             jpegPreloadRep && this.isRepresentationReady(jpegPreloadRep) && jpegPreloadRep.content?.url_template;
         const onlyJpegRepAvailable = jpegRepReady && !pagedWebpRepReady;
 
-        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
-        const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
+        const headersOption = { headers: this.appendAuthHeader() };
 
         if (onlyJpegRepAvailable) {
             const { url_template: jpegUrlTemplate = '' } = jpegPreloadRep.content;
-            const jpegUrlAuthTemplate = useHeaders
-                ? this.createContentUrlV2(jpegUrlTemplate)
-                : this.createContentUrlWithAuthParams(jpegUrlTemplate);
+            const jpegUrlAuthTemplate = this.createContentUrlV2(jpegUrlTemplate);
             const promises = getPreloadImageRequestPromises(this.api, jpegUrlAuthTemplate, 1, '', headersOption);
             Promise.all(promises).then(() => {
                 this.preloaderImagesPrefetched = true;
@@ -425,9 +441,7 @@ class DocBaseViewer extends BaseViewer {
             const { url_template: pagedUrlTemplate = '' } = pagedWebpRep.content;
             const pageCount = pagedWebpRep.metadata?.pages || 8;
             const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
-            const pagedUrlAuthTemplate = useHeaders
-                ? this.createContentUrlV2(newPagedUrlTemplate)
-                : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+            const pagedUrlAuthTemplate = this.createContentUrlV2(newPagedUrlTemplate);
 
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
                 const {
@@ -507,13 +521,8 @@ class DocBaseViewer extends BaseViewer {
                 if (preloadRep && this.isRepresentationReady(preloadRep)) {
                     const { url_template: template } = preloadRep.content;
 
-                    // Prefetch as blob since preload needs to load image as a blob
-                    if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                        const contentUrl = this.createContentUrlV2(template);
-                        this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() });
-                    } else {
-                        this.api.get(this.createContentUrlWithAuthParams(template), { type: 'blob' });
-                    }
+                    const contentUrl = this.createContentUrlV2(template);
+                    this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() });
                 }
             } else {
                 this.prefetchPreloaderImages(file);
@@ -522,12 +531,8 @@ class DocBaseViewer extends BaseViewer {
 
         if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
-            if (this.featureEnabled('migrateAccessTokenToHeader')) {
-                const contentUrl = this.createContentUrlV2(template);
-                this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
-            } else {
-                this.api.get(this.createContentUrlWithAuthParams(template), { type: 'document' });
-            }
+            const contentUrl = this.createContentUrlV2(template);
+            this.api.get(contentUrl, { type: 'document', headers: this.appendAuthHeader() });
         }
     }
 
@@ -587,11 +592,8 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const { url_template: template = '' } = preloadRep?.content || {};
-        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
-        const preloadUrl = useHeaders
-            ? this.createContentUrlV2(template)
-            : this.createContentUrlWithAuthParams(template);
-        const headersOption = useHeaders ? { headers: this.appendAuthHeader() } : {};
+        const preloadUrl = this.createContentUrlV2(template);
+        const headersOption = { headers: this.appendAuthHeader() };
 
         if (!this.docFirstPagesEnabled) {
             this.startPreloadTimer();
@@ -612,9 +614,7 @@ class DocBaseViewer extends BaseViewer {
                 const { pages: pageCount = 1 } = preloadRepPaged?.metadata || {};
                 const { url_template: pagedUrlTemplate = '' } = preloadRepPaged?.content || {};
                 const newPagedUrlTemplate = pagedUrlTemplate.replace(/\{.*\}/, PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER);
-                const pagedPreLoadUrl = useHeaders
-                    ? this.createContentUrlV2(newPagedUrlTemplate)
-                    : this.createContentUrlWithAuthParams(newPagedUrlTemplate);
+                const pagedPreLoadUrl = this.createContentUrlV2(newPagedUrlTemplate);
                 this.preloader.showPreload(null, this.containerEl, pagedPreLoadUrl, pageCount, this, headersOption);
             }
         }
@@ -656,11 +656,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         const template = this.options.representation.content.url_template;
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            this.pdfUrl = this.createContentUrlV2(template);
-        } else {
-            this.pdfUrl = this.createContentUrlWithAuthParams(template);
-        }
+        this.pdfUrl = this.createContentUrlV2(template);
         let jsAssets;
         let cssAssets;
         const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
@@ -930,6 +926,37 @@ class DocBaseViewer extends BaseViewer {
      * @return {boolean} consumed or not
      */
     onKeydown(key, event) {
+        if (this.galleryController && this.galleryController.isOpen) {
+            if (event && event.defaultPrevented) {
+                return false;
+            }
+
+            if (key === 'Escape') {
+                this.galleryController.handleEscape();
+                return true;
+            }
+
+            if (this.galleryController.isEnhancedGalleryEnabled) {
+                if (key === 'Shift++') {
+                    this.galleryController.zoomIn();
+                    return true;
+                }
+
+                if (key === 'Shift+_') {
+                    this.galleryController.zoomOut();
+                    return true;
+                }
+            }
+
+            // Swallow page-nav keys so they can't flip the doc page underneath the gallery
+            // or trigger the host's collection navigation. Arrows/Home/End pressed outside
+            // the grid are redirected into it so the first press navigates the tiles.
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', '[', ']'].includes(key)) {
+                this.galleryController.handleArrowKey(key);
+                return true;
+            }
+        }
+
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
@@ -1044,9 +1071,7 @@ class DocBaseViewer extends BaseViewer {
             url: pdfUrl,
         };
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            pdfDocConfig.httpHeaders = this.appendAuthHeader();
-        }
+        pdfDocConfig.httpHeaders = this.appendAuthHeader();
 
         this.pdfLoadingTask = this.pdfjsLib.getDocument(pdfDocConfig);
 
@@ -1057,6 +1082,10 @@ class DocBaseViewer extends BaseViewer {
 
         return this.pdfLoadingTask.promise
             .then(doc => {
+                if (this.isDestroyed()) {
+                    return null;
+                }
+
                 // Only check operations for .numbers and .xlsx files
                 if (file.extension === 'numbers' || file.extension === 'xlsx') {
                     return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
@@ -1069,6 +1098,10 @@ class DocBaseViewer extends BaseViewer {
                 return doc;
             })
             .then(doc => {
+                if (this.isDestroyed()) {
+                    return;
+                }
+
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
                 if (this.shouldThumbnailsBeToggled()) {
@@ -1080,6 +1113,10 @@ class DocBaseViewer extends BaseViewer {
                 this.doc = doc;
             })
             .catch(err => {
+                if (this.isDestroyed()) {
+                    return;
+                }
+
                 console.error(err); // eslint-disable-line
 
                 // pdf.js gives us the status code in their error message
@@ -1275,9 +1312,12 @@ class DocBaseViewer extends BaseViewer {
      */
     setupPdfjs() {
         if (this.featureEnabled('useNpmPdfjs')) {
+            // npm consumers supply the worker URL via show({ pdfjs: { workerSrc } }) because their
+            // bundler emits the worker as an asset (e.g. webpack `?url`). CDN builds derive it from
+            // import.meta.url, which resolves against this bundle's own emitted assets.
+            const consumerWorkerSrc = this.options.pdfjs && this.options.pdfjs.workerSrc;
             // eslint-disable-next-line global-require
-            const getPdfjsWorkerSrc = require('./pdfjsNpmWorker').default;
-            this.pdfjsLib.GlobalWorkerOptions.workerSrc = getPdfjsWorkerSrc();
+            this.pdfjsLib.GlobalWorkerOptions.workerSrc = consumerWorkerSrc || require('./pdfjsNpmWorker').default();
             return;
         }
 
@@ -1359,11 +1399,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise setting print blob
      */
     fetchPrintBlob(pdfUrl) {
-        const options = { type: 'blob' };
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            options.headers = this.appendAuthHeader();
-        }
-        return this.api.get(pdfUrl, options).then(blob => {
+        return this.api.get(pdfUrl, { type: 'blob', headers: this.appendAuthHeader() }).then(blob => {
             this.printBlob = blob;
         });
     }
@@ -1481,7 +1517,8 @@ class DocBaseViewer extends BaseViewer {
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
         const canRotate = this.featureEnabled('rotate.enabled');
-        const canGallery = this.galleryController.canRender(this.pdfViewer.pagesCount);
+        const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
+        const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isEnhancedGalleryEnabled;
 
         this.controls.render(
             <DocControls
@@ -1489,12 +1526,13 @@ class DocBaseViewer extends BaseViewer {
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
+                hasGalleryZoom={this.galleryController.isEnhancedGalleryEnabled}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
                 hasRegion={canAnnotate && isAnnotationsMode}
                 isGalleryOpen={this.galleryController.isOpen}
                 isThumbnailsOpen={this.thumbnailsSidebar && this.thumbnailsSidebar.isOpen}
-                maxScale={MAX_SCALE}
-                minScale={MIN_SCALE}
+                maxScale={isGalleryZoomActive ? GALLERY_MAX_SCALE : MAX_SCALE}
+                minScale={isGalleryZoomActive ? GALLERY_MIN_SCALE : MIN_SCALE}
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
@@ -1505,11 +1543,11 @@ class DocBaseViewer extends BaseViewer {
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
                 onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
-                onZoomIn={this.zoomIn}
-                onZoomOut={this.zoomOut}
+                onZoomIn={isGalleryZoomActive ? this.galleryController.zoomIn : this.zoomIn}
+                onZoomOut={isGalleryZoomActive ? this.galleryController.zoomOut : this.zoomOut}
                 pageCount={this.pdfViewer.pagesCount}
                 pageNumber={this.pdfViewer.currentPageNumber}
-                scale={this.pdfViewer.currentScale}
+                scale={isGalleryZoomActive ? this.galleryController.scale : this.pdfViewer.currentScale}
             />,
         );
     }
@@ -1529,8 +1567,20 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
         if (this.hasTouch) {
-            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler);
-            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
+            const searchParams = new URLSearchParams(window.location.search);
+            const disableNativePinchToZoom = searchParams.has('disableNativePinchToZoom');
+            const disableAllTouchActions = searchParams.has('disableAllTouchActions');
+            const forceNonPassiveTouchListeners = searchParams.has('forceNonPassiveTouchListeners');
+
+            if (disableAllTouchActions) {
+                this.docEl.style.touchAction = 'none';
+            } else if (disableNativePinchToZoom) {
+                this.docEl.style.touchAction = 'pan-x pan-y';
+            }
+
+            const passiveOption = forceNonPassiveTouchListeners ? { passive: false } : undefined;
+            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler, passiveOption);
+            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler, passiveOption);
             this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
 
@@ -1736,10 +1786,6 @@ class DocBaseViewer extends BaseViewer {
     handleDocElKeydown(event) {
         const key = decodeKeydown(event);
 
-        if (key === 'Escape' && this.galleryController.handleEscape()) {
-            return;
-        }
-
         if (event.altKey && key.includes('Arrow')) {
             event.stopPropagation(); // Prevent collection/page navigation for caret navigation users
         }
@@ -1759,6 +1805,10 @@ class DocBaseViewer extends BaseViewer {
         if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
+
+        // Restore focus to the toggle, the browser otherwise drops focus to the body on exit,
+        // and keyboard input (e.g. gallery arrow keys) no longer reach the viewer
+        this.fullscreenToggleEl?.focus?.();
     }
 
     /**
@@ -2003,9 +2053,25 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * @protected
+     * @param {string} direction - 'zoomIn' or 'zoomOut'
+     * @return {void}
+     */
+    handleGalleryZoomGesture(direction) {
+        this.options.resin?.recordAction({
+            action: 'programmatic',
+            component: 'galleryView',
+            target: direction,
+            fileId: this.options.file.id,
+            fileExtension: this.options.file.extension,
+        });
+    }
+
+    /**
      * Called before the gallery opens. Closes the find bar and resets annotation mode.
      *
      * @protected
+     * @emits galleryOpen
      * @return {void}
      */
     handleGalleryEnter() {
@@ -2016,18 +2082,49 @@ class DocBaseViewer extends BaseViewer {
         if (this.annotator) {
             this.annotator.toggleAnnotationMode(AnnotationMode.NONE);
         }
+        this.emitMetric({ name: USER_DOCUMENT_GALLERY_EVENTS.OPEN, data: this.pdfViewer?.pagesCount ?? 0 });
+        this.emit(VIEWER_EVENT.galleryOpen);
+    }
+
+    /**
+     * Called as the gallery closes, with the page the user landed on or null if they left without
+     * settling on one. Reported as two distinct metrics so the pick-through rate is measurable.
+     *
+     * @protected
+     * @param {number|null} landedPage - Page the gallery left the document on, or null if unchanged
+     * @return {void}
+     */
+    handleGalleryClose(landedPage) {
+        if (landedPage !== null) {
+            this.emitMetric({ name: USER_DOCUMENT_GALLERY_EVENTS.NAVIGATE, data: landedPage });
+        } else {
+            this.emitMetric({ name: USER_DOCUMENT_GALLERY_EVENTS.DISMISS, data: this.pdfViewer?.pagesCount ?? 0 });
+        }
     }
 
     /**
      * Called after the gallery closes. Restores REGION mode so the region-comment cursor is active.
      *
      * @protected
+     * @emits galleryClose
      * @return {void}
      */
     handleGalleryExit() {
         if (this.annotator && this.areNewAnnotationsEnabled()) {
             this.annotator.toggleAnnotationMode(AnnotationMode.REGION);
         }
+        this.emit(VIEWER_EVENT.galleryClose);
+    }
+
+    /**
+     * Closes the gallery view if it is open. Exposed for host applications (e.g. the
+     * preview header's Escape hotkey) that see keys the viewer's own handlers cannot.
+     *
+     * @public
+     * @return {boolean} Whether the gallery was open and has been closed
+     */
+    closeGallery() {
+        return this.galleryController ? this.galleryController.handleEscape() : false;
     }
 
     /**
@@ -2263,9 +2360,13 @@ class DocBaseViewer extends BaseViewer {
      * Get a thumbnail image element
      *
      * @param {number} pageNumber - the page number
-     * @return {Promise} - promise resolves with the image HTMLElement or null if generation is in progress
+     * @return {Promise} - promise resolves with the image HTMLElement or null if unavailable or in progress
      */
     getThumbnail(pageNumber) {
+        if (this.isDestroyed()) {
+            return Promise.resolve(null);
+        }
+
         if (!this.advancedInsightsThumbs) {
             this.advancedInsightsThumbs = new Thumbnail(this.pdfViewer);
         }

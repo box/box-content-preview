@@ -1,0 +1,99 @@
+@import '../../../boxuiVariables';
+
+.bp-WaveformRange {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.bp-WaveformRange-region {
+    position: absolute;
+    top: 50%;
+    box-sizing: border-box;
+    height: 150px;
+    pointer-events: none;
+    background: rgb(255 255 255 / 10%);
+    border: 1px solid rgb(255 255 255 / 40%);
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px #222;
+    transform: translateY(-50%);
+    transition: border-width 100ms ease, border-color 100ms ease;
+}
+
+.bp-WaveformRange--highlight .bp-WaveformRange-region,
+.bp-WaveformRange:has(.bp-WaveformRange-handle:hover) .bp-WaveformRange-region,
+.bp-WaveformRange:has(.bp-WaveformRange-handle--dragging) .bp-WaveformRange-region {
+    border-width: 2px;
+    border-color: $white;
+}
+
+.bp-WaveformRange-handle {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    width: 24px;
+    height: 150px;
+    pointer-events: auto;
+    cursor: ew-resize;
+    touch-action: none;
+    transform: translate(-50%, -50%);
+}
+
+.bp-WaveformRange-handle--end {
+    z-index: 2;
+}
+
+.bp-WaveformRange-handleGrip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 20px;
+    background: $white;
+    border: 1px solid #222;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.5);
+    transition: opacity 100ms ease-in, transform 100ms ease-in;
+}
+
+.bp-WaveformRange-handle:hover .bp-WaveformRange-handleGrip,
+.bp-WaveformRange-handle:focus-visible .bp-WaveformRange-handleGrip,
+.bp-WaveformRange-handle--dragging .bp-WaveformRange-handleGrip {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    transition: opacity 150ms ease-out, transform 150ms ease-out;
+}
+
+.bp-WaveformRange-tooltip {
+    position: absolute;
+    top: 100%;
+    z-index: 3;
+    margin-top: 4px;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
+.bp-WaveformRange-tooltipTime {
+    padding: 4px 10px;
+    color: $white;
+    font-weight: normal;
+    font-size: 14px;
+    font-family: Lato, Arial, sans-serif;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    background: rgb(34 34 34 / 92%);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-WaveformRange-region,
+    .bp-WaveformRange-handleGrip {
+        transition: none;
+    }
+}

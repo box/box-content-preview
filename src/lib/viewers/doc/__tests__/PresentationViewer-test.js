@@ -42,6 +42,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             currentPageNumber: 1,
             update: jest.fn(),
             cleanup: jest.fn(),
+            setDocument: jest.fn(),
         };
 
         presentation.controls = {
@@ -111,6 +112,19 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 removeAllListeners: jest.fn(),
             };
             presentation.destroy();
+            presentation = null; // Don't call destroy again during cleanup
+        });
+
+        test('should detach the PDF document when destroyed', () => {
+            presentation.pdfLinkService = {
+                setDocument: jest.fn(),
+            };
+
+            presentation.destroy();
+
+            expect(presentation.pdfViewer.cleanup).toBeCalled();
+            expect(presentation.pdfViewer.setDocument).toBeCalledWith(null);
+            expect(presentation.pdfLinkService.setDocument).toBeCalledWith(null);
             presentation = null; // Don't call destroy again during cleanup
         });
     });
@@ -200,6 +214,20 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             const result2 = presentation.onKeydown('d');
 
             expect(result2).toBe(false);
+        });
+
+        test('should defer arrows to the gallery key policy instead of paging while the gallery is open', () => {
+            presentation.galleryController = {
+                isOpen: true,
+                handleArrowKey: jest.fn(),
+                handleEscape: jest.fn(),
+                destroy: jest.fn(),
+            };
+
+            const result = presentation.onKeydown('ArrowUp', { defaultPrevented: false });
+
+            expect(stubs.previousPage).not.toBeCalled();
+            expect(result).toBe(true);
         });
     });
 

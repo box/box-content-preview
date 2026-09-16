@@ -1,5 +1,4 @@
 import { defineConfig } from 'cypress';
-import * as plugins from './test/plugins/index.js';
 
 export default defineConfig({
     defaultCommandTimeout: 15000,
@@ -11,9 +10,6 @@ export default defineConfig({
     viewportHeight: 1260,
     viewportWidth: 1600,
     e2e: {
-        setupNodeEvents(on, config): void {
-            return plugins(on, config);
-        },
         baseUrl: 'http://localhost:8000/#',
         specPattern: 'test/integration/**/*.test.{js,jsx,ts,tsx}',
         supportFile: 'test/support/index.js',

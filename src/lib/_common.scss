@@ -26,6 +26,7 @@ $header-height: 48px;
     overflow: hidden;
     font-size: 13px;
     border: 0 none;
+
     // disables non-standard gestures such as double-tap to zoom
     touch-action: manipulation;
 
@@ -80,13 +81,13 @@ $header-height: 48px;
 // Dark theme for header
 .bp-theme-dark {
     .bp-header {
-        background-color: fade-out($black, .15);
+        background-color: fade-out($black, 0.15);
         border-bottom: 0;
     }
 
     .bp-header-btns button {
         svg {
-            fill: fade-out($white, .1);
+            fill: fade-out($white, 0.1);
         }
 
         &:hover svg {
@@ -107,16 +108,13 @@ $header-height: 48px;
     }
 
     .bp-icon {
-        opacity: .9;
+        opacity: 0.9;
     }
 }
 
 .bp {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    inset: 0;
     display: flex;
     flex: 1 1 100%;
     margin: 0;
@@ -132,10 +130,7 @@ $header-height: 48px;
 
     .bp-content {
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        inset: 0;
         display: flex;
         flex: 1 1 auto;
         align-items: center;
@@ -203,7 +198,7 @@ $header-height: 48px;
     }
 }
 
-//---------- Override popup related CSS from _boxui.scss ----------//
+// ---------- Override popup related CSS from _boxui.scss ----------//
 .bp-modal-dialog {
     width: 380px;
     padding: 20px;

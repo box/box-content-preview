@@ -81,6 +81,10 @@ class DocumentViewer extends DocBaseViewer {
      * @return {boolean} Consumed or not
      */
     onKeydown(key, event) {
+        if (this.galleryController && this.galleryController.isOpen) {
+            return super.onKeydown(key, event);
+        }
+
         if (key === 'Shift++') {
             this.zoomIn();
             return true;

@@ -36,6 +36,7 @@ export default function VolumeSliderControl({
     title,
     value,
     onMouseOver,
+    tabIndex = 0,
     ...rest
 }: Props): JSX.Element {
     const [isScrubbing, setIsScrubbing] = React.useState(false);
@@ -139,37 +140,34 @@ export default function VolumeSliderControl({
             <div className="bp-VolumeVerticalSliderControl-track-container">
                 <div
                     ref={sliderElRef}
+                    aria-label={title}
+                    aria-valuemax={max}
+                    aria-valuemin={min}
+                    aria-valuenow={value}
                     className="bp-VolumeVerticalSliderControl-track-background"
+                    data-resin-target="volumeSlider"
+                    data-testid="bp-volume-slider-control-track"
+                    onFocus={noop}
+                    onKeyDown={handleKeydown}
                     onMouseDown={handleMouseDown}
-                    role="button"
-                    tabIndex={0}
+                    onMouseMove={handleMouseMove}
+                    onMouseOver={onMouseOver}
+                    onPointerDown={(): void => {
+                        window.Box?.Preview?.resin?.recordAction({
+                            action: 'programmatic',
+                            component: 'toolbar',
+                            target: 'volumeSlider',
+                        });
+                    }}
+                    onTouchStart={handleTouchStart}
+                    role="slider"
+                    tabIndex={tabIndex}
                 >
                     <div
-                        aria-label={title}
-                        aria-valuemax={max}
-                        aria-valuemin={min}
-                        aria-valuenow={value}
                         className="bp-VolumeVerticalSliderControl-track"
-                        data-resin-target="volumeSlider"
-                        data-testid="bp-volume-slider-control-track"
-                        onFocus={onMouseOver}
-                        onKeyDown={handleKeydown}
-                        onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseOver={onMouseOver}
-                        onPointerDown={(): void => {
-                            window.Box?.Preview?.resin?.recordAction({
-                                action: 'programmatic',
-                                component: 'toolbar',
-                                target: 'volumeSlider',
-                            });
-                        }}
-                        onTouchStart={handleTouchStart}
-                        role="slider"
                         style={{
                             height: `${(heightValueBasedOnVolume / max) * 100}%`,
                         }}
-                        tabIndex={0}
                     />
                 </div>
             </div>

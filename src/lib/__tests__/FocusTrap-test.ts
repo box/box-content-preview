@@ -180,4 +180,48 @@ describe('lib/FocusTrap', () => {
             },
         );
     });
+
+    describe('getFocusableElements()', () => {
+        test('should include explicitly tabbable elements but not the trap anchors', () => {
+            const container = getContainerElement();
+            const tile = document.createElement('div');
+            tile.setAttribute('role', 'option');
+            tile.setAttribute('tabindex', '0');
+            container.appendChild(tile);
+            const gridTile = document.createElement('div');
+            gridTile.setAttribute('role', 'gridcell');
+            gridTile.setAttribute('tabindex', '0');
+            container.appendChild(gridTile);
+            // Roving tabindex: only the active gridcell is tabbable, the rest must stay out
+            const inactiveGridTile = document.createElement('div');
+            inactiveGridTile.setAttribute('role', 'gridcell');
+            inactiveGridTile.setAttribute('tabindex', '-1');
+            container.appendChild(inactiveGridTile);
+
+            const focusTrap = getFocusTrap();
+            focusTrap.enable();
+
+            const focusable = focusTrap.getFocusableElements();
+            expect(focusable).toContain(tile);
+            expect(focusable).toContain(gridTile);
+            expect(focusable).not.toContain(inactiveGridTile);
+            expect(focusable.some(el => el.tagName.toLowerCase() === 'i')).toBe(false);
+        });
+
+        test('should exclude elements inside an inert subtree', () => {
+            const container = getContainerElement();
+            const inertWrapper = document.createElement('div');
+            inertWrapper.setAttribute('inert', '');
+            const hiddenTabbable = document.createElement('div');
+            hiddenTabbable.setAttribute('role', 'option');
+            hiddenTabbable.setAttribute('tabindex', '0');
+            inertWrapper.appendChild(hiddenTabbable);
+            container.appendChild(inertWrapper);
+
+            const focusTrap = getFocusTrap();
+            focusTrap.enable();
+
+            expect(focusTrap.getFocusableElements()).not.toContain(hiddenTabbable);
+        });
+    });
 });

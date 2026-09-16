@@ -77,7 +77,8 @@ describe('lib/RepStatus', () => {
         const infoUrl = 'someUrl';
 
         beforeEach(() => {
-            jest.spyOn(util, 'appendAuthParams').mockReturnValue(infoUrl);
+            jest.spyOn(util, 'appendAuthParamsV2').mockReturnValue(infoUrl);
+            jest.spyOn(util, 'getHeaders').mockReturnValue({});
         });
 
         test('should set the correct object properties', () => {
@@ -93,10 +94,10 @@ describe('lib/RepStatus', () => {
             expect(repStatus.promise).toBeInstanceOf(Promise);
         });
 
-        test('should use appendAuthParamsV2 and set headers when migrateAccessTokenToHeader is true', () => {
+        test('should use appendAuthParamsV2 and set Authorization headers', () => {
             const v2Url = 'v2Url';
-            jest.spyOn(util, 'appendAuthParamsV2').mockReturnValue(v2Url);
-            jest.spyOn(util, 'getHeaders').mockReturnValue({ Authorization: 'Bearer token' });
+            util.appendAuthParamsV2.mockReturnValue(v2Url);
+            util.getHeaders.mockReturnValue({ Authorization: 'Bearer token' });
 
             repStatus = new RepStatus({
                 api: {},
@@ -105,7 +106,6 @@ describe('lib/RepStatus', () => {
                 sharedLink: 'sharedLink',
                 sharedLinkPassword: 'password',
                 logger: {},
-                migrateAccessTokenToHeader: true,
             });
 
             expect(util.appendAuthParamsV2).toBeCalledWith(rep.info.url, 'sharedLink', 'password');

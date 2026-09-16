@@ -54,6 +54,7 @@ module.exports = language => {
         plugins: [
             new BannerPlugin(license),
             new DefinePlugin({
+                __BCP_NPM_BUILD__: JSON.stringify(false),
                 __LANGUAGE__: JSON.stringify(language),
                 __NAME__: JSON.stringify(pkg.name),
                 __VERSION__: JSON.stringify(pkg.version),

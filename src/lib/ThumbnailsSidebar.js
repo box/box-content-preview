@@ -137,11 +137,17 @@ class ThumbnailsSidebar {
             this.virtualScroller = null;
         }
 
+        if (this.thumbnail) {
+            this.thumbnail.destroy();
+            this.thumbnail = null;
+        }
+
         this.pdfViewer = null;
         this.currentThumbnails = [];
         this.currentPage = null;
         this.preloader = null;
         this.anchorEl.removeEventListener('click', this.thumbnailClickHandler);
+        this.anchorEl.removeEventListener('keydown', this.onKeydown);
     }
 
     /**
@@ -211,6 +217,10 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     renderNextThumbnailImage() {
+        if (!this.thumbnail || !this.virtualScroller) {
+            return;
+        }
+
         const scrollerNotInited =
             this.virtualScroller &&
             this.virtualScroller instanceof VirtualScroller &&
@@ -293,8 +303,13 @@ class ThumbnailsSidebar {
      * @return {void}
      */
     requestThumbnailImage(itemIndex, thumbnailEl) {
+        if (!this.thumbnail) {
+            return;
+        }
+
         const requestId = requestAnimationFrame(() => {
             this.animationFrameRequestIds = this.animationFrameRequestIds.filter(id => id !== requestId);
+
             this.thumbnail
                 .createThumbnailImage(itemIndex)
                 .then(imageEl => {
@@ -407,7 +422,7 @@ class ThumbnailsSidebar {
 
     refresh() {
         if (!this.virtualScroller) {
-            return;
+            return Promise.resolve();
         }
 
         this.virtualScroller.destroy();
@@ -421,7 +436,11 @@ class ThumbnailsSidebar {
         const savedPreloader = this.thumbnail.preloader;
         this.thumbnail.preloader = null;
 
-        this.thumbnail.init().then(thumbnailHeight => {
+        return this.thumbnail.init().then(thumbnailHeight => {
+            if (!this.thumbnail || !this.virtualScroller) {
+                return;
+            }
+
             this.thumbnail.preloader = savedPreloader;
 
             if (thumbnailHeight) {
