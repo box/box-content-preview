@@ -171,6 +171,8 @@ describe('lib/viewers/media/MP4Viewer', () => {
     });
 
     describe('renderUI()', () => {
+        const getProps = instance => instance.controls.render.mock.calls[0][0].props;
+
         beforeEach(() => {
             mp4.controls = { render: jest.fn() };
             mp4.annotationModule = { getColor: jest.fn() };
@@ -179,6 +181,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
             jest.spyOn(mp4, 'areNewAnnotationsEnabled').mockReturnValue(false);
             jest.spyOn(mp4, 'hasAnnotationCreatePermission').mockReturnValue(false);
             jest.spyOn(mp4, 'isAutoplayEnabled').mockReturnValue(false);
+            jest.spyOn(mp4, 'isPlayNextEnabled').mockReturnValue(false);
             jest.spyOn(mp4, 'featureEnabled').mockReturnValue(false);
             jest.spyOn(mp4, 'getRate').mockReturnValue(1);
         });
@@ -187,12 +190,18 @@ describe('lib/viewers/media/MP4Viewer', () => {
             mp4.isVideoPlayerV2 = true;
             mp4.renderUI();
             expect(mp4.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: VideoControlsV2 }));
+            expect(getProps(mp4)).toMatchObject({
+                onPlayNextChange: mp4.setPlayNext,
+                playNext: false,
+            });
         });
 
         test('should render VideoControls when isVideoPlayerV2 is false', () => {
             mp4.isVideoPlayerV2 = false;
             mp4.renderUI();
             expect(mp4.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: VideoControls }));
+            expect(getProps(mp4)).not.toHaveProperty('onPlayNextChange');
+            expect(getProps(mp4)).not.toHaveProperty('playNext');
         });
     });
 
