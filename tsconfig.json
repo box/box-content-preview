@@ -1,7 +1,11 @@
 {
     "compilerOptions": {
+        "baseUrl": ".",
         "esModuleInterop": true,
         "module": "ES2020",
+        "paths": {
+            "@box/blueprint-web-assets/icons/Medium/*": ["./node_modules/@box/blueprint-web-assets/dist/icons/Medium/*"]
+        },
         "resolveJsonModule": true,
         "types": ["node", "jest", "@testing-library/jest-dom"]
     },
