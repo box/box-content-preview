@@ -516,11 +516,13 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 onCommentRangeClear: mp3.handleCommentRangeClear,
                 onCommentRangeDragChange: mp3.handleCommentRangeDragChange,
                 onMuteChange: mp3.toggleMute,
+                onPlayNextChange: mp3.setPlayNext,
                 onPlayPause: mp3.handlePlayPause,
                 onRateChange: mp3.setRate,
                 onTimeChange: mp3.handleTimeupdateFromMediaControls,
                 onVolumeChange: mp3.setVolume,
                 peaks: [0.2, 0.8],
+                playNext: false,
                 rate: 'media-speed',
                 volume: 1,
             });
@@ -551,6 +553,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.renderUI();
 
             expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
+            expect(getProps(mp3)).not.toHaveProperty('onPlayNextChange');
+            expect(getProps(mp3)).not.toHaveProperty('playNext');
         });
 
         test('should omit waveform peaks when v2 is off', () => {

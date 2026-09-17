@@ -1549,6 +1549,10 @@ class Preview extends EventEmitter {
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
                 break;
+            case VIEWER_EVENT.mediaEndPlayNext:
+                this.emit(data.event, data.data);
+                this.emit(VIEWER_EVENT.default, data);
+                break;
             case VIEWER_EVENT.error:
                 // Do nothing since 'error' event was already caught, and will be emitted
                 // as a 'preview_error' event
