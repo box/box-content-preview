@@ -612,7 +612,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('mediaendHandler()', () => {
-        test('does not emit mediaendplaynext if play next is disabled', () => {
+        test('does not emit mediaEndPlayNext if play next is disabled', () => {
             jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(false);
             jest.spyOn(media, 'emit');
             jest.spyOn(media, 'resetPlayIcon');
@@ -624,7 +624,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.resetPlayIcon).toBeCalled();
         });
 
-        test('emit the mediaendplaynext event if play next is enabled', () => {
+        test('emit the mediaEndPlayNext event if play next is enabled', () => {
             jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(true);
             jest.spyOn(media, 'emit');
             jest.spyOn(media, 'resetPlayIcon');

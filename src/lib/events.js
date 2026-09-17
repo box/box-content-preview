@@ -6,7 +6,7 @@ export const VIEWER_EVENT = {
     galleryClose: 'galleryClose', // When gallery view closes
     galleryOpen: 'galleryOpen', // When gallery view opens
     load: 'load', // Preview is finished loading.
-    mediaEndPlayNext: 'mediaendplaynext', // Media playback has completed, with play-next enabled.
+    mediaEndPlayNext: 'mediaEndPlayNext', // Media playback has completed, with play-next enabled.
     metric: 'viewermetric', // A viewer metric.
     notificationHide: 'notificationhide', // Hide notification modal.
     notificationShow: 'notificationshow', // Show notification modal.

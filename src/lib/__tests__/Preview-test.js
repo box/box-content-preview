@@ -2282,7 +2282,7 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalledWith(VIEWER_EVENT.default, data);
         });
 
-        test('should emit mediaendplaynext without navigating', () => {
+        test('should emit mediaEndPlayNext without navigating', () => {
             jest.spyOn(preview, 'navigateRight').mockImplementation();
             jest.spyOn(preview, 'emit');
             const data = {

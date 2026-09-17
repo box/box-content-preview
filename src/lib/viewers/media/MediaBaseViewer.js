@@ -782,10 +782,10 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Emits mediaendplaynext when play next is enabled.
+     * Emits mediaEndPlayNext when play next is enabled.
      *
      * @private
-     * @emits mediaendplaynext
+     * @emits mediaEndPlayNext
      * @return {void}
      */
     mediaendHandler() {

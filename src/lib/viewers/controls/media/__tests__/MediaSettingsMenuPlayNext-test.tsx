@@ -47,14 +47,14 @@ describe('MediaSettingsMenuPlayNext', () => {
 
     describe('render', () => {
         test('should return a valid wrapper', async () => {
-            getWrapper();
+            getWrapper({}, { ...getContext(), activeMenu: Menu.PLAY_NEXT });
             const menuBack = await getMenuBack();
             const enabledRadioItem = await getEnabledRadioItem();
             const disabledRadioItem = await getDisabledRadioItem();
 
-            expect(menuBack).toBeInTheDocument();
-            expect(enabledRadioItem).toBeInTheDocument();
-            expect(disabledRadioItem).toBeInTheDocument();
+            expect(menuBack).toBeVisible();
+            expect(enabledRadioItem).toBeVisible();
+            expect(disabledRadioItem).toBeVisible();
         });
     });
 });
