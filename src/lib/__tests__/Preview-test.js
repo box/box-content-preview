@@ -2282,6 +2282,19 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalledWith(VIEWER_EVENT.default, data);
         });
 
+        test('should emit mediaendplaynext without navigating', () => {
+            jest.spyOn(preview, 'navigateRight').mockImplementation();
+            jest.spyOn(preview, 'emit');
+            const data = {
+                event: VIEWER_EVENT.mediaEndPlayNext,
+                data: undefined,
+            };
+            preview.handleViewerEvents(data);
+            expect(preview.navigateRight).not.toHaveBeenCalled();
+            expect(preview.emit).toHaveBeenCalledWith(data.event, data.data);
+            expect(preview.emit).toHaveBeenCalledWith(VIEWER_EVENT.default, data);
+        });
+
         test('should not emit any messages error events', () => {
             jest.spyOn(preview, 'emit');
             const data = {

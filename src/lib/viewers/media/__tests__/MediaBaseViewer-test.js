@@ -413,16 +413,18 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.addEventListenersForMediaElement).toBeCalled();
         });
 
-        test('should create cache entries for autoplay and speed if they are not available', () => {
+        test('should create cache entries for autoplay, play next, and speed if they are not available', () => {
             media.loadUIReact();
 
             expect(media.cache.has).toBeCalledWith('media-autoplay');
+            expect(media.cache.has).toBeCalledWith('media-play-next');
             expect(media.cache.has).toBeCalledWith('media-speed');
             expect(media.cache.set).toBeCalledWith('media-autoplay', 'Disabled');
+            expect(media.cache.set).toBeCalledWith('media-play-next', 'Disabled');
             expect(media.cache.set).toBeCalledWith('media-speed', '1.0');
         });
 
-        test('should not set cache entries for autoplay and speed if already set', () => {
+        test('should not set cache entries for autoplay, play next, and speed if already set', () => {
             media.cache.has.mockReturnValue(true);
 
             media.loadUIReact();
@@ -594,20 +596,42 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('handlePlayNext()', () => {
+        test('should emit the new play next value', () => {
+            jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'emit');
+
+            media.handlePlayNext();
+            expect(media.emit).toBeCalledWith('playnext', false);
+
+            media.isPlayNextEnabled.mockReturnValue(true);
+
+            media.handlePlayNext();
+            expect(media.emit).toBeCalledWith('playnext', true);
+        });
+    });
+
     describe('mediaendHandler()', () => {
-        test('emit the mediaendautoplay event if autoplay is enabled', () => {
-            jest.spyOn(media, 'isAutoplayEnabled').mockReturnValue(false);
+        test('does not emit mediaendplaynext if play next is disabled', () => {
+            jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(false);
             jest.spyOn(media, 'emit');
             jest.spyOn(media, 'resetPlayIcon');
 
             media.mediaendHandler();
-            expect(media.isAutoplayEnabled).toBeCalled();
-            expect(media.emit).not.toBeCalled();
 
-            media.isAutoplayEnabled.mockReturnValue(true);
+            expect(media.isPlayNextEnabled).toBeCalled();
+            expect(media.emit).not.toBeCalled();
+            expect(media.resetPlayIcon).toBeCalled();
+        });
+
+        test('emit the mediaendplaynext event if play next is enabled', () => {
+            jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'emit');
+            jest.spyOn(media, 'resetPlayIcon');
 
             media.mediaendHandler();
-            expect(media.emit).toBeCalledWith(VIEWER_EVENT.mediaEndAutoplay);
+
+            expect(media.emit).toBeCalledWith(VIEWER_EVENT.mediaEndPlayNext);
             expect(media.resetPlayIcon).toBeCalled();
         });
     });

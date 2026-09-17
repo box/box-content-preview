@@ -21,6 +21,7 @@ const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
+const MEDIA_PLAY_NEXT_CACHE_KEY = 'media-play-next';
 const MEDIA_SPEED_CACHE_KEY = 'media-speed';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
@@ -57,6 +58,7 @@ class MediaBaseViewer extends BaseViewer {
         this.containerClickHandler = this.containerClickHandler.bind(this);
         this.errorHandler = this.errorHandler.bind(this);
         this.handleAutoplay = this.handleAutoplay.bind(this);
+        this.handlePlayNext = this.handlePlayNext.bind(this);
         this.handleRate = this.handleRate.bind(this);
         this.handleTimeupdateFromMediaControls = this.handleTimeupdateFromMediaControls.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
@@ -69,6 +71,7 @@ class MediaBaseViewer extends BaseViewer {
         this.resetPlayIcon = this.resetPlayIcon.bind(this);
         this.seekHandler = this.seekHandler.bind(this);
         this.setAutoplay = this.setAutoplay.bind(this);
+        this.setPlayNext = this.setPlayNext.bind(this);
         this.setRate = this.setRate.bind(this);
         this.setTimeCode = this.setTimeCode.bind(this);
         this.setVolume = this.setVolume.bind(this);
@@ -471,6 +474,21 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handler for play next
+     *
+     * @private
+     * @emits playnext
+     * @return {void}
+     */
+    handlePlayNext() {
+        this.emit('playnext', this.isPlayNextEnabled());
+
+        if (this.controls) {
+            this.renderUI();
+        }
+    }
+
+    /**
      * Handler for autoplay failure
      * Overridden in child class
      *
@@ -506,6 +524,16 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Determines if play next is enabled
+     *
+     * @protected
+     * @return {boolean} Indicates if play next is enabled
+     */
+    isPlayNextEnabled() {
+        return this.cache.get(MEDIA_PLAY_NEXT_CACHE_KEY) === 'Enabled';
+    }
+
+    /**
      * Resize handler
      *
      * @private
@@ -537,6 +565,10 @@ class MediaBaseViewer extends BaseViewer {
     loadUIReact() {
         if (!this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY)) {
             this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, 'Disabled');
+        }
+
+        if (!this.cache.has(MEDIA_PLAY_NEXT_CACHE_KEY)) {
+            this.cache.set(MEDIA_PLAY_NEXT_CACHE_KEY, 'Disabled');
         }
 
         if (!this.cache.has(MEDIA_SPEED_CACHE_KEY)) {
@@ -633,6 +665,18 @@ class MediaBaseViewer extends BaseViewer {
     setAutoplay(autoplay) {
         this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, autoplay ? 'Enabled' : 'Disabled', true);
         this.handleAutoplay();
+    }
+
+    /**
+     * Updates play next
+     *
+     * @protected
+     * @param {boolean} playNext - True if enabled
+     * @return {void}
+     */
+    setPlayNext(playNext) {
+        this.cache.set(MEDIA_PLAY_NEXT_CACHE_KEY, playNext ? 'Enabled' : 'Disabled', true);
+        this.handlePlayNext();
     }
 
     /**
@@ -738,10 +782,10 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Emits the previewnextfile event if autoplay is enabled.
+     * Emits mediaendplaynext when play next is enabled.
      *
      * @private
-     * @emits previewnextfile
+     * @emits mediaendplaynext
      * @return {void}
      */
     mediaendHandler() {
@@ -749,8 +793,8 @@ class MediaBaseViewer extends BaseViewer {
 
         this.processMetrics();
 
-        if (this.isAutoplayEnabled()) {
-            this.emit(VIEWER_EVENT.mediaEndAutoplay);
+        if (this.isPlayNextEnabled()) {
+            this.emit(VIEWER_EVENT.mediaEndPlayNext);
         }
     }
 
