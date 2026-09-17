@@ -2242,6 +2242,18 @@ describe('lib/viewers/media/DashViewer', () => {
                 rate: '1.0',
                 volume: expect.any(Number),
             });
+            expect(getProps(dash)).not.toHaveProperty('onPlayNextChange');
+            expect(getProps(dash)).not.toHaveProperty('playNext');
+        });
+
+        test('should pass play next props to VideoControlsV2', () => {
+            dash.isVideoPlayerV2 = true;
+            dash.renderUI();
+
+            expect(getProps(dash)).toMatchObject({
+                onPlayNextChange: dash.setPlayNext,
+                playNext: false,
+            });
         });
 
         test('should not enable annotations if video annotations are disabled', () => {

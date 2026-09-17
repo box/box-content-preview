@@ -79,12 +79,14 @@ export default function VideoControlsV2({
     onGuideChange,
     onMuteChange,
     onPlayPause,
+    onPlayNextChange,
     onQualityChange,
     onRateChange,
     onSubtitleChange,
     onSubtitlesToggle,
     onTimeChange,
     onVolumeChange,
+    playNext,
     quality,
     rate,
     subtitle,
@@ -181,9 +183,11 @@ export default function VideoControlsV2({
                             onAudioTrackChange={onAudioTrackChange}
                             onAutoplayChange={onAutoplayChange}
                             onGuideChange={onGuideChange}
+                            onPlayNextChange={onPlayNextChange}
                             onQualityChange={onQualityChange}
                             onRateChange={onRateChange}
                             onSubtitleChange={onSubtitleChange}
+                            playNext={playNext}
                             quality={quality}
                             rate={rate}
                             subtitle={subtitle}

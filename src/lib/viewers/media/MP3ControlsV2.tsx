@@ -58,10 +58,12 @@ export default function MP3ControlsV2({
     onCommentRangeDragChange,
     onMuteChange,
     onPlayPause,
+    onPlayNextChange,
     onRateChange,
     onTimeChange,
     onVolumeChange,
     peaks,
+    playNext,
     rate,
     volume,
 }: Props): JSX.Element {
@@ -262,7 +264,9 @@ export default function MP3ControlsV2({
                             autoplay={autoplay}
                             className="bp-MP3Controls-settings"
                             onAutoplayChange={onAutoplayChange}
+                            onPlayNextChange={onPlayNextChange}
                             onRateChange={onRateChange}
+                            playNext={playNext}
                             rate={rate}
                         />
                     </div>
