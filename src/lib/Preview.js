@@ -233,6 +233,7 @@ class Preview extends EventEmitter {
         }
 
         this.viewer = undefined;
+        Preview.resin = null;
     }
 
     /**
@@ -1151,6 +1152,7 @@ class Preview extends EventEmitter {
 
         // Optional resin analytics instance for tracking user interactions
         this.options.resin = options.resin;
+        Preview.resin = options.resin;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
