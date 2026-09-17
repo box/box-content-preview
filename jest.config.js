@@ -13,6 +13,7 @@ module.exports = {
         '@box/react-virtualized/dist/es': '@box/react-virtualized/dist/commonjs',
         'box-elements-messages': '<rootDir>/build/jest/i18nMock.js',
         'react-intl': '<rootDir>/build/jest/react-intl-mock.js',
+        '^@box/blueprint-web-assets/(.*)$': '<rootDir>/node_modules/@box/blueprint-web-assets/dist/$1',
         THREE: '<rootDir>/src/third-party/model3d/1.12.0/three.min.js',
     },
     restoreMocks: true,
@@ -31,5 +32,7 @@ module.exports = {
         '^.+\\.[jt]sx?$': 'babel-jest',
         '^.+\\.(svg|html)$': '<rootDir>/build/jest/stringLoader.js',
     },
-    transformIgnorePatterns: ['node_modules/(?!(box-ui-elements|react-virtualized)/)'],
+    transformIgnorePatterns: [
+        'node_modules/(?!(box-ui-elements|react-virtualized|@box/blueprint-web|@box/blueprint-web-assets)/)',
+    ],
 };

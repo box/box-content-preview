@@ -4,6 +4,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
+import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
@@ -1519,9 +1520,10 @@ class DocBaseViewer extends BaseViewer {
         const canRotate = this.featureEnabled('rotate.enabled');
         const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
         const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isEnhancedGalleryEnabled;
+        const Controls = this.featureEnabled('blueprintMigrationControlsBar.enabled') ? DocControlsV2 : DocControls;
 
         this.controls.render(
-            <DocControls
+            <Controls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}

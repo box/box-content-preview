@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>PREVIEW-1864 POC</title>
+        <link rel="stylesheet" href="poc.css" />
+        <style>
+            body {
+                align-items: center;
+                background: #f4f4f4;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                justify-content: center;
+                margin: 0;
+                min-height: 220px;
+            }
+
+            /* Mirrors .bp-ControlsLayer so the harness reproduces how the bars are laid out in
+               the real viewer. */
+            #poc {
+                display: flex;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="poc"></div>
+        <script src="poc.js"></script>
+    </body>
+</html>

@@ -1,0 +1,38 @@
+// Nothing here restyles a Blueprint component. Blueprint owns the bar's height, surface, and icon
+// colors; these rules only lay out the pieces Preview puts around it.
+
+// ControlsLayer lays its children out in a row, so two sibling bars sit side by side and the
+// palette steals width from the main one. Stack them instead, palette on top and flush with the
+// right edge, over the markup button that opens it.
+.bp-ControlsBarV2-stack {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--bp-space-020);
+}
+
+// Controls that render more than one button read as a single unit on the bar, and the overflow
+// logic measures one box per control.
+.bp-ControlsBarV2-item {
+    display: flex;
+    align-items: center;
+    gap: var(--bp-space-020);
+}
+
+// Tooltip wrappers must not introduce inline layout between the bar and its items.
+.bp-ControlsBarV2 .bp-ToggleTooltipV2 {
+    display: flex;
+}
+
+// Parity with the legacy bar: the exit button is only revealed by _docBase.scss in the
+// annotations-only experience.
+.bp-ControlsBarV2 .bp-AnnotationsControls-exitBtn {
+    display: none;
+}
+
+// Without this the "1 / 12" label wraps onto a second line as the bar narrows, which grows the
+// height of the whole bar.
+.bp-ControlsBarV2 .bp-PageControlsV2-button {
+    white-space: nowrap;
+}
