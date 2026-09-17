@@ -1,6 +1,9 @@
+// Nothing here restyles a Blueprint component. Blueprint owns the bar's height, surface, and icon
+// colors; these rules only lay out the pieces Preview puts around it.
+
 // ControlsLayer lays its children out in a row, so two sibling bars sit side by side and the
-// markup bar steals width from the main one. Stack them instead, markup bar on top.
-// The palette sits above the bar and flush with its right edge, over the markup button that opens it.
+// palette steals width from the main one. Stack them instead, palette on top and flush with the
+// right edge, over the markup button that opens it.
 .bp-ControlsBarV2-stack {
     display: flex;
     flex: 0 0 auto;
@@ -9,28 +12,12 @@
     gap: var(--bp-space-020);
 }
 
-// The mock is 48px tall. Blueprint pads its 32px items by 4px for 42px and exposes no size prop,
-// so pin the height here until Toolbar.Root supports one.
-// Blueprint's toolbar is content-box, so the height has to include its padding and border
-// explicitly, otherwise this reads as 48px plus another 10px of chrome.
-.bp-ControlsBarV2 {
-    // The mock fills the bar with white at 90% so the content shows through. Only the surface is
-    // translucent, so this overrides the token rather than the element's opacity.
-    --bp-surface-toolbar-surface: rgb(255 255 255 / 90%);
-
-    min-height: var(--bp-size-120);
-    box-sizing: border-box;
-}
-
-// Toolbar.Icon defaults to the legacy #222222 constant, but the mock draws icons with the BP2
-// secondary token and darkens them to the primary one on hover. Selected items are excluded so
-// they keep their own on-state fill.
-.bp-ControlsBarV2 button:not([data-state='on']) svg * {
-    fill: var(--bp-icon-icon-on-light-secondary);
-}
-
-.bp-ControlsBarV2 button:not([data-state='on']):hover svg * {
-    fill: var(--bp-icon-icon-on-light);
+// Controls that render more than one button read as a single unit on the bar, and the overflow
+// logic measures one box per control.
+.bp-ControlsBarV2-item {
+    display: flex;
+    align-items: center;
+    gap: var(--bp-space-020);
 }
 
 // Tooltip wrappers must not introduce inline layout between the bar and its items.
@@ -44,12 +31,8 @@
     display: none;
 }
 
-// Blueprint paints every toolbar item with the primary on-light token; the mock uses the secondary
-// one for the page label. Scoped under the bar so it outweighs Blueprint's own .toolbarItem rule.
+// Without this the "1 / 12" label wraps onto a second line as the bar narrows, which grows the
+// height of the whole bar.
 .bp-ControlsBarV2 .bp-PageControlsV2-button {
-    color: var(--bp-text-text-on-light-secondary);
-
-    // Without this the "1 / 12" label wraps onto a second line as the bar narrows, which grows the
-    // height of the whole bar.
     white-space: nowrap;
 }
