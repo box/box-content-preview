@@ -1,5 +1,5 @@
 import React from 'react';
-import IconRotate24 from '../icons/IconRotate24';
+import RotateLeft from '@box/blueprint-web-assets/icons/Medium/RotateLeft';
 import './RotateControl.scss';
 
 export type Props = {
@@ -15,7 +15,7 @@ export default function RotateControl({ onRotateLeft }: Props): JSX.Element {
             title={__('rotate_left')}
             type="button"
         >
-            <IconRotate24 />
+            <RotateLeft color="#fff" />
         </button>
     );
 }
