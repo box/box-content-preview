@@ -303,6 +303,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.emit).toBeCalledWith('ratechange', speed);
             expect(media.mediaEl.playbackRate).toBe(speed);
         });
+
+        test.each([undefined, 'not-a-rate'])(
+            'should default playbackRate to 1 when cached speed is %p',
+            cachedSpeed => {
+                jest.spyOn(media, 'emit');
+                jest.spyOn(media.cache, 'get').mockReturnValue(cachedSpeed);
+                media.mediaEl = document.createElement('video');
+                media.mediaEl.playbackRate = 1;
+
+                expect(() => media.handleRate()).not.toThrow();
+                expect(media.mediaEl.playbackRate).toBe(1);
+                expect(media.emit).not.toBeCalled();
+            },
+        );
     });
 
     describe('handleVolume()', () => {
