@@ -22,7 +22,7 @@ $navigationBtnWidth: 50px;
     opacity: 0;
 
     // Override default animations to only animate opacity since width animation to auto doesn't work
-    transition: opacity .5s ease;
+    transition: opacity 0.5s ease;
     pointer-events: all;
 
     &:hover,
@@ -34,7 +34,7 @@ $navigationBtnWidth: 50px;
     &:focus {
         height: 64px;
         outline: 1px solid $downtown-grey;
-        box-shadow: inset 0 0 0 1px fade-out($white, .5), 0 1px 2px fade-out($black, .9);
+        box-shadow: inset 0 0 0 1px fade-out($white, 0.5), 0 1px 2px fade-out($black, 0.9);
     }
 
     &:active {
@@ -44,7 +44,7 @@ $navigationBtnWidth: 50px;
 }
 
 .bp-is-navigation-visible .bp-navigate {
-    opacity: .8;
+    opacity: 0.8;
 
     &:hover {
         opacity: 1;

@@ -1388,6 +1388,8 @@ class DashViewer extends VideoBaseViewer {
                     commentMarkers={this.commentMarkers}
                     onCommentMarkerClick={this.handleCommentMarkerClick}
                     {...sharedProps}
+                    onPlayNextChange={this.setPlayNext}
+                    playNext={this.isPlayNextEnabled()}
                 />,
             );
             return;

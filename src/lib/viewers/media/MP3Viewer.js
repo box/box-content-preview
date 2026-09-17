@@ -1040,7 +1040,9 @@ class MP3Viewer extends MediaBaseViewer {
                     onCommentRangeChange={this.handleCommentRangeChange}
                     onCommentRangeClear={this.handleCommentRangeClear}
                     onCommentRangeDragChange={this.handleCommentRangeDragChange}
+                    onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
+                    playNext={this.isPlayNextEnabled()}
                 />,
             );
             return;

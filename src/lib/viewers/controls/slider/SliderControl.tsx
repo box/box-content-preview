@@ -8,6 +8,7 @@ export type Ref = HTMLDivElement;
 
 export type Props = React.HTMLAttributes<Ref> & {
     className?: string;
+    'data-resin-target'?: string;
     max?: number;
     min?: number;
     onMove?: (value: number, position: number, width: number) => void;
@@ -20,6 +21,7 @@ export type Props = React.HTMLAttributes<Ref> & {
 
 export default function SliderControl({
     className,
+    'data-resin-target': resinTarget,
     max = 100,
     min = 0,
     onMove = noop,
@@ -32,6 +34,18 @@ export default function SliderControl({
 }: Props): JSX.Element {
     const [isScrubbing, setIsScrubbing] = React.useState(false);
     const sliderElRef = React.useRef<Ref>(null);
+
+    const recordScrub = (): void => {
+        if (!resinTarget) {
+            return;
+        }
+
+        window.Box?.Preview?.resin?.recordAction({
+            action: 'programmatic',
+            component: 'toolbar',
+            target: resinTarget,
+        });
+    };
 
     const getPosition = React.useCallback((pageX: number) => {
         const { current: sliderEl } = sliderElRef;
@@ -60,11 +74,13 @@ export default function SliderControl({
 
         if (key === 'ArrowLeft') {
             event.stopPropagation(); // Prevents global key handling
+            recordScrub();
             onUpdate(Math.max(min, Math.min(value - step, max)));
         }
 
         if (key === 'ArrowRight') {
             event.stopPropagation(); // Prevents global key handling
+            recordScrub();
             onUpdate(Math.max(min, Math.min(value + step, max)));
         }
     };
@@ -72,6 +88,7 @@ export default function SliderControl({
     const handleMouseDown = ({ button, ctrlKey, metaKey, pageX }: React.MouseEvent<Ref>): void => {
         if (button > 1 || ctrlKey || metaKey) return;
 
+        recordScrub();
         onUpdate(getPositionValue(pageX));
         setIsScrubbing(true);
     };
@@ -84,6 +101,7 @@ export default function SliderControl({
     };
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
+        recordScrub();
         onUpdate(getPositionValue(touches[0].pageX));
         setIsScrubbing(true);
     };
@@ -126,6 +144,7 @@ export default function SliderControl({
             aria-valuemin={min}
             aria-valuenow={value}
             className={classNames('bp-SliderControl', className, { 'bp-is-scrubbing': isScrubbing })}
+            data-resin-target={resinTarget}
             onKeyDown={handleKeydown}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
