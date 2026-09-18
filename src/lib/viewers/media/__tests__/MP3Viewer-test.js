@@ -509,6 +509,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 currentTime: 0,
                 durationTime: 1000,
                 hasStartedPlayback: false,
+                isGeneratingWaveform: false,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
@@ -914,6 +915,45 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
+    describe('isGeneratingWaveform()', () => {
+        beforeEach(() => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.isWaveformConversionPolling = false;
+        });
+
+        test('should show only while conversion RepStatus is polling', () => {
+            mp3.isWaveformConversionPolling = true;
+
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+        });
+
+        test('should hide when conversion is not polling', () => {
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should show while polling even when over the client-decode cap', () => {
+            mp3.isWaveformConversionPolling = true;
+            mp3.mediaEl = { duration: CLIENT_DECODE_MAX_DURATION_SEC + 1 };
+
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+        });
+
+        test('should hide once peaks have been applied', () => {
+            mp3.isWaveformConversionPolling = true;
+            mp3.waveformPeaksSource = 'client';
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should hide when audio v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            mp3.isWaveformConversionPolling = true;
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+    });
+
     describe('startClientWaveformDecode()', () => {
         beforeEach(() => {
             loadPeaks.mockReset();
@@ -1085,6 +1125,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should not fetch when the content URL template is missing', async () => {
@@ -1095,6 +1136,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should fall back to client decode when conversion status is error', async () => {
@@ -1105,6 +1147,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should not show generating waveform when over-cap conversion is already error', async () => {
+            mp3.mediaEl = { duration: CLIENT_DECODE_MAX_DURATION_SEC + 1 };
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'error' } })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should fall back to client decode when conversion status data is missing', async () => {
@@ -1115,6 +1167,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should poll the waveform rep then fetch JSON with header auth', async () => {
@@ -1133,6 +1186,63 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.abortClientWaveformDecode).toBeCalled();
             expect(mp3.renderUI).toBeCalled();
             expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should hide generating waveform once conversion leaves pending', async () => {
+            let resolveStatus;
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'pending' } })];
+            mp3.getRepStatus.mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () =>
+                    new Promise(resolve => {
+                        resolveStatus = resolve;
+                    }),
+                removeListener: jest.fn(),
+            });
+
+            const pending = mp3.startConversionWaveformLoad();
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+
+            mp3.options.file.representations.entries[0].status.state = 'success';
+            resolveStatus();
+            await pending;
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should not show generating waveform when conversion is already success', async () => {
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.isWaveformConversionPolling).toBe(false);
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should not show generating waveform when conversion is already viewable', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'viewable' } })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.isWaveformConversionPolling).toBe(false);
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should hide generating waveform when pending conversion polling fails', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'pending' } })];
+            mp3.getRepStatus.mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => Promise.reject(new Error('conversion failed')),
+                removeListener: jest.fn(),
+            });
+
+            const pending = mp3.startConversionWaveformLoad();
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+
+            await pending;
+
+            expect(mp3.isWaveformConversionPolling).toBe(false);
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+            expect(mp3.startClientWaveformDecode).toBeCalled();
         });
 
         test('should keep empty peaks when conversion status rejects', async () => {

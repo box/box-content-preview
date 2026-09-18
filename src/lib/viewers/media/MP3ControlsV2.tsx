@@ -15,6 +15,7 @@ import { WaveformViewport } from './waveform/types';
 import { clampWaveformZoom, getTapeDefaultZoom, stepWaveformZoom, viewportEquals } from './waveform/viewport';
 import useTapeWaveform from './waveform/useTapeWaveform';
 import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
+import WaveformGeneratingIndicator from './waveform/WaveformGeneratingIndicator';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
 import './MP3ControlsV2.scss';
@@ -30,6 +31,7 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         commentMarkers?: CommentMarker[];
         commentRangeDraft?: CommentRangeDraft | null;
         hasStartedPlayback?: boolean;
+        isGeneratingWaveform?: boolean;
         keyboardZoomStep?: number;
         mediaEl?: HTMLMediaElement | null;
         onCommentMarkerClick?: (marker: CommentMarker) => void;
@@ -47,6 +49,7 @@ export default function MP3ControlsV2({
     currentTime,
     durationTime,
     hasStartedPlayback = false,
+    isGeneratingWaveform = false,
     isPlaying,
     keyboardVolumeStep = 0,
     keyboardZoomStep = 0,
@@ -184,6 +187,7 @@ export default function MP3ControlsV2({
     const showPlayOverlay = !hasStarted && !isPlaying;
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
     const hasZoomControl = hasZoomHandlers && hasMediaMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
+    const showGeneratingWaveformIndicator = isGeneratingWaveform && !hasRealPeaks;
     const waveformZoomLevel = isTape || hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN;
 
     return (
@@ -218,14 +222,18 @@ export default function MP3ControlsV2({
                         viewport={viewport}
                     />
                 </div>
-                {hasZoomControl && (
+                {(showGeneratingWaveformIndicator || hasZoomControl) && (
                     <div className="bp-MP3ControlsV2-waveformZoom">
-                        <WaveformZoomControl
-                            isRevealed={isZoomRevealed}
-                            maxZoom={maxZoom}
-                            onZoomChange={handleWaveformZoom}
-                            zoomLevel={zoomLevel}
-                        />
+                        {showGeneratingWaveformIndicator ? (
+                            <WaveformGeneratingIndicator />
+                        ) : (
+                            <WaveformZoomControl
+                                isRevealed={isZoomRevealed}
+                                maxZoom={maxZoom}
+                                onZoomChange={handleWaveformZoom}
+                                zoomLevel={zoomLevel}
+                            />
+                        )}
                     </div>
                 )}
                 {showPlayOverlay && (
