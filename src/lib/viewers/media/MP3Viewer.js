@@ -1062,30 +1062,28 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Snap the playhead into the open span and arm the wrap timer. Used when a
-     * draft arrives or is resized while playing.
+     * Update the playback loop to match the current range after it arrives, resizes,
+     * or clears.
      *
      * @return {void}
      */
     syncCommentRangeLoop() {
         this.clearCommentRangeLoopTimer();
-        if (!this.getOpenCommentRangeSeconds() || !this.mediaEl || this.mediaEl.paused) {
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl || this.mediaEl.paused) {
             return;
         }
-        this.enforceCommentRangePlayback();
+        this.enforceCommentRangePlayback(range);
     }
 
     /**
      * Keep playback inside the open span. A playhead outside [start, end) jumps
      * to start, then the wrap timer is armed.
      *
+     * @param {{endSec: number, startSec: number}} range Open draft in seconds
      * @return {void}
      */
-    enforceCommentRangePlayback = () => {
-        const range = this.getOpenCommentRangeSeconds();
-        if (!range || !this.mediaEl) {
-            return;
-        }
+    enforceCommentRangePlayback(range) {
         const { endSec, startSec } = range;
         const currPlayhead = this.mediaEl.currentTime;
         const nextPlayhead = currPlayhead >= startSec && currPlayhead < endSec ? currPlayhead : startSec;
@@ -1093,7 +1091,7 @@ class MP3Viewer extends MediaBaseViewer {
             this.mediaEl.currentTime = nextPlayhead;
         }
         this.scheduleCommentRangeLoopWrap();
-    };
+    }
 
     /**
      * Play. An open draft loops that span: keep the playhead when it is already
