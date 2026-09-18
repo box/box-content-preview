@@ -10,6 +10,7 @@ import {
     getTapeGutterPx,
     getTapePinnedPlayheadLeft,
     getWaveformZoomMax,
+    getWaveformZoomMultiplier,
     getZoomedPixelsPerSecond,
     isTimeInView,
     maxScrollLeft,
@@ -261,6 +262,19 @@ describe('viewport', () => {
         expect(clampWaveformZoom(0, 4)).toBe(1);
         expect(clampWaveformZoom(8, 4)).toBe(4);
         expect(clampWaveformZoom(2, 4)).toBe(2);
+    });
+
+    test('should show tenths below 2x and whole numbers from 2x', () => {
+        expect(getWaveformZoomMultiplier(1)).toBeNull();
+        expect(getWaveformZoomMultiplier(1.04)).toBeNull();
+        expect(getWaveformZoomMultiplier(1.1)).toBe('1.1x');
+        expect(getWaveformZoomMultiplier(1.25)).toBe('1.3x');
+        expect(getWaveformZoomMultiplier(1.9)).toBe('1.9x');
+        expect(getWaveformZoomMultiplier(1.95)).toBe('2x');
+        expect(getWaveformZoomMultiplier(2)).toBe('2x');
+        expect(getWaveformZoomMultiplier(2.5)).toBe('2x');
+        expect(getWaveformZoomMultiplier(4)).toBe('4x');
+        expect(getWaveformZoomMultiplier(Number.NaN)).toBeNull();
     });
 
     test('should use 0 px/sec at fit-to-width so wavesurfer fills the parent', () => {

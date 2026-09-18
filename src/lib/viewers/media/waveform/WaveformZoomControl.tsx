@@ -6,7 +6,13 @@ import MediaToggle from '../../controls/media/MediaToggle';
 import SliderControl from '../../controls/slider';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_SLIDER_MAX } from './constants';
 import { WaveformZoomControlProps } from './types';
-import { clampWaveformZoom, sliderValueFromZoom, stepWaveformZoom, zoomFromSliderValue } from './viewport';
+import {
+    clampWaveformZoom,
+    getWaveformZoomMultiplier,
+    sliderValueFromZoom,
+    stepWaveformZoom,
+    zoomFromSliderValue,
+} from './viewport';
 import './WaveformZoomControl.scss';
 
 export default function WaveformZoomControl({
@@ -24,6 +30,7 @@ export default function WaveformZoomControl({
     const sliderId = `bp-waveform-zoom-slider${useId()}`;
     const zoom = clampWaveformZoom(zoomLevel, maxZoom);
     const zoomValue = Math.round(sliderValueFromZoom(zoom, maxZoom));
+    const zoomMultiplier = getWaveformZoomMultiplier(zoom);
     const isOpen = isHovered || isFocused || isRevealed || isPinned;
     const isAtMinZoom = zoomValue <= 0;
     const isAtMaxZoom = zoomValue >= WAVEFORM_ZOOM_SLIDER_MAX;
@@ -86,7 +93,10 @@ export default function WaveformZoomControl({
         <div
             ref={zoomControlElRef}
             aria-label={__('media_zoom')}
-            className={classNames('bp-WaveformZoomControl', { 'bp-is-open': isOpen })}
+            className={classNames('bp-WaveformZoomControl', {
+                'bp-has-multiplier': zoomMultiplier,
+                'bp-is-open': isOpen,
+            })}
             data-testid="bp-waveform-zoom"
             onBlur={event => {
                 if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
@@ -111,6 +121,22 @@ export default function WaveformZoomControl({
             }}
             role="group"
         >
+            {zoomMultiplier && (
+                <>
+                    <span
+                        className="bp-WaveformZoomControl-multiplier"
+                        data-testid="bp-waveform-zoom-multiplier"
+                        title={__('zoom_current_scale')}
+                    >
+                        {zoomMultiplier}
+                    </span>
+                    <span
+                        aria-hidden="true"
+                        className="bp-WaveformZoomControl-divider"
+                        data-testid="bp-waveform-zoom-divider"
+                    />
+                </>
+            )}
             <MediaToggle
                 aria-disabled={isOpen && isAtMaxZoom}
                 className="bp-WaveformZoomControl-button"
