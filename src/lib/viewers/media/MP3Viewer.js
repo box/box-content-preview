@@ -1092,7 +1092,6 @@ class MP3Viewer extends MediaBaseViewer {
         if (nextPlayhead !== currPlayhead) {
             this.mediaEl.currentTime = nextPlayhead;
         }
-        console.log('[enforceCommentRangePlayback] called');
         this.scheduleCommentRangeLoopWrap();
     };
 
