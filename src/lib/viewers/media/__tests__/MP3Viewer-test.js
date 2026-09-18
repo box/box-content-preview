@@ -981,14 +981,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.mediaEl.currentTime).toBe(10);
         });
 
-        test('should clamp a host comment seek into the open span', () => {
+        test('should dismiss an open range when the host seeks to a comment', () => {
             mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
             Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
             mp3.pendingHostSelectedSeek = { id: 'comment-1', time: 41.2 };
 
             mp3.applyPendingHostSelectedSeek();
 
-            expect(mp3.mediaEl.currentTime).toBe(4);
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
             expect(mp3.mediaEl.pause).toBeCalled();
         });
 

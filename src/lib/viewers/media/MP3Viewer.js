@@ -990,10 +990,10 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.pendingHostSelectedSeek = null;
         this.exitShuttle();
+        this.handleCommentRangeClear();
         this.mediaEl.pause();
-        const time = this.clampTimeToOpenCommentRange(marker.time);
-        if (this.mediaEl.currentTime !== time) {
-            this.mediaEl.currentTime = time;
+        if (this.mediaEl.currentTime !== marker.time) {
+            this.mediaEl.currentTime = marker.time;
         }
     }
 
@@ -1012,8 +1012,8 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Keep a seek inside the open draft. Waveform click-outside clears first,
-     * then seeks; clamp does not apply once the draft is gone.
+     * Keep a seek inside the open draft. Waveform click-outside and host
+     * comment seeks dismiss first, then seek; clamp does not apply then.
      *
      * @param {number} time
      * @return {number}
@@ -1076,8 +1076,8 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Keep playback inside the open span. Past end wraps to start while playing;
-     * a paused playhead past end clamps to end.
+     * Keep playback inside the open span. A playhead outside [start, end) jumps
+     * to start, then the wrap timer is armed.
      *
      * @return {void}
      */
@@ -1087,16 +1087,12 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
         const { endSec, startSec } = range;
-        const current = this.mediaEl.currentTime;
-        let next = current;
-        if (current < startSec) {
-            next = startSec;
-        } else if (current >= endSec) {
-            next = this.mediaEl.paused ? endSec : startSec;
+        const currPlayhead = this.mediaEl.currentTime;
+        const nextPlayhead = currPlayhead >= startSec && currPlayhead < endSec ? currPlayhead : startSec;
+        if (nextPlayhead !== currPlayhead) {
+            this.mediaEl.currentTime = nextPlayhead;
         }
-        if (next !== current) {
-            this.mediaEl.currentTime = next;
-        }
+        console.log('[enforceCommentRangePlayback] called');
         this.scheduleCommentRangeLoopWrap();
     };
 
@@ -1126,7 +1122,7 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Seek. Keyboard, host, and in-range waveform seeks stay inside an open draft.
+     * Seek. Keyboard and in-range waveform seeks stay inside an open draft.
      *
      * @inheritdoc
      */
@@ -1142,8 +1138,7 @@ class MP3Viewer extends MediaBaseViewer {
      */
     mediaendHandler() {
         if (this.getOpenCommentRangeSeconds()) {
-            // `ended` fires after the element is paused, so wrap via play() rather
-            // than enforceCommentRangePlayback (which clamps a paused playhead to end).
+            // `ended` fires after the element is paused; play() wraps and restarts.
             this.play();
             return;
         }
