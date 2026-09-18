@@ -6,7 +6,7 @@ import {
     EVENT_COMMENT_RANGE_DRAFT_DISMISS,
     isValidCommentRangeDraft,
 } from '../controls/media/types';
-import { AUDIO_PLAYER_V2, STATUS_ERROR, WAVEFORM_REP_NAME } from '../../constants';
+import { AUDIO_PLAYER_V2, STATUS_ERROR, STATUS_SUCCESS, STATUS_VIEWABLE, WAVEFORM_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import MediaBaseViewer from './MediaBaseViewer';
@@ -99,6 +99,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.isAudioPlayerV2 = this.getIsAudioPlayerV2();
         this.waveformPeaks = [];
         this.waveformPeaksSource = null;
+        this.isWaveformConversionPolling = false;
         this.waveformDurationSec = 0;
         if (this.isAudioPlayerV2) {
             this.wrapperEl.classList.add('bp-media--v2');
@@ -546,6 +547,46 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
+     * @return {Object|null} waveform conversion representation
+     */
+    getWaveformRepresentation() {
+        const { file } = this.options;
+        return file?.representations?.entries ? getRepresentation(file, WAVEFORM_REP_NAME) : null;
+    }
+
+    /**
+     * @return {string|null} conversion representation state
+     */
+    getWaveformConversionState() {
+        const conversionStatus = this.getWaveformRepresentation()?.status;
+        return conversionStatus && typeof conversionStatus === 'object' ? conversionStatus.state : null;
+    }
+
+    /**
+     * Conversion JSON is already (or about to be) fetchable.
+     *
+     * @return {boolean}
+     */
+    isConversionWaveformAvailable() {
+        const conversionState = this.getWaveformConversionState();
+        return conversionState === STATUS_SUCCESS || conversionState === STATUS_VIEWABLE;
+    }
+
+    /**
+     * Generating chip while conversion RepStatus is polling. Hidden when the
+     * rep is already success/viewable, when polling finishes, when conversion
+     * errors, and once any source applies peaks.
+     *
+     * @return {boolean}
+     */
+    isGeneratingWaveform() {
+        if (!this.isAudioPlayerV2 || this.destroyed || this.waveformPeaksSource) {
+            return false;
+        }
+        return !!this.isWaveformConversionPolling;
+    }
+
+    /**
      * @param {number} durationSec
      * @return {boolean}
      */
@@ -587,13 +628,12 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
 
-        const { file } = this.options;
-        const waveform = file?.representations?.entries ? getRepresentation(file, WAVEFORM_REP_NAME) : null;
+        const waveform = this.getWaveformRepresentation();
         const template = waveform?.content?.url_template;
-        const conversionStatus = waveform?.status;
-        const statusState = conversionStatus && typeof conversionStatus === 'object' ? conversionStatus.state : null;
-        if (!waveform || !template || !statusState || statusState === STATUS_ERROR) {
+        const conversionState = this.getWaveformConversionState();
+        if (!waveform || !template || !conversionState || conversionState === STATUS_ERROR) {
             this.startClientWaveformDecode();
+            this.renderUI();
             return;
         }
 
@@ -601,16 +641,29 @@ class MP3Viewer extends MediaBaseViewer {
         this.waveformStatus = this.getRepStatus(waveform);
         this.waveformStatus.removeListener('conversionpending', this.resetLoadTimeout);
         const status = this.waveformStatus;
+        const shouldPollConversion = !this.isConversionWaveformAvailable();
 
         try {
+            if (shouldPollConversion) {
+                this.isWaveformConversionPolling = true;
+                this.renderUI();
+            }
             await status.getPromise();
+            this.isWaveformConversionPolling = false;
             if (this.destroyed || this.waveformStatus !== status || this.waveformPeaksSource) {
                 return;
+            }
+            if (shouldPollConversion) {
+                this.renderUI();
             }
             const result = await this.loadConversionWaveformPayload(template);
             this.handleConversionWaveformResult(result, status);
         } catch {
+            this.isWaveformConversionPolling = false;
             this.startClientWaveformDecode();
+            if (shouldPollConversion) {
+                this.renderUI();
+            }
         }
     }
 
@@ -666,6 +719,7 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.waveformPeaks = payload.peaks;
         this.waveformPeaksSource = source;
+        this.isWaveformConversionPolling = false;
         this.isWaveformDecodeRetryPending = false;
         if (source === 'conversion') {
             this.waveformDurationSec = payload.durationSec;
@@ -1033,6 +1087,7 @@ class MP3Viewer extends MediaBaseViewer {
                     commentMarkers={this.commentMarkers || []}
                     commentRangeDraft={this.commentRangeDraft || null}
                     hasStartedPlayback={!!this.userRequestedPlay}
+                    isGeneratingWaveform={this.isGeneratingWaveform()}
                     keyboardVolumeStep={this.keyboardVolumeStep}
                     keyboardZoomStep={this.keyboardZoomStep}
                     mediaEl={this.mediaEl}

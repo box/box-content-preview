@@ -380,6 +380,29 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
         });
 
+        test('should show generating waveform in the zoom slot while conversion is polling', async () => {
+            getWrapper({ durationTime: 8, isGeneratingWaveform: true });
+
+            expect(await screen.findByTestId('bp-waveform-generating')).toHaveTextContent(
+                __('media_generating_waveform'),
+            );
+            expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should hide generating waveform once real peaks are available', async () => {
+            getWrapper({ durationTime: 8, isGeneratingWaveform: true, peaks: [0.2, 0.8] });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-generating')).not.toBeInTheDocument();
+        });
+
+        test('should hide generating waveform when conversion is not polling', async () => {
+            getWrapper({ durationTime: 8 });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-generating')).not.toBeInTheDocument();
+        });
+
         test('should keep zoom hidden after play when only placeholder peaks are present', async () => {
             getWrapper({ durationTime: 8, isPlaying: true });
 

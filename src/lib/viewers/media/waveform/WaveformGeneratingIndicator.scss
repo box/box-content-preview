@@ -1,0 +1,68 @@
+@import '../../controls/media/styles';
+
+.bp-WaveformGeneratingIndicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    height: 48px;
+    padding: 8px 16px 8px 12px;
+    pointer-events: none;
+}
+
+.bp-WaveformGeneratingIndicator-bars {
+    display: flex;
+    flex: 0 0 24px;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.bp-WaveformGeneratingIndicator-bar {
+    width: 2px;
+    height: 10px;
+    background: rgb(255 255 255 / 30%);
+    border-radius: 6px;
+    animation: bp-WaveformGeneratingIndicator-pulse 0.66s ease-in-out infinite;
+
+    &:nth-child(2) {
+        margin-left: 2px;
+        animation-delay: 0.1s;
+    }
+
+    &:last-child {
+        margin-left: 2px;
+        animation-delay: 0.2s;
+    }
+}
+
+.bp-WaveformGeneratingIndicator-label {
+    color: $white;
+    font-weight: normal;
+    font-size: 14px;
+    font-family: Lato, Arial, sans-serif;
+    line-height: 22px;
+    white-space: nowrap;
+}
+
+@keyframes bp-WaveformGeneratingIndicator-pulse {
+    0%,
+    80%,
+    100% {
+        background: rgb(255 255 255 / 30%);
+        transform: scaleY(1.2);
+    }
+
+    40% {
+        background: $white;
+        transform: scaleY(1.6);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-WaveformGeneratingIndicator-bar {
+        animation: none;
+        background: $white;
+        transform: none;
+    }
+}
