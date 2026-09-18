@@ -65,18 +65,13 @@ export default function DocControlsV2({
     pageNumber,
     scale,
 }: Props): JSX.Element {
-    const [isPaletteOpen, setIsPaletteOpen] = React.useState(false);
     const isFullscreen = useFullscreen();
 
-    const handlePaletteToggle = (isOpen: boolean): void => {
-        setIsPaletteOpen(isOpen);
-
-        // Closing the palette leaves the mode with it, so a mode can never stay on with nothing on
-        // screen to say which one it is.
-        if (!isOpen && annotationMode !== AnnotationMode.NONE) {
-            onAnnotationModeClick?.({ mode: AnnotationMode.NONE });
-        }
-    };
+    // The palette is the mode made visible rather than a panel with a life of its own: it is up
+    // for exactly as long as a mode is on. That keeps the bar, the palette, and the viewer from
+    // ever disagreeing, and means a mode the viewer turns on by itself — the region the user drags
+    // or the text they select with no mode picked — brings the palette up already on that mode.
+    const isPaletteOpen = annotationMode !== AnnotationMode.NONE;
 
     const items: (ControlsBarItem | false | undefined)[] = [
         !isGalleryOpen &&
@@ -171,10 +166,8 @@ export default function DocControlsV2({
                         hasDrawing={hasDrawing}
                         hasHighlight={hasHighlight}
                         hasRegion={hasRegion}
-                        isOpen={isPaletteOpen}
                         onAnnotationModeClick={onAnnotationModeClick}
                         onAnnotationModeEscape={onAnnotationModeEscape}
-                        onToggle={handlePaletteToggle}
                     />
                 ),
                 id: 'annotations',

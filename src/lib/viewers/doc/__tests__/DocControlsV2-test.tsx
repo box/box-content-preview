@@ -3,8 +3,31 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import DocControlsV2 from '../DocControlsV2';
 import { AnnotationMode } from '../../../types';
+import { Props } from '../DocControls';
 
 describe('DocControlsV2', () => {
+    // The viewer owns the annotation mode and hands it back down, so a test that clicks its way
+    // through the palette has to close the same loop.
+    function ControlledDocControls({ annotationMode: initialMode, onAnnotationModeClick, ...props }: Props) {
+        const [annotationMode, setAnnotationMode] = React.useState(initialMode);
+
+        const handleAnnotationModeClick = ({ mode }: { mode: AnnotationMode }): void => {
+            setAnnotationMode(mode);
+
+            if (onAnnotationModeClick) {
+                onAnnotationModeClick({ mode });
+            }
+        };
+
+        return (
+            <DocControlsV2
+                {...props}
+                annotationMode={annotationMode}
+                onAnnotationModeClick={handleAnnotationModeClick}
+            />
+        );
+    }
+
     const getDefaults = () => ({
         onAnnotationColorChange: jest.fn(),
         onAnnotationModeClick: jest.fn(),
@@ -108,18 +131,19 @@ describe('DocControlsV2', () => {
         expect(props.onPageSubmit).toHaveBeenCalledWith(3);
     });
 
-    test('should open the markup palette before offering the annotation modes', async () => {
+    test('should open the markup palette on a mode rather than on nothing', async () => {
         const user = userEvent.setup();
         const props = getDefaults();
-        render(<DocControlsV2 {...props} hasDrawing hasHighlight hasRegion />);
+        render(<ControlledDocControls {...props} hasDrawing hasHighlight hasRegion />);
 
-        expect(screen.queryByRole('radio', { name: 'Highlight and Comment' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('radio', { name: 'Comment on Region' })).not.toBeInTheDocument();
 
         await user.click(screen.getByRole('button', { name: 'Comment and markup' }));
 
         // Annotation modes are exclusive, so Blueprint's toggle group renders them as radios rather
         // than the pressed buttons the legacy bar used.
-        expect(screen.getByRole('radio', { name: 'Comment on Region' })).toBeInTheDocument();
+        expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.REGION });
+        expect(screen.getByRole('radio', { name: 'Comment on Region' })).toHaveAttribute('data-state', 'on');
         expect(screen.getByRole('radio', { name: 'Markup' })).toBeInTheDocument();
 
         await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
@@ -127,37 +151,59 @@ describe('DocControlsV2', () => {
         expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.HIGHLIGHT });
     });
 
-    test('should show the selected mode as active in the palette', async () => {
-        const user = userEvent.setup();
-        const props = getDefaults();
-        render(<DocControlsV2 {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
-
-        await user.click(screen.getByRole('button', { name: 'Comment and markup' }));
+    test('should show the selected mode as active in the palette', () => {
+        render(<DocControlsV2 {...getDefaults()} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
 
         // Guards the Tooltip/ToggleItem data-state clash: a wrapper keeps the tooltip from
         // overwriting the selected state that paints the active styling.
         expect(screen.getByRole('radio', { name: 'Highlight and Comment' })).toHaveAttribute('data-state', 'on');
     });
 
-    test('should leave annotation mode when the palette is closed', async () => {
+    test('should close the palette when the mode it is on is turned off', async () => {
         const user = userEvent.setup();
         const props = getDefaults();
-        render(<DocControlsV2 {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
+        render(<ControlledDocControls {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
+
+        await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
+
+        expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+        expect(screen.queryByRole('radio', { name: 'Highlight and Comment' })).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Comment and markup' })).toHaveAttribute('data-state', 'off');
+    });
+
+    test('should reopen the palette on the mode it was left on', async () => {
+        const user = userEvent.setup();
+        const props = getDefaults();
+        render(<ControlledDocControls {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight hasRegion />);
 
         const toggle = screen.getByRole('button', { name: 'Comment and markup' });
         await user.click(toggle);
-        await user.click(toggle);
 
         expect(screen.queryByRole('radio', { name: 'Highlight and Comment' })).not.toBeInTheDocument();
-        expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+
+        await user.click(toggle);
+
+        expect(screen.getByRole('radio', { name: 'Highlight and Comment' })).toHaveAttribute('data-state', 'on');
+    });
+
+    test('should follow the viewer into a mode the user started without the palette', () => {
+        const props = getDefaults();
+        const { rerender } = render(<DocControlsV2 {...props} hasHighlight hasRegion />);
+
+        expect(screen.queryByRole('radio', { name: 'Comment on Region' })).not.toBeInTheDocument();
+
+        // Dragging a region or selecting text with no mode picked puts the viewer into that mode on
+        // its own, and the bar has to follow it rather than claim nothing is on.
+        rerender(<DocControlsV2 {...props} annotationMode={AnnotationMode.REGION} hasHighlight hasRegion />);
+
+        expect(screen.getByRole('button', { name: 'Comment and markup' })).toHaveAttribute('data-state', 'on');
+        expect(screen.getByRole('radio', { name: 'Comment on Region' })).toHaveAttribute('data-state', 'on');
     });
 
     test('should pick a color from the swatches shown while drawing', async () => {
         const user = userEvent.setup();
         const props = getDefaults();
         render(<DocControlsV2 {...props} annotationMode={AnnotationMode.DRAWING} hasDrawing />);
-
-        await user.click(screen.getByRole('button', { name: 'Comment and markup' }));
 
         const swatches = screen.getAllByTestId('bp-ColorPickerControl-swatch');
         await user.click(swatches[1]);

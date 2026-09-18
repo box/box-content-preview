@@ -36,6 +36,8 @@ export default function AnnotationsPaletteV2({
         hasRegion,
     });
 
+    // Blueprint's single-select group clears its value when the mode already on is clicked again,
+    // which turns the mode off and takes this palette down with it.
     const handleModeChange = (mode: string): void => {
         onAnnotationModeClick({ mode: (mode as AnnotationMode) || AnnotationMode.NONE });
     };

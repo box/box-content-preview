@@ -21,6 +21,16 @@
             #poc {
                 display: flex;
             }
+
+            /* Stands in for the annotation the viewer would report. Pinned out of the flex row so
+               it cannot affect how the bars lay out or how wide they think they can be. */
+            .poc-simulate {
+                display: flex;
+                gap: 4px;
+                left: 8px;
+                position: fixed;
+                top: 8px;
+            }
         </style>
     </head>
     <body>
