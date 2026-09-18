@@ -835,6 +835,190 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
+    describe('comment range loop', () => {
+        function setPaused(paused) {
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: paused });
+        }
+
+        beforeEach(() => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emit').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 60 });
+            jest.spyOn(mp3.mediaEl, 'play').mockResolvedValue();
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'handleRate').mockImplementation();
+            jest.spyOn(mp3, 'handleVolume').mockImplementation();
+            jest.spyOn(mp3, 'pause');
+            setPaused(true);
+            mp3.mediaEl.currentTime = 0;
+        });
+
+        test('should play from start when the playhead is outside an open range', () => {
+            mp3.mediaEl.currentTime = 10;
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.play();
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.mediaEl.play).toBeCalled();
+            expect(mp3.pause).not.toHaveBeenCalledWith(4);
+        });
+
+        test('should keep the playhead when play starts inside an open range', () => {
+            mp3.mediaEl.currentTime = 3;
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.play();
+
+            expect(mp3.mediaEl.currentTime).toBe(3);
+            expect(mp3.mediaEl.play).toBeCalled();
+        });
+
+        test('should wrap to start when the scheduled end is reached', () => {
+            const timeouts = [];
+            jest.spyOn(window, 'setTimeout').mockImplementation((cb, delay) => {
+                timeouts.push({ cb, delay });
+                return timeouts.length;
+            });
+            jest.spyOn(window, 'clearTimeout').mockImplementation();
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            setPaused(false);
+            mp3.mediaEl.currentTime = 3.5;
+
+            mp3.scheduleCommentRangeLoopWrap(true);
+
+            expect(timeouts[timeouts.length - 1].delay).toBe(500);
+            timeouts[timeouts.length - 1].cb();
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.pause).not.toBeCalled();
+        });
+
+        test('should not loop or confine playback for a collapsed draft', () => {
+            mp3.mediaEl.currentTime = 10;
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+
+            mp3.play();
+            mp3.mediaEl.currentTime = 12;
+
+            expect(mp3.mediaEl.currentTime).toBe(12);
+            expect(mp3.mediaEl.play).toBeCalled();
+        });
+
+        test('should seek freely after click-outside dismisses an open range', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.handleCommentRangeClear();
+
+            mp3.setMediaTime(6);
+
+            expect(mp3.mediaEl.currentTime).toBe(6);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+        });
+
+        test('should stop wrapping after the draft is cleared while looping', () => {
+            const timeouts = [];
+            jest.spyOn(window, 'setTimeout').mockImplementation((cb, delay) => {
+                timeouts.push({ cb, delay });
+                return timeouts.length;
+            });
+            jest.spyOn(window, 'clearTimeout').mockImplementation();
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            setPaused(false);
+            mp3.mediaEl.currentTime = 3.5;
+            mp3.scheduleCommentRangeLoopWrap(true);
+            mp3.handleCommentRangeClear();
+            mp3.mediaEl.currentTime = 4.1;
+
+            timeouts.forEach(({ cb }) => cb());
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.mediaEl.currentTime).toBe(4.1);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+        });
+
+        test('should update the loop window immediately when a draft arrives while playing', () => {
+            setPaused(false);
+            mp3.mediaEl.currentTime = 10;
+
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+        });
+
+        test('should follow a resized range while playing', () => {
+            setPaused(false);
+            mp3.mediaEl.currentTime = 3;
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.handleCommentRangeChange({ endMs: 1500, startMs: 500 });
+
+            expect(mp3.mediaEl.currentTime).toBe(0.5);
+        });
+
+        test('should clamp keyboard and control seeks into the open span', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.setMediaTime(10);
+            expect(mp3.mediaEl.currentTime).toBe(4);
+
+            mp3.setMediaTime(0);
+            expect(mp3.mediaEl.currentTime).toBe(2);
+
+            mp3.mediaEl.currentTime = 3;
+            mp3.quickSeek(5);
+            expect(mp3.mediaEl.currentTime).toBe(4);
+        });
+
+        test('should leave a paused playhead outside the range until Play', () => {
+            mp3.mediaEl.currentTime = 10;
+            setPaused(true);
+
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.mediaEl.currentTime).toBe(10);
+        });
+
+        test('should clamp a host comment seek into the open span', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.pendingHostSelectedSeek = { id: 'comment-1', time: 41.2 };
+
+            mp3.applyPendingHostSelectedSeek();
+
+            expect(mp3.mediaEl.currentTime).toBe(4);
+            expect(mp3.mediaEl.pause).toBeCalled();
+        });
+
+        test('should exit reverse shuttle at the start of an open range', () => {
+            jest.useFakeTimers();
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.mediaEl.currentTime = 3;
+
+            mp3.shuttle('reverse');
+            jest.advanceTimersByTime(5000);
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.shuttleDirection).toBe(null);
+            jest.useRealTimers();
+        });
+
+        test('should wrap from file end instead of resetting playback', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            setPaused(true);
+            mp3.mediaEl.currentTime = 4;
+            jest.spyOn(MediaBaseViewer.prototype, 'mediaendHandler');
+
+            mp3.mediaendHandler();
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.mediaEl.play).toBeCalled();
+            expect(MediaBaseViewer.prototype.mediaendHandler).not.toBeCalled();
+        });
+    });
+
     describe('getIsAudioPlayerV2()', () => {
         test('should default off when the host has not passed a gate', () => {
             expect(mp3.getIsAudioPlayerV2()).toBe(false);
