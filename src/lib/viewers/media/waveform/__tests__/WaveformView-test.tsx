@@ -386,7 +386,7 @@ describe('WaveformView', () => {
         expect(onSeek).toHaveBeenCalledWith(2);
     });
 
-    test('should clear an open range when clicking the waveform outside it', () => {
+    test('should clear an open range and seek when clicking the waveform outside it', () => {
         const onRangeClear = jest.fn();
         const onSeek = jest.fn();
         render(
@@ -402,7 +402,7 @@ describe('WaveformView', () => {
         clickHandler?.(0.75);
 
         expect(onRangeClear).toHaveBeenCalledTimes(1);
-        expect(onSeek).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(6);
     });
 
     test('should seek when clicking inside an open range', () => {

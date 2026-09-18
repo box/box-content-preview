@@ -18,6 +18,7 @@ import {
     DURATION_MISMATCH_TOLERANCE_SEC,
 } from './waveform/constants';
 import { createWaveformLoader } from './waveform/createWaveformLoader';
+import { isRangeCollapsed } from './waveform/range';
 import { isPositiveFinite } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
@@ -122,6 +123,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.shuttleDirection = null;
         this.shuttleRate = 0;
         this.reverseShuttleTimer = 0;
+        this.commentRangeLoopTimer = 0;
         this.keyboardVolumeStep = 0;
         this.keyboardZoomStep = 0;
     }
@@ -287,9 +289,11 @@ class MP3Viewer extends MediaBaseViewer {
                     if (this.mediaEl && this.shuttleDirection === 'forward') {
                         this.mediaEl.playbackRate = this.shuttleRate;
                     }
+                    this.scheduleCommentRangeLoopWrap();
                 })
                 .catch(() => {});
         }
+        this.scheduleCommentRangeLoopWrap(true);
     }
 
     startReverseShuttle(rate) {
@@ -300,12 +304,13 @@ class MP3Viewer extends MediaBaseViewer {
         this.pause(undefined, true);
         this.handleRate();
         this.reverseShuttleTimer = window.setInterval(() => {
-            if (!this.mediaEl || this.mediaEl.currentTime <= 0) {
+            const floor = this.clampTimeToOpenCommentRange(0);
+            if (!this.mediaEl || this.mediaEl.currentTime <= floor) {
                 this.exitShuttle();
                 return;
             }
             this.quickSeek(-((this.shuttleRate * AUDIO_V2_SHUTTLE_TICK_MS) / 1000));
-            if (this.mediaEl.currentTime <= 0) {
+            if (this.mediaEl.currentTime <= floor) {
                 this.exitShuttle();
             }
         }, AUDIO_V2_SHUTTLE_TICK_MS);
@@ -339,9 +344,11 @@ class MP3Viewer extends MediaBaseViewer {
             if (this.controls) {
                 this.renderUI();
             }
+            this.scheduleCommentRangeLoopWrap();
             return;
         }
         super.handleRate();
+        this.scheduleCommentRangeLoopWrap();
     }
 
     jumpToCommentMarker(direction) {
@@ -443,6 +450,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     destroy() {
+        this.clearCommentRangeLoopTimer();
         this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT, this.handleCommentRangeDraft);
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
@@ -463,6 +471,7 @@ class MP3Viewer extends MediaBaseViewer {
             // A file-version switch is a clear, not a resync of the previous draft.
             this.commentRangeDraft = null;
             this.isCommentRangeDragging = false;
+            this.syncCommentRangeLoop();
             this.showAudioLoadingShell();
             this.startConversionWaveformLoad();
         }
@@ -981,10 +990,156 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.pendingHostSelectedSeek = null;
         this.exitShuttle();
+        this.handleCommentRangeClear();
         this.mediaEl.pause();
         if (this.mediaEl.currentTime !== marker.time) {
             this.mediaEl.currentTime = marker.time;
         }
+    }
+
+    /**
+     * Seconds of the open draft span, or null when collapsed / absent.
+     * Collapsed drafts (`endMs: null`) do not confine playback.
+     *
+     * @return {{endSec: number, startSec: number}|null}
+     */
+    getOpenCommentRangeSeconds() {
+        const draft = this.commentRangeDraft;
+        if (isRangeCollapsed(draft) || !Number.isFinite(draft.startMs) || !Number.isFinite(draft.endMs)) {
+            return null;
+        }
+        return { endSec: draft.endMs / 1000, startSec: draft.startMs / 1000 };
+    }
+
+    /**
+     * Keep a seek inside the open draft. Waveform click-outside and host
+     * comment seeks dismiss first, then seek; clamp does not apply then.
+     *
+     * @param {number} time
+     * @return {number}
+     */
+    clampTimeToOpenCommentRange(time) {
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !Number.isFinite(time)) {
+            return time;
+        }
+        return Math.min(Math.max(time, range.startSec), range.endSec);
+    }
+
+    clearCommentRangeLoopTimer() {
+        if (this.commentRangeLoopTimer) {
+            window.clearTimeout(this.commentRangeLoopTimer);
+            this.commentRangeLoopTimer = 0;
+        }
+    }
+
+    /**
+     * Wrap when the remaining time to end elapses. Recalculate after play, seek,
+     * rate change, or a draft resize.
+     *
+     * @param {boolean} [force] schedule even if the element still reports paused
+     * @return {void}
+     */
+    scheduleCommentRangeLoopWrap(force = false) {
+        this.clearCommentRangeLoopTimer();
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl || (!force && this.mediaEl.paused)) {
+            return;
+        }
+        const rate = this.mediaEl.playbackRate > 0 ? this.mediaEl.playbackRate : 1;
+        const remainingSec = range.endSec - this.mediaEl.currentTime;
+        this.commentRangeLoopTimer = window.setTimeout(() => {
+            this.commentRangeLoopTimer = 0;
+            const openRange = this.getOpenCommentRangeSeconds();
+            if (!openRange || !this.mediaEl || this.mediaEl.paused) {
+                return;
+            }
+            if (this.mediaEl.currentTime !== openRange.startSec) {
+                this.mediaEl.currentTime = openRange.startSec;
+            }
+            this.scheduleCommentRangeLoopWrap();
+        }, Math.max(0, (remainingSec / rate) * 1000));
+    }
+
+    /**
+     * Update the playback loop to match the current range after it arrives, resizes,
+     * or clears.
+     *
+     * @return {void}
+     */
+    syncCommentRangeLoop() {
+        this.clearCommentRangeLoopTimer();
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl || this.mediaEl.paused) {
+            return;
+        }
+        this.enforceCommentRangePlayback(range);
+    }
+
+    /**
+     * Keep playback inside the open span. A playhead outside [start, end) jumps
+     * to start, then the wrap timer is armed.
+     *
+     * @param {{endSec: number, startSec: number}} range Open draft in seconds
+     * @return {void}
+     */
+    enforceCommentRangePlayback(range) {
+        const { endSec, startSec } = range;
+        const currPlayhead = this.mediaEl.currentTime;
+        const nextPlayhead = currPlayhead >= startSec && currPlayhead < endSec ? currPlayhead : startSec;
+        if (nextPlayhead !== currPlayhead) {
+            this.mediaEl.currentTime = nextPlayhead;
+        }
+        this.scheduleCommentRangeLoopWrap();
+    }
+
+    /**
+     * Play. An open draft loops that span: keep the playhead when it is already
+     * inside, otherwise jump to start. Does not use play(start, end) because
+     * that pauses at end.
+     *
+     * @inheritdoc
+     */
+    play(...args) {
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl) {
+            // Spread so an argument-less call stays argument-less; super.play() skips
+            // playback when it is handed an explicit undefined start.
+            return super.play(...args);
+        }
+
+        const requested = Number.isFinite(args[0]) ? args[0] : this.mediaEl.currentTime;
+        const next = requested >= range.startSec && requested < range.endSec ? requested : range.startSec;
+        if (this.mediaEl.currentTime !== next) {
+            this.mediaEl.currentTime = next;
+        }
+        const playPromise = super.play();
+        this.scheduleCommentRangeLoopWrap(true);
+        return playPromise;
+    }
+
+    /**
+     * Seek. Keyboard and in-range waveform seeks stay inside an open draft.
+     *
+     * @inheritdoc
+     */
+    setMediaTime(time) {
+        super.setMediaTime(this.clampTimeToOpenCommentRange(time));
+        this.scheduleCommentRangeLoopWrap();
+    }
+
+    /**
+     * If the range ends at file end, wrap instead of resetting the play icon.
+     *
+     * @inheritdoc
+     */
+    mediaendHandler() {
+        if (this.getOpenCommentRangeSeconds()) {
+            // `ended` fires after the element is paused; play() wraps and restarts.
+            this.play();
+            return;
+        }
+        super.mediaendHandler();
     }
 
     handleCommentRangeDraft = draft => {
@@ -992,12 +1147,14 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
         this.commentRangeDraft = { endMs: draft.endMs == null ? null : draft.endMs, startMs: draft.startMs };
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
     handleCommentRangeDraftClear = () => {
         this.commentRangeDraft = null;
         this.isCommentRangeDragging = false;
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
@@ -1012,6 +1169,7 @@ class MP3Viewer extends MediaBaseViewer {
         }
         this.commentRangeDraft = { endMs: range.endMs, startMs: range.startMs };
         this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: range.endMs, startMs: range.startMs });
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
@@ -1025,6 +1183,7 @@ class MP3Viewer extends MediaBaseViewer {
         }
         this.commentRangeDraft = null;
         this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
