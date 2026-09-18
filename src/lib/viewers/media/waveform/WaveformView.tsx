@@ -573,7 +573,6 @@ function WaveformView({
                 const pointerX = positionPxFromTime(timeSec, viewportRef.current);
                 if (!isPointerOverRange({ pointerX, range: rangeDraft, viewport: viewportRef.current })) {
                     onRangeClearRef.current?.();
-                    return;
                 }
             }
             if (cameraModeRef.current === 'tape') {
