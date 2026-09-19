@@ -1,3 +1,16 @@
+## 3.93.0 (2026-09-19)
+
+* fix(test): use sha256 for the jest string-loader cache key (#1790) ([b761ec6](https://github.com/box/box-content-preview/commit/b761ec6)), closes [#1790](https://github.com/box/box-content-preview/issues/1790)
+* feat(analytics): programmatic Resin for scrub gestures (#1779) ([908ea1d](https://github.com/box/box-content-preview/commit/908ea1d)), closes [#1779](https://github.com/box/box-content-preview/issues/1779)
+* feat(audio): loop playback within an open draft comment range (#1787) ([f3b29f0](https://github.com/box/box-content-preview/commit/f3b29f0)), closes [#1787](https://github.com/box/box-content-preview/issues/1787)
+* feat(audio): show a generating-waveform indicator while conversion is polling (#1788) ([f726582](https://github.com/box/box-content-preview/commit/f726582)), closes [#1788](https://github.com/box/box-content-preview/issues/1788)
+* feat(audio): show a zoom multiplier on the waveform controls (#1789) ([bca9238](https://github.com/box/box-content-preview/commit/bca9238)), closes [#1789](https://github.com/box/box-content-preview/issues/1789)
+* feat(audio): wire range selection events through the MP3 viewer (#1778) ([d8aa36e](https://github.com/box/box-content-preview/commit/d8aa36e)), closes [#1778](https://github.com/box/box-content-preview/issues/1778)
+* feat(media): add play-next setting on audio and video v2 (#1781) ([483b8df](https://github.com/box/box-content-preview/commit/483b8df)), closes [#1781](https://github.com/box/box-content-preview/issues/1781)
+* test(audio): add v2 Cypress coverage and default empty speed to 1x (#1784) ([4c59e02](https://github.com/box/box-content-preview/commit/4c59e02)), closes [#1784](https://github.com/box/box-content-preview/issues/1784)
+* chore(deps): bump @box/blueprint-web peer to v17 (#1783) ([7e03c8d](https://github.com/box/box-content-preview/commit/7e03c8d)), closes [#1783](https://github.com/box/box-content-preview/issues/1783)
+* chore(media): remove unused MP4Controls composer (#1782) ([fe003de](https://github.com/box/box-content-preview/commit/fe003de)), closes [#1782](https://github.com/box/box-content-preview/issues/1782)
+
 ## 3.92.0 (2026-09-16)
 
 - feat(audio): add draft range handles on the waveform (#1770) ([42efa70](https://github.com/box/box-content-preview/commit/42efa70)), closes [#1770](https://github.com/box/box-content-preview/issues/1770)
