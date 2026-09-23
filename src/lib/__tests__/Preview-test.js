@@ -3025,6 +3025,42 @@ describe('lib/Preview', () => {
             expect(payload.shared_link_auth).toBeUndefined();
             expect(payload.client_name).toBeUndefined();
         });
+
+        test('should report every Blueprint migration wave that is on', () => {
+            preview.file = { id: '12345' };
+            isFeatureEnabled.mockImplementation((_, feature) =>
+                ['blueprintMigrationControlsBar.enabled', 'blueprintMigrationMediaControls.enabled'].includes(feature),
+            );
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    blueprint_archive: false,
+                    blueprint_controls_bar: true,
+                    blueprint_media_controls: true,
+                    blueprint_supporting_ui: false,
+                }),
+            );
+        });
+
+        test('should report the waves that are off rather than leaving them out', () => {
+            preview.file = { id: '12345' };
+            isFeatureEnabled.mockReturnValue(false);
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    blueprint_archive: false,
+                    blueprint_controls_bar: false,
+                    blueprint_media_controls: false,
+                    blueprint_supporting_ui: false,
+                }),
+            );
+        });
     });
 
     describe('emitPreviewError()', () => {
@@ -3145,6 +3181,17 @@ describe('lib/Preview', () => {
         test('should emit a preview_metric event with event_name "load"', done => {
             preview.once(PREVIEW_METRIC, metric => {
                 expect(metric.event_name).toBe(LOAD_METRIC.previewLoadEvent);
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+
+        test('should emit a preview_metric event tagged with the Blueprint migration waves', done => {
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'blueprintMigrationControlsBar.enabled');
+
+            preview.once(PREVIEW_METRIC, metric => {
+                expect(metric.blueprint_controls_bar).toBe(true);
+                expect(metric.blueprint_media_controls).toBe(false);
                 done();
             });
             preview.emitLoadMetrics();

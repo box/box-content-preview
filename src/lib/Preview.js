@@ -57,6 +57,10 @@ import {
     X_REP_HINT_WAVEFORM,
     AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
     AUDIO_PLAYER_V2,
+    BLUEPRINT_MIGRATION_ARCHIVE,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    BLUEPRINT_MIGRATION_MEDIA_CONTROLS,
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -1960,6 +1964,7 @@ class Preview extends EventEmitter {
 
         this.emit(name, {
             ...payload,
+            ...this.getBlueprintMigrationTags(),
             access_pattern: accessPattern,
             client_name: clientName,
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
@@ -1976,6 +1981,25 @@ class Preview extends EventEmitter {
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
             ...getClientLogDetails(),
         });
+    }
+
+    /**
+     * Returns the state of each Blueprint migration wave for this preview session. Every metric
+     * and error carries all four, including the waves that are off, so the flag-off side of a
+     * rollout is measured the same way as the flag-on side rather than inferred from its absence.
+     *
+     * @private
+     * @return {Object} Blueprint migration dimensions
+     */
+    getBlueprintMigrationTags() {
+        const { features } = this.options || {};
+
+        return {
+            blueprint_archive: isFeatureEnabled(features, BLUEPRINT_MIGRATION_ARCHIVE),
+            blueprint_controls_bar: isFeatureEnabled(features, BLUEPRINT_MIGRATION_CONTROLS_BAR),
+            blueprint_media_controls: isFeatureEnabled(features, BLUEPRINT_MIGRATION_MEDIA_CONTROLS),
+            blueprint_supporting_ui: isFeatureEnabled(features, BLUEPRINT_MIGRATION_SUPPORTING_UI),
+        };
     }
 
     /**
