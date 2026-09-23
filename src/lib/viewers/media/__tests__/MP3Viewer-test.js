@@ -866,13 +866,26 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.emit).not.toHaveBeenCalled();
         });
 
-        test('should emit comment_range_draft_dismiss when the waveform is clicked outside an open range', () => {
-            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+        test('should emit comment_range_draft_dismiss when the timestamp toggle is on', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
 
             mp3.handleCommentRangeClear();
 
             expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeTimestampActive).toBe(false);
             expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should clear a drag-created range without telling the host to uncheck the toggle', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
             expect(mp3.renderUI).toBeCalled();
         });
 

@@ -1210,9 +1210,12 @@ class MP3Viewer extends MediaBaseViewer {
         if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
             return;
         }
+        const notifyHost = this.isCommentRangeTimestampActive;
         this.commentRangeDraft = null;
         this.isCommentRangeTimestampActive = false;
-        this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        if (notifyHost) {
+            this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        }
         this.syncCommentRangeLoop();
         this.renderUI();
     };

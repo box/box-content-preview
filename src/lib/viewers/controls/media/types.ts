@@ -22,7 +22,7 @@ export const EVENT_COMMENT_RANGE_DRAFT = 'comment_range_draft';
 /** Sidebar → viewer: hide the handles (toggle-off, post, version switch, unmount). */
 export const EVENT_COMMENT_RANGE_DRAFT_CLEAR = 'comment_range_draft_clear';
 
-/** Viewer → sidebar: the user clicked the waveform outside an open draft range. */
+/** Viewer → sidebar: click outside an open range while the timestamp toggle is already on. */
 export const EVENT_COMMENT_RANGE_DRAFT_DISMISS = 'comment_range_draft_dismiss';
 
 /**

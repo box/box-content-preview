@@ -165,6 +165,69 @@ function zoomOriginAtPointer(
     return { pointerX, timeSec: ((getScrollLeft(wavesurfer) + pointerX) / fullWidth) * durationSec };
 }
 
+type RangeCreateDrag = {
+    active: boolean;
+    originMs: number;
+    originX: number;
+    pointerId: number;
+    range: { endMs: number; startMs: number } | null;
+};
+
+/** Null when the press should stay a click-to-seek or is not on an empty span of the track. */
+function rangeCreateDragFromEvent(
+    event: React.PointerEvent<HTMLDivElement>,
+    source: {
+        durationSec: number;
+        range: WaveformViewProps['range'];
+        track: HTMLDivElement | null;
+        viewport: WaveformViewport;
+    },
+): RangeCreateDrag | null {
+    const { track } = source;
+    if (!track || !(source.durationSec > 0) || !Number.isFinite(event.clientX)) {
+        return null;
+    }
+    const rect = track.getBoundingClientRect();
+    if (!(rect.width > 0)) {
+        return null;
+    }
+    const pointerX = event.clientX - rect.left;
+    if (
+        source.range &&
+        !isRangeCollapsed(source.range) &&
+        isPointerOverRange({ pointerX, range: source.range, viewport: source.viewport })
+    ) {
+        return null;
+    }
+    return {
+        active: false,
+        originMs: clampTimeMs(pointerTimeMs(pointerX, source.viewport), durationMsFromSec(source.durationSec)),
+        originX: event.clientX,
+        pointerId: event.pointerId,
+        range: null,
+    };
+}
+
+function drawnRangeFromMove(
+    drag: RangeCreateDrag,
+    clientX: number,
+    track: HTMLDivElement,
+    viewport: WaveformViewport,
+    playheadSec: number,
+    durationSec: number,
+): { endMs: number; startMs: number } {
+    const pointerMs = snapTimeMs({
+        pixelsPerSecond: viewport.pixelsPerSecond,
+        playheadMs: playheadSec * 1000,
+        timeMs: pointerTimeMs(clientX - track.getBoundingClientRect().left, viewport),
+    });
+    return rangeFromCreateDrag({
+        durationMs: durationMsFromSec(durationSec),
+        originMs: drag.originMs,
+        pointerMs,
+    });
+}
+
 /**
  * Renders V1 peaks with wavesurfer. Does not fetch audio or attach a media element.
  */
@@ -259,13 +322,7 @@ function WaveformView({
     const [isRangeDragging, setIsRangeDragging] = useState(false);
     const isRangeDraggingRef = useRef(false);
     const rangeRef = useRef(range); // latest committed draft; drag-create must not start on top of an open span
-    const createDragRef = useRef<{
-        active: boolean;
-        originMs: number;
-        originX: number;
-        pointerId: number;
-        range: { endMs: number; startMs: number } | null;
-    } | null>(null);
+    const createDragRef = useRef<RangeCreateDrag | null>(null);
     const removeCreateDragListenersRef = useRef<(() => void) | null>(null);
     const skipNextSeekRef = useRef(false);
     const lastSetTimeSecRef = useRef<number | null>(null);
@@ -1060,32 +1117,15 @@ function WaveformView({
             ) {
                 return;
             }
-            const track = trackRef.current;
-            if (!track || !(durationSecRef.current > 0)) {
+            const drag = rangeCreateDragFromEvent(event, {
+                durationSec: durationSecRef.current,
+                range: rangeRef.current,
+                track: trackRef.current,
+                viewport: viewportRef.current,
+            });
+            if (!drag) {
                 return;
             }
-            const rect = track.getBoundingClientRect();
-            if (!(rect.width > 0) || !Number.isFinite(event.clientX)) {
-                return;
-            }
-            const pointerX = event.clientX - rect.left;
-            const vp = viewportRef.current;
-            const existing = rangeRef.current;
-            if (
-                existing &&
-                !isRangeCollapsed(existing) &&
-                isPointerOverRange({ pointerX, range: existing, viewport: vp })
-            ) {
-                return;
-            }
-
-            const drag = {
-                active: false,
-                originMs: clampTimeMs(pointerTimeMs(pointerX, vp), durationMsFromSec(durationSecRef.current)),
-                originX: event.clientX,
-                pointerId: event.pointerId,
-                range: null as { endMs: number; startMs: number } | null,
-            };
             createDragRef.current = drag;
 
             const onMove = (moveEvent: PointerEvent): void => {
@@ -1098,26 +1138,20 @@ function WaveformView({
                 if (!drag.active && Math.abs(moveEvent.clientX - drag.originX) < WAVEFORM_RANGE_CREATE_DRAG_PX) {
                     return;
                 }
-                const moveTrack = trackRef.current;
-                if (!moveTrack) {
+                const track = trackRef.current;
+                if (!track) {
                     return;
                 }
                 moveEvent.preventDefault();
-                const moveRect = moveTrack.getBoundingClientRect();
-                const moveX = moveEvent.clientX - moveRect.left;
-                const moveVp = viewportRef.current;
                 const playheadSec = mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
-                const pointerMs = snapTimeMs({
-                    pixelsPerSecond: moveVp.pixelsPerSecond,
-                    playheadMs: playheadSec * 1000,
-                    timeMs: pointerTimeMs(moveX, moveVp),
-                });
-                const next = rangeFromCreateDrag({
-                    durationMs: durationMsFromSec(durationSecRef.current),
-                    originMs: drag.originMs,
-                    pointerMs,
-                });
-                drag.range = { endMs: next.endMs, startMs: next.startMs };
+                drag.range = drawnRangeFromMove(
+                    drag,
+                    moveEvent.clientX,
+                    track,
+                    viewportRef.current,
+                    playheadSec,
+                    durationSecRef.current,
+                );
                 if (!drag.active) {
                     drag.active = true;
                     handleRangeDragChange(true);
