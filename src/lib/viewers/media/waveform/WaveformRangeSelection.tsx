@@ -148,6 +148,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const durationMs = durationMsFromSec(durationSec);
         const displayed = dragRange ?? resolveRange(range, durationMs);
         displayedRef.current = displayed;
+        const showCommentButton =
+            Boolean(onDragCreate) && displayed.startMs !== displayed.endMs && activeHandle == null;
 
         const syncPositions = useCallback(
             (next: ResolvedRange, nextViewport: WaveformViewport, nextDurationSec: number): void => {
@@ -206,7 +208,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
 
         useLayoutEffect(() => {
             syncPositions(displayedRef.current, viewportRef.current, durationSec);
-        }, [activeHandle, displayed.endMs, displayed.startMs, durationSec, syncPositions]);
+        }, [activeHandle, displayed.endMs, displayed.startMs, durationSec, showCommentButton, syncPositions]);
         useLayoutEffect(() => {
             const next = createWaveformViewport({
                 durationSec: viewport.durationSec,
@@ -384,29 +386,24 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const tooltipMs = tooltipHandle === 'start' ? displayed.startMs : displayed.endMs;
         const collapsed = displayed.startMs === displayed.endMs;
         const highlight = isHighlighted || collapsed;
-        const commentLeft = collapsed
-            ? undefined
-            : timeLeftPercent((displayed.startMs + displayed.endMs) / 2000, durationSec, viewport);
-        const commentButton =
-            onDragCreate && !collapsed && !activeHandle ? (
-                <button
-                    ref={commentRef}
-                    className="bp-WaveformRange-comment"
-                    data-testid="bp-waveform-range-comment"
-                    onClick={event => {
-                        event.stopPropagation();
-                        onDragCreate();
-                    }}
-                    onPointerDown={event => {
-                        event.stopPropagation();
-                    }}
-                    style={{ left: commentLeft }}
-                    type="button"
-                >
-                    <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
-                    {__('media_range_comment')}
-                </button>
-            ) : null;
+        const commentButton = showCommentButton ? (
+            <button
+                ref={commentRef}
+                className="bp-WaveformRange-comment"
+                data-testid="bp-waveform-range-comment"
+                onClick={event => {
+                    event.stopPropagation();
+                    onDragCreate();
+                }}
+                onPointerDown={event => {
+                    event.stopPropagation();
+                }}
+                type="button"
+            >
+                <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                {__('media_range_comment')}
+            </button>
+        ) : null;
 
         return (
             <div
