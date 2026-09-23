@@ -191,12 +191,13 @@ export type WaveformViewProps = {
     onPlayPause?: (isPlaying: boolean) => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
     onRangeClear?: () => void;
+    onRangeDragCreate?: () => void;
     onRangeDragChange?: (isDragging: boolean) => void;
     onSeek?: (timeSec: number) => void;
     onViewportChange?: (viewport: WaveformViewport) => void;
     onZoomChange?: (zoomLevel: number) => void;
     peaks: ArrayLike<number>;
-    /** Checkbox-driven draft. Nothing renders until this is set. */
+    /** Checkbox-driven draft. A waveform drag can also preview a range before this is set. */
     range?: CommentRangeDraft | null;
     zoomLevel?: number;
 };

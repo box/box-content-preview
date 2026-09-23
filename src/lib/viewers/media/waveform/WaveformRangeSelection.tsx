@@ -7,6 +7,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import IconComment24 from '../../controls/icons/IconComment24';
 import { CommentRangeDraft } from '../../controls/media/types';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from './constants';
 import { formatTime } from './peaks';
@@ -38,6 +39,7 @@ export type WaveformRangeSelectionProps = {
     interactive?: boolean;
     isHighlighted?: boolean;
     keepHighlight?: boolean;
+    onDragCreate?: () => void;
     onDragChange?: (isDragging: boolean) => void;
     onPreviewChange?: (range: CommentRangeDraft) => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
@@ -107,6 +109,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             interactive = true,
             isHighlighted = false,
             keepHighlight = true,
+            onDragCreate,
             onDragChange,
             onPreviewChange,
             onRangeChange,
@@ -120,6 +123,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const startHandleRef = useRef<HTMLDivElement>(null);
         const endHandleRef = useRef<HTMLDivElement>(null);
         const tooltipRef = useRef<HTMLDivElement>(null);
+        const commentRef = useRef<HTMLButtonElement>(null);
         const dragRef = useRef<DragState | null>(null);
         const rangeRef = useRef(range);
         const displayedRef = useRef<ResolvedRange>(resolveRange(range, durationMsFromSec(durationSec)));
@@ -176,6 +180,14 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     const tooltipHandle = activeHandleRef.current ?? 'end';
                     const tooltipMs = tooltipHandle === 'start' ? next.startMs : next.endMs;
                     tooltip.style.left = timeLeftPercent(tooltipMs / 1000, nextDurationSec, nextViewport);
+                }
+                const comment = commentRef.current;
+                if (comment && next.startMs !== next.endMs) {
+                    comment.style.left = timeLeftPercent(
+                        (next.startMs + next.endMs) / 2000,
+                        nextDurationSec,
+                        nextViewport,
+                    );
                 }
             },
             [],
@@ -372,6 +384,29 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const tooltipMs = tooltipHandle === 'start' ? displayed.startMs : displayed.endMs;
         const collapsed = displayed.startMs === displayed.endMs;
         const highlight = isHighlighted || collapsed;
+        const commentLeft = collapsed
+            ? undefined
+            : timeLeftPercent((displayed.startMs + displayed.endMs) / 2000, durationSec, viewport);
+        const commentButton =
+            onDragCreate && !collapsed && !activeHandle ? (
+                <button
+                    ref={commentRef}
+                    className="bp-WaveformRange-comment"
+                    data-testid="bp-waveform-range-comment"
+                    onClick={event => {
+                        event.stopPropagation();
+                        onDragCreate();
+                    }}
+                    onPointerDown={event => {
+                        event.stopPropagation();
+                    }}
+                    style={{ left: commentLeft }}
+                    type="button"
+                >
+                    <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                    {__('media_range_comment')}
+                </button>
+            ) : null;
 
         return (
             <div
@@ -411,6 +446,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                         <div className="bp-WaveformRange-tooltipTime">{formatTime(tooltipMs / 1000)}</div>
                     </div>
                 )}
+                {commentButton}
             </div>
         );
     },

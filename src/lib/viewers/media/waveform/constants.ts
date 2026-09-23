@@ -65,5 +65,7 @@ export const WAVEFORM_RANGE_COLLAPSED_OFFSET_PX =
 export const WAVEFORM_RANGE_SNAP_PX = 8;
 /** Shortest committed range. Collapsed drafts (`endMs: null`) are exempt. */
 export const WAVEFORM_RANGE_MIN_DURATION_MS = 250;
+/** Pointer travel before a waveform press becomes a new draft range. Shorter presses stay click-to-seek. */
+export const WAVEFORM_RANGE_CREATE_DRAG_PX = 4;
 export const WAVEFORM_RANGE_GRIP_IN_MS = 150;
 export const WAVEFORM_RANGE_GRIP_OUT_MS = 100;
