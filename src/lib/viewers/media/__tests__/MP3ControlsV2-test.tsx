@@ -19,6 +19,7 @@ jest.mock('../waveform/WaveformView', () => {
         interactive,
         onRangeChange,
         onRangeClear,
+        onRangeDragCreate,
         onViewportChange,
         onZoomChange,
         range,
@@ -29,6 +30,7 @@ jest.mock('../waveform/WaveformView', () => {
         interactive?: boolean;
         onRangeChange?: (range: { endMs: number; startMs: number }) => void;
         onRangeClear?: () => void;
+        onRangeDragCreate?: () => void;
         onViewportChange?: (viewport: {
             durationSec: number;
             endSec: number;
@@ -140,6 +142,9 @@ jest.mock('../waveform/WaveformView', () => {
                 </button>
                 <button data-testid="bp-mock-range-clear" onClick={() => onRangeClear?.()} type="button">
                     clear
+                </button>
+                <button data-testid="bp-mock-range-drag-create" onClick={() => onRangeDragCreate?.()} type="button">
+                    comment
                 </button>
             </div>
         );
@@ -747,12 +752,14 @@ describe('MP3ControlsV2', () => {
         test('should pass range handle commits and click-outside clears through', async () => {
             const onCommentRangeChange = jest.fn();
             const onCommentRangeClear = jest.fn();
+            const onCommentRangeDragCreate = jest.fn();
             getWrapper({
                 commentRangeDraft: { endMs: 4000, startMs: 2000 },
                 durationTime: 8,
                 isPlaying: true,
                 onCommentRangeChange,
                 onCommentRangeClear,
+                onCommentRangeDragCreate,
                 peaks: [0.2, 0.8],
             });
 
@@ -761,6 +768,9 @@ describe('MP3ControlsV2', () => {
 
             await userEvent.click(screen.getByTestId('bp-mock-range-clear'));
             expect(onCommentRangeClear).toHaveBeenCalledTimes(1);
+
+            await userEvent.click(screen.getByTestId('bp-mock-range-drag-create'));
+            expect(onCommentRangeDragCreate).toHaveBeenCalledTimes(1);
         });
     });
 });

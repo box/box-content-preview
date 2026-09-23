@@ -196,6 +196,29 @@ export function commitRangeChange(range: ResolvedRange): CommentRangeChange | nu
     return { endMs: range.endMs, startMs: range.startMs };
 }
 
+/**
+ * Open a draft from a waveform drag. The press time stays anchored; the pointer
+ * chooses which edge moves. Enforces the minimum span once the drag leaves the point.
+ */
+export function rangeFromCreateDrag({
+    durationMs,
+    originMs,
+    pointerMs,
+}: {
+    durationMs: number;
+    originMs: number;
+    pointerMs: number;
+}): ResolvedRange {
+    const origin = clampTimeMs(originMs, durationMs);
+    const handle: RangeHandle = pointerMs >= origin ? 'end' : 'start';
+    return dragRangeHandle({
+        durationMs,
+        handle,
+        pointerMs,
+        range: { endMs: origin, startMs: origin },
+    }).range;
+}
+
 export function rangeProgress(range: ResolvedRange, durationMs: number): { end: number; start: number } | null {
     if (!(durationMs > 0) || range.endMs <= range.startMs) {
         return null;
