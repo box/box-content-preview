@@ -386,24 +386,25 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const tooltipMs = tooltipHandle === 'start' ? displayed.startMs : displayed.endMs;
         const collapsed = displayed.startMs === displayed.endMs;
         const highlight = isHighlighted || collapsed;
-        const commentButton = showCommentButton ? (
-            <button
-                ref={commentRef}
-                className="bp-WaveformRange-comment"
-                data-testid="bp-waveform-range-comment"
-                onClick={event => {
-                    event.stopPropagation();
-                    onDragCreate();
-                }}
-                onPointerDown={event => {
-                    event.stopPropagation();
-                }}
-                type="button"
-            >
-                <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
-                {__('media_range_comment')}
-            </button>
-        ) : null;
+        const commentButton =
+            showCommentButton && onDragCreate ? (
+                <button
+                    ref={commentRef}
+                    className="bp-WaveformRange-comment"
+                    data-testid="bp-waveform-range-comment"
+                    onClick={event => {
+                        event.stopPropagation();
+                        onDragCreate();
+                    }}
+                    onPointerDown={event => {
+                        event.stopPropagation();
+                    }}
+                    type="button"
+                >
+                    <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                    {__('media_range_comment')}
+                </button>
+            ) : null;
 
         return (
             <div
