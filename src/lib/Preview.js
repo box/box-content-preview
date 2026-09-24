@@ -1231,7 +1231,7 @@ class Preview extends EventEmitter {
             this.isVideoFileByExtension() &&
             !this.hasTranscriptionRep(this.file);
         // Captions are optional — do not treat a missing extracted_text rep like missing
-        // dash/mp4. skipServerUpdate should still skip the refresh; default reopen already
+        // dash/mp4. skipServerUpdate still skips this refresh; default reopen already
         // calls loadFromServer() because skipServerUpdate is false.
         const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps || needsTranscriptionRep;
 
