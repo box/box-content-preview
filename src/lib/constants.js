@@ -109,6 +109,13 @@ export const X_REP_HINT_WAVEFORM = '[waveform]';
 export const AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES = 'aiTranscriptionForVideoSubtitles';
 export const AUDIO_PLAYER_V2 = 'audioPlayerV2.enabled';
 
+// One per wave of the Blueprint migration. Each is reported as its own metric dimension so a
+// dashboard can compare a wave's timings with its flag on against the same wave with it off.
+export const BLUEPRINT_MIGRATION_ARCHIVE = 'blueprintMigrationArchive.enabled';
+export const BLUEPRINT_MIGRATION_CONTROLS_BAR = 'blueprintMigrationControlsBar.enabled';
+export const BLUEPRINT_MIGRATION_MEDIA_CONTROLS = 'blueprintMigrationMediaControls.enabled';
+export const BLUEPRINT_MIGRATION_SUPPORTING_UI = 'blueprintMigrationSupportingUi.enabled';
+
 export const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
 export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
 export const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
