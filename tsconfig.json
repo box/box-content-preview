@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
+        "esModuleInterop": true,
         "module": "ES2020",
+        "resolveJsonModule": true,
         "types": ["node", "jest", "@testing-library/jest-dom"]
     },
     "extends": "@box/frontend/ts/tsconfig.json",

@@ -33,8 +33,15 @@ export default function VideoFullscreenButton({ mediaEl, onFullscreenToggle }: P
 
         update();
 
+        // Watch both the video and the overlay parent. A sibling layout change
+        // (e.g. a host-page sidebar) can shrink the parent and re-center the
+        // video without changing the video element's box size, so observing
+        // mediaEl alone would leave the button at a stale `right` offset.
         const resizeObserver = new ResizeObserver(update);
         resizeObserver.observe(mediaEl);
+        if (ref.current?.offsetParent) {
+            resizeObserver.observe(ref.current.offsetParent);
+        }
         window.addEventListener('resize', update);
 
         return () => {

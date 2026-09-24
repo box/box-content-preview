@@ -188,12 +188,23 @@ describe('lib/FocusTrap', () => {
             tile.setAttribute('role', 'option');
             tile.setAttribute('tabindex', '0');
             container.appendChild(tile);
+            const gridTile = document.createElement('div');
+            gridTile.setAttribute('role', 'gridcell');
+            gridTile.setAttribute('tabindex', '0');
+            container.appendChild(gridTile);
+            // Roving tabindex: only the active gridcell is tabbable, the rest must stay out
+            const inactiveGridTile = document.createElement('div');
+            inactiveGridTile.setAttribute('role', 'gridcell');
+            inactiveGridTile.setAttribute('tabindex', '-1');
+            container.appendChild(inactiveGridTile);
 
             const focusTrap = getFocusTrap();
             focusTrap.enable();
 
             const focusable = focusTrap.getFocusableElements();
             expect(focusable).toContain(tile);
+            expect(focusable).toContain(gridTile);
+            expect(focusable).not.toContain(inactiveGridTile);
             expect(focusable.some(el => el.tagName.toLowerCase() === 'i')).toBe(false);
         });
 

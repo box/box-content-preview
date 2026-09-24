@@ -58,7 +58,7 @@ describe('lib/viewers/SWFViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
 
             jest.spyOn(swf, 'loadAssets').mockResolvedValue(undefined);
-            jest.spyOn(swf, 'postLoad');
+            jest.spyOn(swf, 'postLoad').mockImplementation();
             jest.spyOn(swf, 'setup');
 
             return swf.load().then(() => {
@@ -72,6 +72,7 @@ describe('lib/viewers/SWFViewer', () => {
 
             jest.spyOn(swf, 'loadAssets').mockResolvedValue(undefined);
             jest.spyOn(swf, 'setup');
+            jest.spyOn(swf, 'fetchContentAsBlobUrl').mockResolvedValue('blob:swf');
 
             jest.spyOn(swf, 'startLoadTimer');
 
@@ -83,12 +84,12 @@ describe('lib/viewers/SWFViewer', () => {
 
     describe('postLoad()', () => {
         test('should call embedSWF', () => {
-            const contentUrl = 'someurl';
+            const blobUrl = 'blob:swf';
             sandbox
                 .mock(window.swfobject)
                 .expects('embedSWF')
                 .withArgs(
-                    contentUrl,
+                    blobUrl,
                     'flash-player',
                     '100%',
                     '100%',
@@ -107,9 +108,10 @@ describe('lib/viewers/SWFViewer', () => {
                     null,
                     sinon.match.func,
                 );
-            jest.spyOn(swf, 'createContentUrlWithAuthParams').mockReturnValue(contentUrl);
+            jest.spyOn(swf, 'createContentUrlV2').mockReturnValue('contentUrl');
+            jest.spyOn(swf, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
 
-            swf.postLoad();
+            return swf.postLoad();
         });
     });
 

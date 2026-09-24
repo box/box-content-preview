@@ -229,21 +229,24 @@ class VideoBaseViewer extends MediaBaseViewer {
             };
         }
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            const contentUrl = this.createContentUrlV2(template);
-            if (this.preloadBlobUrl) {
-                URL.revokeObjectURL(this.preloadBlobUrl);
-            }
-            this.fetchContentAsBlobUrl(contentUrl)
-                .then(blobUrl => {
-                    this.preloadBlobUrl = blobUrl;
-                    this.preloader.showPreload(blobUrl, this.mediaContainerEl, options);
-                })
-                .catch(this.handleAssetError);
-        } else {
-            const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
-            this.preloader.showPreload(preloadUrlWithAuth, this.mediaContainerEl, options);
+        const contentUrl = this.createContentUrlV2(template);
+        if (this.preloadBlobUrl) {
+            URL.revokeObjectURL(this.preloadBlobUrl);
         }
+        this.fetchContentAsBlobUrl(contentUrl)
+            .then(blobUrl => {
+                if (this.isDestroyed()) {
+                    URL.revokeObjectURL(blobUrl);
+                    return;
+                }
+                this.preloadBlobUrl = blobUrl;
+                this.preloader.showPreload(blobUrl, this.mediaContainerEl, options);
+            })
+            .catch(err => {
+                // Poster is a non-critical first-frame enhancement.
+                // Warn so prod 401s leave a breadcrumb in DevTools.
+                console.warn('Video preload failed', err); // eslint-disable-line no-console
+            });
         this.mediaEl.classList.add(CLASS_INVISIBLE);
     }
 
@@ -278,13 +281,10 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (!preloadRep || !this.isRepresentationReady(preloadRep) || !preloadRep.content?.url_template) {
             return;
         }
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            const contentUrl = this.createContentUrlV2(preloadRep.content.url_template);
-            this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() }).catch(() => {});
-        } else {
-            const preloadUrlWithAuth = this.createContentUrlWithAuthParams(preloadRep.content.url_template);
-            this.api.get(preloadUrlWithAuth, { type: 'blob' }).catch(() => {});
-        }
+        const contentUrl = this.createContentUrlV2(preloadRep.content.url_template);
+        this.api.get(contentUrl, { type: 'blob', headers: this.appendAuthHeader() }).catch(err => {
+            console.warn('Video preload prefetch failed', err); // eslint-disable-line no-console
+        });
     }
 
     buildPlayButtonWithSeekButtons() {

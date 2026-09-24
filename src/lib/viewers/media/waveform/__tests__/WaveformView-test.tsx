@@ -1,0 +1,1740 @@
+import React from 'react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import WaveSurfer from 'wavesurfer.js';
+import WaveformView from '../WaveformView';
+import {
+    WAVEFORM_BAR_GAP,
+    WAVEFORM_BAR_RADIUS,
+    WAVEFORM_BAR_WIDTH,
+    WAVEFORM_FOLLOW_SCROLL_SETTLE_MS,
+    WAVEFORM_HEIGHT,
+    WAVEFORM_PLAYHEAD_JUMP_MS,
+    WAVEFORM_RANGE_COLLAPSED_OFFSET_PX,
+} from '../constants';
+import { WAVEFORM_COLOR_HOVER_PLAYED, WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
+import { getPinnedPlayheadLeft } from '../viewport';
+
+const mockDestroy = jest.fn();
+const mockLoad = jest.fn();
+const mockSetOptions = jest.fn();
+const mockSetTime = jest.fn();
+const mockGetScroll = jest.fn(() => 0);
+const mockGetWidth = jest.fn(() => 200);
+const mockGetWrapper = jest.fn((): {
+    clientWidth: number;
+    parentElement?: { style: { overflowX?: string; scrollbarWidth?: string } } | null;
+    style?: Record<string, string>;
+} => ({ clientWidth: 200 }));
+const mockSetScroll = jest.fn();
+const mockSetScrollTime = jest.fn();
+const mockObserve = jest.fn();
+const mockDisconnect = jest.fn();
+let clickHandler: ((relativeX: number) => void) | undefined;
+let scrollHandler: ((relativeX?: number) => void) | undefined;
+let zoomHandler: (() => void) | undefined;
+let resizeCallback: ResizeObserverCallback | undefined;
+
+const mockOn = jest.fn((event: string, handler: (relativeX?: number) => void) => {
+    if (event === 'click') {
+        clickHandler = handler;
+    }
+    if (event === 'scroll') {
+        scrollHandler = handler;
+    }
+    if (event === 'zoom') {
+        zoomHandler = handler as () => void;
+    }
+    return jest.fn();
+});
+
+function spyFollowScrollSettle(onSettle: (fn: () => void) => void): void {
+    jest.spyOn(window, 'setTimeout').mockImplementation(((fn: TimerHandler, ms?: number) => {
+        if (ms === WAVEFORM_FOLLOW_SCROLL_SETTLE_MS && typeof fn === 'function') {
+            onSettle(fn as () => void);
+        }
+        return 0;
+    }) as typeof window.setTimeout);
+}
+
+/** jsdom does not flush WaveSurfer scroll's rAF-queued tape seek. */
+function swipeTape(): void {
+    const queued: FrameRequestCallback[] = [];
+    const raf = jest.spyOn(window, 'requestAnimationFrame').mockImplementation(((cb: FrameRequestCallback) => {
+        queued.push(cb);
+        return queued.length;
+    }) as typeof requestAnimationFrame);
+    try {
+        act(() => {
+            scrollHandler?.();
+        });
+        act(() => {
+            queued.splice(0).forEach(cb => cb(0));
+        });
+    } finally {
+        raf.mockRestore();
+    }
+}
+
+function renderZoomedWaveform({
+    bindFollowScroll = true,
+    currentTime,
+    getScroll = 0,
+    onViewportChange,
+    setScrollImpl,
+}: {
+    bindFollowScroll?: boolean;
+    currentTime: number;
+    getScroll?: number;
+    onViewportChange?: (viewport: { scrollLeftPx: number }) => void;
+    setScrollImpl?: () => void;
+}): {
+    animationCallbacks: FrameRequestCallback[];
+    mediaEl: HTMLAudioElement;
+    playhead: HTMLElement;
+    rerender: (next?: {
+        currentTime?: number;
+        onViewportChange?: (viewport: { scrollLeftPx: number }) => void;
+    }) => void;
+} {
+    const mediaEl = document.createElement('audio');
+    Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+    Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: currentTime, writable: true });
+    mockGetScroll.mockReturnValue(getScroll);
+    mockGetWidth.mockReturnValue(200);
+    mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+    if (setScrollImpl) {
+        mockSetScroll.mockImplementation(setScrollImpl);
+    }
+
+    const animationCallbacks: FrameRequestCallback[] = [];
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+        animationCallbacks.push(cb);
+        return animationCallbacks.length;
+    });
+    jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+
+    const view = render(
+        <WaveformView
+            currentTime={currentTime}
+            durationSec={8}
+            mediaEl={mediaEl}
+            onViewportChange={onViewportChange}
+            peaks={new Array(800).fill(0.5)}
+            zoomLevel={2}
+        />,
+    );
+
+    if (bindFollowScroll) {
+        // After mount: zoom-center uses setScroll. Keep this fixture at scroll 0 so
+        // play starts in the follow-right zone instead of already centered.
+        mockGetScroll.mockReturnValue(0);
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+            scrollHandler?.();
+        });
+    }
+
+    return {
+        animationCallbacks,
+        mediaEl,
+        playhead: screen.getByTestId('bp-waveform-playhead'),
+        rerender: (next = {}) => {
+            view.rerender(
+                <WaveformView
+                    currentTime={next.currentTime ?? currentTime}
+                    durationSec={8}
+                    mediaEl={mediaEl}
+                    onViewportChange={next.onViewportChange ?? onViewportChange}
+                    peaks={new Array(800).fill(0.5)}
+                    zoomLevel={2}
+                />,
+            );
+        },
+    };
+}
+
+const mockResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => {
+    resizeCallback = callback;
+    return {
+        disconnect: mockDisconnect,
+        observe: mockObserve,
+        unobserve: jest.fn(),
+    };
+});
+((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+
+jest.mock('wavesurfer.js', () => ({
+    __esModule: true,
+    default: {
+        create: jest.fn(() => ({
+            destroy: mockDestroy,
+            getScroll: mockGetScroll,
+            getWidth: mockGetWidth,
+            getWrapper: mockGetWrapper,
+            load: mockLoad,
+            on: mockOn,
+            setOptions: mockSetOptions,
+            setScroll: mockSetScroll,
+            setScrollTime: mockSetScrollTime,
+            setTime: mockSetTime,
+        })),
+    },
+}));
+
+describe('WaveformView', () => {
+    beforeAll(() => {
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 200 });
+    });
+
+    afterAll(() => {
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 0 });
+    });
+
+    beforeEach(() => {
+        clickHandler = undefined;
+        scrollHandler = undefined;
+        zoomHandler = undefined;
+        resizeCallback = undefined;
+        jest.clearAllMocks();
+    });
+
+    test('should mount a wavesurfer instance from peaks without a media url', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8, 0.1]} />);
+
+        expect(screen.getByTestId('bp-waveform-view')).toBeInTheDocument();
+        expect(WaveSurfer.create).toHaveBeenCalledWith(
+            expect.objectContaining({
+                barGap: WAVEFORM_BAR_GAP,
+                barRadius: WAVEFORM_BAR_RADIUS,
+                barWidth: WAVEFORM_BAR_WIDTH,
+                duration: 8,
+                height: WAVEFORM_HEIGHT,
+                peaks: [
+                    [0.2, 0.8, 0.1],
+                    [0.2, 0.8, 0.1],
+                ],
+                progressColor: WAVEFORM_COLOR_PLAYED,
+                waveColor: WAVEFORM_COLOR_UNPLAYED,
+            }),
+        );
+        const options = (WaveSurfer.create as jest.Mock).mock.calls[0][0];
+        expect(options.url).toBeUndefined();
+        expect(options.media).toBeUndefined();
+        expect(options.barAlign).toBeUndefined();
+        expect(options.cursorWidth).toBe(0);
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '0%' });
+    });
+
+    test('should position the playhead from current time', () => {
+        render(<WaveformView currentTime={2} durationSec={8} peaks={[0.2, 0.8]} />);
+
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should keep smoothing the playhead after a seek while playing', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        const cancelAnimation = jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+
+        render(<WaveformView currentTime={1} durationSec={8} mediaEl={mediaEl} peaks={[0.2, 0.8]} />);
+
+        cancelAnimation.mockClear();
+        mockSetTime.mockClear();
+
+        mediaEl.currentTime = 4;
+        mediaEl.dispatchEvent(new Event('seeked'));
+
+        expect(cancelAnimation).not.toHaveBeenCalled();
+        expect(mockSetTime).toHaveBeenCalledWith(4);
+    });
+
+    test('should apply hover fills and show a time chip while the pointer is over the track', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+        expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should not apply hover fills from a touch pointer', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.pointerMove(track, { clientX: 50, pointerType: 'touch' });
+
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+    });
+
+    test('should show the hover time chip while zoomed', () => {
+        render(<WaveformView durationSec={8} peaks={new Array(800).fill(0.5)} zoomLevel={2} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:01.00');
+        expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should hide the hover time when the pointer leaves', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+        expect(screen.getByTestId('bp-waveform-hover-time')).toBeInTheDocument();
+
+        fireEvent.mouseLeave(track);
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+    });
+
+    test('should highlight the range while the pointer is over it', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} range={{ endMs: 4000, startMs: 2000 }} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'false');
+
+        fireEvent.mouseMove(track, { clientX: 75 });
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'true');
+
+        fireEvent.mouseMove(track, { clientX: 160 });
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'false');
+
+        fireEvent.mouseMove(track, { clientX: 75 });
+        fireEvent.mouseLeave(track);
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'false');
+    });
+
+    test('should keep a collapsed draft highlighted when the pointer leaves', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.mouseLeave(track);
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'true');
+    });
+
+    test('should seek from a wavesurfer click', () => {
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+
+        expect(clickHandler).toBeDefined();
+        clickHandler?.(0.25);
+
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
+    test('should clear an open range and seek when clicking the waveform outside it', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onSeek).toHaveBeenCalledWith(6);
+    });
+
+    test('should seek when clicking inside an open range', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.375);
+
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(3);
+    });
+
+    function mockWaveformRect(): void {
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+    }
+
+    function dispatchTrackPointer(target: EventTarget, type: string, clientX: number): void {
+        const event = new MouseEvent(type, { bubbles: true, button: 0, clientX });
+        if (event.clientX !== clientX) {
+            Object.defineProperty(event, 'clientX', { configurable: true, value: clientX });
+        }
+        Object.defineProperty(event, 'pointerId', { configurable: true, value: 1 });
+        act(() => {
+            target.dispatchEvent(event);
+        });
+    }
+
+    test('should create a draft range when the pointer drags across the waveform', () => {
+        const onRangeChange = jest.fn();
+        const onRangeDragChange = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                onRangeDragChange={onRangeDragChange}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+            />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+        expect(onRangeDragChange).toHaveBeenCalledWith(true);
+        expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(onRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 400 });
+        expect(onRangeDragChange).toHaveBeenLastCalledWith(false);
+        clickHandler?.(0.75);
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should keep a short press as click-to-seek', () => {
+        const onRangeChange = jest.fn();
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} onRangeChange={onRangeChange} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 12);
+        dispatchTrackPointer(window, 'pointerup', 12);
+        clickHandler?.(0.25);
+
+        expect(onRangeChange).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
+    test('should not start a new range from a drag inside an open range', () => {
+        const onRangeChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 75);
+        dispatchTrackPointer(window, 'pointermove', 160);
+        dispatchTrackPointer(window, 'pointerup', 160);
+
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should show Comment above a checkbox range', () => {
+        const onRangeDragCreate = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeDragCreate={onRangeDragCreate}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        fireEvent.click(screen.getByTestId('bp-waveform-range-comment'));
+
+        expect(onRangeDragCreate).toHaveBeenCalledTimes(1);
+    });
+
+    test('should seek when clicking the waveform with only a collapsed draft', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(6);
+    });
+
+    test('should ignore hover and clicks while inert', () => {
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} interactive={false} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+        clickHandler?.(0.25);
+
+        expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--inert');
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+        expect(WaveSurfer.create).toHaveBeenCalledWith(expect.objectContaining({ interact: false }));
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should not create a range from handles while inert', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        const onRangeChange = jest.fn();
+        const onRangeDragChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                interactive={false}
+                onRangeChange={onRangeChange}
+                onRangeDragChange={onRangeDragChange}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        fireEvent.pointerDown(screen.getByTestId('bp-waveform-range-handle-end'), {
+            button: 0,
+            clientX: 50,
+            pointerId: 1,
+        });
+        fireEvent.pointerMove(window, { clientX: 100, pointerId: 1 });
+        fireEvent.pointerUp(window, { clientX: 100, pointerId: 1 });
+
+        expect(onRangeDragChange).not.toHaveBeenCalled();
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should keep the wavesurfer instance when duration changes from the placeholder', () => {
+        const peaks = [0.2, 0.8];
+        const { rerender } = render(<WaveformView durationSec={1} peaks={peaks} />);
+
+        expect(WaveSurfer.create).toHaveBeenCalledTimes(1);
+
+        rerender(<WaveformView durationSec={8} peaks={peaks} />);
+
+        expect(WaveSurfer.create).toHaveBeenCalledTimes(1);
+        expect(mockDestroy).not.toHaveBeenCalled();
+        expect(mockLoad).toHaveBeenCalledWith(
+            '',
+            [
+                [0.2, 0.8],
+                [0.2, 0.8],
+            ],
+            8,
+        );
+    });
+
+    test('should keep playhead left when playback smoothing starts', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 2, writable: true });
+
+        render(<WaveformView currentTime={2} durationSec={8} mediaEl={mediaEl} peaks={[0.2, 0.8]} />);
+        const playhead = screen.getByTestId('bp-waveform-playhead');
+        expect(playhead).toHaveStyle({ left: '25%' });
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
+
+        expect(playhead).toHaveStyle({ left: '25%' });
+    });
+
+    test('should morph peaks without remounting wavesurfer', () => {
+        const frames: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            frames.push(cb);
+            return frames.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        jest.spyOn(performance, 'now').mockReturnValue(0);
+
+        const placeholder = [0.05, 0.05];
+        const decoded = [0.2, 0.8];
+        const { rerender } = render(<WaveformView durationSec={8} peaks={placeholder} />);
+
+        expect(WaveSurfer.create).toHaveBeenCalledTimes(1);
+
+        rerender(<WaveformView durationSec={8} peaks={decoded} />);
+
+        expect(WaveSurfer.create).toHaveBeenCalledTimes(1);
+        expect(frames.length).toBeGreaterThan(0);
+
+        frames[0](800);
+
+        const peakLoad = [...mockLoad.mock.calls].reverse().find(call => call[1]);
+        expect(peakLoad[0]).toBe('');
+        expect(peakLoad[2]).toBe(8);
+        expect(peakLoad[1][0][0]).toBeCloseTo(0.2);
+        expect(peakLoad[1][0][1]).toBeCloseTo(0.8);
+    });
+
+    test('should recompute fills when the canvas width changes', () => {
+        const bufferedRange = {
+            end: () => 4,
+            length: 1,
+            start: () => 0,
+        } as TimeRanges;
+
+        render(<WaveformView bufferedRange={bufferedRange} durationSec={8} peaks={[0.2, 0.8]} />);
+
+        expect(mockResizeObserver).toHaveBeenCalled();
+        expect(mockObserve).toHaveBeenCalled();
+        expect(resizeCallback).toBeDefined();
+
+        mockSetOptions.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { width: 400 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetOptions).toHaveBeenCalled();
+    });
+
+    test('should emit viewport zoom limits from peak density, duration, and viewport width', () => {
+        const onViewportChange = jest.fn();
+        render(<WaveformView durationSec={60} onViewportChange={onViewportChange} peaks={new Array(800).fill(0.5)} />);
+
+        expect(onViewportChange).toHaveBeenCalledWith(expect.objectContaining({ maxZoom: 4, widthPx: 200 }));
+    });
+
+    test('should not allow zoom when the file is shorter than the minimum window floor', () => {
+        const onViewportChange = jest.fn();
+        render(<WaveformView durationSec={2} onViewportChange={onViewportChange} peaks={new Array(16384).fill(0.5)} />);
+
+        expect(onViewportChange).toHaveBeenCalledWith(expect.objectContaining({ maxZoom: 1, widthPx: 200 }));
+    });
+
+    test('should apply minPxPerSec and the zoomed class when zoomed in', () => {
+        render(<WaveformView durationSec={8} peaks={new Array(800).fill(0.5)} zoomLevel={2} />);
+
+        expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--zoomed');
+        expect(mockSetOptions).toHaveBeenCalledWith(
+            expect.objectContaining({
+                autoScroll: false,
+                minPxPerSec: 50,
+            }),
+        );
+    });
+
+    test('should not recenter when only the peak-derived max zoom changes', () => {
+        render(<WaveformView currentTime={10} durationSec={300} peaks={new Array(16384).fill(0.5)} zoomLevel={2} />);
+
+        mockSetScroll.mockClear();
+        mockSetScrollTime.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { width: 800 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetScroll).not.toHaveBeenCalled();
+        expect(mockSetScrollTime).not.toHaveBeenCalled();
+    });
+
+    test('should zoom around the pointer on ctrl+wheel', () => {
+        const onZoomChange = jest.fn();
+        render(
+            <WaveformView durationSec={8} onZoomChange={onZoomChange} peaks={new Array(800).fill(0.5)} zoomLevel={1} />,
+        );
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(onZoomChange).toHaveBeenCalled();
+        expect(onZoomChange.mock.calls[0][0]).toBeGreaterThan(1);
+    });
+
+    test('should not zoom on ctrl+wheel when zoom is not enabled', () => {
+        render(<WaveformView durationSec={8} peaks={new Array(800).fill(0.5)} zoomLevel={1} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--zoomed');
+    });
+
+    test('should not zoom on ctrl+wheel when the minimum window floor leaves no zoom headroom', () => {
+        const onZoomChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={2}
+                onZoomChange={onZoomChange}
+                peaks={new Array(16384).fill(0.5)}
+                zoomLevel={1}
+            />,
+        );
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(onZoomChange).not.toHaveBeenCalled();
+        expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--zoomed');
+    });
+
+    test('should jump the playhead into view on resume even when WaveSurfer emits extra scroll events', () => {
+        jest.spyOn(performance, 'now').mockReturnValue(0);
+        const { animationCallbacks, mediaEl } = renderZoomedWaveform({
+            bindFollowScroll: false,
+            currentTime: 1,
+            getScroll: 400,
+            setScrollImpl: () => {
+                scrollHandler?.();
+                scrollHandler?.();
+            },
+        });
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
+
+        expect(animationCallbacks.length).toBeGreaterThan(0);
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(WAVEFORM_PLAYHEAD_JUMP_MS));
+        });
+
+        expect(mockSetScroll).toHaveBeenCalled();
+        expect(mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1][0]).toBeCloseTo(0);
+    });
+
+    test('should jump the zoomed window to a host seek that is off-screen', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        jest.spyOn(performance, 'now').mockReturnValue(0);
+
+        render(
+            <WaveformView
+                currentTime={1}
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+
+        act(() => {
+            animationCallbacks.splice(0).forEach(cb => cb(0));
+        });
+        mockSetScroll.mockClear();
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 6, writable: true });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('seeked'));
+        });
+
+        expect(animationCallbacks.length).toBeGreaterThan(0);
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(WAVEFORM_PLAYHEAD_JUMP_MS));
+        });
+
+        expect(mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1][0]).toBeCloseTo(200);
+        expect(screen.getByTestId('bp-waveform-playhead').style.left).toBe('50%');
+    });
+
+    test('should jump immediately when reduced motion is preferred', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+        const originalMatchMedia = window.matchMedia;
+        const matchMedia = jest.fn((query: string) => ({
+            addEventListener: jest.fn(),
+            addListener: jest.fn(),
+            dispatchEvent: jest.fn(),
+            matches: query === '(prefers-reduced-motion: reduce)',
+            media: query,
+            onchange: null,
+            removeEventListener: jest.fn(),
+            removeListener: jest.fn(),
+        }));
+        Object.defineProperty(window, 'matchMedia', { configurable: true, value: matchMedia });
+
+        try {
+            render(
+                <WaveformView
+                    currentTime={1}
+                    durationSec={8}
+                    mediaEl={mediaEl}
+                    peaks={new Array(800).fill(0.5)}
+                    zoomLevel={2}
+                />,
+            );
+
+            act(() => {
+                animationCallbacks.splice(0).forEach(cb => cb(0));
+            });
+            mockSetScroll.mockClear();
+
+            Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 6, writable: true });
+            act(() => {
+                mediaEl.dispatchEvent(new Event('seeked'));
+            });
+
+            expect(mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1][0]).toBeCloseTo(200);
+            const setScrollCallsAfterSeek = mockSetScroll.mock.calls.length;
+            act(() => {
+                animationCallbacks.splice(0).forEach(cb => cb(0));
+            });
+
+            expect(mockSetScroll.mock.calls).toHaveLength(setScrollCallsAfterSeek);
+            expect(screen.getByTestId('bp-waveform-playhead').style.left).toBe('50%');
+        } finally {
+            if (originalMatchMedia) {
+                Object.defineProperty(window, 'matchMedia', { configurable: true, value: originalMatchMedia });
+            } else {
+                delete (window as { matchMedia?: typeof window.matchMedia }).matchMedia;
+            }
+        }
+    });
+
+    test('should not jump the zoomed window when a host seek is already in view', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+
+        render(
+            <WaveformView
+                currentTime={1}
+                durationSec={8}
+                mediaEl={mediaEl}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+
+        act(() => {
+            animationCallbacks.splice(0).forEach(cb => cb(0));
+        });
+        mockSetScroll.mockClear();
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 2, writable: true });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('seeked'));
+        });
+        act(() => {
+            animationCallbacks.splice(0).forEach(cb => cb(0));
+        });
+
+        expect(mockSetScroll).not.toHaveBeenCalled();
+    });
+
+    test('should pin the playhead while following and keep setTime in sync', () => {
+        const onViewportChange = jest.fn();
+        const { animationCallbacks, mediaEl, playhead } = renderZoomedWaveform({
+            currentTime: 3.5,
+            onViewportChange,
+        });
+        const pinnedLeft = getPinnedPlayheadLeft(200);
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
+
+        expect(playhead.style.left).toBe(pinnedLeft);
+        expect(mockSetTime).toHaveBeenCalledWith(3.5);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        expect(playhead.style.left).toBe(pinnedLeft);
+        expect(mockSetTime).toHaveBeenCalledWith(3.8);
+        expect(mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1][0]).toBeGreaterThan(0);
+        expect(onViewportChange).toHaveBeenCalled();
+        const latestViewport = onViewportChange.mock.calls[onViewportChange.mock.calls.length - 1][0];
+        expect(latestViewport.scrollLeftPx).toBeGreaterThan(0);
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('pause'));
+        });
+
+        mockGetScroll.mockReturnValue(0);
+        act(() => {
+            scrollHandler?.();
+        });
+
+        expect(playhead.style.left).toBe('95%');
+    });
+
+    test('should emit live scrollLeft when the viewport listener changes while following', () => {
+        const onViewportChange = jest.fn();
+        const { animationCallbacks, mediaEl, rerender } = renderZoomedWaveform({
+            currentTime: 3.5,
+            onViewportChange,
+        });
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
+        act(() => {
+            animationCallbacks.splice(0).forEach(cb => cb(0));
+        });
+
+        const liveScroll = onViewportChange.mock.calls[onViewportChange.mock.calls.length - 1][0].scrollLeftPx;
+        expect(liveScroll).toBeGreaterThan(0);
+
+        const nextOnViewportChange = jest.fn();
+        rerender({ onViewportChange: nextOnViewportChange });
+
+        expect(nextOnViewportChange).toHaveBeenCalled();
+        expect(nextOnViewportChange.mock.calls[0][0].scrollLeftPx).toBe(liveScroll);
+    });
+
+    test('should not jump back after a pan leaves the playhead off the right', () => {
+        let settleUserScroll: (() => void) | undefined;
+        spyFollowScrollSettle(fn => {
+            settleUserScroll = fn;
+        });
+        jest.spyOn(window, 'clearTimeout').mockImplementation(jest.fn());
+
+        const { animationCallbacks, mediaEl, playhead } = renderZoomedWaveform({ currentTime: 3.5 });
+        const pinnedLeft = getPinnedPlayheadLeft(200);
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
+        expect(playhead.style.left).toBe(pinnedLeft);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        const callsWhileFollowing = mockSetScroll.mock.calls.length;
+        expect(callsWhileFollowing).toBeGreaterThan(0);
+
+        mockGetScroll.mockReturnValue(0);
+        act(() => {
+            scrollHandler?.();
+        });
+
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 4.1, writable: true });
+        act(() => {
+            settleUserScroll?.();
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+        expect(mockSetScroll.mock.calls.length).toBe(callsWhileFollowing);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.5, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+        expect(playhead.style.left).toBe(pinnedLeft);
+        expect(mockSetScroll.mock.calls.length).toBeGreaterThan(callsWhileFollowing);
+    });
+
+    test('should not pin after pause during a pan settle', () => {
+        let settleUserScroll: (() => void) | undefined;
+        spyFollowScrollSettle(fn => {
+            settleUserScroll = fn;
+        });
+        jest.spyOn(window, 'clearTimeout').mockImplementation(jest.fn());
+
+        const { animationCallbacks, mediaEl, playhead } = renderZoomedWaveform({ currentTime: 3.5 });
+        const pinnedLeft = getPinnedPlayheadLeft(200);
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('play'));
+        });
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 3.8, writable: true });
+        act(() => {
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        mockGetScroll.mockReturnValue(0);
+        act(() => {
+            scrollHandler?.();
+        });
+        const callsAfterPan = mockSetScroll.mock.calls.length;
+
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('pause'));
+            settleUserScroll?.();
+            const queued = animationCallbacks.splice(0);
+            queued.forEach(cb => cb(0));
+        });
+
+        expect(playhead.style.left).not.toBe(pinnedLeft);
+        expect(mockSetScroll.mock.calls.length).toBe(callsAfterPan);
+    });
+
+    test('should keep the seeked time after a pan while paused', () => {
+        const { mediaEl, playhead } = renderZoomedWaveform({ currentTime: 3.5 });
+
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 1, writable: true });
+        act(() => {
+            mediaEl.dispatchEvent(new Event('seeked'));
+            mockGetScroll.mockReturnValue(0);
+            scrollHandler?.();
+        });
+
+        expect(playhead.style.left).toBe('25%');
+    });
+
+    test('should center the playhead when zoom changes without a pointer origin', () => {
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 200 });
+        const { rerender } = render(
+            <WaveformView currentTime={8} durationSec={16} peaks={new Array(800).fill(0.5)} zoomLevel={2} />,
+        );
+
+        mockSetScroll.mockClear();
+        rerender(<WaveformView currentTime={8} durationSec={16} peaks={new Array(800).fill(0.5)} zoomLevel={4} />);
+
+        expect(mockSetScroll).toHaveBeenCalledWith(300);
+    });
+
+    test('should ignore WaveSurfer zoom/scroll resets until the intended zoom window is applied', () => {
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 200 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+        const onViewportChange = jest.fn();
+        const { rerender } = render(
+            <WaveformView
+                currentTime={8}
+                durationSec={16}
+                onViewportChange={onViewportChange}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+
+        const playhead = screen.getByTestId('bp-waveform-playhead');
+        const playheadLeftDuringZoom: string[] = [];
+        const viewportScrollDuringZoom: number[] = [];
+        mockSetOptions.mockImplementation(() => {
+            mockGetScroll.mockReturnValue(0);
+            zoomHandler?.();
+            scrollHandler?.();
+            playheadLeftDuringZoom.push(playhead.style.left);
+            viewportScrollDuringZoom.push(...onViewportChange.mock.calls.map(call => call[0].scrollLeftPx).slice(-1));
+        });
+        onViewportChange.mockClear();
+        mockSetScroll.mockClear();
+
+        rerender(
+            <WaveformView
+                currentTime={8}
+                durationSec={16}
+                onViewportChange={onViewportChange}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={4}
+            />,
+        );
+
+        mockSetOptions.mockReset();
+
+        expect(playheadLeftDuringZoom).not.toContain('200%');
+        expect(viewportScrollDuringZoom).not.toContain(0);
+        expect(mockSetScroll).toHaveBeenCalledWith(300);
+        expect(onViewportChange.mock.calls.map(call => call[0].scrollLeftPx)).not.toContain(0);
+        expect(playhead).toHaveStyle({ left: '50%' });
+    });
+
+    test('should keep the paused playhead on the live window while panning and zooming', () => {
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 30, writable: true });
+        mockGetScroll.mockReturnValue(0);
+        mockGetWidth.mockReturnValue(200);
+        mockGetWrapper.mockReturnValue({ clientWidth: 400 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        const animationCallbacks: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            animationCallbacks.push(cb);
+            return animationCallbacks.length;
+        });
+
+        const { rerender } = render(
+            <WaveformView
+                currentTime={30}
+                durationSec={60}
+                mediaEl={mediaEl}
+                peaks={new Array(16384).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+
+        act(() => {
+            animationCallbacks.splice(0).forEach(cb => cb(0));
+        });
+
+        const playhead = screen.getByTestId('bp-waveform-playhead');
+        expect(playhead.style.left).toBe('50%');
+
+        mockGetScroll.mockReturnValue(50);
+        act(() => {
+            scrollHandler?.();
+        });
+        expect(playhead.style.left).toBe('75%');
+
+        rerender(
+            <WaveformView
+                currentTime={30}
+                durationSec={60}
+                mediaEl={mediaEl}
+                peaks={new Array(16384).fill(0.5)}
+                zoomLevel={2}
+            />,
+        );
+        expect(playhead.style.left).toBe('75%');
+
+        rerender(
+            <WaveformView
+                currentTime={30}
+                durationSec={60}
+                mediaEl={mediaEl}
+                peaks={new Array(16384).fill(0.5)}
+                zoomLevel={4}
+            />,
+        );
+        expect(playhead.style.left).toBe('50%');
+    });
+
+    test('should pin the playhead at center and not seek from a tap in tape mode', () => {
+        const onPlayPause = jest.fn();
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                isPlaying={false}
+                onPlayPause={onPlayPause}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--tape');
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
+        expect(WaveSurfer.create).toHaveBeenCalledWith(
+            expect.objectContaining({ interact: false, progressColor: WAVEFORM_COLOR_HOVER_PLAYED }),
+        );
+        expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ minPxPerSec: 25 }));
+
+        clickHandler?.(0.25);
+        fireEvent.pointerUp(
+            screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement,
+            { button: 0, pointerType: 'touch' },
+        );
+
+        expect(onSeek).not.toHaveBeenCalled();
+        expect(onPlayPause).toHaveBeenCalledWith(true);
+        expect(onPlayPause).toHaveBeenCalledTimes(1);
+    });
+
+    test('should size tape WaveSurfer bars to the canvas box when the stage is taller than 206px', () => {
+        render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
+
+        mockSetOptions.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { height: 320, width: 200 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ height: 320 }));
+    });
+
+    test('should size tape WaveSurfer from the canvas height on first paint', () => {
+        Object.defineProperty(HTMLElement.prototype, 'clientHeight', { configurable: true, value: 260 });
+        try {
+            render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
+
+            expect(WaveSurfer.create).toHaveBeenCalledWith(expect.objectContaining({ height: 260 }));
+        } finally {
+            Object.defineProperty(HTMLElement.prototype, 'clientHeight', { configurable: true, value: 0 });
+        }
+    });
+
+    test('should not recenter the tape playhead when only the canvas size changes', () => {
+        render(<WaveformView cameraMode="tape" currentTime={2} durationSec={8} peaks={new Array(800).fill(0.5)} />);
+
+        mockSetScroll.mockClear();
+        act(() => {
+            resizeCallback?.(
+                [
+                    ({
+                        contentRect: { height: 320, width: 200 },
+                    } as unknown) as ResizeObserverEntry,
+                ],
+                ({} as unknown) as ResizeObserver,
+            );
+        });
+
+        expect(mockSetScroll).not.toHaveBeenCalled();
+    });
+
+    test('should seek to the time under the center pin when the tape waveform is swiped', () => {
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        expect(onSeek).toHaveBeenCalledWith(2);
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
+        const chip = screen.getByTestId('bp-waveform-hover');
+        expect(chip).toHaveClass('bp-WaveformView-hover--tape');
+        expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+    });
+
+    test('should keep the tape scroller pan-able at 1x so gutter swipes can seek', () => {
+        const onSeek = jest.fn();
+        const scrollStyle: { overflowX?: string; scrollbarWidth?: string } = {};
+        mockGetWrapper.mockReturnValue({
+            clientWidth: 200,
+            parentElement: { style: scrollStyle },
+            style: {},
+        });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        expect(mockSetOptions).toHaveBeenCalledWith(expect.objectContaining({ fillParent: false, minPxPerSec: 25 }));
+        expect(scrollStyle.overflowX).toBe('auto');
+        expect(scrollStyle.scrollbarWidth).toBe('none');
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
+    test('should seek once per frame while the tape is swiped', () => {
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        const queued: FrameRequestCallback[] = [];
+        const raf = jest.spyOn(window, 'requestAnimationFrame').mockImplementation(((cb: FrameRequestCallback) => {
+            queued.push(cb);
+            return queued.length;
+        }) as typeof requestAnimationFrame);
+
+        try {
+            mockGetScroll.mockReturnValue(50);
+            act(() => {
+                scrollHandler?.();
+            });
+            mockGetScroll.mockReturnValue(75);
+            act(() => {
+                scrollHandler?.();
+            });
+
+            expect(onSeek).not.toHaveBeenCalled();
+
+            act(() => {
+                queued.forEach(cb => cb(0));
+            });
+
+            expect(onSeek).toHaveBeenCalledTimes(1);
+            expect(onSeek).toHaveBeenCalledWith(3);
+        } finally {
+            raf.mockRestore();
+        }
+    });
+
+    test('should not toggle play from a delayed click after a tape swipe', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    peaks={new Array(800).fill(0.5)}
+                />,
+            );
+
+            mockGetScroll.mockReturnValue(50);
+            swipeTape();
+
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+            });
+            clickHandler?.(0.25);
+            expect(onPlayPause).not.toHaveBeenCalled();
+
+            clickHandler?.(0.25);
+            expect(onPlayPause).toHaveBeenCalledTimes(1);
+            expect(onPlayPause).toHaveBeenCalledWith(true);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not toggle play from a delayed click after a tape pinch', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onZoomChange = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={100}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onZoomChange={onZoomChange}
+                    peaks={new Array(800).fill(0.5)}
+                />,
+            );
+
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+            fireEvent.touchStart(track, {
+                touches: [
+                    { clientX: 40, clientY: 20, identifier: 1 },
+                    { clientX: 120, clientY: 20, identifier: 2 },
+                ],
+            });
+            fireEvent.touchEnd(track, { touches: [] });
+
+            clickHandler?.(0.25);
+            fireEvent.pointerUp(track, { button: 0 });
+            expect(onPlayPause).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not show a hover time chip from pointer move in tape mode', () => {
+        render(<WaveformView cameraMode="tape" durationSec={8} peaks={[0.2, 0.8]} />);
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+    });
+
+    test('should hide the tape seek time chip after the swipe settles', () => {
+        jest.useFakeTimers();
+        const onSeek = jest.fn();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+            />,
+        );
+
+        mockGetScroll.mockReturnValue(50);
+        act(() => {
+            scrollHandler?.();
+        });
+        expect(screen.getByTestId('bp-waveform-hover-time')).toBeInTheDocument();
+
+        act(() => {
+            jest.advanceTimersByTime(WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+        });
+        expect(screen.queryByTestId('bp-waveform-hover-time')).not.toBeInTheDocument();
+        jest.useRealTimers();
+    });
+
+    test('should not draw range handles until a draft is supplied', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />);
+
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+    });
+
+    test('should draw collapsed range handles at the draft time', () => {
+        render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />);
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-highlighted', 'true');
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({
+            left: `calc(25% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
+            left: `calc(25% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+    });
+
+    test('should hide collapsed range handles while playing', () => {
+        render(<WaveformView durationSec={8} isPlaying peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />);
+
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+    });
+
+    test('should show collapsed range handles again after pause', () => {
+        const { rerender } = render(
+            <WaveformView durationSec={8} isPlaying peaks={[0.2, 0.8]} range={{ endMs: null, startMs: 2000 }} />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+
+        rerender(
+            <WaveformView
+                durationSec={8}
+                isPlaying={false}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+    });
+
+    test('should keep an open range visible while playing', () => {
+        render(<WaveformView durationSec={8} isPlaying peaks={[0.2, 0.8]} range={{ endMs: 4000, startMs: 2000 }} />);
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'false');
+    });
+
+    test('should keep a draft range glued through zoom and pan', () => {
+        const { rerender } = render(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={1}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '25%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '50%' });
+
+        rerender(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={2}
+            />,
+        );
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '100%' });
+
+        mockSetTime.mockClear();
+        mockSetOptions.mockClear();
+        mockGetScroll.mockReturnValue(200);
+        act(() => {
+            scrollHandler?.();
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+        expect(mockSetTime).not.toHaveBeenCalled();
+        expect(mockSetOptions).not.toHaveBeenCalled();
+
+        rerender(
+            <WaveformView
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                zoomLevel={2}
+            />,
+        );
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({ left: '-50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '0%' });
+    });
+
+    test('should not seek while a range handle is dragging', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.releasePointerCapture) {
+            HTMLElement.prototype.releasePointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.hasPointerCapture) {
+            HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
+        }
+        const onSeek = jest.fn();
+        const onRangeDragChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeDragChange={onRangeDragChange}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: null, startMs: 2000 }}
+            />,
+        );
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.pointerDown(screen.getByTestId('bp-waveform-range-handle-end'), {
+            button: 0,
+            clientX: 50,
+            pointerId: 1,
+        });
+        clickHandler?.(0.5);
+        expect(onSeek).not.toHaveBeenCalled();
+
+        fireEvent.pointerUp(window, { clientX: 50, pointerId: 1 });
+        expect(onRangeDragChange).toHaveBeenCalledWith(false);
+        clickHandler?.(0.5);
+        expect(onSeek).not.toHaveBeenCalled();
+
+        clickHandler?.(0.5);
+        expect(onSeek).toHaveBeenCalledWith(4);
+    });
+});

@@ -1539,7 +1539,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             };
             jest.spyOn(videoBase, 'getViewerOption').mockReturnValue(true);
             jest.spyOn(videoBase, 'isRepresentationReady').mockReturnValue(true);
-            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(
+            jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue('https://example.com/preview.jpg');
+            jest.spyOn(videoBase, 'fetchContentAsBlobUrl').mockResolvedValue(
                 'https://example.com/preview.jpg?auth=token',
             );
         });
@@ -1586,11 +1587,13 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.showPreload();
 
             expect(videoBase.preloader).toBeInstanceOf(VideoPreloader);
-            expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
-                'https://example.com/preview.jpg?auth=token',
-                videoBase.mediaContainerEl,
-                expect.objectContaining({ onImageClick: expect.any(Function) }),
-            );
+            return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                    'https://example.com/preview.jpg?auth=token',
+                    videoBase.mediaContainerEl,
+                    expect.objectContaining({ onImageClick: expect.any(Function) }),
+                );
+            });
         });
 
         test('should size the shared media frame when early paint is enabled', () => {
@@ -1606,18 +1609,20 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             videoBase.showPreload();
 
-            expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
-                'https://example.com/preview.jpg?auth=token',
-                videoBase.mediaContainerEl,
-                expect.objectContaining({
-                    onImageClick: expect.any(Function),
-                    earlyPaint: true,
-                    getViewport: expect.any(Function),
-                }),
-            );
+            return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                    'https://example.com/preview.jpg?auth=token',
+                    videoBase.mediaContainerEl,
+                    expect.objectContaining({
+                        onImageClick: expect.any(Function),
+                        earlyPaint: true,
+                        getViewport: expect.any(Function),
+                    }),
+                );
 
-            const { getViewport } = VideoPreloader.prototype.showPreload.mock.calls[0][2];
-            expect(getViewport()).toEqual({ height: 450, width: 800 });
+                const { getViewport } = VideoPreloader.prototype.showPreload.mock.calls[0][2];
+                expect(getViewport()).toEqual({ height: 450, width: 800 });
+            });
         });
 
         test('should preserve container sizing when V2 is disabled', () => {
@@ -1626,11 +1631,13 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             videoBase.showPreload();
 
-            expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
-                'https://example.com/preview.jpg?auth=token',
-                videoBase.mediaContainerEl,
-                expect.not.objectContaining({ sizeWrapperToViewport: expect.anything() }),
-            );
+            return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                    'https://example.com/preview.jpg?auth=token',
+                    videoBase.mediaContainerEl,
+                    expect.not.objectContaining({ sizeWrapperToViewport: expect.anything() }),
+                );
+            });
         });
 
         test('should reuse existing VideoPreloader instance', () => {
@@ -1640,8 +1647,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             videoBase.showPreload();
 
-            expect(videoBase.preloader).toBe(existingPreloader);
-            expect(VideoPreloader.prototype.showPreload).toBeCalled();
+            return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                expect(videoBase.preloader).toBe(existingPreloader);
+                expect(VideoPreloader.prototype.showPreload).toBeCalled();
+            });
         });
 
         test('should call emitFirstRenderMetric when preloader emits preload', () => {
@@ -1649,9 +1658,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             jest.spyOn(videoBase, 'emitFirstRenderMetric').mockImplementation();
 
             videoBase.showPreload();
-            videoBase.preloader.emit('preload');
-
-            expect(videoBase.emitFirstRenderMetric).toBeCalled();
+            return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                videoBase.preloader.emit('preload');
+                expect(videoBase.emitFirstRenderMetric).toBeCalled();
+            });
         });
     });
 
@@ -1672,14 +1682,18 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                     ],
                 },
             };
-            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(jpgUrlWithAuth);
+            jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue(jpgUrlWithAuth);
+            jest.spyOn(videoBase, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token' });
             jest.spyOn(videoBase, 'isRepresentationReady').mockReturnValue(true);
         });
 
         test('should fetch JPG preload image when preload is true and file has ready jpg rep', () => {
             videoBase.prefetch({ preload: true });
 
-            expect(videoBase.api.get).toHaveBeenCalledWith(jpgUrlWithAuth, { type: 'blob' });
+            expect(videoBase.api.get).toHaveBeenCalledWith(jpgUrlWithAuth, {
+                type: 'blob',
+                headers: { Authorization: 'Bearer token' },
+            });
         });
 
         test('should not fetch JPG when preload is false', () => {
@@ -1839,7 +1853,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
     });
 
-    describe('showPreload() with migrateAccessTokenToHeader', () => {
+    describe('showPreload() with header auth', () => {
         beforeEach(() => {
             videoBase.options.file = {
                 id: 123,
@@ -1864,9 +1878,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.wrapperEl.style.height = '600px';
         });
 
-        test('should fetch blob URL for poster image when flag is enabled', () => {
+        test('should fetch blob URL for poster image', () => {
             const blobUrl = 'blob:http://localhost/preload-123';
-            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue('http://localhost/preload.jpg');
             jest.spyOn(videoBase, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
             jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
@@ -1886,25 +1899,25 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             });
         });
 
-        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
-            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(
-                'http://localhost/preload.jpg?token=abc',
-            );
-            jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+        test('should not fail the viewer if the poster fetch fails', () => {
+            jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue('http://localhost/preload.jpg');
+            jest.spyOn(videoBase, 'fetchContentAsBlobUrl').mockReturnValue(Promise.reject(new Error('401')));
+            jest.spyOn(videoBase, 'handleAssetError');
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
             videoBase.showPreload();
 
-            expect(videoBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/preload.jpg');
-            expect(VideoPreloader.prototype.showPreload).toHaveBeenCalledWith(
-                'http://localhost/preload.jpg?token=abc',
-                videoBase.mediaContainerEl,
-                expect.any(Object),
-            );
+            return Promise.resolve()
+                .then(() => Promise.resolve())
+                .then(() => {
+                    expect(videoBase.handleAssetError).not.toHaveBeenCalled();
+                    expect(warnSpy).toHaveBeenCalledWith('Video preload failed', expect.any(Error));
+                    warnSpy.mockRestore();
+                });
         });
     });
 
-    describe('prefetch() with migrateAccessTokenToHeader', () => {
+    describe('prefetch() with header auth', () => {
         let mockApi;
 
         beforeEach(() => {
@@ -1930,8 +1943,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             jest.spyOn(videoBase, 'isRepresentationReady').mockReturnValue(true);
         });
 
-        test('should use createContentUrlV2 with auth headers when flag is enabled', () => {
-            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(true);
+        test('should use createContentUrlV2 with auth headers', () => {
             jest.spyOn(videoBase, 'createContentUrlV2').mockReturnValue('http://localhost/preload.jpg');
             jest.spyOn(videoBase, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token123' });
 
@@ -1944,21 +1956,9 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 headers: { Authorization: 'Bearer token123' },
             });
         });
-
-        test('should use createContentUrlV2WithAuthParams when flag is disabled', () => {
-            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(videoBase, 'createContentUrlWithAuthParams').mockReturnValue(
-                'http://localhost/preload.jpg?token=abc',
-            );
-
-            videoBase.prefetch({ preload: true });
-
-            expect(videoBase.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com/preload.jpg');
-            expect(mockApi.get).toHaveBeenCalledWith('http://localhost/preload.jpg?token=abc', { type: 'blob' });
-        });
     });
 
-    describe('destroy() with migrateAccessTokenToHeader', () => {
+    describe('destroy() with header auth', () => {
         test('should revoke preloadBlobUrl if it exists', () => {
             const blobUrl = 'blob:http://localhost/preload-123';
             videoBase.preloadBlobUrl = blobUrl;

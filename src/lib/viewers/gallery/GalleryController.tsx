@@ -6,19 +6,19 @@ import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import Thumbnail from '../../Thumbnail';
 import { FeatureConfig, isFeatureEnabled } from '../../featureChecking';
+import {
+    GALLERY_MAX_PAGES,
+    GALLERY_MAX_SCALE,
+    GALLERY_MIN_SCALE,
+    GALLERY_SCALE_STEP,
+    THUMBNAILS_SIDEBAR_TRANSITION_TIME,
+} from './constants';
 import GalleryGrid, { GalleryThumbnail } from './GalleryGrid';
 import { PinchDirection } from './useGalleryPinch';
 
 // Controller-owned shape: GalleryGrid only sees the read surface (GalleryThumbnail),
 // but the controller also needs destroy() to invalidate the cache on rotate/teardown.
 type ManagedGalleryThumbnail = GalleryThumbnail & { destroy: () => void };
-
-const GALLERY_MAX_PAGES = 200; // Hide gallery toggle for files above this page count, will increase in V2
-const THUMBNAILS_SIDEBAR_TRANSITION_TIME = 301; // ms
-
-export const GALLERY_MAX_SCALE = 3;
-export const GALLERY_MIN_SCALE = 0.5;
-const GALLERY_SCALE_STEP = 0.1;
 
 // Minimal local shapes for untyped peer modules (pdfjs is JS-only, sidebar is JS-only).
 // Only the members the controller actually uses are declared — extend as needed.
@@ -130,7 +130,8 @@ export default class GalleryController {
         return this.galleryScale;
     }
 
-    get isZoomEnabled(): boolean {
+    /** Both gallery flags must be on: parent apps target the splits independently. */
+    get isEnhancedGalleryEnabled(): boolean {
         const { features } = this;
         return isFeatureEnabled(features, 'galleryView.enabled') && isFeatureEnabled(features, 'galleryViewV2.enabled');
     }
@@ -235,18 +236,19 @@ export default class GalleryController {
     };
 
     /**
-     * Redirects an arrow key pressed outside the grid (e.g. focus parked on a toggle after
+     * Redirects a grid-nav key pressed outside the grid (e.g. focus parked on a toggle after
      * toggling fullscreen) back into it: refocuses the selected tile and replays the key so
      * the first press navigates, like the thumbnail sidebar. Keys pressed inside the grid
-     * never arrive here — GalleryGrid stops propagation on every arrow it handles.
+     * never arrive here — GalleryGrid stops propagation on every arrow/Home/End it handles.
      */
     handleArrowKey(key: string): void {
-        if (!this.isGalleryOpen || !key.startsWith('Arrow')) return;
+        if (!this.isGalleryOpen) return;
+        if (!key.startsWith('Arrow') && key !== 'Home' && key !== 'End') return;
 
         const grid = this.galleryEl;
         if (!grid) return;
 
-        const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"]');
+        const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"], [role="gridcell"][tabindex="0"]');
         if (tile) {
             tile.focus();
             tile.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
@@ -322,7 +324,7 @@ export default class GalleryController {
     };
 
     private commitScale = (scale: number): boolean => {
-        if (!this.isZoomEnabled || !Number.isFinite(scale)) {
+        if (!this.isEnhancedGalleryEnabled || !Number.isFinite(scale)) {
             return false;
         }
 
@@ -384,8 +386,11 @@ export default class GalleryController {
             <GalleryGrid
                 currentPage={pdfViewer.currentPageNumber}
                 getPageRatio={this.getPageRatio}
-                isPinchZoomEnabled={this.isZoomEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')}
-                isTouchZoomEnabled={this.isZoomEnabled && this.hasTouch}
+                isAriaGridEnabled={this.isEnhancedGalleryEnabled}
+                isPinchZoomEnabled={
+                    this.isEnhancedGalleryEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')
+                }
+                isTouchZoomEnabled={this.isEnhancedGalleryEnabled && this.hasTouch}
                 onClose={this.toggle}
                 onFocusChange={this.handleFocusChange}
                 onPageNavigate={this.handleGalleryNavigate}

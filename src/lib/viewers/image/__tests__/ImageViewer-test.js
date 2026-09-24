@@ -130,108 +130,53 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('load()', () => {
-        test('should fetch the image URL and load an image', () => {
-            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue(imageUrl);
+        test('should fetch the image as a blob URL and load it', () => {
+            const blobUrl = 'blob:http://example.com/blob-id';
+            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
+            jest.spyOn(image, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
             jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-            stubs.event = jest.spyOn(image.imageEl, 'addEventListener');
-            stubs.load = jest.spyOn(image, 'finishLoading');
             stubs.bind = jest.spyOn(image, 'bindDOMListeners');
 
-            // load the image
-            return image
-                .load(imageUrl)
-                .then(() => {
-                    expect(image.bindDOMListeners).toBeCalled();
-                    expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
-                })
-                .catch(() => {});
+            return image.load().then(() => {
+                expect(image.bindDOMListeners).toBeCalled();
+                expect(image.createContentUrlV2).toHaveBeenCalledWith('foo', '1.png');
+                expect(image.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://example.com/image.jpg');
+                expect(image.imageEl.src).toBe(blobUrl);
+            });
         });
 
         test('should invoke startLoadTimer()', () => {
             jest.spyOn(image, 'startLoadTimer');
-            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue(imageUrl);
+            jest.spyOn(image, 'createContentUrlV2').mockReturnValue(imageUrl);
+            jest.spyOn(image, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(imageUrl));
             jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
 
-            // load the image
-            return image
-                .load(imageUrl)
-                .then(() => {
-                    expect(image.startLoadTimer).toBeCalled();
-                })
-                .catch(() => {});
+            return image.load().then(() => {
+                expect(image.startLoadTimer).toBeCalled();
+            });
         });
 
-        test('should use createContentUrlV2 and fetchContentAsBlobUrl when migrateAccessTokenToHeader flag is on', () => {
+        test('should revoke the blob URL if destroyed before the fetch resolves', () => {
             const blobUrl = 'blob:http://example.com/blob-id';
-            jest.spyOn(image, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
             jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
             jest.spyOn(image, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
             jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-            jest.spyOn(image, 'startLoadTimer');
-            jest.spyOn(image, 'finishLoading');
+            jest.spyOn(image, 'isDestroyed').mockReturnValue(true);
+            jest.spyOn(URL, 'revokeObjectURL');
 
-            return image
-                .load()
-                .then(() => {
-                    expect(image.createContentUrlV2).toHaveBeenCalledWith('foo', '1.png');
-                    expect(image.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://example.com/image.jpg');
-                    expect(image.imageEl.src).toBe(blobUrl);
-                    expect(image.startLoadTimer).toBeCalled();
-                })
-                .catch(() => {});
-        });
-
-        test('should reuse prefetchedBlobUrlPromise when migrateAccessTokenToHeader flag is on', () => {
-            const blobUrl = 'blob:http://example.com/prefetched-blob';
-            const prefetchedPromise = Promise.resolve(blobUrl);
-            image.prefetchedBlobUrlPromise = prefetchedPromise;
-
-            jest.spyOn(image, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
-            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
-            jest.spyOn(image, 'fetchContentAsBlobUrl');
-            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-            jest.spyOn(image, 'startLoadTimer');
-
-            return image
-                .load()
-                .then(() => {
-                    expect(image.fetchContentAsBlobUrl).not.toHaveBeenCalled();
-                    expect(image.imageEl.src).toBe(blobUrl);
-                    expect(image.prefetchedBlobUrlPromise).toBeNull();
-                })
-                .catch(() => {});
-        });
-
-        test('should use createContentUrlWithAuthParams when migrateAccessTokenToHeader flag is off', () => {
-            jest.spyOn(image, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue(imageUrl);
-            jest.spyOn(image, 'createContentUrl');
-            jest.spyOn(image, 'fetchContentAsBlobUrl');
-            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-
-            return image
-                .load()
-                .then(() => {
-                    expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
-                    expect(image.createContentUrl).not.toHaveBeenCalled();
-                    expect(image.fetchContentAsBlobUrl).not.toHaveBeenCalled();
-                })
-                .catch(() => {});
+            return image.load().then(() => {
+                expect(URL.revokeObjectURL).toHaveBeenCalledWith(blobUrl);
+                expect(image.imageEl.src).not.toBe(blobUrl);
+            });
         });
     });
 
     describe('prefetch()', () => {
         beforeEach(() => {
-            // Reset DOM
-            document.body.innerHTML = '';
             jest.spyOn(image, 'isRepresentationReady').mockReturnValue(true);
-            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue('https://example.com/image.jpg');
-        });
-
-        afterEach(() => {
-            // Clean up any remaining prefetched images
-            const prefetchedImages = document.querySelectorAll('.bp-prefetched-image');
-            prefetchedImages.forEach(img => img.remove());
+            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
+            jest.spyOn(image, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token' });
+            image.api = { get: jest.fn().mockReturnValue(Promise.resolve()) };
         });
 
         test.each`
@@ -244,18 +189,14 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.prefetch(options);
 
             if (shouldPrefetch) {
-                expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
-
-                const prefetchedImg = document.querySelector('.bp-prefetched-image');
-                expect(prefetchedImg).toBeTruthy();
-                expect(prefetchedImg.tagName).toBe('IMG');
-                expect(prefetchedImg.src).toBe('https://example.com/image.jpg');
-                expect(document.body.contains(prefetchedImg)).toBe(true);
+                expect(image.createContentUrlV2).toHaveBeenCalledWith('foo', '1.png');
+                expect(image.api.get).toHaveBeenCalledWith('https://example.com/image.jpg', {
+                    type: 'blob',
+                    headers: { Authorization: 'Bearer token' },
+                });
             } else {
-                expect(image.createContentUrlWithAuthParams).not.toHaveBeenCalled();
-
-                const prefetchedImg = document.querySelector('.bp-prefetched-image');
-                expect(prefetchedImg).toBeFalsy();
+                expect(image.createContentUrlV2).not.toHaveBeenCalled();
+                expect(image.api.get).not.toHaveBeenCalled();
             }
         });
 
@@ -264,10 +205,8 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.prefetch({ content: true });
 
-            expect(image.createContentUrlWithAuthParams).not.toHaveBeenCalled();
-
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-            expect(prefetchedImg).toBeFalsy();
+            expect(image.createContentUrlV2).not.toHaveBeenCalled();
+            expect(image.api.get).not.toHaveBeenCalled();
         });
 
         test('should not prefetch content if file is watermarked', () => {
@@ -277,89 +216,18 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.prefetch({ content: true });
 
-            expect(image.createContentUrlWithAuthParams).not.toHaveBeenCalled();
-
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-            expect(prefetchedImg).toBeFalsy();
-        });
-
-        test('should add load event listener to prefetched image', () => {
-            const addEventListenerSpy = jest.spyOn(HTMLImageElement.prototype, 'addEventListener');
-
-            image.prefetch({ content: true });
-
-            expect(addEventListenerSpy).toHaveBeenCalledWith('load', image.prefetchFinishedLoading);
-
-            addEventListenerSpy.mockRestore();
-        });
-
-        test('should apply bp-prefetched-image class to prefetched image', () => {
-            image.prefetch({ content: true });
-
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-            expect(prefetchedImg).toBeTruthy();
-            expect(prefetchedImg.classList.contains('bp-prefetched-image')).toBe(true);
-        });
-
-        test('should call prefetchFinishedLoading when prefetched image loads', () => {
-            jest.spyOn(image, 'prefetchFinishedLoading');
-
-            image.prefetch({ content: true });
-
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-
-            // Simulate image load event
-            const loadEvent = new Event('load');
-            Object.defineProperty(loadEvent, 'currentTarget', { value: prefetchedImg });
-            prefetchedImg.dispatchEvent(loadEvent);
-
-            expect(image.prefetchFinishedLoading).toHaveBeenCalledWith(loadEvent);
+            expect(image.createContentUrlV2).not.toHaveBeenCalled();
+            expect(image.api.get).not.toHaveBeenCalled();
         });
 
         test('should use default parameters when no options provided', () => {
             image.prefetch();
 
-            // Default is content: true, preload: false, so should prefetch
-            expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
-
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-            expect(prefetchedImg).toBeTruthy();
-        });
-
-        test('should use fetchContentAsBlobUrl and store promise when migrateAccessTokenToHeader flag is on', () => {
-            const blobUrl = 'blob:http://example.com/prefetch-blob';
-            jest.spyOn(image, 'featureEnabled').mockImplementation(feature => feature === 'migrateAccessTokenToHeader');
-            jest.spyOn(image, 'createContentUrlV2').mockReturnValue('https://example.com/image.jpg');
-            jest.spyOn(image, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
-
-            image.prefetch({ content: true });
-
             expect(image.createContentUrlV2).toHaveBeenCalledWith('foo', '1.png');
-            expect(image.fetchContentAsBlobUrl).toHaveBeenCalledWith('https://example.com/image.jpg');
-            expect(image.prefetchedBlobUrlPromise).toBeDefined();
-            expect(image.prefetchedBlobUrlPromise).toBeInstanceOf(Promise);
-
-            // Should not create an img element in the DOM
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-            expect(prefetchedImg).toBeFalsy();
-        });
-
-        test('should create img prefetch element when migrateAccessTokenToHeader flag is off', () => {
-            jest.spyOn(image, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(image, 'createContentUrlWithAuthParams').mockReturnValue('https://example.com/image.jpg');
-            jest.spyOn(image, 'createContentUrl');
-            jest.spyOn(image, 'fetchContentAsBlobUrl');
-
-            image.prefetch({ content: true });
-
-            expect(image.createContentUrlWithAuthParams).toHaveBeenCalledWith('foo', '1.png');
-            expect(image.createContentUrl).not.toHaveBeenCalled();
-            expect(image.fetchContentAsBlobUrl).not.toHaveBeenCalled();
-            expect(image.prefetchedBlobUrlPromise).toBeUndefined();
-
-            const prefetchedImg = document.querySelector('.bp-prefetched-image');
-            expect(prefetchedImg).toBeTruthy();
-            expect(prefetchedImg.src).toBe('https://example.com/image.jpg');
+            expect(image.api.get).toHaveBeenCalledWith('https://example.com/image.jpg', {
+                type: 'blob',
+                headers: { Authorization: 'Bearer token' },
+            });
         });
     });
 
@@ -983,25 +851,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.emitFirstRenderMetric();
 
             expect(image.emitMetric).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('prefetchFinishedLoading', () => {
-        test('should remove image element from document body', () => {
-            const mockImg = document.createElement('img');
-            document.body.appendChild(mockImg);
-
-            const mockEvent = {
-                currentTarget: mockImg,
-            };
-
-            // Verify the image is in the DOM before calling the method
-            expect(document.body.contains(mockImg)).toBe(true);
-
-            image.prefetchFinishedLoading(mockEvent);
-
-            // Verify the image was removed from the DOM
-            expect(document.body.contains(mockImg)).toBe(false);
         });
     });
 

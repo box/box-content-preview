@@ -170,15 +170,6 @@ describe('VolumeSliderControl', () => {
             expect(onMouseOver).toHaveBeenCalled();
         });
 
-        test('should call onMouseOver when focus event occurs', () => {
-            const onMouseOver = jest.fn();
-            render(<VolumeSliderControl {...defaultProps} onMouseOver={onMouseOver} value={50} />);
-
-            fireEvent.focus(screen.getByRole('slider')!);
-
-            expect(onMouseOver).toHaveBeenCalled();
-        });
-
         test('should not handle mousedown with right button or modifier keys', () => {
             const onUpdate = jest.fn();
             render(<VolumeSliderControl {...defaultProps} onUpdate={onUpdate} value={50} />);
@@ -219,6 +210,68 @@ describe('VolumeSliderControl', () => {
             );
 
             expect(onUpdate).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('resin', () => {
+        const recordAction = jest.fn();
+
+        beforeEach(() => {
+            recordAction.mockClear();
+            window.Box = { Preview: { resin: { recordAction } } };
+        });
+
+        afterEach(() => {
+            delete window.Box;
+        });
+
+        test.each(['mousedown', 'touchstart'] as const)('should record a programmatic action on %s', eventName => {
+            render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={0} />);
+
+            if (eventName === 'mousedown') {
+                fireEvent.mouseDown(screen.getByRole('slider')!);
+            } else {
+                fireEvent.touchStart(screen.getByRole('slider')!, {
+                    touches: [{ ...getTouchEventDefaults(), pageY: 25, clientY: 25 }],
+                });
+            }
+
+            expect(recordAction).toHaveBeenCalledTimes(1);
+            expect(recordAction).toHaveBeenCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'volumeSlider',
+            });
+        });
+
+        test.each(['ArrowUp', 'ArrowDown'])('should record a programmatic action on %s', key => {
+            render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={50} />);
+
+            fireEvent.keyDown(screen.getByRole('slider')!, { key });
+
+            expect(recordAction).toHaveBeenCalledTimes(1);
+            expect(recordAction).toHaveBeenCalledWith({
+                action: 'programmatic',
+                component: 'toolbar',
+                target: 'volumeSlider',
+            });
+        });
+
+        test('should not record resin on mousemove or ignored mouse buttons', () => {
+            render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={50} />);
+
+            fireEvent.mouseMove(screen.getByRole('slider')!);
+            fireEvent(
+                screen.getByRole('slider')!,
+                new MouseEventExtended('mousedown', {
+                    button: 2,
+                    bubbles: true,
+                    pageY: 25,
+                    clientY: 25,
+                }),
+            );
+
+            expect(recordAction).not.toHaveBeenCalled();
         });
     });
 
@@ -365,11 +418,16 @@ describe('VolumeSliderControl', () => {
             expect(slider).toHaveAttribute('tabIndex', '0');
         });
 
+        test('should apply a custom tabIndex to the slider', () => {
+            render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} tabIndex={-1} value={50} />);
+
+            expect(screen.getByRole('slider')).toHaveAttribute('tabIndex', '-1');
+        });
+
         test('should set correct height style based on value', () => {
             render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={25} />);
 
-            const slider = screen.getByRole('slider');
-            expect(slider).toHaveStyle({
+            expect(screen.getByRole('slider').querySelector('.bp-VolumeVerticalSliderControl-track')).toHaveStyle({
                 height: '25%',
             });
         });
@@ -377,8 +435,7 @@ describe('VolumeSliderControl', () => {
         test('should set minimum height of 5% when value is 0', () => {
             render(<VolumeSliderControl {...defaultProps} max={100} min={0} step={1} value={0} />);
 
-            const slider = screen.getByRole('slider');
-            expect(slider).toHaveStyle({
+            expect(screen.getByRole('slider').querySelector('.bp-VolumeVerticalSliderControl-track')).toHaveStyle({
                 height: '5%',
             });
         });

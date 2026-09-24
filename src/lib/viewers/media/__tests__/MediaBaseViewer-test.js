@@ -127,18 +127,23 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         test('should load mediaUrl in the media element', () => {
+            const blobUrl = 'blob:http://localhost/media';
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
 
             return media.load().then(() => {
                 expect(media.mediaEl.addEventListener).toBeCalledWith('loadedmetadata', media.loadeddataHandler);
                 expect(media.mediaEl.addEventListener).toBeCalledWith('error', media.errorHandler);
-                expect(media.mediaEl.src).toBe('http://localhost/www.box.com');
+                expect(media.mediaEl.src).toBe(blobUrl);
             });
         });
 
         test('should enable autoplay if on iOS', () => {
             jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue('blob:media');
             media.mediaEl = document.createElement('video');
 
             return media.load().then(() => {
@@ -146,9 +151,23 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             });
         });
 
+        test('should not enable html autoplay on iOS for audio', () => {
+            jest.spyOn(Browser, 'isIOS').mockReturnValue(true);
+            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue('blob:media');
+            media.mediaEl = document.createElement('audio');
+
+            return media.load().then(() => {
+                expect(media.mediaEl.autoplay).toBe(false);
+            });
+        });
+
         test('should invoke startLoadTimer()', () => {
             jest.spyOn(media, 'startLoadTimer');
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
+            jest.spyOn(media, 'fetchContentAsBlobUrl').mockResolvedValue('blob:media');
 
             return media.load().then(() => {
                 expect(media.startLoadTimer).toBeCalled();
@@ -284,6 +303,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.emit).toBeCalledWith('ratechange', speed);
             expect(media.mediaEl.playbackRate).toBe(speed);
         });
+
+        test.each([undefined, 'not-a-rate'])(
+            'should default playbackRate to 1 when cached speed is %p',
+            cachedSpeed => {
+                jest.spyOn(media, 'emit');
+                jest.spyOn(media.cache, 'get').mockReturnValue(cachedSpeed);
+                media.mediaEl = document.createElement('video');
+                media.mediaEl.playbackRate = 1;
+
+                expect(() => media.handleRate()).not.toThrow();
+                expect(media.mediaEl.playbackRate).toBe(1);
+                expect(media.emit).not.toBeCalled();
+            },
+        );
     });
 
     describe('handleVolume()', () => {
@@ -394,16 +427,18 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.addEventListenersForMediaElement).toBeCalled();
         });
 
-        test('should create cache entries for autoplay and speed if they are not available', () => {
+        test('should create cache entries for autoplay, play next, and speed if they are not available', () => {
             media.loadUIReact();
 
             expect(media.cache.has).toBeCalledWith('media-autoplay');
+            expect(media.cache.has).toBeCalledWith('media-play-next');
             expect(media.cache.has).toBeCalledWith('media-speed');
             expect(media.cache.set).toBeCalledWith('media-autoplay', 'Disabled');
+            expect(media.cache.set).toBeCalledWith('media-play-next', 'Disabled');
             expect(media.cache.set).toBeCalledWith('media-speed', '1.0');
         });
 
-        test('should not set cache entries for autoplay and speed if already set', () => {
+        test('should not set cache entries for autoplay, play next, and speed if already set', () => {
             media.cache.has.mockReturnValue(true);
 
             media.loadUIReact();
@@ -575,20 +610,42 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('handlePlayNext()', () => {
+        test('should emit the new play next value', () => {
+            jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(false);
+            jest.spyOn(media, 'emit');
+
+            media.handlePlayNext();
+            expect(media.emit).toBeCalledWith('playnext', false);
+
+            media.isPlayNextEnabled.mockReturnValue(true);
+
+            media.handlePlayNext();
+            expect(media.emit).toBeCalledWith('playnext', true);
+        });
+    });
+
     describe('mediaendHandler()', () => {
-        test('emit the mediaendautoplay event if autoplay is enabled', () => {
-            jest.spyOn(media, 'isAutoplayEnabled').mockReturnValue(false);
+        test('does not emit mediaEndPlayNext if play next is disabled', () => {
+            jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(false);
             jest.spyOn(media, 'emit');
             jest.spyOn(media, 'resetPlayIcon');
 
             media.mediaendHandler();
-            expect(media.isAutoplayEnabled).toBeCalled();
-            expect(media.emit).not.toBeCalled();
 
-            media.isAutoplayEnabled.mockReturnValue(true);
+            expect(media.isPlayNextEnabled).toBeCalled();
+            expect(media.emit).not.toBeCalled();
+            expect(media.resetPlayIcon).toBeCalled();
+        });
+
+        test('emit the mediaEndPlayNext event if play next is enabled', () => {
+            jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(true);
+            jest.spyOn(media, 'emit');
+            jest.spyOn(media, 'resetPlayIcon');
 
             media.mediaendHandler();
-            expect(media.emit).toBeCalledWith(VIEWER_EVENT.mediaEndAutoplay);
+
+            expect(media.emit).toBeCalledWith(VIEWER_EVENT.mediaEndPlayNext);
             expect(media.resetPlayIcon).toBeCalled();
         });
     });
@@ -1607,21 +1664,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('load() with migrateAccessTokenToHeader', () => {
+    describe('load() with header auth', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = jest.fn();
         });
 
-        test('should use fetchContentAsBlobUrl when flag is enabled', () => {
+        test('should use fetchContentAsBlobUrl', () => {
             const blobUrl = 'blob:http://localhost/abc-123';
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
             jest.spyOn(media, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(blobUrl));
             jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
 
             return media.load().then(() => {
-                expect(media.featureEnabled).toHaveBeenCalledWith('migrateAccessTokenToHeader');
                 expect(media.createContentUrlV2).toHaveBeenCalledWith('www.box.com');
                 expect(media.fetchContentAsBlobUrl).toHaveBeenCalledWith('http://localhost/content');
                 expect(media.mediaEl.src).toBe(blobUrl);
@@ -1629,20 +1684,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 expect(media.mediaUrl).toBe(blobUrl);
             });
         });
-
-        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(media, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=abc');
-            jest.spyOn(media, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
-
-            return media.load().then(() => {
-                expect(media.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com');
-                expect(media.mediaEl.src).toBe('http://localhost/content?token=abc');
-            });
-        });
     });
 
-    describe('restartPlayback() with migrateAccessTokenToHeader', () => {
+    describe('restartPlayback() with header auth', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.currentTime = 10;
@@ -1656,13 +1700,12 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             };
         });
 
-        test('should revoke old blob URL and fetch new one when flag is enabled', () => {
+        test('should revoke old blob URL and fetch new one', () => {
             const oldBlobUrl = 'blob:http://localhost/old-123';
             const newBlobUrl = 'blob:http://localhost/new-456';
             media.mediaBlobUrl = oldBlobUrl;
 
             jest.spyOn(URL, 'revokeObjectURL');
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(true);
             jest.spyOn(media, 'createContentUrlV2').mockReturnValue('http://localhost/content');
             jest.spyOn(media, 'fetchContentAsBlobUrl').mockReturnValue(Promise.resolve(newBlobUrl));
 
@@ -1680,20 +1723,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 expect(media.mediaEl.src).toBe(newBlobUrl);
             });
         });
-
-        test('should use createContentUrlWithAuthParams when flag is disabled', () => {
-            jest.spyOn(media, 'featureEnabled').mockReturnValue(false);
-            jest.spyOn(media, 'createContentUrlWithAuthParams').mockReturnValue('http://localhost/content?token=new');
-
-            media.restartPlayback('new-token');
-
-            expect(media.options.token).toBe('new-token');
-            expect(media.createContentUrlWithAuthParams).toHaveBeenCalledWith('www.box.com');
-            expect(media.mediaEl.src).toBe('http://localhost/content?token=new');
-        });
     });
 
-    describe('destroy() with migrateAccessTokenToHeader', () => {
+    describe('destroy() with blob media URL', () => {
         test('should revoke mediaBlobUrl if it exists', () => {
             const blobUrl = 'blob:http://localhost/abc-123';
             media.mediaBlobUrl = blobUrl;

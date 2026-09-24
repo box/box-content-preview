@@ -21,6 +21,7 @@ const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
+const MEDIA_PLAY_NEXT_CACHE_KEY = 'media-play-next';
 const MEDIA_SPEED_CACHE_KEY = 'media-speed';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
@@ -57,6 +58,7 @@ class MediaBaseViewer extends BaseViewer {
         this.containerClickHandler = this.containerClickHandler.bind(this);
         this.errorHandler = this.errorHandler.bind(this);
         this.handleAutoplay = this.handleAutoplay.bind(this);
+        this.handlePlayNext = this.handlePlayNext.bind(this);
         this.handleRate = this.handleRate.bind(this);
         this.handleTimeupdateFromMediaControls = this.handleTimeupdateFromMediaControls.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
@@ -69,6 +71,7 @@ class MediaBaseViewer extends BaseViewer {
         this.resetPlayIcon = this.resetPlayIcon.bind(this);
         this.seekHandler = this.seekHandler.bind(this);
         this.setAutoplay = this.setAutoplay.bind(this);
+        this.setPlayNext = this.setPlayNext.bind(this);
         this.setRate = this.setRate.bind(this);
         this.setTimeCode = this.setTimeCode.bind(this);
         this.setVolume = this.setVolume.bind(this);
@@ -207,35 +210,23 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
 
-        if (Browser.isIOS()) {
-            // iOS doesn't fire loadeddata event until some data loads
-            // Adding autoplay prevents this but won't actually autoplay the video.
-            // https://webkit.org/blog/6784/new-video-policies-for-ios/
+        if (Browser.isIOS() && this.mediaEl.tagName === 'VIDEO') {
+            // Unblocks loadeddata on iOS <video>. Do not set this on <audio>:
+            // after tap-to-open, Safari will start playback.
             this.mediaEl.autoplay = true;
         }
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            const contentUrl = this.createContentUrlV2(template);
-            return this.getRepStatus()
-                .getPromise()
-                .then(() => {
-                    this.startLoadTimer();
-                    return this.fetchContentAsBlobUrl(contentUrl);
-                })
-                .then(blobUrl => {
-                    this.mediaBlobUrl = blobUrl;
-                    this.mediaUrl = blobUrl;
-                    this.mediaEl.src = blobUrl;
-                })
-                .catch(this.handleAssetError);
-        }
-
-        this.mediaUrl = this.createContentUrlWithAuthParams(template);
+        const contentUrl = this.createContentUrlV2(template);
         return this.getRepStatus()
             .getPromise()
             .then(() => {
                 this.startLoadTimer();
-                this.mediaEl.src = this.mediaUrl;
+                return this.fetchContentAsBlobUrl(contentUrl);
+            })
+            .then(blobUrl => {
+                this.mediaBlobUrl = blobUrl;
+                this.mediaUrl = blobUrl;
+                this.mediaEl.src = blobUrl;
             })
             .catch(this.handleAssetError);
     }
@@ -342,23 +333,17 @@ class MediaBaseViewer extends BaseViewer {
         this.currentTime = currentTime;
         this.options.token = newToken;
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            if (this.mediaBlobUrl) {
-                URL.revokeObjectURL(this.mediaBlobUrl);
-            }
-            const contentUrl = this.createContentUrlV2(this.options.representation.content.url_template);
-            this.fetchContentAsBlobUrl(contentUrl)
-                .then(blobUrl => {
-                    this.mediaBlobUrl = blobUrl;
-                    this.mediaUrl = blobUrl;
-                    this.mediaEl.src = blobUrl;
-                })
-                .catch(this.handleAssetError);
-            return;
+        if (this.mediaBlobUrl) {
+            URL.revokeObjectURL(this.mediaBlobUrl);
         }
-
-        this.mediaUrl = this.createContentUrlWithAuthParams(this.options.representation.content.url_template);
-        this.mediaEl.src = this.mediaUrl;
+        const contentUrl = this.createContentUrlV2(this.options.representation.content.url_template);
+        this.fetchContentAsBlobUrl(contentUrl)
+            .then(blobUrl => {
+                this.mediaBlobUrl = blobUrl;
+                this.mediaUrl = blobUrl;
+                this.mediaEl.src = blobUrl;
+            })
+            .catch(this.handleAssetError);
     }
 
     /**
@@ -434,7 +419,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleRate() {
-        const speed = this.cache.get(MEDIA_SPEED_CACHE_KEY) - 0;
+        const cachedSpeed = this.cache.get(MEDIA_SPEED_CACHE_KEY) - 0;
+        // Default to 1x when cache is empty (v2 overlay play can run before loadUIReact).
+        const speed = Number.isFinite(cachedSpeed) ? cachedSpeed : 1;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
         }
@@ -489,6 +476,21 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handler for play next
+     *
+     * @private
+     * @emits playnext
+     * @return {void}
+     */
+    handlePlayNext() {
+        this.emit('playnext', this.isPlayNextEnabled());
+
+        if (this.controls) {
+            this.renderUI();
+        }
+    }
+
+    /**
      * Handler for autoplay failure
      * Overridden in child class
      *
@@ -524,6 +526,16 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Determines if play next is enabled
+     *
+     * @protected
+     * @return {boolean} Indicates if play next is enabled
+     */
+    isPlayNextEnabled() {
+        return this.cache.get(MEDIA_PLAY_NEXT_CACHE_KEY) === 'Enabled';
+    }
+
+    /**
      * Resize handler
      *
      * @private
@@ -555,6 +567,10 @@ class MediaBaseViewer extends BaseViewer {
     loadUIReact() {
         if (!this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY)) {
             this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, 'Disabled');
+        }
+
+        if (!this.cache.has(MEDIA_PLAY_NEXT_CACHE_KEY)) {
+            this.cache.set(MEDIA_PLAY_NEXT_CACHE_KEY, 'Disabled');
         }
 
         if (!this.cache.has(MEDIA_SPEED_CACHE_KEY)) {
@@ -651,6 +667,18 @@ class MediaBaseViewer extends BaseViewer {
     setAutoplay(autoplay) {
         this.cache.set(MEDIA_AUTOPLAY_CACHE_KEY, autoplay ? 'Enabled' : 'Disabled', true);
         this.handleAutoplay();
+    }
+
+    /**
+     * Updates play next
+     *
+     * @protected
+     * @param {boolean} playNext - True if enabled
+     * @return {void}
+     */
+    setPlayNext(playNext) {
+        this.cache.set(MEDIA_PLAY_NEXT_CACHE_KEY, playNext ? 'Enabled' : 'Disabled', true);
+        this.handlePlayNext();
     }
 
     /**
@@ -756,10 +784,10 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Emits the previewnextfile event if autoplay is enabled.
+     * Emits mediaEndPlayNext when play next is enabled.
      *
      * @private
-     * @emits previewnextfile
+     * @emits mediaEndPlayNext
      * @return {void}
      */
     mediaendHandler() {
@@ -767,8 +795,8 @@ class MediaBaseViewer extends BaseViewer {
 
         this.processMetrics();
 
-        if (this.isAutoplayEnabled()) {
-            this.emit(VIEWER_EVENT.mediaEndAutoplay);
+        if (this.isPlayNextEnabled()) {
+            this.emit(VIEWER_EVENT.mediaEndPlayNext);
         }
     }
 

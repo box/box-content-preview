@@ -54,25 +54,19 @@ class SWFViewer extends BaseViewer {
 
         this.startLoadTimer();
 
-        /* istanbul ignore next */
-        swfobject.embedSWF(
-            this.createContentUrlWithAuthParams(template),
-            this.playerEl.id,
-            '100%',
-            '100%',
-            '9',
-            null,
-            null,
-            SWF_PARAMS,
-            null,
-            () => {
-                if (this.isDestroyed()) {
-                    return;
-                }
-                this.loaded = true;
-                this.emit(VIEWER_EVENT.load);
-            },
-        );
+        const contentUrl = this.createContentUrlV2(template);
+        return this.fetchContentAsBlobUrl(contentUrl)
+            .then(blobUrl => {
+                /* istanbul ignore next */
+                swfobject.embedSWF(blobUrl, this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
+                    if (this.isDestroyed()) {
+                        return;
+                    }
+                    this.loaded = true;
+                    this.emit(VIEWER_EVENT.load);
+                });
+            })
+            .catch(this.handleAssetError);
     };
 
     /**

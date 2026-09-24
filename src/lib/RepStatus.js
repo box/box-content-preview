@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { appendAuthParams, appendAuthParamsV2, getHeaders } from './util';
+import { appendAuthParamsV2, getHeaders } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE, STATUS_PENDING, STATUS_NONE } from './constants';
 import PreviewError from './PreviewError';
 import Timer from './Timer';
@@ -50,16 +50,7 @@ class RepStatus extends EventEmitter {
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({
-        api,
-        representation,
-        token,
-        sharedLink,
-        sharedLinkPassword,
-        logger,
-        fileId,
-        migrateAccessTokenToHeader = false,
-    }) {
+    constructor({ api, representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
         super();
 
         this.api = api;
@@ -69,12 +60,8 @@ class RepStatus extends EventEmitter {
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
-        if (migrateAccessTokenToHeader) {
-            this.infoUrl = repInfo ? appendAuthParamsV2(repInfo.url, sharedLink, sharedLinkPassword) : '';
-            this.headers = getHeaders({}, token);
-        } else {
-            this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
-        }
+        this.infoUrl = repInfo ? appendAuthParamsV2(repInfo.url, sharedLink, sharedLinkPassword) : '';
+        this.headers = getHeaders({}, token);
 
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;

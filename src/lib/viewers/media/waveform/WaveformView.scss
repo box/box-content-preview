@@ -1,0 +1,130 @@
+@import '../../../boxuiVariables';
+
+.bp-WaveformView {
+    box-sizing: border-box;
+    width: 100%;
+    height: 206px;
+    min-height: 206px;
+    padding: 0 60px;
+    overflow: visible;
+    background: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &.bp-WaveformView--zoomed,
+    &.bp-WaveformView--tape {
+        padding: 0;
+        touch-action: none;
+
+        .bp-WaveformView-canvas {
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 92px, #000 calc(100% - 92px), transparent);
+            mask-image: linear-gradient(to right, transparent, #000 92px, #000 calc(100% - 92px), transparent);
+
+            // WaveSurfer `part="scroll"`. Also set in JS after create.
+            > *::part(scroll) {
+                overscroll-behavior-x: none;
+            }
+        }
+    }
+
+    &.bp-WaveformView--tape {
+        flex: 1 1 auto;
+        height: 100%;
+        min-height: 0;
+
+        .bp-WaveformView-canvas {
+            height: 100%;
+
+            > *::part(scroll) {
+                scrollbar-width: none;
+            }
+        }
+
+        .bp-WaveformView-playhead,
+        .bp-WaveformRange-region,
+        .bp-WaveformRange-handle {
+            height: calc(100% + 10px);
+        }
+    }
+}
+
+.bp-WaveformView-track {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.bp-WaveformView-canvas {
+    z-index: 0;
+    width: 100%;
+    height: 140px;
+}
+
+.bp-WaveformView-playhead {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 1;
+    width: 2px;
+    height: 150px;
+    pointer-events: none;
+    background: linear-gradient(#2487ff, #006bed);
+    border-radius: 1px;
+
+    // Spread stroke instead of border: border-box on .bp-container * would collapse the 2px fill.
+    box-shadow: 0 0 0 1px #222, 0 0 10px 0 rgb(36 135 255 / 30%);
+    transform: translate(-50%, -50%);
+}
+
+.bp-WaveformView-hover {
+    position: absolute;
+    top: 100%;
+    z-index: 2;
+    margin-top: 4px;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+
+.bp-WaveformView-hover--tape {
+    // Center on the 24px comment row (12px gap + 12px to row midpoint).
+    top: -24px;
+    left: 50%;
+    z-index: 5;
+    margin-top: 0;
+    transform: translate(-50%, -50%);
+}
+
+.bp-WaveformView-hoverTime {
+    padding: 4px 10px;
+    color: $white;
+    font-weight: normal;
+    font-size: 14px;
+    font-family: Lato, Arial, sans-serif;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    background: rgb(34 34 34 / 92%);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 8px;
+}
+
+.bp-WaveformView--inert {
+    pointer-events: none;
+
+    .bp-WaveformView-track {
+        cursor: default;
+    }
+
+    .bp-WaveformRange-handle,
+    .bp-WaveformRange-comment {
+        pointer-events: none;
+        cursor: default;
+    }
+}
+
+.bp-WaveformView:not(:hover) .bp-WaveformRange:not(.bp-WaveformRange--persist) {
+    opacity: 0.4;
+}

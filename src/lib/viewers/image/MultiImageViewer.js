@@ -61,8 +61,7 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     destroy() {
         if (this.singleImageEls && this.singleImageEls.length > 0) {
-            // Auth header migration uses blob URLs for images (XHR fetch + createObjectURL).
-            // Revoke to free the memory since blobs persist until explicitly released.
+            // Blob URLs stay allocated until revoked.
             this.singleImageEls.forEach((el, index) => {
                 if (el.src && el.src.startsWith('blob:')) {
                     URL.revokeObjectURL(el.src);
@@ -137,10 +136,7 @@ class MultiImageViewer extends ImageBaseViewer {
         const asset = viewer.ASSET;
         this.pagesCount = metadata.pages;
 
-        const useHeaders = this.featureEnabled('migrateAccessTokenToHeader');
-        const urlBase = useHeaders
-            ? this.createContentUrlV2(template, asset)
-            : this.createContentUrlWithAuthParams(template, asset);
+        const urlBase = this.createContentUrlV2(template, asset);
         const urls = [];
         for (let pageNum = 1; pageNum <= this.pagesCount; pageNum += 1) {
             urls.push(urlBase.replace('{page}', pageNum));
@@ -167,13 +163,15 @@ class MultiImageViewer extends ImageBaseViewer {
         this.singleImageEls[index].setAttribute('data-page-number', index + 1);
         this.singleImageEls[index].classList.add(CLASS_MULTI_IMAGE_PAGE);
 
-        if (this.featureEnabled('migrateAccessTokenToHeader')) {
-            this.fetchContentAsBlobUrl(imageUrl).then(blobUrl => {
+        this.fetchContentAsBlobUrl(imageUrl)
+            .then(blobUrl => {
+                if (this.isDestroyed()) {
+                    URL.revokeObjectURL(blobUrl);
+                    return;
+                }
                 this.singleImageEls[index].src = blobUrl;
-            });
-        } else {
-            this.singleImageEls[index].src = imageUrl;
-        }
+            })
+            .catch(this.handleMultiImageDownloadError);
     }
 
     /**

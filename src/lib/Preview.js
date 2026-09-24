@@ -55,7 +55,9 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT,
     X_REP_HINT_VIDEO_MP4,
+    X_REP_HINT_WAVEFORM,
     AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
+    AUDIO_PLAYER_V2,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -232,6 +234,7 @@ class Preview extends EventEmitter {
         }
 
         this.viewer = undefined;
+        Preview.resin = null;
     }
 
     /**
@@ -642,11 +645,29 @@ class Preview extends EventEmitter {
             // This allows the browser to download representation content
             const params = { response_content_disposition_type: 'attachment', ...queryParams };
             const downloadUrl = appendQueryParams(
-                this.viewer.createContentUrlWithAuthParams(contentUrlTemplate, this.viewer.getAssetPath()),
+                this.viewer.createContentUrlV2(contentUrlTemplate, this.viewer.getAssetPath()),
                 params,
             );
 
-            this.api.reachability.downloadWithReachabilityCheck(downloadUrl);
+            this.api
+                .get(downloadUrl, { type: 'blob', headers: this.getRequestHeaders() })
+                .then(data => {
+                    const blob = data instanceof Blob ? data : new Blob([data]);
+                    const blobUrl = URL.createObjectURL(blob);
+                    const anchor = document.createElement('a');
+                    anchor.href = blobUrl;
+                    anchor.download = (this.file && this.file.name) || 'download';
+                    document.body.appendChild(anchor);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                    URL.revokeObjectURL(blobUrl);
+                })
+                .catch(error => {
+                    const code = getProp(error, 'response.data.code');
+                    const msg =
+                        code === ERROR_CODE_403_FORBIDDEN_BY_POLICY ? downloadErrorDueToPolicyMsg : downloadErrorMsg;
+                    this.ui.showNotification(msg);
+                });
 
             // Otherwise, get the content download URL of the original file and download
         } else {
@@ -722,7 +743,6 @@ class Preview extends EventEmitter {
         preload = false,
         isDocFirstPrefetchEnabled = false,
         docFirstPagesConfig = null,
-        isAccessTokenHeaderEnabled = false,
     }) {
         let file;
         let loader;
@@ -763,10 +783,6 @@ class Preview extends EventEmitter {
             options.sharedLinkPassword = sharedLinkPassword;
             options.isDocFirstPrefetchEnabled = isDocFirstPrefetchEnabled;
             options.docFirstPagesConfig = docFirstPagesConfig;
-            options.features = {
-                ...this.options.features,
-                migrateAccessTokenToHeader: isAccessTokenHeaderEnabled,
-            };
         }
 
         const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
@@ -1137,6 +1153,7 @@ class Preview extends EventEmitter {
 
         // Optional resin analytics instance for tracking user interactions
         this.options.resin = options.resin;
+        Preview.resin = options.resin;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1595,6 +1612,10 @@ class Preview extends EventEmitter {
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
                 break;
+            case VIEWER_EVENT.mediaEndPlayNext:
+                this.emit(data.event, data.data);
+                this.emit(VIEWER_EVENT.default, data);
+                break;
             case VIEWER_EVENT.error:
                 // Do nothing since 'error' event was already caught, and will be emitted
                 // as a 'preview_error' event
@@ -2050,8 +2071,13 @@ class Preview extends EventEmitter {
             videoHint += X_REP_HINT_VIDEO_DASH_EXTRACTED_TEXT;
         }
 
+        let hints = `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`;
+        if (isFeatureEnabled(this.options.features, AUDIO_PLAYER_V2)) {
+            hints += X_REP_HINT_WAVEFORM;
+        }
+
         const headers = {
-            'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`,
+            'X-Rep-Hints': hints,
         };
 
         return getHeaders(
