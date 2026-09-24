@@ -54,6 +54,15 @@ export function runBaseMediaSettingsTests() {
     });
 }
 
+export function runPlayNextSettingsTests() {
+    describe('Play Next Menu', () => {
+        it('Should show Play next file defaulting to Disabled', () => {
+            cy.getByTestId('bp-media-settings-play-next').contains('Play next file');
+            cy.getByTestId('bp-media-settings-play-next').contains('Disabled');
+        });
+    });
+}
+
 export function runQualityMenuTests(hasReactControls) {
     describe('Quality Menu', () => {
         it('Should be able to change the Quality setting', () => {

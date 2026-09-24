@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from '../constants';
 import { createWaveformViewport } from '../viewport';
 import WaveformRangeSelection, { WaveformRangeSelectionHandle } from '../WaveformRangeSelection';
@@ -97,6 +97,35 @@ describe('WaveformRangeSelection', () => {
             left: `calc(25% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX + WAVEFORM_RANGE_HANDLE_LINE_PX / 2}px)`,
             width: `${(WAVEFORM_RANGE_COLLAPSED_OFFSET_PX + WAVEFORM_RANGE_HANDLE_LINE_PX / 2) * 2}px`,
         });
+    });
+
+    test('should place a Comment button above an open range and omit it when collapsed', () => {
+        const onDragCreate = jest.fn();
+        const { rerender } = render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        const button = screen.getByTestId('bp-waveform-range-comment');
+        expect(button).toHaveTextContent(__('media_range_comment'));
+        expect(button).toHaveStyle({ left: '37.5%' });
+
+        fireEvent.click(button);
+        expect(onDragCreate).toHaveBeenCalledTimes(1);
+
+        rerender(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                range={{ endMs: null, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
     });
 
     test('should stretch the region between start and end', () => {

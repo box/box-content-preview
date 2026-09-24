@@ -118,7 +118,8 @@
         cursor: default;
     }
 
-    .bp-WaveformRange-handle {
+    .bp-WaveformRange-handle,
+    .bp-WaveformRange-comment {
         pointer-events: none;
         cursor: default;
     }

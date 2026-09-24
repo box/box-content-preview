@@ -111,6 +111,24 @@ export function clampWaveformZoom(zoomLevel: number, maxZoom: number = WAVEFORM_
     return Math.min(max, Math.max(WAVEFORM_ZOOM_MIN, zoomLevel));
 }
 
+/** Zoom badge: 1.1×–1.9× below 2×, then whole numbers. Omit at 1×. */
+export function getWaveformZoomMultiplier(zoomLevel: number): string | null {
+    if (!Number.isFinite(zoomLevel) || zoomLevel <= WAVEFORM_ZOOM_MIN) {
+        return null;
+    }
+    if (zoomLevel < 2) {
+        const tenths = Math.round(zoomLevel * 10) / 10;
+        if (tenths <= WAVEFORM_ZOOM_MIN) {
+            return null;
+        }
+        if (tenths >= 2) {
+            return '2x';
+        }
+        return `${tenths.toFixed(1)}x`;
+    }
+    return `${Math.floor(zoomLevel)}x`;
+}
+
 /** WaveSurfer zoom density. 0 = fit the whole file in the view. */
 export function getZoomedPixelsPerSecond({
     durationSec,

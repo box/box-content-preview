@@ -509,11 +509,13 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 currentTime: 0,
                 durationTime: 1000,
                 hasStartedPlayback: false,
+                isGeneratingWaveform: false,
                 isPlaying: true,
                 onAutoplayChange: mp3.setAutoplay,
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
                 onCommentRangeChange: mp3.handleCommentRangeChange,
                 onCommentRangeClear: mp3.handleCommentRangeClear,
+                onCommentRangeDragCreate: mp3.handleCommentRangeDragCreate,
                 onCommentRangeDragChange: mp3.handleCommentRangeDragChange,
                 onMuteChange: mp3.toggleMute,
                 onPlayNextChange: mp3.setPlayNext,
@@ -789,7 +791,10 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.renderUI).toBeCalled();
         });
 
-        test('should emit comment_range_draft_change on pointer-up and keep the local draft', () => {
+        test('should emit comment_range_draft_change on pointer-up when the timestamp toggle is on', () => {
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+            mp3.emit.mockClear();
+
             mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
 
             expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
@@ -797,13 +802,90 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.renderUI).toBeCalled();
         });
 
-        test('should emit comment_range_draft_dismiss when the waveform is clicked outside an open range', () => {
-            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+        test('should keep a drag-created range local until Comment or the timestamp toggle', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should emit comment_range_compose from the Comment button and then sync later edits', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDragCreate();
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
+
+            mp3.handleCommentRangeChange({ endMs: 5000, startMs: 2000 });
+
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_change', { endMs: 5000, startMs: 2000 });
+        });
+
+        test('should emit comment_range_compose for a checkbox range without replacing it', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDragCreate();
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledTimes(1);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { endMs: 4000, startMs: 2000 });
+        });
+
+        test('should push a drag-created range when the timestamp checkbox is checked', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 1000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_change', { endMs: 4000, startMs: 2000 });
+        });
+
+        test('should ignore a collapsed echo after Comment has already adopted the range', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.handleCommentRangeDragCreate();
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 1000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
+        });
+
+        test('should not emit comment_range_compose for a collapsed draft', () => {
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDragCreate();
+
+            expect(mp3.emit).not.toHaveBeenCalled();
+        });
+
+        test('should emit comment_range_draft_dismiss when the timestamp toggle is on', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
 
             mp3.handleCommentRangeClear();
 
             expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeTimestampActive).toBe(false);
             expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should clear a drag-created range without telling the host to uncheck the toggle', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
             expect(mp3.renderUI).toBeCalled();
         });
 
@@ -814,6 +896,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
             expect(mp3.emit).not.toBeCalled();
+        });
+
+        test('should stop syncing range edits after the draft is dismissed', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.handleCommentRangeClear();
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeChange({ endMs: 3000, startMs: 1000 });
+
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
         });
 
         test('should treat a file reload as a local clear without notifying the host', () => {
@@ -831,6 +923,192 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_clear');
             expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
             MediaBaseViewer.prototype.load.mockRestore();
+        });
+    });
+
+    describe('comment range loop', () => {
+        function setPaused(paused) {
+            Object.defineProperty(mp3.mediaEl, 'paused', { configurable: true, value: paused });
+        }
+
+        beforeEach(() => {
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.setup();
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            jest.spyOn(mp3, 'emit').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 60 });
+            jest.spyOn(mp3.mediaEl, 'play').mockResolvedValue();
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            jest.spyOn(mp3, 'handleRate').mockImplementation();
+            jest.spyOn(mp3, 'handleVolume').mockImplementation();
+            jest.spyOn(mp3, 'pause');
+            setPaused(true);
+            mp3.mediaEl.currentTime = 0;
+        });
+
+        test('should play from start when the playhead is outside an open range', () => {
+            mp3.mediaEl.currentTime = 10;
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.play();
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.mediaEl.play).toBeCalled();
+            expect(mp3.pause).not.toHaveBeenCalledWith(4);
+        });
+
+        test('should keep the playhead when play starts inside an open range', () => {
+            mp3.mediaEl.currentTime = 3;
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.play();
+
+            expect(mp3.mediaEl.currentTime).toBe(3);
+            expect(mp3.mediaEl.play).toBeCalled();
+        });
+
+        test('should wrap to start when the scheduled end is reached', () => {
+            const timeouts = [];
+            jest.spyOn(window, 'setTimeout').mockImplementation((cb, delay) => {
+                timeouts.push({ cb, delay });
+                return timeouts.length;
+            });
+            jest.spyOn(window, 'clearTimeout').mockImplementation();
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            setPaused(false);
+            mp3.mediaEl.currentTime = 3.5;
+
+            mp3.scheduleCommentRangeLoopWrap(true);
+
+            expect(timeouts[timeouts.length - 1].delay).toBe(500);
+            timeouts[timeouts.length - 1].cb();
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.pause).not.toBeCalled();
+        });
+
+        test('should not loop or confine playback for a collapsed draft', () => {
+            mp3.mediaEl.currentTime = 10;
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+
+            mp3.play();
+            mp3.mediaEl.currentTime = 12;
+
+            expect(mp3.mediaEl.currentTime).toBe(12);
+            expect(mp3.mediaEl.play).toBeCalled();
+        });
+
+        test('should seek freely after click-outside dismisses an open range', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.handleCommentRangeClear();
+
+            mp3.setMediaTime(6);
+
+            expect(mp3.mediaEl.currentTime).toBe(6);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+        });
+
+        test('should stop wrapping after the draft is cleared while looping', () => {
+            const timeouts = [];
+            jest.spyOn(window, 'setTimeout').mockImplementation((cb, delay) => {
+                timeouts.push({ cb, delay });
+                return timeouts.length;
+            });
+            jest.spyOn(window, 'clearTimeout').mockImplementation();
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            setPaused(false);
+            mp3.mediaEl.currentTime = 3.5;
+            mp3.scheduleCommentRangeLoopWrap(true);
+            mp3.handleCommentRangeClear();
+            mp3.mediaEl.currentTime = 4.1;
+
+            timeouts.forEach(({ cb }) => cb());
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.mediaEl.currentTime).toBe(4.1);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+        });
+
+        test('should update the loop window immediately when a draft arrives while playing', () => {
+            setPaused(false);
+            mp3.mediaEl.currentTime = 10;
+
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+        });
+
+        test('should follow a resized range while playing', () => {
+            setPaused(false);
+            mp3.mediaEl.currentTime = 3;
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.handleCommentRangeChange({ endMs: 1500, startMs: 500 });
+
+            expect(mp3.mediaEl.currentTime).toBe(0.5);
+        });
+
+        test('should clamp keyboard and control seeks into the open span', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            mp3.setMediaTime(10);
+            expect(mp3.mediaEl.currentTime).toBe(4);
+
+            mp3.setMediaTime(0);
+            expect(mp3.mediaEl.currentTime).toBe(2);
+
+            mp3.mediaEl.currentTime = 3;
+            mp3.quickSeek(5);
+            expect(mp3.mediaEl.currentTime).toBe(4);
+        });
+
+        test('should leave a paused playhead outside the range until Play', () => {
+            mp3.mediaEl.currentTime = 10;
+            setPaused(true);
+
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.mediaEl.currentTime).toBe(10);
+        });
+
+        test('should dismiss an open range when the host seeks to a comment', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            mp3.pendingHostSelectedSeek = { id: 'comment-1', time: 41.2 };
+
+            mp3.applyPendingHostSelectedSeek();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.mediaEl.pause).toBeCalled();
+        });
+
+        test('should exit reverse shuttle at the start of an open range', () => {
+            jest.useFakeTimers();
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.mediaEl.currentTime = 3;
+
+            mp3.shuttle('reverse');
+            jest.advanceTimersByTime(5000);
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.shuttleDirection).toBe(null);
+            jest.useRealTimers();
+        });
+
+        test('should wrap from file end instead of resetting playback', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            setPaused(true);
+            mp3.mediaEl.currentTime = 4;
+            jest.spyOn(MediaBaseViewer.prototype, 'mediaendHandler');
+
+            mp3.mediaendHandler();
+
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.mediaEl.play).toBeCalled();
+            expect(MediaBaseViewer.prototype.mediaendHandler).not.toBeCalled();
         });
     });
 
@@ -911,6 +1189,45 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.mediaEl = { duration: Number.NaN };
 
             expect(mp3.shouldRaceClientWaveformDecode()).toBe(false);
+        });
+    });
+
+    describe('isGeneratingWaveform()', () => {
+        beforeEach(() => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.waveformPeaksSource = null;
+            mp3.isWaveformConversionPolling = false;
+        });
+
+        test('should show only while conversion RepStatus is polling', () => {
+            mp3.isWaveformConversionPolling = true;
+
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+        });
+
+        test('should hide when conversion is not polling', () => {
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should show while polling even when over the client-decode cap', () => {
+            mp3.isWaveformConversionPolling = true;
+            mp3.mediaEl = { duration: CLIENT_DECODE_MAX_DURATION_SEC + 1 };
+
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+        });
+
+        test('should hide once peaks have been applied', () => {
+            mp3.isWaveformConversionPolling = true;
+            mp3.waveformPeaksSource = 'client';
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should hide when audio v2 is off', () => {
+            mp3.isAudioPlayerV2 = false;
+            mp3.isWaveformConversionPolling = true;
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
     });
 
@@ -1085,6 +1402,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should not fetch when the content URL template is missing', async () => {
@@ -1095,6 +1413,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should fall back to client decode when conversion status is error', async () => {
@@ -1105,6 +1424,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should not show generating waveform when over-cap conversion is already error', async () => {
+            mp3.mediaEl = { duration: CLIENT_DECODE_MAX_DURATION_SEC + 1 };
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'error' } })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should fall back to client decode when conversion status data is missing', async () => {
@@ -1115,6 +1444,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.getRepStatus).not.toBeCalled();
             expect(mp3.api.get).not.toBeCalled();
             expect(mp3.startClientWaveformDecode).toBeCalled();
+            expect(mp3.isGeneratingWaveform()).toBe(false);
         });
 
         test('should poll the waveform rep then fetch JSON with header auth', async () => {
@@ -1133,6 +1463,63 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.abortClientWaveformDecode).toBeCalled();
             expect(mp3.renderUI).toBeCalled();
             expect(mp3.startClientWaveformDecode).not.toBeCalled();
+        });
+
+        test('should hide generating waveform once conversion leaves pending', async () => {
+            let resolveStatus;
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'pending' } })];
+            mp3.getRepStatus.mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () =>
+                    new Promise(resolve => {
+                        resolveStatus = resolve;
+                    }),
+                removeListener: jest.fn(),
+            });
+
+            const pending = mp3.startConversionWaveformLoad();
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+
+            mp3.options.file.representations.entries[0].status.state = 'success';
+            resolveStatus();
+            await pending;
+
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should not show generating waveform when conversion is already success', async () => {
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.isWaveformConversionPolling).toBe(false);
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should not show generating waveform when conversion is already viewable', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'viewable' } })];
+
+            await mp3.startConversionWaveformLoad();
+
+            expect(mp3.isWaveformConversionPolling).toBe(false);
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+        });
+
+        test('should hide generating waveform when pending conversion polling fails', async () => {
+            mp3.options.file.representations.entries = [conversionRep({ status: { state: 'pending' } })];
+            mp3.getRepStatus.mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => Promise.reject(new Error('conversion failed')),
+                removeListener: jest.fn(),
+            });
+
+            const pending = mp3.startConversionWaveformLoad();
+            expect(mp3.isGeneratingWaveform()).toBe(true);
+
+            await pending;
+
+            expect(mp3.isWaveformConversionPolling).toBe(false);
+            expect(mp3.isGeneratingWaveform()).toBe(false);
+            expect(mp3.startClientWaveformDecode).toBeCalled();
         });
 
         test('should keep empty peaks when conversion status rejects', async () => {

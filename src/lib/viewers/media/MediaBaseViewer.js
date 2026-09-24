@@ -419,7 +419,9 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleRate() {
-        const speed = this.cache.get(MEDIA_SPEED_CACHE_KEY) - 0;
+        const cachedSpeed = this.cache.get(MEDIA_SPEED_CACHE_KEY) - 0;
+        // Default to 1x when cache is empty (v2 overlay play can run before loadUIReact).
+        const speed = Number.isFinite(cachedSpeed) ? cachedSpeed : 1;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
         }
