@@ -324,6 +324,12 @@ describe('lib/Preview', () => {
             expect(stubs.load).not.toHaveBeenCalled();
         });
 
+        test('should allow a script location whose locale segment is empty', () => {
+            preview.location = { locale: '', baseURI: 'http://127.0.0.1:8000/' };
+            preview.show('123', 'token');
+            expect(stubs.load).toHaveBeenCalledWith('123');
+        });
+
         test('should use a caller location when the script location is empty', () => {
             preview.location = {};
             preview.show('123', 'token', {

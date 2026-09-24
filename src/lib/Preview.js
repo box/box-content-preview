@@ -88,9 +88,7 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
 
-// Asset URLs are relative to the preview.js script. Record that location during
-// eval, while document.currentScript is still the tag. The npm build has no such
-// tag; callers pass location to show().
+// document.currentScript is this file only while it evaluates.
 const IS_NPM_BUILD = typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__;
 let PREVIEW_LOCATION = {};
 if (!IS_NPM_BUILD) {
@@ -266,7 +264,8 @@ class Preview extends EventEmitter {
         // Parse the preview options
         this.parseOptions(this.previewOptions);
 
-        if (!getProp(this.location, 'locale')) {
+        // /preview.js parses to locale ''. Throw only when locale is absent.
+        if (getProp(this.location, 'locale') == null) {
             throw new Error('Missing preview location. Load preview.js, or pass location to show().');
         }
 
@@ -2322,8 +2321,6 @@ class Preview extends EventEmitter {
     };
 }
 
-// Publish the constructor for hosts that load preview.js and read global.Box.Preview.
-// Skip this on the npm build so an import is not mistaken for that script.
 if (!IS_NPM_BUILD) {
     global.Box = global.Box || {};
     global.Box.Preview = Preview;
