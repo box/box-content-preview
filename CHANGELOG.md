@@ -1,3 +1,11 @@
+## 3.95.0 (2026-09-24)
+
+* feat(preview): Leave global.Box.Preview unset in the npm build (#1793) ([4bfdd07](https://github.com/box/box-content-preview/commit/4bfdd07)), closes [#1793](https://github.com/box/box-content-preview/issues/1793)
+
+## 3.94.0 (2026-09-24)
+
+* feat(audio): draw a comment range by dragging the waveform (#1791) ([67849c4](https://github.com/box/box-content-preview/commit/67849c4)), closes [#1791](https://github.com/box/box-content-preview/issues/1791)
+
 ## 3.93.0 (2026-09-19)
 
 * fix(test): use sha256 for the jest string-loader cache key (#1790) ([b761ec6](https://github.com/box/box-content-preview/commit/b761ec6)), closes [#1790](https://github.com/box/box-content-preview/issues/1790)

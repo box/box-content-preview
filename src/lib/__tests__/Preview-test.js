@@ -29,7 +29,7 @@ jest.mock('../util', () => ({
     decodeKeydown: jest.fn(),
     findScriptLocation: () => ({
         hostname: 'localhost',
-        location: 'en-US',
+        locale: 'en-US',
     }),
     getHeaders: jest.fn(),
     openUrlInsideIframe: jest.fn(),
@@ -97,6 +97,56 @@ describe('lib/Preview', () => {
             expect(preview.disabledViewers).toEqual({ Office: 1 });
             expect(preview.loaders).toBe(loaders);
             expect(preview.location.hostname).toBe('localhost');
+            expect(preview.location.locale).toBe('en-US');
+        });
+
+        test('should publish the constructor for hosts that load the CDN script', () => {
+            expect(global.Box.Preview).toBe(Preview);
+        });
+    });
+
+    describe('npm build', () => {
+        let previousBox;
+
+        beforeEach(() => {
+            previousBox = global.Box;
+        });
+
+        afterEach(() => {
+            global.Box = previousBox;
+            delete global.__BCP_NPM_BUILD__;
+        });
+
+        test('should export Preview without publishing it or reading preview.js', () => {
+            global.__BCP_NPM_BUILD__ = true;
+            global.Box = {};
+
+            jest.isolateModules(() => {
+                // eslint-disable-next-line global-require
+                const NpmPreview = require('../Preview').default;
+                const npmInstance = new NpmPreview();
+                const load = jest.spyOn(npmInstance, 'load').mockImplementation();
+
+                expect(global.Box.Preview).toBeUndefined();
+                expect(npmInstance.location).toEqual({});
+
+                expect(() => npmInstance.show('123', 'token')).toThrow(
+                    'Missing preview location. Load preview.js, or pass location to show().',
+                );
+                expect(load).not.toHaveBeenCalled();
+
+                npmInstance.show('123', 'token', {
+                    location: {
+                        locale: 'de-DE',
+                        staticBaseURI: 'https://cdn.example/preview/',
+                        version: '9.9.9',
+                    },
+                });
+                expect(npmInstance.location.locale).toBe('de-DE');
+                expect(npmInstance.previewOptions.features.useNpmPdfjs).toBe(true);
+                expect(load).toHaveBeenCalledWith('123');
+                npmInstance.destroy();
+            });
         });
     });
 
@@ -263,6 +313,51 @@ describe('lib/Preview', () => {
             preview.show('123', 'token');
 
             expect(preview.perf).toBeInstanceOf(PreviewPerf);
+        });
+
+        test('should throw when neither the script nor the caller supplied a location', () => {
+            preview.location = {};
+
+            expect(() => preview.show('123', 'token')).toThrow(
+                'Missing preview location. Load preview.js, or pass location to show().',
+            );
+            expect(stubs.load).not.toHaveBeenCalled();
+        });
+
+        test('should allow a script location whose locale segment is empty', () => {
+            preview.location = { locale: '', baseURI: 'http://127.0.0.1:8000/' };
+            preview.show('123', 'token');
+            expect(stubs.load).toHaveBeenCalledWith('123');
+        });
+
+        test('should use a caller location when the script location is empty', () => {
+            preview.location = {};
+            preview.show('123', 'token', {
+                location: {
+                    locale: 'fr-FR',
+                    staticBaseURI: 'https://cdn.example/preview/',
+                    version: '1.2.3',
+                },
+            });
+
+            expect(preview.location).toEqual({
+                locale: 'fr-FR',
+                staticBaseURI: 'https://cdn.example/preview/',
+                version: '1.2.3',
+            });
+            expect(stubs.load).toHaveBeenCalledWith('123');
+        });
+
+        test('should let a caller location override the script location', () => {
+            preview.location = { locale: 'en-US', staticBaseURI: 'https://script.example/' };
+            preview.show('123', 'token', {
+                location: { locale: 'ja-JP', staticBaseURI: 'https://caller.example/' },
+            });
+
+            expect(preview.location).toEqual({
+                locale: 'ja-JP',
+                staticBaseURI: 'https://caller.example/',
+            });
         });
     });
 
