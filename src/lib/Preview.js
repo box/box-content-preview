@@ -88,18 +88,17 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
 
-// All preview assets are relative to preview.js. Here we create a location
-// object that mimics the window location object and points to where
-// preview.js is loaded from by the browser. This needs to be done statically
-// outside the class so that location is found while this script is executing
-// and not when preview is instantiated, which is too late.
-// findScriptLocation throws when there is no preview.js <script> tag in the DOM;
-// npm consumers have no such tag and populate this via Preview.show({ location }).
-let PREVIEW_LOCATION;
-try {
-    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
-} catch (e) {
-    PREVIEW_LOCATION = {};
+// Asset URLs are relative to the preview.js script. Record that location during
+// eval, while document.currentScript is still the tag. The npm build has no such
+// tag; callers pass location to show().
+const IS_NPM_BUILD = typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__;
+let PREVIEW_LOCATION = {};
+if (!IS_NPM_BUILD) {
+    try {
+        PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+    } catch (e) {
+        PREVIEW_LOCATION = {};
+    }
 }
 
 class Preview extends EventEmitter {
@@ -177,9 +176,6 @@ class Preview extends EventEmitter {
             this.disabledViewers[viewerName] = 1;
         });
 
-        // All preview assets are relative to preview.js. Here we create a location
-        // object that mimics the window location object and points to where
-        // preview.js is loaded from by the browser.
         this.location = PREVIEW_LOCATION;
 
         this.cache = new Cache();
@@ -252,10 +248,9 @@ class Preview extends EventEmitter {
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
             // npm consumers have no CDN-served pdfjs at runtime; force the bundled npm pdfjs path.
-            const finalOptions =
-                typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__
-                    ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
-                    : options;
+            const finalOptions = IS_NPM_BUILD
+                ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
+                : options;
             this.previewOptions = { ...finalOptions, token };
         } else {
             throw new Error('Bad access token!');
@@ -270,6 +265,10 @@ class Preview extends EventEmitter {
 
         // Parse the preview options
         this.parseOptions(this.previewOptions);
+
+        if (!getProp(this.location, 'locale')) {
+            throw new Error('Missing preview location. Load preview.js, or pass location to show().');
+        }
 
         // Load the preview
         this.load(fileIdOrFile);
@@ -2323,6 +2322,10 @@ class Preview extends EventEmitter {
     };
 }
 
-global.Box = global.Box || {};
-global.Box.Preview = Preview;
+// Publish the constructor for hosts that load preview.js and read global.Box.Preview.
+// Skip this on the npm build so an import is not mistaken for that script.
+if (!IS_NPM_BUILD) {
+    global.Box = global.Box || {};
+    global.Box.Preview = Preview;
+}
 export default Preview;
