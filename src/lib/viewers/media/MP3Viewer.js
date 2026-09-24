@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    EVENT_COMMENT_RANGE_DRAG_CREATE,
     EVENT_COMMENT_RANGE_DRAFT,
     EVENT_COMMENT_RANGE_DRAFT_CHANGE,
     EVENT_COMMENT_RANGE_DRAFT_CLEAR,
@@ -120,6 +121,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.commentRangeDraft = null;
         this.hostSelectedMarkerId = null;
         this.isCommentRangeDragging = false;
+        this.isCommentRangeTimestampActive = false;
         this.shuttleDirection = null;
         this.shuttleRate = 0;
         this.reverseShuttleTimer = 0;
@@ -456,6 +458,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
         this.commentRangeDraft = null;
         this.isCommentRangeDragging = false;
+        this.isCommentRangeTimestampActive = false;
         this.stopReverseShuttle();
         this.shuttleDirection = null;
         this.shuttleRate = 0;
@@ -471,6 +474,7 @@ class MP3Viewer extends MediaBaseViewer {
             // A file-version switch is a clear, not a resync of the previous draft.
             this.commentRangeDraft = null;
             this.isCommentRangeDragging = false;
+            this.isCommentRangeTimestampActive = false;
             this.syncCommentRangeLoop();
             this.showAudioLoadingShell();
             this.startConversionWaveformLoad();
@@ -1146,6 +1150,19 @@ class MP3Viewer extends MediaBaseViewer {
         if (this.isCommentRangeDragging || !isValidCommentRangeDraft(draft)) {
             return;
         }
+        // Checkbox-on sends a collapsed playhead. A waveform-drawn span should
+        // become that timestamp value instead of collapsing back to the playhead.
+        const local = this.commentRangeDraft;
+        if (local && !isRangeCollapsed(local) && draft.endMs == null) {
+            if (!this.isCommentRangeTimestampActive) {
+                this.isCommentRangeTimestampActive = true;
+                this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: local.endMs, startMs: local.startMs });
+            }
+            this.syncCommentRangeLoop();
+            this.renderUI();
+            return;
+        }
+        this.isCommentRangeTimestampActive = true;
         this.commentRangeDraft = { endMs: draft.endMs == null ? null : draft.endMs, startMs: draft.startMs };
         this.syncCommentRangeLoop();
         this.renderUI();
@@ -1154,6 +1171,7 @@ class MP3Viewer extends MediaBaseViewer {
     handleCommentRangeDraftClear = () => {
         this.commentRangeDraft = null;
         this.isCommentRangeDragging = false;
+        this.isCommentRangeTimestampActive = false;
         this.syncCommentRangeLoop();
         this.renderUI();
     };
@@ -1168,9 +1186,20 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
         this.commentRangeDraft = { endMs: range.endMs, startMs: range.startMs };
-        this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: range.endMs, startMs: range.startMs });
+        if (this.isCommentRangeTimestampActive) {
+            this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: range.endMs, startMs: range.startMs });
+        }
         this.syncCommentRangeLoop();
         this.renderUI();
+    };
+
+    handleCommentRangeDragCreate = () => {
+        const draft = this.commentRangeDraft;
+        if (!draft || isRangeCollapsed(draft)) {
+            return;
+        }
+        this.isCommentRangeTimestampActive = true;
+        this.emit(EVENT_COMMENT_RANGE_DRAG_CREATE, { endMs: draft.endMs, startMs: draft.startMs });
     };
 
     handleCommentRangeDragChange = isDragging => {
@@ -1181,8 +1210,12 @@ class MP3Viewer extends MediaBaseViewer {
         if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
             return;
         }
+        const notifyHost = this.isCommentRangeTimestampActive;
         this.commentRangeDraft = null;
-        this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        this.isCommentRangeTimestampActive = false;
+        if (notifyHost) {
+            this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        }
         this.syncCommentRangeLoop();
         this.renderUI();
     };
@@ -1254,6 +1287,7 @@ class MP3Viewer extends MediaBaseViewer {
                     onCommentRangeChange={this.handleCommentRangeChange}
                     onCommentRangeClear={this.handleCommentRangeClear}
                     onCommentRangeDragChange={this.handleCommentRangeDragChange}
+                    onCommentRangeDragCreate={this.handleCommentRangeDragCreate}
                     onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
                     playNext={this.isPlayNextEnabled()}

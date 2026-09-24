@@ -515,6 +515,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
                 onCommentRangeChange: mp3.handleCommentRangeChange,
                 onCommentRangeClear: mp3.handleCommentRangeClear,
+                onCommentRangeDragCreate: mp3.handleCommentRangeDragCreate,
                 onCommentRangeDragChange: mp3.handleCommentRangeDragChange,
                 onMuteChange: mp3.toggleMute,
                 onPlayNextChange: mp3.setPlayNext,
@@ -790,7 +791,10 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.renderUI).toBeCalled();
         });
 
-        test('should emit comment_range_draft_change on pointer-up and keep the local draft', () => {
+        test('should emit comment_range_draft_change on pointer-up when the timestamp toggle is on', () => {
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+            mp3.emit.mockClear();
+
             mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
 
             expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
@@ -798,13 +802,90 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.renderUI).toBeCalled();
         });
 
-        test('should emit comment_range_draft_dismiss when the waveform is clicked outside an open range', () => {
-            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+        test('should keep a drag-created range local until Comment or the timestamp toggle', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should emit comment_range_compose from the Comment button and then sync later edits', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDragCreate();
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
+
+            mp3.handleCommentRangeChange({ endMs: 5000, startMs: 2000 });
+
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_change', { endMs: 5000, startMs: 2000 });
+        });
+
+        test('should emit comment_range_compose for a checkbox range without replacing it', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDragCreate();
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledTimes(1);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { endMs: 4000, startMs: 2000 });
+        });
+
+        test('should push a drag-created range when the timestamp checkbox is checked', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 1000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_change', { endMs: 4000, startMs: 2000 });
+        });
+
+        test('should ignore a collapsed echo after Comment has already adopted the range', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.handleCommentRangeDragCreate();
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 1000 });
+
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
+        });
+
+        test('should not emit comment_range_compose for a collapsed draft', () => {
+            mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeDragCreate();
+
+            expect(mp3.emit).not.toHaveBeenCalled();
+        });
+
+        test('should emit comment_range_draft_dismiss when the timestamp toggle is on', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
 
             mp3.handleCommentRangeClear();
 
             expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.isCommentRangeTimestampActive).toBe(false);
             expect(mp3.emit).toHaveBeenCalledWith('comment_range_draft_dismiss');
+            expect(mp3.renderUI).toBeCalled();
+        });
+
+        test('should clear a drag-created range without telling the host to uncheck the toggle', () => {
+            mp3.handleCommentRangeChange({ endMs: 4000, startMs: 2000 });
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeClear();
+
+            expect(mp3.commentRangeDraft).toBeNull();
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
             expect(mp3.renderUI).toBeCalled();
         });
 
@@ -815,6 +896,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 2000 });
             expect(mp3.emit).not.toBeCalled();
+        });
+
+        test('should stop syncing range edits after the draft is dismissed', () => {
+            mp3.handleCommentRangeDraft({ endMs: 4000, startMs: 2000 });
+            mp3.handleCommentRangeClear();
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeChange({ endMs: 3000, startMs: 1000 });
+
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
         });
 
         test('should treat a file reload as a local clear without notifying the host', () => {

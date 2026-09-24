@@ -68,6 +68,49 @@
     transition: opacity 150ms ease-out, transform 150ms ease-out;
 }
 
+.bp-WaveformRange-comment {
+    position: absolute;
+
+    // 150px region is centered on the track. Sit 46px above its top edge.
+    top: calc(50% - 75px);
+    z-index: 5;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 48px;
+    padding: 8px 14px;
+    color: rgb(255 255 255 / 80%);
+    font-weight: normal;
+    font-size: 14px;
+    font-family: Lato, Arial, sans-serif;
+    line-height: 22px;
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+    background: rgb(0 0 0 / 80%);
+    border: 0;
+    backdrop-filter: blur(12px);
+    border-radius: 46px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 12%);
+    transform: translate(-50%, calc(-100% - 36px));
+    cursor: pointer;
+    appearance: none;
+    pointer-events: auto;
+}
+
+.bp-WaveformRange-commentIcon {
+    display: block;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+}
+
+.bp-WaveformView--tape .bp-WaveformRange-comment {
+    // Tape region is calc(100% + 10px) and vertically centered.
+    top: calc(50% - (100% + 10px) / 2);
+}
+
 .bp-WaveformRange-tooltip {
     position: absolute;
     top: 100%;

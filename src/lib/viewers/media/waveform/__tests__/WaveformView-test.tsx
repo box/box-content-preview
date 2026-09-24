@@ -424,6 +424,112 @@ describe('WaveformView', () => {
         expect(onSeek).toHaveBeenCalledWith(3);
     });
 
+    function mockWaveformRect(): void {
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+    }
+
+    function dispatchTrackPointer(target: EventTarget, type: string, clientX: number): void {
+        const event = new MouseEvent(type, { bubbles: true, button: 0, clientX });
+        if (event.clientX !== clientX) {
+            Object.defineProperty(event, 'clientX', { configurable: true, value: clientX });
+        }
+        Object.defineProperty(event, 'pointerId', { configurable: true, value: 1 });
+        act(() => {
+            target.dispatchEvent(event);
+        });
+    }
+
+    test('should create a draft range when the pointer drags across the waveform', () => {
+        const onRangeChange = jest.fn();
+        const onRangeDragChange = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                onRangeDragChange={onRangeDragChange}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+            />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+        expect(onRangeDragChange).toHaveBeenCalledWith(true);
+        expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(onRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 400 });
+        expect(onRangeDragChange).toHaveBeenLastCalledWith(false);
+        clickHandler?.(0.75);
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should keep a short press as click-to-seek', () => {
+        const onRangeChange = jest.fn();
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} onRangeChange={onRangeChange} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 12);
+        dispatchTrackPointer(window, 'pointerup', 12);
+        clickHandler?.(0.25);
+
+        expect(onRangeChange).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
+    test('should not start a new range from a drag inside an open range', () => {
+        const onRangeChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 75);
+        dispatchTrackPointer(window, 'pointermove', 160);
+        dispatchTrackPointer(window, 'pointerup', 160);
+
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should show Comment above a checkbox range', () => {
+        const onRangeDragCreate = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeDragCreate={onRangeDragCreate}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        fireEvent.click(screen.getByTestId('bp-waveform-range-comment'));
+
+        expect(onRangeDragCreate).toHaveBeenCalledTimes(1);
+    });
+
     test('should seek when clicking the waveform with only a collapsed draft', () => {
         const onRangeClear = jest.fn();
         const onSeek = jest.fn();

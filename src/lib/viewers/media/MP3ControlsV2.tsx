@@ -37,6 +37,7 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         onCommentMarkerClick?: (marker: CommentMarker) => void;
         onCommentRangeChange?: (range: { endMs: number; startMs: number }) => void;
         onCommentRangeClear?: () => void;
+        onCommentRangeDragCreate?: () => void;
         onCommentRangeDragChange?: (isDragging: boolean) => void;
         peaks?: ArrayLike<number>;
     };
@@ -58,6 +59,7 @@ export default function MP3ControlsV2({
     onCommentMarkerClick,
     onCommentRangeChange,
     onCommentRangeClear,
+    onCommentRangeDragCreate,
     onCommentRangeDragChange,
     onMuteChange,
     onPlayPause,
@@ -206,6 +208,7 @@ export default function MP3ControlsV2({
                         onRangeChange={isWaveformInteractive ? onCommentRangeChange : undefined}
                         onRangeClear={isWaveformInteractive ? onCommentRangeClear : undefined}
                         onRangeDragChange={onCommentRangeDragChange}
+                        onRangeDragCreate={isWaveformInteractive ? onCommentRangeDragCreate : undefined}
                         onSeek={isWaveformInteractive ? onTimeChange : undefined}
                         onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
                         onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}

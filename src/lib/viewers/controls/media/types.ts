@@ -1,9 +1,8 @@
 /**
- * Draft range the activity sidebar is holding. Preview draws start/end handles
- * on the waveform until the sidebar sends `comment_range_draft_clear`.
- * The viewer emits `comment_range_draft_change` on pointer-up so the host
- * can persist the new timestamps, and `comment_range_draft_dismiss` when
- * the user clicks the waveform outside an open range. See media/README.md.
+ * Draft range drawn on the waveform. Sidebar sends `comment_range_draft`
+ * when checkbox is toggled on and Preview keeps the handles until
+ * `comment_range_draft_clear`. A waveform drag can also create a local draft
+ * before the timestamp toggle is on. See media/README.md.
  * `endMs: null` means a single timestamp — both handles sit on `startMs`.
  */
 export type CommentRangeDraft = {
@@ -23,11 +22,21 @@ export const EVENT_COMMENT_RANGE_DRAFT = 'comment_range_draft';
 /** Sidebar → viewer: hide the handles (toggle-off, post, version switch, unmount). */
 export const EVENT_COMMENT_RANGE_DRAFT_CLEAR = 'comment_range_draft_clear';
 
-/** Viewer → sidebar: the user clicked the waveform outside an open draft range. */
+/** Viewer → sidebar: click outside an open range while the timestamp toggle is already on. */
 export const EVENT_COMMENT_RANGE_DRAFT_DISMISS = 'comment_range_draft_dismiss';
 
-/** Viewer → sidebar: a handle drag finished. Emitted on pointer-up only. */
+/**
+ * Viewer → sidebar: a range edit finished while the timestamp toggle is already on.
+ * Pointer-up only. Not used to start commenting — that is `comment_range_compose`.
+ */
 export const EVENT_COMMENT_RANGE_DRAFT_CHANGE = 'comment_range_draft_change';
+
+/**
+ * Viewer → sidebar: the user pressed Comment on a draft range.
+ * The host opens Activity if needed, checks the timestamp toggle, and adopts
+ * `{ startMs, endMs }` without echoing `comment_range_draft`.
+ */
+export const EVENT_COMMENT_RANGE_DRAG_CREATE = 'comment_range_compose';
 
 /** True when a host draft can be shown. Collapsed drafts use `endMs: null`. */
 export function isValidCommentRangeDraft(value: unknown): value is CommentRangeDraft {

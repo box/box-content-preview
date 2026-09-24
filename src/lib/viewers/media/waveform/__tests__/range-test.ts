@@ -13,6 +13,7 @@ import {
     isPointerOverRange,
     pickRangeHandle,
     pointerTimeMs,
+    rangeFromCreateDrag,
     rangeProgress,
     resolveRange,
     snapTimeMs,
@@ -152,5 +153,22 @@ describe('range', () => {
         expect(durationMsFromSec(8)).toBe(8000);
         expect(pointerTimeMs(100, viewport)).toBe(6000);
         expect(rangeProgress({ endMs: 6000, startMs: 4000 }, 8000)).toEqual({ end: 0.75, start: 0.5 });
+    });
+
+    test('should anchor a drag-created range on the press and open it in either direction', () => {
+        expect(rangeFromCreateDrag({ durationMs, originMs: 2000, pointerMs: 4000 })).toEqual({
+            endMs: 4000,
+            startMs: 2000,
+        });
+        expect(rangeFromCreateDrag({ durationMs, originMs: 2000, pointerMs: 500 })).toEqual({
+            endMs: 2000,
+            startMs: 500,
+        });
+        const nudged = rangeFromCreateDrag({
+            durationMs,
+            originMs: 2000,
+            pointerMs: 2000 + WAVEFORM_RANGE_MIN_DURATION_MS - 50,
+        });
+        expect(nudged.endMs - nudged.startMs).toBe(WAVEFORM_RANGE_MIN_DURATION_MS);
     });
 });
