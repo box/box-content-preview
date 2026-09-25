@@ -463,12 +463,17 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     pointerHandler(event) {
         if (event.type === 'touchstart') {
-            // Prevents 'click' event from firing which would pause the video
+            // Prevents the subsequent 'click' from also firing (which would double-toggle play)
             event.preventDefault();
-            event.stopPropagation();
 
             if (this.mediaControls) {
+                // Legacy controls: tap shows/hides the control bar rather than toggling playback
+                event.stopPropagation();
                 this.mediaControls.toggle();
+            } else {
+                // React controls: tap toggles play/pause, matching click behavior.
+                // Do not stopPropagation so ControlsRoot can still show the control bar.
+                this.handlePlayRequest();
             }
         } else if (event.type === 'click') {
             this.handlePlayRequest();

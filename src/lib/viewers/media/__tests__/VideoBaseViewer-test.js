@@ -404,6 +404,22 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaControls.toggle).toBeCalled();
         });
 
+        test('should toggle play on touchstart when using React controls', () => {
+            const event = {
+                type: 'touchstart',
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
+            };
+            videoBase.mediaControls = undefined;
+            jest.spyOn(videoBase, 'handlePlayRequest').mockImplementation();
+
+            videoBase.pointerHandler(event);
+
+            expect(event.preventDefault).toBeCalled();
+            expect(event.stopPropagation).not.toBeCalled();
+            expect(videoBase.handlePlayRequest).toBeCalled();
+        });
+
         test('should call handlePlayRequest on click', () => {
             jest.spyOn(videoBase, 'handlePlayRequest').mockImplementation();
 
