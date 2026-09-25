@@ -174,6 +174,9 @@ export type TapeDetectionWindow = Pick<Window, 'matchMedia'> & { navigator: Tape
 /** Desktop walks then pins near the right inset. Tape keeps the playhead at center. */
 export type PlayheadCameraMode = 'desktop' | 'tape';
 
+/** J scans backward, L scans forward. Absent when shuttle is off. */
+export type ShuttleDirection = 'forward' | 'reverse';
+
 export type PlayheadCameraAction =
     | { type: 'none' }
     | { type: 'followRight'; isPlayheadPinned: boolean; scrollLeftPx: number }

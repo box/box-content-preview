@@ -2,9 +2,8 @@ import classNames from 'classnames';
 import React from 'react';
 import IconShuttleForward from '../../controls/icons/IconShuttleForward';
 import { replacePlaceholders } from '../../../util';
+import { ShuttleDirection } from './types';
 import './WaveformShuttleIndicator.scss';
-
-export type ShuttleDirection = 'forward' | 'reverse';
 
 type Props = {
     direction: ShuttleDirection;

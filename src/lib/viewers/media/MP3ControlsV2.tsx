@@ -11,12 +11,12 @@ import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
-import { WaveformViewport } from './waveform/types';
+import { ShuttleDirection, WaveformViewport } from './waveform/types';
 import { clampWaveformZoom, getTapeDefaultZoom, stepWaveformZoom, viewportEquals } from './waveform/viewport';
 import useTapeWaveform from './waveform/useTapeWaveform';
 import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
 import WaveformGeneratingIndicator from './waveform/WaveformGeneratingIndicator';
-import WaveformShuttleIndicator, { ShuttleDirection } from './waveform/WaveformShuttleIndicator';
+import WaveformShuttleIndicator from './waveform/WaveformShuttleIndicator';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
 import './MP3ControlsV2.scss';
