@@ -1078,20 +1078,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.commentRangeReadOnly).toEqual({ endMs: 4000, startMs: 2000 });
         });
 
-        test('should not restore a dismissed range when the queued seek runs', () => {
-            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: NaN });
-            mp3.handleCommentMarkersUpdated([
-                { endTime: 4, id: 'comment-1', isSelected: true, time: 2, type: 'comment' },
-            ]);
-            mp3.handleCommentRangeClear();
-
-            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 60 });
-            mp3.applyPendingHostSelectedSeek();
-
-            expect(mp3.mediaEl.currentTime).toBe(2);
-            expect(mp3.commentRangeReadOnly).toBeNull();
-        });
-
         test('should show the range again when the marker is clicked after a dismiss', () => {
             mp3.handleCommentMarkersUpdated([
                 { endTime: 4, id: 'comment-1', isSelected: true, time: 2, type: 'comment' },

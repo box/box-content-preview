@@ -2,9 +2,10 @@ import { CommentRangeDraft } from '../../types';
 import { CommentMarker } from '../types';
 
 /**
- * Open span for a ranged timestamp comment.
- * `time` and `endTime` are seconds, matching the host `comment_markers` payload.
- * A point comment (no end, or an end that does not fall after the start) is not a range.
+ * Turn a host comment marker into the waveform range for a read-only span.
+ * `comment_markers` uses seconds (`time` is the start, `endTime` the end); the
+ * waveform draws `{ startMs, endMs }`. A point comment, or a span whose end is
+ * not after the start, has no range, so the viewer only seeks.
  */
 export default function commentMarkerRange(
     marker: Pick<CommentMarker, 'endTime' | 'time'> | null | undefined,

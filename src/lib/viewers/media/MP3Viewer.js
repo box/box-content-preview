@@ -122,7 +122,6 @@ class MP3Viewer extends MediaBaseViewer {
         this.commentMarkers = [];
         this.commentRangeDraft = null;
         this.commentRangeReadOnly = null;
-        this.commentRangeReadOnlyDismissedId = null;
         this.hostSelectedMarkerId = null;
         this.isCommentRangeDragging = false;
         this.isCommentRangeTimestampActive = false;
@@ -467,7 +466,6 @@ class MP3Viewer extends MediaBaseViewer {
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
         this.commentRangeDraft = null;
         this.commentRangeReadOnly = null;
-        this.commentRangeReadOnlyDismissedId = null;
         this.isCommentRangeDragging = false;
         this.isCommentRangeTimestampActive = false;
         this.stopReverseShuttle();
@@ -485,7 +483,6 @@ class MP3Viewer extends MediaBaseViewer {
             // A file-version switch is a clear, not a resync of the previous draft.
             this.commentRangeDraft = null;
             this.commentRangeReadOnly = null;
-            this.commentRangeReadOnlyDismissedId = null;
             this.isCommentRangeDragging = false;
             this.isCommentRangeTimestampActive = false;
             this.syncCommentRangeLoop();
@@ -979,7 +976,6 @@ class MP3Viewer extends MediaBaseViewer {
         if (selected) {
             if (selected.id !== this.hostSelectedMarkerId) {
                 this.hostSelectedMarkerId = selected.id;
-                this.commentRangeReadOnlyDismissedId = null;
                 this.commentRangeReadOnly = commentMarkerRange(selected);
                 if (Number.isFinite(selected.time)) {
                     this.pendingHostSelectedSeek = selected;
@@ -990,7 +986,6 @@ class MP3Viewer extends MediaBaseViewer {
             this.hostSelectedMarkerId = null;
             this.pendingHostSelectedSeek = null;
             this.commentRangeReadOnly = null;
-            this.commentRangeReadOnlyDismissedId = null;
         } else if (this.commentRangeReadOnly && this.hostSelectedMarkerId) {
             const current = markers.find(marker => marker.id === this.hostSelectedMarkerId);
             const next = current ? commentMarkerRange(current) : null;
@@ -1020,9 +1015,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.pendingHostSelectedSeek = null;
         this.exitShuttle();
         this.clearOpenCommentRangeDraft();
-        if (this.commentRangeReadOnlyDismissedId !== marker.id) {
-            this.commentRangeReadOnly = commentMarkerRange(marker);
-        }
+        this.commentRangeReadOnly = commentMarkerRange(marker);
         this.mediaEl.pause();
         if (this.mediaEl.currentTime !== marker.time) {
             this.mediaEl.currentTime = marker.time;
@@ -1256,13 +1249,10 @@ class MP3Viewer extends MediaBaseViewer {
     };
 
     handleCommentRangeClear = () => {
-        const clearedDraft = this.clearOpenCommentRangeDraft();
-        const hadReadOnly = this.commentRangeReadOnly != null;
-        if (hadReadOnly) {
-            this.commentRangeReadOnlyDismissedId = this.hostSelectedMarkerId;
-        }
+        const clearedDraftRange = this.clearOpenCommentRangeDraft();
+        const clearedReadOnlyRange = this.commentRangeReadOnly != null;
         this.commentRangeReadOnly = null;
-        if (!clearedDraft && !hadReadOnly) {
+        if (!clearedDraftRange && !clearedReadOnlyRange) {
             return;
         }
         this.syncCommentRangeLoop();
@@ -1272,7 +1262,6 @@ class MP3Viewer extends MediaBaseViewer {
     handleCommentMarkerClick = marker => {
         this.exitShuttle();
         this.hostSelectedMarkerId = marker.id;
-        this.commentRangeReadOnlyDismissedId = null;
         this.commentRangeReadOnly = commentMarkerRange(marker);
         this.pendingHostSelectedSeek = marker;
         if (this.mediaEl) {
