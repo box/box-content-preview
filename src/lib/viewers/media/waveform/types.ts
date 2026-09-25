@@ -174,6 +174,9 @@ export type TapeDetectionWindow = Pick<Window, 'matchMedia'> & { navigator: Tape
 /** Desktop walks then pins near the right inset. Tape keeps the playhead at center. */
 export type PlayheadCameraMode = 'desktop' | 'tape';
 
+/** J scans backward, L scans forward. Absent when shuttle is off. */
+export type ShuttleDirection = 'forward' | 'reverse';
+
 export type PlayheadCameraAction =
     | { type: 'none' }
     | { type: 'followRight'; isPlayheadPinned: boolean; scrollLeftPx: number }
@@ -199,6 +202,11 @@ export type WaveformViewProps = {
     peaks: ArrayLike<number>;
     /** Checkbox-driven draft. A waveform drag can also preview a range before this is set. */
     range?: CommentRangeDraft | null;
+    /**
+     * The `range` is a viewed comment span. Draw it like a draft, without handles
+     * or editable edges. A drag that creates a new draft still gets handles.
+     */
+    rangeReadOnly?: boolean;
     zoomLevel?: number;
 };
 

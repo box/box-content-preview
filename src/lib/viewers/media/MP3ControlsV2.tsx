@@ -11,11 +11,12 @@ import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
-import { WaveformViewport } from './waveform/types';
+import { ShuttleDirection, WaveformViewport } from './waveform/types';
 import { clampWaveformZoom, getTapeDefaultZoom, stepWaveformZoom, viewportEquals } from './waveform/viewport';
 import useTapeWaveform from './waveform/useTapeWaveform';
 import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
 import WaveformGeneratingIndicator from './waveform/WaveformGeneratingIndicator';
+import WaveformShuttleIndicator from './waveform/WaveformShuttleIndicator';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
 import './MP3ControlsV2.scss';
@@ -30,6 +31,8 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         bufferedRange?: TimeRanges;
         commentMarkers?: CommentMarker[];
         commentRangeDraft?: CommentRangeDraft | null;
+        /** Selected ranged comment. Drawn when no draft is open. */
+        commentRangeReadOnly?: CommentRangeDraft | null;
         hasStartedPlayback?: boolean;
         isGeneratingWaveform?: boolean;
         keyboardZoomStep?: number;
@@ -40,6 +43,8 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         onCommentRangeDragCreate?: () => void;
         onCommentRangeDragChange?: (isDragging: boolean) => void;
         peaks?: ArrayLike<number>;
+        shuttleDirection?: ShuttleDirection | null;
+        shuttleRate?: number;
     };
 
 export default function MP3ControlsV2({
@@ -47,6 +52,7 @@ export default function MP3ControlsV2({
     bufferedRange,
     commentMarkers,
     commentRangeDraft = null,
+    commentRangeReadOnly = null,
     currentTime,
     durationTime,
     hasStartedPlayback = false,
@@ -70,6 +76,8 @@ export default function MP3ControlsV2({
     peaks,
     playNext,
     rate,
+    shuttleDirection = null,
+    shuttleRate = 0,
     volume,
 }: Props): JSX.Element {
     const durationValue = typeof durationTime === 'number' && isFinite(durationTime) ? durationTime : 0;
@@ -166,6 +174,8 @@ export default function MP3ControlsV2({
         mediaEl?.closest<HTMLElement>('.bp-media-container')?.focus();
     }, [mediaEl, onPlayPause]);
 
+    const waveformRange = commentRangeDraft ?? commentRangeReadOnly;
+    const isRangeReadOnly = commentRangeDraft == null && commentRangeReadOnly != null;
     const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
     const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
         waveformMarkers,
@@ -190,6 +200,7 @@ export default function MP3ControlsV2({
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
     const hasZoomControl = hasZoomHandlers && hasMediaMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
     const showGeneratingWaveformIndicator = isGeneratingWaveform && !hasRealPeaks;
+    const showShuttle = !isTape && !!shuttleDirection && shuttleRate > 0;
     const waveformZoomLevel = isTape || hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN;
 
     return (
@@ -213,7 +224,8 @@ export default function MP3ControlsV2({
                         onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
                         onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
                         peaks={waveformPeaks}
-                        range={commentRangeDraft}
+                        range={waveformRange}
+                        rangeReadOnly={isRangeReadOnly}
                         zoomLevel={waveformZoomLevel}
                     />
                     <WaveformCommentMarkers
@@ -225,6 +237,9 @@ export default function MP3ControlsV2({
                         viewport={viewport}
                     />
                 </div>
+                {showShuttle && shuttleDirection && (
+                    <WaveformShuttleIndicator direction={shuttleDirection} rate={shuttleRate} />
+                )}
                 {(showGeneratingWaveformIndicator || hasZoomControl) && (
                     <div className="bp-MP3ControlsV2-waveformZoom">
                         {showGeneratingWaveformIndicator ? (

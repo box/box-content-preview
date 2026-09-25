@@ -506,6 +506,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 },
                 commentMarkers: [],
                 commentRangeDraft: null,
+                commentRangeReadOnly: null,
                 currentTime: 0,
                 durationTime: 1000,
                 hasStartedPlayback: false,
@@ -663,6 +664,48 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.pendingHostSelectedSeek).toBeNull();
         });
 
+        test('should show a read-only range when a host-selected comment has an end', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkersUpdated([
+                { endTime: 50.5, id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' },
+            ]);
+
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 50500, startMs: 41200 });
+        });
+
+        test('should keep a read-only range when the host echoes the marker without isSelected', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const selected = { endTime: 50.5, id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' };
+
+            mp3.handleCommentMarkersUpdated([selected]);
+            mp3.handleCommentMarkersUpdated([{ ...selected, isSelected: false }]);
+
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 50500, startMs: 41200 });
+        });
+
+        test('should clear a read-only range when the selected comment is a point', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkersUpdated([
+                { endTime: 50.5, id: 'comment-1', isSelected: true, time: 41.2, type: 'comment' },
+            ]);
+            mp3.handleCommentMarkersUpdated([{ id: 'comment-2', isSelected: true, time: 8, type: 'comment' }]);
+
+            expect(mp3.commentRangeReadOnly).toBeNull();
+            expect(mp3.mediaEl.currentTime).toBe(8);
+        });
+
         test('should not assign currentTime when the host-selected time is already current', () => {
             jest.spyOn(mp3, 'renderUI').mockImplementation();
             mp3.mediaEl = document.createElement('audio');
@@ -688,6 +731,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
             jest.spyOn(mp3, 'emit').mockImplementation();
             jest.spyOn(mp3, 'renderUI').mockImplementation();
+        });
+
+        test('should show a read-only range when a ranged marker is clicked', () => {
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+
+            mp3.handleCommentMarkerClick({ endTime: 80, id: '507397', time: 72.729, type: 'comment' });
+
+            expect(mp3.mediaEl.currentTime).toBe(72.729);
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 80000, startMs: 72729 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_marker_select', { id: '507397', time: 72.729 });
         });
 
         test('should pause, seek, and emit comment_marker_select', () => {
@@ -997,6 +1050,57 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.mediaEl.currentTime).toBe(12);
             expect(mp3.mediaEl.play).toBeCalled();
+        });
+
+        test('should loop a viewed comment range the same way as a draft', () => {
+            mp3.handleCommentMarkersUpdated([
+                { endTime: 4, id: 'comment-1', isSelected: true, time: 2, type: 'comment' },
+            ]);
+            mp3.mediaEl.currentTime = 10;
+
+            mp3.play();
+
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 4000, startMs: 2000 });
+            expect(mp3.mediaEl.currentTime).toBe(2);
+            expect(mp3.mediaEl.play).toBeCalled();
+        });
+
+        test('should let a composer draft replace a viewed comment range', () => {
+            mp3.handleCommentMarkersUpdated([
+                { endTime: 4, id: 'comment-1', isSelected: true, time: 2, type: 'comment' },
+            ]);
+            mp3.mediaEl.currentTime = 10;
+
+            mp3.handleCommentRangeDraft({ endMs: 8000, startMs: 6000 });
+            mp3.play();
+
+            expect(mp3.mediaEl.currentTime).toBe(6);
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 4000, startMs: 2000 });
+        });
+
+        test('should show the range again when the marker is clicked after a dismiss', () => {
+            mp3.handleCommentMarkersUpdated([
+                { endTime: 4, id: 'comment-1', isSelected: true, time: 2, type: 'comment' },
+            ]);
+            mp3.handleCommentRangeClear();
+
+            mp3.handleCommentMarkerClick({ endTime: 4, id: 'comment-1', time: 2, type: 'comment' });
+
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 4000, startMs: 2000 });
+        });
+
+        test('should clear a viewed range on click-outside without telling the host', () => {
+            mp3.handleCommentMarkersUpdated([
+                { endTime: 4, id: 'comment-1', isSelected: true, time: 2, type: 'comment' },
+            ]);
+            mp3.emit.mockClear();
+
+            mp3.handleCommentRangeClear();
+            mp3.setMediaTime(6);
+
+            expect(mp3.commentRangeReadOnly).toBeNull();
+            expect(mp3.mediaEl.currentTime).toBe(6);
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_dismiss');
         });
 
         test('should seek freely after click-outside dismisses an open range', () => {
@@ -1875,6 +1979,21 @@ describe('lib/viewers/media/MP3Viewer', () => {
             mp3.handleCommentMarkerClick.mockClear();
             expect(mp3.onKeydown('ArrowUp')).toBe(true);
             expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a2', time: 20 });
+        });
+
+        test('should not shuttle on the tape player', () => {
+            enableV2();
+            const { matchMedia } = window;
+            window.matchMedia = jest.fn().mockReturnValue({ matches: true });
+
+            try {
+                expect(mp3.onKeydown('l')).toBe(true);
+                expect(mp3.onKeydown('j')).toBe(true);
+                expect(mp3.shuttleDirection).toBe(null);
+                expect(mp3.play).not.toHaveBeenCalled();
+            } finally {
+                window.matchMedia = matchMedia;
+            }
         });
 
         test('should shuttle forward with ramping playbackRate and pause on k', () => {

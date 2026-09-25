@@ -41,12 +41,24 @@ describe('Preview Document Gallery', () => {
         cy.getPreviewPage(1);
     };
 
-    const openGallery = () => {
-        cy.showControls();
-        cy.getByTitle('Gallery view')
+    const revealControls = () => {
+        cy.get('.bp-ControlsLayer').should($layer => {
+            const viewer = $layer[0].ownerDocument.defaultView.preview.getCurrentViewer();
+            expect(viewer && viewer.controls && viewer.controls.controlsLayer, 'controls layer').to.exist;
+            viewer.controls.controlsLayer.show();
+            expect($layer).to.have.class('bp-is-visible');
+        });
+    };
+
+    const clickControl = title => {
+        revealControls();
+        cy.getByTitle(title)
             .should('be.visible')
             .click();
+    };
 
+    const openGallery = () => {
+        clickControl('Gallery view');
         cy.get('.bp-gallery-grid').should('be.visible');
     };
 
@@ -83,10 +95,7 @@ describe('Preview Document Gallery', () => {
         cy.get('.bp-gallery-tile[data-page="1"] img').should('be.visible');
         cy.getByTitle('Next page').should('not.exist');
 
-        cy.showControls();
-        cy.getByTitle('Gallery view')
-            .should('be.visible')
-            .click();
+        clickControl('Gallery view');
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.getByTitle('Gallery view').should('have.attr', 'aria-pressed', 'false');
@@ -158,7 +167,7 @@ describe('Preview Document Gallery', () => {
 
     it('Should zoom the gallery independently of the document and persist across reopen', () => {
         showDocumentPreview();
-        cy.showControls();
+        revealControls();
         cy.getByTestId('bp-ZoomControls-current')
             .invoke('text')
             .then(documentScale => {
@@ -170,7 +179,7 @@ describe('Preview Document Gallery', () => {
                     cy.get('.bp-gallery-tile[data-page="1"] img')
                         .invoke('attr', 'src')
                         .then(initialSrc => {
-                            cy.getByTitle('Zoom in').click();
+                            clickControl('Zoom in');
                             cy.getByTestId('bp-ZoomControls-current').should('have.text', '110%');
                             cy.get('.bp-gallery-tile[data-page="1"]').should($zoomedTile => {
                                 expect($zoomedTile[0].getBoundingClientRect().width).to.be.greaterThan(initialWidth);
@@ -179,7 +188,7 @@ describe('Preview Document Gallery', () => {
                         });
                 });
 
-                cy.getByTitle('Gallery view').click();
+                clickControl('Gallery view');
                 cy.getByTestId('bp-ZoomControls-current').should('have.text', documentScale);
 
                 openGallery();
@@ -259,7 +268,7 @@ describe('Preview Document Gallery', () => {
         it(`Should hide the gallery toggle when the feature flag is ${flagState}`, () => {
             showDocumentPreview({ galleryEnabled });
 
-            cy.showControls();
+            revealControls();
             cy.getByTitle('Gallery view').should('not.exist');
         });
     });
@@ -267,14 +276,14 @@ describe('Preview Document Gallery', () => {
     it('Should hide the gallery toggle for a single-page document', () => {
         showDocumentPreview({ targetFileId: singlePageFileId });
 
-        cy.showControls();
+        revealControls();
         cy.getByTitle('Gallery view').should('not.exist');
     });
 
     it('Should hide the gallery toggle for a document above the page limit', () => {
         showDocumentPreview({ targetFileId: largeFileId });
 
-        cy.showControls();
+        revealControls();
         cy.getByTitle('Gallery view').should('not.exist');
     });
 
@@ -329,12 +338,11 @@ describe('Preview Document Gallery', () => {
     it('Should release previous document resources when navigating to the next file', () => {
         showGalleryWithRenderedThumbnails({ collection: [fileId, singlePageFileId] });
         cy.get('.bp-gallery-tile[data-page="1"]').type('{esc}');
-        cy.showControls();
 
         cy.window().then(win => {
             cy.wrap(win.preview.getCurrentViewer()).as('previousViewer');
         });
-        cy.getByTitle('Next file').click();
+        clickControl('Next file');
         cy.get('@previousViewer').then(viewer => {
             expectReleasedResources(viewer);
         });

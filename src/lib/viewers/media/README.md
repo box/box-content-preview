@@ -119,6 +119,9 @@ The host also sends these events to the MP3 viewer (audio player v2 only). Check
 | ------------------------- | ------------- | ------------------------------------------------------------------------------------------- |
 | comment_range_draft       | Host → viewer | `{ startMs, endMs }`. `endMs: null` is a collapsed timestamp. Invalid payloads are ignored. |
 | comment_range_draft_clear | Host → viewer | Hide handles. A file-version switch is a clear, not a resync.                               |
+| comment_markers           | Host → viewer | Marker list. A ranged comment includes `endTime` (seconds). `time` is the start.            |
+
+Selecting a ranged marker (sidebar, marker click, or deep link) draws that span as a read-only range. It matches a draft range, including highlight, zoom, and playback loop, without handles or editable edges. Clicking the waveform outside the span clears it locally and does not emit `comment_range_draft_dismiss`. A composer draft still replaces it.
 
 ## Methods
 

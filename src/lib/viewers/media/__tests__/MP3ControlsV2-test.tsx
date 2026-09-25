@@ -1,6 +1,7 @@
 import React, { useEffect as mockUseEffect } from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { replacePlaceholders } from '../../../util';
 import MP3ControlsV2, { Props } from '../MP3ControlsV2';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
 import useTapeWaveform from '../waveform/useTapeWaveform';
@@ -23,6 +24,7 @@ jest.mock('../waveform/WaveformView', () => {
         onViewportChange,
         onZoomChange,
         range,
+        rangeReadOnly,
         zoomLevel = 1,
     }: {
         cameraMode?: string;
@@ -45,6 +47,7 @@ jest.mock('../waveform/WaveformView', () => {
         }) => void;
         onZoomChange?: (zoomLevel: number) => void;
         range?: { endMs: number | null; startMs: number } | null;
+        rangeReadOnly?: boolean;
         zoomLevel?: number;
     }): JSX.Element {
         const overview = {
@@ -129,6 +132,7 @@ jest.mock('../waveform/WaveformView', () => {
                 {range && (
                     <div
                         data-end={range.endMs == null ? '' : String(range.endMs)}
+                        data-readonly={rangeReadOnly ? 'true' : 'false'}
                         data-start={String(range.startMs)}
                         data-testid="bp-waveform-range"
                     />
@@ -218,6 +222,23 @@ describe('MP3ControlsV2', () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
             expect(await screen.findByTestId('media-controls-wrapper-v2')).toHaveClass('bp-MP3ControlsV2');
+        });
+
+        test('should show the desktop shuttle speed above the waveform', async () => {
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8], shuttleDirection: 'forward', shuttleRate: 2 });
+
+            const shuttle = await screen.findByTestId('bp-waveform-shuttle');
+            expect(shuttle).toHaveTextContent('2x');
+            expect(shuttle).toHaveAttribute('aria-label', replacePlaceholders(__('media_shuttle_forward'), ['2']));
+            expect(shuttle).not.toHaveClass('bp-is-reverse');
+        });
+
+        test('should hide shuttle speed on the tape player', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8], shuttleDirection: 'reverse', shuttleRate: 4 });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-shuttle')).not.toBeInTheDocument();
         });
 
         test('should render the waveform instead of the time slider', async () => {
@@ -736,6 +757,30 @@ describe('MP3ControlsV2', () => {
 
             expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
             expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+        });
+
+        test('should draw a viewed comment range without handles when no draft is open', async () => {
+            getWrapper({
+                commentRangeReadOnly: { endMs: 12000, startMs: 8055 },
+                durationTime: 8,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'true');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-start', '8055');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-end', '12000');
+        });
+
+        test('should let a composer draft replace a viewed comment range', async () => {
+            getWrapper({
+                commentRangeDraft: { endMs: 4000, startMs: 2000 },
+                commentRangeReadOnly: { endMs: 12000, startMs: 8055 },
+                durationTime: 8,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'false');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-start', '2000');
         });
 
         test('should draw a checkbox-driven range draft on the waveform', async () => {
