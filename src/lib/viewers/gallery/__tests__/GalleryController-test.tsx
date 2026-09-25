@@ -153,16 +153,21 @@ describe('GalleryController', () => {
 
     describe('canRender', () => {
         test.each`
-            pages                    | flag     | expected
-            ${1}                     | ${true}  | ${false}
-            ${2}                     | ${true}  | ${true}
-            ${GALLERY_MAX_PAGES}     | ${true}  | ${true}
-            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false}
-            ${50}                    | ${false} | ${false}
-        `('should return $expected when pages=$pages and flag=$flag', ({ pages, flag, expected }) => {
-            const { controller } = makeController({ flagOn: flag });
-            expect(controller.canRender(pages)).toBe(expected);
-        });
+            pages                    | flag     | enhancedGallery | expected
+            ${1}                     | ${true}  | ${true}         | ${false}
+            ${2}                     | ${true}  | ${true}         | ${true}
+            ${GALLERY_MAX_PAGES}     | ${true}  | ${true}         | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${true}         | ${false}
+            ${GALLERY_MAX_PAGES}     | ${true}  | ${false}        | ${true}
+            ${GALLERY_MAX_PAGES + 1} | ${true}  | ${false}        | ${false}
+            ${50}                    | ${false} | ${true}         | ${false}
+        `(
+            'should return $expected when pages=$pages, galleryView=$flag, enhancedGallery=$enhancedGallery',
+            ({ pages, flag, enhancedGallery, expected }) => {
+                const { controller } = makeController({ flagOn: flag, enhancedGalleryEnabled: enhancedGallery });
+                expect(controller.canRender(pages)).toBe(expected);
+            },
+        );
     });
 
     describe('toggle', () => {
@@ -293,7 +298,7 @@ describe('GalleryController', () => {
             }
         });
 
-        test('should wire the correct props into GalleryGrid', () => {
+        test('should wire the correct props into VirtualizedGalleryGrid when enhanced', () => {
             const { controller } = makeController({ currentPage: 3, hasTouch: true, pageCount: 25 });
             controller.toggle();
 
@@ -301,7 +306,6 @@ describe('GalleryController', () => {
             const grid = mockLastRoot.render.mock.calls[0][0];
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
-            expect(grid.props.isAriaGridEnabled).toBe(true);
             expect(grid.props.isPinchZoomEnabled).toBe(true);
             expect(grid.props.isTouchZoomEnabled).toBe(true);
             expect(grid.props.scale).toBe(1);
@@ -551,12 +555,9 @@ describe('GalleryController', () => {
             expect(requestUiUpdate).not.toHaveBeenCalled();
 
             const grid = mockLastRoot.render.mock.calls[0][0];
-            expect(grid.props.isPinchZoomEnabled).toBe(false);
-            expect(grid.props.isTouchZoomEnabled).toBe(false);
-            expect(grid.props.isAriaGridEnabled).toBe(false);
-
-            grid.props.onScaleChange(1.5);
-            expect(controller.scale).toBe(1);
+            expect(grid.props.isPinchZoomEnabled).toBeUndefined();
+            expect(grid.props.isTouchZoomEnabled).toBeUndefined();
+            expect(grid.props.onScaleChange).toBeUndefined();
         });
 
         test('should persist scale across close and reopen but reset on destroy', () => {
@@ -607,17 +608,6 @@ describe('GalleryController', () => {
     });
 
     describe('handleArrowKey', () => {
-        // Adds the selected tile to the gallery root (mounted before .bp-ControlsRoot; with no
-        // controls seeded it lands as containerEl's last child).
-        function seedSelectedTile(containerEl: HTMLElement, role = 'option'): HTMLElement {
-            const galleryEl = containerEl.lastElementChild as HTMLElement;
-            const tile = document.createElement('div');
-            tile.setAttribute('role', role);
-            tile.setAttribute('tabindex', '0');
-            galleryEl.appendChild(tile);
-            return tile;
-        }
-
         function seedToggle(containerEl: HTMLElement): HTMLElement {
             const toggle = document.createElement('button');
             toggle.className = 'bp-GalleryToggle';
@@ -625,69 +615,60 @@ describe('GalleryController', () => {
             return toggle;
         }
 
-        test('should refocus the selected tile and replay the arrow into the grid', () => {
-            const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
-            controller.toggle();
-            const tile = seedSelectedTile(containerEl);
-            const tileKeydown = jest.fn();
-            tile.addEventListener('keydown', tileKeydown);
+        function setGridHandle(controller: GalleryController): jest.Mock {
+            const handleNavKey = jest.fn();
+            ((controller as unknown) as {
+                galleryGridRef: { current: { handleNavKey: jest.Mock } };
+            }).galleryGridRef.current = {
+                handleNavKey,
+            };
+            return handleNavKey;
+        }
 
-            toggle.focus();
+        test('should forward arrow keys to the grid handle', () => {
+            const { controller, containerEl } = makeController({ sidebarOpen: false });
+            seedToggle(containerEl);
+            controller.toggle();
+            const handleNavKey = setGridHandle(controller);
+
             controller.handleArrowKey('ArrowDown');
 
-            expect(document.activeElement).toBe(tile);
-            expect(tileKeydown).toHaveBeenCalledTimes(1);
-            expect(tileKeydown.mock.calls[0][0].key).toBe('ArrowDown');
+            expect(handleNavKey).toHaveBeenCalledTimes(1);
+            expect(handleNavKey).toHaveBeenCalledWith('ArrowDown');
         });
 
-        test('should redirect into a gridcell tile', () => {
+        test('should not forward non-grid-nav keys', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
+            seedToggle(containerEl);
             controller.toggle();
-            const tile = seedSelectedTile(containerEl, 'gridcell');
+            const handleNavKey = setGridHandle(controller);
 
-            toggle.focus();
-            controller.handleArrowKey('ArrowDown');
-
-            expect(document.activeElement).toBe(tile);
-        });
-
-        test('should not redirect focus for non-grid-nav keys', () => {
-            const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
-            controller.toggle();
-            seedSelectedTile(containerEl);
-
-            toggle.focus();
             controller.handleArrowKey('[');
 
-            expect(document.activeElement).toBe(toggle);
+            expect(handleNavKey).not.toHaveBeenCalled();
         });
 
-        test.each(['Home', 'End'])('should redirect %s into the selected tile', key => {
+        test.each(['Home', 'End'])('should forward %s to the grid handle', key => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
-            const toggle = seedToggle(containerEl);
+            seedToggle(containerEl);
             controller.toggle();
-            const tile = seedSelectedTile(containerEl);
-            const tileKeydown = jest.fn();
-            tile.addEventListener('keydown', tileKeydown);
+            const handleNavKey = setGridHandle(controller);
 
-            toggle.focus();
             controller.handleArrowKey(key);
 
-            expect(document.activeElement).toBe(tile);
-            expect(tileKeydown).toHaveBeenCalledTimes(1);
-            expect(tileKeydown.mock.calls[0][0].key).toBe(key);
+            expect(handleNavKey).toHaveBeenCalledTimes(1);
+            expect(handleNavKey).toHaveBeenCalledWith(key);
         });
 
         test('should be a no-op when the gallery is closed', () => {
             const { controller, containerEl } = makeController({ sidebarOpen: false });
             const toggle = seedToggle(containerEl);
+            const handleNavKey = setGridHandle(controller);
 
             toggle.focus();
             controller.handleArrowKey('ArrowDown');
 
+            expect(handleNavKey).not.toHaveBeenCalled();
             expect(document.activeElement).toBe(toggle);
         });
     });
