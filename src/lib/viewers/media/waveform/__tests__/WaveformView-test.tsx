@@ -386,6 +386,30 @@ describe('WaveformView', () => {
         expect(onSeek).toHaveBeenCalledWith(2);
     });
 
+    test('should draw a read-only range without handles and still clear it from outside', () => {
+        const onRangeClear = jest.fn();
+        const onRangeChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                onRangeClear={onRangeClear}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+                rangeReadOnly
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'true');
+        expect(screen.queryByTestId('bp-waveform-range-handle-start')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-handle-end')).not.toBeInTheDocument();
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
     test('should clear an open range and seek when clicking the waveform outside it', () => {
         const onRangeClear = jest.fn();
         const onSeek = jest.fn();

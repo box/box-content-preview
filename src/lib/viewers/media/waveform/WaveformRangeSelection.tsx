@@ -44,6 +44,8 @@ export type WaveformRangeSelectionProps = {
     onPreviewChange?: (range: CommentRangeDraft) => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
     range: CommentRangeDraft;
+    /** Viewed comment span. Same chrome as a draft, without handles or edge edits. */
+    readOnly?: boolean;
     viewport: WaveformViewport;
 };
 
@@ -114,6 +116,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             onPreviewChange,
             onRangeChange,
             range,
+            readOnly = false,
             viewport,
         },
         ref,
@@ -149,7 +152,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const displayed = dragRange ?? resolveRange(range, durationMs);
         displayedRef.current = displayed;
         const showCommentButton =
-            Boolean(onDragCreate) && displayed.startMs !== displayed.endMs && activeHandle == null;
+            !readOnly && Boolean(onDragCreate) && displayed.startMs !== displayed.endMs && activeHandle == null;
 
         const syncPositions = useCallback(
             (next: ResolvedRange, nextViewport: WaveformViewport, nextDurationSec: number): void => {
@@ -299,7 +302,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
 
         const startDrag = useCallback(
             (handle: RangeHandle, event: React.PointerEvent<HTMLDivElement>): void => {
-                if (!interactive || event.button > 1 || event.ctrlKey || event.metaKey) {
+                if (readOnly || !interactive || event.button > 1 || event.ctrlKey || event.metaKey) {
                     return;
                 }
                 event.preventDefault();
@@ -321,7 +324,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     startMs: resolved.startMs,
                 });
             },
-            [interactive],
+            [interactive, readOnly],
         );
 
         const onHandlePointerDown = useCallback(
@@ -414,31 +417,36 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 }`}
                 data-collapsed={collapsed ? 'true' : 'false'}
                 data-highlighted={highlight ? 'true' : 'false'}
+                data-readonly={readOnly ? 'true' : 'false'}
                 data-testid="bp-waveform-range"
             >
                 <div ref={regionRef} className="bp-WaveformRange-region" data-testid="bp-waveform-range-region" />
-                <div
-                    ref={startHandleRef}
-                    className={`bp-WaveformRange-handle bp-WaveformRange-handle--start${
-                        activeHandle === 'start' ? ' bp-WaveformRange-handle--dragging' : ''
-                    }`}
-                    data-testid="bp-waveform-range-handle-start"
-                    onMouseMove={event => event.stopPropagation()}
-                    onPointerDown={onHandlePointerDown}
-                >
-                    <div className="bp-WaveformRange-handleGrip" />
-                </div>
-                <div
-                    ref={endHandleRef}
-                    className={`bp-WaveformRange-handle bp-WaveformRange-handle--end${
-                        activeHandle === 'end' ? ' bp-WaveformRange-handle--dragging' : ''
-                    }`}
-                    data-testid="bp-waveform-range-handle-end"
-                    onMouseMove={event => event.stopPropagation()}
-                    onPointerDown={onHandlePointerDown}
-                >
-                    <div className="bp-WaveformRange-handleGrip" />
-                </div>
+                {!readOnly && (
+                    <div
+                        ref={startHandleRef}
+                        className={`bp-WaveformRange-handle bp-WaveformRange-handle--start${
+                            activeHandle === 'start' ? ' bp-WaveformRange-handle--dragging' : ''
+                        }`}
+                        data-testid="bp-waveform-range-handle-start"
+                        onMouseMove={event => event.stopPropagation()}
+                        onPointerDown={onHandlePointerDown}
+                    >
+                        <div className="bp-WaveformRange-handleGrip" />
+                    </div>
+                )}
+                {!readOnly && (
+                    <div
+                        ref={endHandleRef}
+                        className={`bp-WaveformRange-handle bp-WaveformRange-handle--end${
+                            activeHandle === 'end' ? ' bp-WaveformRange-handle--dragging' : ''
+                        }`}
+                        data-testid="bp-waveform-range-handle-end"
+                        onMouseMove={event => event.stopPropagation()}
+                        onPointerDown={onHandlePointerDown}
+                    >
+                        <div className="bp-WaveformRange-handleGrip" />
+                    </div>
+                )}
                 {activeHandle && (
                     <div ref={tooltipRef} className="bp-WaveformRange-tooltip" data-testid="bp-waveform-range-tooltip">
                         <div className="bp-WaveformRange-tooltipTime">{formatTime(tooltipMs / 1000)}</div>

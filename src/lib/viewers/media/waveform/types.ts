@@ -202,6 +202,11 @@ export type WaveformViewProps = {
     peaks: ArrayLike<number>;
     /** Checkbox-driven draft. A waveform drag can also preview a range before this is set. */
     range?: CommentRangeDraft | null;
+    /**
+     * The `range` is a viewed comment span. Draw it like a draft, without handles
+     * or editable edges. A drag that creates a new draft still gets handles.
+     */
+    rangeReadOnly?: boolean;
     zoomLevel?: number;
 };
 
