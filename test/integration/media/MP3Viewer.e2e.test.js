@@ -31,9 +31,21 @@ describe('MP3 Viewer', () => {
     };
 
     const startV2Playback = () => {
+        // play() rejects if a load interrupts it. Wait until the file can play, then
+        // until playback has started, before a later reload destroys the element.
+        cy.window().should(win => {
+            const audio = win.preview.getCurrentViewer().mediaEl;
+            expect(audio, 'audio element').to.exist;
+            expect(audio.readyState).to.be.at.least(win.HTMLMediaElement.HAVE_FUTURE_DATA);
+        });
+
         cy.getByTestId('bp-MP3ControlsV2-play-overlay').click();
         cy.getByTestId('bp-MP3ControlsV2-play-overlay').should('not.exist');
         cy.getByTestId('bp-MP3ControlsV2-bar').should('be.visible');
+
+        cy.window().should(win => {
+            expect(win.preview.getCurrentViewer().mediaEl.paused).to.equal(false);
+        });
     };
 
     const openV2Settings = () => {
