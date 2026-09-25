@@ -389,6 +389,28 @@ describe('WaveformRangeSelection', () => {
         expect(onRangeChange).not.toHaveBeenCalled();
     });
 
+    test('should draw a read-only range without handles', () => {
+        const onRangeChange = jest.fn();
+        const onDragCreate = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeChange={onRangeChange}
+                range={{ endMs: 4000, startMs: 2000 }}
+                readOnly
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'true');
+        expect(screen.getByTestId('bp-waveform-range-region')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-handle-start')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-handle-end')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
     test('should end the drag when the range layer unmounts', () => {
         const onDragChange = jest.fn();
         const onRangeChange = jest.fn();

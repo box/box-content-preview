@@ -1,4 +1,5 @@
 import React from 'react';
+import commentMarkerRange from '../controls/media/markers/helpers/commentMarkerRange';
 import {
     EVENT_COMMENT_RANGE_DRAG_CREATE,
     EVENT_COMMENT_RANGE_DRAFT,
@@ -120,6 +121,8 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaEl.setAttribute('preload', 'auto');
         this.commentMarkers = [];
         this.commentRangeDraft = null;
+        this.commentRangeReadOnly = null;
+        this.commentRangeReadOnlyDismissedId = null;
         this.hostSelectedMarkerId = null;
         this.isCommentRangeDragging = false;
         this.isCommentRangeTimestampActive = false;
@@ -463,6 +466,8 @@ class MP3Viewer extends MediaBaseViewer {
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT, this.handleCommentRangeDraft);
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
         this.commentRangeDraft = null;
+        this.commentRangeReadOnly = null;
+        this.commentRangeReadOnlyDismissedId = null;
         this.isCommentRangeDragging = false;
         this.isCommentRangeTimestampActive = false;
         this.stopReverseShuttle();
@@ -479,6 +484,8 @@ class MP3Viewer extends MediaBaseViewer {
         if (this.isAudioPlayerV2) {
             // A file-version switch is a clear, not a resync of the previous draft.
             this.commentRangeDraft = null;
+            this.commentRangeReadOnly = null;
+            this.commentRangeReadOnlyDismissedId = null;
             this.isCommentRangeDragging = false;
             this.isCommentRangeTimestampActive = false;
             this.syncCommentRangeLoop();
@@ -972,6 +979,8 @@ class MP3Viewer extends MediaBaseViewer {
         if (selected) {
             if (selected.id !== this.hostSelectedMarkerId) {
                 this.hostSelectedMarkerId = selected.id;
+                this.commentRangeReadOnlyDismissedId = null;
+                this.commentRangeReadOnly = commentMarkerRange(selected);
                 if (Number.isFinite(selected.time)) {
                     this.pendingHostSelectedSeek = selected;
                     this.applyPendingHostSelectedSeek();
@@ -980,6 +989,16 @@ class MP3Viewer extends MediaBaseViewer {
         } else if (this.hostSelectedMarkerId && !markers.some(marker => marker.id === this.hostSelectedMarkerId)) {
             this.hostSelectedMarkerId = null;
             this.pendingHostSelectedSeek = null;
+            this.commentRangeReadOnly = null;
+            this.commentRangeReadOnlyDismissedId = null;
+        } else if (this.commentRangeReadOnly && this.hostSelectedMarkerId) {
+            const current = markers.find(marker => marker.id === this.hostSelectedMarkerId);
+            const next = current ? commentMarkerRange(current) : null;
+            const prev = this.commentRangeReadOnly;
+            this.commentRangeReadOnly = next;
+            if (!next || next.startMs !== prev.startMs || next.endMs !== prev.endMs) {
+                this.syncCommentRangeLoop();
+            }
         }
 
         this.renderUI();
@@ -1000,25 +1019,49 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.pendingHostSelectedSeek = null;
         this.exitShuttle();
-        this.handleCommentRangeClear();
+        this.clearOpenCommentRangeDraft();
+        if (this.commentRangeReadOnlyDismissedId !== marker.id) {
+            this.commentRangeReadOnly = commentMarkerRange(marker);
+        }
         this.mediaEl.pause();
         if (this.mediaEl.currentTime !== marker.time) {
             this.mediaEl.currentTime = marker.time;
         }
+        this.syncCommentRangeLoop();
     }
 
     /**
-     * Seconds of the open draft span, or null when collapsed / absent.
-     * Collapsed drafts (`endMs: null`) do not confine playback.
+     * Seconds of the span that confines playback, or null when collapsed / absent.
+     * A composer draft wins over a viewed comment range. Collapsed drafts do not confine playback.
      *
      * @return {{endSec: number, startSec: number}|null}
      */
     getOpenCommentRangeSeconds() {
-        const draft = this.commentRangeDraft;
-        if (isRangeCollapsed(draft) || !Number.isFinite(draft.startMs) || !Number.isFinite(draft.endMs)) {
+        // An open composer draft owns playback. A viewed comment range does otherwise.
+        const source = this.commentRangeDraft != null ? this.commentRangeDraft : this.commentRangeReadOnly;
+        if (isRangeCollapsed(source) || !Number.isFinite(source.startMs) || !Number.isFinite(source.endMs)) {
             return null;
         }
-        return { endSec: draft.endMs / 1000, startSec: draft.startMs / 1000 };
+        return { endSec: source.endMs / 1000, startSec: source.startMs / 1000 };
+    }
+
+    /**
+     * Drop an open composer draft. A collapsed timestamp is left alone.
+     * Does not clear a viewed comment range.
+     *
+     * @return {boolean} whether an open draft was cleared
+     */
+    clearOpenCommentRangeDraft() {
+        if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
+            return false;
+        }
+        const notifyHost = this.isCommentRangeTimestampActive;
+        this.commentRangeDraft = null;
+        this.isCommentRangeTimestampActive = false;
+        if (notifyHost) {
+            this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        }
+        return true;
     }
 
     /**
@@ -1213,14 +1256,14 @@ class MP3Viewer extends MediaBaseViewer {
     };
 
     handleCommentRangeClear = () => {
-        if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
-            return;
+        const clearedDraft = this.clearOpenCommentRangeDraft();
+        const hadReadOnly = this.commentRangeReadOnly != null;
+        if (hadReadOnly) {
+            this.commentRangeReadOnlyDismissedId = this.hostSelectedMarkerId;
         }
-        const notifyHost = this.isCommentRangeTimestampActive;
-        this.commentRangeDraft = null;
-        this.isCommentRangeTimestampActive = false;
-        if (notifyHost) {
-            this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        this.commentRangeReadOnly = null;
+        if (!clearedDraft && !hadReadOnly) {
+            return;
         }
         this.syncCommentRangeLoop();
         this.renderUI();
@@ -1229,6 +1272,8 @@ class MP3Viewer extends MediaBaseViewer {
     handleCommentMarkerClick = marker => {
         this.exitShuttle();
         this.hostSelectedMarkerId = marker.id;
+        this.commentRangeReadOnlyDismissedId = null;
+        this.commentRangeReadOnly = commentMarkerRange(marker);
         this.pendingHostSelectedSeek = marker;
         if (this.mediaEl) {
             this.mediaEl.pause();
@@ -1284,6 +1329,7 @@ class MP3Viewer extends MediaBaseViewer {
                     {...sharedProps}
                     commentMarkers={this.commentMarkers || []}
                     commentRangeDraft={this.commentRangeDraft || null}
+                    commentRangeReadOnly={this.commentRangeReadOnly || null}
                     hasStartedPlayback={!!this.userRequestedPlay}
                     isGeneratingWaveform={this.isGeneratingWaveform()}
                     keyboardVolumeStep={this.keyboardVolumeStep}

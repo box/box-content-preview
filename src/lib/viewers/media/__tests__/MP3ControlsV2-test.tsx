@@ -24,6 +24,7 @@ jest.mock('../waveform/WaveformView', () => {
         onViewportChange,
         onZoomChange,
         range,
+        rangeReadOnly,
         zoomLevel = 1,
     }: {
         cameraMode?: string;
@@ -46,6 +47,7 @@ jest.mock('../waveform/WaveformView', () => {
         }) => void;
         onZoomChange?: (zoomLevel: number) => void;
         range?: { endMs: number | null; startMs: number } | null;
+        rangeReadOnly?: boolean;
         zoomLevel?: number;
     }): JSX.Element {
         const overview = {
@@ -130,6 +132,7 @@ jest.mock('../waveform/WaveformView', () => {
                 {range && (
                     <div
                         data-end={range.endMs == null ? '' : String(range.endMs)}
+                        data-readonly={rangeReadOnly ? 'true' : 'false'}
                         data-start={String(range.startMs)}
                         data-testid="bp-waveform-range"
                     />
@@ -754,6 +757,30 @@ describe('MP3ControlsV2', () => {
 
             expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
             expect(screen.queryByTestId('bp-waveform-range')).not.toBeInTheDocument();
+        });
+
+        test('should draw a viewed comment range without handles when no draft is open', async () => {
+            getWrapper({
+                commentRangeReadOnly: { endMs: 12000, startMs: 8055 },
+                durationTime: 8,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'true');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-start', '8055');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-end', '12000');
+        });
+
+        test('should let a composer draft replace a viewed comment range', async () => {
+            getWrapper({
+                commentRangeDraft: { endMs: 4000, startMs: 2000 },
+                commentRangeReadOnly: { endMs: 12000, startMs: 8055 },
+                durationTime: 8,
+                peaks: [0.2, 0.8],
+            });
+
+            expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'false');
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-start', '2000');
         });
 
         test('should draw a checkbox-driven range draft on the waveform', async () => {

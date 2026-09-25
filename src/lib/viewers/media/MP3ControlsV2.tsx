@@ -31,6 +31,8 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         bufferedRange?: TimeRanges;
         commentMarkers?: CommentMarker[];
         commentRangeDraft?: CommentRangeDraft | null;
+        /** Selected ranged comment. Drawn when no draft is open. */
+        commentRangeReadOnly?: CommentRangeDraft | null;
         hasStartedPlayback?: boolean;
         isGeneratingWaveform?: boolean;
         keyboardZoomStep?: number;
@@ -50,6 +52,7 @@ export default function MP3ControlsV2({
     bufferedRange,
     commentMarkers,
     commentRangeDraft = null,
+    commentRangeReadOnly = null,
     currentTime,
     durationTime,
     hasStartedPlayback = false,
@@ -171,6 +174,8 @@ export default function MP3ControlsV2({
         mediaEl?.closest<HTMLElement>('.bp-media-container')?.focus();
     }, [mediaEl, onPlayPause]);
 
+    const waveformRange = commentRangeDraft ?? commentRangeReadOnly;
+    const isRangeReadOnly = commentRangeDraft == null && commentRangeReadOnly != null;
     const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
     const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
         waveformMarkers,
@@ -219,7 +224,8 @@ export default function MP3ControlsV2({
                         onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
                         onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
                         peaks={waveformPeaks}
-                        range={commentRangeDraft}
+                        range={waveformRange}
+                        rangeReadOnly={isRangeReadOnly}
                         zoomLevel={waveformZoomLevel}
                     />
                     <WaveformCommentMarkers

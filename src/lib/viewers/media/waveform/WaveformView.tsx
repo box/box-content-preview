@@ -250,6 +250,7 @@ function WaveformView({
     onZoomChange,
     peaks,
     range = null,
+    rangeReadOnly = false,
     zoomLevel: zoomLevelProp,
 }: WaveformViewProps): JSX.Element {
     // DOM / WaveSurfer
@@ -1205,6 +1206,7 @@ function WaveformView({
             : timeLeftPercent(hoverProgress * durationSec, durationSec, viewportRef.current);
 
     const overlayRange = createRange ?? range;
+    const isOverlayReadOnly = rangeReadOnly && createRange == null;
     const showRangeOverlay =
         Boolean(overlayRange) && (isRangeDragging || !isPlaying || !isRangeCollapsed(overlayRange));
 
@@ -1268,14 +1270,17 @@ function WaveformView({
                         currentTimeSec={currentTime}
                         durationSec={durationSec}
                         getPlayheadSec={getPlayheadSec}
-                        interactive={interactive}
+                        interactive={interactive && !isOverlayReadOnly}
                         isHighlighted={isRangeDragging || isRangeHovered}
                         keepHighlight
                         onDragChange={handleRangeDragChange}
-                        onDragCreate={interactive && !isRangeDragging ? onRangeDragCreate : undefined}
+                        onDragCreate={
+                            interactive && !isRangeDragging && !isOverlayReadOnly ? onRangeDragCreate : undefined
+                        }
                         onPreviewChange={setPreviewRange}
-                        onRangeChange={interactive ? onRangeChange : undefined}
+                        onRangeChange={interactive && !isOverlayReadOnly ? onRangeChange : undefined}
                         range={overlayRange}
+                        readOnly={isOverlayReadOnly}
                         viewport={viewport}
                     />
                 )}
