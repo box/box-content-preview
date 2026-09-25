@@ -20,6 +20,7 @@ import {
 } from './waveform/constants';
 import { createWaveformLoader } from './waveform/createWaveformLoader';
 import { isRangeCollapsed } from './waveform/range';
+import { isTapeWaveformInput } from './waveform/useTapeWaveform';
 import { isPositiveFinite } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
@@ -267,6 +268,9 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     shuttle(direction) {
+        if (isTapeWaveformInput()) {
+            return;
+        }
         const sameDirection = this.shuttleDirection === direction;
         const rate = nextShuttleRate(this.shuttleRate, sameDirection);
         if (direction === 'forward') {
@@ -296,6 +300,7 @@ class MP3Viewer extends MediaBaseViewer {
                 .catch(() => {});
         }
         this.scheduleCommentRangeLoopWrap(true);
+        this.renderUI();
     }
 
     startReverseShuttle(rate) {
@@ -316,6 +321,7 @@ class MP3Viewer extends MediaBaseViewer {
                 this.exitShuttle();
             }
         }, AUDIO_V2_SHUTTLE_TICK_MS);
+        this.renderUI();
     }
 
     stopReverseShuttle() {
@@ -1291,6 +1297,8 @@ class MP3Viewer extends MediaBaseViewer {
                     onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
                     playNext={this.isPlayNextEnabled()}
+                    shuttleDirection={this.shuttleDirection}
+                    shuttleRate={this.shuttleRate}
                 />,
             );
             return;
