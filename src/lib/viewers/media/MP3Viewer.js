@@ -986,14 +986,6 @@ class MP3Viewer extends MediaBaseViewer {
             this.hostSelectedMarkerId = null;
             this.pendingHostSelectedSeek = null;
             this.commentRangeReadOnly = null;
-        } else if (this.commentRangeReadOnly && this.hostSelectedMarkerId) {
-            const current = markers.find(marker => marker.id === this.hostSelectedMarkerId);
-            const next = current ? commentMarkerRange(current) : null;
-            const prev = this.commentRangeReadOnly;
-            this.commentRangeReadOnly = next;
-            if (!next || next.startMs !== prev.startMs || next.endMs !== prev.endMs) {
-                this.syncCommentRangeLoop();
-            }
         }
 
         this.renderUI();
