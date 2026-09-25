@@ -1,6 +1,7 @@
 import React, { useEffect as mockUseEffect } from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { replacePlaceholders } from '../../../util';
 import MP3ControlsV2, { Props } from '../MP3ControlsV2';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
 import useTapeWaveform from '../waveform/useTapeWaveform';
@@ -218,6 +219,23 @@ describe('MP3ControlsV2', () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
             expect(await screen.findByTestId('media-controls-wrapper-v2')).toHaveClass('bp-MP3ControlsV2');
+        });
+
+        test('should show the desktop shuttle speed above the waveform', async () => {
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8], shuttleDirection: 'forward', shuttleRate: 2 });
+
+            const shuttle = await screen.findByTestId('bp-waveform-shuttle');
+            expect(shuttle).toHaveTextContent('2x');
+            expect(shuttle).toHaveAttribute('aria-label', replacePlaceholders(__('media_shuttle_forward'), ['2']));
+            expect(shuttle).not.toHaveClass('bp-is-reverse');
+        });
+
+        test('should hide shuttle speed on the tape player', async () => {
+            (useTapeWaveform as jest.Mock).mockReturnValue(true);
+            getWrapper({ durationTime: 8, peaks: [0.2, 0.8], shuttleDirection: 'reverse', shuttleRate: 4 });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-shuttle')).not.toBeInTheDocument();
         });
 
         test('should render the waveform instead of the time slider', async () => {

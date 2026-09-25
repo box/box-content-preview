@@ -1877,6 +1877,21 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.handleCommentMarkerClick).toHaveBeenCalledWith({ id: 'a2', time: 20 });
         });
 
+        test('should not shuttle on the tape player', () => {
+            enableV2();
+            const { matchMedia } = window;
+            window.matchMedia = jest.fn().mockReturnValue({ matches: true });
+
+            try {
+                expect(mp3.onKeydown('l')).toBe(true);
+                expect(mp3.onKeydown('j')).toBe(true);
+                expect(mp3.shuttleDirection).toBe(null);
+                expect(mp3.play).not.toHaveBeenCalled();
+            } finally {
+                window.matchMedia = matchMedia;
+            }
+        });
+
         test('should shuttle forward with ramping playbackRate and pause on k', () => {
             enableV2();
             mp3.mediaEl.playbackRate = 1;

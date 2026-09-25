@@ -1,0 +1,39 @@
+@import '../../controls/media/styles';
+
+.bp-WaveformShuttle {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    z-index: 6;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    height: 48px;
+    padding: 8px 16px;
+    color: $white;
+    background: rgb(255 255 255 / 10%);
+    border-radius: 24px;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+    transform: translateX(-50%);
+    backdrop-filter: blur(60px);
+    pointer-events: none;
+    user-select: none;
+}
+
+.bp-WaveformShuttle-glyph {
+    display: block;
+    flex: 0 0 auto;
+    width: 19px;
+    height: 11px;
+}
+
+.bp-WaveformShuttle.bp-is-reverse .bp-WaveformShuttle-glyph {
+    transform: scaleX(-1);
+}
+
+.bp-WaveformShuttle-rate {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+    white-space: nowrap;
+}
