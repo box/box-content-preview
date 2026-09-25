@@ -1,3 +1,8 @@
+## 3.96.0 (2026-09-25)
+
+* fix(video transcription): re-fetch transcription rep on cache hits (#1743) ([6956e4a](https://github.com/box/box-content-preview/commit/6956e4a)), closes [#1743](https://github.com/box/box-content-preview/issues/1743)
+* feat(metrics): tag preview metrics with the Blueprint migration waves (#1792) ([cd99c69](https://github.com/box/box-content-preview/commit/cd99c69)), closes [#1792](https://github.com/box/box-content-preview/issues/1792)
+
 ## 3.95.0 (2026-09-24)
 
 * feat(preview): Leave global.Box.Preview unset in the npm build (#1793) ([4bfdd07](https://github.com/box/box-content-preview/commit/4bfdd07)), closes [#1793](https://github.com/box/box-content-preview/issues/1793)
