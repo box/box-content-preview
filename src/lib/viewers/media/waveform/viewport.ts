@@ -1,6 +1,8 @@
 import {
     WAVEFORM_FOLLOW_INSET_PX,
     WAVEFORM_MIN_VIEW_WINDOW_SEC,
+    WAVEFORM_RANGE_EDGE_ZOOM_OUT_PER_SEC,
+    WAVEFORM_RANGE_EDGE_ZOOM_PX,
     WAVEFORM_TAPE_DEFAULT_WINDOW_SEC,
     WAVEFORM_ZOOM_MAX,
     WAVEFORM_ZOOM_MIN,
@@ -283,6 +285,39 @@ export function getPinnedPlayheadLeft(widthPx: number, insetPx: number = WAVEFOR
 /** CSS left for a playhead locked to the center of the view. */
 export function getTapePinnedPlayheadLeft(): string {
     return '50%';
+}
+
+/**
+ * Next zoom while a range handle is held in the edge zone. Null means leave zoom alone
+ * (not in the zone, already at 1×, or no time has passed).
+ */
+export function getRangeEdgeZoomOut({
+    elapsedSec,
+    edgeZonePx = WAVEFORM_RANGE_EDGE_ZOOM_PX,
+    maxZoom,
+    pointerX,
+    widthPx,
+    zoomLevel,
+    zoomOutPerSec = WAVEFORM_RANGE_EDGE_ZOOM_OUT_PER_SEC,
+}: {
+    elapsedSec: number;
+    edgeZonePx?: number;
+    maxZoom: number;
+    pointerX: number;
+    widthPx: number;
+    zoomLevel: number;
+    zoomOutPerSec?: number;
+}): number | null {
+    if (!(widthPx > 0) || !(elapsedSec > 0) || !(edgeZonePx > 0) || zoomLevel <= WAVEFORM_ZOOM_MIN) {
+        return null;
+    }
+    const distFromEdge = Math.min(pointerX, widthPx - pointerX);
+    if (distFromEdge >= edgeZonePx) {
+        return null;
+    }
+    const intensity = 1 - distFromEdge / edgeZonePx;
+    const nextZoom = clampWaveformZoom(zoomLevel - zoomOutPerSec * elapsedSec * intensity, maxZoom);
+    return nextZoom < zoomLevel ? nextZoom : null;
 }
 
 /** CSS left % of the playhead from the left of the visible window. */

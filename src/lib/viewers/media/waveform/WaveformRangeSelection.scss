@@ -21,6 +21,12 @@
     transition: border-width 100ms ease, border-color 100ms ease;
 }
 
+// A point comment draws this border on the timestamp. Hide it while a tape swipe
+// moves the playhead, then show it again once the swipe settles.
+.bp-WaveformRange--swiping .bp-WaveformRange-region {
+    visibility: hidden;
+}
+
 .bp-WaveformRange--highlight .bp-WaveformRange-region,
 .bp-WaveformRange:has(.bp-WaveformRange-handle:hover) .bp-WaveformRange-region,
 .bp-WaveformRange:has(.bp-WaveformRange-handle--dragging) .bp-WaveformRange-region {

@@ -18,6 +18,7 @@ import {
     WAVEFORM_BAR_WIDTH,
     WAVEFORM_FOLLOW_SCROLL_SETTLE_MS,
     WAVEFORM_RANGE_CREATE_DRAG_PX,
+    WAVEFORM_RANGE_EDGE_ZOOM_MAX_FRAME_SEC,
     WAVEFORM_HEIGHT,
     WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
     WAVEFORM_ZOOM_DISMISS_MS,
@@ -43,6 +44,7 @@ import {
     clampWaveformZoom,
     createWaveformViewport,
     getCenteredScrollLeft,
+    getRangeEdgeZoomOut,
     getTapeGutterPx,
     getTapePinnedPlayheadLeft,
     getViewportAtScroll,
@@ -85,11 +87,16 @@ function applyPeaks(wavesurfer: WaveSurfer, peaks: ArrayLike<number>, durationSe
     wavesurfer.load('', toChannels(peaks), durationSec);
 }
 
+function getWaveformScrollElement(container: HTMLElement | null): HTMLElement | null {
+    const host = container?.firstElementChild;
+    const scroll = host instanceof HTMLElement ? host.shadowRoot?.querySelector('.scroll') : null;
+    return scroll instanceof HTMLElement ? scroll : null;
+}
+
 /** Stop the zoomed waveform from bouncing on trackpad overscroll. WaveSurfer's scroller is inside a shadow root, so SCSS uses `::part(scroll)` while zoomed and this sets the same property as soon as WaveSurfer exists. */
 function disableScrollOverscroll(container: HTMLElement): void {
-    const host = container.firstElementChild;
-    const scroll = host instanceof HTMLElement ? host.shadowRoot?.querySelector('.scroll') : null;
-    if (scroll instanceof HTMLElement) {
+    const scroll = getWaveformScrollElement(container);
+    if (scroll) {
         scroll.style.overscrollBehaviorX = 'none';
     }
 }
@@ -324,6 +331,7 @@ function WaveformView({
     const isRangeDraggingRef = useRef(false);
     const rangeRef = useRef(range); // latest committed draft; drag-create must not start on top of an open span
     const createDragRef = useRef<RangeCreateDrag | null>(null);
+    const rangeDragClientXRef = useRef<number | null>(null);
     const removeCreateDragListenersRef = useRef<(() => void) | null>(null);
     const skipNextSeekRef = useRef(false);
     const lastSetTimeSecRef = useRef<number | null>(null);
@@ -409,11 +417,20 @@ function WaveformView({
         wavesurferRef,
     });
 
+    const suppressTapToPlayPause = useCallback((): void => {
+        suppressNextTapPlayPauseRef.current = true;
+        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
+        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
+            suppressNextTapPlayPauseRef.current = false;
+            suppressNextTapPlayPauseTimerRef.current = 0;
+        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
+    }, []);
+
     const toggleTapePlayback = useCallback(() => {
         if (!interactiveRef.current) {
             return;
         }
-        if (isUserPanning() || pointerZoomRef.current) {
+        if (isUserPanning() || pointerZoomRef.current || isRangeDraggingRef.current) {
             return;
         }
         if (suppressNextTapPlayPauseRef.current) {
@@ -423,13 +440,8 @@ function WaveformView({
             return;
         }
         onPlayPauseRef.current?.(!isPlayingRef.current);
-        suppressNextTapPlayPauseRef.current = true;
-        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
-        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
-            suppressNextTapPlayPauseRef.current = false;
-            suppressNextTapPlayPauseTimerRef.current = 0;
-        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
-    }, [isUserPanning]);
+        suppressTapToPlayPause();
+    }, [isUserPanning, suppressTapToPlayPause]);
     toggleTapePlaybackRef.current = toggleTapePlayback;
 
     useLayoutEffect(() => {
@@ -442,6 +454,27 @@ function WaveformView({
             widthPx: viewport.widthPx,
             zoomLevel: viewport.zoomLevel,
         });
+        const drag = createDragRef.current;
+        const clientX = rangeDragClientXRef.current;
+        const track = trackRef.current;
+        if (!drag?.active || !track || clientX == null) {
+            return;
+        }
+        const playheadSec = mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
+        const drawn = drawnRangeFromMove(
+            drag,
+            clientX,
+            track,
+            viewportRef.current,
+            playheadSec,
+            durationSecRef.current,
+        );
+        if (drag.range && drawn.startMs === drag.range.startMs && drawn.endMs === drag.range.endMs) {
+            return;
+        }
+        drag.range = drawn;
+        setCreateRange(drawn);
+        setPreviewRange(drawn);
     }, [viewport]);
 
     const setZoomLevel = useCallback(
@@ -468,36 +501,34 @@ function WaveformView({
      * Seek the time under the pin (one seek per frame). Swallow the delayed iOS click;
      * show the scrub chip until the swipe settles.
      */
-    const handleTapeSwipe = useCallback((timeSec: number): void => {
-        // Swallow the click WaveSurfer/iOS fires after a swipe or pinch.
-        suppressNextTapPlayPauseRef.current = true;
-        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
-        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
-            suppressNextTapPlayPauseRef.current = false;
-            suppressNextTapPlayPauseTimerRef.current = 0;
-        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
-        queuedTapeSeekTimeSecRef.current = timeSec;
-        if (!tapeSeekAnimationRef.current) {
-            // One seek per frame; later scrolls just update the queued time.
-            tapeSeekAnimationRef.current = window.requestAnimationFrame(() => {
-                tapeSeekAnimationRef.current = 0;
-                const next = queuedTapeSeekTimeSecRef.current;
-                queuedTapeSeekTimeSecRef.current = null;
-                if (next != null) {
-                    onSeekRef.current?.(next);
-                }
-            });
-        }
-        if (interactiveRef.current) {
-            // Show the time under the pin; hide once scrolling has settled.
-            setScrubPreviewTimeSec(timeSec);
-            window.clearTimeout(hideScrubTimeChipTimerRef.current);
-            hideScrubTimeChipTimerRef.current = window.setTimeout(() => {
-                setScrubPreviewTimeSec(null);
-                hideScrubTimeChipTimerRef.current = 0;
-            }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
-        }
-    }, []);
+    const handleTapeSwipe = useCallback(
+        (timeSec: number): void => {
+            // Swallow the click WaveSurfer/iOS fires after a swipe or pinch.
+            suppressTapToPlayPause();
+            queuedTapeSeekTimeSecRef.current = timeSec;
+            if (!tapeSeekAnimationRef.current) {
+                // One seek per frame; later scrolls just update the queued time.
+                tapeSeekAnimationRef.current = window.requestAnimationFrame(() => {
+                    tapeSeekAnimationRef.current = 0;
+                    const next = queuedTapeSeekTimeSecRef.current;
+                    queuedTapeSeekTimeSecRef.current = null;
+                    if (next != null) {
+                        onSeekRef.current?.(next);
+                    }
+                });
+            }
+            if (interactiveRef.current) {
+                // Show the time under the pin; hide once scrolling has settled.
+                setScrubPreviewTimeSec(timeSec);
+                window.clearTimeout(hideScrubTimeChipTimerRef.current);
+                hideScrubTimeChipTimerRef.current = window.setTimeout(() => {
+                    setScrubPreviewTimeSec(null);
+                    hideScrubTimeChipTimerRef.current = 0;
+                }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+            }
+        },
+        [suppressTapToPlayPause],
+    );
 
     const syncViewport = useCallback(() => {
         const wavesurfer = wavesurferRef.current;
@@ -673,7 +704,12 @@ function WaveformView({
             }
             // User pan: map scroll to the time under the playhead, then tape seeks it.
             handleCameraScroll(timeSec => {
-                if (cameraModeRef.current === 'tape' && !pointerZoomRef.current) {
+                if (
+                    cameraModeRef.current === 'tape' &&
+                    !pointerZoomRef.current &&
+                    !createDragRef.current &&
+                    !isRangeDraggingRef.current
+                ) {
                     handleTapeSwipe(timeSec);
                 }
                 syncViewport();
@@ -1061,9 +1097,11 @@ function WaveformView({
         (isDragging: boolean) => {
             isRangeDraggingRef.current = isDragging;
             setIsRangeDragging(isDragging);
+            suppressTapToPlayPause();
             if (isDragging) {
                 setHoverProgress(null);
             } else {
+                rangeDragClientXRef.current = null;
                 skipNextSeekRef.current = true;
                 window.setTimeout(() => {
                     skipNextSeekRef.current = false;
@@ -1072,8 +1110,55 @@ function WaveformView({
             }
             onRangeDragChange?.(isDragging);
         },
-        [onRangeDragChange],
+        [onRangeDragChange, suppressTapToPlayPause],
     );
+
+    useEffect(() => {
+        if (!isTape || !isRangeDragging) {
+            return undefined;
+        }
+        let rafId = 0;
+        let lastTs = 0;
+        const pointerInTrack = (): { width: number; x: number } | null => {
+            const root = trackRef.current;
+            const clientX = rangeDragClientXRef.current;
+            if (!root || clientX == null || !Number.isFinite(clientX)) {
+                return null;
+            }
+            const rect = root.getBoundingClientRect();
+            return { width: rect.width, x: clientX - rect.left };
+        };
+        const onMove = (event: PointerEvent): void => {
+            if (Number.isFinite(event.clientX)) {
+                rangeDragClientXRef.current = event.clientX;
+            }
+        };
+        const onEdgeZoomFrame = (timestampMs: number): void => {
+            const rawElapsedSec = lastTs ? (timestampMs - lastTs) / 1000 : 0;
+            const elapsedSec = Math.min(rawElapsedSec, WAVEFORM_RANGE_EDGE_ZOOM_MAX_FRAME_SEC);
+            lastTs = timestampMs;
+            const pointer = pointerInTrack();
+            if (pointer) {
+                const nextZoom = getRangeEdgeZoomOut({
+                    elapsedSec,
+                    maxZoom,
+                    pointerX: pointer.x,
+                    widthPx: pointer.width,
+                    zoomLevel: zoomRef.current,
+                });
+                if (nextZoom != null) {
+                    setZoomLevel(nextZoom);
+                }
+            }
+            rafId = window.requestAnimationFrame(onEdgeZoomFrame);
+        };
+        window.addEventListener('pointermove', onMove);
+        rafId = window.requestAnimationFrame(onEdgeZoomFrame);
+        return () => {
+            window.removeEventListener('pointermove', onMove);
+            window.cancelAnimationFrame(rafId);
+        };
+    }, [isRangeDragging, isTape, maxZoom, setZoomLevel]);
 
     const getPlayheadSec = useCallback(() => {
         return mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
@@ -1096,38 +1181,10 @@ function WaveformView({
         setCreateRange(current => (current == null ? current : null));
     }, [range]);
 
-    const onTrackPointerDown = useCallback(
-        (event: React.PointerEvent<HTMLDivElement>) => {
-            if (
-                cameraModeRef.current === 'tape' ||
-                !interactiveRef.current ||
-                event.button > 0 ||
-                event.ctrlKey ||
-                event.metaKey ||
-                isRangeDraggingRef.current ||
-                createDragRef.current
-            ) {
-                return;
-            }
-            const { target } = event;
-            if (
-                target instanceof Element &&
-                target.closest(
-                    '[data-testid="bp-waveform-range-handle-start"], [data-testid="bp-waveform-range-handle-end"], [data-testid="bp-waveform-range-comment"]',
-                )
-            ) {
-                return;
-            }
-            const drag = rangeCreateDragFromEvent(event, {
-                durationSec: durationSecRef.current,
-                range: rangeRef.current,
-                track: trackRef.current,
-                viewport: viewportRef.current,
-            });
-            if (!drag) {
-                return;
-            }
+    const trackRangeCreateDrag = useCallback(
+        (drag: RangeCreateDrag, blockScroll: boolean) => {
             createDragRef.current = drag;
+            rangeDragClientXRef.current = drag.originX;
 
             const onMove = (moveEvent: PointerEvent): void => {
                 if (createDragRef.current !== drag || moveEvent.pointerId !== drag.pointerId) {
@@ -1136,7 +1193,11 @@ function WaveformView({
                 if (!Number.isFinite(moveEvent.clientX)) {
                     return;
                 }
+                rangeDragClientXRef.current = moveEvent.clientX;
                 if (!drag.active && Math.abs(moveEvent.clientX - drag.originX) < WAVEFORM_RANGE_CREATE_DRAG_PX) {
+                    if (blockScroll) {
+                        moveEvent.preventDefault();
+                    }
                     return;
                 }
                 const track = trackRef.current;
@@ -1193,6 +1254,41 @@ function WaveformView({
             window.addEventListener('pointercancel', onUp);
         },
         [handleRangeDragChange],
+    );
+
+    const onTrackPointerDown = useCallback(
+        (event: React.PointerEvent<HTMLDivElement>) => {
+            if (
+                !interactiveRef.current ||
+                event.button > 0 ||
+                event.ctrlKey ||
+                event.metaKey ||
+                isRangeDraggingRef.current ||
+                createDragRef.current
+            ) {
+                return;
+            }
+            const { target } = event;
+            if (
+                target instanceof Element &&
+                target.closest(
+                    '[data-testid="bp-waveform-range-handle-start"], [data-testid="bp-waveform-range-handle-end"], [data-testid="bp-waveform-range-comment"]',
+                )
+            ) {
+                return;
+            }
+            const drag = rangeCreateDragFromEvent(event, {
+                durationSec: durationSecRef.current,
+                range: rangeRef.current,
+                track: trackRef.current,
+                viewport: viewportRef.current,
+            });
+            if (!drag || cameraModeRef.current === 'tape') {
+                return;
+            }
+            trackRangeCreateDrag(drag, false);
+        },
+        [trackRangeCreateDrag],
     );
 
     const bindOverlayPortalHost = useCallback((node: HTMLDivElement | null) => {
@@ -1271,9 +1367,13 @@ function WaveformView({
                         durationSec={durationSec}
                         getPlayheadSec={getPlayheadSec}
                         interactive={interactive && !isOverlayReadOnly}
+                        isCollapsedMarkerHidden={isTape && scrubPreviewTimeSec != null}
                         isHighlighted={isRangeDragging || isRangeHovered}
                         keepHighlight
                         onDragChange={handleRangeDragChange}
+                        onDragClientX={clientX => {
+                            rangeDragClientXRef.current = clientX;
+                        }}
                         onDragCreate={
                             interactive && !isRangeDragging && !isOverlayReadOnly ? onRangeDragCreate : undefined
                         }

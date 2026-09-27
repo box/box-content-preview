@@ -1340,6 +1340,59 @@ describe('WaveformView', () => {
         expect(onPlayPause).toHaveBeenCalledTimes(1);
     });
 
+    test('should pin collapsed tape range handles on the playhead, not the left edge', () => {
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({
+            left: `calc(50% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
+            left: `calc(50% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+    });
+
+    test('should not toggle play when a tape range handle is released', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.releasePointerCapture) {
+            HTMLElement.prototype.releasePointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.hasPointerCapture) {
+            HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
+        }
+        const onPlayPause = jest.fn();
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                isPlaying={false}
+                onPlayPause={onPlayPause}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        const handle = screen.getByTestId('bp-waveform-range-handle-end');
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        fireEvent.pointerDown(handle, { button: 0, clientX: 100, pointerId: 1 });
+        fireEvent.pointerUp(track, { button: 0, clientX: 100, pointerId: 1, pointerType: 'touch' });
+        fireEvent.pointerUp(window, { clientX: 100, pointerId: 1 });
+        fireEvent.pointerUp(track, { button: 0, clientX: 100, pointerId: 1, pointerType: 'touch' });
+
+        expect(onPlayPause).not.toHaveBeenCalled();
+    });
+
     test('should size tape WaveSurfer bars to the canvas box when the stage is taller than 206px', () => {
         render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
 
@@ -1412,6 +1465,38 @@ describe('WaveformView', () => {
         const chip = screen.getByTestId('bp-waveform-hover');
         expect(chip).toHaveClass('bp-WaveformView-hover--tape');
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+    });
+
+    test('should hide the point-comment timestamp border while a tape swipe is in progress', () => {
+        jest.useFakeTimers();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).not.toHaveClass('bp-WaveformRange--swiping');
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveClass('bp-WaveformRange--swiping');
+
+        act(() => {
+            jest.advanceTimersByTime(WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+        });
+
+        expect(screen.getByTestId('bp-waveform-range')).not.toHaveClass('bp-WaveformRange--swiping');
+        jest.useRealTimers();
     });
 
     test('should keep the tape scroller pan-able at 1x so gutter swipes can seek', () => {

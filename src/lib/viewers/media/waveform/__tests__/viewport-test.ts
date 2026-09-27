@@ -4,6 +4,7 @@ import {
     createWaveformViewport,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
+    getRangeEdgeZoomOut,
     getSeekCameraAction,
     getTapeCameraAction,
     getTapeDefaultZoom,
@@ -375,6 +376,45 @@ describe('viewport', () => {
 
         const centered = createWaveformViewport({ ...tape, scrollLeftPx: 50 });
         expect(getSeekCameraAction({ cameraMode: 'tape', timeSec: 2, viewport: centered })).toEqual({ type: 'none' });
+    });
+
+    test('should zoom out when a range handle is held in the edge zone', () => {
+        expect(
+            getRangeEdgeZoomOut({
+                elapsedSec: 1,
+                maxZoom: 24,
+                pointerX: 0,
+                widthPx: 200,
+                zoomLevel: 6,
+            }),
+        ).toBe(3);
+        expect(
+            getRangeEdgeZoomOut({
+                elapsedSec: 1,
+                maxZoom: 24,
+                pointerX: 50,
+                widthPx: 200,
+                zoomLevel: 6,
+            }),
+        ).toBe(4.5);
+        expect(
+            getRangeEdgeZoomOut({
+                elapsedSec: 1,
+                maxZoom: 24,
+                pointerX: 100,
+                widthPx: 200,
+                zoomLevel: 6,
+            }),
+        ).toBeNull();
+        expect(
+            getRangeEdgeZoomOut({
+                elapsedSec: 1,
+                maxZoom: 24,
+                pointerX: 0,
+                widthPx: 200,
+                zoomLevel: 1,
+            }),
+        ).toBeNull();
     });
 
     test('should default tape zoom to a 10s window and still allow 1x', () => {
