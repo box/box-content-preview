@@ -140,6 +140,26 @@ describe('WaveformRangeSelection', () => {
         });
     });
 
+    test('should keep tape gutters so t=0 sits on the center pin', () => {
+        const tape = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+        render(<WaveformRangeSelection durationSec={8} range={{ endMs: null, startMs: 0 }} viewport={tape} />);
+
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({
+            left: `calc(50% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
+            left: `calc(50% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+    });
+
     test('should mark the range highlighted when asked', () => {
         const { rerender } = render(
             <WaveformRangeSelection durationSec={8} range={{ endMs: 4000, startMs: 2000 }} viewport={viewport} />,
@@ -306,6 +326,29 @@ describe('WaveformRangeSelection', () => {
         expect(onRangeChange).toHaveBeenCalledTimes(1);
         expect(onRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 2000 });
         expect(onDragChange).toHaveBeenCalledWith(false);
+    });
+
+    test('should keep a held handle on the pointer when the viewport zooms', () => {
+        const { rerender } = render(
+            <WaveformRangeSelection durationSec={8} range={{ endMs: null, startMs: 2000 }} viewport={viewport} />,
+        );
+
+        dispatchPointer(screen.getByTestId('bp-waveform-range-handle-end'), 'pointerdown', 50);
+        dispatchPointer(window, 'pointermove', 150);
+        expect(screen.getByTestId('bp-waveform-range-tooltip')).toHaveTextContent('0:06.00');
+
+        const zoomed = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        rerender(<WaveformRangeSelection durationSec={8} range={{ endMs: null, startMs: 2000 }} viewport={zoomed} />);
+
+        expect(screen.getByTestId('bp-waveform-range-tooltip')).toHaveTextContent('0:03.00');
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '75%' });
     });
 
     test('should snap a dragging handle to the playhead', () => {

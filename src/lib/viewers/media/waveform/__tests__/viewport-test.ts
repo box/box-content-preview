@@ -4,6 +4,7 @@ import {
     createWaveformViewport,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
+    getRangeEdgeScrollDeltaPx,
     getSeekCameraAction,
     getTapeCameraAction,
     getTapeDefaultZoom,
@@ -375,6 +376,49 @@ describe('viewport', () => {
 
         const centered = createWaveformViewport({ ...tape, scrollLeftPx: 50 });
         expect(getSeekCameraAction({ cameraMode: 'tape', timeSec: 2, viewport: centered })).toEqual({ type: 'none' });
+    });
+
+    test('should scroll when a range handle is held in the edge zone', () => {
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 0,
+                widthPx: 200,
+            }),
+        ).toBe(-100);
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 50,
+                widthPx: 200,
+            }),
+        ).toBe(-50);
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 200,
+                widthPx: 200,
+            }),
+        ).toBe(100);
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 100,
+                widthPx: 200,
+            }),
+        ).toBeNull();
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 0,
+                pixelsPerSecond: 25,
+                pointerX: 0,
+                widthPx: 200,
+            }),
+        ).toBeNull();
     });
 
     test('should default tape zoom to a 10s window and still allow 1x', () => {

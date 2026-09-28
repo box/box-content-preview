@@ -18,6 +18,7 @@ import {
     WAVEFORM_BAR_WIDTH,
     WAVEFORM_FOLLOW_SCROLL_SETTLE_MS,
     WAVEFORM_RANGE_CREATE_DRAG_PX,
+    WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC,
     WAVEFORM_HEIGHT,
     WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
     WAVEFORM_ZOOM_DISMISS_MS,
@@ -43,11 +44,13 @@ import {
     clampWaveformZoom,
     createWaveformViewport,
     getCenteredScrollLeft,
+    getRangeEdgeScrollDeltaPx,
     getTapeGutterPx,
     getTapePinnedPlayheadLeft,
     getViewportAtScroll,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
+    maxScrollLeft,
     positionPxFromTime,
     timeFromPositionPx,
     timeLeftPercent,
@@ -324,8 +327,9 @@ function WaveformView({
     const isRangeDraggingRef = useRef(false);
     const rangeRef = useRef(range); // latest committed draft; drag-create must not start on top of an open span
     const createDragRef = useRef<RangeCreateDrag | null>(null);
+    const rangeDragPointerXRef = useRef<number | null>(null); // clientX while a handle or create-drag is down
     const removeCreateDragListenersRef = useRef<(() => void) | null>(null);
-    const skipNextSeekRef = useRef(false);
+    const skipNextSeekRef = useRef(false); // ignore the click fired when a handle is released
     const lastSetTimeSecRef = useRef<number | null>(null);
     const [isRangeHovered, setIsRangeHovered] = useState(false);
     const isControlled = typeof zoomLevelProp === 'number';
@@ -409,11 +413,20 @@ function WaveformView({
         wavesurferRef,
     });
 
+    const suppressTapToPlayPause = useCallback((): void => {
+        suppressNextTapPlayPauseRef.current = true;
+        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
+        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
+            suppressNextTapPlayPauseRef.current = false;
+            suppressNextTapPlayPauseTimerRef.current = 0;
+        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
+    }, []);
+
     const toggleTapePlayback = useCallback(() => {
         if (!interactiveRef.current) {
             return;
         }
-        if (isUserPanning() || pointerZoomRef.current) {
+        if (isUserPanning() || pointerZoomRef.current || isRangeDraggingRef.current) {
             return;
         }
         if (suppressNextTapPlayPauseRef.current) {
@@ -423,13 +436,8 @@ function WaveformView({
             return;
         }
         onPlayPauseRef.current?.(!isPlayingRef.current);
-        suppressNextTapPlayPauseRef.current = true;
-        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
-        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
-            suppressNextTapPlayPauseRef.current = false;
-            suppressNextTapPlayPauseTimerRef.current = 0;
-        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
-    }, [isUserPanning]);
+        suppressTapToPlayPause();
+    }, [isUserPanning, suppressTapToPlayPause]);
     toggleTapePlaybackRef.current = toggleTapePlayback;
 
     useLayoutEffect(() => {
@@ -668,12 +676,13 @@ function WaveformView({
             onSeekRef.current?.(timeSec);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
-            if (suppressViewportSyncRef.current) {
+            if (suppressViewportSyncRef.current || isRangeDraggingRef.current) {
+                // A handle drag scrolls from its own frame loop. A pan settle would pull it back.
                 return;
             }
             // User pan: map scroll to the time under the playhead, then tape seeks it.
             handleCameraScroll(timeSec => {
-                if (cameraModeRef.current === 'tape' && !pointerZoomRef.current) {
+                if (cameraModeRef.current === 'tape' && !pointerZoomRef.current && !createDragRef.current) {
                     handleTapeSwipe(timeSec);
                 }
                 syncViewport();
@@ -810,7 +819,9 @@ function WaveformView({
         const tick = (): void => {
             if (!media.paused) {
                 updatePlayheadPosition(media.currentTime);
-                applyPlayheadCamera(media.currentTime, false);
+                if (!isRangeDraggingRef.current) {
+                    applyPlayheadCamera(media.currentTime, false);
+                }
             }
             playheadAnimationRef.current = window.requestAnimationFrame(tick);
         };
@@ -818,7 +829,9 @@ function WaveformView({
         const startLoop = (): void => {
             window.cancelAnimationFrame(playheadAnimationRef.current);
             releaseUserPanHold();
-            applyPlayheadCamera(media.currentTime, true);
+            if (!isRangeDraggingRef.current) {
+                applyPlayheadCamera(media.currentTime, true);
+            }
             playheadAnimationRef.current = window.requestAnimationFrame(tick);
         };
 
@@ -835,7 +848,7 @@ function WaveformView({
 
         const handleSeeked = (): void => {
             onPlayheadSeek(media.currentTime);
-            if (!isUserPanning()) {
+            if (!isUserPanning() && !isRangeDraggingRef.current) {
                 seekTo(media.currentTime);
             }
             updatePlayheadPosition(media.currentTime);
@@ -1061,9 +1074,12 @@ function WaveformView({
         (isDragging: boolean) => {
             isRangeDraggingRef.current = isDragging;
             setIsRangeDragging(isDragging);
+            suppressTapToPlayPause();
+            cancelJump();
             if (isDragging) {
                 setHoverProgress(null);
             } else {
+                rangeDragPointerXRef.current = null;
                 skipNextSeekRef.current = true;
                 window.setTimeout(() => {
                     skipNextSeekRef.current = false;
@@ -1072,8 +1088,64 @@ function WaveformView({
             }
             onRangeDragChange?.(isDragging);
         },
-        [onRangeDragChange],
+        [cancelJump, onRangeDragChange, suppressTapToPlayPause],
     );
+
+    useEffect(() => {
+        if (!isTape || !isRangeDragging) {
+            return undefined;
+        }
+        let frameId = 0;
+        let previousFrameMs = 0;
+        let hasPreviousFrame = false;
+        let pendingScrollPx = 0;
+        const getPointerInTrack = (): { width: number; x: number } | null => {
+            const track = trackRef.current;
+            const pointerClientX = rangeDragPointerXRef.current;
+            if (!track || pointerClientX == null || !Number.isFinite(pointerClientX)) {
+                return null;
+            }
+            const rect = track.getBoundingClientRect();
+            return { width: rect.width, x: pointerClientX - rect.left };
+        };
+        const scrollWhileHandleAtEdge = (frameMs: number): void => {
+            const rawElapsedSec = hasPreviousFrame ? Math.max(0, (frameMs - previousFrameMs) / 1000) : 0;
+            const elapsedSec = Math.min(rawElapsedSec, WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC);
+            hasPreviousFrame = true;
+            previousFrameMs = frameMs;
+            const pointer = getPointerInTrack();
+            const viewport = viewportRef.current;
+            const scrollDeltaPx = pointer
+                ? getRangeEdgeScrollDeltaPx({
+                      elapsedSec,
+                      pixelsPerSecond: viewport.pixelsPerSecond,
+                      pointerX: pointer.x,
+                      widthPx: pointer.width,
+                  })
+                : null;
+            if (scrollDeltaPx == null) {
+                pendingScrollPx = 0;
+            } else {
+                pendingScrollPx += scrollDeltaPx;
+                const nextScroll = Math.min(
+                    maxScrollLeft(viewport),
+                    Math.max(0, viewport.scrollLeftPx + pendingScrollPx),
+                );
+                const scrolledPx = nextScroll - viewport.scrollLeftPx;
+                pendingScrollPx = scrolledPx === 0 ? 0 : pendingScrollPx - scrolledPx;
+                if (scrolledPx !== 0) {
+                    applyScrollLeft(nextScroll, true);
+                    const nextViewport = viewportRef.current;
+                    onSeekRef.current?.(timeFromPositionPx(nextViewport.widthPx / 2, nextViewport));
+                }
+            }
+            frameId = window.requestAnimationFrame(scrollWhileHandleAtEdge);
+        };
+        frameId = window.requestAnimationFrame(scrollWhileHandleAtEdge);
+        return () => {
+            window.cancelAnimationFrame(frameId);
+        };
+    }, [applyScrollLeft, isRangeDragging, isTape]);
 
     const getPlayheadSec = useCallback(() => {
         return mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
@@ -1272,11 +1344,15 @@ function WaveformView({
                         getPlayheadSec={getPlayheadSec}
                         interactive={interactive && !isOverlayReadOnly}
                         isHighlighted={isRangeDragging || isRangeHovered}
+                        isSwiping={isTape && scrubPreviewTimeSec != null}
                         keepHighlight
                         onDragChange={handleRangeDragChange}
                         onDragCreate={
                             interactive && !isRangeDragging && !isOverlayReadOnly ? onRangeDragCreate : undefined
                         }
+                        onDragPointerX={clientX => {
+                            rangeDragPointerXRef.current = clientX;
+                        }}
                         onPreviewChange={setPreviewRange}
                         onRangeChange={interactive && !isOverlayReadOnly ? onRangeChange : undefined}
                         range={overlayRange}
