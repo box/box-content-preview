@@ -1,3 +1,10 @@
+## 3.97.0 (2026-09-28)
+
+* test(audio): wait for mp3 playback before the Cypress reload (#1797) ([4e2bef4](https://github.com/box/box-content-preview/commit/4e2bef4)), closes [#1797](https://github.com/box/box-content-preview/issues/1797)
+* feat(audio): show a read-only range for a selected ranged comment (#1794) ([41ffb6b](https://github.com/box/box-content-preview/commit/41ffb6b)), closes [#1794](https://github.com/box/box-content-preview/issues/1794)
+* feat(audio): show shuttle speed on the desktop waveform (#1796) ([56c6f69](https://github.com/box/box-content-preview/commit/56c6f69)), closes [#1796](https://github.com/box/box-content-preview/issues/1796)
+* fix(test): Stabilize gallery controls and logger timing (#1795) ([b67d995](https://github.com/box/box-content-preview/commit/b67d995)), closes [#1795](https://github.com/box/box-content-preview/issues/1795)
+
 ## 3.96.0 (2026-09-25)
 
 * fix(video transcription): re-fetch transcription rep on cache hits (#1743) ([6956e4a](https://github.com/box/box-content-preview/commit/6956e4a)), closes [#1743](https://github.com/box/box-content-preview/issues/1743)
