@@ -1,8 +1,8 @@
 import {
     WAVEFORM_FOLLOW_INSET_PX,
     WAVEFORM_MIN_VIEW_WINDOW_SEC,
-    WAVEFORM_RANGE_EDGE_ZOOM_OUT_PER_SEC,
-    WAVEFORM_RANGE_EDGE_ZOOM_PX,
+    WAVEFORM_RANGE_EDGE_SCROLL_PX,
+    WAVEFORM_RANGE_EDGE_SCROLL_SEC_PER_SEC,
     WAVEFORM_TAPE_DEFAULT_WINDOW_SEC,
     WAVEFORM_ZOOM_MAX,
     WAVEFORM_ZOOM_MIN,
@@ -288,27 +288,25 @@ export function getTapePinnedPlayheadLeft(): string {
 }
 
 /**
- * Next zoom while a range handle is held in the edge zone. Null means leave zoom alone
- * (not in the zone, already at 1×, or no time has passed).
+ * Scroll delta while a range handle is held in the edge zone. Negative moves toward
+ * the start of the file. Null means the pointer is outside the zone or no time passed.
  */
-export function getRangeEdgeZoomOut({
+export function getRangeEdgeScrollPx({
     elapsedSec,
-    edgeZonePx = WAVEFORM_RANGE_EDGE_ZOOM_PX,
-    maxZoom,
+    edgeZonePx = WAVEFORM_RANGE_EDGE_SCROLL_PX,
+    pixelsPerSecond,
     pointerX,
+    scrollSecPerSec = WAVEFORM_RANGE_EDGE_SCROLL_SEC_PER_SEC,
     widthPx,
-    zoomLevel,
-    zoomOutPerSec = WAVEFORM_RANGE_EDGE_ZOOM_OUT_PER_SEC,
 }: {
     elapsedSec: number;
     edgeZonePx?: number;
-    maxZoom: number;
+    pixelsPerSecond: number;
     pointerX: number;
+    scrollSecPerSec?: number;
     widthPx: number;
-    zoomLevel: number;
-    zoomOutPerSec?: number;
 }): number | null {
-    if (!(widthPx > 0) || !(elapsedSec > 0) || !(edgeZonePx > 0) || zoomLevel <= WAVEFORM_ZOOM_MIN) {
+    if (!(widthPx > 0) || !(elapsedSec > 0) || !(edgeZonePx > 0) || !(pixelsPerSecond > 0)) {
         return null;
     }
     const distFromEdge = Math.min(pointerX, widthPx - pointerX);
@@ -316,8 +314,8 @@ export function getRangeEdgeZoomOut({
         return null;
     }
     const intensity = 1 - distFromEdge / edgeZonePx;
-    const nextZoom = clampWaveformZoom(zoomLevel - zoomOutPerSec * elapsedSec * intensity, maxZoom);
-    return nextZoom < zoomLevel ? nextZoom : null;
+    const direction = pointerX < widthPx / 2 ? -1 : 1;
+    return direction * pixelsPerSecond * scrollSecPerSec * elapsedSec * intensity;
 }
 
 /** CSS left % of the playhead from the left of the visible window. */

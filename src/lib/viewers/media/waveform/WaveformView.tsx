@@ -18,7 +18,7 @@ import {
     WAVEFORM_BAR_WIDTH,
     WAVEFORM_FOLLOW_SCROLL_SETTLE_MS,
     WAVEFORM_RANGE_CREATE_DRAG_PX,
-    WAVEFORM_RANGE_EDGE_ZOOM_MAX_FRAME_SEC,
+    WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC,
     WAVEFORM_HEIGHT,
     WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
     WAVEFORM_ZOOM_DISMISS_MS,
@@ -44,12 +44,13 @@ import {
     clampWaveformZoom,
     createWaveformViewport,
     getCenteredScrollLeft,
-    getRangeEdgeZoomOut,
+    getRangeEdgeScrollPx,
     getTapeGutterPx,
     getTapePinnedPlayheadLeft,
     getViewportAtScroll,
     getWaveformZoomMax,
     getZoomedPixelsPerSecond,
+    maxScrollLeft,
     positionPxFromTime,
     timeFromPositionPx,
     timeLeftPercent,
@@ -699,7 +700,9 @@ function WaveformView({
             onSeekRef.current?.(timeSec);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
-            if (suppressViewportSyncRef.current) {
+            if (suppressViewportSyncRef.current || isRangeDraggingRef.current) {
+                // Handle drags scroll from their own frame loop. Treating that as a pan
+                // arms a settle that recenters on the old playhead and stops the swipe.
                 return;
             }
             // User pan: map scroll to the time under the playhead, then tape seeks it.
@@ -846,7 +849,10 @@ function WaveformView({
         const tick = (): void => {
             if (!media.paused) {
                 updatePlayheadPosition(media.currentTime);
-                applyPlayheadCamera(media.currentTime, false);
+                // A handle drag owns scrolling. Follow would pull the window back to the old time.
+                if (!isRangeDraggingRef.current) {
+                    applyPlayheadCamera(media.currentTime, false);
+                }
             }
             playheadAnimationRef.current = window.requestAnimationFrame(tick);
         };
@@ -854,7 +860,9 @@ function WaveformView({
         const startLoop = (): void => {
             window.cancelAnimationFrame(playheadAnimationRef.current);
             releaseUserPanHold();
-            applyPlayheadCamera(media.currentTime, true);
+            if (!isRangeDraggingRef.current) {
+                applyPlayheadCamera(media.currentTime, true);
+            }
             playheadAnimationRef.current = window.requestAnimationFrame(tick);
         };
 
@@ -871,7 +879,8 @@ function WaveformView({
 
         const handleSeeked = (): void => {
             onPlayheadSeek(media.currentTime);
-            if (!isUserPanning()) {
+            // Edge swipe seeks every frame. Recentering that seek yanks the scroll and the swipe stalls.
+            if (!isUserPanning() && !isRangeDraggingRef.current) {
                 seekTo(media.currentTime);
             }
             updatePlayheadPosition(media.currentTime);
@@ -1098,6 +1107,7 @@ function WaveformView({
             isRangeDraggingRef.current = isDragging;
             setIsRangeDragging(isDragging);
             suppressTapToPlayPause();
+            cancelJump();
             if (isDragging) {
                 setHoverProgress(null);
             } else {
@@ -1110,7 +1120,7 @@ function WaveformView({
             }
             onRangeDragChange?.(isDragging);
         },
-        [onRangeDragChange, suppressTapToPlayPause],
+        [cancelJump, onRangeDragChange, suppressTapToPlayPause],
     );
 
     useEffect(() => {
@@ -1119,6 +1129,8 @@ function WaveformView({
         }
         let rafId = 0;
         let lastTs = 0;
+        let hasFrame = false;
+        let pendingPx = 0;
         const pointerInTrack = (): { width: number; x: number } | null => {
             const root = trackRef.current;
             const clientX = rangeDragClientXRef.current;
@@ -1133,32 +1145,48 @@ function WaveformView({
                 rangeDragClientXRef.current = event.clientX;
             }
         };
-        const onEdgeZoomFrame = (timestampMs: number): void => {
-            const rawElapsedSec = lastTs ? (timestampMs - lastTs) / 1000 : 0;
-            const elapsedSec = Math.min(rawElapsedSec, WAVEFORM_RANGE_EDGE_ZOOM_MAX_FRAME_SEC);
+        const onEdgeScrollFrame = (timestampMs: number): void => {
+            const rawElapsedSec = hasFrame ? Math.max(0, (timestampMs - lastTs) / 1000) : 0;
+            const elapsedSec = Math.min(rawElapsedSec, WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC);
+            hasFrame = true;
             lastTs = timestampMs;
             const pointer = pointerInTrack();
+            const viewport = viewportRef.current;
             if (pointer) {
-                const nextZoom = getRangeEdgeZoomOut({
+                const deltaPx = getRangeEdgeScrollPx({
                     elapsedSec,
-                    maxZoom,
+                    pixelsPerSecond: viewport.pixelsPerSecond,
                     pointerX: pointer.x,
                     widthPx: pointer.width,
-                    zoomLevel: zoomRef.current,
                 });
-                if (nextZoom != null) {
-                    setZoomLevel(nextZoom);
+                if (deltaPx == null) {
+                    pendingPx = 0;
+                } else {
+                    pendingPx += deltaPx;
+                    const nextScroll = Math.min(
+                        maxScrollLeft(viewport),
+                        Math.max(0, viewport.scrollLeftPx + pendingPx),
+                    );
+                    const appliedPx = nextScroll - viewport.scrollLeftPx;
+                    if (appliedPx !== 0) {
+                        pendingPx -= appliedPx;
+                        applyScrollLeft(nextScroll, true);
+                        const nextViewport = viewportRef.current;
+                        onSeekRef.current?.(timeFromPositionPx(nextViewport.widthPx / 2, nextViewport));
+                    } else {
+                        pendingPx = 0;
+                    }
                 }
             }
-            rafId = window.requestAnimationFrame(onEdgeZoomFrame);
+            rafId = window.requestAnimationFrame(onEdgeScrollFrame);
         };
         window.addEventListener('pointermove', onMove);
-        rafId = window.requestAnimationFrame(onEdgeZoomFrame);
+        rafId = window.requestAnimationFrame(onEdgeScrollFrame);
         return () => {
             window.removeEventListener('pointermove', onMove);
             window.cancelAnimationFrame(rafId);
         };
-    }, [isRangeDragging, isTape, maxZoom, setZoomLevel]);
+    }, [applyScrollLeft, isRangeDragging, isTape]);
 
     const getPlayheadSec = useCallback(() => {
         return mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;

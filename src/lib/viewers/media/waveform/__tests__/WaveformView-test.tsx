@@ -1393,6 +1393,105 @@ describe('WaveformView', () => {
         expect(onPlayPause).not.toHaveBeenCalled();
     });
 
+    test('should keep scrolling while a tape range handle is held at the edge', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.releasePointerCapture) {
+            HTMLElement.prototype.releasePointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.hasPointerCapture) {
+            HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
+        }
+        const onSeek = jest.fn();
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 0, writable: true });
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockGetWidth.mockReturnValue(200);
+        const previousClientWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth');
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 200 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        const queued: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            queued.push(cb);
+            return queued.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                mediaEl={mediaEl}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        const flush = (timestampMs: number): void => {
+            const batch = queued.splice(0);
+            act(() => {
+                batch.forEach(cb => cb(timestampMs));
+            });
+        };
+        const advance = (frames: number, startMs: number): void => {
+            for (let frame = 0; frame < frames; frame += 1) {
+                flush(startMs + frame * 16);
+            }
+        };
+        try {
+            flush(0);
+            mockSetScroll.mockClear();
+            onSeek.mockClear();
+
+            act(() => {
+                screen.getByTestId('bp-waveform-range-handle-end').dispatchEvent(
+                    new MouseEvent('pointerdown', {
+                        bubbles: true,
+                        button: 0,
+                        clientX: 200,
+                    }),
+                );
+            });
+            advance(40, 1000);
+            const scrolledPx = mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1]?.[0] ?? 0;
+            expect(scrolledPx).toBeGreaterThan(50);
+            expect(onSeek).toHaveBeenCalled();
+            const seekCount = onSeek.mock.calls.length;
+
+            act(() => {
+                mediaEl.dispatchEvent(new Event('seeked'));
+            });
+            advance(40, 2000);
+            const laterPx = mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1]?.[0] ?? 0;
+            expect(laterPx).toBeGreaterThan(scrolledPx + 20);
+            expect(onSeek.mock.calls.length).toBeGreaterThan(seekCount);
+        } finally {
+            if (previousClientWidth) {
+                Object.defineProperty(HTMLElement.prototype, 'clientWidth', previousClientWidth);
+            } else {
+                delete (HTMLElement.prototype as { clientWidth?: number }).clientWidth;
+            }
+        }
+    });
+
     test('should size tape WaveSurfer bars to the canvas box when the stage is taller than 206px', () => {
         render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
 
