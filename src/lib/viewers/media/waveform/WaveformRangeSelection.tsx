@@ -135,6 +135,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const tooltipRef = useRef<HTMLDivElement>(null);
         const commentRef = useRef<HTMLButtonElement>(null);
         const dragRef = useRef<DragState | null>(null);
+        const replayDragRef = useRef<(clientX: number) => void>(() => undefined);
         const rangeRef = useRef(range);
         const displayedRef = useRef<ResolvedRange>(resolveRange(range, durationMsFromSec(durationSec)));
         const viewportRef = useRef(viewport);
@@ -207,65 +208,14 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             [],
         );
 
-        const updateDragAtClientX = useCallback(
-            (clientX: number): void => {
-                const drag = dragRef.current;
-                const root = rootRef.current;
-                if (!drag || !root || !Number.isFinite(clientX)) {
-                    return;
-                }
-                drag.lastClientX = clientX;
-                onDragPointerXRef.current?.(clientX);
-                const rect = root.getBoundingClientRect();
-                const pointerX = clientX - rect.left;
-                const vp = viewportRef.current;
-                const duration = durationMsFromSec(durationSecRef.current);
-                const playheadSec = getPlayheadSecRef.current?.() ?? currentTimeSec;
-                const pointerMs = snapTimeMs({
-                    pixelsPerSecond: vp.pixelsPerSecond,
-                    playheadMs: playheadSec * 1000,
-                    timeMs: pointerTimeMs(pointerX, vp),
-                });
-                if (
-                    drag.originMs === drag.range.startMs &&
-                    drag.originMs === drag.range.endMs &&
-                    pointerMs === drag.originMs
-                ) {
-                    syncPositions(drag.range, vp, durationSecRef.current);
-                    return;
-                }
-                const next = dragRangeHandle({
-                    durationMs: duration,
-                    handle: drag.handle,
-                    pointerMs,
-                    range: { endMs: drag.range.endMs, startMs: drag.range.startMs },
-                });
-                const unchanged =
-                    next.handle === drag.handle &&
-                    next.range.startMs === drag.range.startMs &&
-                    next.range.endMs === drag.range.endMs;
-                drag.handle = next.handle;
-                drag.range = next.range;
-                if (unchanged) {
-                    syncPositions(next.range, vp, durationSecRef.current);
-                    return;
-                }
-                setActiveHandle(next.handle);
-                setDragRange(next.range);
-                syncPositions(next.range, vp, durationSecRef.current);
-                onPreviewChangeRef.current?.({ endMs: next.range.endMs, startMs: next.range.startMs });
-            },
-            [currentTimeSec, syncPositions],
-        );
-
         const refreshRangePositions = useCallback((): void => {
             const drag = dragRef.current;
             if (!drag) {
                 syncPositions(displayedRef.current, viewportRef.current, durationSecRef.current);
                 return;
             }
-            updateDragAtClientX(drag.lastClientX);
-        }, [syncPositions, updateDragAtClientX]);
+            replayDragRef.current(drag.lastClientX);
+        }, [syncPositions]);
 
         useImperativeHandle(
             ref,
@@ -335,11 +285,52 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 if (!drag || (event.pointerId && drag.pointerId !== event.pointerId)) {
                     return;
                 }
-                event.preventDefault();
-                updateDragAtClientX(event.clientX);
+                const root = rootRef.current;
+                if (!root) {
+                    return;
+                }
+                drag.lastClientX = event.clientX;
+                onDragPointerXRef.current?.(event.clientX);
+                const rect = root.getBoundingClientRect();
+                const pointerX = event.clientX - rect.left;
+                const vp = viewportRef.current;
+                const duration = durationMsFromSec(durationSecRef.current);
+                const playheadSec = getPlayheadSecRef.current?.() ?? currentTimeSec;
+                const pointerMs = snapTimeMs({
+                    pixelsPerSecond: vp.pixelsPerSecond,
+                    playheadMs: playheadSec * 1000,
+                    timeMs: pointerTimeMs(pointerX, vp),
+                });
+                if (
+                    drag.originMs === drag.range.startMs &&
+                    drag.originMs === drag.range.endMs &&
+                    pointerMs === drag.originMs
+                ) {
+                    syncPositions(drag.range, vp, durationSecRef.current);
+                    return;
+                }
+                const next = dragRangeHandle({
+                    durationMs: duration,
+                    handle: drag.handle,
+                    pointerMs,
+                    range: { endMs: drag.range.endMs, startMs: drag.range.startMs },
+                });
+                drag.handle = next.handle;
+                drag.range = next.range;
+                setActiveHandle(next.handle);
+                setDragRange(next.range);
+                syncPositions(next.range, vp, durationSecRef.current);
+                onPreviewChangeRef.current?.({ endMs: next.range.endMs, startMs: next.range.startMs });
             },
-            [updateDragAtClientX],
+            [currentTimeSec, syncPositions],
         );
+        replayDragRef.current = (clientX: number): void => {
+            const drag = dragRef.current;
+            if (!drag || !Number.isFinite(clientX)) {
+                return;
+            }
+            moveDrag({ clientX, pointerId: drag.pointerId } as PointerEvent);
+        };
 
         const startDrag = useCallback(
             (handle: RangeHandle, event: React.PointerEvent<HTMLDivElement>): void => {
