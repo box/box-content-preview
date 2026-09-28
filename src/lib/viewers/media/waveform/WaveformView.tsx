@@ -476,34 +476,36 @@ function WaveformView({
      * Seek the time under the pin (one seek per frame). Swallow the delayed iOS click;
      * show the scrub chip until the swipe settles.
      */
-    const handleTapeSwipe = useCallback(
-        (timeSec: number): void => {
-            // Swallow the click WaveSurfer/iOS fires after a swipe or pinch.
-            suppressTapToPlayPause();
-            queuedTapeSeekTimeSecRef.current = timeSec;
-            if (!tapeSeekAnimationRef.current) {
-                // One seek per frame; later scrolls just update the queued time.
-                tapeSeekAnimationRef.current = window.requestAnimationFrame(() => {
-                    tapeSeekAnimationRef.current = 0;
-                    const next = queuedTapeSeekTimeSecRef.current;
-                    queuedTapeSeekTimeSecRef.current = null;
-                    if (next != null) {
-                        onSeekRef.current?.(next);
-                    }
-                });
-            }
-            if (interactiveRef.current) {
-                // Show the time under the pin; hide once scrolling has settled.
-                setScrubPreviewTimeSec(timeSec);
-                window.clearTimeout(hideScrubTimeChipTimerRef.current);
-                hideScrubTimeChipTimerRef.current = window.setTimeout(() => {
-                    setScrubPreviewTimeSec(null);
-                    hideScrubTimeChipTimerRef.current = 0;
-                }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
-            }
-        },
-        [suppressTapToPlayPause],
-    );
+    const handleTapeSwipe = useCallback((timeSec: number): void => {
+        // Swallow the click WaveSurfer/iOS fires after a swipe or pinch.
+        suppressNextTapPlayPauseRef.current = true;
+        window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
+        suppressNextTapPlayPauseTimerRef.current = window.setTimeout(() => {
+            suppressNextTapPlayPauseRef.current = false;
+            suppressNextTapPlayPauseTimerRef.current = 0;
+        }, WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
+        queuedTapeSeekTimeSecRef.current = timeSec;
+        if (!tapeSeekAnimationRef.current) {
+            // One seek per frame; later scrolls just update the queued time.
+            tapeSeekAnimationRef.current = window.requestAnimationFrame(() => {
+                tapeSeekAnimationRef.current = 0;
+                const next = queuedTapeSeekTimeSecRef.current;
+                queuedTapeSeekTimeSecRef.current = null;
+                if (next != null) {
+                    onSeekRef.current?.(next);
+                }
+            });
+        }
+        if (interactiveRef.current) {
+            // Show the time under the pin; hide once scrolling has settled.
+            setScrubPreviewTimeSec(timeSec);
+            window.clearTimeout(hideScrubTimeChipTimerRef.current);
+            hideScrubTimeChipTimerRef.current = window.setTimeout(() => {
+                setScrubPreviewTimeSec(null);
+                hideScrubTimeChipTimerRef.current = 0;
+            }, WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+        }
+    }, []);
 
     const syncViewport = useCallback(() => {
         const wavesurfer = wavesurferRef.current;
