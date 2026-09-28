@@ -4,7 +4,7 @@ import {
     createWaveformViewport,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
-    getRangeEdgeScrollPx,
+    getRangeEdgeScrollDeltaPx,
     getSeekCameraAction,
     getTapeCameraAction,
     getTapeDefaultZoom,
@@ -380,7 +380,7 @@ describe('viewport', () => {
 
     test('should scroll when a range handle is held in the edge zone', () => {
         expect(
-            getRangeEdgeScrollPx({
+            getRangeEdgeScrollDeltaPx({
                 elapsedSec: 1,
                 pixelsPerSecond: 25,
                 pointerX: 0,
@@ -388,7 +388,7 @@ describe('viewport', () => {
             }),
         ).toBe(-100);
         expect(
-            getRangeEdgeScrollPx({
+            getRangeEdgeScrollDeltaPx({
                 elapsedSec: 1,
                 pixelsPerSecond: 25,
                 pointerX: 50,
@@ -396,7 +396,7 @@ describe('viewport', () => {
             }),
         ).toBe(-50);
         expect(
-            getRangeEdgeScrollPx({
+            getRangeEdgeScrollDeltaPx({
                 elapsedSec: 1,
                 pixelsPerSecond: 25,
                 pointerX: 200,
@@ -404,7 +404,7 @@ describe('viewport', () => {
             }),
         ).toBe(100);
         expect(
-            getRangeEdgeScrollPx({
+            getRangeEdgeScrollDeltaPx({
                 elapsedSec: 1,
                 pixelsPerSecond: 25,
                 pointerX: 100,
@@ -412,7 +412,7 @@ describe('viewport', () => {
             }),
         ).toBeNull();
         expect(
-            getRangeEdgeScrollPx({
+            getRangeEdgeScrollDeltaPx({
                 elapsedSec: 0,
                 pixelsPerSecond: 25,
                 pointerX: 0,

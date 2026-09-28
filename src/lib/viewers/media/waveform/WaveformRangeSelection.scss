@@ -21,8 +21,7 @@
     transition: border-width 100ms ease, border-color 100ms ease;
 }
 
-// A point comment draws this border on the timestamp. Hide it while a tape swipe
-// moves the playhead, then show it again once the swipe settles.
+// Hide single timestamped ring while a tape swipe moves the playhead.
 .bp-WaveformRange--swiping .bp-WaveformRange-region {
     visibility: hidden;
 }

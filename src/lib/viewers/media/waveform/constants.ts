@@ -67,10 +67,10 @@ export const WAVEFORM_RANGE_SNAP_PX = 8;
 export const WAVEFORM_RANGE_MIN_DURATION_MS = 250;
 /** Pointer travel before a waveform press becomes a new draft range. Shorter presses stay click-to-seek. */
 export const WAVEFORM_RANGE_CREATE_DRAG_PX = 4;
-/** While dragging a handle in this many CSS pixels of the view edge, scroll. */
-export const WAVEFORM_RANGE_EDGE_SCROLL_PX = 100;
-/** Seconds of audio scrolled per second at the very edge (falls off toward the zone start). */
-export const WAVEFORM_RANGE_EDGE_SCROLL_SEC_PER_SEC = 4;
+/** Drag a handle inside this many CSS pixels of either view edge and the tape scrolls. */
+export const WAVEFORM_RANGE_EDGE_ZONE_PX = 100;
+/** Audio seconds moved per wall-clock second when the pointer is on the view edge. */
+export const WAVEFORM_RANGE_EDGE_SCROLL_AUDIO_SEC_PER_SEC = 4;
 /** Longest gap one edge-scroll frame may apply. A stalled timestamp must not jump the playhead. */
 export const WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC = 0.05;
 export const WAVEFORM_RANGE_GRIP_IN_MS = 150;

@@ -1,8 +1,8 @@
 import {
     WAVEFORM_FOLLOW_INSET_PX,
     WAVEFORM_MIN_VIEW_WINDOW_SEC,
-    WAVEFORM_RANGE_EDGE_SCROLL_PX,
-    WAVEFORM_RANGE_EDGE_SCROLL_SEC_PER_SEC,
+    WAVEFORM_RANGE_EDGE_SCROLL_AUDIO_SEC_PER_SEC,
+    WAVEFORM_RANGE_EDGE_ZONE_PX,
     WAVEFORM_TAPE_DEFAULT_WINDOW_SEC,
     WAVEFORM_ZOOM_MAX,
     WAVEFORM_ZOOM_MIN,
@@ -288,34 +288,34 @@ export function getTapePinnedPlayheadLeft(): string {
 }
 
 /**
- * Scroll delta while a range handle is held in the edge zone. Negative moves toward
- * the start of the file. Null means the pointer is outside the zone or no time passed.
+ * Pixels to scroll this frame while a range handle is held in the edge zone.
+ * Negative moves toward the start of the file. Null means the pointer is outside the zone.
  */
-export function getRangeEdgeScrollPx({
+export function getRangeEdgeScrollDeltaPx({
+    audioSecPerSec = WAVEFORM_RANGE_EDGE_SCROLL_AUDIO_SEC_PER_SEC,
     elapsedSec,
-    edgeZonePx = WAVEFORM_RANGE_EDGE_SCROLL_PX,
+    edgeZonePx = WAVEFORM_RANGE_EDGE_ZONE_PX,
     pixelsPerSecond,
     pointerX,
-    scrollSecPerSec = WAVEFORM_RANGE_EDGE_SCROLL_SEC_PER_SEC,
     widthPx,
 }: {
+    audioSecPerSec?: number;
     elapsedSec: number;
     edgeZonePx?: number;
     pixelsPerSecond: number;
     pointerX: number;
-    scrollSecPerSec?: number;
     widthPx: number;
 }): number | null {
     if (!(widthPx > 0) || !(elapsedSec > 0) || !(edgeZonePx > 0) || !(pixelsPerSecond > 0)) {
         return null;
     }
-    const distFromEdge = Math.min(pointerX, widthPx - pointerX);
-    if (distFromEdge >= edgeZonePx) {
+    const distanceFromEdgePx = Math.min(pointerX, widthPx - pointerX);
+    if (distanceFromEdgePx >= edgeZonePx) {
         return null;
     }
-    const intensity = 1 - distFromEdge / edgeZonePx;
+    const intensity = 1 - distanceFromEdgePx / edgeZonePx;
     const direction = pointerX < widthPx / 2 ? -1 : 1;
-    return direction * pixelsPerSecond * scrollSecPerSec * elapsedSec * intensity;
+    return direction * pixelsPerSecond * audioSecPerSec * elapsedSec * intensity;
 }
 
 /** CSS left % of the playhead from the left of the visible window. */
