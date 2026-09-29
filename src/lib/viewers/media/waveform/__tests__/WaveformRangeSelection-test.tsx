@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from '../constants';
 import { createWaveformViewport } from '../viewport';
 import WaveformRangeSelection, { WaveformRangeSelectionHandle } from '../WaveformRangeSelection';
@@ -126,6 +127,40 @@ describe('WaveformRangeSelection', () => {
             />,
         );
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+    });
+
+    test('should clear a tape range from the control beside Comment and omit it on desktop', async () => {
+        const user = userEvent.setup();
+        const onDragCreate = jest.fn();
+        const onRangeClear = jest.fn();
+        const { rerender } = render(
+            <WaveformRangeSelection
+                cameraMode="tape"
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        const clear = screen.getByTestId('bp-waveform-range-clear');
+        expect(clear).toHaveAttribute('aria-label', __('media_range_clear'));
+        await user.click(clear);
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onDragCreate).not.toHaveBeenCalled();
+
+        rerender(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-comment')).toBeInTheDocument();
     });
 
     test('should stretch the region between start and end', () => {
@@ -451,7 +486,30 @@ describe('WaveformRangeSelection', () => {
         expect(screen.queryByTestId('bp-waveform-range-handle-start')).not.toBeInTheDocument();
         expect(screen.queryByTestId('bp-waveform-range-handle-end')).not.toBeInTheDocument();
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
         expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should show only the clear control on a viewed tape range', async () => {
+        const user = userEvent.setup();
+        const onDragCreate = jest.fn();
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformRangeSelection
+                cameraMode="tape"
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                readOnly
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        await user.click(screen.getByTestId('bp-waveform-range-clear'));
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onDragCreate).not.toHaveBeenCalled();
     });
 
     test('should end the drag when the range layer unmounts', () => {

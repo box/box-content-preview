@@ -104,11 +104,59 @@
     pointer-events: auto;
 }
 
+.bp-WaveformRange-comment--withClear {
+    gap: 4px;
+    padding: 8px 8px 8px 12px;
+    cursor: default;
+}
+
+.bp-WaveformRange-comment--clearOnly {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.bp-WaveformRange-commentLabel,
+.bp-WaveformRange-commentClear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    appearance: none;
+}
+
+.bp-WaveformRange-commentLabel {
+    gap: 8px;
+    height: 32px;
+    padding: 0 6px;
+}
+
+.bp-WaveformRange-commentDivider {
+    flex: 0 0 auto;
+    width: 1px;
+    height: 16px;
+    background: rgb(255 255 255 / 40%);
+}
+
+.bp-WaveformRange-commentClear {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
 .bp-WaveformRange-commentIcon {
     display: block;
     flex: 0 0 auto;
     width: 20px;
     height: 20px;
+    fill: currentcolor;
 }
 
 .bp-WaveformView--tape .bp-WaveformRange-comment {

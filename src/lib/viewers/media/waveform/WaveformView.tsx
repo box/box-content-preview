@@ -354,6 +354,8 @@ function WaveformView({
     const activeRange = (isRangeDragging ? previewRange ?? createRange : createRange) ?? range;
     const activeRangeRef = useRef(activeRange);
     activeRangeRef.current = activeRange;
+    const viewedRangeRef = useRef(false);
+    viewedRangeRef.current = rangeReadOnly && createRange == null;
     const durationMs = durationMsFromSec(durationSec);
     const rangeStartMs = activeRange?.startMs;
     const rangeEndMs = activeRange?.endMs;
@@ -663,7 +665,12 @@ function WaveformView({
             }
             const rangeDraft = activeRangeRef.current;
             const timeSec = relativeX * durationSecRef.current;
-            if (rangeDraft && !isRangeCollapsed(rangeDraft)) {
+            // A tape draft dismisses from the pill. A viewed range, and desktop, still clear on click-outside.
+            if (
+                (cameraModeRef.current !== 'tape' || viewedRangeRef.current) &&
+                rangeDraft &&
+                !isRangeCollapsed(rangeDraft)
+            ) {
                 const pointerX = positionPxFromTime(timeSec, viewportRef.current);
                 if (!isPointerOverRange({ pointerX, range: rangeDraft, viewport: viewportRef.current })) {
                     onRangeClearRef.current?.();
@@ -1339,6 +1346,7 @@ function WaveformView({
                 {showRangeOverlay && overlayRange && (
                     <WaveformRangeSelection
                         ref={rangeLayerRef}
+                        cameraMode={cameraMode}
                         currentTimeSec={currentTime}
                         durationSec={durationSec}
                         getPlayheadSec={getPlayheadSec}
@@ -1355,6 +1363,7 @@ function WaveformView({
                         }}
                         onPreviewChange={setPreviewRange}
                         onRangeChange={interactive && !isOverlayReadOnly ? onRangeChange : undefined}
+                        onRangeClear={onRangeClear}
                         range={overlayRange}
                         readOnly={isOverlayReadOnly}
                         viewport={viewport}

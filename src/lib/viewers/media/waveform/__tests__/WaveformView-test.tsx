@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import WaveSurfer from 'wavesurfer.js';
 import WaveformView from '../WaveformView';
 import {
@@ -552,6 +553,76 @@ describe('WaveformView', () => {
         fireEvent.click(screen.getByTestId('bp-waveform-range-comment'));
 
         expect(onRangeDragCreate).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+    });
+
+    test('should not clear an open range from a tape waveform click', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                cameraMode="tape"
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should clear a viewed range from a click outside it on desktop', () => {
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+                rangeReadOnly
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+    });
+
+    test('should dismiss a tape range from the clear control beside Comment', async () => {
+        const user = userEvent.setup();
+        const onPlayPause = jest.fn();
+        const onRangeClear = jest.fn();
+        const onRangeDragCreate = jest.fn();
+        render(
+            <WaveformView
+                cameraMode="tape"
+                durationSec={8}
+                isPlaying={false}
+                onPlayPause={onPlayPause}
+                onRangeClear={onRangeClear}
+                onRangeDragCreate={onRangeDragCreate}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        await user.click(screen.getByTestId('bp-waveform-range-clear'));
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onRangeDragCreate).not.toHaveBeenCalled();
+        expect(onPlayPause).not.toHaveBeenCalled();
+
+        const pill = screen.getByTestId('bp-waveform-range-comment-pill');
+        await user.pointer([{ keys: '[MouseLeft>]', target: pill }, { keys: '[/MouseLeft]' }]);
+
+        expect(onPlayPause).not.toHaveBeenCalled();
     });
 
     test('should seek when clicking the waveform with only a collapsed draft', () => {

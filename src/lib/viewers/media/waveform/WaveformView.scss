@@ -119,7 +119,9 @@
     }
 
     .bp-WaveformRange-handle,
-    .bp-WaveformRange-comment {
+    .bp-WaveformRange-comment,
+    .bp-WaveformRange-commentLabel,
+    .bp-WaveformRange-commentClear {
         pointer-events: none;
         cursor: default;
     }
