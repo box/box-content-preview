@@ -1,3 +1,7 @@
+## 3.98.0 (2026-09-29)
+
+* feat(audio): show comment ranges on the tape waveform (#1800) ([635c02a](https://github.com/box/box-content-preview/commit/635c02a)), closes [#1800](https://github.com/box/box-content-preview/issues/1800)
+
 ## 3.97.0 (2026-09-28)
 
 * test(audio): wait for mp3 playback before the Cypress reload (#1797) ([4e2bef4](https://github.com/box/box-content-preview/commit/4e2bef4)), closes [#1797](https://github.com/box/box-content-preview/issues/1797)
