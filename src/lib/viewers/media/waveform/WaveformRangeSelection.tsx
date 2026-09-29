@@ -173,8 +173,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const displayed = dragRange ?? resolveRange(range, durationMs);
         displayedRef.current = displayed;
         const isRangeOpen = displayed.startMs !== displayed.endMs && activeHandle == null;
-        const isCommentButtonVisible = !readOnly && Boolean(onDragCreate) && isRangeOpen;
-        const isClearOnlyVisible = cameraMode === 'tape' && readOnly && onRangeClear != null && isRangeOpen;
+        const showCommentButton = !readOnly && Boolean(onDragCreate) && isRangeOpen;
+        const showClearOnly = cameraMode === 'tape' && readOnly && onRangeClear != null && isRangeOpen;
 
         const syncPositions = useCallback(
             (next: ResolvedRange, nextViewport: WaveformViewport, nextDurationSec: number): void => {
@@ -247,8 +247,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             displayed.endMs,
             displayed.startMs,
             durationSec,
-            isClearOnlyVisible,
-            isCommentButtonVisible,
+            showClearOnly,
+            showCommentButton,
             syncPositions,
         ]);
         useLayoutEffect(() => {
@@ -451,7 +451,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         );
         const isTapeClearAvailable = cameraMode === 'tape' && onRangeClear != null;
         let commentButton: JSX.Element | null = null;
-        if (isClearOnlyVisible && onRangeClear) {
+        if (showClearOnly && onRangeClear) {
             commentButton = (
                 <button
                     ref={commentButtonRef}
@@ -469,7 +469,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     <IconExit24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
                 </button>
             );
-        } else if (isCommentButtonVisible && onDragCreate) {
+        } else if (showCommentButton && onDragCreate) {
             const commentAction = (
                 <button
                     ref={isTapeClearAvailable ? undefined : commentButtonRef}
