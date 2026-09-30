@@ -67,6 +67,10 @@ export const WAVEFORM_RANGE_SNAP_PX = 8;
 export const WAVEFORM_RANGE_MIN_DURATION_MS = 250;
 /** Pointer travel before a waveform press becomes a new draft range. Shorter presses stay click-to-seek. */
 export const WAVEFORM_RANGE_CREATE_DRAG_PX = 4;
+/** Hold on the tape waveform before a press can draw a new range. A move sooner stays a swipe. */
+export const WAVEFORM_TAPE_RANGE_LONG_PRESS_MS = 500;
+/** Pointer travel during that hold that cancels it. */
+export const WAVEFORM_TAPE_RANGE_LONG_PRESS_CANCEL_PX = 10;
 /** Drag a handle inside this many CSS pixels of either view edge and the tape scrolls. */
 export const WAVEFORM_RANGE_EDGE_ZONE_PX = 100;
 /** Audio seconds moved per wall-clock second when the pointer is on the view edge. */

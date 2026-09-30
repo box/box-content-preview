@@ -21,6 +21,8 @@ import {
     WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC,
     WAVEFORM_HEIGHT,
     WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
+    WAVEFORM_TAPE_RANGE_LONG_PRESS_MS,
+    WAVEFORM_TAPE_RANGE_LONG_PRESS_CANCEL_PX,
     WAVEFORM_ZOOM_DISMISS_MS,
     WAVEFORM_ZOOM_MIN,
 } from './constants';
@@ -327,8 +329,10 @@ function WaveformView({
     const isRangeDraggingRef = useRef(false);
     const rangeRef = useRef(range); // latest committed draft; drag-create must not start on top of an open span
     const createDragRef = useRef<RangeCreateDrag | null>(null);
+    const tapeRangeHoldRef = useRef(false); // a tape long-press is waiting to draw; touch must not scroll
     const rangeDragPointerXRef = useRef<number | null>(null); // clientX while a handle or create-drag is down
     const removeCreateDragListenersRef = useRef<(() => void) | null>(null);
+    const removeTapeContextMenuRef = useRef<(() => void) | null>(null);
     const skipNextSeekRef = useRef(false); // ignore the click fired when a handle is released
     const lastSetTimeSecRef = useRef<number | null>(null);
     const [isRangeHovered, setIsRangeHovered] = useState(false);
@@ -452,6 +456,27 @@ function WaveformView({
             widthPx: viewport.widthPx,
             zoomLevel: viewport.zoomLevel,
         });
+        const drag = createDragRef.current;
+        const clientX = rangeDragPointerXRef.current;
+        const track = trackRef.current;
+        if (!drag?.active || clientX == null || !track) {
+            return;
+        }
+        const playheadSec = mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
+        const drawn = drawnRangeFromMove(
+            drag,
+            clientX,
+            track,
+            viewportRef.current,
+            playheadSec,
+            durationSecRef.current,
+        );
+        if (drawn.startMs === drag.range?.startMs && drawn.endMs === drag.range?.endMs) {
+            return;
+        }
+        drag.range = drawn;
+        setCreateRange(drawn);
+        setPreviewRange(drawn);
     }, [viewport]);
 
     const setZoomLevel = useCallback(
@@ -1007,6 +1032,10 @@ function WaveformView({
         };
 
         const onTouchMove = (event: TouchEvent): void => {
+            // A tape hold or range drag owns the touch. A desktop press can still scroll.
+            if (cameraModeRef.current === 'tape' && (tapeRangeHoldRef.current || createDragRef.current)) {
+                event.preventDefault();
+            }
             const pinch = pinchStartRef.current;
             if (
                 !interactiveRef.current ||
@@ -1161,6 +1190,7 @@ function WaveformView({
     useEffect(() => {
         return () => {
             removeCreateDragListenersRef.current?.();
+            removeTapeContextMenuRef.current?.();
             if (createDragRef.current?.active) {
                 createDragRef.current = null;
                 onRangeDragChangeRef.current?.(false);
@@ -1175,38 +1205,23 @@ function WaveformView({
         setCreateRange(current => (current == null ? current : null));
     }, [range]);
 
-    const onTrackPointerDown = useCallback(
-        (event: React.PointerEvent<HTMLDivElement>) => {
-            if (
-                cameraModeRef.current === 'tape' ||
-                !interactiveRef.current ||
-                event.button > 0 ||
-                event.ctrlKey ||
-                event.metaKey ||
-                isRangeDraggingRef.current ||
-                createDragRef.current
-            ) {
-                return;
-            }
-            const { target } = event;
-            if (
-                target instanceof Element &&
-                target.closest(
-                    '[data-testid="bp-waveform-range-handle-start"], [data-testid="bp-waveform-range-handle-end"], [data-testid="bp-waveform-range-comment"]',
-                )
-            ) {
-                return;
-            }
-            const drag = rangeCreateDragFromEvent(event, {
-                durationSec: durationSecRef.current,
-                range: rangeRef.current,
-                track: trackRef.current,
-                viewport: viewportRef.current,
-            });
-            if (!drag) {
-                return;
-            }
+    const startRangeCreateDrag = useCallback(
+        (drag: RangeCreateDrag, capture: boolean) => {
             createDragRef.current = drag;
+            rangeDragPointerXRef.current = drag.originX;
+            const track = trackRef.current;
+            if (capture && track && typeof track.setPointerCapture === 'function') {
+                try {
+                    track.setPointerCapture(drag.pointerId);
+                } catch (error) {
+                    const lostPointer =
+                        error instanceof DOMException &&
+                        (error.name === 'NotFoundError' || error.name === 'InvalidStateError');
+                    if (!lostPointer) {
+                        console.warn('Pointer capture failed', error); // eslint-disable-line no-console
+                    }
+                }
+            }
 
             const onMove = (moveEvent: PointerEvent): void => {
                 if (createDragRef.current !== drag || moveEvent.pointerId !== drag.pointerId) {
@@ -1215,19 +1230,27 @@ function WaveformView({
                 if (!Number.isFinite(moveEvent.clientX)) {
                     return;
                 }
+                // Capture runs before WaveSurfer's document drag, which stops the event after a few pixels.
+                if (capture) {
+                    moveEvent.preventDefault();
+                    moveEvent.stopPropagation();
+                }
+                rangeDragPointerXRef.current = moveEvent.clientX;
                 if (!drag.active && Math.abs(moveEvent.clientX - drag.originX) < WAVEFORM_RANGE_CREATE_DRAG_PX) {
                     return;
                 }
-                const track = trackRef.current;
-                if (!track) {
+                const moveTrack = trackRef.current;
+                if (!moveTrack) {
                     return;
                 }
-                moveEvent.preventDefault();
+                if (!capture) {
+                    moveEvent.preventDefault();
+                }
                 const playheadSec = mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
                 drag.range = drawnRangeFromMove(
                     drag,
                     moveEvent.clientX,
-                    track,
+                    moveTrack,
                     viewportRef.current,
                     playheadSec,
                     durationSecRef.current,
@@ -1241,9 +1264,18 @@ function WaveformView({
             };
             let onUp: (upEvent: PointerEvent) => void = () => undefined;
             const removeListeners = (): void => {
-                window.removeEventListener('pointermove', onMove);
-                window.removeEventListener('pointerup', onUp);
-                window.removeEventListener('pointercancel', onUp);
+                window.removeEventListener('pointermove', onMove, capture);
+                window.removeEventListener('pointerup', onUp, capture);
+                window.removeEventListener('pointercancel', onUp, capture);
+                const captured = trackRef.current;
+                if (
+                    capture &&
+                    captured &&
+                    typeof captured.hasPointerCapture === 'function' &&
+                    captured.hasPointerCapture(drag.pointerId)
+                ) {
+                    captured.releasePointerCapture(drag.pointerId);
+                }
                 if (removeCreateDragListenersRef.current === removeListeners) {
                     removeCreateDragListenersRef.current = null;
                 }
@@ -1257,6 +1289,8 @@ function WaveformView({
                 createDragRef.current = null;
                 removeListeners();
                 if (!wasActive || !drawn) {
+                    // This pointerup still reaches the tape track. Swallow it so a still hold does not play.
+                    suppressTapToPlayPause();
                     return;
                 }
                 const committed = commitRangeChange(drawn);
@@ -1267,11 +1301,119 @@ function WaveformView({
                 handleRangeDragChange(false);
             };
             removeCreateDragListenersRef.current = removeListeners;
-            window.addEventListener('pointermove', onMove);
-            window.addEventListener('pointerup', onUp);
-            window.addEventListener('pointercancel', onUp);
+            window.addEventListener('pointermove', onMove, capture);
+            window.addEventListener('pointerup', onUp, capture);
+            window.addEventListener('pointercancel', onUp, capture);
         },
-        [handleRangeDragChange],
+        [handleRangeDragChange, suppressTapToPlayPause],
+    );
+
+    const onTrackPointerDown = useCallback(
+        (event: React.PointerEvent<HTMLDivElement>) => {
+            if (
+                !interactiveRef.current ||
+                event.button > 0 ||
+                event.ctrlKey ||
+                event.metaKey ||
+                isRangeDraggingRef.current ||
+                createDragRef.current
+            ) {
+                return;
+            }
+            const { target } = event;
+            if (target instanceof Element && target.closest('.bp-WaveformRange-handle, .bp-WaveformRange-comment')) {
+                return;
+            }
+            const drag = rangeCreateDragFromEvent(event, {
+                durationSec: durationSecRef.current,
+                range: rangeRef.current,
+                track: trackRef.current,
+                viewport: viewportRef.current,
+            });
+            if (!drag) {
+                return;
+            }
+            if (cameraModeRef.current !== 'tape') {
+                startRangeCreateDrag(drag, false);
+                return;
+            }
+
+            const suppressContextMenu = (menuEvent: Event): void => {
+                menuEvent.preventDefault();
+            };
+            let endPointer: (endEvent: PointerEvent) => void = () => undefined;
+            const removeContextMenu = (): void => {
+                window.removeEventListener('contextmenu', suppressContextMenu, true);
+                window.removeEventListener('pointerup', endPointer, true);
+                window.removeEventListener('pointercancel', endPointer, true);
+                if (removeTapeContextMenuRef.current === removeContextMenu) {
+                    removeTapeContextMenuRef.current = null;
+                }
+            };
+            endPointer = (endEvent: PointerEvent): void => {
+                if (endEvent.pointerId !== drag.pointerId) {
+                    return;
+                }
+                removeContextMenu();
+            };
+            removeTapeContextMenuRef.current = removeContextMenu;
+            window.addEventListener('contextmenu', suppressContextMenu, true);
+            window.addEventListener('pointerup', endPointer, true);
+            window.addEventListener('pointercancel', endPointer, true);
+
+            const originY = event.clientY;
+            let holdPending = true;
+            let longPressTimer = 0;
+            let onHoldMove: (moveEvent: PointerEvent) => void = () => undefined;
+            let onHoldEnd: (upEvent: PointerEvent) => void = () => undefined;
+            const cancelHold = (): void => {
+                if (!holdPending) {
+                    return;
+                }
+                holdPending = false;
+                tapeRangeHoldRef.current = false;
+                window.clearTimeout(longPressTimer);
+                window.removeEventListener('pointermove', onHoldMove, true);
+                window.removeEventListener('pointerup', onHoldEnd, true);
+                window.removeEventListener('pointercancel', onHoldEnd, true);
+                if (removeCreateDragListenersRef.current === cancelHold) {
+                    removeCreateDragListenersRef.current = null;
+                }
+            };
+            onHoldMove = (moveEvent: PointerEvent): void => {
+                if (!holdPending || moveEvent.pointerId !== drag.pointerId) {
+                    return;
+                }
+                const moved = Math.hypot(moveEvent.clientX - drag.originX, moveEvent.clientY - originY);
+                if (moved >= WAVEFORM_TAPE_RANGE_LONG_PRESS_CANCEL_PX) {
+                    cancelHold();
+                    return;
+                }
+                // A smaller drift must not scroll the tape. The move that cancels the hold stays a swipe.
+                moveEvent.preventDefault();
+                moveEvent.stopPropagation();
+            };
+            onHoldEnd = (upEvent: PointerEvent): void => {
+                if (upEvent.pointerId !== drag.pointerId) {
+                    return;
+                }
+                cancelHold();
+            };
+            tapeRangeHoldRef.current = true;
+            longPressTimer = window.setTimeout(() => {
+                if (!holdPending) {
+                    return;
+                }
+                cancelHold();
+                suppressTapToPlayPause();
+                startRangeCreateDrag(drag, true);
+            }, WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            removeCreateDragListenersRef.current = cancelHold;
+            window.addEventListener('pointermove', onHoldMove, true);
+            window.addEventListener('pointerup', onHoldEnd, true);
+            window.addEventListener('pointercancel', onHoldEnd, true);
+        },
+        [suppressTapToPlayPause, startRangeCreateDrag],
     );
 
     const bindOverlayPortalHost = useCallback((node: HTMLDivElement | null) => {
