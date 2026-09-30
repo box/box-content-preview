@@ -471,7 +471,7 @@ function WaveformView({
             playheadSec,
             durationSecRef.current,
         );
-        if (drag.range && drawn.startMs === drag.range.startMs && drawn.endMs === drag.range.endMs) {
+        if (drawn.startMs === drag.range?.startMs && drawn.endMs === drag.range?.endMs) {
             return;
         }
         drag.range = drawn;
@@ -1218,7 +1218,7 @@ function WaveformView({
                         error instanceof DOMException &&
                         (error.name === 'NotFoundError' || error.name === 'InvalidStateError');
                     if (!lostPointer) {
-                        throw error;
+                        console.warn('Pointer capture failed', error); // eslint-disable-line no-console
                     }
                 }
             }
