@@ -11,6 +11,8 @@ import {
     WAVEFORM_HEIGHT,
     WAVEFORM_PLAYHEAD_JUMP_MS,
     WAVEFORM_RANGE_COLLAPSED_OFFSET_PX,
+    WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
+    WAVEFORM_TAPE_RANGE_LONG_PRESS_MS,
 } from '../constants';
 import { WAVEFORM_COLOR_HOVER_PLAYED, WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
 import { getPinnedPlayheadLeft } from '../viewport';
@@ -1409,6 +1411,194 @@ describe('WaveformView', () => {
         expect(onSeek).not.toHaveBeenCalled();
         expect(onPlayPause).toHaveBeenCalledWith(true);
         expect(onPlayPause).toHaveBeenCalledTimes(1);
+    });
+
+    test('should draw a tape range after a long press', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 120);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            });
+            dispatchTrackPointer(window, 'pointermove', 180);
+            dispatchTrackPointer(window, 'pointerup', 180);
+
+            expect(onRangeChange).toHaveBeenCalledWith({ endMs: 3200, startMs: 800 });
+            expect(onPlayPause).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should keep drawing a tape range when a document listener stops the drag', () => {
+        jest.useFakeTimers();
+        const onRangeChange = jest.fn();
+        const stopDocumentMove = (event: Event): void => {
+            event.stopPropagation();
+        };
+        document.addEventListener('pointermove', stopDocumentMove);
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 120);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            });
+            dispatchTrackPointer(track, 'pointermove', 180);
+            dispatchTrackPointer(track, 'pointerup', 180);
+
+            expect(onRangeChange).toHaveBeenCalledWith({ endMs: 3200, startMs: 800 });
+        } finally {
+            document.removeEventListener('pointermove', stopDocumentMove);
+            jest.useRealTimers();
+        }
+    });
+
+    test('should keep a short tape press as play and pause', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 10);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS - 1);
+            });
+            dispatchTrackPointer(track, 'pointerup', 10);
+
+            expect(onRangeChange).not.toHaveBeenCalled();
+            expect(onPlayPause).toHaveBeenCalledWith(true);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not play when a tape hold ends without moving', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 10);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS + WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
+            });
+            dispatchTrackPointer(track, 'pointerup', 10);
+
+            expect(onRangeChange).not.toHaveBeenCalled();
+            expect(onPlayPause).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should suppress the context menu during a tape long press', () => {
+        jest.useFakeTimers();
+        try {
+            render(
+                <WaveformView cameraMode="tape" currentTime={0} durationSec={8} isPlaying={false} peaks={[0.2, 0.8]} />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 120);
+            const duringHold = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+            act(() => {
+                track.dispatchEvent(duringHold);
+            });
+            expect(duringHold.defaultPrevented).toBe(true);
+
+            dispatchTrackPointer(track, 'pointerup', 120);
+            const afterRelease = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+            act(() => {
+                track.dispatchEvent(afterRelease);
+            });
+            expect(afterRelease.defaultPrevented).toBe(false);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not draw a tape range when the finger moves before the hold', () => {
+        jest.useFakeTimers();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 10);
+            dispatchTrackPointer(window, 'pointermove', 40);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            });
+            dispatchTrackPointer(window, 'pointermove', 100);
+            dispatchTrackPointer(window, 'pointerup', 100);
+
+            expect(onRangeChange).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
     });
 
     test('should pin collapsed tape range handles on the playhead, not the left edge', () => {
