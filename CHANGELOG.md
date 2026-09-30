@@ -1,3 +1,7 @@
+## 3.99.0 (2026-09-30)
+
+* feat(audio): add a clear control for tape ranges (#1801) ([6ad40d9](https://github.com/box/box-content-preview/commit/6ad40d9)), closes [#1801](https://github.com/box/box-content-preview/issues/1801)
+
 ## 3.98.0 (2026-09-29)
 
 * feat(audio): show comment ranges on the tape waveform (#1800) ([635c02a](https://github.com/box/box-content-preview/commit/635c02a)), closes [#1800](https://github.com/box/box-content-preview/issues/1800)
