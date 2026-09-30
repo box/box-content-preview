@@ -1,3 +1,7 @@
+## 3.100.0 (2026-09-30)
+
+* feat(audio): draw a tape range from a long press (#1802) ([2d616f8](https://github.com/box/box-content-preview/commit/2d616f8)), closes [#1802](https://github.com/box/box-content-preview/issues/1802)
+
 ## 3.99.0 (2026-09-30)
 
 * feat(audio): add a clear control for tape ranges (#1801) ([6ad40d9](https://github.com/box/box-content-preview/commit/6ad40d9)), closes [#1801](https://github.com/box/box-content-preview/issues/1801)
