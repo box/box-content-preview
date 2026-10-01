@@ -26,7 +26,7 @@ import {
     snapTimeMs,
     visualRangeHandlePx,
 } from './range';
-import { PlayheadCameraMode, WaveformViewport } from './types';
+import { WaveformViewport } from './types';
 import { createWaveformViewport, timeLeftPercent } from './viewport';
 import './WaveformRangeSelection.scss';
 
@@ -35,7 +35,6 @@ export type WaveformRangeSelectionHandle = {
 };
 
 export type WaveformRangeSelectionProps = {
-    cameraMode?: PlayheadCameraMode;
     currentTimeSec?: number;
     durationSec: number;
     getPlayheadSec?: () => number;
@@ -117,7 +116,6 @@ function applyRegion(
 const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, WaveformRangeSelectionProps>(
     function WaveformRangeSelection(
         {
-            cameraMode = 'desktop',
             currentTimeSec = 0,
             durationSec,
             getPlayheadSec,
@@ -174,7 +172,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         displayedRef.current = displayed;
         const isRangeOpen = displayed.startMs !== displayed.endMs && activeHandle == null;
         const showCommentButton = !readOnly && Boolean(onDragCreate) && isRangeOpen;
-        const showClearOnly = cameraMode === 'tape' && readOnly && onRangeClear != null && isRangeOpen;
+        const showClearControl = onRangeClear != null && isRangeOpen;
+        const showClearOnly = readOnly && showClearControl;
 
         const syncPositions = useCallback(
             (next: ResolvedRange, nextViewport: WaveformViewport, nextDurationSec: number): void => {
@@ -247,7 +246,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             displayed.endMs,
             displayed.startMs,
             durationSec,
-            showClearOnly,
+            showClearControl,
             showCommentButton,
             syncPositions,
         ]);
@@ -449,7 +448,6 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 {__('media_range_comment')}
             </>
         );
-        const isTapeClearAvailable = cameraMode === 'tape' && onRangeClear != null;
         let commentButton: JSX.Element | null = null;
         if (showClearOnly && onRangeClear) {
             commentButton = (
@@ -472,8 +470,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         } else if (showCommentButton && onDragCreate) {
             const commentAction = (
                 <button
-                    ref={isTapeClearAvailable ? undefined : commentButtonRef}
-                    className={isTapeClearAvailable ? 'bp-WaveformRange-commentLabel' : 'bp-WaveformRange-comment'}
+                    ref={showClearControl ? undefined : commentButtonRef}
+                    className={showClearControl ? 'bp-WaveformRange-commentLabel' : 'bp-WaveformRange-comment'}
                     data-testid="bp-waveform-range-comment"
                     onClick={event => {
                         stopRangeEvent(event);
@@ -486,34 +484,35 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     {commentLabel}
                 </button>
             );
-            commentButton = isTapeClearAvailable ? (
-                <div
-                    ref={commentPillRef}
-                    className="bp-WaveformRange-comment bp-WaveformRange-comment--withClear"
-                    data-testid="bp-waveform-range-comment-pill"
-                    onPointerDown={stopRangeEvent}
-                    onPointerUp={stopRangeEvent}
-                >
-                    {commentAction}
-                    <span aria-hidden="true" className="bp-WaveformRange-commentDivider" />
-                    <button
-                        aria-label={__('media_range_clear')}
-                        className="bp-WaveformRange-commentClear"
-                        data-testid="bp-waveform-range-clear"
-                        onClick={event => {
-                            stopRangeEvent(event);
-                            onRangeClear();
-                        }}
+            commentButton =
+                showClearControl && onRangeClear ? (
+                    <div
+                        ref={commentPillRef}
+                        className="bp-WaveformRange-comment bp-WaveformRange-comment--withClear"
+                        data-testid="bp-waveform-range-comment-pill"
                         onPointerDown={stopRangeEvent}
                         onPointerUp={stopRangeEvent}
-                        type="button"
                     >
-                        <IconExit24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
-                    </button>
-                </div>
-            ) : (
-                commentAction
-            );
+                        {commentAction}
+                        <span aria-hidden="true" className="bp-WaveformRange-commentDivider" />
+                        <button
+                            aria-label={__('media_range_clear')}
+                            className="bp-WaveformRange-commentClear"
+                            data-testid="bp-waveform-range-clear"
+                            onClick={event => {
+                                stopRangeEvent(event);
+                                onRangeClear();
+                            }}
+                            onPointerDown={stopRangeEvent}
+                            onPointerUp={stopRangeEvent}
+                            type="button"
+                        >
+                            <IconExit24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                        </button>
+                    </div>
+                ) : (
+                    commentAction
+                );
         }
 
         return (

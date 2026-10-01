@@ -1488,7 +1488,6 @@ function WaveformView({
                 {showRangeOverlay && overlayRange && (
                     <WaveformRangeSelection
                         ref={rangeLayerRef}
-                        cameraMode={cameraMode}
                         currentTimeSec={currentTime}
                         durationSec={durationSec}
                         getPlayheadSec={getPlayheadSec}
