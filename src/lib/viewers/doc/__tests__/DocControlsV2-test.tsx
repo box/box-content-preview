@@ -73,17 +73,18 @@ describe('DocControlsV2', () => {
         expect(screen.getByText('100%')).toBeInTheDocument();
     });
 
-    test('should reach find and gallery through the overflow menu', async () => {
+    test('should show find on the bar and keep gallery in the overflow menu', async () => {
         const user = userEvent.setup();
         const props = getDefaults();
         render(<DocControlsV2 {...props} />);
 
-        // Find and gallery sit in the menu at every width in the mocks, so they are never buttons.
-        expect(screen.queryByRole('button', { name: 'Toggle findbar' })).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Toggle findbar' })).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Gallery view' })).not.toBeInTheDocument();
 
         await user.click(screen.getByRole('button', { name: 'More options' }));
 
-        expect(screen.getByRole('menuitem', { name: 'Toggle findbar' })).toBeInTheDocument();
+        expect(screen.queryByRole('menuitem', { name: 'Toggle findbar' })).not.toBeInTheDocument();
+        expect(screen.getByRole('menuitem', { name: 'Gallery view' })).toBeInTheDocument();
 
         await user.click(screen.getByRole('menuitem', { name: 'Gallery view' }));
 
@@ -99,11 +100,13 @@ describe('DocControlsV2', () => {
         expect(screen.getByRole('button', { name: 'Click to enter page number' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Comment and markup' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Zoom in' })).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Toggle findbar' })).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Rotate left' })).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: 'Toggle thumbnails' })).not.toBeInTheDocument();
 
         await user.click(screen.getByRole('button', { name: 'More options' }));
 
+        expect(screen.getByRole('menuitem', { name: 'Toggle findbar' })).toBeInTheDocument();
         expect(screen.getByRole('menuitem', { name: 'Rotate left' })).toBeInTheDocument();
         expect(screen.getByRole('menuitem', { name: 'Toggle thumbnails' })).toBeInTheDocument();
     });
@@ -159,12 +162,24 @@ describe('DocControlsV2', () => {
         expect(screen.getByRole('radio', { name: 'Highlight and Comment' })).toHaveAttribute('data-state', 'on');
     });
 
-    test('should close the palette when the mode it is on is turned off', async () => {
+    test('should leave the mode on when the palette selection is clicked again', async () => {
         const user = userEvent.setup();
         const props = getDefaults();
         render(<ControlledDocControls {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
 
         await user.click(screen.getByRole('radio', { name: 'Highlight and Comment' }));
+
+        expect(props.onAnnotationModeClick).not.toHaveBeenCalled();
+        expect(screen.getByRole('radio', { name: 'Highlight and Comment' })).toHaveAttribute('data-state', 'on');
+        expect(screen.getByRole('button', { name: 'Comment and markup' })).toHaveAttribute('data-state', 'on');
+    });
+
+    test('should close the palette when the controls bar selection is clicked', async () => {
+        const user = userEvent.setup();
+        const props = getDefaults();
+        render(<ControlledDocControls {...props} annotationMode={AnnotationMode.HIGHLIGHT} hasHighlight />);
+
+        await user.click(screen.getByRole('button', { name: 'Comment and markup' }));
 
         expect(props.onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
         expect(screen.queryByRole('radio', { name: 'Highlight and Comment' })).not.toBeInTheDocument();

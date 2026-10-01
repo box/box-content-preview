@@ -25,16 +25,16 @@ import { ALWAYS_OVERFLOW, ALWAYS_VISIBLE, ControlsBarItem } from '../controls/co
 import { AnnotationMode } from '../../types';
 import { Props } from './DocControls';
 
-// The order controls collapse in as the viewer narrows, taken from the responsive mocks: find and
-// gallery start in the menu, then rotate, then the thumbnails and fullscreen pair, then zoom. Page
-// and the markup button stay on the bar at every width.
+// The order controls collapse in as the viewer narrows: find, then rotate, then the thumbnails
+// and fullscreen pair, then zoom. Gallery starts in the menu. Page and the markup button stay on
+// the bar at every width.
 const PRIORITY = {
-    find: ALWAYS_OVERFLOW,
+    find: 1,
     gallery: ALWAYS_OVERFLOW,
-    rotate: 1,
-    thumbnails: 2,
-    fullscreen: 3,
-    zoom: 4,
+    rotate: 2,
+    thumbnails: 3,
+    fullscreen: 4,
+    zoom: 5,
 };
 
 export default function DocControlsV2({
