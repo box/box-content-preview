@@ -32,7 +32,9 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     border-radius: 32px;
     box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
     backdrop-filter: blur(60px);
-    transition: width 150ms ease-out, gap 150ms ease-out;
+    transition:
+        width 150ms ease-out,
+        gap 150ms ease-out;
 
     &.bp-has-multiplier {
         padding: $bp-WaveformZoom-padding $bp-WaveformZoom-padding $bp-WaveformZoom-padding $bp-WaveformZoom-multiplier-inset-x;

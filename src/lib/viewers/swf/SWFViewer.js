@@ -37,9 +37,7 @@ class SWFViewer extends BaseViewer {
      */
     load() {
         super.load();
-        return this.loadAssets(JS)
-            .then(this.postLoad)
-            .catch(this.handleAssetError);
+        return this.loadAssets(JS).then(this.postLoad).catch(this.handleAssetError);
     }
 
     /**

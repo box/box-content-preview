@@ -29,20 +29,14 @@ describe('Archive Viewer', () => {
             cy.get('button').click();
         });
         // folders are in front of files
-        cy.get('.ReactVirtualized__Table__row')
-            .first()
-            .contains('Level 1 Folder');
+        cy.get('.ReactVirtualized__Table__row').first().contains('Level 1 Folder');
 
         // default sort by name
-        cy.get('.ReactVirtualized__Table__row')
-            .eq(1)
-            .contains('Audio.mp3');
+        cy.get('.ReactVirtualized__Table__row').eq(1).contains('Audio.mp3');
 
         // reverse
         cy.getByTitle('Name').click();
-        cy.get('.ReactVirtualized__Table__row')
-            .eq(1)
-            .contains('Preview SDK Sample Excel.xlsx');
+        cy.get('.ReactVirtualized__Table__row').eq(1).contains('Preview SDK Sample Excel.xlsx');
     });
 
     it('Should show matched item list based on search query', () => {

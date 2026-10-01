@@ -12,8 +12,8 @@ This viewer gives you an interactive view of a 360 degree image. First, a low re
 
 ### Controls:
 
-* Fullscreen (can be exited with the escape key)
-* VR Button: When using a browser that supports WebVR and a suitable VR device is attached to your computer, a VR button will be available to allow toggling in and out of VR mode.
+- Fullscreen (can be exited with the escape key)
+- VR Button: When using a browser that supports WebVR and a suitable VR device is attached to your computer, a VR button will be available to allow toggling in and out of VR mode.
 
 ## Limitations
 
@@ -27,16 +27,15 @@ Currently, this previewer requires that the file be named with a '.360' precedin
 
 The 360 image viewer fires the following events
 
-| Event Name | Explanation | Event Data |
-| --- | --- | --- |
-| destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
-| notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | {object} file |
-| reload | The preview reloads ||
-| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
-| assetsloaded | The viewer's third party assets have loaded ||
-
+| Event Name   | Explanation                                 | Event Data                                                                                                                                                                     |
+| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| destroy      | The preview is intentionally destroyed      |                                                                                                                                                                                |
+| load         | The preview loads                           | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
+| notification | A notification is displayed                 |                                                                                                                                                                                |
+| navigate     | The preview is shown for a given index      | {object} file                                                                                                                                                                  |
+| reload       | The preview reloads                         |                                                                                                                                                                                |
+| resize       | The preview resizes                         | 1. {number} **height**: window height 2. {number} **width**: window width                                                                                                      |
+| assetsloaded | The viewer's third party assets have loaded |                                                                                                                                                                                |
 
 ## Methods
 

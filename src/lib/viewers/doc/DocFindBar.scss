@@ -43,7 +43,7 @@
         right: 120px;
         margin: 0;
         padding: 0;
-        color: fade-out($better-black, .75);
+        color: fade-out($better-black, 0.75);
         line-height: 1;
         text-align: right;
         cursor: default;
@@ -72,7 +72,7 @@
         }
 
         .icon {
-            fill: fade-out($better-black, .25);
+            fill: fade-out($better-black, 0.25);
         }
     }
 
@@ -111,7 +111,7 @@
     .bp-find-match-not-found,
     .bp-find-match-not-found:hover,
     .bp-find-match-not-found:focus {
-        border-color: fade-out($great-balls-of-fire, .5);
+        border-color: fade-out($great-balls-of-fire, 0.5);
     }
 
     .bp-doc-find-controls {

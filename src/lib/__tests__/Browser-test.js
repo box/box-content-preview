@@ -418,10 +418,7 @@ describe('lib/Browser', () => {
         test("should return false if the browser doesn't support downloads, and mobile", () => {
             jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
             window.externalHost = undefined;
-            sandbox
-                .stub(document, 'createElement')
-                .withArgs('a')
-                .returns({});
+            sandbox.stub(document, 'createElement').withArgs('a').returns({});
             const canDownload = Browser.canDownload();
             expect(canDownload).toBe(false);
         });
@@ -429,10 +426,7 @@ describe('lib/Browser', () => {
         test('should return true if the browser does support downloads, and mobile', () => {
             jest.spyOn(Browser, 'isMobile').mockReturnValue(true);
             window.externalHost = undefined;
-            sandbox
-                .stub(document, 'createElement')
-                .withArgs('a')
-                .returns({ download: true });
+            sandbox.stub(document, 'createElement').withArgs('a').returns({ download: true });
             const canDownload = Browser.canDownload();
             expect(canDownload).toBe(true);
         });

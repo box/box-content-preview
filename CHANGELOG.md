@@ -1,51 +1,51 @@
 ## 3.101.0 (2026-10-01)
 
-* feat(text): enable preview for vtt files (#1799) ([222a7e3](https://github.com/box/box-content-preview/commit/222a7e3)), closes [#1799](https://github.com/box/box-content-preview/issues/1799)
+- feat(text): enable preview for vtt files (#1799) ([222a7e3](https://github.com/box/box-content-preview/commit/222a7e3)), closes [#1799](https://github.com/box/box-content-preview/issues/1799)
 
 ## 3.100.0 (2026-09-30)
 
-* feat(audio): draw a tape range from a long press (#1802) ([2d616f8](https://github.com/box/box-content-preview/commit/2d616f8)), closes [#1802](https://github.com/box/box-content-preview/issues/1802)
+- feat(audio): draw a tape range from a long press (#1802) ([2d616f8](https://github.com/box/box-content-preview/commit/2d616f8)), closes [#1802](https://github.com/box/box-content-preview/issues/1802)
 
 ## 3.99.0 (2026-09-30)
 
-* feat(audio): add a clear control for tape ranges (#1801) ([6ad40d9](https://github.com/box/box-content-preview/commit/6ad40d9)), closes [#1801](https://github.com/box/box-content-preview/issues/1801)
+- feat(audio): add a clear control for tape ranges (#1801) ([6ad40d9](https://github.com/box/box-content-preview/commit/6ad40d9)), closes [#1801](https://github.com/box/box-content-preview/issues/1801)
 
 ## 3.98.0 (2026-09-29)
 
-* feat(audio): show comment ranges on the tape waveform (#1800) ([635c02a](https://github.com/box/box-content-preview/commit/635c02a)), closes [#1800](https://github.com/box/box-content-preview/issues/1800)
+- feat(audio): show comment ranges on the tape waveform (#1800) ([635c02a](https://github.com/box/box-content-preview/commit/635c02a)), closes [#1800](https://github.com/box/box-content-preview/issues/1800)
 
 ## 3.97.0 (2026-09-28)
 
-* test(audio): wait for mp3 playback before the Cypress reload (#1797) ([4e2bef4](https://github.com/box/box-content-preview/commit/4e2bef4)), closes [#1797](https://github.com/box/box-content-preview/issues/1797)
-* feat(audio): show a read-only range for a selected ranged comment (#1794) ([41ffb6b](https://github.com/box/box-content-preview/commit/41ffb6b)), closes [#1794](https://github.com/box/box-content-preview/issues/1794)
-* feat(audio): show shuttle speed on the desktop waveform (#1796) ([56c6f69](https://github.com/box/box-content-preview/commit/56c6f69)), closes [#1796](https://github.com/box/box-content-preview/issues/1796)
-* fix(test): Stabilize gallery controls and logger timing (#1795) ([b67d995](https://github.com/box/box-content-preview/commit/b67d995)), closes [#1795](https://github.com/box/box-content-preview/issues/1795)
+- test(audio): wait for mp3 playback before the Cypress reload (#1797) ([4e2bef4](https://github.com/box/box-content-preview/commit/4e2bef4)), closes [#1797](https://github.com/box/box-content-preview/issues/1797)
+- feat(audio): show a read-only range for a selected ranged comment (#1794) ([41ffb6b](https://github.com/box/box-content-preview/commit/41ffb6b)), closes [#1794](https://github.com/box/box-content-preview/issues/1794)
+- feat(audio): show shuttle speed on the desktop waveform (#1796) ([56c6f69](https://github.com/box/box-content-preview/commit/56c6f69)), closes [#1796](https://github.com/box/box-content-preview/issues/1796)
+- fix(test): Stabilize gallery controls and logger timing (#1795) ([b67d995](https://github.com/box/box-content-preview/commit/b67d995)), closes [#1795](https://github.com/box/box-content-preview/issues/1795)
 
 ## 3.96.0 (2026-09-25)
 
-* fix(video transcription): re-fetch transcription rep on cache hits (#1743) ([6956e4a](https://github.com/box/box-content-preview/commit/6956e4a)), closes [#1743](https://github.com/box/box-content-preview/issues/1743)
-* feat(metrics): tag preview metrics with the Blueprint migration waves (#1792) ([cd99c69](https://github.com/box/box-content-preview/commit/cd99c69)), closes [#1792](https://github.com/box/box-content-preview/issues/1792)
+- fix(video transcription): re-fetch transcription rep on cache hits (#1743) ([6956e4a](https://github.com/box/box-content-preview/commit/6956e4a)), closes [#1743](https://github.com/box/box-content-preview/issues/1743)
+- feat(metrics): tag preview metrics with the Blueprint migration waves (#1792) ([cd99c69](https://github.com/box/box-content-preview/commit/cd99c69)), closes [#1792](https://github.com/box/box-content-preview/issues/1792)
 
 ## 3.95.0 (2026-09-24)
 
-* feat(preview): Leave global.Box.Preview unset in the npm build (#1793) ([4bfdd07](https://github.com/box/box-content-preview/commit/4bfdd07)), closes [#1793](https://github.com/box/box-content-preview/issues/1793)
+- feat(preview): Leave global.Box.Preview unset in the npm build (#1793) ([4bfdd07](https://github.com/box/box-content-preview/commit/4bfdd07)), closes [#1793](https://github.com/box/box-content-preview/issues/1793)
 
 ## 3.94.0 (2026-09-24)
 
-* feat(audio): draw a comment range by dragging the waveform (#1791) ([67849c4](https://github.com/box/box-content-preview/commit/67849c4)), closes [#1791](https://github.com/box/box-content-preview/issues/1791)
+- feat(audio): draw a comment range by dragging the waveform (#1791) ([67849c4](https://github.com/box/box-content-preview/commit/67849c4)), closes [#1791](https://github.com/box/box-content-preview/issues/1791)
 
 ## 3.93.0 (2026-09-19)
 
-* fix(test): use sha256 for the jest string-loader cache key (#1790) ([b761ec6](https://github.com/box/box-content-preview/commit/b761ec6)), closes [#1790](https://github.com/box/box-content-preview/issues/1790)
-* feat(analytics): programmatic Resin for scrub gestures (#1779) ([908ea1d](https://github.com/box/box-content-preview/commit/908ea1d)), closes [#1779](https://github.com/box/box-content-preview/issues/1779)
-* feat(audio): loop playback within an open draft comment range (#1787) ([f3b29f0](https://github.com/box/box-content-preview/commit/f3b29f0)), closes [#1787](https://github.com/box/box-content-preview/issues/1787)
-* feat(audio): show a generating-waveform indicator while conversion is polling (#1788) ([f726582](https://github.com/box/box-content-preview/commit/f726582)), closes [#1788](https://github.com/box/box-content-preview/issues/1788)
-* feat(audio): show a zoom multiplier on the waveform controls (#1789) ([bca9238](https://github.com/box/box-content-preview/commit/bca9238)), closes [#1789](https://github.com/box/box-content-preview/issues/1789)
-* feat(audio): wire range selection events through the MP3 viewer (#1778) ([d8aa36e](https://github.com/box/box-content-preview/commit/d8aa36e)), closes [#1778](https://github.com/box/box-content-preview/issues/1778)
-* feat(media): add play-next setting on audio and video v2 (#1781) ([483b8df](https://github.com/box/box-content-preview/commit/483b8df)), closes [#1781](https://github.com/box/box-content-preview/issues/1781)
-* test(audio): add v2 Cypress coverage and default empty speed to 1x (#1784) ([4c59e02](https://github.com/box/box-content-preview/commit/4c59e02)), closes [#1784](https://github.com/box/box-content-preview/issues/1784)
-* chore(deps): bump @box/blueprint-web peer to v17 (#1783) ([7e03c8d](https://github.com/box/box-content-preview/commit/7e03c8d)), closes [#1783](https://github.com/box/box-content-preview/issues/1783)
-* chore(media): remove unused MP4Controls composer (#1782) ([fe003de](https://github.com/box/box-content-preview/commit/fe003de)), closes [#1782](https://github.com/box/box-content-preview/issues/1782)
+- fix(test): use sha256 for the jest string-loader cache key (#1790) ([b761ec6](https://github.com/box/box-content-preview/commit/b761ec6)), closes [#1790](https://github.com/box/box-content-preview/issues/1790)
+- feat(analytics): programmatic Resin for scrub gestures (#1779) ([908ea1d](https://github.com/box/box-content-preview/commit/908ea1d)), closes [#1779](https://github.com/box/box-content-preview/issues/1779)
+- feat(audio): loop playback within an open draft comment range (#1787) ([f3b29f0](https://github.com/box/box-content-preview/commit/f3b29f0)), closes [#1787](https://github.com/box/box-content-preview/issues/1787)
+- feat(audio): show a generating-waveform indicator while conversion is polling (#1788) ([f726582](https://github.com/box/box-content-preview/commit/f726582)), closes [#1788](https://github.com/box/box-content-preview/issues/1788)
+- feat(audio): show a zoom multiplier on the waveform controls (#1789) ([bca9238](https://github.com/box/box-content-preview/commit/bca9238)), closes [#1789](https://github.com/box/box-content-preview/issues/1789)
+- feat(audio): wire range selection events through the MP3 viewer (#1778) ([d8aa36e](https://github.com/box/box-content-preview/commit/d8aa36e)), closes [#1778](https://github.com/box/box-content-preview/issues/1778)
+- feat(media): add play-next setting on audio and video v2 (#1781) ([483b8df](https://github.com/box/box-content-preview/commit/483b8df)), closes [#1781](https://github.com/box/box-content-preview/issues/1781)
+- test(audio): add v2 Cypress coverage and default empty speed to 1x (#1784) ([4c59e02](https://github.com/box/box-content-preview/commit/4c59e02)), closes [#1784](https://github.com/box/box-content-preview/issues/1784)
+- chore(deps): bump @box/blueprint-web peer to v17 (#1783) ([7e03c8d](https://github.com/box/box-content-preview/commit/7e03c8d)), closes [#1783](https://github.com/box/box-content-preview/issues/1783)
+- chore(media): remove unused MP4Controls composer (#1782) ([fe003de](https://github.com/box/box-content-preview/commit/fe003de)), closes [#1782](https://github.com/box/box-content-preview/issues/1782)
 
 ## 3.92.0 (2026-09-16)
 

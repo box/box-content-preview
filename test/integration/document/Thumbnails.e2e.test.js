@@ -41,9 +41,7 @@ describe('Preview Document Thumbnails', () => {
     const toggleThumbnails = () => {
         cy.showControls();
 
-        cy.getByTitle('Toggle thumbnails')
-            .should('be.visible')
-            .click();
+        cy.getByTitle('Toggle thumbnails').should('be.visible').click();
 
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(301); // Wait for toggle animation to complete
@@ -86,26 +84,20 @@ describe('Preview Document Thumbnails', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
 
         // Verify we're on page 1
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '1 / 1990');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
         // Verify which thumbnail is selected
         getThumbnailWithRenderedImage(1).should('have.class', THUMBNAIL_SELECTED_CLASS);
-        getThumbnailWithRenderedImage(2)
-            .click()
-            .should('have.class', THUMBNAIL_SELECTED_CLASS);
+        getThumbnailWithRenderedImage(2).click().should('have.class', THUMBNAIL_SELECTED_CLASS);
         getThumbnailWithRenderedImage(1).should('not.have.class', THUMBNAIL_SELECTED_CLASS);
         cy.get('@currentPage').should('have.text', '2 / 1990');
     });
 
     it('Should reflect the selected page when page is changed', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '1 / 1990');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -120,9 +112,7 @@ describe('Preview Document Thumbnails', () => {
 
     it('Should reflect the selected page even when thumbnail was not previously in rendered window', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '1 / 1990');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -142,9 +132,7 @@ describe('Preview Document Thumbnails', () => {
 
     it('Should still reflect the current viewed page when thumbnails sidebar is toggled open', () => {
         showDocumentPreview({ enableThumbnailsSidebar: true });
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '1 / 1990');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 1990');
 
         cy.getByTestId('thumbnails-sidebar').should('be.visible');
 
@@ -263,9 +251,7 @@ describe('Preview Document Thumbnails', () => {
         getThumbnailWithRenderedImage(2).click();
         cy.focused().type('{downarrow}');
         getThumbnailWithRenderedImage(3).should('have.class', THUMBNAIL_SELECTED_CLASS);
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '3 / 1990');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '3 / 1990');
 
         getThumbnailWithRenderedImage(3).click();
         cy.focused().type('{uparrow}');

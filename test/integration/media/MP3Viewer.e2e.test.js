@@ -55,10 +55,7 @@ describe('MP3 Viewer', () => {
     };
 
     const chooseVisibleSetting = label => {
-        cy.get('[role="menuitemradio"]')
-            .filter(':visible')
-            .contains(label)
-            .click();
+        cy.get('[role="menuitemradio"]').filter(':visible').contains(label).click();
     };
 
     describe('Media Settings Controls', () => {
@@ -127,9 +124,7 @@ describe('MP3 Viewer', () => {
             cy.getByTitle('Settings').click();
             cy.getByTestId('bp-settings-flyout').should('be.visible');
 
-            cy.getByTestId('bp-media-settings-autoplay')
-                .contains('Disabled')
-                .click();
+            cy.getByTestId('bp-media-settings-autoplay').contains('Disabled').click();
             chooseVisibleSetting('Enabled');
             cy.getByTestId('bp-media-settings-autoplay').contains('Enabled');
 
@@ -146,9 +141,7 @@ describe('MP3 Viewer', () => {
             showAudioV2();
             openV2Settings();
 
-            cy.getByTestId('bp-media-settings-play-next')
-                .contains('Disabled')
-                .click();
+            cy.getByTestId('bp-media-settings-play-next').contains('Disabled').click();
             chooseVisibleSetting('Enabled');
             cy.getByTestId('bp-media-settings-play-next').contains('Enabled');
             cy.getByTitle('Settings').click();
@@ -175,9 +168,7 @@ describe('MP3 Viewer', () => {
             showAudioV2();
             openV2Settings();
 
-            cy.getByTestId('bp-media-settings-play-next')
-                .contains('Disabled')
-                .click();
+            cy.getByTestId('bp-media-settings-play-next').contains('Disabled').click();
             chooseVisibleSetting('Enabled');
             cy.getByTestId('bp-media-settings-play-next').contains('Enabled');
 

@@ -10,7 +10,7 @@ const mockResizeObserver = jest.fn().mockImplementation(() => ({
     disconnect: jest.fn(),
 }));
 
-((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
 
 describe('VideoFullscreenButton', () => {
     let mediaEl: HTMLVideoElement;
@@ -111,7 +111,7 @@ describe('VideoFullscreenButton', () => {
                 height: 0,
                 toJSON: () => ({}),
                 ...overrides,
-            } as DOMRect);
+            }) as DOMRect;
 
         let observerCallback: () => void;
 

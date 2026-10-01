@@ -38,10 +38,14 @@
     border-radius: 12px;
     box-shadow: 0 0 0 1px $off-white;
     cursor: pointer;
-    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+    transition:
+        box-shadow 0.2s ease-in-out,
+        transform 0.2s ease-in-out;
 
     &:hover {
-        box-shadow: 0 0 0 3px $seventy-sixers, 0 4px 5px 0 rgb(0 0 0 / 15%);
+        box-shadow:
+            0 0 0 3px $seventy-sixers,
+            0 4px 5px 0 rgb(0 0 0 / 15%);
         transform: translateY(-1px) scale(var(--bp-gallery-hover-scale));
 
         .bp-gallery-tile-badge {
@@ -63,11 +67,15 @@
 }
 
 .bp-gallery-tile--selected {
-    box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgb(0 0 0 / 8%);
+    box-shadow:
+        0 0 0 3px $box-blue,
+        0 4px 5px 0 rgb(0 0 0 / 8%);
 
     &:hover,
     &:focus {
-        box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgb(0 0 0 / 8%);
+        box-shadow:
+            0 0 0 3px $box-blue,
+            0 4px 5px 0 rgb(0 0 0 / 8%);
     }
 
     .bp-gallery-tile-badge {

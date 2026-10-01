@@ -13,7 +13,7 @@ class MockResizeObserver {
 
 describe('VideoGuidesOverlay', () => {
     beforeAll(() => {
-        ((global as unknown) as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver = MockResizeObserver;
+        (global as unknown as { ResizeObserver: typeof MockResizeObserver }).ResizeObserver = MockResizeObserver;
     });
 
     const makeVideo = ({ videoWidth = 1920, videoHeight = 1080 } = {}): HTMLVideoElement => {

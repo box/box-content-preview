@@ -85,29 +85,26 @@ describe('lib/viewers/SWFViewer', () => {
     describe('postLoad()', () => {
         test('should call embedSWF', () => {
             const blobUrl = 'blob:swf';
-            sandbox
-                .mock(window.swfobject)
-                .expects('embedSWF')
-                .withArgs(
-                    blobUrl,
-                    'flash-player',
-                    '100%',
-                    '100%',
-                    '9',
-                    null,
-                    null,
-                    {
-                        allowfullscreen: 'true',
-                        allowFullScreen: 'true',
-                        allownetworking: 'none',
-                        allowNetworking: 'none',
-                        allowscriptaccess: 'never',
-                        allowScriptAccess: 'never',
-                        wmode: 'transparent',
-                    },
-                    null,
-                    sinon.match.func,
-                );
+            sandbox.mock(window.swfobject).expects('embedSWF').withArgs(
+                blobUrl,
+                'flash-player',
+                '100%',
+                '100%',
+                '9',
+                null,
+                null,
+                {
+                    allowfullscreen: 'true',
+                    allowFullScreen: 'true',
+                    allownetworking: 'none',
+                    allowNetworking: 'none',
+                    allowscriptaccess: 'never',
+                    allowScriptAccess: 'never',
+                    wmode: 'transparent',
+                },
+                null,
+                sinon.match.func,
+            );
             jest.spyOn(swf, 'createContentUrlV2').mockReturnValue('contentUrl');
             jest.spyOn(swf, 'fetchContentAsBlobUrl').mockResolvedValue(blobUrl);
 

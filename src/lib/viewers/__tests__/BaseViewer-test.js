@@ -1503,7 +1503,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         test('should not call handleScrollToAnnotation if there is not an active annotation', () => {
             base.options.fileOptions = {
-                '0': {
+                0: {
                     annotations: {},
                 },
             };
@@ -1514,7 +1514,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
         test('should call scroll to annotation if active annotation is set', () => {
             base.options.fileOptions = {
-                '0': {
+                0: {
                     annotations: {
                         activeId: 'ABC',
                     },

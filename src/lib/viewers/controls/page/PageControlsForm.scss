@@ -12,7 +12,7 @@
         text-align: center;
         border: 1px solid $bdl-gray;
         border-radius: 0;
-        transition: border-color linear .15s;
+        transition: border-color linear 0.15s;
 
         /* stylelint-disable property-no-vendor-prefix */
         // Removes the spinner for number type inputs in Firefox

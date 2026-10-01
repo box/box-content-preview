@@ -78,14 +78,12 @@ describe('HighResThumbnailStore', () => {
 
     test('should keep cancelled work counted until it settles', async () => {
         const renders = new Map<number, { cancel: jest.Mock; result: Deferred<HighResRenderResult | null> }>();
-        const render = jest.fn(
-            (pageNum: number): HighResRenderTask => {
-                const result = deferred<HighResRenderResult | null>();
-                const cancel = jest.fn();
-                renders.set(pageNum, { cancel, result });
-                return { cancel, promise: result.promise };
-            },
-        );
+        const render = jest.fn((pageNum: number): HighResRenderTask => {
+            const result = deferred<HighResRenderResult | null>();
+            const cancel = jest.fn();
+            renders.set(pageNum, { cancel, result });
+            return { cancel, promise: result.promise };
+        });
         const store = new HighResThumbnailStore({
             maxBytes: 800,
             maxConcurrent: 1,
@@ -110,14 +108,12 @@ describe('HighResThumbnailStore', () => {
             result: Deferred<HighResRenderResult | null>;
             width: number;
         }> = [];
-        const render = jest.fn(
-            (_pageNum: number, width: number): HighResRenderTask => {
-                const result = deferred<HighResRenderResult | null>();
-                const cancel = jest.fn();
-                renders.push({ cancel, result, width });
-                return { cancel, promise: result.promise };
-            },
-        );
+        const render = jest.fn((_pageNum: number, width: number): HighResRenderTask => {
+            const result = deferred<HighResRenderResult | null>();
+            const cancel = jest.fn();
+            renders.push({ cancel, result, width });
+            return { cancel, promise: result.promise };
+        });
         const store = new HighResThumbnailStore({
             maxBytes: 2000,
             maxConcurrent: 2,

@@ -33,9 +33,7 @@ describe('Presentation Viewer', () => {
         cy.contains('LINK TO PAGE 3');
 
         // Internal links should be rendered with <a> tags by PDF.js
-        cy.getByTestId('bp-content')
-            .find('a')
-            .click();
+        cy.getByTestId('bp-content').find('a').click();
 
         cy.getPreviewPage(3).should('be.visible');
     });

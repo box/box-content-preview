@@ -12,7 +12,7 @@ $bp-MediaControl-width: 36px;
     display: flex;
     flex-direction: column;
     width: 100%;
-    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
+    background-image: linear-gradient(to top, rgba($black, 0.6) 0%, rgba($black, 0) 100%);
 
     .bp-FullscreenToggle {
         width: $bp-MediaControl-width;

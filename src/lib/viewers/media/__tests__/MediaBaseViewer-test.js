@@ -737,10 +737,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
 
         test('should start playing from start time without pausing, when only one parameter is passed', () => {
-            jest.spyOn(media, 'isValidTime')
-                .mockImplementation()
-                .mockReturnValueOnce(true)
-                .mockReturnValueOnce(false);
+            jest.spyOn(media, 'isValidTime').mockImplementation().mockReturnValueOnce(true).mockReturnValueOnce(false);
             media.play(100);
 
             expect(media.removePauseEventListener).toBeCalledTimes(1);

@@ -308,19 +308,13 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
     describe('animation behavior', () => {
         test('should invoke renderer.setAnimationClip() via .handleSelectAnimationClip()', () => {
             const clipId = 'anim_12389765';
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setAnimationClip')
-                .withArgs(clipId);
+            sandbox.mock(model3d.renderer).expects('setAnimationClip').withArgs(clipId);
             model3d.handleSelectAnimationClip(clipId);
         });
 
         test('should invoke renderer.toggleAnimation() via .handleToggleAnimation()', () => {
             const play = true;
-            sandbox
-                .mock(model3d.renderer)
-                .expects('toggleAnimation')
-                .withArgs(play);
+            sandbox.mock(model3d.renderer).expects('toggleAnimation').withArgs(play);
             model3d.handleToggleAnimation(play);
         });
 
@@ -371,10 +365,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             });
 
             test('should get the list of animations loaded', () => {
-                b3dMock
-                    .expects('getEntitiesByType')
-                    .once()
-                    .returns([]);
+                b3dMock.expects('getEntitiesByType').once().returns([]);
                 model3d.populateAnimationControls();
             });
 
@@ -382,10 +373,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 const animation = {
                     getClipIds: () => [],
                 };
-                b3dMock
-                    .expects('getEntitiesByType')
-                    .once()
-                    .returns([animation]);
+                b3dMock.expects('getEntitiesByType').once().returns([animation]);
                 model3d.populateAnimationControls();
             });
 
@@ -406,14 +394,8 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 };
                 const animMock = sandbox.mock(animation);
                 animMock.expects('getClipIds').returns(['1', '2']);
-                animMock
-                    .expects('getClip')
-                    .withArgs('1')
-                    .returns(clipOne);
-                animMock
-                    .expects('getClip')
-                    .withArgs('2')
-                    .returns(clipTwo);
+                animMock.expects('getClip').withArgs('1').returns(clipOne);
+                animMock.expects('getClip').withArgs('2').returns(clipTwo);
                 b3dMock.expects('getEntitiesByType').returns([animation]);
                 controlMock.expects('addAnimationClip').twice();
                 model3d.populateAnimationControls();
@@ -423,10 +405,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 const animation = {
                     getClipIds: () => [],
                 };
-                b3dMock
-                    .expects('getEntitiesByType')
-                    .once()
-                    .returns([animation]);
+                b3dMock.expects('getEntitiesByType').once().returns([animation]);
                 controlMock.expects('showAnimationControls').never();
 
                 model3d.populateAnimationControls();
@@ -436,10 +415,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 const animation = {
                     getClipIds: () => [],
                 };
-                b3dMock
-                    .expects('getEntitiesByType')
-                    .once()
-                    .returns([animation]);
+                b3dMock.expects('getEntitiesByType').once().returns([animation]);
                 controlMock.expects('selectAnimationClip').never();
 
                 model3d.populateAnimationControls();
@@ -457,10 +433,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 };
                 const animMock = sandbox.mock(animation);
                 animMock.expects('getClipIds').returns(['1']);
-                animMock
-                    .expects('getClip')
-                    .withArgs('1')
-                    .returns(clipOne);
+                animMock.expects('getClip').withArgs('1').returns(clipOne);
                 b3dMock.expects('getEntitiesByType').returns([animation]);
                 controlMock.expects('showAnimationControls').once();
 
@@ -479,15 +452,9 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 };
                 const animMock = sandbox.mock(animation);
                 animMock.expects('getClipIds').returns(['1']);
-                animMock
-                    .expects('getClip')
-                    .withArgs('1')
-                    .returns(clipOne);
+                animMock.expects('getClip').withArgs('1').returns(clipOne);
                 b3dMock.expects('getEntitiesByType').returns([animation]);
-                controlMock
-                    .expects('selectAnimationClip')
-                    .once()
-                    .withArgs('1');
+                controlMock.expects('selectAnimationClip').once().withArgs('1');
 
                 model3d.populateAnimationControls();
             });
@@ -505,10 +472,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     };
                     const animMock = sandbox.mock(animation);
                     animMock.expects('getClipIds').returns(['1']);
-                    animMock
-                        .expects('getClip')
-                        .withArgs('1')
-                        .returns(clipOne);
+                    animMock.expects('getClip').withArgs('1').returns(clipOne);
                     b3dMock.expects('getEntitiesByType').returns([animation]);
 
                     jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
@@ -538,20 +502,14 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
     describe('axis rotation behavior', () => {
         test('should invoke renderer.rotateOnAxis() via .handleRotateOnAxis()', () => {
             const axis = '+x';
-            sandbox
-                .mock(model3d.renderer)
-                .expects('rotateOnAxis')
-                .withArgs(axis);
+            sandbox.mock(model3d.renderer).expects('rotateOnAxis').withArgs(axis);
             model3d.handleRotateOnAxis(axis);
         });
 
         test('should invoke renderer.setAxisRotation() via .handleRotationAxisSet()', () => {
             const up = '-y';
             const forward = '+z';
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setAxisRotation')
-                .withArgs(up, forward, true);
+            sandbox.mock(model3d.renderer).expects('setAxisRotation').withArgs(up, forward, true);
             model3d.handleRotationAxisSet(up, forward);
         });
 
@@ -596,35 +554,23 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
     describe('rendering behaviour', () => {
         test('should invoke renderer.setRenderMode() when calling handleSetRenderMode(), with default value', () => {
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setRenderMode')
-                .withArgs('Lit');
+            sandbox.mock(model3d.renderer).expects('setRenderMode').withArgs('Lit');
             model3d.handleSetRenderMode();
         });
 
         test('should invoke renderer.setRenderMode() when calling handleSetRenderMode(), with parameter provided', () => {
             const renderMode = 'unlit';
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setRenderMode')
-                .withArgs(renderMode);
+            sandbox.mock(model3d.renderer).expects('setRenderMode').withArgs(renderMode);
             model3d.handleSetRenderMode(renderMode);
         });
 
         test('should invoke renderer.toggleHelpers() when calling handleToggleHelpers()', () => {
-            sandbox
-                .mock(model3d.renderer)
-                .expects('toggleHelpers')
-                .withArgs();
+            sandbox.mock(model3d.renderer).expects('toggleHelpers').withArgs();
             model3d.handleToggleHelpers();
         });
 
         test('should invoke renderer.toggleHelpers() when calling handleToggleHelpers(), with parameter provided', () => {
-            sandbox
-                .mock(model3d.renderer)
-                .expects('toggleHelpers')
-                .withArgs(true);
+            sandbox.mock(model3d.renderer).expects('toggleHelpers').withArgs(true);
             model3d.handleToggleHelpers(true);
         });
 
@@ -635,10 +581,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
 
         test('should invoke renderer.setCameraProjection() when calling handleSetCameraProjection(), with parameter provided', () => {
             const proj = 'Orthogonal';
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setCameraProjection')
-                .withArgs(proj);
+            sandbox.mock(model3d.renderer).expects('setCameraProjection').withArgs(proj);
             model3d.handleSetCameraProjection(proj);
         });
 
@@ -648,10 +591,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
 
         test('should invoke renderer.setSkeletonsVisible() when calling handleShowSkeletons(), with parameter provided', () => {
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setSkeletonsVisible')
-                .withArgs(true);
+            sandbox.mock(model3d.renderer).expects('setSkeletonsVisible').withArgs(true);
             model3d.handleShowSkeletons(true);
         });
 
@@ -661,10 +601,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
 
         test('should invoke renderer.setWireframesVisible() when calling handleShowWireframes(), with parameter provided', () => {
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setWireframesVisible')
-                .withArgs(true);
+            sandbox.mock(model3d.renderer).expects('setWireframesVisible').withArgs(true);
             model3d.handleShowWireframes(true);
         });
 
@@ -674,10 +611,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
 
         test('should invoke renderer.setGridVisible() when calling handleShowGrid(), with parameter provided', () => {
-            sandbox
-                .mock(model3d.renderer)
-                .expects('setGridVisible')
-                .withArgs(true);
+            sandbox.mock(model3d.renderer).expects('setGridVisible').withArgs(true);
             model3d.handleShowGrid(true);
         });
 
@@ -811,20 +745,11 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
 
         test('should reset control settings', () => {
-            sandbox
-                .mock(model3d.controls)
-                .expects('handleSetRenderMode')
-                .withArgs(RENDER_MODE_NORMALS);
-            sandbox
-                .mock(model3d.controls)
-                .expects('setCurrentProjectionMode')
-                .withArgs(CAMERA_PROJECTION_ORTHOGRAPHIC);
+            sandbox.mock(model3d.controls).expects('handleSetRenderMode').withArgs(RENDER_MODE_NORMALS);
+            sandbox.mock(model3d.controls).expects('setCurrentProjectionMode').withArgs(CAMERA_PROJECTION_ORTHOGRAPHIC);
             sandbox.mock(model3d.controls).expects('handleSetSkeletonsVisible');
             sandbox.mock(model3d.controls).expects('handleSetWireframesVisible');
-            sandbox
-                .mock(model3d.controls)
-                .expects('handleSetGridVisible')
-                .withArgs(false);
+            sandbox.mock(model3d.controls).expects('handleSetGridVisible').withArgs(false);
             const renderMock = sandbox.mock(model3d.renderer);
             renderMock.expects('stopAnimation').once();
             model3d.handleReset();

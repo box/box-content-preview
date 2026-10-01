@@ -19,7 +19,10 @@ $bp-marker-avatar-size-active: 24px;
     box-shadow: 0 0 0 1px $bp-marker-avatar-border;
     transform: translate(-50%, 0);
     transform-origin: bottom center;
-    transition: width 150ms, height 150ms, box-shadow 150ms;
+    transition:
+        width 150ms,
+        height 150ms,
+        box-shadow 150ms;
 
     img {
         position: absolute;
@@ -65,7 +68,9 @@ $bp-marker-avatar-size-active: 24px;
 :is(.bp-WaveformCommentMarkers-marker--selected:not(.bp-WaveformCommentMarkers-marker--group), .bp-TimeControlsV2-marker--selected:not(.bp-TimeControlsV2-marker--group), .bp-MarkerAvatarStack-item--selected):is(:hover, :focus-visible) .bp-MarkerAvatar {
     width: $bp-marker-avatar-size-active;
     height: $bp-marker-avatar-size-active;
-    box-shadow: 0 0 0 2px $white, 0 0 0 3px $bp-marker-avatar-border;
+    box-shadow:
+        0 0 0 2px $white,
+        0 0 0 3px $bp-marker-avatar-border;
 
     .bp-MarkerAvatar-initial {
         font-size: 12px;

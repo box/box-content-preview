@@ -44,7 +44,10 @@
     transform-origin: bottom center;
     visibility: hidden;
     opacity: 0;
-    transition: opacity $palette-duration $palette-ease, transform $palette-duration $palette-ease, visibility 0s linear $palette-duration;
+    transition:
+        opacity $palette-duration $palette-ease,
+        transform $palette-duration $palette-ease,
+        visibility 0s linear $palette-duration;
 
     &::after {
         position: absolute;
@@ -61,17 +64,24 @@
         transform: translate(-50%, -100%) scale(1);
         visibility: visible;
         opacity: 1;
-        transition: opacity $palette-duration $palette-ease, transform $palette-duration $palette-ease, visibility 0s linear 0s;
+        transition:
+            opacity $palette-duration $palette-ease,
+            transform $palette-duration $palette-ease,
+            visibility 0s linear 0s;
     }
 
     @media (prefers-reduced-motion: reduce) {
         // Keep the opacity fade; drop the scale so nothing moves.
         transform: translate(-50%, -100%);
-        transition: opacity $palette-duration linear, visibility 0s linear $palette-duration;
+        transition:
+            opacity $palette-duration linear,
+            visibility 0s linear $palette-duration;
 
         &.bp-is-open {
             transform: translate(-50%, -100%);
-            transition: opacity $palette-duration linear, visibility 0s linear 0s;
+            transition:
+                opacity $palette-duration linear,
+                visibility 0s linear 0s;
         }
     }
 }

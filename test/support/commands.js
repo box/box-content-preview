@@ -1,10 +1,7 @@
 Cypress.Commands.add('getByTestId', (testId, options = {}) => cy.get(`[data-testid="${testId}"]`, options));
 Cypress.Commands.add('getByTitle', (title, options = {}) => cy.get(`[title="${title}"]`, options));
 Cypress.Commands.add('getPreviewPage', pageNum => {
-    cy.get(`.page[data-page-number=${pageNum}]`)
-        .as('previewPage')
-        .find('.loadingIcon')
-        .should('not.exist');
+    cy.get(`.page[data-page-number=${pageNum}]`).as('previewPage').find('.loadingIcon').should('not.exist');
 
     return cy.get('@previewPage');
 });
