@@ -543,11 +543,13 @@ describe('WaveformView', () => {
         expect(onRangeChange).not.toHaveBeenCalled();
     });
 
-    test('should show Comment above a checkbox range', () => {
+    test('should show Comment and clear above a checkbox range', () => {
+        const onRangeClear = jest.fn();
         const onRangeDragCreate = jest.fn();
         render(
             <WaveformView
                 durationSec={8}
+                onRangeClear={onRangeClear}
                 onRangeDragCreate={onRangeDragCreate}
                 peaks={[0.2, 0.8]}
                 range={{ endMs: 4000, startMs: 2000 }}
@@ -557,7 +559,8 @@ describe('WaveformView', () => {
         fireEvent.click(screen.getByTestId('bp-waveform-range-comment'));
 
         expect(onRangeDragCreate).toHaveBeenCalledTimes(1);
-        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
     });
 
     test('should not clear an open range from a tape waveform click', () => {
@@ -596,7 +599,7 @@ describe('WaveformView', () => {
 
         expect(onRangeClear).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
-        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
     });
 
     test('should dismiss a tape range from the clear control beside Comment', async () => {

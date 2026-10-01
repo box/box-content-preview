@@ -1,3 +1,7 @@
+## 3.102.0 (2026-10-01)
+
+* feat(audio): show the range clear control on the desktop player (#1803) ([8ac4228](https://github.com/box/box-content-preview/commit/8ac4228)), closes [#1803](https://github.com/box/box-content-preview/issues/1803)
+
 ## 3.101.0 (2026-10-01)
 
 - feat(text): enable preview for vtt files (#1799) ([222a7e3](https://github.com/box/box-content-preview/commit/222a7e3)), closes [#1799](https://github.com/box/box-content-preview/issues/1799)
