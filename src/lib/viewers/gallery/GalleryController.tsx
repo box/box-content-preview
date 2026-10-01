@@ -13,7 +13,9 @@ import {
     GALLERY_SCALE_STEP,
     THUMBNAILS_SIDEBAR_TRANSITION_TIME,
 } from './constants';
-import GalleryGrid, { GalleryThumbnail } from './GalleryGrid';
+import GalleryGrid from './GalleryGrid';
+import { GalleryThumbnail } from './GalleryGridShared';
+import VirtualizedGalleryGrid, { VirtualizedGalleryGridHandle } from './VirtualizedGalleryGrid';
 import { PinchDirection } from './useGalleryPinch';
 
 // Controller-owned shape: GalleryGrid only sees the read surface (GalleryThumbnail),
@@ -88,6 +90,8 @@ export default class GalleryController {
     private galleryRoot: Root | null = null;
 
     private galleryEl: HTMLDivElement | null = null;
+
+    private galleryGridRef = React.createRef<VirtualizedGalleryGridHandle>();
 
     private galleryThumbnail: ManagedGalleryThumbnail | null = null;
 
@@ -237,21 +241,26 @@ export default class GalleryController {
 
     /**
      * Redirects a grid-nav key pressed outside the grid (e.g. focus parked on a toggle after
-     * toggling fullscreen) back into it: refocuses the selected tile and replays the key so
-     * the first press navigates, like the thumbnail sidebar. Keys pressed inside the grid
-     * never arrive here — GalleryGrid stops propagation on every arrow/Home/End it handles.
+     * toggling fullscreen) into the gallery so the first press navigates, like the thumbnail
+     * sidebar. Keys pressed inside the grid never arrive here — the grid stops propagation
+     * on every arrow/Home/End it handles.
      */
     handleArrowKey(key: string): void {
         if (!this.isGalleryOpen) return;
         if (!key.startsWith('Arrow') && key !== 'Home' && key !== 'End') return;
 
-        const grid = this.galleryEl;
-        if (!grid) return;
-
-        const tile = grid.querySelector<HTMLElement>('[role="option"][tabindex="0"], [role="gridcell"][tabindex="0"]');
-        if (tile) {
-            tile.focus();
-            tile.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+        if (this.isEnhancedGalleryEnabled) {
+            this.galleryGridRef.current?.handleNavKey(key);
+        } else {
+            const grid = this.galleryEl;
+            if (!grid) return;
+            const tile = grid.querySelector<HTMLElement>(
+                '[role="option"][tabindex="0"], [role="gridcell"][tabindex="0"]',
+            );
+            if (tile) {
+                tile.focus();
+                tile.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+            }
         }
     }
 
@@ -382,24 +391,37 @@ export default class GalleryController {
         }
 
         const pdfViewer = this.getPdfViewer();
-        this.galleryRoot.render(
-            <GalleryGrid
-                currentPage={pdfViewer.currentPageNumber}
-                getPageRatio={this.getPageRatio}
-                isAriaGridEnabled={this.isEnhancedGalleryEnabled}
-                isPinchZoomEnabled={
-                    this.isEnhancedGalleryEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')
-                }
-                isTouchZoomEnabled={this.isEnhancedGalleryEnabled && this.hasTouch}
-                onClose={this.toggle}
-                onFocusChange={this.handleFocusChange}
-                onPageNavigate={this.handleGalleryNavigate}
-                onPinchStart={this.onZoomGesture}
-                onScaleChange={this.commitScale}
-                pageCount={pdfViewer.pagesCount}
-                scale={this.galleryScale}
-                thumbnail={this.galleryThumbnail}
-            />,
-        );
+
+        if (this.isEnhancedGalleryEnabled) {
+            this.galleryRoot.render(
+                <VirtualizedGalleryGrid
+                    ref={this.galleryGridRef}
+                    currentPage={pdfViewer.currentPageNumber}
+                    getPageRatio={this.getPageRatio}
+                    isPinchZoomEnabled={isFeatureEnabled(this.features, 'pinchToZoom.enabled')}
+                    isTouchZoomEnabled={this.hasTouch}
+                    onClose={this.toggle}
+                    onFocusChange={this.handleFocusChange}
+                    onPageNavigate={this.handleGalleryNavigate}
+                    onPinchStart={this.onZoomGesture}
+                    onScaleChange={this.commitScale}
+                    pageCount={pdfViewer.pagesCount}
+                    scale={this.galleryScale}
+                    thumbnail={this.galleryThumbnail}
+                />,
+            );
+        } else {
+            this.galleryRoot.render(
+                <GalleryGrid
+                    currentPage={pdfViewer.currentPageNumber}
+                    getPageRatio={this.getPageRatio}
+                    onClose={this.toggle}
+                    onFocusChange={this.handleFocusChange}
+                    onPageNavigate={this.handleGalleryNavigate}
+                    pageCount={pdfViewer.pagesCount}
+                    thumbnail={this.galleryThumbnail}
+                />,
+            );
+        }
     }
 }

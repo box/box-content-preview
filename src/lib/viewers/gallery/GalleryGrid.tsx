@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
-import { decodeKeydown, replacePlaceholders } from '../../util';
-import HighResThumbnailStore, { HighResRenderTask } from './HighResThumbnailStore';
+import { decodeKeydown } from '../../util';
+import HighResThumbnailStore from './HighResThumbnailStore';
 import {
     CONCURRENT_LOADS,
     GALLERY_HIGH_RES_CONCURRENCY,
@@ -17,20 +17,11 @@ import {
     SCROLL_THROTTLE_MS,
 } from './constants';
 import { getColumnIndex, getPageAbove, getPageBelow, getRowCount } from './galleryGridNavigation';
+import { GalleryTile, GalleryThumbnail } from './GalleryGridShared';
 import useGalleryPinch, { PinchDirection, PinchFocal } from './useGalleryPinch';
 import './GalleryGrid.scss';
 
-export interface GalleryThumbnail {
-    init: () => Promise<unknown>;
-    getImageFromCache: (itemIndex: number) => { image?: HTMLImageElement; inProgress: boolean } | null | undefined;
-    createThumbnailImage: (
-        itemIndex: number,
-        options: { createImgTag: boolean; thumbMaxWidth: number },
-    ) => Promise<HTMLImageElement | null>;
-    renderPageImage: (pageNum: number, options: { thumbMaxWidth: number }) => HighResRenderTask;
-    /** First-page width:height ratio, populated by init(). Used to size placeholders to the real page shape. */
-    pageRatio?: number;
-}
+export { GalleryThumbnail } from './GalleryGridShared';
 
 export type Props = {
     pageCount: number;
@@ -49,59 +40,6 @@ export type Props = {
     scale?: number;
     thumbnail: GalleryThumbnail;
 };
-
-interface TileProps {
-    pageNum: number;
-    isFocused: boolean;
-    ariaColIndex?: number;
-    imageSrc?: string;
-    onClick: (pageNum: number) => void;
-    onFocus: (pageNum: number) => void;
-    pageRatio?: number | null;
-    role: 'option' | 'gridcell';
-}
-
-const GalleryTile = React.memo(function GalleryTile({
-    pageNum,
-    isFocused,
-    ariaColIndex,
-    imageSrc,
-    onClick,
-    onFocus,
-    pageRatio,
-    role,
-}: TileProps): JSX.Element {
-    const ratio = pageRatio && Number.isFinite(pageRatio) && pageRatio > 0 ? pageRatio : null;
-    const tileStyle = ratio ? { aspectRatio: String(ratio) } : undefined;
-    const contentStyle = ratio ? { height: '100%' } : undefined;
-    const placeholderStyle = ratio ? { ...contentStyle, paddingTop: 0 } : undefined;
-
-    return (
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-        <div
-            aria-colindex={ariaColIndex}
-            aria-label={replacePlaceholders(__('page_gallery_tile'), [String(pageNum)])}
-            aria-selected={isFocused}
-            className={`bp-gallery-tile${isFocused ? ' bp-gallery-tile--selected' : ''}`}
-            data-page={pageNum}
-            data-resin-target="galleryTile"
-            onClick={() => onClick(pageNum)}
-            onFocus={() => onFocus(pageNum)}
-            role={role}
-            style={tileStyle}
-            tabIndex={isFocused ? 0 : -1}
-        >
-            <span aria-hidden="true" className="bp-gallery-tile-badge">
-                {pageNum}
-            </span>
-            {imageSrc ? (
-                <img alt="" src={imageSrc} style={contentStyle} />
-            ) : (
-                <span className="bp-gallery-tile-placeholder" style={placeholderStyle} />
-            )}
-        </div>
-    );
-});
 
 export default function GalleryGrid({
     pageCount,
@@ -365,7 +303,7 @@ export default function GalleryGrid({
             // which would silently drop focus to <body>; remember to restore it post-render.
             restoreFocusRef.current = grid.contains(document.activeElement);
             // Capture where the anchor tile sits now — after any zoom/resize scroll fixups that
-            // already ran — so the post-commit effect can restore its position.
+            // already ran — so the post-commit effect restores its position.
             const anchorPage = anchorPageRef.current;
             const anchorTile = grid.querySelector(`[data-page="${anchorPage}"]`);
             rechunkAnchorRef.current = anchorTile
