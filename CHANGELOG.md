@@ -1,3 +1,7 @@
+## 3.101.0 (2026-10-01)
+
+* feat(text): enable preview for vtt files (#1799) ([222a7e3](https://github.com/box/box-content-preview/commit/222a7e3)), closes [#1799](https://github.com/box/box-content-preview/issues/1799)
+
 ## 3.100.0 (2026-09-30)
 
 * feat(audio): draw a tape range from a long press (#1802) ([2d616f8](https://github.com/box/box-content-preview/commit/2d616f8)), closes [#1802](https://github.com/box/box-content-preview/issues/1802)
