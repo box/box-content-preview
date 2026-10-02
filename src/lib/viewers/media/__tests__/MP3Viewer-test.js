@@ -910,6 +910,47 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_draft_change', expect.anything());
         });
 
+        test('should make the paused playhead the collapsed range draft when commenting', () => {
+            mp3.mediaEl = { currentTime: 1.25 };
+            mp3.emit.mockClear();
+            mp3.renderUI.mockClear();
+
+            mp3.handlePlayheadComment();
+
+            expect(mp3.mediaEl.currentTime).toBe(1.25);
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 1250 });
+            expect(mp3.isCommentRangeTimestampActive).toBe(true);
+            expect(mp3.emit).toHaveBeenCalledTimes(1);
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { startMs: 1250 });
+            expect(mp3.renderUI).toHaveBeenCalled();
+        });
+
+        test('should ignore a playhead comment while shuttle is moving', () => {
+            mp3.mediaEl = { currentTime: 4 };
+            mp3.shuttleDirection = 'reverse';
+            mp3.emit.mockClear();
+            const draft = mp3.commentRangeDraft;
+
+            mp3.handlePlayheadComment();
+
+            expect(mp3.commentRangeDraft).toBe(draft);
+            expect(mp3.emit).not.toHaveBeenCalled();
+        });
+
+        test('should move a collapsed draft onto the playhead when commenting', () => {
+            mp3.mediaEl = { currentTime: 5, duration: 30 };
+            mp3.commentRangeDraft = { endMs: null, startMs: 2000 };
+            jest.spyOn(mp3, 'setMediaTime');
+            mp3.emit.mockClear();
+
+            mp3.handlePlayheadComment();
+
+            expect(mp3.setMediaTime).not.toHaveBeenCalled();
+            expect(mp3.mediaEl.currentTime).toBe(5);
+            expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 5000 });
+            expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { startMs: 5000 });
+        });
+
         test('should not emit comment_range_compose for a collapsed draft', () => {
             mp3.handleCommentRangeDraft({ endMs: null, startMs: 2000 });
             mp3.emit.mockClear();

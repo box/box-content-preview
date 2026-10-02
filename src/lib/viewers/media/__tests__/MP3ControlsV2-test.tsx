@@ -18,6 +18,7 @@ jest.mock('../waveform/WaveformView', () => {
         cameraMode,
         durationSec = 0,
         interactive,
+        onPlayheadComment,
         onRangeChange,
         onRangeClear,
         onRangeDragCreate,
@@ -30,6 +31,7 @@ jest.mock('../waveform/WaveformView', () => {
         cameraMode?: string;
         durationSec?: number;
         interactive?: boolean;
+        onPlayheadComment?: () => void;
         onRangeChange?: (range: { endMs: number; startMs: number }) => void;
         onRangeClear?: () => void;
         onRangeDragCreate?: () => void;
@@ -72,6 +74,7 @@ jest.mock('../waveform/WaveformView', () => {
                 data-camera-mode={cameraMode || 'desktop'}
                 data-duration-sec={String(durationSec)}
                 data-interactive={interactive ? 'true' : 'false'}
+                data-playhead-comment={onPlayheadComment ? 'true' : 'false'}
                 data-testid="bp-waveform-view"
                 data-zoom-level={String(zoomLevel)}
             >
@@ -162,7 +165,7 @@ const mockResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
     unobserve: jest.fn(),
 }));
-(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
 
 beforeAll(() => {
     Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 600 });
@@ -231,6 +234,20 @@ describe('MP3ControlsV2', () => {
             expect(shuttle).toHaveTextContent('2x');
             expect(shuttle).toHaveAttribute('aria-label', replacePlaceholders(__('media_shuttle_forward'), ['2']));
             expect(shuttle).not.toHaveClass('bp-is-reverse');
+        });
+
+        test('should withhold the playhead comment while shuttle is moving', async () => {
+            getWrapper({
+                durationTime: 8,
+                hasStartedPlayback: true,
+                isPlaying: false,
+                onPlayheadComment: jest.fn(),
+                peaks: [0.2, 0.8],
+                shuttleDirection: 'reverse',
+                shuttleRate: 2,
+            });
+
+            expect(await screen.findByTestId('bp-waveform-view')).toHaveAttribute('data-playhead-comment', 'false');
         });
 
         test('should hide shuttle speed on the tape player', async () => {

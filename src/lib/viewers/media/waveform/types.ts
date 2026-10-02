@@ -59,7 +59,7 @@ export const WAVEFORM_ERROR_CODES = [
     'UNAVAILABLE',
 ] as const;
 
-export type WaveformErrorCode = (typeof WAVEFORM_ERROR_CODES)[number];
+export type WaveformErrorCode = typeof WAVEFORM_ERROR_CODES[number];
 
 const WAVEFORM_ERROR_CODE_SET: ReadonlySet<string> = new Set(WAVEFORM_ERROR_CODES);
 
@@ -192,6 +192,8 @@ export type WaveformViewProps = {
     isPlaying?: boolean;
     mediaEl?: HTMLMediaElement | null;
     onPlayPause?: (isPlaying: boolean) => void;
+    /** Pause, after playback has started. Emits one timestamp comment at the playhead. */
+    onPlayheadComment?: () => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
     onRangeClear?: () => void;
     onRangeDragCreate?: () => void;

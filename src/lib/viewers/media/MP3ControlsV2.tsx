@@ -42,6 +42,7 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         onCommentRangeClear?: () => void;
         onCommentRangeDragCreate?: () => void;
         onCommentRangeDragChange?: (isDragging: boolean) => void;
+        onPlayheadComment?: () => void;
         peaks?: ArrayLike<number>;
         shuttleDirection?: ShuttleDirection | null;
         shuttleRate?: number;
@@ -67,6 +68,7 @@ export default function MP3ControlsV2({
     onCommentRangeClear,
     onCommentRangeDragCreate,
     onCommentRangeDragChange,
+    onPlayheadComment,
     onMuteChange,
     onPlayPause,
     onPlayNextChange,
@@ -177,10 +179,9 @@ export default function MP3ControlsV2({
     const waveformRange = commentRangeDraft ?? commentRangeReadOnly;
     const isRangeReadOnly = commentRangeDraft == null && commentRangeReadOnly != null;
     const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
-    const selectedMarkerId = useMemo(
-        () => waveformMarkers.find(marker => marker.isSelected)?.id ?? null,
-        [waveformMarkers],
-    );
+    const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
+        waveformMarkers,
+    ]);
     const handleCommentMarkerClick = useCallback(
         (marker: CommentMarker) => {
             setPlayRequested(true);
@@ -216,6 +217,7 @@ export default function MP3ControlsV2({
                         interactive={isWaveformInteractive}
                         isPlaying={isPlaying}
                         mediaEl={mediaEl}
+                        onPlayheadComment={isWaveformInteractive && !shuttleDirection ? onPlayheadComment : undefined}
                         onPlayPause={isWaveformInteractive ? onPlayPause : undefined}
                         onRangeChange={isWaveformInteractive ? onCommentRangeChange : undefined}
                         onRangeClear={isWaveformInteractive ? onCommentRangeClear : undefined}

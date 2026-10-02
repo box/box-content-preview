@@ -76,10 +76,17 @@
     border-radius: 1px;
 
     // Spread stroke instead of border: border-box on .bp-container * would collapse the 2px fill.
-    box-shadow:
-        0 0 0 1px #222,
-        0 0 10px 0 rgb(36 135 255 / 30%);
+    box-shadow: 0 0 0 1px #222, 0 0 10px 0 rgb(36 135 255 / 30%);
     transform: translate(-50%, -50%);
+}
+
+// Sits on the playhead, which is already the 150px region. The shared range
+// pill positions against the full track, so override that here.
+.bp-WaveformView-playhead .bp-WaveformView-playheadComment {
+    top: auto;
+    bottom: calc(100% + 36px);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .bp-WaveformView-hover {
