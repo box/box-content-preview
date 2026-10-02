@@ -6,7 +6,7 @@ import subtitles from '../../controls/media/__mocks__/subtitles';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../constants';
 
-((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = jest.fn().mockImplementation(() => ({
+(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = jest.fn().mockImplementation(() => ({
     disconnect: jest.fn(),
     observe: jest.fn(),
     unobserve: jest.fn(),

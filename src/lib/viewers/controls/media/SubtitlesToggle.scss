@@ -20,7 +20,7 @@
     color: $white;
     font-weight: bold;
     font-size: 12px;
-    letter-spacing: .1em;
-    background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
+    letter-spacing: 0.1em;
+    background-color: rgba($black, 0.3); // Anything less than .3 looks too transparent on IE/Edge
     border-radius: 4px;
 }

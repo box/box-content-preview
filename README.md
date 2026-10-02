@@ -45,7 +45,7 @@ Box Content Preview supports 100+ file types, including most document and image 
 You can self-host the Box Content Preview library or reference the versions available on Box's CDN.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
   <head>
     <meta charset="utf-8" />
@@ -221,14 +221,14 @@ The Preview library optionally takes a token generator function instead of a str
 
 ```javascript
 // Example token generator function that resolves to a single access token
-var singleTokenGenerator = function() {
-  return someApi.getToken().then(function(data) {
+var singleTokenGenerator = function () {
+  return someApi.getToken().then(function (data) {
     return data.token;
   });
 };
 
 // Example token generator function that resolves to a map of tokens
-var mapTokenGenerator = function() {
+var mapTokenGenerator = function () {
   return Promise.resolve({
     file_1234: 'some_token_abcd',
     file_2345: 'some_token_bcde',

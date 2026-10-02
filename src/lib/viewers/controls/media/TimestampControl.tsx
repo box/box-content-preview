@@ -128,17 +128,19 @@ export default function TimestampControl({
         }
     };
 
-    const createKeyDownHandler = (selectedFormat: TimeFormat) => (event: React.KeyboardEvent): void => {
-        const key = decodeKeydown(event);
+    const createKeyDownHandler =
+        (selectedFormat: TimeFormat) =>
+        (event: React.KeyboardEvent): void => {
+            const key = decodeKeydown(event);
 
-        if (key !== 'Space' && key !== 'Enter') {
-            return;
-        }
+            if (key !== 'Space' && key !== 'Enter') {
+                return;
+            }
 
-        // Prevent the global media key handling logic, i.e. Space toggling playback
-        event.stopPropagation();
-        handleSelect(selectedFormat);
-    };
+            // Prevent the global media key handling logic, i.e. Space toggling playback
+            event.stopPropagation();
+            handleSelect(selectedFormat);
+        };
 
     if (!canChangeTimeFormat) {
         return (

@@ -57,10 +57,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('increaseSpeed()', () => {
         test('should increase speed one step', () => {
             jest.spyOn(settings, 'chooseOption');
-            sandbox
-                .stub(settings.cache, 'get')
-                .withArgs('media-speed')
-                .returns('1.25');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('1.25');
 
             settings.increaseSpeed();
 
@@ -69,10 +66,7 @@ describe('lib/viewers/media/Settings', () => {
 
         test('should not increase speed after max', () => {
             jest.spyOn(settings, 'chooseOption');
-            sandbox
-                .stub(settings.cache, 'get')
-                .withArgs('media-speed')
-                .returns('2.0');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('2.0');
 
             settings.increaseSpeed();
 
@@ -83,10 +77,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('decreaseSpeed()', () => {
         test('should decrease speed one step', () => {
             jest.spyOn(settings, 'chooseOption');
-            sandbox
-                .stub(settings.cache, 'get')
-                .withArgs('media-speed')
-                .returns('1.5');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('1.5');
 
             settings.decreaseSpeed();
 
@@ -98,10 +89,7 @@ describe('lib/viewers/media/Settings', () => {
             expect(speedOptions.length).toBeGreaterThan(0);
 
             jest.spyOn(settings, 'chooseOption');
-            sandbox
-                .stub(settings.cache, 'get')
-                .withArgs('media-speed')
-                .returns(speedOptions[0]);
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns(speedOptions[0]);
 
             settings.decreaseSpeed();
 
@@ -863,10 +851,7 @@ describe('lib/viewers/media/Settings', () => {
         test('Should toggle on subtitles if they were on in the most recently viewed subtitled video', () => {
             jest.spyOn(settings, 'chooseOption');
             jest.spyOn(settings, 'areSubtitlesOn').mockReturnValue(false);
-            sandbox
-                .stub(settings.cache, 'get')
-                .withArgs('media-subtitles')
-                .returns('2');
+            sandbox.stub(settings.cache, 'get').withArgs('media-subtitles').returns('2');
 
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 
@@ -876,10 +861,7 @@ describe('lib/viewers/media/Settings', () => {
         test('Should not toggle on subtitles if they were off in the most recently viewed subtitled video', () => {
             jest.spyOn(settings, 'chooseOption');
             jest.spyOn(settings, 'areSubtitlesOn').mockReturnValue(false);
-            sandbox
-                .stub(settings.cache, 'get')
-                .withArgs('media-subtitles')
-                .returns('-1');
+            sandbox.stub(settings.cache, 'get').withArgs('media-subtitles').returns('-1');
 
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 

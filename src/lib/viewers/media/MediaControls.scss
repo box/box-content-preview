@@ -17,10 +17,12 @@
     height: 60px;
     margin: auto;
     overflow: hidden;
-    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
+    background-image: linear-gradient(to top, rgba($black, 0.6) 0%, rgba($black, 0) 100%);
     visibility: hidden;
     opacity: 0;
-    transition: visibility .3s, opacity .3s;
+    transition:
+        visibility 0.3s,
+        opacity 0.3s;
 }
 
 .bp-media-time-scrubber-container {
@@ -32,7 +34,7 @@
     width: 0;
     height: 40px;
     overflow: hidden;
-    transition: width .2s ease-in-out;
+    transition: width 0.2s ease-in-out;
 }
 
 .bp-media-controls-volume-scrubber-expand {
@@ -84,7 +86,7 @@
     border: none;
     outline: 0 none;
     cursor: pointer;
-    opacity: .7;
+    opacity: 0.7;
 
     &:hover {
         opacity: 1;
@@ -144,7 +146,7 @@
 
     svg path {
         transform-origin: 50%;
-        transition: all .3s;
+        transition: all 0.3s;
     }
 
     .bp-media-settings-is-open & svg path {
@@ -171,8 +173,8 @@
     font-weight: bold;
     font-size: 12px;
     line-height: 24px;
-    letter-spacing: .1em;
-    background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
+    letter-spacing: 0.1em;
+    background-color: rgba($black, 0.3); // Anything less than .3 looks too transparent on IE/Edge
     border-radius: 4px;
 
     .bp-media-settings-subtitles-on & {
@@ -189,7 +191,7 @@
     font-weight: bold;
     font-size: 8px;
     line-height: 8px;
-    letter-spacing: .1em;
+    letter-spacing: 0.1em;
     background-color: $box-blue;
     border-radius: 3px;
 

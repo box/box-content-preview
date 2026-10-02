@@ -18,7 +18,9 @@ $item-hover-color: #f6fafd;
     border: 1px solid $sf-fog;
     border-radius: 2px;
     visibility: hidden;
-    transition: width 0.2s, height 0.2s;
+    transition:
+        width 0.2s,
+        height 0.2s;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 
     .bp-media-settings-is-open & {

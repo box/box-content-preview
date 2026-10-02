@@ -21,9 +21,7 @@ describe('Preview Sanity', () => {
 
         cy.window().then(win => {
             win.preview.reload(true);
-            cy.getByTestId('bp-content')
-                .find('.bp-loading-wrapper')
-                .should('be.visible');
+            cy.getByTestId('bp-content').find('.bp-loading-wrapper').should('be.visible');
             cy.getPreviewPage(1);
             cy.contains('The Content Platform for Your Apps');
             cy.get('@getFileInfo.all').should('have.length', 1);

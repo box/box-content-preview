@@ -162,7 +162,7 @@ const mockResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
     unobserve: jest.fn(),
 }));
-((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
 
 beforeAll(() => {
     Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 600 });

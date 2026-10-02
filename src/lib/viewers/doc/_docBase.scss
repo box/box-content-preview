@@ -47,7 +47,9 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             }
 
             .bp-thumbnail-nav {
-                box-shadow: 0 0 0 1px $seventy-sixers, 0 4px 5px 0 rgb(0 0 0 / 15%);
+                box-shadow:
+                    0 0 0 1px $seventy-sixers,
+                    0 4px 5px 0 rgb(0 0 0 / 15%);
             }
 
             &.bp-thumbnail-image-loaded {
@@ -64,7 +66,9 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             }
 
             .bp-thumbnail-nav {
-                box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgb(0 0 0 / 8%);
+                box-shadow:
+                    0 0 0 3px $box-blue,
+                    0 4px 5px 0 rgb(0 0 0 / 8%);
             }
 
             &.bp-thumbnail-image-loaded {
@@ -86,7 +90,9 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         overflow: hidden;
         background-color: $d-eight;
         border-radius: $thumbnail-border-radius;
-        box-shadow: 0 0 0 1px $off-white, 0 1px 4px 0 rgb(0 0 0 / 8%);
+        box-shadow:
+            0 0 0 1px $off-white,
+            0 1px 4px 0 rgb(0 0 0 / 8%);
         transition: box-shadow 0.2s ease-in-out;
     }
 

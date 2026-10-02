@@ -58,12 +58,7 @@ describe('SettingsDropdown', () => {
             render(<SettingsDropdown label="Dropdown Label" listItems={listItems} onSelect={onSelect} value="first" />);
 
             await user.click(screen.getByLabelText('Dropdown Label first'));
-            fireEvent.keyDown(
-                within(screen.getByRole('listbox'))
-                    .getAllByRole('option')
-                    .at(1)!,
-                { key },
-            );
+            fireEvent.keyDown(within(screen.getByRole('listbox')).getAllByRole('option').at(1)!, { key });
 
             expect(onSelect).toHaveBeenCalledWith('second');
         });

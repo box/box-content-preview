@@ -3,7 +3,9 @@
 
 $bp-controls-background: fade-out($black, 0.2);
 $bp-controls-opacity: 0.9;
-$bp-controls-outline: inset 0 0 0 1px fade-out($bdl-gray-20, 0.5), 0 1px 2px fade-out($black, 0.9);
+$bp-controls-outline:
+    inset 0 0 0 1px fade-out($bdl-gray-20, 0.5),
+    0 1px 2px fade-out($black, 0.9);
 $bp-controls-radius-inner: 54px;
 $bp-controls-radius-outer: 46px;
 $bp-controls-size-default: 44px;
@@ -58,7 +60,9 @@ $bp-controls-distinct-button-size-small: 24px;
 
 @mixin bp-Control--fade {
     opacity: $bp-controls-opacity;
-    transition: opacity 150ms, background-color 150ms;
+    transition:
+        opacity 150ms,
+        background-color 150ms;
     will-change: opacity; // Prevent flickering in Safari
 
     &:focus:not(:disabled),

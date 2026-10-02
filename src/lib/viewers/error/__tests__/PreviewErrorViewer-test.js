@@ -148,8 +148,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             error.load(err);
 
             expect(error.emit).toBeCalledWith(VIEWER_EVENT.load, {
-                error:
-                    'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"',
+                error: 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"',
             });
         });
     });

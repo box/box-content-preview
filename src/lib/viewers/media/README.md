@@ -55,12 +55,12 @@ The DASH viewer fires the following events
 The following methods are available for the DASH viewer.
 
 | Method Name      | Explanation                                   | Method Parameters              |
-| ---------------- | --------------------------------------------- | ------------------------------ |
+| ---------------- | --------------------------------------------- | ------------------------------ | --- |
 | setMediaTime     | Updates the media element's time              | {number} time in seconds       |
 | setVolume        | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay       | Toggles playback                              |                                |
 | toggleMute       | Toggles between mute and current volume value |                                |
-| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |  |
+| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |     |
 | increaseVolume   | Increases volume by a small increment         |                                |
 | decreaseVolume   | Decreases volume by a small increment         |                                |
 | toggleFullscreen | Toggles fullscreen mode                       |                                |
@@ -128,12 +128,12 @@ Selecting a ranged marker (sidebar, marker click, or deep link) draws that span 
 The following methods are available for the MP3 viewer.
 
 | Method Name    | Explanation                                   | Method Parameters              |
-| -------------- | --------------------------------------------- | ------------------------------ |
+| -------------- | --------------------------------------------- | ------------------------------ | --- |
 | setMediaTime   | Updates the media element's time              | {number} time in seconds       |
 | setVolume      | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay     | Toggles playback                              |                                |
 | toggleMute     | Toggles between mute and current volume value |                                |
-| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |  |
+| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |     |
 | increaseVolume | Increases volume by a small increment         |                                |
 | decreaseVolume | Decreases volume by a small increment         |                                |
 

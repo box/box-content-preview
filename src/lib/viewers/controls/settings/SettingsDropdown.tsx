@@ -51,22 +51,26 @@ function SettingsDropdown<V extends Value = string>(props: Props<V>, ref: React.
         setIsOpen(false);
         onSelect(selectedOption);
     };
-    const createClickHandler = (selectedOption: V) => (event: React.MouseEvent<HTMLDivElement>): void => {
-        handleSelect(selectedOption);
+    const createClickHandler =
+        (selectedOption: V) =>
+        (event: React.MouseEvent<HTMLDivElement>): void => {
+            handleSelect(selectedOption);
 
-        // Prevent the event from bubbling up and triggering any upstream click handling logic,
-        // i.e. if the dropdown is nested inside a menu flyout
-        event.stopPropagation();
-    };
-    const createKeyDownHandler = (selectedOption: V) => (event: React.KeyboardEvent<HTMLDivElement>): void => {
-        const key = decodeKeydown(event);
+            // Prevent the event from bubbling up and triggering any upstream click handling logic,
+            // i.e. if the dropdown is nested inside a menu flyout
+            event.stopPropagation();
+        };
+    const createKeyDownHandler =
+        (selectedOption: V) =>
+        (event: React.KeyboardEvent<HTMLDivElement>): void => {
+            const key = decodeKeydown(event);
 
-        if (key !== 'Space' && key !== 'Enter') {
-            return;
-        }
+            if (key !== 'Space' && key !== 'Enter') {
+                return;
+            }
 
-        handleSelect(selectedOption);
-    };
+            handleSelect(selectedOption);
+        };
 
     useClickOutside(dropdownElRef, () => setIsOpen(false));
 

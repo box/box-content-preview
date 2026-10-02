@@ -7,7 +7,7 @@ import GalleryGrid from '../GalleryGrid';
 const observeMock = jest.fn();
 const disconnectMock = jest.fn();
 let resizeCallback: () => void;
-((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = jest
+(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = jest
     .fn()
     .mockImplementation((callback: () => void) => {
         resizeCallback = callback;
@@ -387,7 +387,7 @@ describe('GalleryGrid', () => {
 
             const touchEvent = (type: string, xPositions: number[]): TouchEvent => {
                 const touches = xPositions.map(
-                    x => (({ clientX: x, clientY: 0, pageX: x, pageY: 0 } as unknown) as Touch),
+                    x => ({ clientX: x, clientY: 0, pageX: x, pageY: 0 }) as unknown as Touch,
                 );
                 return new TouchEvent(type, { bubbles: true, cancelable: true, touches });
             };

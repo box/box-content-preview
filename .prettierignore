@@ -1,0 +1,6 @@
+.claude
+.cursor
+dist
+reports
+src/third-party
+src/lib/exif

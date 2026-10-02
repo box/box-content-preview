@@ -48,7 +48,7 @@ describe('useAttention', () => {
             result.current[1].onFocus();
         });
         act(() => {
-            result.current[1].onBlur(({ currentTarget, relatedTarget } as unknown) as React.FocusEvent<HTMLElement>);
+            result.current[1].onBlur({ currentTarget, relatedTarget } as unknown as React.FocusEvent<HTMLElement>);
         });
 
         expect(result.current[0]).toBe(true);

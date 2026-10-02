@@ -14,9 +14,11 @@ if (typeof PointerEvent === 'undefined') {
             this.pointerId = init.pointerId ?? 0;
         }
     }
-    ((global as unknown) as {
-        PointerEvent: typeof PointerEvent;
-    }).PointerEvent = (PointerEventPolyfill as unknown) as typeof PointerEvent;
+    (
+        global as unknown as {
+            PointerEvent: typeof PointerEvent;
+        }
+    ).PointerEvent = PointerEventPolyfill as unknown as typeof PointerEvent;
 }
 
 function mockTrackRect(width = 200): void {

@@ -14,10 +14,14 @@
     background: $bp-controls-settings-flyout-background;
     border: 1px solid $bdl-gray-10;
     border-radius: 20px;
-    box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgb(0 0 0 / 10%);
+    box-shadow:
+        0 0 1px 1px $sf-fog,
+        0 4px 12px 0 rgb(0 0 0 / 10%);
     transform: translateY(-100%);
     backdrop-filter: blur(16px);
-    transition: width 200ms, height 200ms;
+    transition:
+        width 200ms,
+        height 200ms;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 
     &.bp-is-open {

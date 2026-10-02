@@ -13,5 +13,5 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import './commands'
-import './constants'
+import './commands';
+import './constants';

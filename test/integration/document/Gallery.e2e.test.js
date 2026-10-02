@@ -52,9 +52,7 @@ describe('Preview Document Gallery', () => {
 
     const clickControl = title => {
         revealControls();
-        cy.getByTitle(title)
-            .should('be.visible')
-            .click();
+        cy.getByTitle(title).should('be.visible').click();
     };
 
     const openGallery = () => {
@@ -89,9 +87,7 @@ describe('Preview Document Gallery', () => {
         openGallery();
 
         cy.getByTitle('Gallery view').should('have.attr', 'aria-pressed', 'true');
-        cy.get('.bp-gallery-grid[role="grid"]')
-            .find('[role="gridcell"]')
-            .should('have.length', 2);
+        cy.get('.bp-gallery-grid[role="grid"]').find('[role="gridcell"]').should('have.length', 2);
         cy.get('.bp-gallery-tile[data-page="1"] img').should('be.visible');
         cy.getByTitle('Next page').should('not.exist');
 
@@ -157,9 +153,7 @@ describe('Preview Document Gallery', () => {
         openGallery();
 
         cy.get('.bp-gallery-grid[role="listbox"]').should('not.have.attr', 'aria-rowcount');
-        cy.get('.bp-gallery-grid[role="listbox"]')
-            .find('[role="option"]')
-            .should('have.length', 2);
+        cy.get('.bp-gallery-grid[role="listbox"]').find('[role="option"]').should('have.length', 2);
 
         cy.get('[role="option"][aria-label="Page 1"]').type('{downArrow}');
         cy.focused().should('have.attr', 'aria-label', 'Page 2');
@@ -221,9 +215,7 @@ describe('Preview Document Gallery', () => {
 
     it('Should navigate to a selected page and close gallery view', () => {
         showDocumentPreview();
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '1 / 2');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 2');
         openGallery();
 
         cy.get('.bp-gallery-tile[data-page="2"]').click();
@@ -248,18 +240,14 @@ describe('Preview Document Gallery', () => {
 
     it('Should close gallery view with Escape without changing pages', () => {
         showDocumentPreview();
-        cy.getByTestId('bp-PageControlsForm-button')
-            .as('currentPage')
-            .should('have.text', '1 / 2');
+        cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 2');
         openGallery();
 
         cy.get('.bp-gallery-tile[data-page="1"]').type('{esc}');
 
         cy.get('.bp-gallery-grid').should('not.exist');
         cy.get('@currentPage').should('have.text', '1 / 2');
-        cy.getByTitle('Gallery view')
-            .should('have.focus')
-            .and('have.attr', 'aria-pressed', 'false');
+        cy.getByTitle('Gallery view').should('have.focus').and('have.attr', 'aria-pressed', 'false');
     });
 
     [null, false].forEach(galleryEnabled => {
@@ -347,8 +335,6 @@ describe('Preview Document Gallery', () => {
             expectReleasedResources(viewer);
         });
 
-        cy.window()
-            .its('preview.file.id')
-            .should('equal', singlePageFileId);
+        cy.window().its('preview.file.id').should('equal', singlePageFileId);
     });
 });

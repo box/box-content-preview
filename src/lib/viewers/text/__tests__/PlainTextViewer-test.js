@@ -147,20 +147,14 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             jest.spyOn(text, 'createContentUrlV2').mockReturnValue(contentUrl);
             jest.spyOn(text, 'appendAuthHeader').mockReturnValue(headers);
             jest.spyOn(text, 'isRepresentationReady').mockReturnValue(true);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .withArgs(contentUrl, { type: 'document', headers });
+            sandbox.mock(stubs.api).expects('get').withArgs(contentUrl, { type: 'document', headers });
 
             text.prefetch({ assets: false, content: true });
         });
 
         test('should not prefetch content if content is true but representation is not ready', () => {
             jest.spyOn(text, 'isRepresentationReady').mockReturnValue(false);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .never();
+            sandbox.mock(stubs.api).expects('get').never();
             text.prefetch({ assets: false, content: true });
         });
 
@@ -170,10 +164,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             jest.spyOn(text, 'createContentUrlV2').mockReturnValue(contentUrl);
             jest.spyOn(text, 'appendAuthHeader').mockReturnValue(headers);
             jest.spyOn(text, 'isRepresentationReady').mockReturnValue(true);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .withArgs(contentUrl, { type: 'document', headers });
+            sandbox.mock(stubs.api).expects('get').withArgs(contentUrl, { type: 'document', headers });
 
             text.prefetch({ assets: false, content: true });
 

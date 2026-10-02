@@ -362,10 +362,7 @@ export default class GalleryController {
 
         if (!this.galleryThumbnail) {
             // Thumbnail is a JS class; cast to the typed interface used by the controller + grid.
-            this.galleryThumbnail = (new Thumbnail(
-                pdfViewer,
-                this.getPreloader(),
-            ) as unknown) as ManagedGalleryThumbnail;
+            this.galleryThumbnail = new Thumbnail(pdfViewer, this.getPreloader()) as unknown as ManagedGalleryThumbnail;
         }
 
         this.galleryEl = document.createElement('div');

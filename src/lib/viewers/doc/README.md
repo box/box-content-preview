@@ -12,10 +12,10 @@ The document viewer remembers which page you were viewing upon closing the previ
 
 ### Controls:
 
-* Zoom In
-* Zoom Out
-* Set Page: either with the up and down arrows, or by clicking the page number and entering text
-* Fullscreen (can be exited with the escape key)
+- Zoom In
+- Zoom Out
+- Set Page: either with the up and down arrows, or by clicking the page number and entering text
+- Fullscreen (can be exited with the escape key)
 
 ## Supported File Extensions
 
@@ -23,49 +23,48 @@ The document viewer remembers which page you were viewing upon closing the previ
 
 ## Options
 
-| Option | Type | Description |
-| --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
-| disableFindBar | boolean | Optional. Setting to true will enable the browser's findBar in place of the viewers. Defaults to false |
-
+| Option         | Type    | Description                                                                                                                                            |
+| -------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| annotations    | boolean | Optional. Whether annotations on content are shown. Defaults to false. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
+| disableFindBar | boolean | Optional. Setting to true will enable the browser's findBar in place of the viewers. Defaults to false                                                 |
 
 ## Events
 
 The document viewer fires the following events
 
-| Event Name | Explanation | Event Data |
-| --- | --- | --- |
-| destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
-| notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | {object} file |
-| reload | The preview reloads ||
-| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
-| zoom | The preview zooms in or out | 1. {number} **newScale**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
-| pagerender | A page is rendered | {number} page number of rendered page |
-| pagefocus | A page is visible | {number} page number of focused page |
-| scrollstart | The viewer starts to scroll | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
-| scrollend | The viewer stops scrolling | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
-| printsuccess | An attempt to print triggered successfully ||
-| printsuccess | An attempt to print failed ||
-| assetsloaded | The viewer's third party assets have loaded ||
+| Event Name   | Explanation                                 | Event Data                                                                                                                                                                     |
+| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| destroy      | The preview is intentionally destroyed      |                                                                                                                                                                                |
+| load         | The preview loads                           | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
+| notification | A notification is displayed                 |                                                                                                                                                                                |
+| navigate     | The preview is shown for a given index      | {object} file                                                                                                                                                                  |
+| reload       | The preview reloads                         |                                                                                                                                                                                |
+| resize       | The preview resizes                         | 1. {number} **height**: window height 2. {number} **width**: window width                                                                                                      |
+| zoom         | The preview zooms in or out                 | 1. {number} **newScale**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more     |
+| pagerender   | A page is rendered                          | {number} page number of rendered page                                                                                                                                          |
+| pagefocus    | A page is visible                           | {number} page number of focused page                                                                                                                                           |
+| scrollstart  | The viewer starts to scroll                 | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport                          |
+| scrollend    | The viewer stops scrolling                  | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport                          |
+| printsuccess | An attempt to print triggered successfully  |                                                                                                                                                                                |
+| printsuccess | An attempt to print failed                  |                                                                                                                                                                                |
+| assetsloaded | The viewer's third party assets have loaded |                                                                                                                                                                                |
 
 ## Methods
 
 The following methods are available for the document viewer.
 
-| Method Name | Explanation | Method Parameters |
-| --- | --- | --- |
-| print | Prints the file as a PDF blob ||
-| previousPage | Navigates to the previous page ||
-| nextPage | Navigates to the next page ||
-| setPage | Navigates to a given page | {number} page number |
-| getCachedPage | Gets the last cached page number ||
-| cachePage | Caches the current page number | {number} page number |
-| zoomIn | Zooms the document in | {number} number of steps to zoom in based on scale |
-| zoomOut | Zooms the document out | {number} number of steps to zoom out based on scale |
-| toggleFullscreen | Toggles fullscreen mode ||
-| find | scrolls to and highlights the next occurrences of a given phrase | {string} phrase to find, {boolean} option to open the find bar on find, defaults to false |
+| Method Name      | Explanation                                                      | Method Parameters                                                                         |
+| ---------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| print            | Prints the file as a PDF blob                                    |                                                                                           |
+| previousPage     | Navigates to the previous page                                   |                                                                                           |
+| nextPage         | Navigates to the next page                                       |                                                                                           |
+| setPage          | Navigates to a given page                                        | {number} page number                                                                      |
+| getCachedPage    | Gets the last cached page number                                 |                                                                                           |
+| cachePage        | Caches the current page number                                   | {number} page number                                                                      |
+| zoomIn           | Zooms the document in                                            | {number} number of steps to zoom in based on scale                                        |
+| zoomOut          | Zooms the document out                                           | {number} number of steps to zoom out based on scale                                       |
+| toggleFullscreen | Toggles fullscreen mode                                          |                                                                                           |
+| find             | scrolls to and highlights the next occurrences of a given phrase | {string} phrase to find, {boolean} option to open the find bar on find, defaults to false |
 
 # Presentation Viewer
 

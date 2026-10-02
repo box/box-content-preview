@@ -38,7 +38,9 @@ $bp-SettingsDropdown-spacing: 5px;
     border: 1px solid $sf-fog;
     border-radius: 2px;
     cursor: pointer;
-    transition: background-color 0.05s ease-in-out, border-color 0.05s ease-in-out;
+    transition:
+        background-color 0.05s ease-in-out,
+        border-color 0.05s ease-in-out;
 
     &:hover,
     &:focus {

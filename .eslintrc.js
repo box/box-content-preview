@@ -1,4 +1,5 @@
 const eslintrc = require.resolve('@box/frontend/eslint/eslintrc.js');
+const prettierConfig = require('./.prettierrc');
 
 module.exports = {
     extends: [eslintrc],
@@ -43,6 +44,12 @@ module.exports = {
                 'react-hooks/exhaustive-deps': 'error',
             },
         },
+        {
+            files: ['**/*.{js,jsx,ts,tsx}'],
+            rules: {
+                'prettier/prettier': ['error', prettierConfig],
+            },
+        },
     ],
     parser: '@typescript-eslint/parser',
     rules: {
@@ -53,5 +60,6 @@ module.exports = {
         'import/no-unresolved': 'off', // fixme, allows JS files to import TS files
         'no-underscore-dangle': 0, // fixme
         'prefer-destructuring': ['error', { object: true, array: false }], // fixme
+        'prettier/prettier': ['error', prettierConfig],
     },
 };

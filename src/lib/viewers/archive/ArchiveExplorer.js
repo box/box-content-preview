@@ -80,24 +80,26 @@ class ArchiveExplorer extends React.Component {
      * @param {number} index - row index of the data to selected
      * @return {Object} formatted data
      */
-    getRowData = itemList => ({ index }) => {
-        const { absolute_path: fullPath, modified_at: modifiedAt, name, size, type, ...rest } = itemList[index];
+    getRowData =
+        itemList =>
+        ({ index }) => {
+            const { absolute_path: fullPath, modified_at: modifiedAt, name, size, type, ...rest } = itemList[index];
 
-        return {
-            [KEY_NAME]: {
-                fullPath,
-                isExternal: false,
-                name,
-                type,
-                dataAttributes: {
-                    'data-resin-target': type,
+            return {
+                [KEY_NAME]: {
+                    fullPath,
+                    isExternal: false,
+                    name,
+                    type,
+                    dataAttributes: {
+                        'data-resin-target': type,
+                    },
                 },
-            },
-            [KEY_MODIFIED_AT]: modifiedAt,
-            [KEY_SIZE]: type === 'folder' ? null : size,
-            ...rest,
+                [KEY_MODIFIED_AT]: modifiedAt,
+                [KEY_SIZE]: type === 'folder' ? null : size,
+                ...rest,
+            };
         };
-    };
 
     /**
      * Handle item click event, update fullPath state, reset search and view
