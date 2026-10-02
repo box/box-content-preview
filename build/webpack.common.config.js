@@ -27,14 +27,37 @@ module.exports = language => {
                     include: [path.resolve('src/lib')],
                 },
                 {
-                    test: /\.s?css$/,
+                    test: /\.scss$/,
                     use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
                     include: [
                         path.resolve('src/lib'),
                         path.resolve('node_modules/box-annotations'),
                         path.resolve('node_modules/box-ui-elements'),
-                        path.resolve('node_modules/pdfjs-dist'),
                     ],
+                },
+                {
+                    // Split from the Sass rule so plain CSS from node_modules is not run through
+                    // sass-loader. Blueprint ships compiled CSS, and on CDN it is bundled rather
+                    // than left to the host, so it has to be listed here or its styles never reach
+                    // preview.css.
+                    test: /\.css$/,
+                    use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+                    include: [
+                        path.resolve('src/lib'),
+                        path.resolve('node_modules/box-annotations'),
+                        path.resolve('node_modules/box-ui-elements'),
+                        path.resolve('node_modules/pdfjs-dist'),
+                        path.resolve('node_modules/@box/blueprint-web'),
+                    ],
+                },
+                {
+                    // Blueprint's ESM build uses extensionless relative imports, which webpack 5
+                    // rejects under strict ESM resolution.
+                    test: /\.m?js$/,
+                    include: [path.resolve('node_modules/@box/blueprint-web')],
+                    resolve: {
+                        fullySpecified: false,
+                    },
                 },
                 {
                     test: /\.(svg|html)$/,
