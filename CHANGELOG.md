@@ -1,3 +1,7 @@
+## 3.104.0 (2026-10-02)
+
+* fix(media): expand the volume slider on the first tap (#1807) ([69f5727](https://github.com/box/box-content-preview/commit/69f5727)), closes [#1807](https://github.com/box/box-content-preview/issues/1807)
+
 ## 3.103.0 (2026-10-02)
 
 * chore(deps): Upgrade Prettier from 1 to 3 (#1804) ([06cff95](https://github.com/box/box-content-preview/commit/06cff95)), closes [#1804](https://github.com/box/box-content-preview/issues/1804)
