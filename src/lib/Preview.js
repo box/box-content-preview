@@ -206,6 +206,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        clearTimeout(this.retryTimeout);
+
         // Log all load metrics
         this.emitLoadMetrics();
 
