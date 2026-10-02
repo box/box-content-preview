@@ -815,26 +815,14 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: function constr() {},
             };
 
-            sandbox
-                .stub(file, 'getCachedFile')
-                .withArgs(preview.cache, sinon.match.any)
-                .returns(someFile);
-            sandbox
-                .stub(preview, 'getLoader')
-                .withArgs(someFile)
-                .returns(loader);
+            sandbox.stub(file, 'getCachedFile').withArgs(preview.cache, sinon.match.any).returns(someFile);
+            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
         });
 
         test('should short circuit if no appropriate viewer is found', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(null);
-            sandbox
-                .mock(loader)
-                .expects('determineRepresentation')
-                .never();
-            sandbox
-                .mock(viewer)
-                .expects('CONSTRUCTOR')
-                .never();
+            sandbox.mock(loader).expects('determineRepresentation').never();
+            sandbox.mock(viewer).expects('CONSTRUCTOR').never();
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -850,10 +838,7 @@ describe('lib/Preview', () => {
 
         test('should determine representation', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
-            sandbox
-                .mock(loader)
-                .expects('determineRepresentation')
-                .withArgs(someFile, viewer);
+            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -891,10 +876,7 @@ describe('lib/Preview', () => {
                             preload: true,
                             content: true,
                         }),
-                        getViewerOption: sandbox
-                            .stub()
-                            .withArgs('preload')
-                            .returns(true),
+                        getViewerOption: sandbox.stub().withArgs('preload').returns(true),
                     };
                 },
             };
@@ -912,10 +894,7 @@ describe('lib/Preview', () => {
                             preload: false,
                             content: true,
                         }),
-                        getViewerOption: sandbox
-                            .stub()
-                            .withArgs('preload')
-                            .returns(false),
+                        getViewerOption: sandbox.stub().withArgs('preload').returns(false),
                     };
                 },
             };
@@ -1440,10 +1419,7 @@ describe('lib/Preview', () => {
             const fileId = '123';
             const fileVersionId = '1234';
 
-            sandbox
-                .stub(preview, 'getFileOption')
-                .withArgs(fileId, 'fileVersionId')
-                .returns(fileVersionId);
+            sandbox.stub(preview, 'getFileOption').withArgs(fileId, 'fileVersionId').returns(fileVersionId);
             preview.load(fileId);
 
             expect(file.getCachedFile).toHaveBeenCalledWith(preview.cache, { fileVersionId });
@@ -2104,10 +2080,7 @@ describe('lib/Preview', () => {
             const fileVersion = {
                 id: '1234',
             };
-            sandbox
-                .stub(preview, 'getFileOption')
-                .withArgs('123', 'fileVersionId')
-                .returns(fileVersion.id);
+            sandbox.stub(preview, 'getFileOption').withArgs('123', 'fileVersionId').returns(fileVersion.id);
 
             preview.handleFileInfoResponse(fileVersion);
 
@@ -2795,10 +2768,7 @@ describe('lib/Preview', () => {
             preview.viewer.containerEl = {
                 focus: () => {},
             };
-            sandbox
-                .mock(preview.viewer.containerEl)
-                .expects('focus')
-                .never();
+            sandbox.mock(preview.viewer.containerEl).expects('focus').never();
             preview.finishLoading();
         });
 
@@ -3080,10 +3050,7 @@ describe('lib/Preview', () => {
                     id: '0',
                 };
                 stubs.error.headers = {
-                    get: sandbox
-                        .stub()
-                        .withArgs(retryAfter)
-                        .returns(5),
+                    get: sandbox.stub().withArgs(retryAfter).returns(5),
                 };
                 preview.open = true;
                 preview.retryCount = 1;

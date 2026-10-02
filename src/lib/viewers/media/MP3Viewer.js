@@ -1102,17 +1102,20 @@ class MP3Viewer extends MediaBaseViewer {
         }
         const rate = this.mediaEl.playbackRate > 0 ? this.mediaEl.playbackRate : 1;
         const remainingSec = range.endSec - this.mediaEl.currentTime;
-        this.commentRangeLoopTimer = window.setTimeout(() => {
-            this.commentRangeLoopTimer = 0;
-            const openRange = this.getOpenCommentRangeSeconds();
-            if (!openRange || !this.mediaEl || this.mediaEl.paused) {
-                return;
-            }
-            if (this.mediaEl.currentTime !== openRange.startSec) {
-                this.mediaEl.currentTime = openRange.startSec;
-            }
-            this.scheduleCommentRangeLoopWrap();
-        }, Math.max(0, (remainingSec / rate) * 1000));
+        this.commentRangeLoopTimer = window.setTimeout(
+            () => {
+                this.commentRangeLoopTimer = 0;
+                const openRange = this.getOpenCommentRangeSeconds();
+                if (!openRange || !this.mediaEl || this.mediaEl.paused) {
+                    return;
+                }
+                if (this.mediaEl.currentTime !== openRange.startSec) {
+                    this.mediaEl.currentTime = openRange.startSec;
+                }
+                this.scheduleCommentRangeLoopWrap();
+            },
+            Math.max(0, (remainingSec / rate) * 1000),
+        );
     }
 
     /**

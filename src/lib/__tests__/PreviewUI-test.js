@@ -37,14 +37,8 @@ describe('lib/PreviewUI', () => {
             const resultEl = ui.setup(options, handler, null, null, handler);
 
             const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
-            sandbox
-                .mock(contentContainerEl)
-                .expects('removeEventListener')
-                .withArgs('mousemove', handler);
-            sandbox
-                .mock(document)
-                .expects('removeEventListener')
-                .withArgs('keydown', handler);
+            sandbox.mock(contentContainerEl).expects('removeEventListener').withArgs('mousemove', handler);
+            sandbox.mock(document).expects('removeEventListener').withArgs('keydown', handler);
 
             ui.cleanup();
 
@@ -105,14 +99,8 @@ describe('lib/PreviewUI', () => {
             test('should remove nav event listeners if collection only has one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox
-                    .mock(leftNavEl)
-                    .expects('removeEventListener')
-                    .withArgs('click');
-                sandbox
-                    .mock(rightNavEl)
-                    .expects('removeEventListener')
-                    .withArgs('click');
+                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
+                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
 
                 ui.showNavigation('1', ['1']);
             });
@@ -120,42 +108,24 @@ describe('lib/PreviewUI', () => {
             test('should reset nav event listeners if collection has more than one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox
-                    .mock(leftNavEl)
-                    .expects('removeEventListener')
-                    .withArgs('click');
-                sandbox
-                    .mock(rightNavEl)
-                    .expects('removeEventListener')
-                    .withArgs('click');
+                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
+                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
 
                 ui.showNavigation('1', ['1', '2']);
             });
 
             test('should show left nav arrow if passed in ID is not the first in the collection', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
-                sandbox
-                    .mock(leftNavEl)
-                    .expects('removeEventListener')
-                    .withArgs('click');
-                sandbox
-                    .mock(leftNavEl.classList)
-                    .expects('remove')
-                    .withArgs(constants.CLASS_HIDDEN);
+                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
+                sandbox.mock(leftNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('2', ['1', '2']);
             });
 
             test('should show right nav arrow if passed in ID is not the last in the collection', () => {
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox
-                    .mock(rightNavEl)
-                    .expects('addEventListener')
-                    .withArgs('click');
-                sandbox
-                    .mock(rightNavEl.classList)
-                    .expects('remove')
-                    .withArgs(constants.CLASS_HIDDEN);
+                sandbox.mock(rightNavEl).expects('addEventListener').withArgs('click');
+                sandbox.mock(rightNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('1', ['1', '2']);
             });
@@ -180,10 +150,7 @@ describe('lib/PreviewUI', () => {
             test('should set up and show print button', () => {
                 const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_PRINT);
                 buttonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox
-                    .mock(buttonEl)
-                    .expects('addEventListener')
-                    .withArgs('click', handler);
+                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
                 ui.showPrintButton(handler);
 
