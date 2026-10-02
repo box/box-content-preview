@@ -100,6 +100,31 @@ describe('lib/viewers/BaseViewer', () => {
             expect(container).toHaveClass('bp-is-mobile');
         });
 
+        test('should add comparison classes when isComparing', () => {
+            base.options.isComparing = true;
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
+
+            base.setup();
+
+            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW);
+            expect(container).toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARING);
+            expect(container).not.toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARED);
+        });
+
+        test('should add the compared class when isComparedPreview', () => {
+            base.options.isComparing = true;
+            base.options.isComparedPreview = true;
+            jest.spyOn(base, 'loadBoxAnnotations').mockResolvedValue(undefined);
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);
+
+            base.setup();
+
+            const container = document.querySelector(constants.SELECTOR_BOX_PREVIEW);
+            expect(container).toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARING);
+            expect(container).toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARED);
+        });
+
         test('should not load annotations assets if global preview showAnnotations option is false', () => {
             jest.spyOn(base, 'addCommonListeners');
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(false);

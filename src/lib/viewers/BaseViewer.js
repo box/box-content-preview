@@ -27,6 +27,8 @@ import {
     CLASS_ANNOTATIONS_CREATE_REGION,
     CLASS_ANNOTATIONS_DISCOVERABLE,
     CLASS_ANNOTATIONS_ONLY_CONTROLS,
+    CLASS_BOX_PREVIEW_IS_COMPARED,
+    CLASS_BOX_PREVIEW_IS_COMPARING,
     CLASS_BOX_PREVIEW_MOBILE,
     FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -223,6 +225,13 @@ class BaseViewer extends EventEmitter {
         // For mobile browsers add mobile class just in case viewers need it
         if (this.isMobile) {
             this.rootEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
+        }
+
+        if (this.options.isComparing) {
+            this.rootEl.classList.add(CLASS_BOX_PREVIEW_IS_COMPARING);
+            if (this.options.isComparedPreview) {
+                this.rootEl.classList.add(CLASS_BOX_PREVIEW_IS_COMPARED);
+            }
         }
 
         // Creates a promise that the annotator will be constructed if annotations are enabled
