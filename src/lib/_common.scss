@@ -285,7 +285,8 @@ $header-height: 48px;
         .bp-document-preload-wrapper,
         .bp-image,
         .bp-images,
-        .bp-text-plain {
+        .bp-text-plain,
+        .bp-vs {
             padding-top: var(--bp-comparison-banner-height);
         }
     }
