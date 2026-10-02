@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { act } from '@testing-library/react';
 import * as constants from '../constants';
 import LoadingIcon from '../LoadingIcon';
 import PreviewUI from '../PreviewUI';
@@ -36,8 +37,14 @@ describe('lib/PreviewUI', () => {
             const resultEl = ui.setup(options, handler, null, null, handler);
 
             const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
-            sandbox.mock(contentContainerEl).expects('removeEventListener').withArgs('mousemove', handler);
-            sandbox.mock(document).expects('removeEventListener').withArgs('keydown', handler);
+            sandbox
+                .mock(contentContainerEl)
+                .expects('removeEventListener')
+                .withArgs('mousemove', handler);
+            sandbox
+                .mock(document)
+                .expects('removeEventListener')
+                .withArgs('keydown', handler);
 
             ui.cleanup();
 
@@ -98,8 +105,14 @@ describe('lib/PreviewUI', () => {
             test('should remove nav event listeners if collection only has one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
-                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
+                sandbox
+                    .mock(leftNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(rightNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
 
                 ui.showNavigation('1', ['1']);
             });
@@ -107,24 +120,42 @@ describe('lib/PreviewUI', () => {
             test('should reset nav event listeners if collection has more than one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
-                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
+                sandbox
+                    .mock(leftNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(rightNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
 
                 ui.showNavigation('1', ['1', '2']);
             });
 
             test('should show left nav arrow if passed in ID is not the first in the collection', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
-                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
-                sandbox.mock(leftNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
+                sandbox
+                    .mock(leftNavEl)
+                    .expects('removeEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(leftNavEl.classList)
+                    .expects('remove')
+                    .withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('2', ['1', '2']);
             });
 
             test('should show right nav arrow if passed in ID is not the last in the collection', () => {
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.mock(rightNavEl).expects('addEventListener').withArgs('click');
-                sandbox.mock(rightNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
+                sandbox
+                    .mock(rightNavEl)
+                    .expects('addEventListener')
+                    .withArgs('click');
+                sandbox
+                    .mock(rightNavEl.classList)
+                    .expects('remove')
+                    .withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('1', ['1', '2']);
             });
@@ -149,7 +180,10 @@ describe('lib/PreviewUI', () => {
             test('should set up and show print button', () => {
                 const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_PRINT);
                 buttonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
+                sandbox
+                    .mock(buttonEl)
+                    .expects('addEventListener')
+                    .withArgs('click', handler);
 
                 ui.showPrintButton(handler);
 
@@ -288,6 +322,69 @@ describe('lib/PreviewUI', () => {
             );
             expect(customLogoEl).not.toHaveClass(constants.CLASS_HIDDEN);
             expect(customLogoEl.src).toBe(url);
+        });
+    });
+
+    describe('showComparisonBanner()', () => {
+        test('should insert a version banner into the preview shell', () => {
+            ui.setup(options);
+            act(() => {
+                ui.showComparisonBanner(
+                    {
+                        version_number: '12',
+                        modified_at: '2024-08-22T18:33:00.000Z',
+                        modified_by: { name: 'Emily Huang' },
+                    },
+                    { locale: 'en-US' },
+                );
+            });
+
+            const bannerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_VERSION_BANNER);
+            expect(bannerEl).not.toBeNull();
+            expect(bannerEl.querySelector('.bp-version-banner-badge').textContent).toBe('12');
+            expect(bannerEl.querySelector('.bp-version-banner-author').textContent).toBe('Emily Huang');
+        });
+
+        test('should remove the banner when hideComparisonBanner is called', () => {
+            ui.setup(options);
+            act(() => {
+                ui.showComparisonBanner({ version_number: '12' });
+            });
+            act(() => {
+                ui.hideComparisonBanner();
+            });
+
+            expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_VERSION_BANNER)).toBeNull();
+        });
+
+        test('should replace an existing banner instead of stacking them', () => {
+            ui.setup(options);
+            act(() => {
+                ui.showComparisonBanner({ version_number: '1' });
+                ui.showComparisonBanner({ version_number: '2' });
+            });
+
+            const banners = containerEl.querySelectorAll(constants.SELECTOR_BOX_PREVIEW_VERSION_BANNER);
+            expect(banners).toHaveLength(1);
+            expect(banners[0].querySelector('.bp-version-banner-badge').textContent).toBe('2');
+        });
+    });
+
+    describe('setup() comparison classes', () => {
+        test('should add comparison classes when isComparing', () => {
+            const resultEl = ui.setup({ ...options, isComparing: true, isComparedPreview: true });
+            const previewEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
+
+            expect(previewEl).toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARING);
+            expect(previewEl).toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARED);
+        });
+
+        test('should not add comparison classes when isComparing is omitted', () => {
+            const resultEl = ui.setup(options);
+            const previewEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
+
+            expect(previewEl).not.toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARING);
+            expect(previewEl).not.toHaveClass(constants.CLASS_BOX_PREVIEW_IS_COMPARED);
         });
     });
 

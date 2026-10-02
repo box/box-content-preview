@@ -366,6 +366,41 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('setComparisonMode()', () => {
+        beforeEach(() => {
+            preview.options = {};
+            preview.file = { id: '123', version_number: '4' };
+            preview.location = { locale: 'en-US' };
+            preview.ui = {
+                previewContainer: document.createElement('div'),
+                showComparisonBanner: jest.fn(),
+                hideComparisonBanner: jest.fn(),
+            };
+            preview.viewer = { rootEl: document.createElement('div') };
+        });
+
+        test('should add comparison classes and show the banner', () => {
+            preview.setComparisonMode({ isComparing: true, isComparedPreview: true });
+
+            expect(preview.options.isComparing).toBe(true);
+            expect(preview.options.isComparedPreview).toBe(true);
+            expect(preview.viewer.rootEl).toHaveClass('bp-is-comparing');
+            expect(preview.viewer.rootEl).toHaveClass('bp-is-compared');
+            expect(preview.ui.showComparisonBanner).toHaveBeenCalledWith(preview.file, {
+                isComparedPreview: true,
+                locale: 'en-US',
+            });
+        });
+
+        test('should remove comparison chrome when comparison ends', () => {
+            preview.setComparisonMode({ isComparing: true });
+            preview.setComparisonMode({ isComparing: false });
+
+            expect(preview.viewer.rootEl).not.toHaveClass('bp-is-comparing');
+            expect(preview.ui.hideComparisonBanner).toHaveBeenCalled();
+        });
+    });
+
     describe('hide()', () => {
         beforeEach(() => {
             stubs.destroy = jest.spyOn(preview, 'destroy').mockImplementation();
@@ -780,14 +815,26 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: function constr() {},
             };
 
-            sandbox.stub(file, 'getCachedFile').withArgs(preview.cache, sinon.match.any).returns(someFile);
-            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
+            sandbox
+                .stub(file, 'getCachedFile')
+                .withArgs(preview.cache, sinon.match.any)
+                .returns(someFile);
+            sandbox
+                .stub(preview, 'getLoader')
+                .withArgs(someFile)
+                .returns(loader);
         });
 
         test('should short circuit if no appropriate viewer is found', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(null);
-            sandbox.mock(loader).expects('determineRepresentation').never();
-            sandbox.mock(viewer).expects('CONSTRUCTOR').never();
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .never();
+            sandbox
+                .mock(viewer)
+                .expects('CONSTRUCTOR')
+                .never();
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -803,7 +850,10 @@ describe('lib/Preview', () => {
 
         test('should determine representation', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
-            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .withArgs(someFile, viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -841,7 +891,10 @@ describe('lib/Preview', () => {
                             preload: true,
                             content: true,
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(true),
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(true),
                     };
                 },
             };
@@ -859,7 +912,10 @@ describe('lib/Preview', () => {
                             preload: false,
                             content: true,
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(false),
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(false),
                     };
                 },
             };
@@ -1384,7 +1440,10 @@ describe('lib/Preview', () => {
             const fileId = '123';
             const fileVersionId = '1234';
 
-            sandbox.stub(preview, 'getFileOption').withArgs(fileId, 'fileVersionId').returns(fileVersionId);
+            sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs(fileId, 'fileVersionId')
+                .returns(fileVersionId);
             preview.load(fileId);
 
             expect(file.getCachedFile).toHaveBeenCalledWith(preview.cache, { fileVersionId });
@@ -1572,6 +1631,22 @@ describe('lib/Preview', () => {
             previewUIMock.expects('showLoadingIndicator');
             previewUIMock.expects('showNavigation');
             previewUIMock.expects('setupNotification');
+
+            preview.setupUI();
+        });
+
+        test('should show the comparison banner when isComparing', () => {
+            preview.options.isComparing = true;
+            preview.options.isComparedPreview = true;
+            preview.file = { id: '123', version_number: '12' };
+            preview.location = { locale: 'en-US' };
+            const previewUIMock = sandbox.mock(preview.ui);
+            previewUIMock.expects('setup');
+            previewUIMock.expects('showLoadingIcon');
+            previewUIMock.expects('showLoadingIndicator');
+            previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
+            previewUIMock.expects('showComparisonBanner').atLeast(1);
 
             preview.setupUI();
         });
@@ -1830,6 +1905,22 @@ describe('lib/Preview', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.pdfjs).toEqual({});
         });
+
+        test('should persist comparison flags when the host sets them', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                isComparing: true,
+                isComparedPreview: true,
+            });
+            expect(preview.options.isComparing).toBe(true);
+            expect(preview.options.isComparedPreview).toBe(true);
+        });
+
+        test('should default comparison flags to false when omitted', () => {
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.isComparing).toBe(false);
+            expect(preview.options.isComparedPreview).toBe(false);
+        });
     });
 
     describe('createViewerOptions()', () => {
@@ -2013,7 +2104,10 @@ describe('lib/Preview', () => {
             const fileVersion = {
                 id: '1234',
             };
-            sandbox.stub(preview, 'getFileOption').withArgs('123', 'fileVersionId').returns(fileVersion.id);
+            sandbox
+                .stub(preview, 'getFileOption')
+                .withArgs('123', 'fileVersionId')
+                .returns(fileVersion.id);
 
             preview.handleFileInfoResponse(fileVersion);
 
@@ -2044,6 +2138,20 @@ describe('lib/Preview', () => {
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).toBe(stubs.file);
             expect(preview.logger.setFile).toHaveBeenCalled();
+        });
+
+        test('should refresh the comparison banner when isComparing', () => {
+            preview.options.isComparing = true;
+            preview.options.isComparedPreview = true;
+            preview.location = { locale: 'en-US' };
+            preview.ui.showComparisonBanner = jest.fn();
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(preview.ui.showComparisonBanner).toHaveBeenCalledWith(stubs.file, {
+                isComparedPreview: true,
+                locale: 'en-US',
+            });
         });
 
         test('should get the latest cache, then update it with the new file', () => {
@@ -2687,7 +2795,10 @@ describe('lib/Preview', () => {
             preview.viewer.containerEl = {
                 focus: () => {},
             };
-            sandbox.mock(preview.viewer.containerEl).expects('focus').never();
+            sandbox
+                .mock(preview.viewer.containerEl)
+                .expects('focus')
+                .never();
             preview.finishLoading();
         });
 
@@ -2969,7 +3080,10 @@ describe('lib/Preview', () => {
                     id: '0',
                 };
                 stubs.error.headers = {
-                    get: sandbox.stub().withArgs(retryAfter).returns(5),
+                    get: sandbox
+                        .stub()
+                        .withArgs(retryAfter)
+                        .returns(5),
                 };
                 preview.open = true;
                 preview.retryCount = 1;
