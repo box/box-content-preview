@@ -179,9 +179,10 @@ export default function MP3ControlsV2({
     const waveformRange = commentRangeDraft ?? commentRangeReadOnly;
     const isRangeReadOnly = commentRangeDraft == null && commentRangeReadOnly != null;
     const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
-    const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
-        waveformMarkers,
-    ]);
+    const selectedMarkerId = useMemo(
+        () => waveformMarkers.find(marker => marker.isSelected)?.id ?? null,
+        [waveformMarkers],
+    );
     const handleCommentMarkerClick = useCallback(
         (marker: CommentMarker) => {
             setPlayRequested(true);

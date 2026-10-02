@@ -59,7 +59,7 @@ export const WAVEFORM_ERROR_CODES = [
     'UNAVAILABLE',
 ] as const;
 
-export type WaveformErrorCode = typeof WAVEFORM_ERROR_CODES[number];
+export type WaveformErrorCode = (typeof WAVEFORM_ERROR_CODES)[number];
 
 const WAVEFORM_ERROR_CODE_SET: ReadonlySet<string> = new Set(WAVEFORM_ERROR_CODES);
 
