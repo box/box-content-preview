@@ -87,6 +87,25 @@
     bottom: calc(100% + 36px);
     left: 50%;
     transform: translateX(-50%);
+    animation-name: bp-WaveformView-playheadCommentIn;
+}
+
+@keyframes bp-WaveformView-playheadCommentIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-WaveformView-playhead .bp-WaveformView-playheadComment {
+        animation: none;
+    }
 }
 
 .bp-WaveformView-hover {
