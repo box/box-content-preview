@@ -32,9 +32,10 @@ export const EVENT_COMMENT_RANGE_DRAFT_DISMISS = 'comment_range_draft_dismiss';
 export const EVENT_COMMENT_RANGE_DRAFT_CHANGE = 'comment_range_draft_change';
 
 /**
- * Viewer → sidebar: the user pressed Comment on a draft range.
- * The host opens Activity if needed, checks the timestamp toggle, and adopts
- * `{ startMs, endMs }` without echoing `comment_range_draft`.
+ * Viewer → sidebar: the user pressed Comment on a draft range, or on the
+ * playhead after pausing. The host opens Activity if needed, checks the
+ * timestamp toggle, and adopts the payload without echoing `comment_range_draft`.
+ * A range sends `{ startMs, endMs }`. A pause sends `{ startMs }` only.
  */
 export const EVENT_COMMENT_RANGE_DRAG_CREATE = 'comment_range_compose';
 

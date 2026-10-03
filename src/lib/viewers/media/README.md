@@ -55,12 +55,12 @@ The DASH viewer fires the following events
 The following methods are available for the DASH viewer.
 
 | Method Name      | Explanation                                   | Method Parameters              |
-| ---------------- | --------------------------------------------- | ------------------------------ | --- |
+| ---------------- | --------------------------------------------- | ------------------------------ |
 | setMediaTime     | Updates the media element's time              | {number} time in seconds       |
 | setVolume        | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay       | Toggles playback                              |                                |
 | toggleMute       | Toggles between mute and current volume value |                                |
-| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |     |
+| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |  |
 | increaseVolume   | Increases volume by a small increment         |                                |
 | decreaseVolume   | Decreases volume by a small increment         |                                |
 | toggleFullscreen | Toggles fullscreen mode                       |                                |
@@ -111,7 +111,7 @@ The MP3 viewer fires the following events
 | seeked                      | The audio skips to a time                                                                                                                                                                                   | {number} time                                                                                                                                                                  |
 | comment_range_draft_change  | A draft range edit finished while the timestamp toggle is already on (audio player v2). Pointer-up only.                                                                                                    | `{ startMs, endMs }` milliseconds; `endMs > startMs`                                                                                                                           |
 | comment_range_draft_dismiss | Viewer → host: click outside an open range while the timestamp toggle is already on. Host should uncheck the toggle. A drag-created range the host never adopted is cleared locally and does not emit this. |                                                                                                                                                                                |
-| comment_range_compose       | Viewer → host: the user pressed Comment on a draft range. Open Activity if needed and check the timestamp toggle.                                                                                           | `{ startMs, endMs }` milliseconds; `endMs > startMs`. The host must not echo `comment_range_draft`.                                                                            |
+| comment_range_compose       | Viewer → host: the user pressed Comment on a draft range, or on the playhead after pausing. Open Activity if needed and check the timestamp toggle.                                                         | A range sends `{ startMs, endMs }` milliseconds with `endMs > startMs`. A pause sends `{ startMs }` only. The host must not echo `comment_range_draft`.                        |
 
 The host also sends these events to the MP3 viewer (audio player v2 only). Checkbox-driven handles appear on `comment_range_draft`. A waveform drag can draw a range before that event; Comment then emits `comment_range_compose`.
 
@@ -128,12 +128,12 @@ Selecting a ranged marker (sidebar, marker click, or deep link) draws that span 
 The following methods are available for the MP3 viewer.
 
 | Method Name    | Explanation                                   | Method Parameters              |
-| -------------- | --------------------------------------------- | ------------------------------ | --- |
+| -------------- | --------------------------------------------- | ------------------------------ |
 | setMediaTime   | Updates the media element's time              | {number} time in seconds       |
 | setVolume      | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay     | Toggles playback                              |                                |
 | toggleMute     | Toggles between mute and current volume value |                                |
-| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |     |
+| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |  |
 | increaseVolume | Increases volume by a small increment         |                                |
 | decreaseVolume | Decreases volume by a small increment         |                                |
 
