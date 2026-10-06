@@ -2949,6 +2949,20 @@ describe('lib/Preview', () => {
             expect(stubs.load).toHaveBeenCalledWith(1);
         });
 
+        test('should not load the file again after hide cancels a pending retry', () => {
+            preview.file = {
+                id: '0',
+            };
+            preview.open = true;
+            preview.retryCount = 1;
+
+            preview.handleFetchError(stubs.error);
+            preview.hide();
+
+            jest.advanceTimersByTime(10000);
+            expect(stubs.load).not.toHaveBeenCalled();
+        });
+
         test('should retry using full jitter', () => {
             preview.file = {
                 id: '0',

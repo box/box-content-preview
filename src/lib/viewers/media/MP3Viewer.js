@@ -1189,6 +1189,17 @@ class MP3Viewer extends MediaBaseViewer {
         super.mediaendHandler();
     }
 
+    /**
+     * Only an explicit `can_comment` shows Comment.
+     * A missing file, permissions object, or flag hides it.
+     *
+     * @return {boolean}
+     */
+    getCanCreateComment() {
+        const canComment = this.options?.file?.permissions?.can_comment;
+        return canComment ?? false;
+    }
+
     handleCommentRangeDraft = draft => {
         if (this.isCommentRangeDragging || !isValidCommentRangeDraft(draft)) {
             return;
@@ -1238,7 +1249,7 @@ class MP3Viewer extends MediaBaseViewer {
 
     handleCommentRangeDragCreate = () => {
         const draft = this.commentRangeDraft;
-        if (!draft || isRangeCollapsed(draft)) {
+        if (!this.getCanCreateComment() || !draft || isRangeCollapsed(draft)) {
             return;
         }
         this.isCommentRangeTimestampActive = true;
@@ -1253,7 +1264,7 @@ class MP3Viewer extends MediaBaseViewer {
      */
     handlePlayheadComment = () => {
         const timeSec = this.mediaEl?.currentTime;
-        if (this.shuttleDirection || !Number.isFinite(timeSec) || timeSec < 0) {
+        if (!this.getCanCreateComment() || this.shuttleDirection || !Number.isFinite(timeSec) || timeSec < 0) {
             return;
         }
         if (this.commentRangeDraft && !isRangeCollapsed(this.commentRangeDraft)) {
@@ -1352,8 +1363,10 @@ class MP3Viewer extends MediaBaseViewer {
                     onCommentRangeChange={this.handleCommentRangeChange}
                     onCommentRangeClear={this.handleCommentRangeClear}
                     onCommentRangeDragChange={this.handleCommentRangeDragChange}
-                    onCommentRangeDragCreate={this.handleCommentRangeDragCreate}
-                    onPlayheadComment={this.handlePlayheadComment}
+                    onCommentRangeDragCreate={
+                        this.getCanCreateComment() ? this.handleCommentRangeDragCreate : undefined
+                    }
+                    onPlayheadComment={this.getCanCreateComment() ? this.handlePlayheadComment : undefined}
                     onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
                     playNext={this.isPlayNextEnabled()}

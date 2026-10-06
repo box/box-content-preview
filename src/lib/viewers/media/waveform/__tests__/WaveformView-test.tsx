@@ -499,6 +499,9 @@ describe('WaveformView', () => {
         expect(onRangeDragChange).toHaveBeenCalledWith(true);
         expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
 
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
         dispatchTrackPointer(window, 'pointerup', 100);
 
         expect(onRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 400 });

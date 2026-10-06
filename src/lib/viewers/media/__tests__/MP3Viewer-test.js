@@ -516,7 +516,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 onCommentMarkerClick: mp3.handleCommentMarkerClick,
                 onCommentRangeChange: mp3.handleCommentRangeChange,
                 onCommentRangeClear: mp3.handleCommentRangeClear,
-                onCommentRangeDragCreate: mp3.handleCommentRangeDragCreate,
                 onCommentRangeDragChange: mp3.handleCommentRangeDragChange,
                 onMuteChange: mp3.toggleMute,
                 onPlayNextChange: mp3.setPlayNext,
@@ -529,6 +528,19 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 rate: 'media-speed',
                 volume: 1,
             });
+            expect(getProps(mp3).onPlayheadComment).toBeUndefined();
+            expect(getProps(mp3).onCommentRangeDragCreate).toBeUndefined();
+        });
+
+        test('should pass Comment controls when the file allows commenting', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            mp3.options.file.permissions = { can_comment: true };
+
+            mp3.renderUI();
+
+            expect(getProps(mp3).onPlayheadComment).toBe(mp3.handlePlayheadComment);
+            expect(getProps(mp3).onCommentRangeDragCreate).toBe(mp3.handleCommentRangeDragCreate);
         });
 
         test('should use conversion duration when the audio blob has no metadata yet', () => {
@@ -557,6 +569,8 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
             expect(mp3.controls.render).toHaveBeenCalledWith(expect.objectContaining({ type: MP3Controls }));
             expect(getProps(mp3)).not.toHaveProperty('onPlayNextChange');
+            expect(getProps(mp3)).not.toHaveProperty('onPlayheadComment');
+            expect(getProps(mp3)).not.toHaveProperty('onCommentRangeDragCreate');
             expect(getProps(mp3)).not.toHaveProperty('playNext');
         });
 
@@ -865,6 +879,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
 
     describe('comment range draft', () => {
         beforeEach(() => {
+            mp3.options.file.permissions = { can_comment: true };
             jest.spyOn(mp3, 'renderUI').mockImplementation();
             jest.spyOn(mp3, 'emit').mockImplementation();
         });
@@ -1019,6 +1034,35 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.mediaEl.currentTime).toBe(5);
             expect(mp3.commentRangeDraft).toEqual({ endMs: null, startMs: 5000 });
             expect(mp3.emit).toHaveBeenCalledWith('comment_range_compose', { startMs: 5000 });
+        });
+
+        test.each`
+            permissions
+            ${undefined}
+            ${{}}
+            ${{ can_comment: false }}
+        `('should hide Comment controls when can_comment is not true ($permissions)', ({ permissions }) => {
+            mp3.renderUI.mockRestore();
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            mp3.controls = { render: jest.fn() };
+            mp3.mediaEl = document.createElement('audio');
+            mp3.mediaEl.duration = 30;
+            mp3.options.file.permissions = permissions;
+            mp3.commentRangeDraft = { endMs: 4000, startMs: 2000 };
+            mp3.emit = jest.fn();
+
+            mp3.renderUI();
+            mp3.handlePlayheadComment();
+            mp3.handleCommentRangeDragCreate();
+
+            const [[element]] = mp3.controls.render.mock.calls;
+            const { props } = element;
+            expect(props.onPlayheadComment).toBeUndefined();
+            expect(props.onCommentRangeDragCreate).toBeUndefined();
+            expect(props.onCommentRangeClear).toBe(mp3.handleCommentRangeClear);
+            expect(mp3.emit).not.toHaveBeenCalledWith('comment_range_compose', expect.anything());
+            expect(mp3.commentRangeDraft).toEqual({ endMs: 4000, startMs: 2000 });
         });
 
         test('should not emit comment_range_compose for a collapsed draft', () => {
