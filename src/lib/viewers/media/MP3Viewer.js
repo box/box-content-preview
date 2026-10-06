@@ -1239,6 +1239,29 @@ class MP3Viewer extends MediaBaseViewer {
         this.emit(EVENT_COMMENT_RANGE_DRAG_CREATE, { endMs: draft.endMs, startMs: draft.startMs });
     };
 
+    /**
+     * Comment at the paused playhead. The playhead becomes the collapsed draft,
+     * the same point a seek stores when the timestamp toggle is on.
+     *
+     * @return {void}
+     */
+    handlePlayheadComment = () => {
+        const timeSec = this.mediaEl?.currentTime;
+        if (this.shuttleDirection || !Number.isFinite(timeSec) || timeSec < 0) {
+            return;
+        }
+        if (this.commentRangeDraft && !isRangeCollapsed(this.commentRangeDraft)) {
+            return;
+        }
+
+        const startMs = Math.floor(timeSec * 1000);
+        this.isCommentRangeTimestampActive = true;
+        this.commentRangeDraft = { endMs: null, startMs };
+        this.syncCommentRangeLoop();
+        this.emit(EVENT_COMMENT_RANGE_DRAG_CREATE, { startMs });
+        this.renderUI();
+    };
+
     handleCommentRangeDragChange = isDragging => {
         this.isCommentRangeDragging = !!isDragging;
     };
@@ -1324,6 +1347,7 @@ class MP3Viewer extends MediaBaseViewer {
                     onCommentRangeClear={this.handleCommentRangeClear}
                     onCommentRangeDragChange={this.handleCommentRangeDragChange}
                     onCommentRangeDragCreate={this.handleCommentRangeDragCreate}
+                    onPlayheadComment={this.handlePlayheadComment}
                     onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
                     playNext={this.isPlayNextEnabled()}

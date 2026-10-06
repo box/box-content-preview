@@ -192,6 +192,8 @@ export type WaveformViewProps = {
     isPlaying?: boolean;
     mediaEl?: HTMLMediaElement | null;
     onPlayPause?: (isPlaying: boolean) => void;
+    /** Pause, after playback has started. Emits one timestamp comment at the playhead. */
+    onPlayheadComment?: () => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
     onRangeClear?: () => void;
     onRangeDragCreate?: () => void;

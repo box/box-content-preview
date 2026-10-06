@@ -2211,4 +2211,92 @@ describe('WaveformView', () => {
         clickHandler?.(0.5);
         expect(onSeek).toHaveBeenCalledWith(4);
     });
+
+    describe('playhead comment', () => {
+        test('should show Comment above the playhead after playback has started and then paused', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+
+            const button = screen.getByTestId('bp-waveform-playhead-comment');
+            expect(button).toHaveAttribute('data-target-id', 'Waveform-commentAtTime');
+            expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+            expect(button.closest('[data-testid="bp-waveform-playhead"]')).not.toBeNull();
+        });
+
+        test('should hide Comment while playing and before the waveform is interactive', () => {
+            const { rerender } = render(
+                <WaveformView durationSec={8} interactive isPlaying onPlayheadComment={jest.fn()} peaks={[0.2, 0.8]} />,
+            );
+            expect(screen.queryByTestId('bp-waveform-playhead-comment')).not.toBeInTheDocument();
+
+            rerender(
+                <WaveformView
+                    durationSec={8}
+                    interactive={false}
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            expect(screen.queryByTestId('bp-waveform-playhead-comment')).not.toBeInTheDocument();
+        });
+
+        test('should hide Comment while a range is open', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    range={{ endMs: 4000, startMs: 2000 }}
+                />,
+            );
+
+            expect(screen.queryByTestId('bp-waveform-playhead-comment')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
+        });
+
+        test('should keep Comment when the draft is only a start time', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    range={{ endMs: null, startMs: 2000 }}
+                />,
+            );
+
+            expect(screen.getByTestId('bp-waveform-playhead-comment')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+            expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        });
+
+        test('should keep Comment visible after it is clicked', () => {
+            const onPlayheadComment = jest.fn();
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={onPlayheadComment}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+
+            fireEvent.click(screen.getByTestId('bp-waveform-playhead-comment'));
+
+            expect(onPlayheadComment).toHaveBeenCalledTimes(1);
+            expect(screen.getByTestId('bp-waveform-playhead-comment')).toBeInTheDocument();
+        });
+    });
 });

@@ -14,7 +14,7 @@ function isRelatedTargetInside(event: { currentTarget: EventTarget; relatedTarge
     return (event.currentTarget as Node).contains(event.relatedTarget as Node | null);
 }
 
-export default function useAttention(): [isActive, handlers] {
+export default function useAttention(): [isActive, handlers, () => void] {
     const [isFocused, setFocused] = React.useState(false);
     const [isHovered, setHovered] = React.useState(false);
 
@@ -32,6 +32,10 @@ export default function useAttention(): [isActive, handlers] {
         setHovered(false);
     };
     const handleMouseOver = (): void => setHovered(true);
+    const reset = React.useCallback((): void => {
+        setFocused(false);
+        setHovered(false);
+    }, []);
 
     return [
         isFocused || isHovered,
@@ -41,5 +45,6 @@ export default function useAttention(): [isActive, handlers] {
             onMouseOut: handleMouseOut,
             onMouseOver: handleMouseOver,
         },
+        reset,
     ];
 }

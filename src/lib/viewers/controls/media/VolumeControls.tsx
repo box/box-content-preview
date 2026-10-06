@@ -40,14 +40,17 @@ export default function VolumeControls({
     onVolumeChange,
     volume = 1,
 }: Props): JSX.Element {
-    const [isActive, handlers] = useAttention();
+    const [isActive, handlers, resetAttention] = useAttention();
+    const [isPinned, setPinned] = useState(false);
     const [isRevealed, setIsRevealed] = useState(false);
+    const wasFlyoutOpenOnPointerDownRef = useRef(true); // first tap on the speaker pins the flyout instead of muting
+    const volumeControlElRef = useRef<HTMLDivElement>(null); // root; outside pointerdown unpins the flyout
     const revealTimerRef = useRef(0);
     const isMuted = !volume;
     const Icon = isMuted ? IconVolumeMuted24 : getIcon(volume);
     const title = isMuted ? __('media_unmute') : __('media_mute');
     const value = Math.round(volume * 100);
-    const isOpen = isActive || isRevealed;
+    const isOpen = isActive || isRevealed || isPinned;
 
     useEffect(() => {
         if (!keyboardVolumeStep) {
@@ -63,6 +66,27 @@ export default function VolumeControls({
 
     useEffect(() => () => window.clearTimeout(revealTimerRef.current), []);
 
+    useEffect(() => {
+        if (!isPinned) {
+            return undefined;
+        }
+
+        const closeIfOutside = (event: PointerEvent): void => {
+            const volumeControlEl = volumeControlElRef.current;
+            if (!volumeControlEl || volumeControlEl.contains(event.target as Node | null)) {
+                return;
+            }
+            setPinned(false);
+            resetAttention();
+            window.clearTimeout(revealTimerRef.current);
+            revealTimerRef.current = 0;
+            setIsRevealed(false);
+        };
+
+        document.addEventListener('pointerdown', closeIfOutside);
+        return () => document.removeEventListener('pointerdown', closeIfOutside);
+    }, [isPinned, resetAttention]);
+
     const handleVolume = useCallback(
         (newValue: number): void => {
             const newValueToUse = newValue <= 5 ? 0 : newValue;
@@ -74,8 +98,21 @@ export default function VolumeControls({
         [onVolumeChange],
     );
 
+    const handleTogglePointerDown = useCallback((): void => {
+        wasFlyoutOpenOnPointerDownRef.current = isActive || isRevealed || isPinned;
+    }, [isActive, isPinned, isRevealed]);
+
+    const handleToggleClick = useCallback((): void => {
+        if (!wasFlyoutOpenOnPointerDownRef.current) {
+            setPinned(true);
+            return;
+        }
+        onMuteChange(!isMuted);
+    }, [isMuted, onMuteChange]);
+
     return (
         <div
+            ref={volumeControlElRef}
             className="bp-VolumeControls"
             data-testid="bp-volume-controls"
             onBlur={event => {
@@ -83,6 +120,7 @@ export default function VolumeControls({
                 if (event.currentTarget.contains(event.relatedTarget as Node | null)) {
                     return;
                 }
+                setPinned(false);
                 window.clearTimeout(revealTimerRef.current);
                 revealTimerRef.current = 0;
                 setIsRevealed(false);
@@ -94,7 +132,8 @@ export default function VolumeControls({
             <MediaToggle
                 className="bp-VolumeControls-toggle"
                 data-resin-target="volumeToggle"
-                onClick={(): void => onMuteChange(!isMuted)}
+                onClick={handleToggleClick}
+                onPointerDown={handleTogglePointerDown}
                 title={title}
             >
                 <Icon />
