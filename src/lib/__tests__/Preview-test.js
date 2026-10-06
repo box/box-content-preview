@@ -373,179 +373,30 @@ describe('lib/Preview', () => {
             preview.location = { locale: 'en-US' };
             preview.ui = {
                 previewContainer: document.createElement('div'),
-                showComparisonBanner: jest.fn(),
-                hideComparisonBanner: jest.fn(),
             };
             preview.viewer = { rootEl: document.createElement('div') };
         });
 
-        test('should add comparison classes and show the banner', () => {
-            preview.setComparisonMode({ isComparing: true, isComparedPreview: true });
+        test('should add comparison classes without rendering a banner', () => {
+            preview.setComparisonMode({
+                isComparing: true,
+                isComparedPreview: true,
+                versionInfo: { current: { id: 'v9' }, compared: { id: 'v2' } },
+            });
 
             expect(preview.options.isComparing).toBe(true);
             expect(preview.options.isComparedPreview).toBe(true);
+            expect(preview.options.versionInfo).toEqual({ current: { id: 'v9' }, compared: { id: 'v2' } });
             expect(preview.viewer.rootEl).toHaveClass('bp-is-comparing');
             expect(preview.viewer.rootEl).toHaveClass('bp-is-compared');
-            expect(preview.ui.showComparisonBanner).toHaveBeenCalledWith(preview.file, {
-                isComparedPreview: true,
-                locale: 'en-US',
-            });
+            expect(preview.viewer.rootEl.querySelector('.bp-version-banner')).toBeNull();
         });
 
-        test('should remove comparison chrome when comparison ends', () => {
+        test('should remove comparison classes when comparison ends', () => {
             preview.setComparisonMode({ isComparing: true });
             preview.setComparisonMode({ isComparing: false });
 
             expect(preview.viewer.rootEl).not.toHaveClass('bp-is-comparing');
-            expect(preview.ui.hideComparisonBanner).toHaveBeenCalled();
-        });
-    });
-
-    describe('paintComparisonBanner()', () => {
-        let deferred;
-
-        beforeEach(() => {
-            deferred = {};
-            deferred.promise = new Promise(resolve => {
-                deferred.resolve = resolve;
-            });
-            preview.open = true;
-            preview.options = { isComparing: true, apiHost: 'https://api.box.com' };
-            preview.file = { id: '123', file_version: { id: 'v-current' } };
-            preview.comparisonBannerMetadata = undefined;
-            preview.location = { locale: 'en-US' };
-            preview.previewOptions = {};
-            preview.ui = {
-                showComparisonBanner: jest.fn(),
-            };
-            jest.spyOn(preview.api, 'get').mockReturnValue(deferred.promise);
-            jest.spyOn(preview, 'getRequestHeaders').mockReturnValue({});
-        });
-
-        test('should merge banner metadata when the same file is still open', () => {
-            preview.paintComparisonBanner();
-            deferred.resolve({
-                id: 'v-current',
-                version_number: '12',
-                modified_at: '2024-08-22T18:33:00.000Z',
-                modified_by: { name: 'Emily Huang' },
-            });
-
-            return deferred.promise.then(() => {
-                expect(preview.api.get).toHaveBeenCalledWith(
-                    expect.stringContaining('/files/123/versions/v-current'),
-                    expect.any(Object),
-                );
-                expect(preview.file.id).toBe('123');
-                expect(preview.file.version_number).toBe('12');
-                expect(preview.file.modified_by).toEqual({ name: 'Emily Huang' });
-                expect(preview.ui.showComparisonBanner).toHaveBeenLastCalledWith(preview.file, {
-                    isComparedPreview: false,
-                    locale: 'en-US',
-                });
-            });
-        });
-
-        test('should keep the current version author after a file-level refresh', () => {
-            preview.file = {
-                id: '123',
-                file_version: { id: 'v-current' },
-                version_number: '4',
-                modified_by: { name: 'Renamer' },
-            };
-            preview.paintComparisonBanner();
-            deferred.resolve({
-                id: 'v-current',
-                version_number: '4',
-                modified_at: '2024-08-22T18:33:00.000Z',
-                modified_by: { name: 'Emily Huang' },
-            });
-
-            return deferred.promise.then(() => {
-                preview.api.get.mockClear();
-                preview.file = {
-                    id: '123',
-                    file_version: { id: 'v-current' },
-                    version_number: '4',
-                    modified_at: '2026-01-01T00:00:00.000Z',
-                    modified_by: { name: 'Renamer' },
-                };
-
-                preview.paintComparisonBanner();
-
-                expect(preview.api.get).not.toHaveBeenCalled();
-                expect(preview.file.modified_by).toEqual({ name: 'Emily Huang' });
-                expect(preview.file.modified_at).toBe('2024-08-22T18:33:00.000Z');
-            });
-        });
-
-        test('should ignore a stale response after the file changes', () => {
-            preview.paintComparisonBanner();
-            preview.file = { id: '999' };
-            deferred.resolve({ version_number: '12', modified_by: { name: 'Emily Huang' } });
-
-            return deferred.promise.then(() => {
-                expect(preview.file).toEqual({ id: '999' });
-                expect(preview.ui.showComparisonBanner).toHaveBeenCalledTimes(1);
-            });
-        });
-
-        test('should ignore a stale response after the file version changes', () => {
-            preview.previewOptions = { fileOptions: { 123: { fileVersionId: 'v1' } } };
-            preview.paintComparisonBanner();
-            preview.previewOptions = { fileOptions: { 123: { fileVersionId: 'v2' } } };
-            deferred.resolve({ version_number: '3' });
-
-            return deferred.promise.then(() => {
-                expect(preview.file.version_number).toBeUndefined();
-                expect(preview.ui.showComparisonBanner).toHaveBeenCalledTimes(1);
-            });
-        });
-
-        test('should ignore a stale response after comparison ends', () => {
-            preview.paintComparisonBanner();
-            preview.options.isComparing = false;
-            deferred.resolve({ version_number: '12' });
-
-            return deferred.promise.then(() => {
-                expect(preview.file.version_number).toBeUndefined();
-            });
-        });
-
-        test('should skip the merge and log when the metadata response is empty', () => {
-            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-            preview.paintComparisonBanner();
-            deferred.resolve(undefined);
-
-            return deferred.promise.then(() => {
-                expect(preview.file).toEqual({ id: '123', file_version: { id: 'v-current' } });
-                expect(preview.comparisonBannerMetadata).toBeUndefined();
-                expect(preview.ui.showComparisonBanner).toHaveBeenCalledTimes(1);
-                expect(errorSpy).toHaveBeenCalledWith(
-                    '[Preview SDK] Failed to load comparison banner metadata for file 123 version v-current',
-                    expect.any(Error),
-                );
-                errorSpy.mockRestore();
-            });
-        });
-
-        test('should log a failed metadata request without merging', () => {
-            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-            const error = new Error('network');
-            preview.api.get.mockReturnValue(Promise.reject(error));
-            preview.paintComparisonBanner();
-
-            return Promise.resolve()
-                .then(() => undefined)
-                .then(() => {
-                    expect(preview.file).toEqual({ id: '123', file_version: { id: 'v-current' } });
-                    expect(preview.comparisonBannerMetadata).toBeUndefined();
-                    expect(errorSpy).toHaveBeenCalledWith(
-                        '[Preview SDK] Failed to load comparison banner metadata for file 123 version v-current',
-                        error,
-                    );
-                    errorSpy.mockRestore();
-                });
         });
     });
 
@@ -1758,22 +1609,6 @@ describe('lib/Preview', () => {
 
             preview.setupUI();
         });
-
-        test('should show the comparison banner when isComparing', () => {
-            preview.options.isComparing = true;
-            preview.options.isComparedPreview = true;
-            preview.file = { id: '123', version_number: '12' };
-            preview.location = { locale: 'en-US' };
-            const previewUIMock = sandbox.mock(preview.ui);
-            previewUIMock.expects('setup');
-            previewUIMock.expects('showLoadingIcon');
-            previewUIMock.expects('showLoadingIndicator');
-            previewUIMock.expects('showNavigation');
-            previewUIMock.expects('setupNotification');
-            previewUIMock.expects('showComparisonBanner').atLeast(1);
-
-            preview.setupUI();
-        });
     });
 
     describe('parseOptions()', () => {
@@ -2030,6 +1865,20 @@ describe('lib/Preview', () => {
             expect(preview.options.pdfjs).toEqual({});
         });
 
+        test('should persist version info without rendering a banner', () => {
+            preview.parseOptions({
+                ...preview.previewOptions,
+                versionInfo: {
+                    current: { id: 'v9', version_number: '9' },
+                    compared: { id: 'v2', version_number: '2' },
+                },
+            });
+            expect(preview.options.versionInfo).toEqual({
+                current: { id: 'v9', version_number: '9' },
+                compared: { id: 'v2', version_number: '2' },
+            });
+        });
+
         test('should persist comparison flags when the host sets them', () => {
             preview.parseOptions({
                 ...preview.previewOptions,
@@ -2259,20 +2108,6 @@ describe('lib/Preview', () => {
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).toBe(stubs.file);
             expect(preview.logger.setFile).toHaveBeenCalled();
-        });
-
-        test('should refresh the comparison banner when isComparing', () => {
-            preview.options.isComparing = true;
-            preview.options.isComparedPreview = true;
-            preview.location = { locale: 'en-US' };
-            preview.ui.showComparisonBanner = jest.fn();
-
-            preview.handleFileInfoResponse(stubs.file);
-
-            expect(preview.ui.showComparisonBanner).toHaveBeenCalledWith(stubs.file, {
-                isComparedPreview: true,
-                locale: 'en-US',
-            });
         });
 
         test('should get the latest cache, then update it with the new file', () => {

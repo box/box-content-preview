@@ -276,27 +276,7 @@ $header-height: 48px;
     color: #fff;
 }
 
-// Overlay banner. Pad scrollable viewers so the first page can sit below it.
-// Fullscreen is toggled on .bp-content (BaseViewer.toggleFullscreen), not .bp.
-.bp.bp-is-comparing {
-    --bp-comparison-banner-height: 4.5rem;
-
-    &:not(:has(> .bp-content.bp-is-fullscreen)) {
-        .bp-doc,
-        .bp-document-preload-wrapper,
-        .bp-image,
-        .bp-images,
-        .bp-text-plain,
-        .bp-vs {
-            padding-top: var(--bp-comparison-banner-height);
-        }
-    }
-
-    &:has(> .bp-content.bp-is-fullscreen) .bp-version-banner {
-        display: none;
-    }
-}
-
+// Comparison banner. Implemented for a later host, and not mounted by Preview yet.
 .bp-version-banner {
     position: absolute;
     top: 0;

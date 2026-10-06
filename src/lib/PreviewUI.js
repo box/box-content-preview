@@ -23,7 +23,6 @@ import {
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT,
 } from './constants';
-import { ComparisonBannerRoot } from './ComparisonBanner';
 import { insertTemplate } from './util';
 
 class PreviewUI {
@@ -48,9 +47,6 @@ class PreviewUI {
     /** @property {LoadingIcon} - Loading icon instance */
     loadingIcon;
 
-    /** @property {ComparisonBannerRoot} */
-    comparisonBannerRoot;
-
     /** @property {HTMLElement} - Preview container element which houses the sidebar and content */
     previewContainer;
 
@@ -69,8 +65,6 @@ class PreviewUI {
             this.loadingIcon.destroy();
             this.loadingIcon = null;
         }
-
-        this.hideComparisonBanner();
 
         if (this.container) {
             this.container.innerHTML = '';
@@ -211,41 +205,6 @@ class PreviewUI {
         if (index < collection.length - 1) {
             rightNavEl.addEventListener('click', this.rightHandler);
             rightNavEl.classList.remove(CLASS_HIDDEN);
-        }
-    }
-
-    /**
-     * Renders or replaces the comparison version banner from file metadata.
-     *
-     * @public
-     * @param {Object} file - Box file or normalized file version
-     * @param {Object} [bannerOptions]
-     * @param {boolean} [bannerOptions.isComparedPreview]
-     * @param {string} [bannerOptions.locale]
-     * @return {void}
-     */
-    showComparisonBanner(file, bannerOptions = {}) {
-        if (!this.previewContainer) {
-            return;
-        }
-
-        if (!this.comparisonBannerRoot) {
-            this.comparisonBannerRoot = new ComparisonBannerRoot(this.previewContainer);
-        }
-
-        this.comparisonBannerRoot.render(file, bannerOptions);
-    }
-
-    /**
-     * Removes the comparison version banner, if present.
-     *
-     * @public
-     * @return {void}
-     */
-    hideComparisonBanner() {
-        if (this.comparisonBannerRoot) {
-            this.comparisonBannerRoot.destroy();
-            this.comparisonBannerRoot = null;
         }
     }
 

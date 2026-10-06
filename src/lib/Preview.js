@@ -281,131 +281,28 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Turns comparison chrome on or off without reloading.
+     * Turns comparison classes on or off without reloading.
+     * versionInfo is kept for a later banner and is not rendered.
      *
      * @public
      * @param {Object} [flags]
      * @param {boolean} [flags.isComparing]
      * @param {boolean} [flags.isComparedPreview]
+     * @param {Object} [flags.versionInfo]
      * @return {void}
      */
-    setComparisonMode({ isComparing = false, isComparedPreview = false } = {}) {
+    setComparisonMode({ isComparing = false, isComparedPreview = false, versionInfo } = {}) {
         this.options.isComparing = !!isComparing;
         this.options.isComparedPreview = !!isComparedPreview;
+        if (versionInfo) {
+            this.options.versionInfo = versionInfo;
+        }
 
         const rootEl = (this.viewer && this.viewer.rootEl) || (this.ui && this.ui.previewContainer);
         if (rootEl) {
             rootEl.classList.toggle(CLASS_BOX_PREVIEW_IS_COMPARING, this.options.isComparing);
             rootEl.classList.toggle(CLASS_BOX_PREVIEW_IS_COMPARED, this.options.isComparedPreview);
         }
-
-        if (!this.ui) {
-            return;
-        }
-
-        if (this.options.isComparing) {
-            this.paintComparisonBanner();
-        } else {
-            this.ui.hideComparisonBanner();
-        }
-    }
-
-    /**
-     * Renders the comparison banner from this.file. The current pane has no
-     * fileVersionId option, so load /files/:id/versions/:file_version.id and
-     * normalize it the same way as the compared pane. A later file refresh can
-     * carry a rename's modified_by; keep the version fields when that happens.
-     *
-     * @private
-     * @return {void}
-     */
-    paintComparisonBanner() {
-        if (!this.options.isComparing || !this.ui) {
-            return;
-        }
-
-        const bannerOptions = {
-            isComparedPreview: !!this.options.isComparedPreview,
-            locale: this.location?.locale,
-        };
-        const requestedFileId = getProp(this.file, 'id');
-        const optionVersionId = requestedFileId
-            ? this.getFileOption(requestedFileId, FILE_OPTION_FILE_VERSION_ID) || ''
-            : '';
-        const fileVersionId = optionVersionId || getProp(this.file, 'file_version.id') || '';
-        const cachedMetadata = this.comparisonBannerMetadata;
-        const hasVersionMetadata =
-            !!cachedMetadata &&
-            String(cachedMetadata.fileId) === String(requestedFileId) &&
-            String(cachedMetadata.versionId) === String(fileVersionId) &&
-            !!fileVersionId;
-
-        if (hasVersionMetadata) {
-            this.file = {
-                ...this.file,
-                version_number: cachedMetadata.version_number,
-                modified_at: cachedMetadata.modified_at,
-                modified_by: cachedMetadata.modified_by,
-            };
-        }
-
-        this.ui.showComparisonBanner(this.file, bannerOptions);
-
-        if (!this.file || !requestedFileId || !fileVersionId || hasVersionMetadata) {
-            return;
-        }
-        // Compared-pane file info is already that version.
-        if (optionVersionId && this.file.version_number != null) {
-            return;
-        }
-
-        const { apiHost } = this.options;
-        const logMetadataError = error => {
-            // eslint-disable-next-line no-console
-            console.error(
-                `[Preview SDK] Failed to load comparison banner metadata for file ${requestedFileId} version ${fileVersionId}`,
-                error,
-            );
-        };
-        this.api
-            .get(getURL(requestedFileId, fileVersionId, apiHost), { headers: this.getRequestHeaders() })
-            .then(response => {
-                const currentOptionVersionId = this.file
-                    ? this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || ''
-                    : '';
-                const currentVersionId = currentOptionVersionId || getProp(this.file, 'file_version.id') || '';
-                // Drop stale responses after hide(), a file/version switch, or leaving comparison.
-                if (
-                    !this.open ||
-                    !this.options.isComparing ||
-                    !this.ui ||
-                    !this.file ||
-                    String(this.file.id) !== String(requestedFileId) ||
-                    String(currentVersionId) !== String(fileVersionId)
-                ) {
-                    return;
-                }
-                if (response == null || response.version_number == null) {
-                    logMetadataError(new Error('Comparison banner metadata response was empty'));
-                    return;
-                }
-                const versionFile = normalizeFileVersion(response, requestedFileId);
-                this.comparisonBannerMetadata = {
-                    fileId: String(requestedFileId),
-                    versionId: String(fileVersionId),
-                    version_number: versionFile.version_number,
-                    modified_at: versionFile.modified_at,
-                    modified_by: versionFile.modified_by,
-                };
-                this.file = {
-                    ...this.file,
-                    version_number: versionFile.version_number,
-                    modified_at: versionFile.modified_at,
-                    modified_by: versionFile.modified_by,
-                };
-                this.ui.showComparisonBanner(this.file, bannerOptions);
-            })
-            .catch(logMetadataError);
     }
 
     /**
@@ -1154,8 +1051,6 @@ class Preview extends EventEmitter {
         this.ui.showLoadingIcon(this.file.extension);
         this.ui.showLoadingIndicator();
 
-        this.paintComparisonBanner();
-
         // Start the preview duration timer when the user starts to perceive preview's load
         const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
         Timer.start(previewDurationTag);
@@ -1318,8 +1213,10 @@ class Preview extends EventEmitter {
         this.options.pdfjs = options.pdfjs || {};
 
         // parseOptions is an allowlist — copy host comparison flags onto this.options.
+        // versionInfo is stored for a later banner. Preview does not render it yet.
         this.options.isComparing = !!options.isComparing;
         this.options.isComparedPreview = !!options.isComparedPreview;
+        this.options.versionInfo = options.versionInfo || null;
 
         // Disable or enable viewers based on viewer options
         Object.keys(this.options.viewers).forEach(viewerName => {
@@ -1485,7 +1382,6 @@ class Preview extends EventEmitter {
             // Set current file to file data from server and update file in logger
             this.file = file;
             this.logger.setFile(file);
-            this.paintComparisonBanner();
 
             // Keep reference to previously cached file version
             const cachedFile = getCachedFile(this.cache, { fileVersionId: responseFileVersionId });

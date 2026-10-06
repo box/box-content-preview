@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-expressions */
-import { act } from '@testing-library/react';
 import * as constants from '../constants';
 import LoadingIcon from '../LoadingIcon';
 import PreviewUI from '../PreviewUI';
@@ -289,51 +288,6 @@ describe('lib/PreviewUI', () => {
             );
             expect(customLogoEl).not.toHaveClass(constants.CLASS_HIDDEN);
             expect(customLogoEl.src).toBe(url);
-        });
-    });
-
-    describe('showComparisonBanner()', () => {
-        test('should insert a version banner into the preview shell', () => {
-            ui.setup(options);
-            act(() => {
-                ui.showComparisonBanner(
-                    {
-                        version_number: '12',
-                        modified_at: '2024-08-22T18:33:00.000Z',
-                        modified_by: { name: 'Emily Huang' },
-                    },
-                    { locale: 'en-US' },
-                );
-            });
-
-            const bannerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_VERSION_BANNER);
-            expect(bannerEl).not.toBeNull();
-            expect(bannerEl.querySelector('.bp-version-banner-badge').textContent).toBe('12');
-            expect(bannerEl.querySelector('.bp-version-banner-author').textContent).toBe('Emily Huang');
-        });
-
-        test('should remove the banner when hideComparisonBanner is called', () => {
-            ui.setup(options);
-            act(() => {
-                ui.showComparisonBanner({ version_number: '12' });
-            });
-            act(() => {
-                ui.hideComparisonBanner();
-            });
-
-            expect(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_VERSION_BANNER)).toBeNull();
-        });
-
-        test('should replace an existing banner instead of stacking them', () => {
-            ui.setup(options);
-            act(() => {
-                ui.showComparisonBanner({ version_number: '1' });
-                ui.showComparisonBanner({ version_number: '2' });
-            });
-
-            const banners = containerEl.querySelectorAll(constants.SELECTOR_BOX_PREVIEW_VERSION_BANNER);
-            expect(banners).toHaveLength(1);
-            expect(banners[0].querySelector('.bp-version-banner-badge').textContent).toBe('2');
         });
     });
 
