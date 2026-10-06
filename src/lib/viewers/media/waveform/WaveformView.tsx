@@ -1521,7 +1521,7 @@ function WaveformView({
                         }}
                         onPreviewChange={setPreviewRange}
                         onRangeChange={interactive && !isOverlayReadOnly ? onRangeChange : undefined}
-                        onRangeClear={onRangeClear}
+                        onRangeClear={isRangeDragging ? undefined : onRangeClear}
                         range={overlayRange}
                         readOnly={isOverlayReadOnly}
                         viewport={viewport}

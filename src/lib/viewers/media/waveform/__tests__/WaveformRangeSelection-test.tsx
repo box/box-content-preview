@@ -131,6 +131,40 @@ describe('WaveformRangeSelection', () => {
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
     });
 
+    test('should return focus to the media container when the range clear control is pressed', async () => {
+        const user = userEvent.setup();
+        const container = document.createElement('div');
+        container.className = 'bp-media-container';
+        container.tabIndex = -1;
+        document.body.appendChild(container);
+
+        const { rerender } = render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={jest.fn()}
+                onRangeClear={jest.fn()}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+            { container },
+        );
+
+        await user.click(screen.getByTestId('bp-waveform-range-clear'));
+        rerender(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={jest.fn()}
+                onRangeClear={jest.fn()}
+                range={{ endMs: null, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(document.activeElement).toBe(container);
+        container.remove();
+    });
+
     test('should clear a draft range from the control beside Comment', async () => {
         const user = userEvent.setup();
         const onDragCreate = jest.fn();
@@ -496,9 +530,33 @@ describe('WaveformRangeSelection', () => {
         );
 
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
-        await user.click(screen.getByTestId('bp-waveform-range-clear'));
+        const clear = screen.getByTestId('bp-waveform-range-clear');
+        expect(clear).toHaveClass('bp-WaveformRange-comment--clearOnly');
+        await user.click(clear);
         expect(onRangeClear).toHaveBeenCalledTimes(1);
         expect(onDragCreate).not.toHaveBeenCalled();
+    });
+
+    test('should show only the clear control when an open range cannot be commented', async () => {
+        const user = userEvent.setup();
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toBeInTheDocument();
+        const clear = screen.getByTestId('bp-waveform-range-clear');
+        expect(clear).toHaveClass('bp-WaveformRange-comment--clearOnly');
+        await user.click(clear);
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
     });
 
     test('should end the drag when the range layer unmounts', () => {

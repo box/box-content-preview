@@ -68,6 +68,14 @@ function stopRangeEvent(event: React.SyntheticEvent): void {
     event.stopPropagation();
 }
 
+function focusMediaContainer(event: React.SyntheticEvent): void {
+    const { currentTarget } = event;
+    if (!(currentTarget instanceof Element)) {
+        return;
+    }
+    currentTarget.closest<HTMLElement>('.bp-media-container')?.focus();
+}
+
 function offsetLeftCss(base: string, offsetPx: number): string {
     if (!offsetPx) {
         return base;
@@ -173,7 +181,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const isRangeOpen = displayed.startMs !== displayed.endMs && activeHandle == null;
         const showCommentButton = !readOnly && Boolean(onDragCreate) && isRangeOpen;
         const showClearControl = onRangeClear != null && isRangeOpen;
-        const showClearOnly = readOnly && showClearControl;
+        const showClearOnly = showClearControl && !showCommentButton;
 
         const syncPositions = useCallback(
             (next: ResolvedRange, nextViewport: WaveformViewport, nextDurationSec: number): void => {
@@ -458,6 +466,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     data-testid="bp-waveform-range-clear"
                     onClick={event => {
                         stopRangeEvent(event);
+                        focusMediaContainer(event);
                         onRangeClear();
                     }}
                     onPointerDown={stopRangeEvent}
@@ -501,6 +510,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                             data-testid="bp-waveform-range-clear"
                             onClick={event => {
                                 stopRangeEvent(event);
+                                focusMediaContainer(event);
                                 onRangeClear();
                             }}
                             onPointerDown={stopRangeEvent}
