@@ -42,6 +42,7 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         onCommentRangeClear?: () => void;
         onCommentRangeDragCreate?: () => void;
         onCommentRangeDragChange?: (isDragging: boolean) => void;
+        onPlayheadComment?: () => void;
         peaks?: ArrayLike<number>;
         shuttleDirection?: ShuttleDirection | null;
         shuttleRate?: number;
@@ -67,6 +68,7 @@ export default function MP3ControlsV2({
     onCommentRangeClear,
     onCommentRangeDragCreate,
     onCommentRangeDragChange,
+    onPlayheadComment,
     onMuteChange,
     onPlayPause,
     onPlayNextChange,
@@ -216,6 +218,7 @@ export default function MP3ControlsV2({
                         interactive={isWaveformInteractive}
                         isPlaying={isPlaying}
                         mediaEl={mediaEl}
+                        onPlayheadComment={isWaveformInteractive && !shuttleDirection ? onPlayheadComment : undefined}
                         onPlayPause={isWaveformInteractive ? onPlayPause : undefined}
                         onRangeChange={isWaveformInteractive ? onCommentRangeChange : undefined}
                         onRangeClear={isWaveformInteractive ? onCommentRangeClear : undefined}

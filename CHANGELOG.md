@@ -1,3 +1,7 @@
+## 3.105.0 (2026-10-03)
+
+* feat(audio): show a comment button on the paused playhead (#1808) ([9d5254c](https://github.com/box/box-content-preview/commit/9d5254c)), closes [#1808](https://github.com/box/box-content-preview/issues/1808)
+
 ## 3.104.0 (2026-10-02)
 
 * fix(media): expand the volume slider on the first tap (#1807) ([69f5727](https://github.com/box/box-content-preview/commit/69f5727)), closes [#1807](https://github.com/box/box-content-preview/issues/1807)
