@@ -26,6 +26,7 @@ import {
     WAVEFORM_ZOOM_DISMISS_MS,
     WAVEFORM_ZOOM_MIN,
 } from './constants';
+import IconComment24 from '../../controls/icons/IconComment24';
 import { formatTime, morphPeaks, toChannels, WAVEFORM_PEAK_TRANSITION_MS } from './peaks';
 import {
     clampTimeMs,
@@ -246,6 +247,7 @@ function WaveformView({
     isPlaying = false,
     mediaEl,
     onPlayPause,
+    onPlayheadComment,
     onRangeChange,
     onRangeClear,
     onRangeDragCreate,
@@ -1428,6 +1430,8 @@ function WaveformView({
 
     const overlayRange = createRange ?? range;
     const isOverlayReadOnly = rangeReadOnly && createRange == null;
+    const showPlayheadComment =
+        interactive && !isPlaying && !isRangeDragging && isRangeCollapsed(overlayRange) && Boolean(onPlayheadComment);
     const showRangeOverlay =
         Boolean(overlayRange) && (isRangeDragging || !isPlaying || !isRangeCollapsed(overlayRange));
 
@@ -1479,12 +1483,25 @@ function WaveformView({
                 }
             >
                 <div ref={containerRef} className="bp-WaveformView-canvas" />
-                <div
-                    ref={playheadRef}
-                    aria-hidden="true"
-                    className="bp-WaveformView-playhead"
-                    data-testid="bp-waveform-playhead"
-                />
+                <div ref={playheadRef} className="bp-WaveformView-playhead" data-testid="bp-waveform-playhead">
+                    {showPlayheadComment && (
+                        <button
+                            className="bp-WaveformRange-comment bp-WaveformView-playheadComment"
+                            data-target-id="Waveform-commentAtTime"
+                            data-testid="bp-waveform-playhead-comment"
+                            onClick={event => {
+                                event.stopPropagation();
+                                onPlayheadComment?.();
+                            }}
+                            onPointerDown={event => event.stopPropagation()}
+                            onPointerUp={event => event.stopPropagation()}
+                            type="button"
+                        >
+                            <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                            {__('media_range_comment')}
+                        </button>
+                    )}
+                </div>
                 {showRangeOverlay && overlayRange && (
                     <WaveformRangeSelection
                         ref={rangeLayerRef}

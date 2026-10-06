@@ -1,3 +1,15 @@
+## 3.105.0 (2026-10-03)
+
+* feat(audio): show a comment button on the paused playhead (#1808) ([9d5254c](https://github.com/box/box-content-preview/commit/9d5254c)), closes [#1808](https://github.com/box/box-content-preview/issues/1808)
+
+## 3.104.0 (2026-10-02)
+
+* fix(media): expand the volume slider on the first tap (#1807) ([69f5727](https://github.com/box/box-content-preview/commit/69f5727)), closes [#1807](https://github.com/box/box-content-preview/issues/1807)
+
+## 3.103.0 (2026-10-02)
+
+* chore(deps): Upgrade Prettier from 1 to 3 (#1804) ([06cff95](https://github.com/box/box-content-preview/commit/06cff95)), closes [#1804](https://github.com/box/box-content-preview/issues/1804)
+
 ## 3.102.0 (2026-10-01)
 
 * feat(audio): show the range clear control on the desktop player (#1803) ([8ac4228](https://github.com/box/box-content-preview/commit/8ac4228)), closes [#1803](https://github.com/box/box-content-preview/issues/1803)
