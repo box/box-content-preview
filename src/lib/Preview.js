@@ -311,9 +311,10 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Renders the comparison banner from this.file. Cached current-file objects often
-     * omit version_number / modified_*; fetch those fields once so the current pane
-     * can show the same badge, time, and author as the compared pane.
+     * Renders the comparison banner from this.file. The current pane has no
+     * fileVersionId option, so load /files/:id/versions/:file_version.id and
+     * normalize it the same way as the compared pane. A later file refresh can
+     * carry a rename's modified_by; keep the version fields when that happens.
      *
      * @private
      * @return {void}
@@ -325,23 +326,54 @@ class Preview extends EventEmitter {
 
         const bannerOptions = {
             isComparedPreview: !!this.options.isComparedPreview,
-            locale: this.location && this.location.locale,
+            locale: this.location?.locale,
         };
+        const requestedFileId = getProp(this.file, 'id');
+        const optionVersionId = requestedFileId
+            ? this.getFileOption(requestedFileId, FILE_OPTION_FILE_VERSION_ID) || ''
+            : '';
+        const fileVersionId = optionVersionId || getProp(this.file, 'file_version.id') || '';
+        const cachedMetadata = this.comparisonBannerMetadata;
+        const hasVersionMetadata =
+            !!cachedMetadata &&
+            String(cachedMetadata.fileId) === String(requestedFileId) &&
+            String(cachedMetadata.versionId) === String(fileVersionId) &&
+            !!fileVersionId;
+
+        if (hasVersionMetadata) {
+            this.file = {
+                ...this.file,
+                version_number: cachedMetadata.version_number,
+                modified_at: cachedMetadata.modified_at,
+                modified_by: cachedMetadata.modified_by,
+            };
+        }
+
         this.ui.showComparisonBanner(this.file, bannerOptions);
 
-        if (!this.file || this.file.version_number != null || !this.file.id) {
+        if (!this.file || !requestedFileId || !fileVersionId || hasVersionMetadata) {
+            return;
+        }
+        // Compared-pane file info is already that version.
+        if (optionVersionId && this.file.version_number != null) {
             return;
         }
 
         const { apiHost } = this.options;
-        const requestedFileId = this.file.id;
-        const fileVersionId = this.getFileOption(requestedFileId, FILE_OPTION_FILE_VERSION_ID) || '';
+        const logMetadataError = error => {
+            // eslint-disable-next-line no-console
+            console.error(
+                `[Preview SDK] Failed to load comparison banner metadata for file ${requestedFileId} version ${fileVersionId}`,
+                error,
+            );
+        };
         this.api
             .get(getURL(requestedFileId, fileVersionId, apiHost), { headers: this.getRequestHeaders() })
             .then(response => {
-                const currentFileVersionId = this.file
+                const currentOptionVersionId = this.file
                     ? this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || ''
                     : '';
+                const currentVersionId = currentOptionVersionId || getProp(this.file, 'file_version.id') || '';
                 // Drop stale responses after hide(), a file/version switch, or leaving comparison.
                 if (
                     !this.open ||
@@ -349,20 +381,31 @@ class Preview extends EventEmitter {
                     !this.ui ||
                     !this.file ||
                     String(this.file.id) !== String(requestedFileId) ||
-                    currentFileVersionId !== fileVersionId
+                    String(currentVersionId) !== String(fileVersionId)
                 ) {
                     return;
                 }
-                const file = fileVersionId ? normalizeFileVersion(response, requestedFileId) : response;
+                if (response == null || response.version_number == null) {
+                    logMetadataError(new Error('Comparison banner metadata response was empty'));
+                    return;
+                }
+                const versionFile = normalizeFileVersion(response, requestedFileId);
+                this.comparisonBannerMetadata = {
+                    fileId: String(requestedFileId),
+                    versionId: String(fileVersionId),
+                    version_number: versionFile.version_number,
+                    modified_at: versionFile.modified_at,
+                    modified_by: versionFile.modified_by,
+                };
                 this.file = {
                     ...this.file,
-                    version_number: file.version_number,
-                    modified_at: file.modified_at,
-                    modified_by: file.modified_by,
+                    version_number: versionFile.version_number,
+                    modified_at: versionFile.modified_at,
+                    modified_by: versionFile.modified_by,
                 };
                 this.ui.showComparisonBanner(this.file, bannerOptions);
             })
-            .catch(() => {});
+            .catch(logMetadataError);
     }
 
     /**

@@ -411,7 +411,8 @@ describe('lib/Preview', () => {
             });
             preview.open = true;
             preview.options = { isComparing: true, apiHost: 'https://api.box.com' };
-            preview.file = { id: '123' };
+            preview.file = { id: '123', file_version: { id: 'v-current' } };
+            preview.comparisonBannerMetadata = undefined;
             preview.location = { locale: 'en-US' };
             preview.previewOptions = {};
             preview.ui = {
@@ -424,18 +425,57 @@ describe('lib/Preview', () => {
         test('should merge banner metadata when the same file is still open', () => {
             preview.paintComparisonBanner();
             deferred.resolve({
+                id: 'v-current',
                 version_number: '12',
                 modified_at: '2024-08-22T18:33:00.000Z',
                 modified_by: { name: 'Emily Huang' },
             });
 
             return deferred.promise.then(() => {
+                expect(preview.api.get).toHaveBeenCalledWith(
+                    expect.stringContaining('/files/123/versions/v-current'),
+                    expect.any(Object),
+                );
+                expect(preview.file.id).toBe('123');
                 expect(preview.file.version_number).toBe('12');
                 expect(preview.file.modified_by).toEqual({ name: 'Emily Huang' });
                 expect(preview.ui.showComparisonBanner).toHaveBeenLastCalledWith(preview.file, {
                     isComparedPreview: false,
                     locale: 'en-US',
                 });
+            });
+        });
+
+        test('should keep the current version author after a file-level refresh', () => {
+            preview.file = {
+                id: '123',
+                file_version: { id: 'v-current' },
+                version_number: '4',
+                modified_by: { name: 'Renamer' },
+            };
+            preview.paintComparisonBanner();
+            deferred.resolve({
+                id: 'v-current',
+                version_number: '4',
+                modified_at: '2024-08-22T18:33:00.000Z',
+                modified_by: { name: 'Emily Huang' },
+            });
+
+            return deferred.promise.then(() => {
+                preview.api.get.mockClear();
+                preview.file = {
+                    id: '123',
+                    file_version: { id: 'v-current' },
+                    version_number: '4',
+                    modified_at: '2026-01-01T00:00:00.000Z',
+                    modified_by: { name: 'Renamer' },
+                };
+
+                preview.paintComparisonBanner();
+
+                expect(preview.api.get).not.toHaveBeenCalled();
+                expect(preview.file.modified_by).toEqual({ name: 'Emily Huang' });
+                expect(preview.file.modified_at).toBe('2024-08-22T18:33:00.000Z');
             });
         });
 
@@ -470,6 +510,42 @@ describe('lib/Preview', () => {
             return deferred.promise.then(() => {
                 expect(preview.file.version_number).toBeUndefined();
             });
+        });
+
+        test('should skip the merge and log when the metadata response is empty', () => {
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            preview.paintComparisonBanner();
+            deferred.resolve(undefined);
+
+            return deferred.promise.then(() => {
+                expect(preview.file).toEqual({ id: '123', file_version: { id: 'v-current' } });
+                expect(preview.comparisonBannerMetadata).toBeUndefined();
+                expect(preview.ui.showComparisonBanner).toHaveBeenCalledTimes(1);
+                expect(errorSpy).toHaveBeenCalledWith(
+                    '[Preview SDK] Failed to load comparison banner metadata for file 123 version v-current',
+                    expect.any(Error),
+                );
+                errorSpy.mockRestore();
+            });
+        });
+
+        test('should log a failed metadata request without merging', () => {
+            const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            const error = new Error('network');
+            preview.api.get.mockReturnValue(Promise.reject(error));
+            preview.paintComparisonBanner();
+
+            return Promise.resolve()
+                .then(() => undefined)
+                .then(() => {
+                    expect(preview.file).toEqual({ id: '123', file_version: { id: 'v-current' } });
+                    expect(preview.comparisonBannerMetadata).toBeUndefined();
+                    expect(errorSpy).toHaveBeenCalledWith(
+                        '[Preview SDK] Failed to load comparison banner metadata for file 123 version v-current',
+                        error,
+                    );
+                    errorSpy.mockRestore();
+                });
         });
     });
 
