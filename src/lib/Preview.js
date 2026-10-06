@@ -334,14 +334,26 @@ class Preview extends EventEmitter {
         }
 
         const { apiHost } = this.options;
-        const fileVersionId = this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || '';
+        const requestedFileId = this.file.id;
+        const fileVersionId = this.getFileOption(requestedFileId, FILE_OPTION_FILE_VERSION_ID) || '';
         this.api
-            .get(getURL(this.file.id, fileVersionId, apiHost), { headers: this.getRequestHeaders() })
+            .get(getURL(requestedFileId, fileVersionId, apiHost), { headers: this.getRequestHeaders() })
             .then(response => {
-                if (!this.options.isComparing || !this.file) {
+                const currentFileVersionId = this.file
+                    ? this.getFileOption(this.file.id, FILE_OPTION_FILE_VERSION_ID) || ''
+                    : '';
+                // Drop stale responses after hide(), a file/version switch, or leaving comparison.
+                if (
+                    !this.open ||
+                    !this.options.isComparing ||
+                    !this.ui ||
+                    !this.file ||
+                    String(this.file.id) !== String(requestedFileId) ||
+                    currentFileVersionId !== fileVersionId
+                ) {
                     return;
                 }
-                const file = fileVersionId ? normalizeFileVersion(response, this.file.id) : response;
+                const file = fileVersionId ? normalizeFileVersion(response, requestedFileId) : response;
                 this.file = {
                     ...this.file,
                     version_number: file.version_number,

@@ -401,6 +401,78 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('paintComparisonBanner()', () => {
+        let deferred;
+
+        beforeEach(() => {
+            deferred = {};
+            deferred.promise = new Promise(resolve => {
+                deferred.resolve = resolve;
+            });
+            preview.open = true;
+            preview.options = { isComparing: true, apiHost: 'https://api.box.com' };
+            preview.file = { id: '123' };
+            preview.location = { locale: 'en-US' };
+            preview.previewOptions = {};
+            preview.ui = {
+                showComparisonBanner: jest.fn(),
+            };
+            jest.spyOn(preview.api, 'get').mockReturnValue(deferred.promise);
+            jest.spyOn(preview, 'getRequestHeaders').mockReturnValue({});
+        });
+
+        test('should merge banner metadata when the same file is still open', () => {
+            preview.paintComparisonBanner();
+            deferred.resolve({
+                version_number: '12',
+                modified_at: '2024-08-22T18:33:00.000Z',
+                modified_by: { name: 'Emily Huang' },
+            });
+
+            return deferred.promise.then(() => {
+                expect(preview.file.version_number).toBe('12');
+                expect(preview.file.modified_by).toEqual({ name: 'Emily Huang' });
+                expect(preview.ui.showComparisonBanner).toHaveBeenLastCalledWith(preview.file, {
+                    isComparedPreview: false,
+                    locale: 'en-US',
+                });
+            });
+        });
+
+        test('should ignore a stale response after the file changes', () => {
+            preview.paintComparisonBanner();
+            preview.file = { id: '999' };
+            deferred.resolve({ version_number: '12', modified_by: { name: 'Emily Huang' } });
+
+            return deferred.promise.then(() => {
+                expect(preview.file).toEqual({ id: '999' });
+                expect(preview.ui.showComparisonBanner).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        test('should ignore a stale response after the file version changes', () => {
+            preview.previewOptions = { fileOptions: { 123: { fileVersionId: 'v1' } } };
+            preview.paintComparisonBanner();
+            preview.previewOptions = { fileOptions: { 123: { fileVersionId: 'v2' } } };
+            deferred.resolve({ version_number: '3' });
+
+            return deferred.promise.then(() => {
+                expect(preview.file.version_number).toBeUndefined();
+                expect(preview.ui.showComparisonBanner).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        test('should ignore a stale response after comparison ends', () => {
+            preview.paintComparisonBanner();
+            preview.options.isComparing = false;
+            deferred.resolve({ version_number: '12' });
+
+            return deferred.promise.then(() => {
+                expect(preview.file.version_number).toBeUndefined();
+            });
+        });
+    });
+
     describe('hide()', () => {
         beforeEach(() => {
             stubs.destroy = jest.spyOn(preview, 'destroy').mockImplementation();
