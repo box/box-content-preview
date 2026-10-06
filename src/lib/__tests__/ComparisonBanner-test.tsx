@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
-import { CLASS_BOX_PREVIEW_VERSION_BANNER } from '../constants';
+import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from '../constants';
 import ComparisonBanner, {
     ComparisonBannerRoot,
     formatComparisonTimestamp,
@@ -57,6 +57,7 @@ describe('lib/ComparisonBanner', () => {
 
             expect(bannerEl).toHaveAttribute('role', 'status');
             expect(bannerEl).toHaveAttribute('aria-label', __('comparison_banner_current'));
+            expect(bannerEl).not.toHaveClass(CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED);
             expect(bannerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('12');
             expect(bannerEl.querySelector('.bp-version-banner-time')).toHaveTextContent(/Aug/);
             expect(bannerEl.querySelector('.bp-version-banner-author')).toHaveTextContent('Emily Huang');
@@ -67,6 +68,7 @@ describe('lib/ComparisonBanner', () => {
             const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`) as HTMLElement;
 
             expect(bannerEl).toHaveAttribute('aria-label', __('comparison_banner_previous'));
+            expect(bannerEl).toHaveClass(CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED);
         });
 
         test('should omit missing fields', () => {

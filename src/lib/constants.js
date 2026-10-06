@@ -27,6 +27,7 @@ export const CLASS_BOX_PREVIEW_LOGO_DEFAULT = 'bp-default-logo';
 export const CLASS_BOX_PREVIEW_MENU = 'bp-menu';
 export const CLASS_BOX_PREVIEW_MOBILE = 'bp-is-mobile';
 export const CLASS_BOX_PREVIEW_VERSION_BANNER = 'bp-version-banner';
+export const CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED = 'bp-version-banner--compared';
 export const CLASS_BOX_PREVIEW_OVERLAY = 'bp-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';

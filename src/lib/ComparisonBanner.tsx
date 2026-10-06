@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import { CLASS_BOX_PREVIEW_VERSION_BANNER } from './constants';
+import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from './constants';
 
 export type ComparisonBannerFile = {
     created_by?: { name?: string };
@@ -48,7 +48,11 @@ export default function ComparisonBanner({ file = {}, isComparedPreview = false,
     return (
         <div
             aria-label={isComparedPreview ? __('comparison_banner_previous') : __('comparison_banner_current')}
-            className={CLASS_BOX_PREVIEW_VERSION_BANNER}
+            className={
+                isComparedPreview
+                    ? `${CLASS_BOX_PREVIEW_VERSION_BANNER} ${CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED}`
+                    : CLASS_BOX_PREVIEW_VERSION_BANNER
+            }
             role="status"
         >
             {versionNumber && <span className="bp-version-banner-badge">{versionNumber}</span>}

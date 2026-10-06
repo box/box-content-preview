@@ -308,7 +308,7 @@ $header-height: 48px;
     border-radius: 50%;
 }
 
-.bp-is-compared .bp-version-banner-badge {
+.bp-version-banner--compared .bp-version-banner-badge {
     color: #000;
     font-weight: bold;
     background-color: rgb(255 255 255 / 70%);
@@ -330,7 +330,7 @@ $header-height: 48px;
     text-overflow: ellipsis;
 }
 
-.bp-is-compared .bp-version-banner-time {
+.bp-version-banner--compared .bp-version-banner-time {
     color: #222;
 }
 
@@ -357,11 +357,10 @@ $header-height: 48px;
     .bp-version-banner-author {
         color: rgb(255 255 255 / 70%);
     }
-}
 
-:is(.bp-dark, .bp:has(.bp-media--v2)).bp-is-compared .bp-version-banner-badge,
-.bp-theme-dark .bp-is-compared .bp-version-banner-badge {
-    color: #fff;
-    background-color: rgb(255 255 255 / 30%);
-    border-color: rgb(255 255 255 / 12%);
+    .bp-version-banner--compared .bp-version-banner-badge {
+        color: #fff;
+        background-color: rgb(255 255 255 / 30%);
+        border-color: rgb(255 255 255 / 12%);
+    }
 }
