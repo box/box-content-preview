@@ -55,12 +55,12 @@ The DASH viewer fires the following events
 The following methods are available for the DASH viewer.
 
 | Method Name      | Explanation                                   | Method Parameters              |
-| ---------------- | --------------------------------------------- | ------------------------------ |
+| ---------------- | --------------------------------------------- | ------------------------------ | --- |
 | setMediaTime     | Updates the media element's time              | {number} time in seconds       |
 | setVolume        | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay       | Toggles playback                              |                                |
 | toggleMute       | Toggles between mute and current volume value |                                |
-| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |  |
+| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |     |
 | increaseVolume   | Increases volume by a small increment         |                                |
 | decreaseVolume   | Decreases volume by a small increment         |                                |
 | toggleFullscreen | Toggles fullscreen mode                       |                                |
@@ -115,6 +115,8 @@ The MP3 viewer fires the following events
 
 The host also sends these events to the MP3 viewer (audio player v2 only). Checkbox-driven handles appear on `comment_range_draft`. A waveform drag can draw a range before that event; Comment then emits `comment_range_compose`.
 
+Comment on the paused playhead and on an open range follows the file's `permissions.can_comment`, the same flag the activity feed uses. Only `true` shows those Comment controls. `false`, a missing permissions object, or a missing flag hides them, and those presses do not emit `comment_range_compose`. An open range still shows the clear control on its own, the same X as a viewed range.
+
 | Event Name                | Direction     | Event Data                                                                                  |
 | ------------------------- | ------------- | ------------------------------------------------------------------------------------------- |
 | comment_range_draft       | Host → viewer | `{ startMs, endMs }`. `endMs: null` is a collapsed timestamp. Invalid payloads are ignored. |
@@ -128,12 +130,12 @@ Selecting a ranged marker (sidebar, marker click, or deep link) draws that span 
 The following methods are available for the MP3 viewer.
 
 | Method Name    | Explanation                                   | Method Parameters              |
-| -------------- | --------------------------------------------- | ------------------------------ |
+| -------------- | --------------------------------------------- | ------------------------------ | --- |
 | setMediaTime   | Updates the media element's time              | {number} time in seconds       |
 | setVolume      | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay     | Toggles playback                              |                                |
 | toggleMute     | Toggles between mute and current volume value |                                |
-| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |  |
+| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |     |
 | increaseVolume | Increases volume by a small increment         |                                |
 | decreaseVolume | Decreases volume by a small increment         |                                |
 
