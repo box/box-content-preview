@@ -499,12 +499,51 @@ describe('WaveformView', () => {
         expect(onRangeDragChange).toHaveBeenCalledWith(true);
         expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
 
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
         dispatchTrackPointer(window, 'pointerup', 100);
 
         expect(onRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 400 });
         expect(onRangeDragChange).toHaveBeenLastCalledWith(false);
         clickHandler?.(0.75);
         expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should show Comment and clear only after a range drag ends', () => {
+        render(
+            <WaveformView durationSec={8} onRangeClear={jest.fn()} onRangeDragCreate={jest.fn()} peaks={[0.2, 0.8]} />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(screen.getByTestId('bp-waveform-range-comment-pill')).toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-comment')).toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
+    });
+
+    test('should show only clear after a range drag when commenting is unavailable', () => {
+        render(<WaveformView durationSec={8} onRangeClear={jest.fn()} peaks={[0.2, 0.8]} />);
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-clear')).toHaveClass('bp-WaveformRange-comment--clearOnly');
     });
 
     test('should keep a short press as click-to-seek', () => {
