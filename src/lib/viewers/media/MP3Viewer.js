@@ -123,6 +123,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.commentRangeDraft = null;
         this.commentRangeReadOnly = null;
         this.hostSelectedMarkerId = null;
+        this.hostSelectedMarkerSeq = null;
         this.isCommentRangeDragging = false;
         this.isCommentRangeTimestampActive = false;
         this.shuttleDirection = null;
@@ -973,9 +974,13 @@ class MP3Viewer extends MediaBaseViewer {
 
         // Host echoes often omit isSelected. Keep hostSelectedMarkerId so ↑/↓ can
         // still walk other comments at the same time. Clear only when that id is gone.
+        // selectionSeq is a new pick of that same comment: seek and draw the range again.
         if (selected) {
-            if (selected.id !== this.hostSelectedMarkerId) {
+            const incomingSeq = Number.isFinite(selected.selectionSeq) ? selected.selectionSeq : null;
+            const isRepeatSelect = incomingSeq != null && incomingSeq !== this.hostSelectedMarkerSeq;
+            if (selected.id !== this.hostSelectedMarkerId || isRepeatSelect) {
                 this.hostSelectedMarkerId = selected.id;
+                this.hostSelectedMarkerSeq = incomingSeq;
                 this.commentRangeReadOnly = commentMarkerRange(selected);
                 if (Number.isFinite(selected.time)) {
                     this.pendingHostSelectedSeek = selected;
@@ -984,6 +989,7 @@ class MP3Viewer extends MediaBaseViewer {
             }
         } else if (this.hostSelectedMarkerId && !markers.some(marker => marker.id === this.hostSelectedMarkerId)) {
             this.hostSelectedMarkerId = null;
+            this.hostSelectedMarkerSeq = null;
             this.pendingHostSelectedSeek = null;
             this.commentRangeReadOnly = null;
         }

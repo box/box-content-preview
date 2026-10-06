@@ -510,7 +510,7 @@ describe('WaveformView', () => {
         expect(onSeek).not.toHaveBeenCalled();
     });
 
-    test('should show Comment and clear only after a range drag ends', () => {
+    test('should show Comment without clear after a desktop range drag ends', () => {
         render(
             <WaveformView durationSec={8} onRangeClear={jest.fn()} onRangeDragCreate={jest.fn()} peaks={[0.2, 0.8]} />,
         );
@@ -525,12 +525,12 @@ describe('WaveformView', () => {
 
         dispatchTrackPointer(window, 'pointerup', 100);
 
-        expect(screen.getByTestId('bp-waveform-range-comment-pill')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
         expect(screen.getByTestId('bp-waveform-range-comment')).toBeInTheDocument();
-        expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
     });
 
-    test('should show only clear after a range drag when commenting is unavailable', () => {
+    test('should hide Comment and clear after a desktop range drag when commenting is unavailable', () => {
         render(<WaveformView durationSec={8} onRangeClear={jest.fn()} peaks={[0.2, 0.8]} />);
         mockWaveformRect();
         const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
@@ -543,7 +543,7 @@ describe('WaveformView', () => {
         dispatchTrackPointer(window, 'pointerup', 100);
 
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
-        expect(screen.getByTestId('bp-waveform-range-clear')).toHaveClass('bp-WaveformRange-comment--clearOnly');
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
     });
 
     test('should keep a short press as click-to-seek', () => {
@@ -582,7 +582,8 @@ describe('WaveformView', () => {
         expect(onRangeChange).not.toHaveBeenCalled();
     });
 
-    test('should show Comment and clear above a checkbox range', () => {
+    test('should show Comment without clear above a desktop checkbox range', async () => {
+        const user = userEvent.setup();
         const onRangeClear = jest.fn();
         const onRangeDragCreate = jest.fn();
         render(
@@ -595,11 +596,12 @@ describe('WaveformView', () => {
             />,
         );
 
-        fireEvent.click(screen.getByTestId('bp-waveform-range-comment'));
+        await user.click(screen.getByTestId('bp-waveform-range-comment'));
 
         expect(onRangeDragCreate).toHaveBeenCalledTimes(1);
         expect(onRangeClear).not.toHaveBeenCalled();
-        expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
     });
 
     test('should not clear an open range from a tape waveform click', () => {
@@ -638,7 +640,23 @@ describe('WaveformView', () => {
 
         expect(onRangeClear).toHaveBeenCalledTimes(1);
         expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
-        expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+    });
+
+    test('should show the clear control on a tape viewed range', () => {
+        render(
+            <WaveformView
+                cameraMode="tape"
+                durationSec={8}
+                onRangeClear={jest.fn()}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                rangeReadOnly
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-clear')).toHaveClass('bp-WaveformRange-comment--clearOnly');
     });
 
     test('should dismiss a tape range from the clear control beside Comment', async () => {

@@ -18,6 +18,11 @@
     height: 100%;
     background: transparent;
     pointer-events: none;
+
+    // An open range can be dismissed from the letterbox around the wave.
+    &--rangeDismiss {
+        pointer-events: auto;
+    }
 }
 
 .bp-MP3ControlsV2-stage {
