@@ -276,7 +276,7 @@ $header-height: 48px;
     color: #fff;
 }
 
-// Comparison banner. Not mounted yet.
+// Comparison banner, rendered in this package rather than by the host. Not mounted yet.
 .bp-version-banner {
     position: absolute;
     top: 0;
