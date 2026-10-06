@@ -277,10 +277,11 @@ $header-height: 48px;
 }
 
 // Overlay banner. Pad scrollable viewers so the first page can sit below it.
+// Fullscreen is toggled on .bp-content (BaseViewer.toggleFullscreen), not .bp.
 .bp.bp-is-comparing {
     --bp-comparison-banner-height: 4.5rem;
 
-    &:not(.bp-is-fullscreen) {
+    &:not(:has(> .bp-content.bp-is-fullscreen)) {
         .bp-doc,
         .bp-document-preload-wrapper,
         .bp-image,
@@ -291,7 +292,7 @@ $header-height: 48px;
         }
     }
 
-    &.bp-is-fullscreen .bp-version-banner {
+    &:has(> .bp-content.bp-is-fullscreen) .bp-version-banner {
         display: none;
     }
 }
@@ -307,7 +308,6 @@ $header-height: 48px;
     align-items: center;
     height: var(--bp-comparison-banner-height, 4.5rem);
     padding: 16px;
-    pointer-events: none;
     background: linear-gradient(180deg, #f5f5f5 19.61%, rgb(255 255 255 / 0%) 100%);
 }
 
