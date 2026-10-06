@@ -20,24 +20,33 @@ function eventTargetElement(target: EventTarget | null): Element | null {
  * Optimistic comment-badge selection that clears on pointerdown outside the
  * selected avatar or its cluster. Host `hostSelectedId` can restore a different
  * id; acking the dismissed id must not bring the ring back.
+ * A new `selectionSeq` is the user picking that same comment again, so the ring returns.
  */
 export default function useDismissableMarkerSelection(
     hostSelectedId: string | null = null,
+    selectionSeq: number | null = null,
 ): DismissableMarkerSelection {
     const containerRef = useRef<HTMLDivElement>(null);
     const dismissedIdRef = useRef<string | null>(null);
+    const appliedSeqRef = useRef<number | null>(null);
     const [optimisticSelectedId, setOptimisticSelectedId] = useState<string | null>(null);
     const [isSelectionDismissed, setIsSelectionDismissed] = useState(false);
     const selectedId = optimisticSelectedId ?? (isSelectionDismissed ? null : hostSelectedId);
 
     useEffect(() => {
         setOptimisticSelectedId(null);
+        if (selectionSeq != null && selectionSeq !== appliedSeqRef.current) {
+            appliedSeqRef.current = selectionSeq;
+            dismissedIdRef.current = null;
+            setIsSelectionDismissed(false);
+            return;
+        }
         if (dismissedIdRef.current && hostSelectedId === dismissedIdRef.current) {
             return;
         }
         dismissedIdRef.current = null;
         setIsSelectionDismissed(false);
-    }, [hostSelectedId]);
+    }, [hostSelectedId, selectionSeq]);
 
     const selectMarker = useCallback((id: string): void => {
         dismissedIdRef.current = null;

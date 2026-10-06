@@ -55,12 +55,12 @@ The DASH viewer fires the following events
 The following methods are available for the DASH viewer.
 
 | Method Name      | Explanation                                   | Method Parameters              |
-| ---------------- | --------------------------------------------- | ------------------------------ |
+| ---------------- | --------------------------------------------- | ------------------------------ | --- |
 | setMediaTime     | Updates the media element's time              | {number} time in seconds       |
 | setVolume        | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay       | Toggles playback                              |                                |
 | toggleMute       | Toggles between mute and current volume value |                                |
-| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |  |
+| quickSeek        | Seeks forward/backward from current point     | {number} increment in seconds  |     |
 | increaseVolume   | Increases volume by a small increment         |                                |
 | decreaseVolume   | Decreases volume by a small increment         |                                |
 | toggleFullscreen | Toggles fullscreen mode                       |                                |
@@ -121,19 +121,21 @@ The host also sends these events to the MP3 viewer (audio player v2 only). Check
 | comment_range_draft_clear | Host → viewer | Hide handles. A file-version switch is a clear, not a resync.                               |
 | comment_markers           | Host → viewer | Marker list. A ranged comment includes `endTime` (seconds). `time` is the start.            |
 
-Selecting a ranged marker (sidebar, marker click, or deep link) draws that span as a read-only range. It matches a draft range, including highlight, zoom, and playback loop, without handles or editable edges. Clicking the waveform outside the span clears it locally and does not emit `comment_range_draft_dismiss`. A composer draft still replaces it.
+Selecting a ranged marker (sidebar, marker click, or deep link) draws that span as a read-only range. It matches a draft range, including highlight, zoom, and playback loop, without handles or editable edges. Clicking the waveform outside the span clears it locally and does not emit `comment_range_draft_dismiss`. A click elsewhere in the player does the same, except on comment markers, the comment toolbar, the zoom control, or the transport bar. The desktop player has no X on a draft or viewed range. The tape player still shows it. A composer draft still replaces it.
+
+Choosing that same comment again adds `selectionSeq` on the selected marker. The viewer seeks and redraws the avatar and range when the number changes. A later feed refresh keeps the previous `selectionSeq` and does not seek again.
 
 ## Methods
 
 The following methods are available for the MP3 viewer.
 
 | Method Name    | Explanation                                   | Method Parameters              |
-| -------------- | --------------------------------------------- | ------------------------------ |
+| -------------- | --------------------------------------------- | ------------------------------ | --- |
 | setMediaTime   | Updates the media element's time              | {number} time in seconds       |
 | setVolume      | Updates the media element's volume            | {number} value between 0 and 1 |
 | togglePlay     | Toggles playback                              |                                |
 | toggleMute     | Toggles between mute and current volume value |                                |
-| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |  |
+| quickSeek      | Seeks forward/backward from current point     | {number} increment in seconds  |     |
 | increaseVolume | Increases volume by a small increment         |                                |
 | decreaseVolume | Decreases volume by a small increment         |                                |
 

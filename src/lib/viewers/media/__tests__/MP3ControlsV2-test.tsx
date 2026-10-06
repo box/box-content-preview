@@ -70,7 +70,7 @@ jest.mock('../waveform/WaveformView', () => {
         }, [durationSec, onViewportChange]);
         return (
             <div
-                className={cameraMode === 'tape' ? 'bp-WaveformView--tape' : undefined}
+                className={cameraMode === 'tape' ? 'bp-WaveformView bp-WaveformView--tape' : 'bp-WaveformView'}
                 data-camera-mode={cameraMode || 'desktop'}
                 data-duration-sec={String(durationSec)}
                 data-interactive={interactive ? 'true' : 'false'}
@@ -809,6 +809,66 @@ describe('MP3ControlsV2', () => {
 
             expect(await screen.findByTestId('bp-waveform-range')).toHaveAttribute('data-start', '8055');
             expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-end', '');
+        });
+
+        test('should dismiss an open draft or viewed range from the player outside the range chrome', async () => {
+            const onCommentRangeClear = jest.fn();
+            const { rerender } = getWrapper({
+                commentRangeDraft: { endMs: 4000, startMs: 2000 },
+                commentMarkers: hostCommentMarkers,
+                durationTime: 180,
+                isPlaying: true,
+                onCommentRangeClear,
+                peaks: [0.2, 0.8],
+            });
+            const user = userEvent.setup();
+            const player = await screen.findByTestId('media-controls-wrapper-v2');
+
+            await user.click(player);
+            expect(onCommentRangeClear).toHaveBeenCalledTimes(1);
+
+            onCommentRangeClear.mockClear();
+            await user.click(screen.getByTestId('bp-MP3ControlsV2-bar'));
+            await user.click(screen.getByTestId('bp-waveform-zoom'));
+            await user.click(screen.getByTestId('bp-waveform-comment-marker'));
+            await user.click(screen.getByTestId('bp-waveform-view'));
+            expect(onCommentRangeClear).not.toHaveBeenCalled();
+
+            const toolbar = document.createElement('button');
+            toolbar.className = 'bp-WaveformRange-comment';
+            player.appendChild(toolbar);
+            await user.click(toolbar);
+            expect(onCommentRangeClear).not.toHaveBeenCalled();
+
+            rerender(
+                <MP3ControlsV2
+                    {...defaultControlsProps}
+                    commentRangeReadOnly={{ endMs: 12000, startMs: 8055 }}
+                    durationTime={180}
+                    isPlaying
+                    mediaEl={mediaElWithDuration(180)}
+                    onCommentRangeClear={onCommentRangeClear}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            await user.click(screen.getByTestId('media-controls-wrapper-v2'));
+            expect(onCommentRangeClear).toHaveBeenCalledTimes(1);
+        });
+
+        test('should keep a collapsed timestamp when the player is clicked', async () => {
+            const onCommentRangeClear = jest.fn();
+            getWrapper({
+                commentRangeDraft: { endMs: null, startMs: 2000 },
+                durationTime: 8,
+                isPlaying: true,
+                onCommentRangeClear,
+                peaks: [0.2, 0.8],
+            });
+
+            await userEvent.click(await screen.findByTestId('media-controls-wrapper-v2'));
+
+            expect(onCommentRangeClear).not.toHaveBeenCalled();
+            expect(screen.getByTestId('media-controls-wrapper-v2')).not.toHaveClass('bp-MP3ControlsV2--rangeDismiss');
         });
 
         test('should pass range handle commits and click-outside clears through', async () => {

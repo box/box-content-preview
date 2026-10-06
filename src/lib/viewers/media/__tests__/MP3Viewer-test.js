@@ -628,6 +628,76 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.pendingHostSelectedSeek).toBeNull();
         });
 
+        test('should seek and restore the range when the same marker is selected again', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const marker = {
+                endTime: 50.5,
+                id: 'comment-1',
+                isSelected: true,
+                selectionSeq: 1,
+                time: 41.2,
+                type: 'comment',
+            };
+
+            mp3.handleCommentMarkersUpdated([marker]);
+            mp3.commentRangeReadOnly = null;
+            mp3.mediaEl.currentTime = 12;
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated([{ ...marker, selectionSeq: 2 }]);
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.commentRangeReadOnly).toEqual({ endMs: 50500, startMs: 41200 });
+        });
+
+        test('should seek a point comment again when selectionSeq changes', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const marker = { id: 'comment-1', isSelected: true, selectionSeq: 1, time: 41.2, type: 'comment' };
+
+            mp3.handleCommentMarkersUpdated([marker]);
+            mp3.mediaEl.currentTime = 12;
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated([{ ...marker, selectionSeq: 2 }]);
+
+            expect(mp3.mediaEl.pause).toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(41.2);
+            expect(mp3.commentRangeReadOnly).toBeNull();
+        });
+
+        test('should not seek again when selectionSeq is unchanged', () => {
+            jest.spyOn(mp3, 'renderUI').mockImplementation();
+            mp3.mediaEl = document.createElement('audio');
+            jest.spyOn(mp3.mediaEl, 'pause').mockImplementation();
+            Object.defineProperty(mp3.mediaEl, 'duration', { configurable: true, value: 180 });
+            const marker = {
+                endTime: 50.5,
+                id: 'comment-1',
+                isSelected: true,
+                selectionSeq: 1,
+                time: 41.2,
+                type: 'comment',
+            };
+
+            mp3.handleCommentMarkersUpdated([marker]);
+            mp3.commentRangeReadOnly = null;
+            mp3.mediaEl.currentTime = 12;
+            mp3.mediaEl.pause.mockClear();
+
+            mp3.handleCommentMarkersUpdated([marker]);
+
+            expect(mp3.mediaEl.pause).not.toBeCalled();
+            expect(mp3.mediaEl.currentTime).toBe(12);
+            expect(mp3.commentRangeReadOnly).toBeNull();
+        });
+
         test('should not seek again when the same marker stays selected', () => {
             jest.spyOn(mp3, 'renderUI').mockImplementation();
             mp3.mediaEl = document.createElement('audio');

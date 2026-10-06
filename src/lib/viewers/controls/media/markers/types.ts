@@ -10,6 +10,11 @@ export type CommentMarker = {
     initial?: string;
     /** Host / activity-feed selection. The painted ring follows the dismiss hook's selectedId. */
     isSelected?: boolean;
+    /**
+     * Increments when the user selects this same comment again.
+     * A feed refresh keeps the previous value and must not seek again.
+     */
+    selectionSeq?: number;
     time: number;
     type?: 'annotation' | 'comment';
 };

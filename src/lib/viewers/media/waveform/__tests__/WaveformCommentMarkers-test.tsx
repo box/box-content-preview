@@ -303,6 +303,23 @@ describe('WaveformCommentMarkers', () => {
         expect(badge).not.toHaveClass('bp-WaveformCommentMarkers-marker--selected');
     });
 
+    test('should restore the ring when the same comment is selected again', async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(
+            <WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" selectionSeq={1} />,
+        );
+
+        const badge = screen.getAllByTestId('bp-waveform-comment-marker')[0];
+        await user.click(document.body);
+        expect(badge).not.toHaveClass('bp-WaveformCommentMarkers-marker--selected');
+
+        rerender(
+            <WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" selectionSeq={2} />,
+        );
+
+        expect(badge).toHaveClass('bp-WaveformCommentMarkers-marker--selected');
+    });
+
     test('should follow the visible window when the waveform viewport changes', () => {
         const zoomed = createWaveformViewport({
             durationSec: 180,
