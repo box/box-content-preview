@@ -21,13 +21,8 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -39,7 +34,7 @@
         "@box/blueprint-web": "^17.11.3",
         "@box/blueprint-web-assets": "^5.10.10",
         "@box/react-virtualized": "9.22.3-rc-box.2",
-        "axios": "^0.33.0",
+        "axios": "^0.34.0",
         "box-annotations": "^5.2.1-beta.0",
         "box-ui-elements": "^20.0.0",
         "react": "^18.0.0",
@@ -73,7 +68,7 @@
         "@typescript-eslint/eslint-plugin": "^5.60.1",
         "@typescript-eslint/parser": "^5.60.1",
         "autoprefixer": "^10.4.21",
-        "axios": "^0.33.0",
+        "axios": "^0.34.0",
         "babel-jest": "^29.7.0",
         "babel-loader": "^8.3.0",
         "babel-plugin-transform-require-ignore": "^0.1.1",
