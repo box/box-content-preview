@@ -277,10 +277,10 @@ $header-height: 48px;
 
 .bp-version-banner {
     position: absolute;
+    z-index: 3;
     top: 0;
     right: 0;
     left: 0;
-    z-index: 3;
     display: flex;
     gap: 12px;
     align-items: center;
@@ -297,18 +297,18 @@ $header-height: 48px;
     min-width: 32px;
     height: 32px;
     padding: 0 8px;
-    color: #fff;
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 20px;
-    background-color: #26c281;
     border: 1px solid rgb(0 0 0 / 12%);
     border-radius: 50%;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #fff;
+    background-color: #26c281;
 }
 
 .bp-version-banner--compared .bp-version-banner-badge {
-    color: #000;
     font-weight: bold;
+    color: #000;
     background-color: rgb(255 255 255 / 70%);
 }
 
@@ -320,12 +320,12 @@ $header-height: 48px;
 
 .bp-version-banner-time {
     overflow: hidden;
-    color: #000;
-    font-weight: 500;
     font-size: 15px;
+    font-weight: 500;
     line-height: 20px;
-    white-space: nowrap;
+    color: #000;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .bp-version-banner--compared .bp-version-banner-time {
@@ -334,11 +334,11 @@ $header-height: 48px;
 
 .bp-version-banner-author {
     overflow: hidden;
-    color: #000;
     font-size: 12px;
     line-height: 14px;
-    white-space: nowrap;
+    color: #000;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 // Video lowers lights on .bp. MP3/MP4 v2 keep the dark stage on .bp-media--v2
@@ -357,8 +357,8 @@ $header-height: 48px;
     }
 
     .bp-version-banner--compared .bp-version-banner-badge {
+        border-color: rgb(255 255 255 / 12%);
         color: #fff;
         background-color: rgb(255 255 255 / 30%);
-        border-color: rgb(255 255 255 / 12%);
     }
 }
