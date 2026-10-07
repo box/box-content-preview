@@ -1,3 +1,12 @@
+## 3.106.0 (2026-10-07)
+
+* feat(audio): dismiss an open range from the player and repeat a comment selection (#1812) ([d0aae17](https://github.com/box/box-content-preview/commit/d0aae17)), closes [#1812](https://github.com/box/box-content-preview/issues/1812)
+* feat(audio): hide waveform Comment controls when the file cannot be commented (#1811) ([89bae12](https://github.com/box/box-content-preview/commit/89bae12)), closes [#1811](https://github.com/box/box-content-preview/issues/1811)
+* feat(preview): add an unused comparison banner (#1814) ([95dcf68](https://github.com/box/box-content-preview/commit/95dcf68)), closes [#1814](https://github.com/box/box-content-preview/issues/1814)
+* chore(deps): Bump shell-quote, proxy-addr, compression, and more (#1813) ([5f30b6e](https://github.com/box/box-content-preview/commit/5f30b6e)), closes [#1813](https://github.com/box/box-content-preview/issues/1813)
+* chore(deps): Upgrade axios (#1810) ([8476523](https://github.com/box/box-content-preview/commit/8476523)), closes [#1810](https://github.com/box/box-content-preview/issues/1810)
+* fix(preview): Clear the file-info retry timer on destroy (#1805) ([9579d4f](https://github.com/box/box-content-preview/commit/9579d4f)), closes [#1805](https://github.com/box/box-content-preview/issues/1805)
+
 ## 3.105.0 (2026-10-03)
 
 * feat(audio): show a comment button on the paused playhead (#1808) ([9d5254c](https://github.com/box/box-content-preview/commit/9d5254c)), closes [#1808](https://github.com/box/box-content-preview/issues/1808)
