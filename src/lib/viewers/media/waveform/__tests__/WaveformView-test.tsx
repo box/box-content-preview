@@ -2269,6 +2269,197 @@ describe('WaveformView', () => {
         expect(onSeek).toHaveBeenCalledWith(4);
     });
 
+    describe('playhead drag', () => {
+        test('should move the playhead while dragging and seek on release', async () => {
+            const user = userEvent.setup();
+            const onRangeChange = jest.fn();
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} onRangeChange={onRangeChange} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+            expect(playhead).toHaveClass('bp-WaveformView-playhead--draggable');
+            expect(playhead).toHaveAttribute('data-target-id', 'Waveform-dragPlayhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 50, y: 10 } },
+            ]);
+            expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--playheadDragging');
+            expect(onSeek).not.toHaveBeenCalled();
+            expect(playhead).toHaveStyle({ left: '25%' });
+            expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+            expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+
+            await user.pointer({ target: playhead, coords: { x: 100, y: 10 } });
+            expect(playhead).toHaveStyle({ left: '50%' });
+            await user.pointer({ keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } });
+
+            expect(onSeek).toHaveBeenCalledTimes(1);
+            expect(onSeek).toHaveBeenCalledWith(4);
+            expect(playhead).toHaveStyle({ left: '50%' });
+            expect(onRangeChange).not.toHaveBeenCalled();
+        });
+
+        test('should keep hover fills when the pointer leaves the track during a playhead drag', async () => {
+            const user = userEvent.setup();
+            render(<WaveformView durationSec={8} onSeek={jest.fn()} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+                { target: document.body, coords: { x: 100, y: 400 } },
+            ]);
+
+            expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:04.00');
+            expect(playhead).toHaveStyle({ left: '50%' });
+        });
+
+        test('should keep waveform progress at the dragged time until currentTime catches up', async () => {
+            const user = userEvent.setup();
+            render(<WaveformView currentTime={0} durationSec={8} onSeek={jest.fn()} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+            mockSetTime.mockClear();
+            await user.pointer({ keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } });
+
+            expect(playhead).toHaveStyle({ left: '50%' });
+            expect(mockSetTime).toHaveBeenCalledWith(4);
+            expect(mockSetTime).not.toHaveBeenCalledWith(0);
+        });
+
+        test('should end a playhead drag when pointer capture is lost', async () => {
+            const user = userEvent.setup();
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+            dispatchTrackPointer(playhead, 'lostpointercapture', 100);
+
+            expect(onSeek).toHaveBeenCalledWith(4);
+            expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--playheadDragging');
+        });
+
+        test('should not drag the playhead on the tape player', async () => {
+            const user = userEvent.setup({ pointerEventsCheck: 0 });
+            const onSeek = jest.fn();
+            render(<WaveformView cameraMode="tape" durationSec={8} onSeek={onSeek} peaks={new Array(800).fill(0.5)} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 80, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 80, y: 10 } },
+            ]);
+
+            expect(playhead).not.toHaveClass('bp-WaveformView-playhead--draggable');
+            expect(onSeek).not.toHaveBeenCalled();
+            expect(playhead).toHaveStyle({ left: '50%' });
+        });
+
+        test('should not seek when the playhead comment is pressed', async () => {
+            const user = userEvent.setup();
+            const onPlayheadComment = jest.fn();
+            const onSeek = jest.fn();
+            render(
+                <WaveformView
+                    durationSec={8}
+                    onPlayheadComment={onPlayheadComment}
+                    onSeek={onSeek}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+
+            await user.click(screen.getByTestId('bp-waveform-playhead-comment'));
+
+            expect(onPlayheadComment).toHaveBeenCalledTimes(1);
+            expect(onSeek).not.toHaveBeenCalled();
+        });
+
+        test('should not drag the playhead while the waveform is inert', async () => {
+            const user = userEvent.setup({ pointerEventsCheck: 0 });
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} interactive={false} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+
+            expect(playhead).not.toHaveClass('bp-WaveformView-playhead--draggable');
+            expect(onSeek).not.toHaveBeenCalled();
+        });
+
+        test('should keep the dragged playhead until media time leaves the start', async () => {
+            const user = userEvent.setup();
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+            Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 0, writable: true });
+            const animationCallbacks: FrameRequestCallback[] = [];
+            jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+                animationCallbacks.push(cb);
+                return animationCallbacks.length;
+            });
+            jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+            const onSeek = jest.fn();
+            render(
+                <WaveformView currentTime={0} durationSec={8} mediaEl={mediaEl} onSeek={onSeek} peaks={[0.2, 0.8]} />,
+            );
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+
+            expect(onSeek).toHaveBeenCalledWith(4);
+            act(() => {
+                animationCallbacks[animationCallbacks.length - 1]?.(0);
+            });
+            expect(playhead).toHaveStyle({ left: '50%' });
+        });
+
+        test('should not start a playhead drag if pointer capture fails', async () => {
+            const user = userEvent.setup();
+            if (!HTMLElement.prototype.setPointerCapture) {
+                HTMLElement.prototype.setPointerCapture = jest.fn();
+            }
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+            jest.spyOn(playhead, 'setPointerCapture').mockImplementation(() => {
+                throw new DOMException('Invalid capture', 'InvalidStateError');
+            });
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+
+            expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--playheadDragging');
+            expect(onSeek).not.toHaveBeenCalled();
+            expect(playhead).toHaveStyle({ left: '0%' });
+        });
+    });
+
     describe('playhead comment', () => {
         test('should show Comment above the playhead after playback has started and then paused', () => {
             render(

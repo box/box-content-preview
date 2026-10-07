@@ -82,6 +82,43 @@
         0 0 10px 0 rgb(36 135 255 / 30%);
 }
 
+// 24px grab target, matching the range-handle hit area. The 2px stroke stays the visual line.
+.bp-WaveformView-playhead--draggable {
+    pointer-events: auto;
+    touch-action: none;
+    cursor: grab;
+    transition:
+        border-radius 150ms,
+        box-shadow 150ms,
+        width 150ms;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 24px;
+    }
+}
+
+.bp-WaveformView-playhead--draggable:hover,
+.bp-WaveformView--playheadDragging .bp-WaveformView-playhead--draggable {
+    width: 4px;
+    border-radius: 2px;
+    box-shadow:
+        0 0 0 1px #222,
+        0 0 8px 1px rgb(36 135 255 / 30%),
+        0 0 20px 2px rgb(36 135 255 / 10%);
+}
+
+.bp-WaveformView--playheadDragging,
+.bp-WaveformView--playheadDragging .bp-WaveformView-track,
+.bp-WaveformView--playheadDragging .bp-WaveformView-playhead {
+    cursor: grabbing;
+}
+
 // Sits on the playhead, which is already the 150px region. The shared range
 // pill positions against the full track, so override that here.
 .bp-WaveformView-playhead .bp-WaveformView-playheadComment {
@@ -107,6 +144,10 @@
 @media (prefers-reduced-motion: reduce) {
     .bp-WaveformView-playhead .bp-WaveformView-playheadComment {
         animation: none;
+    }
+
+    .bp-WaveformView-playhead--draggable {
+        transition: none;
     }
 }
 
