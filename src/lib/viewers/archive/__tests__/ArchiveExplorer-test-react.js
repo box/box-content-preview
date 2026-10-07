@@ -166,15 +166,15 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             await user.click(within(screen.getByTitle('test')).getByRole('button'));
             await user.click(screen.getByRole('columnheader', { name: 'Size' }));
 
-            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder'); // folders come before files
-            expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
-            expect(screen.getAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(1).textContent).toContain('subfolder'); // folders come before files
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
 
             await user.click(screen.getByRole('columnheader', { name: 'Size' }));
 
-            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder');
-            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
-            expect(screen.getAllByRole('row').at(4).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(1).textContent).toContain('subfolder');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
         });
 
         test('should sort itemList by clicking on the Name column header', async () => {
@@ -184,15 +184,15 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             await user.click(within(screen.queryByTitle('test')).getByRole('button'));
             await user.click(screen.getByRole('columnheader', { name: 'Name' }));
 
-            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder'); // folders come before files
-            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
-            expect(screen.getAllByRole('row').at(4).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(1).textContent).toContain('subfolder'); // folders come before files
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
 
             await user.click(screen.getByRole('columnheader', { name: 'Name' }));
 
-            expect(screen.getAllByRole('row').at(2).textContent).toContain('subfolder');
-            expect(screen.getAllByRole('row').at(3).textContent).toContain('csv-level-1.csv');
-            expect(screen.getAllByRole('row').at(4).textContent).toContain('pdf-level-1.pdf');
+            expect(screen.getAllByRole('row').at(1).textContent).toContain('subfolder');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
         });
     });
 });
