@@ -51,6 +51,7 @@
 // V2 video player radio item — match the TimestampControl flyout typography
 .bp-media--v2 {
     .bp-SettingsRadioItem {
+        cursor: pointer;
         display: flex;
         flex-direction: row-reverse;
         gap: 16px;
@@ -58,13 +59,12 @@
         justify-content: space-between;
         padding: 6px 14px;
         border-radius: 8px;
-        cursor: pointer;
 
         &:hover {
-            background-color: $bdl-gray-05;
             border-radius: 8px;
-            box-shadow: none;
+            background-color: $bdl-gray-05;
             backdrop-filter: none;
+            box-shadow: none;
 
             .bp-SettingsRadioItem-check-icon {
                 fill: $black;
@@ -88,9 +88,9 @@
 
     .bp-SettingsRadioItem-value {
         padding: 0;
-        color: $black;
         font-size: 16px;
         line-height: 24px;
+        color: $black;
         text-align: left;
     }
 }

@@ -7,17 +7,17 @@
         width: $bp-controls-size-default;
         height: $bp-controls-size-small;
         padding: $bp-controls-spacing;
-        color: $bdl-gray;
-        font-size: 13px;
-        text-align: center;
         border: 1px solid $bdl-gray;
         border-radius: 0;
-        transition: border-color linear 0.15s;
+        font-size: 13px;
+        -webkit-font-smoothing: antialiased;
+        color: $bdl-gray;
+        text-align: center;
 
         /* stylelint-disable property-no-vendor-prefix */
         // Removes the spinner for number type inputs in Firefox
         -moz-appearance: textfield;
-        -webkit-font-smoothing: antialiased;
+        transition: border-color linear 0.15s;
 
         // Removes the spinner for number type inputs in Webkit browsers
         &::-webkit-outer-spin-button,

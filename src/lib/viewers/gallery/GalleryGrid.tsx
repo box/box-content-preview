@@ -187,14 +187,14 @@ export default function GalleryGrid({
 
     function syncHighRes() {
         const store = highResStoreRef.current;
-        const { pageRatio } = thumbnail;
-        if (!store || !pageRatio) return;
+        const { pageRatio: thumbnailPageRatio } = thumbnail;
+        if (!store || !thumbnailPageRatio) return;
 
         const width = getNeededThumbWidth();
         if (width === GALLERY_THUMB_MAX_WIDTH) {
-            store.setRetained([], width, pageRatio);
+            store.setRetained([], width, thumbnailPageRatio);
         } else if (!isProcessingRef.current) {
-            store.setRetained(getPagesNearViewport(0.5), width, pageRatio);
+            store.setRetained(getPagesNearViewport(0.5), width, thumbnailPageRatio);
         }
     }
 

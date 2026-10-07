@@ -19,8 +19,8 @@ $arrow-top-bottom: 4px solid transparent;
     .bp-pullup {
         bottom: 100%;
         padding: 0 10px 20px;
-        white-space: nowrap;
         text-align: left;
+        white-space: nowrap;
     }
 
     .bp-settings-panel-row {
@@ -29,9 +29,9 @@ $arrow-top-bottom: 4px solid transparent;
 
         &::before,
         &::after {
+            content: '';
             display: table;
             line-height: 0;
-            content: '';
         }
 
         &::before {
@@ -43,17 +43,17 @@ $arrow-top-bottom: 4px solid transparent;
     .bp-settings-panel-label {
         display: inline;
         margin: 4px;
-        color: $seventy-sixers;
         line-height: 1;
+        color: $seventy-sixers;
         white-space: nowrap;
     }
 
     .bp-panel-btn {
-        height: 34px;
-        overflow: hidden;
-        line-height: 34px;
-        border-radius: 5px;
         cursor: pointer;
+        overflow: hidden;
+        height: 34px;
+        border-radius: 5px;
+        line-height: 34px;
     }
 
     .bp-toggle-overlay {
@@ -65,13 +65,14 @@ $arrow-top-bottom: 4px solid transparent;
             width: 100%;
             height: 34px;
             padding: 5px 0 5px 10px;
-            color: #808080;
             font-size: 13px;
-            letter-spacing: 0;
+            color: #808080;
             text-align: left;
             text-transform: none;
+            letter-spacing: 0;
 
             &::after {
+                content: '';
                 position: absolute;
                 top: 15px;
                 right: 11px;
@@ -80,7 +81,6 @@ $arrow-top-bottom: 4px solid transparent;
                 border-top: 3px solid #494949;
                 border-right: 3px solid transparent;
                 border-left: 3px solid transparent;
-                content: '';
             }
         }
     }
@@ -121,21 +121,21 @@ $arrow-top-bottom: 4px solid transparent;
         }
 
         .box3d-setting-axis-rotate {
-            padding: 0 12px;
-            color: $box-blue;
-            font-size: medium;
             cursor: pointer;
+            padding: 0 12px;
+            font-size: medium;
+            color: $box-blue;
         }
 
         .box3d-setting-axis-rotate-left::after,
         .box3d-setting-axis-rotate-right::after {
+            content: '';
             position: absolute;
             top: 7px;
             width: 0;
             height: 0;
             border-top: $arrow-top-bottom;
             border-bottom: $arrow-top-bottom;
-            content: '';
         }
 
         .box3d-setting-axis-rotate-left::after {
@@ -168,15 +168,15 @@ $arrow-top-bottom: 4px solid transparent;
     }
 
     .box3d-animation-clip-pullup {
-        max-height: 200px;
         overflow: auto;
+        max-height: 200px;
     }
 
     .box3d-animation-clip {
+        cursor: pointer;
         display: block;
         margin-top: 6px;
         white-space: nowrap;
-        cursor: pointer;
 
         .box3d-animation-clip-icon {
             display: inline-block;
@@ -189,9 +189,9 @@ $arrow-top-bottom: 4px solid transparent;
         }
 
         .box3d-animation-clip-value {
+            overflow-x: hidden;
             display: inline;
             max-width: 183px;
-            overflow-x: hidden;
             white-space: nowrap;
         }
     }

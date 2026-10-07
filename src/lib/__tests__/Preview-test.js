@@ -1,3 +1,4 @@
+import { setImmediate as flushImmediate } from 'timers';
 import { createRoot } from 'react-dom/client';
 import * as file from '../file';
 import * as util from '../util';
@@ -26,6 +27,12 @@ import {
 } from '../events';
 import PageTracker from '../PageTracker';
 import { isFeatureEnabled } from '../featureChecking';
+
+function flushPromises() {
+    return new Promise(resolve => {
+        flushImmediate(resolve);
+    });
+}
 
 jest.mock('../Logger');
 jest.mock('../util', () => ({
@@ -1945,29 +1952,27 @@ describe('lib/Preview', () => {
             expect(startStub).toHaveBeenCalledWith(expectedTag);
         });
 
-        test('should not call handleFetchError when file-info fails but a playable viewer is showing', () => {
+        test('should not call handleFetchError when file-info fails but a playable viewer is showing', async () => {
             stubs.get.mockReturnValue(Promise.reject(new Error('network')));
             preview.viewer = {};
             jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(true);
 
             preview.loadFromServer();
+            await flushPromises();
 
-            return new Promise(resolve => setTimeout(resolve, 0)).then(() => {
-                expect(stubs.handleFetchError).not.toHaveBeenCalled();
-            });
+            expect(stubs.handleFetchError).not.toHaveBeenCalled();
         });
 
-        test('should call handleFetchError when file-info fails and no playable viewer is showing', () => {
+        test('should call handleFetchError when file-info fails and no playable viewer is showing', async () => {
             const error = new Error('network');
             stubs.get.mockReturnValue(Promise.reject(error));
             preview.viewer = undefined;
             jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(false);
 
             preview.loadFromServer();
+            await flushPromises();
 
-            return new Promise(resolve => setTimeout(resolve, 0)).then(() => {
-                expect(stubs.handleFetchError).toHaveBeenCalledWith(error);
-            });
+            expect(stubs.handleFetchError).toHaveBeenCalledWith(error);
         });
     });
 

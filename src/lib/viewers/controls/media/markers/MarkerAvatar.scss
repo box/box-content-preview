@@ -10,15 +10,15 @@ $bp-marker-avatar-size-active: 24px;
     position: absolute;
     bottom: calc(100% + 4px);
     left: 50%;
+    transform-origin: bottom center;
+    transform: translate(-50%, 0);
+    overflow: visible;
     width: var(--bp-marker-avatar-size, $bp-marker-avatar-size);
     height: var(--bp-marker-avatar-size, $bp-marker-avatar-size);
-    overflow: visible;
     border: 0;
     border-radius: 50%;
     outline: none;
     box-shadow: 0 0 0 1px $bp-marker-avatar-border;
-    transform: translate(-50%, 0);
-    transform-origin: bottom center;
     transition:
         width 150ms,
         height 150ms,
@@ -30,22 +30,22 @@ $bp-marker-avatar-size-active: 24px;
         left: 0;
         width: 100%;
         height: 100%;
+        border-radius: 50%;
         object-fit: cover;
         object-position: center;
-        border-radius: 50%;
     }
 }
 
 .bp-MarkerAvatar-initial {
     display: grid;
+    place-items: center;
     width: 100%;
     height: 100%;
-    font-weight: bold;
     font-size: 10px;
+    font-weight: bold;
     line-height: 1;
     text-align: center;
     text-transform: uppercase;
-    place-items: center;
 }
 
 .bp-MarkerAvatar-anonymousIcon {

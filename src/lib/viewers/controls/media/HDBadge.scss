@@ -2,10 +2,10 @@
 
 .bp-HDBadge {
     padding: 2px 2px 2px 3px;
-    color: $white;
-    font-weight: bold;
+    border-radius: 3px;
     font-size: 8px;
+    font-weight: bold;
+    color: $white;
     letter-spacing: 0.1em;
     background-color: $bdl-box-blue;
-    border-radius: 3px;
 }

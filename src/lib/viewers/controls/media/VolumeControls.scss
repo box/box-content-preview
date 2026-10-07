@@ -10,16 +10,16 @@
     position: absolute;
     top: -40px;
     left: -5px;
+    overflow: hidden;
     display: none;
     flex: 0 0 auto;
     max-width: 0;
     height: $bp-MediaControl-height;
-    overflow: hidden;
     transition: max-width 200ms ease-in-out;
 
     &.bp-is-open {
-        display: block;
         overflow: visible;
+        display: block;
     }
 
     .bp-media--v2 & {

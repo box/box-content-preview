@@ -4,12 +4,12 @@
 .bp-text-plain {
     position: absolute;
     inset: 0;
-    margin: 0;
     overflow: auto;
+    margin: 0;
     line-height: 1.5;
-    white-space: pre-wrap;
     text-align: left;
     word-wrap: break-word;
+    white-space: pre-wrap;
     background-color: $white;
 
     /* Override Github CSS */
@@ -46,9 +46,9 @@
 @media print {
     .bp-text-plain {
         position: static;
+        overflow: visible;
         margin: 0;
         padding: 0;
-        overflow: visible;
         word-wrap: break-word;
     }
 

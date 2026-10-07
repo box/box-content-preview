@@ -47,11 +47,11 @@ $doc-first-preloader-padding: 0 20px;
 }
 
 .bp-preloader-loaded {
+    pointer-events: all;
+    overflow: auto;
     margin-right: auto;
     margin-left: auto;
     padding: $doc-first-preloader-padding;
-    overflow: auto;
-    pointer-events: all;
 }
 
 .bp-loading {
@@ -81,8 +81,8 @@ $doc-first-preloader-padding: 0 20px;
         display: inline-block;
         width: 2px;
         height: 10px;
-        background-color: $box-blue;
         border-radius: 4px;
+        background-color: $box-blue;
         animation: box-crawler 0.66s infinite ease-in-out; // Crawler is 3 short lines pulsing
     }
 

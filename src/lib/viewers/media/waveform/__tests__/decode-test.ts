@@ -166,7 +166,7 @@ describe('decodeToPeaks', () => {
     });
 
     test('should close AudioContext when aborted during decode', async () => {
-        decodeAudioData.mockImplementation(() => new Promise(() => undefined));
+        decodeAudioData.mockImplementation(() => new Promise(() => {}));
         const controller = new AbortController();
         const pending = decodeToPeaks(new ArrayBuffer(8), controller.signal);
 

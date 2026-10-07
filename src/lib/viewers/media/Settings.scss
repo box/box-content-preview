@@ -6,18 +6,18 @@ $item-hover-color: #f6fafd;
     position: absolute;
     right: 16px;
     bottom: 60px;
+    overflow: hidden auto; // So scrollbar doesn't show on hover in IE/Edge
     display: inline-block;
     max-width: 400px;
     max-height: 210px;
     padding: $padding;
-    overflow: hidden auto; // So scrollbar doesn't show on hover in IE/Edge
-    color: $fours;
-    font-size: 10px;
-    line-height: 0; // override line-height (only affects svgs in the menu, since nothing else is inline/inline-block)
-    background-color: $white;
     border: 1px solid $sf-fog;
     border-radius: 2px;
+    font-size: 10px;
+    line-height: 0; // override line-height (only affects svgs in the menu, since nothing else is inline/inline-block)
+    color: $fours;
     visibility: hidden;
+    background-color: $white;
     transition:
         width 0.2s,
         height 0.2s;
@@ -74,13 +74,13 @@ $item-hover-color: #f6fafd;
 
 .bp-media-settings-item,
 .bp-media-settings-sub-item {
+    cursor: pointer;
+    overflow: hidden;
     display: table-row;
     height: $item-height;
     padding: $padding / 2;
-    overflow: hidden;
     white-space: nowrap;
     outline: 0 none; // will be overridden by our own
-    cursor: pointer;
 
     &:hover {
         background-color: $item-hover-color;
@@ -157,9 +157,9 @@ $item-hover-color: #f6fafd;
 }
 
 .bp-media-settings-label {
-    color: $downtown-grey;
-    font-weight: normal;
     font-size: 11px;
+    font-weight: normal;
+    color: $downtown-grey;
     text-transform: uppercase;
 
     .bp-media-settings-item & {
@@ -173,8 +173,8 @@ $item-hover-color: #f6fafd;
 
 .bp-media-settings-value {
     padding-left: 10px;
-    color: $sunset-grey;
     font-size: 12px;
+    color: $sunset-grey;
     text-align: left;
 
     .bp-media-settings-selected & {

@@ -3,12 +3,12 @@
 
 // Reset default styling that come from the “User Agent Stylesheet”
 @mixin bp-reset-default-styling-button {
-    padding: 0;
-    color: inherit;
-    font: inherit;
-    background: none;
-    border: none;
     cursor: pointer;
+    padding: 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+    background: none;
 }
 
 .bp-media {
@@ -31,6 +31,7 @@
 }
 
 .bp-media-container {
+    user-select: none; // Prevents copy paste dialog from appearing on mobile
     position: relative;
     display: flex;
     flex: 1 1 0;
@@ -41,25 +42,24 @@
     min-width: 360px; // Prevent media controls from overflowing on small screens
     min-height: 0;
     outline: 0 none;
-    user-select: none; // Prevents copy paste dialog from appearing on mobile
 }
 
 .bp-media-play-button {
     @include bp-reset-default-styling-button;
 
+    cursor: pointer;
     position: absolute;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
     width: 80px;
     height: 80px;
-    color: $white;
-    font-size: 40px;
-    text-align: center;
-    background: rgba($black, 0.5);
     border: 4px solid $white;
     border-radius: 40px;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
+    font-size: 40px;
+    color: $white;
+    text-align: center;
+    background: rgba($black, 0.5);
     transition: all 0.2s;
 
     &:hover {
@@ -68,18 +68,18 @@
 }
 
 .bp-media-overlay-play-container {
+    cursor: pointer;
     position: absolute;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     gap: 28px;
     align-items: center;
     justify-content: center;
-    color: $white;
     font-size: 40px;
+    color: $white;
     text-align: center;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
     transition: all 0.2s;
 
     // move this to the center of the container height
@@ -87,13 +87,13 @@
     button {
         @include bp-reset-default-styling-button;
 
+        cursor: pointer;
         width: 40px;
         height: 40px;
+        border-radius: 40px;
         font-size: 40px;
         text-align: center;
         background: $black;
-        border-radius: 40px;
-        cursor: pointer;
         transition: all 0.2s;
     }
 
@@ -168,10 +168,10 @@
 
 .bp-VideoControlsRoot {
     position: relative;
+    z-index: 1; // Stack above sibling media container so settings menu paints over guides
     right: auto;
     bottom: auto;
     left: auto;
-    z-index: 1; // Stack above sibling media container so settings menu paints over guides
     align-self: stretch;
     width: 100%;
 }
@@ -230,8 +230,8 @@
         max-width: none;
         height: 100%;
         max-height: none;
-        object-fit: contain;
         border: 1px solid rgba($white, 0.12);
+        object-fit: contain;
     }
 
     .bp-video-preload-wrapper {
@@ -243,8 +243,8 @@
         }
 
         .bp-preload-content {
-            object-fit: contain;
             border: 1px solid rgba($white, 0.12);
+            object-fit: contain;
         }
     }
 }
@@ -263,13 +263,13 @@
 .bp-video-preload-wrapper {
     position: absolute;
     inset: 0;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0;
-    overflow: hidden;
-    background-color: transparent;
     opacity: 1;
+    background-color: transparent;
     transition: opacity 0.5s;
 
     &.bp-is-invisible {
@@ -283,11 +283,11 @@
     .bp-preload {
         position: absolute;
         inset: 0;
-        width: 100%;
-        height: 100%;
 
         /* Offset by half of controls height (120px) so thumbnail aligns with video */
         transform: translateY(-60px);
+        width: 100%;
+        height: 100%;
     }
 
     .bp-preload-content {
@@ -306,18 +306,18 @@
     }
 
     .bp-video-preload-play-overlay {
+        pointer-events: none;
         position: absolute;
         top: 50%;
         left: 50%;
+        transform: translate(-50%, -50%);
         display: flex;
         align-items: center;
         justify-content: center;
         width: 80px;
         height: 80px;
-        background: rgba($black, 0.5);
         border-radius: 50%;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
+        background: rgba($black, 0.5);
 
         svg {
             width: 48px;

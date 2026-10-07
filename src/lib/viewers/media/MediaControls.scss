@@ -13,13 +13,13 @@
     right: 0;
     bottom: 0;
     left: 0;
+    overflow: hidden;
     width: 100%;
     height: 60px;
     margin: auto;
-    overflow: hidden;
-    background-image: linear-gradient(to top, rgba($black, 0.6) 0%, rgba($black, 0) 100%);
     visibility: hidden;
     opacity: 0;
+    background-image: linear-gradient(to top, rgba($black, 0.6) 0%, rgba($black, 0) 100%);
     transition:
         visibility 0.3s,
         opacity 0.3s;
@@ -30,10 +30,10 @@
 }
 
 .bp-media-volume-scrubber-container-wrapper {
+    overflow: hidden;
     display: inline-block;
     width: 0;
     height: 40px;
-    overflow: hidden;
     transition: width 0.2s ease-in-out;
 }
 
@@ -72,21 +72,21 @@
 
 .bp-media-controls-label,
 .bp-media-controls-btn {
+    cursor: pointer;
     display: inline-block;
     width: 45px;
     height: 40px;
     margin: 0;
     padding: 0;
-    color: $white;
-    font-weight: normal;
+    border: none;
     font-size: 12px;
+    font-weight: normal;
+    color: $white;
     text-align: center;
     vertical-align: top;
-    background-color: transparent;
-    border: none;
-    outline: 0 none;
-    cursor: pointer;
     opacity: 0.7;
+    background-color: transparent;
+    outline: 0 none;
 
     &:hover {
         opacity: 1;
@@ -106,12 +106,12 @@
 }
 
 .bp-media-controls-label {
+    cursor: default;
     display: inline-block;
     width: auto;
     margin: 0 4px;
     line-height: 40px;
     vertical-align: top;
-    cursor: default;
 }
 
 .bp-media-controls-timecode {
@@ -169,13 +169,13 @@
     width: 24px;
     height: 24px;
     padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
-    color: $white;
-    font-weight: bold;
+    border-radius: 4px;
     font-size: 12px;
+    font-weight: bold;
     line-height: 24px;
+    color: $white;
     letter-spacing: 0.1em;
     background-color: rgba($black, 0.3); // Anything less than .3 looks too transparent on IE/Edge
-    border-radius: 4px;
 
     .bp-media-settings-subtitles-on & {
         color: $white;
@@ -188,12 +188,12 @@
     left: 22px;
     display: none;
     padding: 2px 2px 2px 3px;
-    font-weight: bold;
+    border-radius: 3px;
     font-size: 8px;
+    font-weight: bold;
     line-height: 8px;
     letter-spacing: 0.1em;
     background-color: $box-blue;
-    border-radius: 3px;
 
     .bp-media-controls-is-hd & {
         display: inline;

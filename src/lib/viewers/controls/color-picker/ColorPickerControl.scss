@@ -19,8 +19,8 @@
     &:hover {
         .bp-ColorPickerControl-toggle {
             padding: 8px;
-            background-color: $fours;
             border-radius: $bp-controls-radius-inner;
+            background-color: $fours;
         }
     }
 }
@@ -31,17 +31,17 @@
     $palette-duration: 160ms;
 
     position: absolute;
+    z-index: 1;
     top: -#{$arrow-height};
     left: 50%;
-    z-index: 1;
-    padding-bottom: 10px;
+
+    // Popover sits above its trigger, so scale in from the bottom-center, not its own center.
+    transform-origin: bottom center;
 
     // display can't be transitioned, so hide via visibility+opacity and delay visibility on close
     // until the fade-out finishes.
     transform: translate(-50%, -100%) scale(0.95);
-
-    // Popover sits above its trigger, so scale in from the bottom-center, not its own center.
-    transform-origin: bottom center;
+    padding-bottom: 10px;
     visibility: hidden;
     opacity: 0;
     transition:
@@ -50,14 +50,14 @@
         visibility 0s linear $palette-duration;
 
     &::after {
+        content: '';
         position: absolute;
         left: 50%;
+        transform: translateX(-50%);
         display: block;
         border-top: $arrow-height solid $bp-controls-background;
         border-right: $arrow-height solid transparent;
         border-left: $arrow-height solid transparent;
-        transform: translateX(-50%);
-        content: '';
     }
 
     &.bp-is-open {

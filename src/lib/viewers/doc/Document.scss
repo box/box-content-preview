@@ -8,14 +8,14 @@
 
 // Used for showing preload, aka Instant Preview
 .bp-document-preload-wrapper {
+    scrollbar-gutter: stable;
     position: absolute;
     inset: 0;
+    overflow-y: scroll;
     height: 100%;
     margin: 0;
-    overflow-y: scroll;
-    scrollbar-gutter: stable;
-    background-color: $ffive;
     opacity: 1;
+    background-color: $ffive;
     transition: opacity 0.5s;
 
     &.bp-is-invisible {
