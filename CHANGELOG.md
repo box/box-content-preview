@@ -1,3 +1,8 @@
+## 3.107.0 (2026-10-07)
+
+* feat(audio): drag the desktop playhead to seek (#1816) ([a197793](https://github.com/box/box-content-preview/commit/a197793)), closes [#1816](https://github.com/box/box-content-preview/issues/1816)
+* chore(deps): Upgrade @box/frontend to 11 (#1815) ([64a3eff](https://github.com/box/box-content-preview/commit/64a3eff)), closes [#1815](https://github.com/box/box-content-preview/issues/1815)
+
 ## 3.106.0 (2026-10-07)
 
 * feat(audio): dismiss an open range from the player and repeat a comment selection (#1812) ([d0aae17](https://github.com/box/box-content-preview/commit/d0aae17)), closes [#1812](https://github.com/box/box-content-preview/issues/1812)
