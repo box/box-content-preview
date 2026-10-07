@@ -115,7 +115,7 @@ The MP3 viewer fires the following events
 
 The host also sends these events to the MP3 viewer (audio player v2 only). Checkbox-driven handles appear on `comment_range_draft`. A waveform drag can draw a range before that event; Comment then emits `comment_range_compose`.
 
-Comment on the paused playhead and on an open range follows the file's `permissions.can_comment`, the same flag the activity feed uses. Only `true` shows those Comment controls. `false`, a missing permissions object, or a missing flag hides them, and those presses do not emit `comment_range_compose`. An open range still shows the clear control on its own, the same X as a viewed range.
+Comment on the paused playhead and on an open range follows the file's `permissions.can_comment`, the same flag the activity feed uses. Only `true` shows those Comment controls. `false`, a missing permissions object, or a missing flag hides them, and those presses do not emit `comment_range_compose`. On the tape player, an open range still shows the clear control on its own, the same X as a viewed range. The desktop player has no X.
 
 | Event Name                | Direction     | Event Data                                                                                  |
 | ------------------------- | ------------- | ------------------------------------------------------------------------------------------- |
@@ -123,7 +123,9 @@ Comment on the paused playhead and on an open range follows the file's `permissi
 | comment_range_draft_clear | Host → viewer | Hide handles. A file-version switch is a clear, not a resync.                               |
 | comment_markers           | Host → viewer | Marker list. A ranged comment includes `endTime` (seconds). `time` is the start.            |
 
-Selecting a ranged marker (sidebar, marker click, or deep link) draws that span as a read-only range. It matches a draft range, including highlight, zoom, and playback loop, without handles or editable edges. Clicking the waveform outside the span clears it locally and does not emit `comment_range_draft_dismiss`. A composer draft still replaces it.
+Selecting a ranged marker (sidebar, marker click, or deep link) draws that span as a read-only range. It matches a draft range, including highlight, zoom, and playback loop, without handles or editable edges. Clicking the waveform outside the span clears it locally and does not emit `comment_range_draft_dismiss`. A click elsewhere in the player does the same, except on comment markers, the comment toolbar, the zoom control, or the transport bar. A composer draft still replaces it.
+
+Choosing that same comment again adds `selectionSeq` on the selected marker. The viewer seeks and redraws the avatar and range when the number changes. A later feed refresh keeps the previous `selectionSeq` and does not seek again.
 
 ## Methods
 

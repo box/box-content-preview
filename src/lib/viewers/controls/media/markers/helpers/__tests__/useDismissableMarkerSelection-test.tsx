@@ -6,11 +6,13 @@ import useDismissableMarkerSelection from '../useDismissableMarkerSelection';
 function Probe({
     hostSelectedId = null,
     omitSelectedAttr = false,
+    selectionSeq = null,
 }: {
     hostSelectedId?: string | null;
     omitSelectedAttr?: boolean;
+    selectionSeq?: number | null;
 }): JSX.Element {
-    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId);
+    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId, selectionSeq);
 
     return (
         <div ref={containerRef}>
@@ -63,6 +65,20 @@ describe('useDismissableMarkerSelection', () => {
         rerender(<Probe hostSelectedId="a" />);
 
         expect(screen.getByTestId('selected')).toHaveTextContent('none');
+    });
+
+    test('should restore a dismissed comment when selectionSeq changes', async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(<Probe hostSelectedId="a" selectionSeq={1} />);
+
+        await user.click(document.body);
+        expect(screen.getByTestId('selected')).toHaveTextContent('none');
+
+        rerender(<Probe hostSelectedId="a" selectionSeq={1} />);
+        expect(screen.getByTestId('selected')).toHaveTextContent('none');
+
+        rerender(<Probe hostSelectedId="a" selectionSeq={2} />);
+        expect(screen.getByTestId('selected')).toHaveTextContent('a');
     });
 
     test('should restore selection when the host selects a different comment', async () => {
