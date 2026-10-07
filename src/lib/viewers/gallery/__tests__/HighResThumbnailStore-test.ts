@@ -1,6 +1,11 @@
+import { setImmediate as flushImmediate } from 'timers';
 import HighResThumbnailStore, { HighResRenderResult, HighResRenderTask } from '../HighResThumbnailStore';
 
-const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+function flushPromises(): Promise<void> {
+    return new Promise(resolve => {
+        flushImmediate(resolve);
+    });
+}
 
 interface Deferred<T> {
     promise: Promise<T>;

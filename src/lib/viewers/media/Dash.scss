@@ -2,13 +2,13 @@
 
 .bp-media-dash {
     video {
+        cursor: none;
         display: block;
         width: 100%;
         max-width: 100%;
         max-height: 100%;
         margin-right: auto;
         margin-left: auto;
-        cursor: none;
     }
 
     .bp-media-controls-label,
@@ -31,10 +31,10 @@
     position: absolute;
     bottom: 60px;
     left: 0;
+    overflow: hidden;
     display: none;
     width: 160px;
     height: 110px; // 90px filmstrip frame height + 20px for timecode
-    overflow: hidden;
     border: 1px solid $sunset-grey;
 }
 
@@ -44,21 +44,21 @@
 
 .bp-media-filmstrip-timecode {
     position: absolute;
-    bottom: 0;
     z-index: 1;
+    bottom: 0;
     width: 100%;
-    color: $white;
     font-size: 13px;
     line-height: 18px; // 110px container height - 2px border - 90px filmstrip frame height
+    color: $white;
     text-align: center;
     background-color: $twos;
 }
 
 .bp-media-crawler-wrapper {
     position: relative;
+    z-index: 1;
     top: 50%;
     left: 50%;
-    z-index: 1;
     width: 10px;
     margin: -15px 0 0 -5px;
 }
@@ -67,6 +67,6 @@
     position: absolute;
     top: 20px;
     right: 20px;
-    color: $white;
     font-size: 24px;
+    color: $white;
 }

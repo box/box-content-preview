@@ -17,10 +17,10 @@
     justify-content: center;
     width: 24px;
     height: 24px;
-    color: $white;
-    font-weight: bold;
+    border-radius: 4px;
     font-size: 12px;
+    font-weight: bold;
+    color: $white;
     letter-spacing: 0.1em;
     background-color: rgba($black, 0.3); // Anything less than .3 looks too transparent on IE/Edge
-    border-radius: 4px;
 }

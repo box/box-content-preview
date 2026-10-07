@@ -2,14 +2,14 @@
 
 .bp-gallery-grid {
     position: absolute;
-    inset: 0;
 
     // Sits above annotation layers and find bar (z=3); toolbar (ControlsRoot z=5) stays on top.
     z-index: 4;
-    padding: 40px;
-    padding-bottom: 100px;
+    inset: 0;
     overflow-y: auto;
     overscroll-behavior: none;
+    padding: 40px;
+    padding-bottom: 100px;
     background-color: $white;
 }
 
@@ -31,22 +31,22 @@
 }
 
 .bp-gallery-tile {
+    cursor: pointer;
     position: relative;
     padding: 0;
-    background: $ffive;
     border: none;
     border-radius: 12px;
+    background: $ffive;
     box-shadow: 0 0 0 1px $off-white;
-    cursor: pointer;
     transition:
         box-shadow 0.2s ease-in-out,
         transform 0.2s ease-in-out;
 
     &:hover {
+        transform: translateY(-1px) scale(var(--bp-gallery-hover-scale));
         box-shadow:
             0 0 0 3px $seventy-sixers,
             0 4px 5px 0 rgb(0 0 0 / 15%);
-        transform: translateY(-1px) scale(var(--bp-gallery-hover-scale));
 
         .bp-gallery-tile-badge {
             opacity: 1;
@@ -61,8 +61,8 @@
         display: block;
         width: 100%;
         height: auto;
-        object-fit: contain;
         border-radius: 12px;
+        object-fit: contain;
     }
 }
 
@@ -79,28 +79,28 @@
     }
 
     .bp-gallery-tile-badge {
-        background: $box-blue;
         opacity: 1;
+        background: $box-blue;
     }
 }
 
 .bp-gallery-tile-badge {
     position: absolute;
+    z-index: 1;
     top: -2px;
     left: -2px;
-    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 30px;
     height: 26px;
     padding: 0 4px;
-    color: $white;
+    border-radius: 12px 0;
     font-size: 13px;
     line-height: 1;
-    background: $seventy-sixers;
-    border-radius: 12px 0;
+    color: $white;
     opacity: 0;
+    background: $seventy-sixers;
     transition: opacity 0.15s;
 }
 

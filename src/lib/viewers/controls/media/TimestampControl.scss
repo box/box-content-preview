@@ -8,29 +8,29 @@
 
 .bp-TimestampControl-button,
 .bp-TimestampControl-static {
+    user-select: none;
     display: flex;
     gap: 4px;
     align-items: center;
     padding: 6px 12px;
-    color: $white;
-    font-weight: normal;
-    font-size: 14px;
     font-family: Lato, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
     line-height: 20px;
+    color: $white;
     letter-spacing: 0.3px;
     white-space: nowrap;
-    user-select: none;
 }
 
 .bp-TimestampControl-button {
     @include bp-Control--fade;
     @include bp-Control--outline;
 
+    cursor: pointer;
     margin: 0;
-    background: transparent;
     border: 0;
     border-radius: $bp-controls-button-radius;
-    cursor: pointer;
+    background: transparent;
 
     &:focus:not(:disabled),
     &.bp-is-open {
@@ -56,42 +56,42 @@
 
 .bp-TimestampControl-flyout {
     position: absolute;
+    z-index: 1;
     bottom: calc(100% + 12px);
     left: 50%;
-    z-index: 1;
+    transform: translateX(-50%);
     min-width: 250px;
     padding: 12px 8px;
-    background: $white;
     border-radius: 16px;
+    background: $white;
     box-shadow: 0 4px 12px 0 rgb(0 0 0 / 15%);
-    transform: translateX(-50%);
 }
 
 .bp-TimestampControl-header {
-    padding: 6px 14px;
-    color: $bdl-gray-62;
-    font-weight: bold;
-    font-size: 14px;
-    font-family: Lato, Arial, sans-serif;
-    line-height: 20px;
-    letter-spacing: 0.3px;
     user-select: none;
+    padding: 6px 14px;
+    font-family: Lato, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    color: $bdl-gray-62;
+    letter-spacing: 0.3px;
 }
 
 .bp-TimestampControl-listitem {
+    cursor: pointer;
     display: flex;
     gap: 16px;
     align-items: center;
     justify-content: space-between;
     padding: 6px 14px;
-    color: $black;
-    font-size: 16px;
-    font-family: Lato, Arial, sans-serif;
-    line-height: 24px;
-    white-space: nowrap;
     border-radius: 8px;
+    font-family: Lato, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    color: $black;
+    white-space: nowrap;
     outline: none;
-    cursor: pointer;
 
     &:hover,
     &:focus {

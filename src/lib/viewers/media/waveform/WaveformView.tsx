@@ -1152,11 +1152,11 @@ function WaveformView({
             hasPreviousFrame = true;
             previousFrameMs = frameMs;
             const pointer = getPointerInTrack();
-            const viewport = viewportRef.current;
+            const currentViewport = viewportRef.current;
             const scrollDeltaPx = pointer
                 ? getRangeEdgeScrollDeltaPx({
                       elapsedSec,
-                      pixelsPerSecond: viewport.pixelsPerSecond,
+                      pixelsPerSecond: currentViewport.pixelsPerSecond,
                       pointerX: pointer.x,
                       widthPx: pointer.width,
                   })
@@ -1166,10 +1166,10 @@ function WaveformView({
             } else {
                 pendingScrollPx += scrollDeltaPx;
                 const nextScroll = Math.min(
-                    maxScrollLeft(viewport),
-                    Math.max(0, viewport.scrollLeftPx + pendingScrollPx),
+                    maxScrollLeft(currentViewport),
+                    Math.max(0, currentViewport.scrollLeftPx + pendingScrollPx),
                 );
-                const scrolledPx = nextScroll - viewport.scrollLeftPx;
+                const scrolledPx = nextScroll - currentViewport.scrollLeftPx;
                 pendingScrollPx = scrolledPx === 0 ? 0 : pendingScrollPx - scrolledPx;
                 if (scrolledPx !== 0) {
                     applyScrollLeft(nextScroll, true);

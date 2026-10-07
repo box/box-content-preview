@@ -19,6 +19,7 @@ $bp-WaveformZoom-collapsed-multiplier-width: $bp-WaveformZoom-multiplier-inset-x
 $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $bp-WaveformZoom-multiplier-width + $bp-WaveformZoom-gap + $bp-WaveformZoom-divider-width + $bp-WaveformZoom-gap + $bp-WaveformZoom-flyout-width + $bp-WaveformZoom-gap + $bp-WaveformZoom-icon + $bp-WaveformZoom-padding;
 
 .bp-WaveformZoomControl {
+    overflow: hidden;
     display: flex;
     flex-direction: row;
     gap: 0;
@@ -27,11 +28,10 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     width: $bp-WaveformZoom-size;
     height: $bp-WaveformZoom-size;
     padding: $bp-WaveformZoom-padding;
-    overflow: hidden;
-    background: rgb(255 255 255 / 10%);
     border-radius: 32px;
-    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+    background: rgb(255 255 255 / 10%);
     backdrop-filter: blur(60px);
+    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
     transition:
         width 150ms ease-out,
         gap 150ms ease-out;
@@ -55,19 +55,19 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
 }
 
 .bp-WaveformZoomControl-multiplier {
-    display: flex;
-    flex: 0 0 $bp-WaveformZoom-multiplier-width;
-    order: -3;
-    align-items: center;
-    justify-content: center;
-    width: $bp-WaveformZoom-multiplier-width;
-    height: $bp-WaveformZoom-multiplier-width;
-    color: $white;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 22px;
     pointer-events: none;
     user-select: none;
+    display: flex;
+    flex: 0 0 $bp-WaveformZoom-multiplier-width;
+    align-items: center;
+    justify-content: center;
+    order: -3;
+    width: $bp-WaveformZoom-multiplier-width;
+    height: $bp-WaveformZoom-multiplier-width;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    color: $white;
     white-space: nowrap;
 }
 
@@ -85,14 +85,14 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
 }
 
 .bp-WaveformZoomControl-flyout {
+    overflow: hidden;
     display: flex;
     flex: 0 0 auto;
-    order: -1;
     gap: $bp-WaveformZoom-gap;
     align-items: center;
+    order: -1;
     width: 0;
     height: $bp-WaveformZoom-icon;
-    overflow: hidden;
     transition: width 150ms ease-out;
 
     &.bp-is-open {
@@ -107,19 +107,19 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     .bp-SliderControl-track {
         height: $bp-WaveformZoom-track-height;
         margin: 0;
+        border-radius: 20px;
         background: rgb(255 255 255 / 30%);
         background-image: none;
-        border-radius: 20px;
 
         &::after {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: calc(#{$bp-WaveformZoom-track-height} + #{$bp-WaveformZoom-fill-range} * var(--bp-zoom-t, 0));
             height: $bp-WaveformZoom-track-height;
-            background: rgb(255 255 255 / 90%);
             border-radius: 20px;
-            content: '';
+            background: rgb(255 255 255 / 90%);
         }
     }
 
@@ -129,6 +129,7 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
 }
 
 .bp-WaveformZoomControl-button {
+    cursor: pointer;
     position: relative;
     z-index: 1;
     display: flex;
@@ -138,11 +139,10 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     width: $bp-WaveformZoom-icon;
     height: $bp-WaveformZoom-icon;
     padding: 0;
-    color: $white;
-    background: transparent;
     border: 0;
     border-radius: 50%;
-    cursor: pointer;
+    color: $white;
+    background: transparent;
 
     &[aria-disabled='true'] {
         cursor: default;

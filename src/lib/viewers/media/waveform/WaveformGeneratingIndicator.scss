@@ -1,12 +1,12 @@
 @import '../../controls/media/styles';
 
 .bp-WaveformGeneratingIndicator {
+    pointer-events: none;
     display: flex;
     gap: 4px;
     align-items: center;
     height: 48px;
     padding: 8px 16px 8px 12px;
-    pointer-events: none;
 }
 
 .bp-WaveformGeneratingIndicator-bars {
@@ -21,8 +21,8 @@
 .bp-WaveformGeneratingIndicator-bar {
     width: 2px;
     height: 10px;
-    background: rgb(255 255 255 / 30%);
     border-radius: 6px;
+    background: rgb(255 255 255 / 30%);
     animation: bp-WaveformGeneratingIndicator-pulse 0.66s ease-in-out infinite;
 
     &:nth-child(2) {
@@ -37,10 +37,10 @@
 }
 
 .bp-WaveformGeneratingIndicator-label {
-    color: $white;
-    font-weight: normal;
     font-size: 14px;
+    font-weight: normal;
     line-height: 22px;
+    color: $white;
     white-space: nowrap;
 }
 
@@ -48,20 +48,20 @@
     0%,
     80%,
     100% {
-        background: rgb(255 255 255 / 30%);
         transform: scaleY(1.2);
+        background: rgb(255 255 255 / 30%);
     }
 
     40% {
-        background: $white;
         transform: scaleY(1.6);
+        background: $white;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .bp-WaveformGeneratingIndicator-bar {
-        animation: none;
-        background: $white;
         transform: none;
+        background: $white;
+        animation: none;
     }
 }

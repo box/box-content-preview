@@ -9,7 +9,7 @@ $compact-height: 550px;
 
 @media (max-height: $compact-height) {
     .bp-box3d .bp-pullup {
-        height: 250px;
         overflow: scroll;
+        height: 250px;
     }
 }

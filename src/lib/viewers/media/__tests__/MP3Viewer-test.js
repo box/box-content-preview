@@ -1579,7 +1579,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
 
         test('should abort an in-flight decode on destroy', () => {
-            loadPeaks.mockReturnValue(new Promise(() => undefined));
+            loadPeaks.mockReturnValue(new Promise(() => {}));
             const superDestroy = jest.spyOn(MediaBaseViewer.prototype, 'destroy').mockImplementation();
 
             mp3.startClientWaveformDecode();

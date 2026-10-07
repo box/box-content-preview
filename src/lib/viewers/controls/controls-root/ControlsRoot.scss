@@ -2,9 +2,9 @@
 
 .bp-ControlsRoot {
     position: absolute;
+    z-index: 5;
     bottom: 25px;
     left: 50%;
-    z-index: 5;
     transform: translate3d(-50%, 0, 0);
     backface-visibility: hidden;
 

@@ -1,27 +1,27 @@
 @import '../controls/media/styles';
 
 .bp-VideoControlsRoot:has(.bp-VideoControlsV2) {
+    pointer-events: none;
     position: absolute;
     inset: 0;
     width: 100%;
-    pointer-events: none;
 
     .bp-ControlsLayer {
+        pointer-events: none;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
         width: 100%;
         height: 100%;
-        pointer-events: none;
     }
 }
 
 .bp-VideoControlsV2 {
     @include bp-VideoControls;
 
+    pointer-events: auto;
     padding: 30px 48px 20px;
     background: linear-gradient(to top, rgb(0 0 0 / 100%), rgb(0 0 0 / 0%));
-    pointer-events: auto;
 }
 
 .bp-VideoControlsV2-bar {
@@ -53,8 +53,8 @@
 .bp-VideoControlsV2-divider {
     width: 1px;
     height: 24px;
-    background-color: rgb(255 255 255 / 10%);
     border-radius: 1px;
+    background-color: rgb(255 255 255 / 10%);
 }
 
 .bp-VideoControlsV2 .bp-AnnotationsControls {

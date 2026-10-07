@@ -16,7 +16,12 @@ const shaka = require(`../../../../third-party/media/${MEDIA_STATIC_ASSETS_VERSI
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const sandbox = sinon.createSandbox();
-const flushPromises = () => new Promise(resolve => flushImmediate(resolve));
+
+function flushPromises() {
+    return new Promise(resolve => {
+        flushImmediate(resolve);
+    });
+}
 
 let dash;
 let stubs = {};
@@ -2392,7 +2397,6 @@ describe('lib/viewers/media/DashViewer', () => {
                 jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
 
                 dash.loadFilmStrip();
-                // Drain the chained promise queue: getPromise().then() → fetchContentAsBlobUrl().then() → handleBlobUrl
                 await flushPromises();
 
                 expect(dash.createContentUrlV2).toHaveBeenCalledWith(FILMSTRIP_TEMPLATE);

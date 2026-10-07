@@ -4,20 +4,20 @@
 .bp-SliderControl {
     @include bp-Control--outline;
 
-    position: relative;
     cursor: pointer;
+    position: relative;
 }
 
 .bp-SliderControl-thumb {
+    cursor: pointer;
     position: absolute;
     top: calc(50% - #{$bp-SliderControl-thumb-radius});
     width: $bp-SliderControl-thumb-size;
     height: $bp-SliderControl-thumb-size;
     margin-left: -#{$bp-SliderControl-thumb-radius};
-    background: $box-blue;
     border: 0;
     border-radius: $bp-SliderControl-thumb-size;
-    cursor: pointer;
+    background: $box-blue;
 }
 
 .bp-SliderControl-track {

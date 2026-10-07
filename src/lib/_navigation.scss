@@ -6,24 +6,24 @@ $navigationBtnWidth: 50px;
 }
 
 .bp-navigate {
+    pointer-events: all;
+    cursor: pointer;
     position: absolute;
     top: 50%;
+    transform: translateY(-50%);
+    overflow: hidden;
     display: block;
     width: $navigationBtnWidth;
     height: 64px;
     margin: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-decoration: none;
-    background-repeat: no-repeat;
     border: 0 none;
-    transform: translateY(-50%);
-    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
     opacity: 0;
+    background-repeat: no-repeat;
 
     // Override default animations to only animate opacity since width animation to auto doesn't work
     transition: opacity 0.5s ease;
-    pointer-events: all;
 
     &:hover,
     &:focus {

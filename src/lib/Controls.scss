@@ -4,11 +4,11 @@ $controls-button-width: 32px;
     position: absolute;
     bottom: 25px;
     left: 50%;
-    display: flex;
-    background: fade-out($black, 0.2);
-    border-radius: 6px;
     transform: translateX(-50%);
+    display: flex;
+    border-radius: 6px;
     opacity: 0;
+    background: fade-out($black, 0.2);
     transition: opacity 0.5s;
 
     /* stylelint-disable property-no-vendor-prefix */
@@ -30,32 +30,31 @@ $controls-button-width: 32px;
 }
 
 .bp-controls-cell {
+    touch-action: manipulation;
+    user-select: none;
     display: table-cell;
     margin: 0;
     padding: 0;
     vertical-align: middle;
-    user-select: none;
-    touch-action: manipulation;
 }
 
 .bp-controls-btn {
+    // disables non-standard gestures such as double-tap to zoom
+    touch-action: manipulation;
+    cursor: pointer;
+    user-select: none;
+    zoom: 1;
     display: block;
     width: 44px;
     height: 44px;
     margin: 0;
     padding: 0;
-    color: $white;
-    background: transparent;
     border: 1px solid transparent;
     border-radius: 6px;
-    outline: 0;
-    cursor: pointer;
+    color: $white;
     opacity: 0.7;
-    user-select: none;
-
-    // disables non-standard gestures such as double-tap to zoom
-    touch-action: manipulation;
-    zoom: 1;
+    background: transparent;
+    outline: 0;
 
     &:hover,
     &:focus {
@@ -80,9 +79,9 @@ $controls-button-width: 32px;
 
     &.disabled,
     &:disabled {
+        pointer-events: none;
         cursor: default;
         opacity: 0.2;
-        pointer-events: none;
     }
 }
 

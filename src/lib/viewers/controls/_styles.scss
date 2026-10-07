@@ -26,24 +26,24 @@ $bp-controls-distinct-button-size-small: 24px;
     @include bp-Control--fade;
     @include bp-Control--outline;
 
+    touch-action: manipulation;
+    cursor: pointer;
+    user-select: none;
+    zoom: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0;
     padding: 0;
-    color: $white;
-    background: transparent;
     border: 0;
     border-radius: $bp-controls-button-radius;
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-    zoom: 1;
+    color: $white;
+    background: transparent;
 
     &:disabled {
+        pointer-events: none;
         cursor: default;
         opacity: 0.2;
-        pointer-events: none;
     }
 
     svg {
@@ -59,16 +59,16 @@ $bp-controls-distinct-button-size-small: 24px;
 }
 
 @mixin bp-Control--fade {
+    will-change: opacity; // Prevent flickering in Safari
     opacity: $bp-controls-opacity;
     transition:
         opacity 150ms,
         background-color 150ms;
-    will-change: opacity; // Prevent flickering in Safari
 
     &:focus:not(:disabled),
     &:hover:not(:disabled) {
-        background-color: $bp-controls-button-hover-background;
         opacity: 1;
+        background-color: $bp-controls-button-hover-background;
     }
 
     &:focus:not(:disabled),
@@ -108,18 +108,18 @@ $bp-controls-distinct-button-size-small: 24px;
 }
 
 @mixin bp-ControlLabel {
+    user-select: none;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: $bp-controls-size-default;
     padding-right: 3px;
     padding-left: 3px;
-    color: $white;
     font-size: 13px;
     line-height: 1;
+    color: $white;
     white-space: nowrap;
     opacity: $bp-controls-opacity;
-    user-select: none;
 }
 
 @mixin bp-Control--distinct-button-small {

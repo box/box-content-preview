@@ -17,27 +17,27 @@ $bp-SettingsDropdown-spacing: 5px;
 }
 
 .bp-SettingsDropdown-flyout {
-    inset: auto 0 0;
     z-index: 1;
+    inset: auto 0 0;
+    transform: translateY(100%);
     flex: 1 1 auto;
     padding: 8px 0;
-    transform: translateY(100%);
 }
 
 .bp-SettingsDropdown-button {
+    cursor: pointer;
     position: relative;
     height: 34px;
     margin: $bp-SettingsDropdown-spacing 0;
     padding: $bp-SettingsDropdown-spacing 0 $bp-SettingsDropdown-spacing $bp-SettingsDropdown-spacing * 2;
-    color: #808080;
-    font-weight: normal;
-    font-size: 13px;
-    letter-spacing: 1px;
-    text-align: left;
-    background-color: $white;
     border: 1px solid $sf-fog;
     border-radius: 2px;
-    cursor: pointer;
+    font-size: 13px;
+    font-weight: normal;
+    color: #808080;
+    text-align: left;
+    letter-spacing: 1px;
+    background-color: $white;
     transition:
         background-color 0.05s ease-in-out,
         border-color 0.05s ease-in-out;
@@ -48,17 +48,17 @@ $bp-SettingsDropdown-spacing: 5px;
     }
 
     &::after {
+        content: '';
         position: absolute;
         top: 15px;
         right: 11px;
+        transform: rotate(0);
         width: 0;
         height: 0;
         border-top: 3px solid $better-black;
         border-right: 3px solid transparent;
         border-left: 3px solid transparent;
-        transform: rotate(0);
         transition: transform 200ms linear;
-        content: '';
     }
 
     &.bp-is-open {
@@ -75,16 +75,16 @@ $bp-SettingsDropdown-spacing: 5px;
 .bp-SettingsDropdown-listitem {
     display: block;
     padding: $bp-SettingsDropdown-spacing 35px $bp-SettingsDropdown-spacing 15px;
-    color: $better-black;
     line-height: 20px;
+    color: $better-black;
     outline: none;
 
     &.bp-is-active,
     &:hover,
     &:focus {
+        cursor: pointer;
         color: $dark-cerulean;
         background: $hover-blue-background;
-        cursor: pointer;
         fill: $dark-cerulean;
     }
 }

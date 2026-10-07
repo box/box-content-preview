@@ -30,8 +30,8 @@
 }
 
 .bp-media-scrubber-converted {
-    background-color: rgba($white, 0.5);
     cursor: pointer;
+    background-color: rgba($white, 0.5);
 }
 
 .bp-media-scrubber-buffered {
@@ -41,25 +41,25 @@
 }
 
 .bp-media-scrubber-played {
-    background-color: $box-blue;
     cursor: pointer;
+    background-color: $box-blue;
 }
 
 .bp-media-scrubber-underlay {
-    width: 100%;
     cursor: not-allowed;
+    width: 100%;
 }
 
 .bp-media-scrubber-handle {
+    cursor: pointer;
     position: absolute;
     top: -4.25px;
+    transform: scale(0);
     width: 12px;
     height: 12px;
     margin-left: -6px; // Half of the width, to account for the width of the handle
-    background-color: $box-blue;
     border-radius: 6px;
-    transform: scale(0);
-    cursor: pointer;
+    background-color: $box-blue;
     transition: transform 0.05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
 }
 

@@ -1,23 +1,23 @@
 @import '../../controls/media/styles';
 
 .bp-WaveformShuttle {
+    pointer-events: none;
+    user-select: none;
     position: absolute;
+    z-index: 6;
     top: 48px;
     left: 50%;
-    z-index: 6;
+    transform: translateX(-50%);
     display: flex;
     gap: 4px;
     align-items: center;
     height: 48px;
     padding: 8px 16px;
+    border-radius: 24px;
     color: $white;
     background: rgb(255 255 255 / 10%);
-    border-radius: 24px;
-    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
-    transform: translateX(-50%);
     backdrop-filter: blur(60px);
-    pointer-events: none;
-    user-select: none;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
 }
 
 .bp-WaveformShuttle-glyph {
@@ -32,8 +32,8 @@
 }
 
 .bp-WaveformShuttle-rate {
-    font-weight: 500;
     font-size: 14px;
+    font-weight: 500;
     line-height: 22px;
     white-space: nowrap;
 }
