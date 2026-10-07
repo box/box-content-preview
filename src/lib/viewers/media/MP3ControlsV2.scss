@@ -10,8 +10,6 @@
 }
 
 .bp-MP3ControlsV2 {
-    --bp-waveform-bar-min: 140px;
-
     pointer-events: none;
     position: relative;
     width: 100%;
@@ -49,13 +47,13 @@
     width: 100%;
 }
 
-// Tape: at least the desktop bar height (140px), and at least 25% of the player
-// stage (same box as `.bp-media-container`). Percentage on `.bp-WaveformView`
+// Tape: 25% of the player stage (same box as `.bp-media-container`). A 140px
+// floor overflows short landscape viewports. Percentage on `.bp-WaveformView`
 // itself would resolve against this wrapper's shrink-wrapped height and collapse.
 .bp-MP3ControlsV2-stage:has(.bp-WaveformView--tape) .bp-MP3ControlsV2-waveform {
     display: flex;
     flex-direction: column;
-    height: max(var(--bp-waveform-bar-min, 140px), 25%);
+    height: 25%;
     min-height: 0;
 }
 
