@@ -27,14 +27,45 @@ module.exports = language => {
                     include: [path.resolve('src/lib')],
                 },
                 {
-                    test: /\.s?css$/,
+                    test: /\.scss$/,
                     use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
                     include: [
                         path.resolve('src/lib'),
                         path.resolve('node_modules/box-annotations'),
                         path.resolve('node_modules/box-ui-elements'),
-                        path.resolve('node_modules/pdfjs-dist'),
+                        // Token / mixin Sass from assets (e.g. tokens.scss) if anything imports it.
+                        path.resolve('node_modules/@box/blueprint-web-assets'),
                     ],
+                },
+                {
+                    // Split from the Sass rule so plain CSS from node_modules is not run through
+                    // sass-loader. Blueprint ships compiled CSS, and on CDN it is bundled rather
+                    // than left to the host, so it has to be listed here or its styles never reach
+                    // preview.css. Assets also ships token CSS under dist/tokens.
+                    test: /\.css$/,
+                    use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+                    include: [
+                        path.resolve('src/lib'),
+                        path.resolve('node_modules/box-annotations'),
+                        path.resolve('node_modules/box-ui-elements'),
+                        path.resolve('node_modules/pdfjs-dist'),
+                        path.resolve('node_modules/@box/blueprint-web'),
+                        path.resolve('node_modules/@box/blueprint-web-assets'),
+                    ],
+                },
+                {
+                    // Blueprint packages use ESM with extensionless relative imports (e.g. assets
+                    // icon barrels: `export { default as X } from './X'`), which webpack 5 rejects
+                    // under strict ESM resolution. Required as soon as CDN resolves either package
+                    // — including transitively when @box/blueprint-web imports assets icons/tokens.
+                    test: /\.m?js$/,
+                    include: [
+                        path.resolve('node_modules/@box/blueprint-web'),
+                        path.resolve('node_modules/@box/blueprint-web-assets'),
+                    ],
+                    resolve: {
+                        fullySpecified: false,
+                    },
                 },
                 {
                     test: /\.(svg|html)$/,
