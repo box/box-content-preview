@@ -2,20 +2,15 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
-import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
-import itemNameCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/itemNameCellRenderer';
-import readableTimeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/readableTimeCellRenderer';
-import sizeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sizeCellRenderer';
-import sortableColumnHeaderRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sortableColumnHeaderRenderer';
-import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
+import { AutoSizer, SortDirection } from '@box/react-virtualized';
+import ArchiveTable from './ArchiveTable';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
-import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
+import { ROOT_FOLDER, VIEWS } from './constants';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
-const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
 const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
 class ArchiveExplorer extends React.Component {
@@ -70,33 +65,6 @@ class ArchiveExplorer extends React.Component {
 
         const { item_collection: folderItems = [] } = itemCollection.find(item => item.absolute_path === fullPath);
         return itemCollection.filter(item => folderItems.includes(item.absolute_path));
-    };
-
-    /**
-     * Prepare data to render
-     * Will be passed as row getter into VirtaulizedTable
-     *
-     * @param {Array<Object>} itemList - list of data object
-     * @param {number} index - row index of the data to selected
-     * @return {Object} formatted data
-     */
-    getRowData = itemList => ({ index }) => {
-        const { absolute_path: fullPath, modified_at: modifiedAt, name, size, type, ...rest } = itemList[index];
-
-        return {
-            [KEY_NAME]: {
-                fullPath,
-                isExternal: false,
-                name,
-                type,
-                dataAttributes: {
-                    'data-resin-target': type,
-                },
-            },
-            [KEY_MODIFIED_AT]: modifiedAt,
-            [KEY_SIZE]: type === 'folder' ? null : size,
-            ...rest,
-        };
     };
 
     /**
@@ -221,46 +189,15 @@ class ArchiveExplorer extends React.Component {
                     <div className="bp-ArchiveExplorer-table">
                         <AutoSizer>
                             {({ height, width }) => (
-                                <VirtualizedTable
+                                <ArchiveTable
                                     height={height}
-                                    rowData={itemList}
-                                    rowGetter={this.getRowData(itemList)}
-                                    scrollToIndex={0}
-                                    sort={this.handleSort}
+                                    itemList={itemList}
+                                    onItemClick={this.handleItemClick}
+                                    onSort={this.handleSort}
                                     sortBy={sortBy}
                                     sortDirection={sortDirection}
                                     width={width}
-                                >
-                                    {intl => [
-                                        <Column
-                                            key={KEY_NAME}
-                                            cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
-                                            dataKey={KEY_NAME}
-                                            flexGrow={3}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('filename')}
-                                            width={1}
-                                        />,
-                                        <Column
-                                            key={KEY_MODIFIED_AT}
-                                            cellRenderer={readableTimeCellRenderer}
-                                            dataKey={KEY_MODIFIED_AT}
-                                            flexGrow={2}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('last_modified_date')}
-                                            width={1}
-                                        />,
-                                        <Column
-                                            key={KEY_SIZE}
-                                            cellRenderer={sizeCellRenderer()}
-                                            dataKey={KEY_SIZE}
-                                            flexGrow={1}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('size')}
-                                            width={1}
-                                        />,
-                                    ]}
-                                </VirtualizedTable>
+                                />
                             )}
                         </AutoSizer>
                     </div>

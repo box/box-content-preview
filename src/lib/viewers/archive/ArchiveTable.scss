@@ -1,0 +1,75 @@
+// Mirrors the All Files list row: Blueprint list-item tokens, not a copied stylesheet.
+// The virtualized grid still owns layout. These rules only paint the cells it mounts.
+
+.bp-ArchiveTable {
+    .ReactVirtualized__Table__headerRow {
+        text-transform: none;
+        background: var(--bp-surface-surface);
+    }
+
+    .ReactVirtualized__Table__headerColumn {
+        margin: 0;
+    }
+
+    .ReactVirtualized__Table__row {
+        border-bottom: var(--bp-border-01) solid var(--bp-border-divider-border);
+    }
+
+    .ReactVirtualized__Table__row:hover {
+        background: var(--bp-surface-list-item-surface-hover);
+    }
+
+    .ReactVirtualized__Table__rowColumn {
+        margin: 0;
+    }
+}
+
+.bp-ArchiveTable-header {
+    display: flex;
+    gap: var(--bp-space-020);
+    align-items: center;
+    padding: var(--bp-space-020) var(--bp-space-030);
+}
+
+.bp-ArchiveTable-header--sorted {
+    font-weight: var(--bp-font-weight-bold);
+    color: var(--bp-text-text-on-light);
+}
+
+.bp-ArchiveTable-sortIcon {
+    width: var(--bp-size-040);
+    height: var(--bp-size-040);
+}
+
+.bp-ArchiveTable-sortIcon--asc {
+    transform: rotate(180deg);
+}
+
+.bp-ArchiveTable-name {
+    display: flex;
+    gap: var(--bp-space-030);
+    align-items: center;
+    min-width: 0;
+    padding: 0 var(--bp-space-030);
+}
+
+.bp-ArchiveTable-icon {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+}
+
+.bp-ArchiveTable-folderButton {
+    cursor: pointer;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    background: none;
+}
+
+.bp-ArchiveTable-meta {
+    padding: 0 var(--bp-space-030);
+}

@@ -116,15 +116,17 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             render(<ArchiveExplorer filename={filename} itemCollection={data} />);
 
             expect(screen.getByRole('gridcell', { name: 'test' })).toHaveAttribute('aria-colindex', '1');
-            expect(
-                screen.getAllByRole('gridcell', { name: '{time, date, medium} at {time, time, short}' }).at(0),
-            ).toHaveAttribute('aria-colindex', '2');
+            expect(screen.getAllByRole('gridcell', { name: '19-Dec-02 16:43' }).at(0)).toHaveAttribute(
+                'aria-colindex',
+                '2',
+            );
             expect(screen.getByRole('gridcell', { name: '--' })).toHaveAttribute('aria-colindex', '3');
 
             expect(screen.getByRole('gridcell', { name: 'level-0.txt' })).toHaveAttribute('aria-colindex', '1');
-            expect(
-                screen.getAllByRole('gridcell', { name: '{time, date, medium} at {time, time, short}' }).at(0),
-            ).toHaveAttribute('aria-colindex', '2');
+            expect(screen.getAllByRole('gridcell', { name: '19-Nov-04 16:11' }).at(0)).toHaveAttribute(
+                'aria-colindex',
+                '2',
+            );
             expect(screen.getByRole('gridcell', { name: '1 Bytes' })).toHaveAttribute('aria-colindex', '3');
         });
     });
@@ -154,9 +156,9 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         test('should set the sort direction and type', () => {
             render(<ArchiveExplorer filename={filename} itemCollection={data} />);
 
-            expect(screen.getByTitle('Name').querySelector('svg')).toHaveClass('bdl-icon-sort-chevron');
-            expect(screen.queryByTitle('Modified').querySelector('svg')).not.toBeInTheDocument();
-            expect(screen.queryByTitle('Size').querySelector('svg')).not.toBeInTheDocument();
+            expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveAttribute('aria-sort', 'ascending');
+            expect(screen.getByRole('columnheader', { name: 'Modified' })).toHaveAttribute('aria-sort', 'none');
+            expect(screen.getByRole('columnheader', { name: 'Size' })).toHaveAttribute('aria-sort', 'none');
         });
 
         test('should sort itemList by clicking on the Size column header', async () => {
