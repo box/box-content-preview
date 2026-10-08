@@ -1,3 +1,7 @@
+## 3.108.0 (2026-10-08)
+
+* chore(deps): Align Sass, loaders, and test libraries (#1817) ([062a0ee](https://github.com/box/box-content-preview/commit/062a0ee)), closes [#1817](https://github.com/box/box-content-preview/issues/1817)
+
 ## 3.107.0 (2026-10-07)
 
 * feat(audio): drag the desktop playhead to seek (#1816) ([a197793](https://github.com/box/box-content-preview/commit/a197793)), closes [#1816](https://github.com/box/box-content-preview/issues/1816)
