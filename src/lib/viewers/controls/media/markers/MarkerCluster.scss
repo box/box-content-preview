@@ -2,10 +2,10 @@
 
 .bp-MarkerCluster {
     position: absolute;
-    top: 50%;
     z-index: 1;
-    height: 8px;
+    top: 50%;
     transform: translate(-2px, -50%);
+    height: 8px;
     transition: transform 150ms;
 
     &:hover,
@@ -15,13 +15,13 @@
 }
 
 .bp-MarkerCluster-tick {
+    cursor: pointer;
     display: block;
     width: 100%;
     height: 100%;
     padding: 0;
-    background: $bdl-gray-65;
     border: 1px solid $white;
     border-radius: 2px;
-    cursor: pointer;
+    background: $bdl-gray-65;
     transition: transform 150ms;
 }

@@ -6,6 +6,7 @@
 }
 
 .bp-box3d {
+    user-select: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -15,7 +16,6 @@
     margin: 0;
     padding: 0;
     border: 0 none;
-    user-select: none;
     -webkit-touch-callout: none;
 
     // For VR mode
@@ -31,8 +31,8 @@
 .bp-box3d canvas {
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: grab;
-    -webkit-touch-callout: none;
     user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .bp-box3d.bp-invisible {
@@ -47,11 +47,11 @@
     position: absolute;
     z-index: 2;
     margin: auto;
-    color: #484848;
-    font-weight: normal;
-    font-size: 13px;
-    background: #fff;
     border: 1px solid #caccd0;
+    font-size: 13px;
+    font-weight: normal;
+    color: #484848;
+    background: #fff;
     outline: 0;
 }
 
@@ -59,7 +59,7 @@
     position: relative;
     top: 5px;
     display: inline-block;
-    opacity: .7;
+    opacity: 0.7;
 }
 
 .bp-box3d .bp-toggle-overlay .bp-menu {

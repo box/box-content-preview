@@ -10,15 +10,15 @@
     height: 18px; // Divisible by 3px (default) and 6px (hovered) for better vertical centering
 
     .bp-SliderControl-thumb {
+        will-change: transform; // Prevent flickering in Safari
         transform: scale(0);
         transition: transform 100ms ease;
-        will-change: transform; // Prevent flickering in Safari
     }
 
     .bp-SliderControl-track {
+        will-change: transform; // Prevent flickering in Safari
         backface-visibility: hidden; // Prevent jank in Firefox
         transition: transform 100ms ease;
-        will-change: transform; // Prevent flickering in Safari
     }
 
     &.bp-is-scrubbing,

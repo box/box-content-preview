@@ -31,28 +31,28 @@
 // V2 video player back button — match the TimestampControl flyout typography
 .bp-media--v2 {
     .bp-SettingsMenuBack {
+        cursor: pointer;
         gap: 16px;
         padding: 6px 14px;
         border-radius: 8px;
-        cursor: pointer;
 
         &:hover {
-            background-color: $bdl-gray-05;
             border-radius: 8px;
-            box-shadow: none;
+            background-color: $bdl-gray-05;
             backdrop-filter: none;
+            box-shadow: none;
         }
     }
 
     .bp-SettingsMenuBack-label {
-        padding: 6px 14px;
-        color: $bdl-gray-62;
-        font-weight: bold;
-        font-size: 14px;
-        font-family: Lato, Arial, sans-serif;
-        line-height: 20px;
-        letter-spacing: .3px;
-        text-transform: none;
         user-select: none;
+        padding: 6px 14px;
+        font-family: Lato, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 20px;
+        color: $bdl-gray-62;
+        text-transform: none;
+        letter-spacing: 0.3px;
     }
 }

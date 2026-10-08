@@ -14,9 +14,9 @@ This viewer does not support printing.
 
 ### Controls:
 
-* Zoom In
-* Zoom Out
-* Fullscreen (can be exited with the escape key)
+- Zoom In
+- Zoom Out
+- Fullscreen (can be exited with the escape key)
 
 ## Supported File Extensions
 
@@ -26,29 +26,27 @@ This viewer does not support printing.
 
 The CSV viewer fires the following events
 
-| Event Name | Explanation | Event Data |
-| --- | --- | --- |
-| destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
-| notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | {object} file |
-| reload | The preview reloads ||
-| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
-| zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
-| assetsloaded | The viewer's third party assets have loaded ||
-
+| Event Name   | Explanation                                 | Event Data                                                                                                                                                                     |
+| ------------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| destroy      | The preview is intentionally destroyed      |                                                                                                                                                                                |
+| load         | The preview loads                           | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
+| notification | A notification is displayed                 |                                                                                                                                                                                |
+| navigate     | The preview is shown for a given index      | {object} file                                                                                                                                                                  |
+| reload       | The preview reloads                         |                                                                                                                                                                                |
+| resize       | The preview resizes                         | 1. {number} **height**: window height 2. {number} **width**: window width                                                                                                      |
+| zoom         | The preview zooms in or out                 | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more         |
+| assetsloaded | The viewer's third party assets have loaded |                                                                                                                                                                                |
 
 ## Methods
 
 The following methods are available for the CSV viewer.
 
-| Method Name | Explanation | Method Parameters |
-| --- | --- | --- |
-| zoom | Zooms in or out based on the given value | {string} 'in' or 'out' |
-| zoomIn | Zooms in ||
-| zoomOut | Zooms out ||
-| toggleFullscreen | Toggles fullscreen mode ||
-
+| Method Name      | Explanation                              | Method Parameters      |
+| ---------------- | ---------------------------------------- | ---------------------- |
+| zoom             | Zooms in or out based on the given value | {string} 'in' or 'out' |
+| zoomIn           | Zooms in                                 |                        |
+| zoomOut          | Zooms out                                |                        |
+| toggleFullscreen | Toggles fullscreen mode                  |                        |
 
 # Markdown Viewer
 
@@ -68,7 +66,7 @@ Re-sizing the viewer window will reflow the markdown to fit the available space.
 
 ### Controls:
 
-* Fullscreen (can be exited with the escape key)
+- Fullscreen (can be exited with the escape key)
 
 ## Supported File Extensions
 
@@ -78,25 +76,24 @@ Re-sizing the viewer window will reflow the markdown to fit the available space.
 
 The Markdown viewer fires the following events
 
-| Event Name | Explanation | Event Data |
-| --- | --- | --- |
-| destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
-| notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | {object} file |
-| reload | The preview reloads ||
-| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
-| printsuccess | An attempt to print triggered successfully ||
+| Event Name   | Explanation                                | Event Data                                                                                                                                                                     |
+| ------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| destroy      | The preview is intentionally destroyed     |                                                                                                                                                                                |
+| load         | The preview loads                          | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
+| notification | A notification is displayed                |                                                                                                                                                                                |
+| navigate     | The preview is shown for a given index     | {object} file                                                                                                                                                                  |
+| reload       | The preview reloads                        |                                                                                                                                                                                |
+| resize       | The preview resizes                        | 1. {number} **height**: window height 2. {number} **width**: window width                                                                                                      |
+| printsuccess | An attempt to print triggered successfully |                                                                                                                                                                                |
 
 ## Methods
 
 The following methods are available for the Markdown viewer.
 
-| Method Name | Explanation | Method Parameters |
-| --- | --- | --- |
-| print | Prints text using Github Markdown styling ||
-| toggleFullscreen | Toggles fullscreen mode ||
-
+| Method Name      | Explanation                               | Method Parameters |
+| ---------------- | ----------------------------------------- | ----------------- |
+| print            | Prints text using Github Markdown styling |                   |
+| toggleFullscreen | Toggles fullscreen mode                   |                   |
 
 # Text Viewer
 
@@ -116,37 +113,37 @@ This viewer supports printing and will attempt to print with appropriate syntax 
 
 ### Controls:
 
-* Zoom In
-* Zoom Out
-* Fullscreen: can be exited with the escape key
+- Zoom In
+- Zoom Out
+- Fullscreen: can be exited with the escape key
 
 ## Supported File Extensions
 
 `as, as3, asm, bat, c, cc, cmake, cpp, cs, css, cxx, diff, erb, groovy, h, haml, hh, htm, html, java, js, less, m, make, md, ml, mm, php, pl, plist, properties, py, rb, rst, sass, scala, script, scm, sml, sql, sh, vi, vim, webdoc, xhtml, yaml`
 
-
 ## Events
 
 The text viewer fires the following events
 
-| Event Name | Explanation | Event Data |
-| --- | --- | --- |
-| destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
-| notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | {object} file |
-| reload | The preview reloads ||
-| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
-| zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
-| printsuccess | An attempt to print triggered successfully ||
+| Event Name   | Explanation                                | Event Data                                                                                                                                                                     |
+| ------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| destroy      | The preview is intentionally destroyed     |                                                                                                                                                                                |
+| load         | The preview loads                          | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
+| notification | A notification is displayed                |                                                                                                                                                                                |
+| navigate     | The preview is shown for a given index     | {object} file                                                                                                                                                                  |
+| reload       | The preview reloads                        |                                                                                                                                                                                |
+| resize       | The preview resizes                        | 1. {number} **height**: window height 2. {number} **width**: window width                                                                                                      |
+| zoom         | The preview zooms in or out                | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more         |
+| printsuccess | An attempt to print triggered successfully |                                                                                                                                                                                |
 
 ## Methods
 
 The following methods are available for the text viewer.
-| Method Name | Explanation | Method Parameters |
-| --- | --- | --- |
-| zoom | Zooms in or out based on the given value | {string} 'in' or 'out' |
-| zoomIn | Zooms in ||
-| zoomOut | Zooms out ||
-| print | Prints text ||
-| toggleFullscreen | Toggles fullscreen mode ||
+
+| Method Name      | Explanation                              | Method Parameters      |
+| ---------------- | ---------------------------------------- | ---------------------- |
+| zoom             | Zooms in or out based on the given value | {string} 'in' or 'out' |
+| zoomIn           | Zooms in                                 |                        |
+| zoomOut          | Zooms out                                |                        |
+| print            | Prints text                              |                        |
+| toggleFullscreen | Toggles fullscreen mode                  |                        |

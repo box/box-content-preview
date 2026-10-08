@@ -146,7 +146,13 @@ class MP4Viewer extends VideoBaseViewer {
         };
 
         if (this.isVideoPlayerV2) {
-            this.controls.render(<VideoControlsV2 {...sharedProps} />);
+            this.controls.render(
+                <VideoControlsV2
+                    {...sharedProps}
+                    onPlayNextChange={this.setPlayNext}
+                    playNext={this.isPlayNextEnabled()}
+                />,
+            );
             return;
         }
 

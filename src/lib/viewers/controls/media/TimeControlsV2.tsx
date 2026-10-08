@@ -42,10 +42,15 @@ export default function TimeControlsV2({
     const [hoverTime, setHoverTime] = React.useState(0);
     const [trackWidth, setTrackWidth] = React.useState(0);
     const scrubberRef = React.useRef<HTMLDivElement>(null);
-    const hostSelectedId = React.useMemo(() => commentMarkers.find(marker => marker.isSelected)?.id ?? null, [
-        commentMarkers,
-    ]);
-    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId);
+    const selectedMarker = React.useMemo(
+        () => commentMarkers.find(marker => marker.isSelected) ?? null,
+        [commentMarkers],
+    );
+    const hostSelectedId = selectedMarker?.id ?? null;
+    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(
+        hostSelectedId,
+        selectedMarker?.selectionSeq ?? null,
+    );
     const currentValue = isFinite(currentTime) ? currentTime : 0;
     const durationValue = isFinite(durationTime) ? durationTime : 0;
     const currentPercentage = percent(currentValue, durationValue);
@@ -75,11 +80,10 @@ export default function TimeControlsV2({
         [onCommentMarkerClick, selectMarker],
     );
 
-    const clusters = React.useMemo(() => buildClusters(commentMarkers, durationValue, trackWidth), [
-        commentMarkers,
-        durationValue,
-        trackWidth,
-    ]);
+    const clusters = React.useMemo(
+        () => buildClusters(commentMarkers, durationValue, trackWidth),
+        [commentMarkers, durationValue, trackWidth],
+    );
 
     const trackMask = React.useMemo(() => {
         if (durationValue <= 0 || clusters.length === 0) return undefined;

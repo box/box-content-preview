@@ -4,20 +4,24 @@
     position: absolute;
     top: -5px;
     right: 0;
+    transform: translateY(-100%);
+    overflow: hidden; // Prevent scrollbar from showing on hover in IE/Edge
     display: none;
     min-width: 184px;
     max-width: 400px;
-    overflow: hidden; // Prevent scrollbar from showing on hover in IE/Edge
-    color: $fours;
-    font-size: 13px;
-    line-height: normal;
-    background: $bp-controls-settings-flyout-background;
     border: 1px solid $bdl-gray-10;
     border-radius: 20px;
-    box-shadow: 0 0 1px 1px $sf-fog, 0 4px 12px 0 rgb(0 0 0 / 10%);
-    transform: translateY(-100%);
+    font-size: 13px;
+    line-height: normal;
+    color: $fours;
+    background: $bp-controls-settings-flyout-background;
     backdrop-filter: blur(16px);
-    transition: width 200ms, height 200ms;
+    box-shadow:
+        0 0 1px 1px $sf-fog,
+        0 4px 12px 0 rgb(0 0 0 / 10%);
+    transition:
+        width 200ms,
+        height 200ms;
     -ms-overflow-style: -ms-autohiding-scrollbar;
 
     &.bp-is-open {
@@ -33,15 +37,15 @@
 .bp-media--v2 {
     .bp-SettingsFlyout {
         z-index: 10;
-        min-width: 250px;
-        color: $black;
-        font-size: 16px;
-        font-family: Lato, Arial, sans-serif;
-        line-height: 24px;
-        background: $white;
+        min-width: 300px;
         border: 0;
         border-radius: 16px;
-        box-shadow: 0 4px 12px 0 rgb(0 0 0 / 15%);
+        font-family: Lato, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 24px;
+        color: $black;
+        background: $white;
         backdrop-filter: none;
+        box-shadow: 0 4px 12px 0 rgb(0 0 0 / 15%);
     }
 }

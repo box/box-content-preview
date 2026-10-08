@@ -24,6 +24,38 @@ describe('VolumeControls', () => {
             await userEvent.click(toggle);
             expect(onMuteChange).toHaveBeenCalledWith(isMuted);
         });
+
+        test('should open the slider on the first collapsed press and mute on the next', async () => {
+            const user = userEvent.setup();
+            const onMuteChange = jest.fn();
+            getWrapper({ onMuteChange, volume: 1 });
+
+            const container = await getContainer();
+            const flyout = container.querySelector('.bp-VolumeControls-flyout');
+            const toggle = await getToggle();
+            expect(flyout).not.toHaveClass('bp-is-open');
+
+            await user.pointer({ keys: '[TouchA]', target: toggle });
+            expect(flyout).toHaveClass('bp-is-open');
+            expect(onMuteChange).not.toHaveBeenCalled();
+            expect(screen.getByRole('slider', { name: __('media_volume_slider') })).toBeInTheDocument();
+
+            await user.pointer({ keys: '[TouchA]', target: toggle });
+            expect(onMuteChange).toHaveBeenCalledWith(true);
+        });
+
+        test('should collapse a pinned volume flyout when tapping outside', async () => {
+            const user = userEvent.setup();
+            getWrapper({ volume: 1 });
+
+            const container = await getContainer();
+            const flyout = container.querySelector('.bp-VolumeControls-flyout');
+            await user.pointer({ keys: '[TouchA]', target: await getToggle() });
+            expect(flyout).toHaveClass('bp-is-open');
+
+            await user.pointer({ keys: '[TouchA>]', target: document.body });
+            expect(flyout).not.toHaveClass('bp-is-open');
+        });
     });
 
     describe('render', () => {

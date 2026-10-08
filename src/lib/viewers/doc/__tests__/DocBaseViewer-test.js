@@ -584,10 +584,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not prefetch content if content is true but representation is not ready', () => {
                 jest.spyOn(docBase, 'isRepresentationReady').mockReturnValue(false);
-                sandbox
-                    .mock(stubs.api)
-                    .expects('get')
-                    .never();
+                sandbox.mock(stubs.api).expects('get').never();
                 docBase.prefetch({ assets: false, preload: false, content: true });
             });
 
@@ -595,10 +592,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.file.watermark_info = {
                     is_watermarked: true,
                 };
-                sandbox
-                    .mock(stubs.api)
-                    .expects('get')
-                    .never();
+                sandbox.mock(stubs.api).expects('get').never();
                 docBase.prefetch({ assets: false, preload: false, content: true });
             });
 
@@ -692,10 +686,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not do anything if there is a previously cached page', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(2);
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
@@ -703,10 +694,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should not do anything if startAt is not page 1', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
                 docBase.startPageNum = 3;
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
@@ -718,15 +706,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     },
                 };
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 jest.spyOn(file, 'getRepresentation').mockReturnValue({});
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
@@ -734,17 +716,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should not do anything if both reps are missing', () => {
                 docBase.options.file = {};
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 webpRep = null;
                 jpegRep = null;
 
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
@@ -752,17 +728,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should not do anything if no preload or paged preload rep is available', () => {
                 docBase.options.file = {};
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 webpRep.status.state = STATUS_NONE;
                 jpegRep.status.state = STATUS_NONE;
 
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
@@ -770,57 +740,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should not do anything if preload option is not set', () => {
                 docBase.options.file = {};
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(false);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(false);
                 jest.spyOn(file, 'getRepresentation').mockReturnValue(null);
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
 
             test('should not do anything if reps have an error', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 webpRep.status.state = STATUS_ERROR;
                 jpegRep.status.state = STATUS_ERROR;
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
 
             test('should not do anything if preload reps are pending', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 webpRep.status.state = STATUS_PENDING;
                 jpegRep.status.state = STATUS_PENDING;
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .never();
+                sandbox.mock(docBase.preloader).expects('showPreload').never();
 
                 docBase.showPreload();
             });
 
             test('should show preload if webp paged rep is unavalable but jpeg preload rep is available', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 webpRep.status.state = STATUS_NONE;
                 jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
                 docBase.showPreload();
@@ -829,10 +778,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should show preload of webp paged rep is available but jpeg preload rep is unavailable', () => {
                 jest.spyOn(docBase, 'getCachedPage').mockReturnValue(1);
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 jpegRep.status.state = STATUS_NONE;
                 jest.spyOn(docBase.preloader, 'showPreload').mockImplementation();
                 docBase.showPreload();
@@ -851,15 +797,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         state: STATUS_SUCCESS,
                     },
                 });
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue(preloadUrl);
-                sandbox
-                    .mock(docBase.preloader)
-                    .expects('showPreload')
-                    .withArgs(preloadUrl, docBase.containerEl);
+                sandbox.mock(docBase.preloader).expects('showPreload').withArgs(preloadUrl, docBase.containerEl);
 
                 docBase.showPreload();
             });
@@ -876,10 +816,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         state: STATUS_SUCCESS,
                     },
                 });
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('preload')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
                 jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue(preloadUrl);
 
                 sandbox.mock(docBase.preloader).expects('showPreload');
@@ -1258,10 +1195,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should not set find bar if viewer option disableFindBar is true', () => {
-                sandbox
-                    .stub(docBase, 'getViewerOption')
-                    .withArgs('disableFindBar')
-                    .returns(true);
+                sandbox.stub(docBase, 'getViewerOption').withArgs('disableFindBar').returns(true);
                 docBase.initFind();
                 expect(docBase.findBar).toBeUndefined();
             });
@@ -4156,13 +4090,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
 
             test('should return undefined if there is no existing cache entry for the file', () => {
-                stubs.get.mockReturnValue({ '123': true });
+                stubs.get.mockReturnValue({ 123: true });
 
                 expect(docBase.getCachedThumbnailsToggledState()).toBeUndefined();
             });
 
             test('should return the cached value if there is an existing cache entry for the file', () => {
-                stubs.get.mockReturnValue({ '0': true });
+                stubs.get.mockReturnValue({ 0: true });
 
                 expect(docBase.getCachedThumbnailsToggledState()).toBe(true);
             });
@@ -4181,23 +4115,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 docBase.cacheThumbnailsToggledState(true);
 
-                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
+                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { 0: true }, true);
             });
 
             test('should set toggled state to existing object', () => {
-                stubs.get.mockReturnValue({ '123': false });
+                stubs.get.mockReturnValue({ 123: false });
 
                 docBase.cacheThumbnailsToggledState(true);
 
-                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true, '123': false }, true);
+                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { 0: true, 123: false }, true);
             });
 
             test('should update toggled state to existing object', () => {
-                stubs.get.mockReturnValue({ '0': false });
+                stubs.get.mockReturnValue({ 0: false });
 
                 docBase.cacheThumbnailsToggledState(true);
 
-                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { '0': true }, true);
+                expect(stubs.set).toBeCalledWith(THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY, { 0: true }, true);
             });
         });
 

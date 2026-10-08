@@ -143,7 +143,7 @@ describe('tintWaveformTiles', () => {
         ) {
             Object.defineProperty(this, 'width', { configurable: true, value: 200 });
             Object.defineProperty(this, 'height', { configurable: true, value: 10 });
-            return ({
+            return {
                 createLinearGradient: (x0: number, _y0: number, x1: number) => {
                     gradients.push({ left: this.style.left, x0, x1 });
                     return { addColorStop: jest.fn() };
@@ -153,7 +153,7 @@ describe('tintWaveformTiles', () => {
                 save: jest.fn(),
                 fillStyle: '',
                 globalCompositeOperation: 'source-over',
-            } as unknown) as CanvasRenderingContext2D;
+            } as unknown as CanvasRenderingContext2D;
         });
 
         tintWaveformTiles({
@@ -175,7 +175,7 @@ describe('tintWaveformTiles', () => {
         canvas.style.width = '100px';
         Object.defineProperty(canvas, 'width', { configurable: true, value: 200 });
         const createLinearGradient = jest.fn(() => ({ addColorStop: jest.fn() }));
-        const context = ({ createLinearGradient } as unknown) as CanvasRenderingContext2D;
+        const context = { createLinearGradient } as unknown as CanvasRenderingContext2D;
 
         fillForTile(
             context,
@@ -206,7 +206,7 @@ describe('tintWaveformTiles', () => {
         ) {
             Object.defineProperty(this, 'width', { configurable: true, value: 200 });
             Object.defineProperty(this, 'height', { configurable: true, value: 10 });
-            return ({
+            return {
                 createLinearGradient: () => ({ addColorStop: jest.fn() }),
                 fillRect: jest.fn(),
                 getImageData,
@@ -215,7 +215,7 @@ describe('tintWaveformTiles', () => {
                 save: jest.fn(),
                 fillStyle: '',
                 globalCompositeOperation: 'source-over',
-            } as unknown) as CanvasRenderingContext2D;
+            } as unknown as CanvasRenderingContext2D;
         });
 
         const fills = getWaveformFills({ bufferProgress: 1, hoverProgress: 0.25 });
@@ -242,14 +242,14 @@ describe('tintWaveformTiles', () => {
         ) {
             Object.defineProperty(this, 'width', { configurable: true, value: 200 });
             Object.defineProperty(this, 'height', { configurable: true, value: 10 });
-            return ({
+            return {
                 createLinearGradient: () => ({ addColorStop: jest.fn() }),
                 fillRect,
                 restore: jest.fn(),
                 save: jest.fn(),
                 fillStyle: '',
                 globalCompositeOperation: 'source-over',
-            } as unknown) as CanvasRenderingContext2D;
+            } as unknown as CanvasRenderingContext2D;
         });
 
         tintWaveformTiles({

@@ -23,6 +23,8 @@ export type WaveformCommentMarkersProps = {
     onCommentMarkerClick?: (marker: CommentMarker) => void;
     /** Host-selected marker (activity feed / BUE). */
     selectedId?: string | null;
+    /** New value means the user picked `selectedId` again after dismissing it. */
+    selectionSeq?: number | null;
     /** Live waveform window. Parent keeps this while the overlay is unmounted. */
     viewport?: WaveformViewport | null;
 };
@@ -69,10 +71,11 @@ export default function WaveformCommentMarkers({
     isTape = false,
     onCommentMarkerClick,
     selectedId: hostSelectedId = null,
+    selectionSeq = null,
     viewport = null,
 }: WaveformCommentMarkersProps): JSX.Element | null {
     const trackRef = useRef<HTMLDivElement>(null); // width source for clustering overlapping badges
-    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId);
+    const { containerRef, selectMarker, selectedId } = useDismissableMarkerSelection(hostSelectedId, selectionSeq);
     const [trackWidth, setTrackWidth] = useState(0);
     const canShowTrack = durationSec > 0 && commentMarkers.length > 0;
     const zoomLevel = viewport?.zoomLevel ?? WAVEFORM_ZOOM_MIN;

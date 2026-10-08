@@ -9,8 +9,8 @@ $bp-SettingsCheckboxItem-spacing: 6px;
 
 .bp-SettingsCheckboxItem-input,
 .bp-SettingsCheckboxItem-label {
-    padding: $bp-SettingsCheckboxItem-spacing;
     user-select: none;
+    padding: $bp-SettingsCheckboxItem-spacing;
 }
 
 .bp-SettingsCheckboxItem-input {
@@ -21,8 +21,8 @@ $bp-SettingsCheckboxItem-spacing: 6px;
 .bp-media--v2 {
     .bp-SettingsCheckboxItem {
         padding: 6px 14px;
-        color: $black;
         border-radius: 8px;
+        color: $black;
 
         &:hover {
             background-color: $bdl-gray-05;

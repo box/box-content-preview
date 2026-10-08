@@ -5,18 +5,18 @@
     align-items: center;
     justify-content: center;
     padding: 0 8px;
-    background: $bp-controls-background;
     border-radius: $bp-controls-radius-inner;
+    background: $bp-controls-background;
 }
 
 .bp-ColorPickerPalette-button {
+    cursor: pointer;
     width: 20px;
     height: 20px;
     margin: 10px 2px;
     padding: 0;
     border: none;
     border-radius: $bp-controls-radius-inner;
-    cursor: pointer;
 
     &:focus,
     &:hover {

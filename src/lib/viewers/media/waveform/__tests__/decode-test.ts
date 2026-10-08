@@ -79,10 +79,10 @@ describe('extractPeaks', () => {
     test('should extract from an AudioBuffer without copying channels', () => {
         const left = new Float32Array([0.1, -0.2, 0.3, -0.4]);
         const right = new Float32Array([0.5, 0.05, -0.9, 0.1]);
-        const audioBuffer = ({
+        const audioBuffer = {
             numberOfChannels: 2,
             getChannelData: (channelIndex: number) => (channelIndex === 0 ? left : right),
-        } as unknown) as AudioBuffer;
+        } as unknown as AudioBuffer;
 
         const peaks = extractPeaks(audioBuffer, 2);
 
@@ -166,7 +166,7 @@ describe('decodeToPeaks', () => {
     });
 
     test('should close AudioContext when aborted during decode', async () => {
-        decodeAudioData.mockImplementation(() => new Promise(() => undefined));
+        decodeAudioData.mockImplementation(() => new Promise(() => {}));
         const controller = new AbortController();
         const pending = decodeToPeaks(new ArrayBuffer(8), controller.signal);
 

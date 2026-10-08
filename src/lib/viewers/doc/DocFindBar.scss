@@ -2,16 +2,16 @@
     $bdlGray10: #e8e8e8;
 
     position: absolute;
+    z-index: 3;
     top: 0;
     right: 17px; // Prevents overlap with scroll-bar
-    z-index: 3;
     display: flex;
     align-items: center;
     padding: 6px;
-    font-size: 12px;
-    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background: $white;
     border: 1px solid $bdlGray10;
+    font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    background: $white;
 
     // Removes "clear field" x at the end of input fields in IE10+ on Windows 8+
     ::-ms-clear {
@@ -22,10 +22,10 @@
         width: 200px;
         height: 34px;
         padding: 6px 6px 6px 25px;
-        color: $better-black;
-        line-height: 20px;
         border: 1px solid $bdlGray10;
         border-radius: 2px 0 0 2px;
+        line-height: 20px;
+        color: $better-black;
         outline-style: none;
         transition-timing-function: ease;
         transition-duration: 150ms;
@@ -38,41 +38,41 @@
     }
 
     .bp-doc-find-results-count {
+        cursor: default;
+        user-select: none;
         position: absolute;
         top: 37%;
         right: 120px;
         margin: 0;
         padding: 0;
-        color: fade-out($better-black, .75);
         line-height: 1;
+        color: fade-out($better-black, 0.75);
         text-align: right;
-        cursor: default;
-        user-select: none;
     }
 
     .bp-doc-find-search,
     .bp-doc-find-prev,
     .bp-doc-find-next,
     .bp-doc-find-close {
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         width: 34px;
         height: 34px;
         padding: 0;
+        border: 1px solid $off-white;
+        border-left: 0;
         line-height: 1;
         vertical-align: middle;
         background: none;
-        border: 1px solid $off-white;
-        border-left: 0;
-        cursor: pointer;
 
         svg {
             width: 17px;
         }
 
         .icon {
-            fill: fade-out($better-black, .25);
+            fill: fade-out($better-black, 0.25);
         }
     }
 
@@ -85,14 +85,14 @@
     }
 
     .bp-doc-find-search {
+        pointer-events: none;
         position: absolute;
         top: 15%;
         left: 5px;
         margin: 0;
+        border: 0;
         line-height: 1;
         text-align: left;
-        border: 0;
-        pointer-events: none;
 
         svg {
             width: 12px;
@@ -111,7 +111,7 @@
     .bp-find-match-not-found,
     .bp-find-match-not-found:hover,
     .bp-find-match-not-found:focus {
-        border-color: fade-out($great-balls-of-fire, .5);
+        border-color: fade-out($great-balls-of-fire, 0.5);
     }
 
     .bp-doc-find-controls {

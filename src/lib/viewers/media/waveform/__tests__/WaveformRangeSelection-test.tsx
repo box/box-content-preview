@@ -1,5 +1,6 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from '../constants';
 import { createWaveformViewport } from '../viewport';
 import WaveformRangeSelection, { WaveformRangeSelectionHandle } from '../WaveformRangeSelection';
@@ -13,9 +14,11 @@ if (typeof PointerEvent === 'undefined') {
             this.pointerId = init.pointerId ?? 0;
         }
     }
-    ((global as unknown) as {
-        PointerEvent: typeof PointerEvent;
-    }).PointerEvent = (PointerEventPolyfill as unknown) as typeof PointerEvent;
+    (
+        global as unknown as {
+            PointerEvent: typeof PointerEvent;
+        }
+    ).PointerEvent = PointerEventPolyfill as unknown as typeof PointerEvent;
 }
 
 function mockTrackRect(width = 200): void {
@@ -99,6 +102,91 @@ describe('WaveformRangeSelection', () => {
         });
     });
 
+    test('should place a Comment button above an open range and omit it when collapsed', () => {
+        const onDragCreate = jest.fn();
+        const { rerender } = render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        const button = screen.getByTestId('bp-waveform-range-comment');
+        expect(button).toHaveTextContent(__('media_range_comment'));
+        expect(button).toHaveStyle({ left: '37.5%' });
+
+        fireEvent.click(button);
+        expect(onDragCreate).toHaveBeenCalledTimes(1);
+
+        rerender(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                range={{ endMs: null, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+    });
+
+    test('should return focus to the media container when the range clear control is pressed', async () => {
+        const user = userEvent.setup();
+        const container = document.createElement('div');
+        container.className = 'bp-media-container';
+        container.tabIndex = -1;
+        document.body.appendChild(container);
+
+        const { rerender } = render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={jest.fn()}
+                onRangeClear={jest.fn()}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+            { container },
+        );
+
+        await user.click(screen.getByTestId('bp-waveform-range-clear'));
+        rerender(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={jest.fn()}
+                onRangeClear={jest.fn()}
+                range={{ endMs: null, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(document.activeElement).toBe(container);
+        container.remove();
+    });
+
+    test('should clear a draft range from the control beside Comment', async () => {
+        const user = userEvent.setup();
+        const onDragCreate = jest.fn();
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range-comment')).toBeInTheDocument();
+        const clear = screen.getByTestId('bp-waveform-range-clear');
+        expect(clear).toHaveAttribute('aria-label', __('media_range_clear'));
+        await user.click(clear);
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onDragCreate).not.toHaveBeenCalled();
+    });
+
     test('should stretch the region between start and end', () => {
         render(<WaveformRangeSelection durationSec={8} range={{ endMs: 4000, startMs: 2000 }} viewport={viewport} />);
 
@@ -108,6 +196,26 @@ describe('WaveformRangeSelection', () => {
         expect(screen.getByTestId('bp-waveform-range-region')).toHaveStyle({
             left: 'calc(25% - 1px)',
             width: 'calc(50% - 25% + 2px)',
+        });
+    });
+
+    test('should keep tape gutters so t=0 sits on the center pin', () => {
+        const tape = createWaveformViewport({
+            durationSec: 8,
+            gutterPx: 100,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 1,
+        });
+        render(<WaveformRangeSelection durationSec={8} range={{ endMs: null, startMs: 0 }} viewport={tape} />);
+
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({
+            left: `calc(50% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
+            left: `calc(50% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
         });
     });
 
@@ -279,6 +387,29 @@ describe('WaveformRangeSelection', () => {
         expect(onDragChange).toHaveBeenCalledWith(false);
     });
 
+    test('should keep a held handle on the pointer when the viewport zooms', () => {
+        const { rerender } = render(
+            <WaveformRangeSelection durationSec={8} range={{ endMs: null, startMs: 2000 }} viewport={viewport} />,
+        );
+
+        dispatchPointer(screen.getByTestId('bp-waveform-range-handle-end'), 'pointerdown', 50);
+        dispatchPointer(window, 'pointermove', 150);
+        expect(screen.getByTestId('bp-waveform-range-tooltip')).toHaveTextContent('0:06.00');
+
+        const zoomed = createWaveformViewport({
+            durationSec: 8,
+            heightPx: 140,
+            maxZoom: 4,
+            scrollLeftPx: 0,
+            widthPx: 200,
+            zoomLevel: 2,
+        });
+        rerender(<WaveformRangeSelection durationSec={8} range={{ endMs: null, startMs: 2000 }} viewport={zoomed} />);
+
+        expect(screen.getByTestId('bp-waveform-range-tooltip')).toHaveTextContent('0:03.00');
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({ left: '75%' });
+    });
+
     test('should snap a dragging handle to the playhead', () => {
         const onRangeChange = jest.fn();
         render(
@@ -358,6 +489,74 @@ describe('WaveformRangeSelection', () => {
         expect(onDragChange).toHaveBeenCalledWith(true);
         expect(onDragChange).toHaveBeenCalledWith(false);
         expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should draw a read-only range without handles', () => {
+        const onRangeChange = jest.fn();
+        const onDragCreate = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeChange={onRangeChange}
+                range={{ endMs: 4000, startMs: 2000 }}
+                readOnly
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'true');
+        expect(screen.getByTestId('bp-waveform-range-region')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-handle-start')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-handle-end')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should show only the clear control on a viewed range', async () => {
+        const user = userEvent.setup();
+        const onDragCreate = jest.fn();
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onDragCreate={onDragCreate}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                readOnly
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        const clear = screen.getByTestId('bp-waveform-range-clear');
+        expect(clear).toHaveClass('bp-WaveformRange-comment--clearOnly');
+        await user.click(clear);
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onDragCreate).not.toHaveBeenCalled();
+    });
+
+    test('should show only the clear control when an open range cannot be commented', async () => {
+        const user = userEvent.setup();
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformRangeSelection
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                range={{ endMs: 4000, startMs: 2000 }}
+                viewport={viewport}
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toBeInTheDocument();
+        const clear = screen.getByTestId('bp-waveform-range-clear');
+        expect(clear).toHaveClass('bp-WaveformRange-comment--clearOnly');
+        await user.click(clear);
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
     });
 
     test('should end the drag when the range layer unmounts', () => {

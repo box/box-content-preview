@@ -1,11 +1,11 @@
 @import '../styles';
 
 @mixin bp-SettingsRow {
-    display: table-row;
+    cursor: pointer;
     overflow: hidden;
+    display: table-row;
     white-space: nowrap;
     outline: 0 none;
-    cursor: pointer;
 }
 
 @mixin bp-SettingsRow-cell {
@@ -22,9 +22,9 @@
     @include bp-SettingsRow-cell;
 
     padding: 6px;
-    color: $downtown-grey;
-    font-weight: normal;
     font-size: 11px;
+    font-weight: normal;
+    color: $downtown-grey;
     text-align: left;
     text-transform: uppercase;
 }
@@ -33,22 +33,22 @@
     @include bp-SettingsRow-cell;
 
     padding: 6px;
-    color: $sunset-grey;
     font-size: 12px;
+    color: $sunset-grey;
     text-align: left;
 }
 
 @mixin bp-SettingsRow-hover {
-    background-color: #f4f4f4;
     border-radius: 12px;
-    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 10%);
+    background-color: #f4f4f4;
     backdrop-filter: blur(16px);
+    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 10%);
 }
 
 @mixin bp-SettingsMenuItem {
-    padding: 8px;
+    cursor: pointer;
     overflow: hidden;
+    padding: 8px;
     white-space: nowrap;
     outline: 0 none;
-    cursor: pointer;
 }

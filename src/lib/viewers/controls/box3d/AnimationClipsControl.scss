@@ -12,9 +12,9 @@
 
 .bp-AnimationClipsControl-radioItem {
     .bp-SettingsRadioItem-value {
-        max-width: 180px;
         overflow-x: hidden;
-        white-space: nowrap;
+        max-width: 180px;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }

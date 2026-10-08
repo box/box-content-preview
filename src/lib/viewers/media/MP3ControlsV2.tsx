@@ -11,15 +11,22 @@ import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
 import { PLACEHOLDER_DURATION_SEC, placeholderPeaks } from './waveform/peaks';
-import { WaveformViewport } from './waveform/types';
+import { ShuttleDirection, WaveformViewport } from './waveform/types';
 import { clampWaveformZoom, getTapeDefaultZoom, stepWaveformZoom, viewportEquals } from './waveform/viewport';
+import { isRangeCollapsed } from './waveform/range';
 import useTapeWaveform from './waveform/useTapeWaveform';
 import WaveformCommentMarkers from './waveform/WaveformCommentMarkers';
+import WaveformGeneratingIndicator from './waveform/WaveformGeneratingIndicator';
+import WaveformShuttleIndicator from './waveform/WaveformShuttleIndicator';
 import WaveformView from './waveform/WaveformView';
 import WaveformZoomControl from './waveform/WaveformZoomControl';
 import './MP3ControlsV2.scss';
 
 const PLACEHOLDER_PEAKS = placeholderPeaks();
+
+/** Clicks here keep an open range. Everywhere else in the player dismisses it. */
+const RANGE_DISMISS_IGNORE =
+    '.bp-WaveformView, .bp-WaveformCommentMarkers, .bp-WaveformRange-comment, .bp-WaveformZoomControl, .bp-MP3ControlsV2-bar';
 
 export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
     MediaSettingsProps &
@@ -29,14 +36,21 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         bufferedRange?: TimeRanges;
         commentMarkers?: CommentMarker[];
         commentRangeDraft?: CommentRangeDraft | null;
+        /** Selected ranged comment. Drawn when no draft is open. */
+        commentRangeReadOnly?: CommentRangeDraft | null;
         hasStartedPlayback?: boolean;
+        isGeneratingWaveform?: boolean;
         keyboardZoomStep?: number;
         mediaEl?: HTMLMediaElement | null;
         onCommentMarkerClick?: (marker: CommentMarker) => void;
         onCommentRangeChange?: (range: { endMs: number; startMs: number }) => void;
         onCommentRangeClear?: () => void;
+        onCommentRangeDragCreate?: () => void;
         onCommentRangeDragChange?: (isDragging: boolean) => void;
+        onPlayheadComment?: () => void;
         peaks?: ArrayLike<number>;
+        shuttleDirection?: ShuttleDirection | null;
+        shuttleRate?: number;
     };
 
 export default function MP3ControlsV2({
@@ -44,9 +58,11 @@ export default function MP3ControlsV2({
     bufferedRange,
     commentMarkers,
     commentRangeDraft = null,
+    commentRangeReadOnly = null,
     currentTime,
     durationTime,
     hasStartedPlayback = false,
+    isGeneratingWaveform = false,
     isPlaying,
     keyboardVolumeStep = 0,
     keyboardZoomStep = 0,
@@ -55,14 +71,20 @@ export default function MP3ControlsV2({
     onCommentMarkerClick,
     onCommentRangeChange,
     onCommentRangeClear,
+    onCommentRangeDragCreate,
     onCommentRangeDragChange,
+    onPlayheadComment,
     onMuteChange,
     onPlayPause,
+    onPlayNextChange,
     onRateChange,
     onTimeChange,
     onVolumeChange,
     peaks,
+    playNext,
     rate,
+    shuttleDirection = null,
+    shuttleRate = 0,
     volume,
 }: Props): JSX.Element {
     const durationValue = typeof durationTime === 'number' && isFinite(durationTime) ? durationTime : 0;
@@ -79,6 +101,7 @@ export default function MP3ControlsV2({
     const [playRequested, setPlayRequested] = useState(hasStartedPlayback);
     const [viewport, setViewport] = useState<WaveformViewport | null>(null);
     const isTape = useTapeWaveform();
+    const controlsRef = useRef<HTMLDivElement>(null); // player root; pointerdown outside the range chrome dismisses it
     const hasAppliedTapeDefaultZoomRef = useRef(false); // ~10s window applied; reset to 1× when leaving tape
     const lastKeyboardZoomStepRef = useRef(0); // last +/− step applied; skip re-step when maxZoom retriggers the effect
     const userChangedTapeZoomRef = useRef(false); // pinch/wheel zoom; skip re-applying the 10s default
@@ -159,10 +182,12 @@ export default function MP3ControlsV2({
         mediaEl?.closest<HTMLElement>('.bp-media-container')?.focus();
     }, [mediaEl, onPlayPause]);
 
+    const waveformRange = commentRangeDraft ?? commentRangeReadOnly;
+    const isRangeReadOnly = commentRangeDraft == null && commentRangeReadOnly != null;
     const waveformMarkers = useMemo(() => commentMarkers || [], [commentMarkers]);
-    const selectedMarkerId = useMemo(() => waveformMarkers.find(marker => marker.isSelected)?.id ?? null, [
-        waveformMarkers,
-    ]);
+    const selectedMarker = useMemo(() => waveformMarkers.find(marker => marker.isSelected) ?? null, [waveformMarkers]);
+    const selectedMarkerId = selectedMarker?.id ?? null;
+    const selectionSeq = selectedMarker?.selectionSeq ?? null;
     const handleCommentMarkerClick = useCallback(
         (marker: CommentMarker) => {
             setPlayRequested(true);
@@ -178,14 +203,39 @@ export default function MP3ControlsV2({
 
     const hasStarted = playRequested || hasStartedPlayback;
     const isWaveformInteractive = hasStarted && hasMediaMetadata;
+    const canDismissOpenRange = isWaveformInteractive && !isRangeCollapsed(waveformRange);
+
+    useEffect(() => {
+        const root = controlsRef.current;
+        if (!canDismissOpenRange || !onCommentRangeClear || !root) {
+            return undefined;
+        }
+
+        const onPointerDown = (event: PointerEvent): void => {
+            const { target } = event;
+            if (!(target instanceof Element) || target.closest(RANGE_DISMISS_IGNORE)) {
+                return;
+            }
+            onCommentRangeClear();
+        };
+
+        root.addEventListener('pointerdown', onPointerDown);
+        return () => root.removeEventListener('pointerdown', onPointerDown);
+    }, [canDismissOpenRange, onCommentRangeClear]);
     const isWaitingToPlay = hasStarted && !hasMediaMetadata;
     const showPlayOverlay = !hasStarted && !isPlaying;
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
     const hasZoomControl = hasZoomHandlers && hasMediaMetadata && maxZoom > WAVEFORM_ZOOM_MIN;
+    const showGeneratingWaveformIndicator = isGeneratingWaveform && !hasRealPeaks;
+    const showShuttle = !isTape && !!shuttleDirection && shuttleRate > 0;
     const waveformZoomLevel = isTape || hasZoomHandlers ? zoomLevel : WAVEFORM_ZOOM_MIN;
 
     return (
-        <div className="bp-MP3ControlsV2" data-testid="media-controls-wrapper-v2">
+        <div
+            ref={controlsRef}
+            className={canDismissOpenRange ? 'bp-MP3ControlsV2 bp-MP3ControlsV2--rangeDismiss' : 'bp-MP3ControlsV2'}
+            data-testid="media-controls-wrapper-v2"
+        >
             <div className="bp-MP3ControlsV2-stage">
                 <div className="bp-MP3ControlsV2-waveform">
                     <WaveformView
@@ -196,15 +246,18 @@ export default function MP3ControlsV2({
                         interactive={isWaveformInteractive}
                         isPlaying={isPlaying}
                         mediaEl={mediaEl}
+                        onPlayheadComment={isWaveformInteractive && !shuttleDirection ? onPlayheadComment : undefined}
                         onPlayPause={isWaveformInteractive ? onPlayPause : undefined}
                         onRangeChange={isWaveformInteractive ? onCommentRangeChange : undefined}
                         onRangeClear={isWaveformInteractive ? onCommentRangeClear : undefined}
                         onRangeDragChange={onCommentRangeDragChange}
+                        onRangeDragCreate={isWaveformInteractive ? onCommentRangeDragCreate : undefined}
                         onSeek={isWaveformInteractive ? onTimeChange : undefined}
                         onViewportChange={hasRealPeaks ? handleViewportChange : undefined}
                         onZoomChange={hasZoomHandlers ? handleWaveformZoom : undefined}
                         peaks={waveformPeaks}
-                        range={commentRangeDraft}
+                        range={waveformRange}
+                        rangeReadOnly={isRangeReadOnly}
                         zoomLevel={waveformZoomLevel}
                     />
                     <WaveformCommentMarkers
@@ -213,17 +266,25 @@ export default function MP3ControlsV2({
                         isTape={isTape}
                         onCommentMarkerClick={handleCommentMarkerClick}
                         selectedId={selectedMarkerId}
+                        selectionSeq={selectionSeq}
                         viewport={viewport}
                     />
                 </div>
-                {hasZoomControl && (
+                {showShuttle && shuttleDirection && (
+                    <WaveformShuttleIndicator direction={shuttleDirection} rate={shuttleRate} />
+                )}
+                {(showGeneratingWaveformIndicator || hasZoomControl) && (
                     <div className="bp-MP3ControlsV2-waveformZoom">
-                        <WaveformZoomControl
-                            isRevealed={isZoomRevealed}
-                            maxZoom={maxZoom}
-                            onZoomChange={handleWaveformZoom}
-                            zoomLevel={zoomLevel}
-                        />
+                        {showGeneratingWaveformIndicator ? (
+                            <WaveformGeneratingIndicator />
+                        ) : (
+                            <WaveformZoomControl
+                                isRevealed={isZoomRevealed}
+                                maxZoom={maxZoom}
+                                onZoomChange={handleWaveformZoom}
+                                zoomLevel={zoomLevel}
+                            />
+                        )}
                     </div>
                 )}
                 {showPlayOverlay && (
@@ -262,7 +323,9 @@ export default function MP3ControlsV2({
                             autoplay={autoplay}
                             className="bp-MP3Controls-settings"
                             onAutoplayChange={onAutoplayChange}
+                            onPlayNextChange={onPlayNextChange}
                             onRateChange={onRateChange}
+                            playNext={playNext}
                             rate={rate}
                         />
                     </div>

@@ -1,26 +1,30 @@
 @import '../controls/media/styles';
 
 .bp-MP3ControlsRoot:has(.bp-MP3ControlsV2) {
+    pointer-events: none;
     position: absolute;
     inset: 0;
+    transform: none;
     width: 100%;
     height: 100%;
-    transform: none;
-    pointer-events: none;
 }
 
 .bp-MP3ControlsV2 {
-    --bp-waveform-bar-min: 140px;
-
+    pointer-events: none;
     position: relative;
     width: 100%;
     max-width: none;
     height: 100%;
     background: transparent;
-    pointer-events: none;
+
+    // An open range can be dismissed from the letterbox around the wave.
+    &--rangeDismiss {
+        pointer-events: auto;
+    }
 }
 
 .bp-MP3ControlsV2-stage {
+    pointer-events: none;
     position: absolute;
     inset: 0;
     display: flex;
@@ -29,7 +33,6 @@
     justify-content: center;
     width: 100%;
     min-height: 0;
-    pointer-events: none;
 
     .bp-WaveformView,
     .bp-MP3ControlsV2-waveform,
@@ -40,26 +43,26 @@
 
 .bp-MP3ControlsV2-waveform {
     position: relative;
-    width: 100%;
     overflow: visible;
+    width: 100%;
 }
 
-// Tape: at least the desktop bar height (140px), and at least 25% of the player
-// stage (same box as `.bp-media-container`). Percentage on `.bp-WaveformView`
+// Tape: 25% of the player stage (same box as `.bp-media-container`). A 140px
+// floor overflows short landscape viewports. Percentage on `.bp-WaveformView`
 // itself would resolve against this wrapper's shrink-wrapped height and collapse.
 .bp-MP3ControlsV2-stage:has(.bp-WaveformView--tape) .bp-MP3ControlsV2-waveform {
     display: flex;
     flex-direction: column;
-    height: max(var(--bp-waveform-bar-min, 140px), 25%);
+    height: 25%;
     min-height: 0;
 }
 
 .bp-MP3ControlsV2-waveformZoom {
+    pointer-events: none;
     position: absolute;
+    z-index: 4;
     top: 48px;
     right: 48px;
-    z-index: 6;
-    pointer-events: none;
 
     .bp-WaveformZoomControl {
         pointer-events: auto;
@@ -67,22 +70,22 @@
 }
 
 .bp-MP3ControlsV2-playOverlay {
+    pointer-events: auto;
+    cursor: pointer;
     position: absolute;
+    z-index: 2;
     top: 50%;
     left: 50%;
-    z-index: 2;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;
     width: 80px;
     height: 80px;
     padding: 0;
-    background: rgb(0 0 0 / 50%);
     border: 0;
     border-radius: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    pointer-events: auto;
+    background: rgb(0 0 0 / 50%);
 
     svg {
         width: 48px;
@@ -92,23 +95,23 @@
 }
 
 .bp-MP3ControlsV2-stage .bp-media-buffering-spinner {
-    z-index: 2;
     pointer-events: none;
+    z-index: 2;
 }
 
 .bp-MP3ControlsV2-bar {
+    pointer-events: auto;
     position: absolute;
+    z-index: 2;
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: space-between;
     min-height: 32px;
     padding: 30px 58px 25px;
     background: linear-gradient(to top, rgb(0 0 0 / 100%), rgb(0 0 0 / 0%));
-    pointer-events: auto;
 }
 
 .bp-MP3ControlsV2-group {
@@ -120,8 +123,8 @@
 .bp-MP3ControlsV2-divider {
     width: 1px;
     height: 24px;
-    background-color: rgb(255 255 255 / 10%);
     border-radius: 1px;
+    background-color: rgb(255 255 255 / 10%);
 }
 
 .bp-MP3ControlsV2 .bp-MP3Controls-settings {

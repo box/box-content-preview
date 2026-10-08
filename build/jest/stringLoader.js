@@ -3,7 +3,7 @@ const crypto = require('crypto');
 module.exports = {
     getCacheKey(sourceText, sourcePath, options) {
         return crypto
-            .createHash('md5')
+            .createHash('sha256')
             .update(sourceText)
             .update('\0', 'utf8')
             .update(sourcePath)

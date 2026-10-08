@@ -1,3 +1,4 @@
+import { setImmediate as flushImmediate } from 'timers';
 import { createRoot } from 'react-dom/client';
 import * as file from '../file';
 import * as util from '../util';
@@ -10,7 +11,12 @@ import PreviewError from '../PreviewError';
 import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
-import { API_HOST, CLASS_NAVIGATION_VISIBILITY, PRELOAD_REP_NAME } from '../constants';
+import {
+    API_HOST,
+    CLASS_NAVIGATION_VISIBILITY,
+    PRELOAD_REP_NAME,
+    AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
+} from '../constants';
 import {
     VIEWER_EVENT,
     ERROR_CODE,
@@ -22,6 +28,12 @@ import {
 import PageTracker from '../PageTracker';
 import { isFeatureEnabled } from '../featureChecking';
 
+function flushPromises() {
+    return new Promise(resolve => {
+        flushImmediate(resolve);
+    });
+}
+
 jest.mock('../Logger');
 jest.mock('../util', () => ({
     ...jest.requireActual('../util'),
@@ -29,7 +41,7 @@ jest.mock('../util', () => ({
     decodeKeydown: jest.fn(),
     findScriptLocation: () => ({
         hostname: 'localhost',
-        location: 'en-US',
+        locale: 'en-US',
     }),
     getHeaders: jest.fn(),
     openUrlInsideIframe: jest.fn(),
@@ -97,6 +109,56 @@ describe('lib/Preview', () => {
             expect(preview.disabledViewers).toEqual({ Office: 1 });
             expect(preview.loaders).toBe(loaders);
             expect(preview.location.hostname).toBe('localhost');
+            expect(preview.location.locale).toBe('en-US');
+        });
+
+        test('should publish the constructor for hosts that load the CDN script', () => {
+            expect(global.Box.Preview).toBe(Preview);
+        });
+    });
+
+    describe('npm build', () => {
+        let previousBox;
+
+        beforeEach(() => {
+            previousBox = global.Box;
+        });
+
+        afterEach(() => {
+            global.Box = previousBox;
+            delete global.__BCP_NPM_BUILD__;
+        });
+
+        test('should export Preview without publishing it or reading preview.js', () => {
+            global.__BCP_NPM_BUILD__ = true;
+            global.Box = {};
+
+            jest.isolateModules(() => {
+                // eslint-disable-next-line global-require
+                const NpmPreview = require('../Preview').default;
+                const npmInstance = new NpmPreview();
+                const load = jest.spyOn(npmInstance, 'load').mockImplementation();
+
+                expect(global.Box.Preview).toBeUndefined();
+                expect(npmInstance.location).toEqual({});
+
+                expect(() => npmInstance.show('123', 'token')).toThrow(
+                    'Missing preview location. Load preview.js, or pass location to show().',
+                );
+                expect(load).not.toHaveBeenCalled();
+
+                npmInstance.show('123', 'token', {
+                    location: {
+                        locale: 'de-DE',
+                        staticBaseURI: 'https://cdn.example/preview/',
+                        version: '9.9.9',
+                    },
+                });
+                expect(npmInstance.location.locale).toBe('de-DE');
+                expect(npmInstance.previewOptions.features.useNpmPdfjs).toBe(true);
+                expect(load).toHaveBeenCalledWith('123');
+                npmInstance.destroy();
+            });
         });
     });
 
@@ -263,6 +325,51 @@ describe('lib/Preview', () => {
             preview.show('123', 'token');
 
             expect(preview.perf).toBeInstanceOf(PreviewPerf);
+        });
+
+        test('should throw when neither the script nor the caller supplied a location', () => {
+            preview.location = {};
+
+            expect(() => preview.show('123', 'token')).toThrow(
+                'Missing preview location. Load preview.js, or pass location to show().',
+            );
+            expect(stubs.load).not.toHaveBeenCalled();
+        });
+
+        test('should allow a script location whose locale segment is empty', () => {
+            preview.location = { locale: '', baseURI: 'http://127.0.0.1:8000/' };
+            preview.show('123', 'token');
+            expect(stubs.load).toHaveBeenCalledWith('123');
+        });
+
+        test('should use a caller location when the script location is empty', () => {
+            preview.location = {};
+            preview.show('123', 'token', {
+                location: {
+                    locale: 'fr-FR',
+                    staticBaseURI: 'https://cdn.example/preview/',
+                    version: '1.2.3',
+                },
+            });
+
+            expect(preview.location).toEqual({
+                locale: 'fr-FR',
+                staticBaseURI: 'https://cdn.example/preview/',
+                version: '1.2.3',
+            });
+            expect(stubs.load).toHaveBeenCalledWith('123');
+        });
+
+        test('should let a caller location override the script location', () => {
+            preview.location = { locale: 'en-US', staticBaseURI: 'https://script.example/' };
+            preview.show('123', 'token', {
+                location: { locale: 'ja-JP', staticBaseURI: 'https://caller.example/' },
+            });
+
+            expect(preview.location).toEqual({
+                locale: 'ja-JP',
+                staticBaseURI: 'https://caller.example/',
+            });
         });
     });
 
@@ -680,26 +787,14 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: function constr() {},
             };
 
-            sandbox
-                .stub(file, 'getCachedFile')
-                .withArgs(preview.cache, sinon.match.any)
-                .returns(someFile);
-            sandbox
-                .stub(preview, 'getLoader')
-                .withArgs(someFile)
-                .returns(loader);
+            sandbox.stub(file, 'getCachedFile').withArgs(preview.cache, sinon.match.any).returns(someFile);
+            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
         });
 
         test('should short circuit if no appropriate viewer is found', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(null);
-            sandbox
-                .mock(loader)
-                .expects('determineRepresentation')
-                .never();
-            sandbox
-                .mock(viewer)
-                .expects('CONSTRUCTOR')
-                .never();
+            sandbox.mock(loader).expects('determineRepresentation').never();
+            sandbox.mock(viewer).expects('CONSTRUCTOR').never();
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -715,10 +810,7 @@ describe('lib/Preview', () => {
 
         test('should determine representation', () => {
             jest.spyOn(loader, 'determineViewer').mockReturnValue(viewer);
-            sandbox
-                .mock(loader)
-                .expects('determineRepresentation')
-                .withArgs(someFile, viewer);
+            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -756,10 +848,7 @@ describe('lib/Preview', () => {
                             preload: true,
                             content: true,
                         }),
-                        getViewerOption: sandbox
-                            .stub()
-                            .withArgs('preload')
-                            .returns(true),
+                        getViewerOption: sandbox.stub().withArgs('preload').returns(true),
                     };
                 },
             };
@@ -777,10 +866,7 @@ describe('lib/Preview', () => {
                             preload: false,
                             content: true,
                         }),
-                        getViewerOption: sandbox
-                            .stub()
-                            .withArgs('preload')
-                            .returns(false),
+                        getViewerOption: sandbox.stub().withArgs('preload').returns(false),
                     };
                 },
             };
@@ -1305,10 +1391,7 @@ describe('lib/Preview', () => {
             const fileId = '123';
             const fileVersionId = '1234';
 
-            sandbox
-                .stub(preview, 'getFileOption')
-                .withArgs(fileId, 'fileVersionId')
-                .returns(fileVersionId);
+            sandbox.stub(preview, 'getFileOption').withArgs(fileId, 'fileVersionId').returns(fileVersionId);
             preview.load(fileId);
 
             expect(file.getCachedFile).toHaveBeenCalledWith(preview.cache, { fileVersionId });
@@ -1790,6 +1873,40 @@ describe('lib/Preview', () => {
             expect(preview.loadFromServer).not.toHaveBeenCalled();
         });
 
+        test('should refresh from server when skipServerUpdate but video lacks transcription rep', () => {
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            jest.spyOn(preview, 'hasTranscriptionRep').mockReturnValue(false);
+            jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(true);
+            preview.options.skipServerUpdate = true;
+            preview.file = {
+                id: '123',
+                extension: 'avi',
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            };
+
+            preview.loadFromCache();
+
+            expect(stubs.loadViewer).toHaveBeenCalled();
+            expect(stubs.loadFromServer).toHaveBeenCalled();
+        });
+
+        test('should load the viewer immediately when skipServerUpdate but video lacks playable reps', () => {
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            jest.spyOn(preview, 'hasTranscriptionRep').mockReturnValue(false);
+            jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(false);
+            preview.options.skipServerUpdate = true;
+            preview.file = { id: '123', extension: 'avi' };
+
+            preview.loadFromCache();
+
+            expect(stubs.loadViewer).toHaveBeenCalled();
+            expect(stubs.loadFromServer).toHaveBeenCalled();
+        });
+
         test('should refresh the file from the server to update the cache', () => {
             preview.loadFromCache();
             expect(preview.loadFromServer).toHaveBeenCalled();
@@ -1833,6 +1950,29 @@ describe('lib/Preview', () => {
             const expectedTag = Timer.createTag(1, LOAD_METRIC.fileInfoTime);
             preview.loadFromServer();
             expect(startStub).toHaveBeenCalledWith(expectedTag);
+        });
+
+        test('should not call handleFetchError when file-info fails but a playable viewer is showing', async () => {
+            stubs.get.mockReturnValue(Promise.reject(new Error('network')));
+            preview.viewer = {};
+            jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(true);
+
+            preview.loadFromServer();
+            await flushPromises();
+
+            expect(stubs.handleFetchError).not.toHaveBeenCalled();
+        });
+
+        test('should call handleFetchError when file-info fails and no playable viewer is showing', async () => {
+            const error = new Error('network');
+            stubs.get.mockReturnValue(Promise.reject(error));
+            preview.viewer = undefined;
+            jest.spyOn(preview, 'hasPlayableVideoReps').mockReturnValue(false);
+
+            preview.loadFromServer();
+            await flushPromises();
+
+            expect(stubs.handleFetchError).toHaveBeenCalledWith(error);
         });
     });
 
@@ -1878,10 +2018,7 @@ describe('lib/Preview', () => {
             const fileVersion = {
                 id: '1234',
             };
-            sandbox
-                .stub(preview, 'getFileOption')
-                .withArgs('123', 'fileVersionId')
-                .returns(fileVersion.id);
+            sandbox.stub(preview, 'getFileOption').withArgs('123', 'fileVersionId').returns(fileVersion.id);
 
             preview.handleFileInfoResponse(fileVersion);
 
@@ -2062,6 +2199,111 @@ describe('lib/Preview', () => {
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).toHaveBeenCalled();
             expect(stubs.reload).toHaveBeenCalled();
+        });
+
+        test('should update viewer and load transcription when cache lacked extracted_text and viewer is loaded', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            preview.file.extension = 'avi';
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: 2 },
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            });
+            stubs.file.representations.entries = [
+                { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
+                { representation: 'extracted_text', content: { url_template: 'https://example.com/vtt' } },
+            ];
+            const loadTranscription = jest.fn();
+            preview.viewer = {
+                options: { file: {} },
+                player: {},
+                isLoaded: () => true,
+                loadTranscription,
+            };
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(preview.viewer.options.file).toBe(stubs.file);
+            expect(loadTranscription).toHaveBeenCalled();
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should update file but not load transcription when viewer exists but is not loaded', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            preview.file.extension = 'avi';
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: 2 },
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            });
+            stubs.file.representations.entries = [
+                { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
+                { representation: 'extracted_text', content: { url_template: 'https://example.com/vtt' } },
+            ];
+            const loadTranscription = jest.fn();
+            preview.viewer = {
+                options: { file: {} },
+                player: {},
+                isLoaded: () => false,
+                loadTranscription,
+            };
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(preview.viewer.options.file).toBe(stubs.file);
+            expect(loadTranscription).not.toHaveBeenCalled();
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
+        });
+
+        test('should not throw when the cached file lacks representations entries', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            preview.viewer = {
+                options: { file: {} },
+                isLoaded: () => true,
+                loadTranscription: jest.fn(),
+            };
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: 2 },
+            });
+            stubs.file.representations.entries = [
+                { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
+                { representation: 'extracted_text', content: { url_template: 'https://example.com/vtt' } },
+            ];
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.triggerError).not.toHaveBeenCalled();
+            expect(preview.viewer.loadTranscription).toHaveBeenCalled();
+        });
+
+        test('should not reload the viewer when transcription is still unavailable on the server', () => {
+            jest.spyOn(Browser, 'canPlayDash').mockReturnValue(true);
+            isFeatureEnabled.mockImplementation((_, name) => name === AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES);
+            jest.spyOn(preview, 'isVideoFileByExtension').mockReturnValue(true);
+            preview.viewer = {
+                options: { file: {} },
+            };
+            stubs.getCachedFile.mockReturnValue({
+                file_version: { sha1: 2 },
+                representations: {
+                    entries: [{ representation: 'dash', content: { url_template: 'https://example.com/dash' } }],
+                },
+            });
+            stubs.file.representations.entries = [
+                { representation: 'dash', content: { url_template: 'https://example.com/dash' } },
+            ];
+
+            preview.handleFileInfoResponse(stubs.file);
+
+            expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
         test('should set the cache stale and re-load the viewer if the file is watermarked', () => {
@@ -2282,6 +2524,19 @@ describe('lib/Preview', () => {
             expect(preview.emit).toHaveBeenCalledWith(VIEWER_EVENT.default, data);
         });
 
+        test('should emit mediaEndPlayNext without navigating', () => {
+            jest.spyOn(preview, 'navigateRight').mockImplementation();
+            jest.spyOn(preview, 'emit');
+            const data = {
+                event: VIEWER_EVENT.mediaEndPlayNext,
+                data: undefined,
+            };
+            preview.handleViewerEvents(data);
+            expect(preview.navigateRight).not.toHaveBeenCalled();
+            expect(preview.emit).toHaveBeenCalledWith(data.event, data.data);
+            expect(preview.emit).toHaveBeenCalledWith(VIEWER_EVENT.default, data);
+        });
+
         test('should not emit any messages error events', () => {
             jest.spyOn(preview, 'emit');
             const data = {
@@ -2437,10 +2692,7 @@ describe('lib/Preview', () => {
             preview.viewer.containerEl = {
                 focus: () => {},
             };
-            sandbox
-                .mock(preview.viewer.containerEl)
-                .expects('focus')
-                .never();
+            sandbox.mock(preview.viewer.containerEl).expects('focus').never();
             preview.finishLoading();
         });
 
@@ -2702,6 +2954,20 @@ describe('lib/Preview', () => {
             expect(stubs.load).toHaveBeenCalledWith(1);
         });
 
+        test('should not load the file again after hide cancels a pending retry', () => {
+            preview.file = {
+                id: '0',
+            };
+            preview.open = true;
+            preview.retryCount = 1;
+
+            preview.handleFetchError(stubs.error);
+            preview.hide();
+
+            jest.advanceTimersByTime(10000);
+            expect(stubs.load).not.toHaveBeenCalled();
+        });
+
         test('should retry using full jitter', () => {
             preview.file = {
                 id: '0',
@@ -2722,10 +2988,7 @@ describe('lib/Preview', () => {
                     id: '0',
                 };
                 stubs.error.headers = {
-                    get: sandbox
-                        .stub()
-                        .withArgs(retryAfter)
-                        .returns(5),
+                    get: sandbox.stub().withArgs(retryAfter).returns(5),
                 };
                 preview.open = true;
                 preview.retryCount = 1;
@@ -3012,6 +3275,42 @@ describe('lib/Preview', () => {
             expect(payload.shared_link_auth).toBeUndefined();
             expect(payload.client_name).toBeUndefined();
         });
+
+        test('should report every Blueprint migration wave that is on', () => {
+            preview.file = { id: '12345' };
+            isFeatureEnabled.mockImplementation((_, feature) =>
+                ['blueprintMigrationControlsBar.enabled', 'blueprintMigrationMediaControls.enabled'].includes(feature),
+            );
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    blueprint_archive: false,
+                    blueprint_controls_bar: true,
+                    blueprint_media_controls: true,
+                    blueprint_supporting_ui: false,
+                }),
+            );
+        });
+
+        test('should report the waves that are off rather than leaving them out', () => {
+            preview.file = { id: '12345' };
+            isFeatureEnabled.mockReturnValue(false);
+
+            preview.emitLogEvent('test');
+
+            expect(preview.emit).toHaveBeenCalledWith(
+                'test',
+                expect.objectContaining({
+                    blueprint_archive: false,
+                    blueprint_controls_bar: false,
+                    blueprint_media_controls: false,
+                    blueprint_supporting_ui: false,
+                }),
+            );
+        });
     });
 
     describe('emitPreviewError()', () => {
@@ -3132,6 +3431,17 @@ describe('lib/Preview', () => {
         test('should emit a preview_metric event with event_name "load"', done => {
             preview.once(PREVIEW_METRIC, metric => {
                 expect(metric.event_name).toBe(LOAD_METRIC.previewLoadEvent);
+                done();
+            });
+            preview.emitLoadMetrics();
+        });
+
+        test('should emit a preview_metric event tagged with the Blueprint migration waves', done => {
+            isFeatureEnabled.mockImplementation((_, feature) => feature === 'blueprintMigrationControlsBar.enabled');
+
+            preview.once(PREVIEW_METRIC, metric => {
+                expect(metric.blueprint_controls_bar).toBe(true);
+                expect(metric.blueprint_media_controls).toBe(false);
                 done();
             });
             preview.emitLoadMetrics();

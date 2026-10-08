@@ -4,12 +4,14 @@ import {
     createWaveformViewport,
     getPinnedPlayheadLeft,
     getPlayheadCameraAction,
+    getRangeEdgeScrollDeltaPx,
     getSeekCameraAction,
     getTapeCameraAction,
     getTapeDefaultZoom,
     getTapeGutterPx,
     getTapePinnedPlayheadLeft,
     getWaveformZoomMax,
+    getWaveformZoomMultiplier,
     getZoomedPixelsPerSecond,
     isTimeInView,
     maxScrollLeft,
@@ -263,6 +265,19 @@ describe('viewport', () => {
         expect(clampWaveformZoom(2, 4)).toBe(2);
     });
 
+    test('should show tenths below 2x and whole numbers from 2x', () => {
+        expect(getWaveformZoomMultiplier(1)).toBeNull();
+        expect(getWaveformZoomMultiplier(1.04)).toBeNull();
+        expect(getWaveformZoomMultiplier(1.1)).toBe('1.1x');
+        expect(getWaveformZoomMultiplier(1.25)).toBe('1.3x');
+        expect(getWaveformZoomMultiplier(1.9)).toBe('1.9x');
+        expect(getWaveformZoomMultiplier(1.95)).toBe('2x');
+        expect(getWaveformZoomMultiplier(2)).toBe('2x');
+        expect(getWaveformZoomMultiplier(2.5)).toBe('2x');
+        expect(getWaveformZoomMultiplier(4)).toBe('4x');
+        expect(getWaveformZoomMultiplier(Number.NaN)).toBeNull();
+    });
+
     test('should use 0 px/sec at fit-to-width so wavesurfer fills the parent', () => {
         expect(getZoomedPixelsPerSecond({ durationSec: 10, maxZoom: 4, viewWidthPx: 900, zoomLevel: 1 })).toBe(0);
         expect(getZoomedPixelsPerSecond({ durationSec: 10, maxZoom: 4, viewWidthPx: 900, zoomLevel: 2 })).toBe(180);
@@ -361,6 +376,49 @@ describe('viewport', () => {
 
         const centered = createWaveformViewport({ ...tape, scrollLeftPx: 50 });
         expect(getSeekCameraAction({ cameraMode: 'tape', timeSec: 2, viewport: centered })).toEqual({ type: 'none' });
+    });
+
+    test('should scroll when a range handle is held in the edge zone', () => {
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 0,
+                widthPx: 200,
+            }),
+        ).toBe(-100);
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 50,
+                widthPx: 200,
+            }),
+        ).toBe(-50);
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 200,
+                widthPx: 200,
+            }),
+        ).toBe(100);
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 1,
+                pixelsPerSecond: 25,
+                pointerX: 100,
+                widthPx: 200,
+            }),
+        ).toBeNull();
+        expect(
+            getRangeEdgeScrollDeltaPx({
+                elapsedSec: 0,
+                pixelsPerSecond: 25,
+                pointerX: 0,
+                widthPx: 200,
+            }),
+        ).toBeNull();
     });
 
     test('should default tape zoom to a 10s window and still allow 1x', () => {

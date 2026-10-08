@@ -17,9 +17,9 @@ describe('useTapeWaveform', () => {
 
     function createTapeWindow(matches: boolean, tapeNavigator = createTapeNavigator()): TapeDetectionWindow {
         return {
-            matchMedia: (jest.fn((query: string) => ({
+            matchMedia: jest.fn((query: string) => ({
                 matches: query === coarseQuery && matches,
-            })) as unknown) as Window['matchMedia'],
+            })) as unknown as Window['matchMedia'],
             navigator: tapeNavigator,
         };
     }

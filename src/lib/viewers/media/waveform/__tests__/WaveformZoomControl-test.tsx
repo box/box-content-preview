@@ -22,6 +22,7 @@ describe('WaveformZoomControl', () => {
             'data-resin-target',
             'waveformZoomIn',
         );
+        expect(screen.queryByTestId('bp-waveform-zoom-multiplier')).not.toBeInTheDocument();
 
         await user.hover(control);
         expect(control).toHaveClass('bp-is-open');
@@ -90,6 +91,41 @@ describe('WaveformZoomControl', () => {
 
         rerender(<WaveformZoomControl isRevealed={false} maxZoom={4} onZoomChange={onZoomChange} zoomLevel={2.5} />);
         expect(control).not.toHaveClass('bp-is-open');
+        expect(screen.getByTestId('bp-waveform-zoom-multiplier')).toHaveTextContent('2x');
+    });
+
+    test('should show a multiplier left of zoom in when zoom is above 1x', async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1} />);
+
+        expect(screen.queryByTestId('bp-waveform-zoom-multiplier')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-zoom-divider')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-zoom')).not.toHaveClass('bp-has-multiplier');
+
+        rerender(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1.2} />);
+        expect(screen.getByTestId('bp-waveform-zoom-multiplier')).toHaveTextContent('1.2x');
+        expect(screen.getByTestId('bp-waveform-zoom')).not.toHaveClass('bp-is-open');
+
+        rerender(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />);
+        const multiplier = screen.getByTestId('bp-waveform-zoom-multiplier');
+        const control = screen.getByTestId('bp-waveform-zoom');
+        expect(multiplier).toHaveTextContent('2x');
+        expect(multiplier).toHaveAttribute('title', __('zoom_current_scale'));
+        expect(control).toHaveClass('bp-has-multiplier');
+        expect(control).not.toHaveClass('bp-is-open');
+        expect(multiplier.compareDocumentPosition(screen.getByTestId('bp-waveform-zoom-in'))).toBe(
+            Node.DOCUMENT_POSITION_FOLLOWING,
+        );
+        expect(screen.getByTestId('bp-waveform-zoom-divider')).toHaveAttribute('aria-hidden', 'true');
+
+        await user.hover(control);
+        const divider = screen.getByTestId('bp-waveform-zoom-divider');
+        expect(control).toHaveClass('bp-is-open');
+        expect(screen.getByTestId('bp-waveform-zoom-multiplier')).toHaveTextContent('2x');
+        expect(multiplier.compareDocumentPosition(divider)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+        expect(divider.compareDocumentPosition(screen.getByTestId('bp-waveform-zoom-out'))).toBe(
+            Node.DOCUMENT_POSITION_FOLLOWING,
+        );
     });
 
     test('should keep the slider out of the tab order until the control opens', async () => {

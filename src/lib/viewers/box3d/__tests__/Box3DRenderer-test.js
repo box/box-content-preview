@@ -590,10 +590,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             renderer.box3d = {
                 trigger: jest.fn(),
             };
-            sandbox
-                .mock(renderer.box3d)
-                .expects('trigger')
-                .withArgs('resize');
+            sandbox.mock(renderer.box3d).expects('trigger').withArgs('resize');
             renderer.resize();
         });
     });
@@ -611,10 +608,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         test('should enable the component if it available on the camera', () => {
             const component = { enable: jest.fn() };
-            cameraMock
-                .expects('getComponentByScriptId')
-                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID)
-                .returns(component);
+            cameraMock.expects('getComponentByScriptId').withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
             renderer.enableCameraControls();
             expect(component.enable).toBeCalled();
         });
@@ -633,10 +627,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         test('should disable the component if it available on the camera', () => {
             const component = { disable: jest.fn() };
-            cameraMock
-                .expects('getComponentByScriptId')
-                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID)
-                .returns(component);
+            cameraMock.expects('getComponentByScriptId').withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
             renderer.disableCameraControls();
             expect(component.disable).toBeCalled();
         });

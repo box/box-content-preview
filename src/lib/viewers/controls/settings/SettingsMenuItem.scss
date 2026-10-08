@@ -50,33 +50,33 @@
 // V2 video player menu items — modern typography to match TimestampControl
 .bp-media--v2 {
     .bp-SettingsMenuItem {
+        cursor: pointer;
         gap: 16px;
         padding: 6px 14px;
         border: 0;
         border-radius: 8px;
-        cursor: pointer;
 
         &:hover {
-            background-color: $bdl-gray-05;
             border-radius: 8px;
-            box-shadow: none;
+            background-color: $bdl-gray-05;
             backdrop-filter: none;
+            box-shadow: none;
         }
     }
 
     .bp-SettingsMenuItem-label {
         padding: 0 8px;
-        color: $black;
-        font-weight: normal;
         font-size: 16px;
+        font-weight: normal;
         line-height: 24px;
+        color: $black;
         text-transform: none;
     }
 
     .bp-SettingsMenuItem-value {
         padding: 0 8px;
-        color: $bdl-gray-62;
         font-size: 16px;
         line-height: 24px;
+        color: $bdl-gray-62;
     }
 }

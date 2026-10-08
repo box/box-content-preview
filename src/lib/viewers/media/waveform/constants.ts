@@ -65,5 +65,17 @@ export const WAVEFORM_RANGE_COLLAPSED_OFFSET_PX =
 export const WAVEFORM_RANGE_SNAP_PX = 8;
 /** Shortest committed range. Collapsed drafts (`endMs: null`) are exempt. */
 export const WAVEFORM_RANGE_MIN_DURATION_MS = 250;
+/** Pointer travel before a waveform press becomes a new draft range. Shorter presses stay click-to-seek. */
+export const WAVEFORM_RANGE_CREATE_DRAG_PX = 4;
+/** Hold on the tape waveform before a press can draw a new range. A move sooner stays a swipe. */
+export const WAVEFORM_TAPE_RANGE_LONG_PRESS_MS = 500;
+/** Pointer travel during that hold that cancels it. */
+export const WAVEFORM_TAPE_RANGE_LONG_PRESS_CANCEL_PX = 10;
+/** Drag a handle inside this many CSS pixels of either view edge and the tape scrolls. */
+export const WAVEFORM_RANGE_EDGE_ZONE_PX = 100;
+/** Audio seconds moved per wall-clock second when the pointer is on the view edge. */
+export const WAVEFORM_RANGE_EDGE_SCROLL_AUDIO_SEC_PER_SEC = 4;
+/** Longest gap one edge-scroll frame may apply. A stalled timestamp must not jump the playhead. */
+export const WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC = 0.05;
 export const WAVEFORM_RANGE_GRIP_IN_MS = 150;
 export const WAVEFORM_RANGE_GRIP_OUT_MS = 100;

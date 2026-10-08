@@ -1,25 +1,25 @@
 @import '../styles';
 
 @mixin bp-RotateAxisControl-button($direction) {
+    cursor: pointer;
     position: relative;
     width: 24px;
     height: 25px;
-    background-color: transparent;
     border: none;
+    background-color: transparent;
     outline: none;
-    cursor: pointer;
 
     &::after {
+        content: '';
         position: absolute;
         top: 50%;
         left: 50%;
+        transform: translateX(-50%) translateY(-50%);
         width: 0;
         height: 0;
         border-top: 4px solid transparent;
         border-bottom: 4px solid transparent;
         border-#{$direction}: 5px solid $fours;
-        transform: translateX(-50%) translateY(-50%);
-        content: '';
     }
 
     &:focus,
@@ -32,10 +32,10 @@
 
 .bp-RotateAxisControl {
     display: flex;
-    color: $bdl-gray-62;
     border: 1px solid $sf-fog;
     border-bottom-width: 2px;
     border-radius: 2px;
+    color: $bdl-gray-62;
 }
 
 .bp-RotateAxisControl-label {

@@ -2,25 +2,26 @@
 import Logger from '../Logger';
 
 describe('lib/Logger', () => {
-    const dateNowStub = jest.spyOn(Date, 'now');
+    let dateNowMock;
     let logger;
 
     beforeEach(() => {
-        dateNowStub.mockReturnValue(0);
+        dateNowMock = jest.spyOn(Date, 'now').mockReturnValue(0);
         logger = new Logger('FOO', {});
     });
 
     afterEach(() => {
+        dateNowMock.mockRestore();
         logger = null;
     });
 
     test('should have correct defaults', () => {
-        dateNowStub.mockReturnValue(1); // Took 1 ms to run
+        dateNowMock.mockReturnValue(1);
         const log = logger.done();
 
-        expect(log.time.total < 5).toBe(true);
-        expect(log.time.conversion < 5).toBe(true);
-        expect(log.time.rendering < 5).toBe(true);
+        expect(log.time.total).toBe(1);
+        expect(log.time.conversion).toBe(0);
+        expect(log.time.rendering).toBe(1);
 
         expect(undefined).toEqual(log.type);
         expect('FOO').toEqual(log.locale);
@@ -51,21 +52,19 @@ describe('lib/Logger', () => {
     });
 
     test('should set and get correctly', () => {
-        dateNowStub.mockReturnValue(0);
         logger.setCached();
         logger.setCacheStale();
         logger.setFile({ id: 1 });
         logger.setType('BAR');
 
-        dateNowStub.mockReturnValue(100);
+        dateNowMock.mockReturnValue(100);
         logger.setUnConverted();
 
         const log = logger.done();
 
-        expect('number').toEqual(typeof log.time.total);
-        expect('number').toEqual(typeof log.time.conversion);
-        expect('number').toEqual(typeof log.time.rendering);
-        expect(log.time.total).toEqual(log.time.conversion + log.time.rendering);
+        expect(log.time.conversion).toBe(100);
+        expect(log.time.rendering).toBe(0);
+        expect(log.time.total).toBe(100);
 
         expect('BAR').toEqual(log.type);
         expect('FOO').toEqual(log.locale);
@@ -95,7 +94,7 @@ describe('lib/Logger', () => {
     describe('setPreloaded()', () => {
         test('should set preloaded time', () => {
             logger.start = 0;
-            jest.spyOn(Date, 'now').mockReturnValue(100);
+            dateNowMock.mockReturnValue(100);
 
             logger.setPreloaded();
 

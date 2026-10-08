@@ -11,10 +11,10 @@
 
 .bp-media-mp3 {
     .bp-media-container {
+        overflow: visible; // to show settings popup
         width: 100%;
         max-width: 360px;
         height: 60px; // same as controls
-        overflow: visible; // to show settings popup
         outline: 0 none;
     }
 
@@ -43,9 +43,9 @@
     }
 
     .bp-media-controls-wrapper {
-        background: $black;
         visibility: visible;
         opacity: 1;
+        background: $black;
     }
 
     .bp-media-settings-item-quality,

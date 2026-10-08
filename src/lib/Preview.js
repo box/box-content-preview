@@ -35,6 +35,7 @@ import {
     uncacheFile,
     isWatermarked,
     getCachedFile,
+    getRepresentation,
     normalizeFileVersion,
     canDownload,
     shouldDownloadWM,
@@ -57,6 +58,10 @@ import {
     X_REP_HINT_WAVEFORM,
     AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES,
     AUDIO_PLAYER_V2,
+    BLUEPRINT_MIGRATION_ARCHIVE,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    BLUEPRINT_MIGRATION_MEDIA_CONTROLS,
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     FILE_OPTION_FILE_VERSION_ID,
     VIDEO_VIEWER_NAMES,
 } from './constants';
@@ -88,18 +93,15 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
 
-// All preview assets are relative to preview.js. Here we create a location
-// object that mimics the window location object and points to where
-// preview.js is loaded from by the browser. This needs to be done statically
-// outside the class so that location is found while this script is executing
-// and not when preview is instantiated, which is too late.
-// findScriptLocation throws when there is no preview.js <script> tag in the DOM;
-// npm consumers have no such tag and populate this via Preview.show({ location }).
-let PREVIEW_LOCATION;
-try {
-    PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
-} catch (e) {
-    PREVIEW_LOCATION = {};
+// document.currentScript is this file only while it evaluates.
+const IS_NPM_BUILD = typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__;
+let PREVIEW_LOCATION = {};
+if (!IS_NPM_BUILD) {
+    try {
+        PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+    } catch (e) {
+        PREVIEW_LOCATION = {};
+    }
 }
 
 class Preview extends EventEmitter {
@@ -177,9 +179,6 @@ class Preview extends EventEmitter {
             this.disabledViewers[viewerName] = 1;
         });
 
-        // All preview assets are relative to preview.js. Here we create a location
-        // object that mimics the window location object and points to where
-        // preview.js is loaded from by the browser.
         this.location = PREVIEW_LOCATION;
 
         this.cache = new Cache();
@@ -207,6 +206,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        clearTimeout(this.retryTimeout);
+
         // Log all load metrics
         this.emitLoadMetrics();
 
@@ -233,6 +234,7 @@ class Preview extends EventEmitter {
         }
 
         this.viewer = undefined;
+        Preview.resin = null;
     }
 
     /**
@@ -251,10 +253,9 @@ class Preview extends EventEmitter {
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
             // npm consumers have no CDN-served pdfjs at runtime; force the bundled npm pdfjs path.
-            const finalOptions =
-                typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__
-                    ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
-                    : options;
+            const finalOptions = IS_NPM_BUILD
+                ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
+                : options;
             this.previewOptions = { ...finalOptions, token };
         } else {
             throw new Error('Bad access token!');
@@ -269,6 +270,11 @@ class Preview extends EventEmitter {
 
         // Parse the preview options
         this.parseOptions(this.previewOptions);
+
+        // /preview.js parses to locale ''. Throw only when locale is absent.
+        if (getProp(this.location, 'locale') == null) {
+            throw new Error('Missing preview location. Load preview.js, or pass location to show().');
+        }
 
         // Load the preview
         this.load(fileIdOrFile);
@@ -1151,6 +1157,7 @@ class Preview extends EventEmitter {
 
         // Optional resin analytics instance for tracking user interactions
         this.options.resin = options.resin;
+        Preview.resin = options.resin;
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
@@ -1222,11 +1229,22 @@ class Preview extends EventEmitter {
         // Log cache hit
         this.logger.setCached();
 
-        // Finally load the viewer
+        const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
+        const needsTranscriptionRep =
+            isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+            this.isVideoFileByExtension() &&
+            !this.hasTranscriptionRep(this.file);
+        // Captions are optional — do not treat a missing extracted_text rep like missing
+        // dash/mp4. skipServerUpdate still skips this refresh; default reopen already
+        // calls loadFromServer() because skipServerUpdate is false.
+        const needsServerRefresh = !this.options.skipServerUpdate || needsVideoReps || needsTranscriptionRep;
+
+        // Play from cache immediately. Default reopen still refreshes file info in the
+        // background; handleFileInfoResponse then updates the live viewer if extracted_text
+        // arrived. A failed captions-only refresh must not uncache or destroy playback.
         this.loadViewer();
 
-        const needsVideoReps = this.isVideoFileByExtension() && !this.hasPlayableVideoReps(this.file);
-        if (!this.options.skipServerUpdate || needsVideoReps) {
+        if (needsServerRefresh) {
             this.loadFromServer();
         }
     }
@@ -1258,7 +1276,14 @@ class Preview extends EventEmitter {
         this.api
             .get(fileInfoUrl, { headers: this.getRequestHeaders() })
             .then(this.handleFileInfoResponse)
-            .catch(this.handleFetchError);
+            .catch(err => {
+                // Captions are optional. If a cache-hit viewer is already playing dash/mp4,
+                // a failed background file-info refresh must not uncache or triggerError.
+                if (this.viewer && this.hasPlayableVideoReps(this.file)) {
+                    return;
+                }
+                this.handleFetchError(err);
+            });
     }
 
     /**
@@ -1351,6 +1376,13 @@ class Preview extends EventEmitter {
                 throw new PreviewError(ERROR_CODE.ACCOUNT, __('error_account'));
             }
 
+            const needsTranscriptionReload =
+                this.canUseDash() &&
+                isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES) &&
+                this.isVideoFileByExtension() &&
+                !this.hasTranscriptionRep(cachedFile) &&
+                this.hasTranscriptionRep(file);
+
             // Should load viewer for first time if:
             //   - File isn't cached OR
             //   - Cached file doesn't have a valid structure
@@ -1363,6 +1395,18 @@ class Preview extends EventEmitter {
             } else if (cachedFile.file_version.sha1 !== file.file_version.sha1 || isFileWatermarked) {
                 this.logger.setCacheStale(); // Log that cache is stale
                 this.reload(true); // Reload viewer without fetching updated file info from server
+            } else if (needsTranscriptionReload) {
+                // Cache was valid but lacked extracted_text (e.g. prefetch without the hint).
+                // Server refresh now has the rep — update the already-playing viewer so
+                // loadTranscription can attach captions. Only call it after loadeddata;
+                // calling earlier duplicates the Auto-generated Shaka track and can throw
+                // if UI is not ready. If loadeddata has not fired, the handler uses this file.
+                if (this.viewer) {
+                    this.viewer.options.file = this.file;
+                    if (this.viewer.isLoaded() && typeof this.viewer.loadTranscription === 'function') {
+                        this.viewer.loadTranscription();
+                    }
+                }
             }
         } catch (err) {
             const error =
@@ -1494,6 +1538,31 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Returns true if file has an extracted_text transcription rep with a content URL.
+     *
+     * @private
+     * @param {Object} file - File object
+     * @return {boolean}
+     */
+    hasTranscriptionRep(file) {
+        if (!file?.representations?.entries) {
+            return false;
+        }
+        const extractedText = getRepresentation(file, 'extracted_text');
+        return !!extractedText?.content?.url_template;
+    }
+
+    /**
+     * Returns true when Dash playback is available and not disabled.
+     *
+     * @private
+     * @return {boolean}
+     */
+    canUseDash() {
+        return Browser.canPlayDash() && !this.disabledViewers.Dash;
+    }
+
+    /**
      * Returns true if file has playable video representations (dash or mp4).
      *
      * @private
@@ -1544,6 +1613,10 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.preload:
                 // Dismiss the global loading spinner once the preload thumbnail is visible
                 this.ui.hideLoadingIndicator();
+                this.emit(data.event, data.data);
+                this.emit(VIEWER_EVENT.default, data);
+                break;
+            case VIEWER_EVENT.mediaEndPlayNext:
                 this.emit(data.event, data.data);
                 this.emit(VIEWER_EVENT.default, data);
                 break;
@@ -1954,6 +2027,7 @@ class Preview extends EventEmitter {
 
         this.emit(name, {
             ...payload,
+            ...this.getBlueprintMigrationTags(),
             access_pattern: accessPattern,
             client_name: clientName,
             content_type: getProp(this.viewer, 'options.viewer.NAME', ''),
@@ -1970,6 +2044,25 @@ class Preview extends EventEmitter {
             total_pages: getProp(this.viewer, 'pdfViewer.pdfDocument.numPages', ''),
             ...getClientLogDetails(),
         });
+    }
+
+    /**
+     * Returns the state of each Blueprint migration wave for this preview session. Every metric
+     * and error carries all four, including the waves that are off, so the flag-off side of a
+     * rollout is measured the same way as the flag-on side rather than inferred from its absence.
+     *
+     * @private
+     * @return {Object} Blueprint migration dimensions
+     */
+    getBlueprintMigrationTags() {
+        const { features } = this.options || {};
+
+        return {
+            blueprint_archive: isFeatureEnabled(features, BLUEPRINT_MIGRATION_ARCHIVE),
+            blueprint_controls_bar: isFeatureEnabled(features, BLUEPRINT_MIGRATION_CONTROLS_BAR),
+            blueprint_media_controls: isFeatureEnabled(features, BLUEPRINT_MIGRATION_MEDIA_CONTROLS),
+            blueprint_supporting_ui: isFeatureEnabled(features, BLUEPRINT_MIGRATION_SUPPORTING_UI),
+        };
     }
 
     /**
@@ -1995,7 +2088,7 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const isDash = Browser.canPlayDash() && !this.disabledViewers.Dash;
+        const isDash = this.canUseDash();
         let videoHint = isDash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
 
         if (isDash && isFeatureEnabled(this.options.features, AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES)) {
@@ -2317,6 +2410,8 @@ class Preview extends EventEmitter {
     };
 }
 
-global.Box = global.Box || {};
-global.Box.Preview = Preview;
+if (!IS_NPM_BUILD) {
+    global.Box = global.Box || {};
+    global.Box.Preview = Preview;
+}
 export default Preview;

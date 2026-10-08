@@ -2,8 +2,8 @@
 
 .bp-error {
     width: 100%; // IE11 flex width bug - https://caniuse.com/#search=flex
-    color: $twos;
     font-size: 14px;
+    color: $twos;
     text-align: center;
 
     .bp-btn {

@@ -40,7 +40,7 @@ function getAudioContextConstructor(): (new () => DecodeAudioContext) | undefine
     if (typeof window === 'undefined') {
         return undefined;
     }
-    const { AudioContext, webkitAudioContext } = (window as unknown) as {
+    const { AudioContext, webkitAudioContext } = window as unknown as {
         AudioContext?: new () => DecodeAudioContext;
         webkitAudioContext?: new () => DecodeAudioContext;
     };

@@ -232,5 +232,43 @@ describe('MediaSettings', () => {
                 expect(screen.getByRole('menuitemradio', { name: 'Spanish' })).toHaveAttribute('aria-checked', 'true');
             });
         });
+
+        describe('play next', () => {
+            test('should not render play next unless a change handler is provided', async () => {
+                const user = userEvent.setup();
+                render(
+                    <MediaSettings autoplay={false} onAutoplayChange={jest.fn()} onRateChange={jest.fn()} rate="1.0" />,
+                );
+                await user.click(screen.getByTitle('Settings'));
+
+                expect(screen.queryByTestId('bp-media-settings-play-next')).not.toBeInTheDocument();
+            });
+
+            test.each`
+                value    | displayValue
+                ${true}  | ${__('media_play_next_enabled')}
+                ${false} | ${__('media_play_next_disabled')}
+            `(
+                'should display $displayValue as the selected play next value $value',
+                async ({ displayValue, value }) => {
+                    const user = userEvent.setup();
+                    render(
+                        <MediaSettings
+                            autoplay={false}
+                            onAutoplayChange={jest.fn()}
+                            onPlayNextChange={jest.fn()}
+                            onRateChange={jest.fn()}
+                            playNext={value}
+                            rate="1.0"
+                        />,
+                    );
+                    await user.click(screen.getByTitle('Settings'));
+
+                    expect(
+                        screen.getByRole('menuitem', { name: `${__('media_play_next')} ${displayValue}` }),
+                    ).toBeInTheDocument();
+                },
+            );
+        });
     });
 });

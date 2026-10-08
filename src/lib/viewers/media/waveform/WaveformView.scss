@@ -1,19 +1,19 @@
 @import '../../../boxuiVariables';
 
 .bp-WaveformView {
+    overflow: visible;
     box-sizing: border-box;
     width: 100%;
     height: 206px;
     min-height: 206px;
     padding: 0 60px;
-    overflow: visible;
     background: none;
     -webkit-tap-highlight-color: transparent;
 
     &.bp-WaveformView--zoomed,
     &.bp-WaveformView--tape {
-        padding: 0;
         touch-action: none;
+        padding: 0;
 
         .bp-WaveformView-canvas {
             overflow: hidden;
@@ -31,6 +31,7 @@
         flex: 1 1 auto;
         height: 100%;
         min-height: 0;
+        -webkit-touch-callout: none;
 
         .bp-WaveformView-canvas {
             height: 100%;
@@ -49,12 +50,12 @@
 }
 
 .bp-WaveformView-track {
+    cursor: pointer;
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
     height: 100%;
-    cursor: pointer;
 }
 
 .bp-WaveformView-canvas {
@@ -64,51 +65,123 @@
 }
 
 .bp-WaveformView-playhead {
+    pointer-events: none;
     position: absolute;
+    z-index: 1;
     top: 50%;
     left: 0;
-    z-index: 1;
+    transform: translate(-50%, -50%);
     width: 2px;
     height: 150px;
-    pointer-events: none;
-    background: linear-gradient(#2487ff, #006bed);
     border-radius: 1px;
+    background: linear-gradient(#2487ff, #006bed);
 
     // Spread stroke instead of border: border-box on .bp-container * would collapse the 2px fill.
-    box-shadow: 0 0 0 1px #222, 0 0 10px 0 rgb(36 135 255 / 30%);
-    transform: translate(-50%, -50%);
+    box-shadow:
+        0 0 0 1px #222,
+        0 0 10px 0 rgb(36 135 255 / 30%);
+}
+
+// 24px grab target, matching the range-handle hit area. The 2px stroke stays the visual line.
+.bp-WaveformView-playhead--draggable {
+    pointer-events: auto;
+    touch-action: none;
+    cursor: grab;
+    transition:
+        border-radius 150ms,
+        box-shadow 150ms,
+        width 150ms;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 24px;
+    }
+}
+
+.bp-WaveformView-playhead--draggable:hover,
+.bp-WaveformView--playheadDragging .bp-WaveformView-playhead--draggable {
+    width: 4px;
+    border-radius: 2px;
+    box-shadow:
+        0 0 0 1px #222,
+        0 0 8px 1px rgb(36 135 255 / 30%),
+        0 0 20px 2px rgb(36 135 255 / 10%);
+}
+
+.bp-WaveformView--playheadDragging,
+.bp-WaveformView--playheadDragging .bp-WaveformView-track,
+.bp-WaveformView--playheadDragging .bp-WaveformView-playhead {
+    cursor: grabbing;
+}
+
+// Sits on the playhead, which is already the 150px region. The shared range
+// pill positions against the full track, so override that here.
+.bp-WaveformView-playhead .bp-WaveformView-playheadComment {
+    top: auto;
+    bottom: calc(100% + 36px);
+    left: 50%;
+    transform: translateX(-50%);
+    animation-name: bp-WaveformView-playheadCommentIn;
+}
+
+@keyframes bp-WaveformView-playheadCommentIn {
+    from {
+        transform: translate(-50%, 8px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(-50%);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-WaveformView-playhead .bp-WaveformView-playheadComment {
+        animation: none;
+    }
+
+    .bp-WaveformView-playhead--draggable {
+        transition: none;
+    }
 }
 
 .bp-WaveformView-hover {
-    position: absolute;
-    top: 100%;
-    z-index: 2;
-    margin-top: 4px;
     pointer-events: none;
+    position: absolute;
+    z-index: 2;
+    top: 100%;
     transform: translateX(-50%);
+    margin-top: 4px;
 }
 
 .bp-WaveformView-hover--tape {
+    z-index: 5;
+
     // Center on the 24px comment row (12px gap + 12px to row midpoint).
     top: -24px;
     left: 50%;
-    z-index: 5;
-    margin-top: 0;
     transform: translate(-50%, -50%);
+    margin-top: 0;
 }
 
 .bp-WaveformView-hoverTime {
     padding: 4px 10px;
-    color: $white;
-    font-weight: normal;
-    font-size: 14px;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 8px;
     font-family: Lato, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
     line-height: 20px;
+    color: $white;
     letter-spacing: 0.3px;
     white-space: nowrap;
     background: rgb(34 34 34 / 92%);
-    border: 1px solid rgb(255 255 255 / 18%);
-    border-radius: 8px;
 }
 
 .bp-WaveformView--inert {
@@ -118,7 +191,10 @@
         cursor: default;
     }
 
-    .bp-WaveformRange-handle {
+    .bp-WaveformRange-handle,
+    .bp-WaveformRange-comment,
+    .bp-WaveformRange-commentLabel,
+    .bp-WaveformRange-commentClear {
         pointer-events: none;
         cursor: default;
     }

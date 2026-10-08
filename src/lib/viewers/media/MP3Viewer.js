@@ -1,12 +1,14 @@
 import React from 'react';
+import commentMarkerRange from '../controls/media/markers/helpers/commentMarkerRange';
 import {
+    EVENT_COMMENT_RANGE_DRAG_CREATE,
     EVENT_COMMENT_RANGE_DRAFT,
     EVENT_COMMENT_RANGE_DRAFT_CHANGE,
     EVENT_COMMENT_RANGE_DRAFT_CLEAR,
     EVENT_COMMENT_RANGE_DRAFT_DISMISS,
     isValidCommentRangeDraft,
 } from '../controls/media/types';
-import { AUDIO_PLAYER_V2, STATUS_ERROR, WAVEFORM_REP_NAME } from '../../constants';
+import { AUDIO_PLAYER_V2, STATUS_ERROR, STATUS_SUCCESS, STATUS_VIEWABLE, WAVEFORM_REP_NAME } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import MediaBaseViewer from './MediaBaseViewer';
@@ -18,6 +20,8 @@ import {
     DURATION_MISMATCH_TOLERANCE_SEC,
 } from './waveform/constants';
 import { createWaveformLoader } from './waveform/createWaveformLoader';
+import { isRangeCollapsed } from './waveform/range';
+import { isTapeWaveformInput } from './waveform/useTapeWaveform';
 import { isPositiveFinite } from './waveform/validateWaveformPayload';
 import './MP3.scss';
 
@@ -99,6 +103,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.isAudioPlayerV2 = this.getIsAudioPlayerV2();
         this.waveformPeaks = [];
         this.waveformPeaksSource = null;
+        this.isWaveformConversionPolling = false;
         this.waveformDurationSec = 0;
         if (this.isAudioPlayerV2) {
             this.wrapperEl.classList.add('bp-media--v2');
@@ -116,11 +121,15 @@ class MP3Viewer extends MediaBaseViewer {
         this.mediaEl.setAttribute('preload', 'auto');
         this.commentMarkers = [];
         this.commentRangeDraft = null;
+        this.commentRangeReadOnly = null;
         this.hostSelectedMarkerId = null;
+        this.hostSelectedMarkerSeq = null;
         this.isCommentRangeDragging = false;
+        this.isCommentRangeTimestampActive = false;
         this.shuttleDirection = null;
         this.shuttleRate = 0;
         this.reverseShuttleTimer = 0;
+        this.commentRangeLoopTimer = 0;
         this.keyboardVolumeStep = 0;
         this.keyboardZoomStep = 0;
     }
@@ -262,6 +271,9 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     shuttle(direction) {
+        if (isTapeWaveformInput()) {
+            return;
+        }
         const sameDirection = this.shuttleDirection === direction;
         const rate = nextShuttleRate(this.shuttleRate, sameDirection);
         if (direction === 'forward') {
@@ -286,9 +298,12 @@ class MP3Viewer extends MediaBaseViewer {
                     if (this.mediaEl && this.shuttleDirection === 'forward') {
                         this.mediaEl.playbackRate = this.shuttleRate;
                     }
+                    this.scheduleCommentRangeLoopWrap();
                 })
                 .catch(() => {});
         }
+        this.scheduleCommentRangeLoopWrap(true);
+        this.renderUI();
     }
 
     startReverseShuttle(rate) {
@@ -299,15 +314,17 @@ class MP3Viewer extends MediaBaseViewer {
         this.pause(undefined, true);
         this.handleRate();
         this.reverseShuttleTimer = window.setInterval(() => {
-            if (!this.mediaEl || this.mediaEl.currentTime <= 0) {
+            const floor = this.clampTimeToOpenCommentRange(0);
+            if (!this.mediaEl || this.mediaEl.currentTime <= floor) {
                 this.exitShuttle();
                 return;
             }
             this.quickSeek(-((this.shuttleRate * AUDIO_V2_SHUTTLE_TICK_MS) / 1000));
-            if (this.mediaEl.currentTime <= 0) {
+            if (this.mediaEl.currentTime <= floor) {
                 this.exitShuttle();
             }
         }, AUDIO_V2_SHUTTLE_TICK_MS);
+        this.renderUI();
     }
 
     stopReverseShuttle() {
@@ -338,9 +355,11 @@ class MP3Viewer extends MediaBaseViewer {
             if (this.controls) {
                 this.renderUI();
             }
+            this.scheduleCommentRangeLoopWrap();
             return;
         }
         super.handleRate();
+        this.scheduleCommentRangeLoopWrap();
     }
 
     jumpToCommentMarker(direction) {
@@ -442,11 +461,14 @@ class MP3Viewer extends MediaBaseViewer {
      * @inheritdoc
      */
     destroy() {
+        this.clearCommentRangeLoopTimer();
         this.removeListener('comment_markers', this.handleCommentMarkersUpdated);
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT, this.handleCommentRangeDraft);
         this.removeListener(EVENT_COMMENT_RANGE_DRAFT_CLEAR, this.handleCommentRangeDraftClear);
         this.commentRangeDraft = null;
+        this.commentRangeReadOnly = null;
         this.isCommentRangeDragging = false;
+        this.isCommentRangeTimestampActive = false;
         this.stopReverseShuttle();
         this.shuttleDirection = null;
         this.shuttleRate = 0;
@@ -461,7 +483,10 @@ class MP3Viewer extends MediaBaseViewer {
         if (this.isAudioPlayerV2) {
             // A file-version switch is a clear, not a resync of the previous draft.
             this.commentRangeDraft = null;
+            this.commentRangeReadOnly = null;
             this.isCommentRangeDragging = false;
+            this.isCommentRangeTimestampActive = false;
+            this.syncCommentRangeLoop();
             this.showAudioLoadingShell();
             this.startConversionWaveformLoad();
         }
@@ -546,6 +571,46 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
+     * @return {Object|null} waveform conversion representation
+     */
+    getWaveformRepresentation() {
+        const { file } = this.options;
+        return file?.representations?.entries ? getRepresentation(file, WAVEFORM_REP_NAME) : null;
+    }
+
+    /**
+     * @return {string|null} conversion representation state
+     */
+    getWaveformConversionState() {
+        const conversionStatus = this.getWaveformRepresentation()?.status;
+        return conversionStatus && typeof conversionStatus === 'object' ? conversionStatus.state : null;
+    }
+
+    /**
+     * Conversion JSON is already (or about to be) fetchable.
+     *
+     * @return {boolean}
+     */
+    isConversionWaveformAvailable() {
+        const conversionState = this.getWaveformConversionState();
+        return conversionState === STATUS_SUCCESS || conversionState === STATUS_VIEWABLE;
+    }
+
+    /**
+     * Generating chip while conversion RepStatus is polling. Hidden when the
+     * rep is already success/viewable, when polling finishes, when conversion
+     * errors, and once any source applies peaks.
+     *
+     * @return {boolean}
+     */
+    isGeneratingWaveform() {
+        if (!this.isAudioPlayerV2 || this.destroyed || this.waveformPeaksSource) {
+            return false;
+        }
+        return !!this.isWaveformConversionPolling;
+    }
+
+    /**
      * @param {number} durationSec
      * @return {boolean}
      */
@@ -587,13 +652,12 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
 
-        const { file } = this.options;
-        const waveform = file?.representations?.entries ? getRepresentation(file, WAVEFORM_REP_NAME) : null;
+        const waveform = this.getWaveformRepresentation();
         const template = waveform?.content?.url_template;
-        const conversionStatus = waveform?.status;
-        const statusState = conversionStatus && typeof conversionStatus === 'object' ? conversionStatus.state : null;
-        if (!waveform || !template || !statusState || statusState === STATUS_ERROR) {
+        const conversionState = this.getWaveformConversionState();
+        if (!waveform || !template || !conversionState || conversionState === STATUS_ERROR) {
             this.startClientWaveformDecode();
+            this.renderUI();
             return;
         }
 
@@ -601,16 +665,29 @@ class MP3Viewer extends MediaBaseViewer {
         this.waveformStatus = this.getRepStatus(waveform);
         this.waveformStatus.removeListener('conversionpending', this.resetLoadTimeout);
         const status = this.waveformStatus;
+        const shouldPollConversion = !this.isConversionWaveformAvailable();
 
         try {
+            if (shouldPollConversion) {
+                this.isWaveformConversionPolling = true;
+                this.renderUI();
+            }
             await status.getPromise();
+            this.isWaveformConversionPolling = false;
             if (this.destroyed || this.waveformStatus !== status || this.waveformPeaksSource) {
                 return;
+            }
+            if (shouldPollConversion) {
+                this.renderUI();
             }
             const result = await this.loadConversionWaveformPayload(template);
             this.handleConversionWaveformResult(result, status);
         } catch {
+            this.isWaveformConversionPolling = false;
             this.startClientWaveformDecode();
+            if (shouldPollConversion) {
+                this.renderUI();
+            }
         }
     }
 
@@ -666,6 +743,7 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.waveformPeaks = payload.peaks;
         this.waveformPeaksSource = source;
+        this.isWaveformConversionPolling = false;
         this.isWaveformDecodeRetryPending = false;
         if (source === 'conversion') {
             this.waveformDurationSec = payload.durationSec;
@@ -896,9 +974,14 @@ class MP3Viewer extends MediaBaseViewer {
 
         // Host echoes often omit isSelected. Keep hostSelectedMarkerId so ↑/↓ can
         // still walk other comments at the same time. Clear only when that id is gone.
+        // selectionSeq is a new pick of that same comment: seek and draw the range again.
         if (selected) {
-            if (selected.id !== this.hostSelectedMarkerId) {
+            const incomingSeq = Number.isFinite(selected.selectionSeq) ? selected.selectionSeq : null;
+            const isRepeatSelect = incomingSeq != null && incomingSeq !== this.hostSelectedMarkerSeq;
+            if (selected.id !== this.hostSelectedMarkerId || isRepeatSelect) {
                 this.hostSelectedMarkerId = selected.id;
+                this.hostSelectedMarkerSeq = incomingSeq;
+                this.commentRangeReadOnly = commentMarkerRange(selected);
                 if (Number.isFinite(selected.time)) {
                     this.pendingHostSelectedSeek = selected;
                     this.applyPendingHostSelectedSeek();
@@ -906,7 +989,9 @@ class MP3Viewer extends MediaBaseViewer {
             }
         } else if (this.hostSelectedMarkerId && !markers.some(marker => marker.id === this.hostSelectedMarkerId)) {
             this.hostSelectedMarkerId = null;
+            this.hostSelectedMarkerSeq = null;
             this.pendingHostSelectedSeek = null;
+            this.commentRangeReadOnly = null;
         }
 
         this.renderUI();
@@ -927,23 +1012,221 @@ class MP3Viewer extends MediaBaseViewer {
 
         this.pendingHostSelectedSeek = null;
         this.exitShuttle();
+        this.clearOpenCommentRangeDraft();
+        this.commentRangeReadOnly = commentMarkerRange(marker);
         this.mediaEl.pause();
         if (this.mediaEl.currentTime !== marker.time) {
             this.mediaEl.currentTime = marker.time;
         }
+        this.syncCommentRangeLoop();
+    }
+
+    /**
+     * Seconds of the span that confines playback, or null when collapsed / absent.
+     * A composer draft wins over a viewed comment range. Collapsed drafts do not confine playback.
+     *
+     * @return {{endSec: number, startSec: number}|null}
+     */
+    getOpenCommentRangeSeconds() {
+        // An open composer draft owns playback. A viewed comment range does otherwise.
+        const source = this.commentRangeDraft != null ? this.commentRangeDraft : this.commentRangeReadOnly;
+        if (isRangeCollapsed(source) || !Number.isFinite(source.startMs) || !Number.isFinite(source.endMs)) {
+            return null;
+        }
+        return { endSec: source.endMs / 1000, startSec: source.startMs / 1000 };
+    }
+
+    /**
+     * Drop an open composer draft. A collapsed timestamp is left alone.
+     * Does not clear a viewed comment range.
+     *
+     * @return {boolean} whether an open draft was cleared
+     */
+    clearOpenCommentRangeDraft() {
+        if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
+            return false;
+        }
+        const notifyHost = this.isCommentRangeTimestampActive;
+        this.commentRangeDraft = null;
+        this.isCommentRangeTimestampActive = false;
+        if (notifyHost) {
+            this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        }
+        return true;
+    }
+
+    /**
+     * Keep a seek inside the open draft. Waveform click-outside and host
+     * comment seeks dismiss first, then seek; clamp does not apply then.
+     *
+     * @param {number} time
+     * @return {number}
+     */
+    clampTimeToOpenCommentRange(time) {
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !Number.isFinite(time)) {
+            return time;
+        }
+        return Math.min(Math.max(time, range.startSec), range.endSec);
+    }
+
+    clearCommentRangeLoopTimer() {
+        if (this.commentRangeLoopTimer) {
+            window.clearTimeout(this.commentRangeLoopTimer);
+            this.commentRangeLoopTimer = 0;
+        }
+    }
+
+    /**
+     * Wrap when the remaining time to end elapses. Recalculate after play, seek,
+     * rate change, or a draft resize.
+     *
+     * @param {boolean} [force] schedule even if the element still reports paused
+     * @return {void}
+     */
+    scheduleCommentRangeLoopWrap(force = false) {
+        this.clearCommentRangeLoopTimer();
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl || (!force && this.mediaEl.paused)) {
+            return;
+        }
+        const rate = this.mediaEl.playbackRate > 0 ? this.mediaEl.playbackRate : 1;
+        const remainingSec = range.endSec - this.mediaEl.currentTime;
+        this.commentRangeLoopTimer = window.setTimeout(
+            () => {
+                this.commentRangeLoopTimer = 0;
+                const openRange = this.getOpenCommentRangeSeconds();
+                if (!openRange || !this.mediaEl || this.mediaEl.paused) {
+                    return;
+                }
+                if (this.mediaEl.currentTime !== openRange.startSec) {
+                    this.mediaEl.currentTime = openRange.startSec;
+                }
+                this.scheduleCommentRangeLoopWrap();
+            },
+            Math.max(0, (remainingSec / rate) * 1000),
+        );
+    }
+
+    /**
+     * Update the playback loop to match the current range after it arrives, resizes,
+     * or clears.
+     *
+     * @return {void}
+     */
+    syncCommentRangeLoop() {
+        this.clearCommentRangeLoopTimer();
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl || this.mediaEl.paused) {
+            return;
+        }
+        this.enforceCommentRangePlayback(range);
+    }
+
+    /**
+     * Keep playback inside the open span. A playhead outside [start, end) jumps
+     * to start, then the wrap timer is armed.
+     *
+     * @param {{endSec: number, startSec: number}} range Open draft in seconds
+     * @return {void}
+     */
+    enforceCommentRangePlayback(range) {
+        const { endSec, startSec } = range;
+        const currPlayhead = this.mediaEl.currentTime;
+        const nextPlayhead = currPlayhead >= startSec && currPlayhead < endSec ? currPlayhead : startSec;
+        if (nextPlayhead !== currPlayhead) {
+            this.mediaEl.currentTime = nextPlayhead;
+        }
+        this.scheduleCommentRangeLoopWrap();
+    }
+
+    /**
+     * Play. An open draft loops that span: keep the playhead when it is already
+     * inside, otherwise jump to start. Does not use play(start, end) because
+     * that pauses at end.
+     *
+     * @inheritdoc
+     */
+    play(...args) {
+        const range = this.getOpenCommentRangeSeconds();
+        if (!range || !this.mediaEl) {
+            // Spread so an argument-less call stays argument-less; super.play() skips
+            // playback when it is handed an explicit undefined start.
+            return super.play(...args);
+        }
+
+        const requested = Number.isFinite(args[0]) ? args[0] : this.mediaEl.currentTime;
+        const next = requested >= range.startSec && requested < range.endSec ? requested : range.startSec;
+        if (this.mediaEl.currentTime !== next) {
+            this.mediaEl.currentTime = next;
+        }
+        const playPromise = super.play();
+        this.scheduleCommentRangeLoopWrap(true);
+        return playPromise;
+    }
+
+    /**
+     * Seek. Keyboard and in-range waveform seeks stay inside an open draft.
+     *
+     * @inheritdoc
+     */
+    setMediaTime(time) {
+        super.setMediaTime(this.clampTimeToOpenCommentRange(time));
+        this.scheduleCommentRangeLoopWrap();
+    }
+
+    /**
+     * If the range ends at file end, wrap instead of resetting the play icon.
+     *
+     * @inheritdoc
+     */
+    mediaendHandler() {
+        if (this.getOpenCommentRangeSeconds()) {
+            // `ended` fires after the element is paused; play() wraps and restarts.
+            this.play();
+            return;
+        }
+        super.mediaendHandler();
+    }
+
+    /**
+     * Only an explicit `can_comment` shows Comment.
+     * A missing file, permissions object, or flag hides it.
+     *
+     * @return {boolean}
+     */
+    getCanCreateComment() {
+        const canComment = this.options?.file?.permissions?.can_comment;
+        return canComment ?? false;
     }
 
     handleCommentRangeDraft = draft => {
         if (this.isCommentRangeDragging || !isValidCommentRangeDraft(draft)) {
             return;
         }
+        // Checkbox-on sends a collapsed playhead. A waveform-drawn span should
+        // become that timestamp value instead of collapsing back to the playhead.
+        const local = this.commentRangeDraft;
+        if (local && !isRangeCollapsed(local) && draft.endMs == null) {
+            if (!this.isCommentRangeTimestampActive) {
+                this.isCommentRangeTimestampActive = true;
+                this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: local.endMs, startMs: local.startMs });
+            }
+            this.syncCommentRangeLoop();
+            this.renderUI();
+            return;
+        }
+        this.isCommentRangeTimestampActive = true;
         this.commentRangeDraft = { endMs: draft.endMs == null ? null : draft.endMs, startMs: draft.startMs };
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
     handleCommentRangeDraftClear = () => {
         this.commentRangeDraft = null;
         this.isCommentRangeDragging = false;
+        this.isCommentRangeTimestampActive = false;
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
@@ -957,7 +1240,42 @@ class MP3Viewer extends MediaBaseViewer {
             return;
         }
         this.commentRangeDraft = { endMs: range.endMs, startMs: range.startMs };
-        this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: range.endMs, startMs: range.startMs });
+        if (this.isCommentRangeTimestampActive) {
+            this.emit(EVENT_COMMENT_RANGE_DRAFT_CHANGE, { endMs: range.endMs, startMs: range.startMs });
+        }
+        this.syncCommentRangeLoop();
+        this.renderUI();
+    };
+
+    handleCommentRangeDragCreate = () => {
+        const draft = this.commentRangeDraft;
+        if (!this.getCanCreateComment() || !draft || isRangeCollapsed(draft)) {
+            return;
+        }
+        this.isCommentRangeTimestampActive = true;
+        this.emit(EVENT_COMMENT_RANGE_DRAG_CREATE, { endMs: draft.endMs, startMs: draft.startMs });
+    };
+
+    /**
+     * Comment at the paused playhead. The playhead becomes the collapsed draft,
+     * the same point a seek stores when the timestamp toggle is on.
+     *
+     * @return {void}
+     */
+    handlePlayheadComment = () => {
+        const timeSec = this.mediaEl?.currentTime;
+        if (!this.getCanCreateComment() || this.shuttleDirection || !Number.isFinite(timeSec) || timeSec < 0) {
+            return;
+        }
+        if (this.commentRangeDraft && !isRangeCollapsed(this.commentRangeDraft)) {
+            return;
+        }
+
+        const startMs = Math.floor(timeSec * 1000);
+        this.isCommentRangeTimestampActive = true;
+        this.commentRangeDraft = { endMs: null, startMs };
+        this.syncCommentRangeLoop();
+        this.emit(EVENT_COMMENT_RANGE_DRAG_CREATE, { startMs });
         this.renderUI();
     };
 
@@ -966,17 +1284,20 @@ class MP3Viewer extends MediaBaseViewer {
     };
 
     handleCommentRangeClear = () => {
-        if (!this.commentRangeDraft || this.commentRangeDraft.endMs == null) {
+        const clearedDraftRange = this.clearOpenCommentRangeDraft();
+        const clearedReadOnlyRange = this.commentRangeReadOnly != null;
+        this.commentRangeReadOnly = null;
+        if (!clearedDraftRange && !clearedReadOnlyRange) {
             return;
         }
-        this.commentRangeDraft = null;
-        this.emit(EVENT_COMMENT_RANGE_DRAFT_DISMISS);
+        this.syncCommentRangeLoop();
         this.renderUI();
     };
 
     handleCommentMarkerClick = marker => {
         this.exitShuttle();
         this.hostSelectedMarkerId = marker.id;
+        this.commentRangeReadOnly = commentMarkerRange(marker);
         this.pendingHostSelectedSeek = marker;
         if (this.mediaEl) {
             this.mediaEl.pause();
@@ -1032,7 +1353,9 @@ class MP3Viewer extends MediaBaseViewer {
                     {...sharedProps}
                     commentMarkers={this.commentMarkers || []}
                     commentRangeDraft={this.commentRangeDraft || null}
+                    commentRangeReadOnly={this.commentRangeReadOnly || null}
                     hasStartedPlayback={!!this.userRequestedPlay}
+                    isGeneratingWaveform={this.isGeneratingWaveform()}
                     keyboardVolumeStep={this.keyboardVolumeStep}
                     keyboardZoomStep={this.keyboardZoomStep}
                     mediaEl={this.mediaEl}
@@ -1040,7 +1363,15 @@ class MP3Viewer extends MediaBaseViewer {
                     onCommentRangeChange={this.handleCommentRangeChange}
                     onCommentRangeClear={this.handleCommentRangeClear}
                     onCommentRangeDragChange={this.handleCommentRangeDragChange}
+                    onCommentRangeDragCreate={
+                        this.getCanCreateComment() ? this.handleCommentRangeDragCreate : undefined
+                    }
+                    onPlayheadComment={this.getCanCreateComment() ? this.handlePlayheadComment : undefined}
+                    onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
+                    playNext={this.isPlayNextEnabled()}
+                    shuttleDirection={this.shuttleDirection}
+                    shuttleRate={this.shuttleRate}
                 />,
             );
             return;

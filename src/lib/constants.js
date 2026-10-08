@@ -26,6 +26,8 @@ export const CLASS_BOX_PREVIEW_LOGO_CUSTOM = 'bp-custom-logo';
 export const CLASS_BOX_PREVIEW_LOGO_DEFAULT = 'bp-default-logo';
 export const CLASS_BOX_PREVIEW_MENU = 'bp-menu';
 export const CLASS_BOX_PREVIEW_MOBILE = 'bp-is-mobile';
+export const CLASS_BOX_PREVIEW_VERSION_BANNER = 'bp-version-banner';
+export const CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED = 'bp-version-banner--compared';
 export const CLASS_BOX_PREVIEW_OVERLAY = 'bp-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
@@ -67,6 +69,7 @@ export const DISCOVERABILITY_ATTRIBUTE = 'data-resin-discoverability';
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
 export const SELECTOR_BOX_PREVIEW_CONTENT = `.${CLASS_BOX_PREVIEW_CONTENT}`;
+export const SELECTOR_BOX_PREVIEW_VERSION_BANNER = `.${CLASS_BOX_PREVIEW_VERSION_BANNER}`;
 export const SELECTOR_NAVIGATION_LEFT = '.bp-navigate-left';
 export const SELECTOR_NAVIGATION_RIGHT = '.bp-navigate-right';
 export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT = '.bp-btn-annotate-point';
@@ -108,6 +111,13 @@ export const X_REP_HINT_WAVEFORM = '[waveform]';
 
 export const AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES = 'aiTranscriptionForVideoSubtitles';
 export const AUDIO_PLAYER_V2 = 'audioPlayerV2.enabled';
+
+// One per wave of the Blueprint migration. Each is reported as its own metric dimension so a
+// dashboard can compare a wave's timings with its flag on against the same wave with it off.
+export const BLUEPRINT_MIGRATION_ARCHIVE = 'blueprintMigrationArchive.enabled';
+export const BLUEPRINT_MIGRATION_CONTROLS_BAR = 'blueprintMigrationControlsBar.enabled';
+export const BLUEPRINT_MIGRATION_MEDIA_CONTROLS = 'blueprintMigrationMediaControls.enabled';
+export const BLUEPRINT_MIGRATION_SUPPORTING_UI = 'blueprintMigrationSupportingUi.enabled';
 
 export const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
 export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js

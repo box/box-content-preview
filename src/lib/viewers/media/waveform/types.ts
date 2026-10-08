@@ -59,7 +59,7 @@ export const WAVEFORM_ERROR_CODES = [
     'UNAVAILABLE',
 ] as const;
 
-export type WaveformErrorCode = typeof WAVEFORM_ERROR_CODES[number];
+export type WaveformErrorCode = (typeof WAVEFORM_ERROR_CODES)[number];
 
 const WAVEFORM_ERROR_CODE_SET: ReadonlySet<string> = new Set(WAVEFORM_ERROR_CODES);
 
@@ -174,6 +174,9 @@ export type TapeDetectionWindow = Pick<Window, 'matchMedia'> & { navigator: Tape
 /** Desktop walks then pins near the right inset. Tape keeps the playhead at center. */
 export type PlayheadCameraMode = 'desktop' | 'tape';
 
+/** J scans backward, L scans forward. Absent when shuttle is off. */
+export type ShuttleDirection = 'forward' | 'reverse';
+
 export type PlayheadCameraAction =
     | { type: 'none' }
     | { type: 'followRight'; isPlayheadPinned: boolean; scrollLeftPx: number }
@@ -189,15 +192,23 @@ export type WaveformViewProps = {
     isPlaying?: boolean;
     mediaEl?: HTMLMediaElement | null;
     onPlayPause?: (isPlaying: boolean) => void;
+    /** Pause, after playback has started. Emits one timestamp comment at the playhead. */
+    onPlayheadComment?: () => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
     onRangeClear?: () => void;
+    onRangeDragCreate?: () => void;
     onRangeDragChange?: (isDragging: boolean) => void;
     onSeek?: (timeSec: number) => void;
     onViewportChange?: (viewport: WaveformViewport) => void;
     onZoomChange?: (zoomLevel: number) => void;
     peaks: ArrayLike<number>;
-    /** Checkbox-driven draft. Nothing renders until this is set. */
+    /** Checkbox-driven draft. A waveform drag can also preview a range before this is set. */
     range?: CommentRangeDraft | null;
+    /**
+     * The `range` is a viewed comment span. Draw it like a draft, without handles
+     * or editable edges. A drag that creates a new draft still gets handles.
+     */
+    rangeReadOnly?: boolean;
     zoomLevel?: number;
 };
 

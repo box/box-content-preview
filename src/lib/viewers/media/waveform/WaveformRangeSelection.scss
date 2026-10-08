@@ -1,43 +1,50 @@
 @import '../../../boxuiVariables';
 
 .bp-WaveformRange {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
     pointer-events: none;
+    position: absolute;
+    z-index: 2;
+    inset: 0;
 }
 
 .bp-WaveformRange-region {
+    pointer-events: none;
     position: absolute;
     top: 50%;
+    transform: translateY(-50%);
     box-sizing: border-box;
     height: 150px;
-    pointer-events: none;
-    background: rgb(255 255 255 / 10%);
     border: 1px solid rgb(255 255 255 / 40%);
     border-radius: 10px;
+    background: rgb(255 255 255 / 10%);
     box-shadow: 0 0 0 1px #222;
-    transform: translateY(-50%);
-    transition: border-width 100ms ease, border-color 100ms ease;
+    transition:
+        border-width 100ms ease,
+        border-color 100ms ease;
+}
+
+// Hide single timestamped ring while a tape swipe moves the playhead.
+.bp-WaveformRange--swiping .bp-WaveformRange-region {
+    visibility: hidden;
 }
 
 .bp-WaveformRange--highlight .bp-WaveformRange-region,
 .bp-WaveformRange:has(.bp-WaveformRange-handle:hover) .bp-WaveformRange-region,
 .bp-WaveformRange:has(.bp-WaveformRange-handle--dragging) .bp-WaveformRange-region {
-    border-width: 2px;
     border-color: $white;
+    border-width: 2px;
 }
 
 .bp-WaveformRange-handle {
+    pointer-events: auto;
+    touch-action: none;
+    cursor: ew-resize;
     position: absolute;
-    top: 50%;
     z-index: 1;
+    top: 50%;
+    transform: translate(-50%, -50%);
     width: 24px;
     height: 150px;
-    pointer-events: auto;
-    cursor: ew-resize;
-    touch-action: none;
-    transform: translate(-50%, -50%);
 }
 
 .bp-WaveformRange-handle--end {
@@ -45,55 +52,167 @@
 }
 
 .bp-WaveformRange-handleGrip {
+    pointer-events: none;
     position: absolute;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
     width: 8px;
     height: 20px;
-    background: $white;
     border: 1px solid #222;
     border-radius: 4px;
-    box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
     opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, -50%) scale(0.5);
-    transition: opacity 100ms ease-in, transform 100ms ease-in;
+    background: $white;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 40%);
+    transition:
+        opacity 100ms ease-in,
+        transform 100ms ease-in;
 }
 
 .bp-WaveformRange-handle:hover .bp-WaveformRange-handleGrip,
 .bp-WaveformRange-handle:focus-visible .bp-WaveformRange-handleGrip,
 .bp-WaveformRange-handle--dragging .bp-WaveformRange-handleGrip {
-    opacity: 1;
     transform: translate(-50%, -50%) scale(1);
-    transition: opacity 150ms ease-out, transform 150ms ease-out;
+    opacity: 1;
+    transition:
+        opacity 150ms ease-out,
+        transform 150ms ease-out;
+}
+
+.bp-WaveformRange-comment {
+    pointer-events: auto;
+    cursor: pointer;
+    position: absolute;
+    z-index: 5;
+
+    // 150px region is centered on the track. Sit 46px above its top edge.
+    top: calc(50% - 75px);
+    transform: translate(-50%, calc(-100% - 36px));
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: 48px;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 46px;
+    font-family: Lato, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 22px;
+    color: rgb(255 255 255 / 80%);
+    letter-spacing: 0.1px;
+    white-space: nowrap;
+    appearance: none;
+    background: rgb(0 0 0 / 80%);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 12%);
+    animation: bp-WaveformRange-commentIn 150ms ease-out;
+}
+
+@keyframes bp-WaveformRange-commentIn {
+    from {
+        transform: translate(-50%, calc(-100% - 36px + 8px));
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, calc(-100% - 36px));
+        opacity: 1;
+    }
+}
+
+.bp-WaveformRange-comment--withClear {
+    cursor: default;
+    gap: 4px;
+    padding: 8px 8px 8px 12px;
+}
+
+.bp-WaveformRange-comment--clearOnly {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.bp-WaveformRange-commentLabel,
+.bp-WaveformRange-commentClear {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    appearance: none;
+    background: transparent;
+}
+
+.bp-WaveformRange-commentLabel {
+    gap: 8px;
+    height: 32px;
+    padding: 0 6px;
+}
+
+.bp-WaveformRange-commentDivider {
+    flex: 0 0 auto;
+    width: 1px;
+    height: 16px;
+    background: rgb(255 255 255 / 40%);
+}
+
+.bp-WaveformRange-commentClear {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.bp-WaveformRange-commentIcon {
+    display: block;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    fill: currentcolor;
+}
+
+.bp-WaveformView--tape .bp-WaveformRange-comment {
+    // Tape region is calc(100% + 10px) and vertically centered.
+    top: calc(50% - (100% + 10px) / 2);
 }
 
 .bp-WaveformRange-tooltip {
-    position: absolute;
-    top: 100%;
-    z-index: 3;
-    margin-top: 4px;
     pointer-events: none;
+    position: absolute;
+    z-index: 3;
+    top: 100%;
     transform: translateX(-50%);
+    margin-top: 4px;
 }
 
 .bp-WaveformRange-tooltipTime {
     padding: 4px 10px;
-    color: $white;
-    font-weight: normal;
-    font-size: 14px;
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: 8px;
     font-family: Lato, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
     line-height: 20px;
+    color: $white;
     letter-spacing: 0.3px;
     white-space: nowrap;
     background: rgb(34 34 34 / 92%);
-    border: 1px solid rgb(255 255 255 / 18%);
-    border-radius: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .bp-WaveformRange-region,
     .bp-WaveformRange-handleGrip {
         transition: none;
+    }
+
+    .bp-WaveformRange-comment {
+        animation: none;
     }
 }

@@ -23,15 +23,11 @@ export function runBaseMediaSettingsTests() {
 
     describe('Autoplay Menu', () => {
         it('Should be able to change the Autoplay setting', () => {
-            cy.getByTestId('bp-media-settings-autoplay')
-                .contains('Disabled')
-                .click();
+            cy.getByTestId('bp-media-settings-autoplay').contains('Disabled').click();
 
             cy.get('[role="menuitem"]').contains('Autoplay');
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('Enabled')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('Enabled').click();
 
             cy.getByTestId('bp-media-settings-autoplay').contains('Enabled');
         });
@@ -39,17 +35,22 @@ export function runBaseMediaSettingsTests() {
 
     describe('Speed Menu', () => {
         it('Should be able to change the Speed setting', () => {
-            cy.getByTestId('bp-media-settings-speed')
-                .contains('Normal')
-                .click();
+            cy.getByTestId('bp-media-settings-speed').contains('Normal').click();
 
             cy.get('[role="menuitem"]').contains('Speed');
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('0.5')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('0.5').click();
 
             cy.getByTestId('bp-media-settings-speed').contains('0.5');
+        });
+    });
+}
+
+export function runPlayNextSettingsTests() {
+    describe('Play Next Menu', () => {
+        it('Should show Play next file defaulting to Disabled', () => {
+            cy.getByTestId('bp-media-settings-play-next').contains('Play next file');
+            cy.getByTestId('bp-media-settings-play-next').contains('Disabled');
         });
     });
 }
@@ -57,25 +58,17 @@ export function runBaseMediaSettingsTests() {
 export function runQualityMenuTests(hasReactControls) {
     describe('Quality Menu', () => {
         it('Should be able to change the Quality setting', () => {
-            cy.getByTestId('bp-media-settings-quality')
-                .contains('Auto')
-                .click();
+            cy.getByTestId('bp-media-settings-quality').contains('Auto').click();
 
             cy.get('[role="menuitem"]').contains('Quality');
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('1080p')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('1080p').click();
 
             cy.getByTestId('bp-media-controls-hd').should('be.visible');
 
-            cy.getByTestId('bp-media-settings-quality')
-                .contains('1080p')
-                .click();
+            cy.getByTestId('bp-media-settings-quality').contains('1080p').click();
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('480p')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('480p').click();
 
             cy.getByTestId('bp-media-settings-quality').contains('480p');
 
@@ -107,15 +100,11 @@ export function runLowQualityMenuTests(hasReactControls) {
 export function runAudioTracksTests() {
     describe('Audiotracks Menu', () => {
         it('Should be able to change the Audiotrack setting', () => {
-            cy.getByTestId('bp-media-settings-audiotracks')
-                .contains('Track 1')
-                .click();
+            cy.getByTestId('bp-media-settings-audiotracks').contains('Track 1').click();
 
             cy.get('[role="menuitem"]').contains('Audio');
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('Track 2')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('Track 2').click();
 
             cy.getByTestId('bp-media-settings-audiotracks').contains('Track 2');
         });
@@ -125,15 +114,11 @@ export function runAudioTracksTests() {
 export function runSubtitlesTests() {
     describe('Subtitles', () => {
         it('Should be able to change the Subtitle setting', () => {
-            cy.getByTestId('bp-media-settings-subtitles')
-                .contains('English')
-                .click();
+            cy.getByTestId('bp-media-settings-subtitles').contains('English').click();
 
             cy.get('[role="menuitem"]').contains('Subtitles/CC');
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('Spanish')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('Spanish').click();
 
             cy.getByTestId('bp-media-settings-subtitles').contains('Spanish');
         });
@@ -168,13 +153,9 @@ export function runSubtitlesTests() {
                 .should('be.visible')
                 .should('have.attr', 'aria-pressed', 'true');
 
-            cy.getByTestId('bp-media-settings-subtitles')
-                .contains('English')
-                .click();
+            cy.getByTestId('bp-media-settings-subtitles').contains('English').click();
 
-            cy.getByTestId('bp-settings-flyout')
-                .contains('Off')
-                .click();
+            cy.getByTestId('bp-settings-flyout').contains('Off').click();
 
             cy.get('@subtitlesBtn').should('have.attr', 'aria-pressed', 'false');
 
@@ -196,15 +177,11 @@ export function runSubtitlesTests() {
 export function runAnnotationsTests() {
     describe('Annotations', () => {
         it('Should be able to click annotation buttons', () => {
-            cy.getByTestId('bp-AnnotationsControls-drawBtn')
-                .should('be.visible')
-                .click();
+            cy.getByTestId('bp-AnnotationsControls-drawBtn').should('be.visible').click();
 
             cy.getByTestId('bp-color-picker-control').should('be.visible');
 
-            cy.getByTestId('bp-AnnotationsControls-regionBtn')
-                .should('be.visible')
-                .click();
+            cy.getByTestId('bp-AnnotationsControls-regionBtn').should('be.visible').click();
             cy.getByTestId('bp-color-picker-control').should('not.exist');
         });
     });

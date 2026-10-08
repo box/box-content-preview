@@ -444,12 +444,8 @@ class DocBaseViewer extends BaseViewer {
             const pagedUrlAuthTemplate = this.createContentUrlV2(newPagedUrlTemplate);
 
             if (docFirstPagesConfig && docFirstPagesConfig.priorityPages) {
-                const {
-                    priorityPages,
-                    maxPreloadPages,
-                    secondBatchDelayMs,
-                    prefetchPriorityPagesOnly,
-                } = docFirstPagesConfig;
+                const { priorityPages, maxPreloadPages, secondBatchDelayMs, prefetchPriorityPagesOnly } =
+                    docFirstPagesConfig;
 
                 const priorityPromises = getPreloadImageRequestPromisesByBatch(
                     this.api,

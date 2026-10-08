@@ -1,6 +1,8 @@
 import {
     WAVEFORM_FOLLOW_INSET_PX,
     WAVEFORM_MIN_VIEW_WINDOW_SEC,
+    WAVEFORM_RANGE_EDGE_SCROLL_AUDIO_SEC_PER_SEC,
+    WAVEFORM_RANGE_EDGE_ZONE_PX,
     WAVEFORM_TAPE_DEFAULT_WINDOW_SEC,
     WAVEFORM_ZOOM_MAX,
     WAVEFORM_ZOOM_MIN,
@@ -109,6 +111,24 @@ export function clampWaveformZoom(zoomLevel: number, maxZoom: number = WAVEFORM_
         return WAVEFORM_ZOOM_MIN;
     }
     return Math.min(max, Math.max(WAVEFORM_ZOOM_MIN, zoomLevel));
+}
+
+/** Zoom badge: 1.1×–1.9× below 2×, then whole numbers. Omit at 1×. */
+export function getWaveformZoomMultiplier(zoomLevel: number): string | null {
+    if (!Number.isFinite(zoomLevel) || zoomLevel <= WAVEFORM_ZOOM_MIN) {
+        return null;
+    }
+    if (zoomLevel < 2) {
+        const tenths = Math.round(zoomLevel * 10) / 10;
+        if (tenths <= WAVEFORM_ZOOM_MIN) {
+            return null;
+        }
+        if (tenths >= 2) {
+            return '2x';
+        }
+        return `${tenths.toFixed(1)}x`;
+    }
+    return `${Math.floor(zoomLevel)}x`;
 }
 
 /** WaveSurfer zoom density. 0 = fit the whole file in the view. */
@@ -265,6 +285,37 @@ export function getPinnedPlayheadLeft(widthPx: number, insetPx: number = WAVEFOR
 /** CSS left for a playhead locked to the center of the view. */
 export function getTapePinnedPlayheadLeft(): string {
     return '50%';
+}
+
+/**
+ * Pixels to scroll this frame while a range handle is held in the edge zone.
+ * Negative moves toward the start of the file. Null means the pointer is outside the zone.
+ */
+export function getRangeEdgeScrollDeltaPx({
+    audioSecPerSec = WAVEFORM_RANGE_EDGE_SCROLL_AUDIO_SEC_PER_SEC,
+    elapsedSec,
+    edgeZonePx = WAVEFORM_RANGE_EDGE_ZONE_PX,
+    pixelsPerSecond,
+    pointerX,
+    widthPx,
+}: {
+    audioSecPerSec?: number;
+    elapsedSec: number;
+    edgeZonePx?: number;
+    pixelsPerSecond: number;
+    pointerX: number;
+    widthPx: number;
+}): number | null {
+    if (!(widthPx > 0) || !(elapsedSec > 0) || !(edgeZonePx > 0) || !(pixelsPerSecond > 0)) {
+        return null;
+    }
+    const distanceFromEdgePx = Math.min(pointerX, widthPx - pointerX);
+    if (distanceFromEdgePx >= edgeZonePx) {
+        return null;
+    }
+    const intensity = 1 - distanceFromEdgePx / edgeZonePx;
+    const direction = pointerX < widthPx / 2 ? -1 : 1;
+    return direction * pixelsPerSecond * audioSecPerSec * elapsedSec * intensity;
 }
 
 /** CSS left % of the playhead from the left of the visible window. */

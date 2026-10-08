@@ -256,9 +256,7 @@ describe('lib/util', () => {
         test('should produce a different _cache_buster on each call so every request is a unique cache key', () => {
             const template = 'https://dl.boxcloud.com/content?preview=true&_cache_buster=0';
 
-            jest.spyOn(Date, 'now')
-                .mockReturnValueOnce(1)
-                .mockReturnValueOnce(2);
+            jest.spyOn(Date, 'now').mockReturnValueOnce(1).mockReturnValueOnce(2);
             const first = util.createContentUrl(template, null, true);
             const second = util.createContentUrl(template, null, true);
 

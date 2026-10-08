@@ -30,11 +30,11 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .bp-thumbnail {
+        cursor: pointer;
         position: relative;
         display: flex;
         margin-right: 20px;
         margin-left: 20px;
-        cursor: pointer;
         transition: transform 0.2s ease-in-out;
 
         &:focus,
@@ -42,12 +42,14 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             transform: translateY(-1px) scale(1.02);
 
             .bp-thumbnail-page-number {
-                background: $seventy-sixers;
                 opacity: 1;
+                background: $seventy-sixers;
             }
 
             .bp-thumbnail-nav {
-                box-shadow: 0 0 0 1px $seventy-sixers, 0 4px 5px 0 rgb(0 0 0 / 15%);
+                box-shadow:
+                    0 0 0 1px $seventy-sixers,
+                    0 4px 5px 0 rgb(0 0 0 / 15%);
             }
 
             &.bp-thumbnail-image-loaded {
@@ -59,12 +61,14 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
         &.bp-thumbnail-is-selected {
             .bp-thumbnail-page-number {
-                background: $box-blue;
                 opacity: 1;
+                background: $box-blue;
             }
 
             .bp-thumbnail-nav {
-                box-shadow: 0 0 0 3px $box-blue, 0 4px 5px 0 rgb(0 0 0 / 8%);
+                box-shadow:
+                    0 0 0 3px $box-blue,
+                    0 4px 5px 0 rgb(0 0 0 / 8%);
             }
 
             &.bp-thumbnail-image-loaded {
@@ -82,11 +86,13 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .bp-thumbnail-nav {
-        flex: 0 0 150px; // IE11 does not respect width within a flex container
         overflow: hidden;
-        background-color: $d-eight;
+        flex: 0 0 150px; // IE11 does not respect width within a flex container
         border-radius: $thumbnail-border-radius;
-        box-shadow: 0 0 0 1px $off-white, 0 1px 4px 0 rgb(0 0 0 / 8%);
+        background-color: $d-eight;
+        box-shadow:
+            0 0 0 1px $off-white,
+            0 1px 4px 0 rgb(0 0 0 / 8%);
         transition: box-shadow 0.2s ease-in-out;
     }
 
@@ -99,23 +105,23 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         height: 24px;
         padding-right: 3px;
         padding-left: 3px;
-        color: $white;
-        font-size: 13px;
         border-radius: $thumbnail-border-radius / 2 0 $thumbnail-border-radius 0;
-        box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 20%);
+        font-size: 13px;
+        color: $white;
         opacity: 0;
+        box-shadow: 1px 1px 2px 0 rgb(0 0 0 / 20%);
     }
 
     .bp-thumbnail-image {
+        pointer-events: none; // Allow the parent elements to handle user events
         background-repeat: no-repeat;
         background-position: center;
         background-size: contain; // Needed for the case of document with portrait and landscape orientations
-        pointer-events: none; // Allow the parent elements to handle user events
     }
 
     .bp-thumbnails-container--dark {
-        background-color: $fours;
         border-right-color: $black;
+        background-color: $fours;
 
         .bp-thumbnail-page-number {
             background-color: $fours;
@@ -128,13 +134,13 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 
     @keyframes bp-thumbnails-open {
         0% {
-            display: none;
             transform: translateX(-$thumbnail-sidebar-width);
+            display: none;
         }
 
         1% {
-            display: flex;
             transform: translateX(-$thumbnail-sidebar-width);
+            display: flex;
         }
 
         100% {
@@ -187,8 +193,8 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             }
 
             .bp-thumbnails-container {
-                display: flex;
                 transform: translateX(0);
+                display: flex;
             }
         }
 
@@ -219,14 +225,14 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 }
 
 .bp-doc {
+    user-select: none;
     position: absolute;
     inset: 0;
+    overflow: hidden;
     width: 100%;
     height: 100%;
     margin: 0;
-    overflow: hidden;
     letter-spacing: normal; // Reset Box UI
-    user-select: none;
 
     // Removes canvas flickering on tap for iOS Safari
     -webkit-tap-highlight-color: transparent;
@@ -250,6 +256,7 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     // ---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
         position: relative;
+        overflow: visible;
         display: block;
         /* stylelint-disable declaration-no-important */
         box-sizing: content-box !important;
@@ -259,7 +266,6 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
         padding: $pdfjs-page-padding 0;
-        overflow: visible;
         border: 0;
         border-image: none;
 
@@ -269,10 +275,10 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
             &::before {
                 @include bp-DocShadow;
 
+                content: '';
                 position: absolute;
                 inset: $pdfjs-page-padding 0 $pdfjs-page-padding 0;
                 display: block;
-                content: '';
             }
 
             // Display the ghost state only if the page does not already have rendered content (e.g. during a resize)
@@ -321,9 +327,9 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
     }
 
     .pdfViewer .page .textLayer {
+        z-index: 1;
         top: $pdfjs-page-padding;
         bottom: auto;
-        z-index: 1;
         opacity: 1;
         caret-color: black; // Required for caret navigation on transparent text
 

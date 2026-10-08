@@ -17,18 +17,17 @@ $header-height: 48px;
 }
 
 .bp-container {
+    // disables non-standard gestures such as double-tap to zoom
+    touch-action: manipulation;
     position: relative;
+    overflow: hidden;
     width: 100%;
     min-width: 300px;
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    font-size: 13px;
     border: 0 none;
-
-    // disables non-standard gestures such as double-tap to zoom
-    touch-action: manipulation;
+    font-size: 13px;
 
     a {
         color: $seesee;
@@ -47,8 +46,8 @@ $header-height: 48px;
     justify-content: space-between;
     height: $header-height;
     padding: 0 20px;
-    background-color: $white;
     border-bottom: 1px solid $seesee;
+    background-color: $white;
 
     .bp-custom-logo {
         max-height: 30px;
@@ -81,8 +80,8 @@ $header-height: 48px;
 // Dark theme for header
 .bp-theme-dark {
     .bp-header {
-        background-color: fade-out($black, 0.15);
         border-bottom: 0;
+        background-color: fade-out($black, 0.15);
     }
 
     .bp-header-btns button {
@@ -119,8 +118,8 @@ $header-height: 48px;
     flex: 1 1 100%;
     margin: 0;
     padding: 0;
-    background-color: $ffive;
     border: 0 none;
+    background-color: $ffive;
     outline: none;
     -webkit-overflow-scrolling: touch;
 
@@ -160,8 +159,8 @@ $header-height: 48px;
 }
 
 .bp-no-user-highlight {
-    -webkit-touch-callout: none;
     user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .bp-is-invisible {
@@ -189,11 +188,11 @@ $header-height: 48px;
 
     &.bp-is-visible {
         .bp-overlay {
+            pointer-events: all;
             transform: rotateY(0deg) rotateX(0deg);
             visibility: visible;
             opacity: 1;
             transition-delay: 0s;
-            pointer-events: all;
         }
     }
 }
@@ -219,8 +218,8 @@ $header-height: 48px;
 }
 
 .bp-modal-header {
-    display: block;
     float: right;
+    display: block;
     width: 100%;
     height: 0;
 }
@@ -238,9 +237,9 @@ $header-height: 48px;
     float: right;
 
     svg {
+        pointer-events: none;
         width: 24px;
         height: 24px;
-        pointer-events: none;
         fill: $downtown-grey;
     }
 }
@@ -263,15 +262,103 @@ $header-height: 48px;
 
 .bp-popup-modal {
     position: absolute;
-    top: 100px;
-    right: 0;
-    left: 0;
 
     // z-index as the base modal
     z-index: 160; // follows bp-modal from boxui
+    top: 100px;
+    right: 0;
+    left: 0;
     margin: 0 auto;
 }
 
 .bp-container .bp-btn-primary {
     color: #fff;
+}
+
+.bp-version-banner {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    height: var(--bp-comparison-banner-height, 4.5rem);
+    padding: 16px;
+    background: linear-gradient(180deg, #f5f5f5 19.61%, rgb(255 255 255 / 0%) 100%);
+}
+
+.bp-version-banner-badge {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid rgb(0 0 0 / 12%);
+    border-radius: 50%;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #fff;
+    background-color: #26c281;
+}
+
+.bp-version-banner--compared .bp-version-banner-badge {
+    font-weight: bold;
+    color: #000;
+    background-color: rgb(255 255 255 / 70%);
+}
+
+.bp-version-banner-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.bp-version-banner-time {
+    overflow: hidden;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bp-version-banner--compared .bp-version-banner-time {
+    color: #222;
+}
+
+.bp-version-banner-author {
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 14px;
+    color: #000;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Video lowers lights on .bp. MP3/MP4 v2 keep the dark stage on .bp-media--v2
+// (a descendant of .bp-content, not an ancestor of the overlay banner).
+:is(.bp-dark, .bp-theme-dark, .bp:has(.bp-media--v2)) {
+    .bp-version-banner {
+        background: linear-gradient(180deg, rgb(0 0 0 / 90%) 19.61%, rgb(0 0 0 / 0%) 100%);
+    }
+
+    .bp-version-banner-time {
+        color: #fff;
+    }
+
+    .bp-version-banner-author {
+        color: rgb(255 255 255 / 70%);
+    }
+
+    .bp-version-banner--compared .bp-version-banner-badge {
+        border-color: rgb(255 255 255 / 12%);
+        color: #fff;
+        background-color: rgb(255 255 255 / 30%);
+    }
 }

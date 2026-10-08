@@ -6,6 +6,7 @@ export enum Menu {
     AUDIO = 'audio',
     AUTOPLAY = 'autoplay',
     GUIDES = 'guides',
+    PLAY_NEXT = 'playnext',
     QUALITY = 'quality',
     RATE = 'rate',
     SUBTITLES = 'subtitles',

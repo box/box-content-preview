@@ -7,6 +7,7 @@ import MediaSettingsMenuGuides, {
     Guide,
     Props as GuidesProps,
 } from './MediaSettingsMenuGuides';
+import MediaSettingsMenuPlayNext, { Props as PlayNextProps } from './MediaSettingsMenuPlayNext';
 import MediaSettingsMenuQuality, {
     getLabel as getQualityLabel,
     Props as QualityProps,
@@ -21,7 +22,12 @@ export type Props = Partial<AudioTracksProps> &
     Partial<SettingsProps> &
     Partial<SubtitlesProps> &
     AutoplayProps &
-    RateProps & { className?: string; isGuidesEnabled?: boolean; isHDSupported?: boolean };
+    Partial<PlayNextProps> &
+    RateProps & {
+        className?: string;
+        isGuidesEnabled?: boolean;
+        isHDSupported?: boolean;
+    };
 
 export default function MediaSettings({
     audioTrack,
@@ -37,7 +43,9 @@ export default function MediaSettings({
     onGuideChange = noop,
     onQualityChange,
     onRateChange,
+    onPlayNextChange,
     onSubtitleChange,
+    playNext = false,
     quality,
     rate,
     subtitle,
@@ -46,7 +54,9 @@ export default function MediaSettings({
 }: Props): JSX.Element {
     const subtitleDisplayLanguage = getDisplayLanguage(subtitle, subtitles);
     const autoValue = autoplay ? __('media_autoplay_enabled') : __('media_autoplay_disabled');
+    const playNextValue = playNext ? __('media_play_next_enabled') : __('media_play_next_disabled');
     const rateValue = rate === '1.0' || !rate ? __('media_speed_normal') : rate;
+    const showPlayNext = typeof onPlayNextChange === 'function';
     const labelledAudioTracks = React.useMemo(() => addLabels(audioTracks), [audioTracks]);
     const hydratedSelectedAudioTrack = labelledAudioTracks.find(({ id }) => audioTrack === id);
     const audioTrackLabel = hydratedSelectedAudioTrack ? hydratedSelectedAudioTrack.label : '';
@@ -62,6 +72,14 @@ export default function MediaSettings({
                     target={Menu.AUTOPLAY}
                     value={autoValue}
                 />
+                {showPlayNext && (
+                    <Settings.MenuItem
+                        data-testid="bp-media-settings-play-next"
+                        label={__('media_play_next')}
+                        target={Menu.PLAY_NEXT}
+                        value={playNextValue}
+                    />
+                )}
                 <Settings.MenuItem
                     data-testid="bp-media-settings-speed"
                     label={__('media_speed')}
@@ -104,6 +122,9 @@ export default function MediaSettings({
             </Settings.Menu>
 
             <MediaSettingsMenuAutoplay autoplay={autoplay} onAutoplayChange={onAutoplayChange} />
+            {showPlayNext && onPlayNextChange && (
+                <MediaSettingsMenuPlayNext onPlayNextChange={onPlayNextChange} playNext={playNext} />
+            )}
             <MediaSettingsMenuRate onRateChange={onRateChange} rate={rate} />
             <MediaSettingsMenuQuality onQualityChange={onQualityChange} quality={quality} />
             {isGuidesEnabled && <MediaSettingsMenuGuides guide={guide} onGuideChange={onGuideChange} />}

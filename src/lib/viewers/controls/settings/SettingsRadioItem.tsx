@@ -17,8 +17,15 @@ export type Ref = HTMLDivElement;
 function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>): JSX.Element {
     const { className, isSelected, label, onChange, value } = props;
     const displayedValue = label || value.toString();
+    const recordAction = window.Box?.Preview?.resin?.recordAction;
+    const settingsRadioItemAction = {
+        action: 'programmatic',
+        component: 'toolbar',
+        target: 'settingsRadioItem',
+    } as const;
 
     const handleClick = (): void => {
+        recordAction?.(settingsRadioItemAction);
         onChange(value);
     };
 
@@ -29,6 +36,7 @@ function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>
             return;
         }
 
+        recordAction?.(settingsRadioItemAction);
         onChange(value);
     };
 

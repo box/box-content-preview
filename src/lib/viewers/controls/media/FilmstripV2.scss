@@ -5,10 +5,10 @@
     bottom: calc(100% + 12px);
     padding: 12px;
     padding-bottom: 8px;
-    background: $white;
     border-radius: 16px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
     visibility: hidden;
+    background: $white;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 
     &.bp-is-shown {
         visibility: visible;
@@ -17,10 +17,10 @@
 
 .bp-FilmstripV2-frame {
     position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
     border-radius: 10px;
 }
 
@@ -28,9 +28,9 @@
     position: absolute;
     top: 0;
     left: 0;
+    transform-origin: top left;
     overflow: hidden;
     background-repeat: no-repeat;
-    transform-origin: top left;
 }
 
 .bp-FilmstripV2-frame .bp-crawler {
@@ -40,8 +40,8 @@
 
 .bp-FilmstripV2-time {
     margin-top: 8px;
-    color: $black;
     font-size: 13px;
     line-height: 20px;
+    color: $black;
     text-align: center;
 }

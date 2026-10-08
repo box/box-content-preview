@@ -17,7 +17,7 @@ before_install:
     - export NODE_OPTIONS=--openssl-legacy-provider
 jobs:
     include:
-        - name: "Build & Test"
+        - name: 'Build & Test'
           script: commitlint-travis && yarn lint && npm-run-all clean build:i18n build:ci test:ci
-        - name: "E2E Tests"
+        - name: 'E2E Tests'
           script: yarn test:e2e

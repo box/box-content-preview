@@ -16,7 +16,12 @@ const shaka = require(`../../../../third-party/media/${MEDIA_STATIC_ASSETS_VERSI
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const sandbox = sinon.createSandbox();
-const flushPromises = () => new Promise(resolve => flushImmediate(resolve));
+
+function flushPromises() {
+    return new Promise(resolve => {
+        flushImmediate(resolve);
+    });
+}
 
 let dash;
 let stubs = {};
@@ -222,20 +227,14 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test('should not prefetch rep content if content is false', () => {
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .never();
+            sandbox.mock(stubs.api).expects('get').never();
             dash.prefetch({ assets: false, content: false });
             expect(stubs.prefetchAssets).not.toBeCalled();
         });
 
         test('should not prefetch rep content if representation is not ready', () => {
             stubs.repReady.mockReturnValue(false);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .never();
+            sandbox.mock(stubs.api).expects('get').never();
 
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).not.toBeCalled();
@@ -292,10 +291,7 @@ describe('lib/viewers/media/DashViewer', () => {
             stubs.mockPlayer.expects('addEventListener').withArgs('error', sinon.match.func);
             stubs.mockPlayer.expects('addEventListener').withArgs('buffering', sinon.match.func);
             stubs.mockPlayer.expects('configure');
-            stubs.mockPlayer
-                .expects('load')
-                .withArgs('url')
-                .returns(Promise.resolve());
+            stubs.mockPlayer.expects('load').withArgs('url').returns(Promise.resolve());
 
             dash.loadDashPlayer();
 
@@ -317,10 +313,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.mediaUrl = 'url';
             dash.startTimeInSeconds = START_TIME_IN_SECONDS;
             jest.spyOn(shaka, 'Player').mockReturnValue(dash.player);
-            stubs.mockPlayer
-                .expects('load')
-                .withArgs('url', START_TIME_IN_SECONDS)
-                .returns(Promise.resolve());
+            stubs.mockPlayer.expects('load').withArgs('url', START_TIME_IN_SECONDS).returns(Promise.resolve());
 
             dash.loadDashPlayer();
         });
@@ -1925,16 +1918,8 @@ describe('lib/viewers/media/DashViewer', () => {
         test('should return the sum of all the played parts', () => {
             dash.mediaEl.played = {
                 length: 2,
-                start: jest
-                    .fn()
-                    .mockImplementation()
-                    .mockReturnValueOnce(0)
-                    .mockReturnValueOnce(10),
-                end: jest
-                    .fn()
-                    .mockImplementation()
-                    .mockReturnValueOnce(5)
-                    .mockReturnValueOnce(15),
+                start: jest.fn().mockImplementation().mockReturnValueOnce(0).mockReturnValueOnce(10),
+                end: jest.fn().mockImplementation().mockReturnValueOnce(5).mockReturnValueOnce(15),
             };
 
             expect(dash.determineWatchLength()).toBe(10000);
@@ -2242,6 +2227,18 @@ describe('lib/viewers/media/DashViewer', () => {
                 rate: '1.0',
                 volume: expect.any(Number),
             });
+            expect(getProps(dash)).not.toHaveProperty('onPlayNextChange');
+            expect(getProps(dash)).not.toHaveProperty('playNext');
+        });
+
+        test('should pass play next props to VideoControlsV2', () => {
+            dash.isVideoPlayerV2 = true;
+            dash.renderUI();
+
+            expect(getProps(dash)).toMatchObject({
+                onPlayNextChange: dash.setPlayNext,
+                playNext: false,
+            });
         });
 
         test('should not enable annotations if video annotations are disabled', () => {
@@ -2400,7 +2397,6 @@ describe('lib/viewers/media/DashViewer', () => {
                 jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
 
                 dash.loadFilmStrip();
-                // Drain the chained promise queue: getPromise().then() → fetchContentAsBlobUrl().then() → handleBlobUrl
                 await flushPromises();
 
                 expect(dash.createContentUrlV2).toHaveBeenCalledWith(FILMSTRIP_TEMPLATE);

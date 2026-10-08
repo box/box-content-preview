@@ -87,10 +87,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.bindImageListeners(0);
         this.bindDOMListeners();
 
-        return this.getRepStatus()
-            .getPromise()
-            .then(this.handleAssetAndRepLoad)
-            .catch(this.handleAssetError);
+        return this.getRepStatus().getPromise().then(this.handleAssetAndRepLoad).catch(this.handleAssetError);
     }
 
     /**

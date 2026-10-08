@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, {
     forwardRef,
     useCallback,
@@ -7,6 +8,8 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import IconComment24 from '../../controls/icons/IconComment24';
+import IconExit24 from '../../controls/icons/IconExit24';
 import { CommentRangeDraft } from '../../controls/media/types';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from './constants';
 import { formatTime } from './peaks';
@@ -35,23 +38,43 @@ export type WaveformRangeSelectionProps = {
     currentTimeSec?: number;
     durationSec: number;
     getPlayheadSec?: () => number;
+    isSwiping?: boolean;
     interactive?: boolean;
     isHighlighted?: boolean;
     keepHighlight?: boolean;
     onDragChange?: (isDragging: boolean) => void;
+    onDragCreate?: () => void;
+    /** Pointer clientX during a handle drag, including the press that started it. */
+    onDragPointerX?: (clientX: number) => void;
     onPreviewChange?: (range: CommentRangeDraft) => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
+    onRangeClear?: () => void;
     range: CommentRangeDraft;
+    /** Viewed comment span. Same chrome as a draft, without handles or edge edits. */
+    readOnly?: boolean;
     viewport: WaveformViewport;
 };
 
 type DragState = {
     handle: RangeHandle;
+    lastClientX: number;
     originMs: number;
     originRange: ResolvedRange;
     pointerId: number;
     range: ResolvedRange;
 };
+
+function stopRangeEvent(event: React.SyntheticEvent): void {
+    event.stopPropagation();
+}
+
+function focusMediaContainer(event: React.SyntheticEvent): void {
+    const { currentTarget } = event;
+    if (!(currentTarget instanceof Element)) {
+        return;
+    }
+    currentTarget.closest<HTMLElement>('.bp-media-container')?.focus();
+}
 
 function offsetLeftCss(base: string, offsetPx: number): string {
     if (!offsetPx) {
@@ -104,13 +127,18 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             currentTimeSec = 0,
             durationSec,
             getPlayheadSec,
+            isSwiping = false,
             interactive = true,
             isHighlighted = false,
             keepHighlight = true,
             onDragChange,
+            onDragCreate,
+            onDragPointerX,
             onPreviewChange,
             onRangeChange,
+            onRangeClear,
             range,
+            readOnly = false,
             viewport,
         },
         ref,
@@ -120,12 +148,17 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const startHandleRef = useRef<HTMLDivElement>(null);
         const endHandleRef = useRef<HTMLDivElement>(null);
         const tooltipRef = useRef<HTMLDivElement>(null);
+        const commentRef = useRef<HTMLElement>(null);
+        const commentButtonRef = commentRef as React.Ref<HTMLButtonElement>;
+        const commentPillRef = commentRef as React.Ref<HTMLDivElement>;
         const dragRef = useRef<DragState | null>(null);
+        const replayDragRef = useRef<(clientX: number) => void>(() => undefined);
         const rangeRef = useRef(range);
         const displayedRef = useRef<ResolvedRange>(resolveRange(range, durationMsFromSec(durationSec)));
         const viewportRef = useRef(viewport);
         const durationSecRef = useRef(durationSec);
         const onDragChangeRef = useRef(onDragChange);
+        const onDragPointerXRef = useRef(onDragPointerX);
         const onPreviewChangeRef = useRef(onPreviewChange);
         const onRangeChangeRef = useRef(onRangeChange);
         const getPlayheadSecRef = useRef(getPlayheadSec);
@@ -136,6 +169,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         rangeRef.current = range;
         durationSecRef.current = durationSec;
         onDragChangeRef.current = onDragChange;
+        onDragPointerXRef.current = onDragPointerX;
         onPreviewChangeRef.current = onPreviewChange;
         onRangeChangeRef.current = onRangeChange;
         getPlayheadSecRef.current = getPlayheadSec;
@@ -144,6 +178,10 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const durationMs = durationMsFromSec(durationSec);
         const displayed = dragRange ?? resolveRange(range, durationMs);
         displayedRef.current = displayed;
+        const isRangeOpen = displayed.startMs !== displayed.endMs && activeHandle == null;
+        const showCommentButton = !readOnly && Boolean(onDragCreate) && isRangeOpen;
+        const showClearControl = onRangeClear != null && isRangeOpen;
+        const showClearOnly = showClearControl && !showCommentButton;
 
         const syncPositions = useCallback(
             (next: ResolvedRange, nextViewport: WaveformViewport, nextDurationSec: number): void => {
@@ -177,27 +215,53 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     const tooltipMs = tooltipHandle === 'start' ? next.startMs : next.endMs;
                     tooltip.style.left = timeLeftPercent(tooltipMs / 1000, nextDurationSec, nextViewport);
                 }
+                const comment = commentRef.current;
+                if (comment && next.startMs !== next.endMs) {
+                    comment.style.left = timeLeftPercent(
+                        (next.startMs + next.endMs) / 2000,
+                        nextDurationSec,
+                        nextViewport,
+                    );
+                }
             },
             [],
         );
+
+        const refreshRangePositions = useCallback((): void => {
+            const drag = dragRef.current;
+            if (!drag) {
+                syncPositions(displayedRef.current, viewportRef.current, durationSecRef.current);
+                return;
+            }
+            replayDragRef.current(drag.lastClientX);
+        }, [syncPositions]);
 
         useImperativeHandle(
             ref,
             () => ({
                 applyViewport: (nextViewport: WaveformViewport) => {
                     viewportRef.current = nextViewport;
-                    syncPositions(displayedRef.current, nextViewport, durationSecRef.current);
+                    refreshRangePositions();
                 },
             }),
-            [syncPositions],
+            [refreshRangePositions],
         );
 
         useLayoutEffect(() => {
             syncPositions(displayedRef.current, viewportRef.current, durationSec);
-        }, [activeHandle, displayed.endMs, displayed.startMs, durationSec, syncPositions]);
+        }, [
+            activeHandle,
+            displayed.endMs,
+            displayed.startMs,
+            durationSec,
+            showClearControl,
+            showCommentButton,
+            syncPositions,
+        ]);
         useLayoutEffect(() => {
             const next = createWaveformViewport({
                 durationSec: viewport.durationSec,
+                gutterPx: viewport.gutterPx,
                 heightPx: viewport.heightPx,
                 maxZoom: viewport.maxZoom,
                 scrollLeftPx: viewportRef.current.scrollLeftPx,
@@ -205,10 +269,11 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 zoomLevel: viewport.zoomLevel,
             });
             viewportRef.current = next;
-            syncPositions(displayedRef.current, next, durationSecRef.current);
+            refreshRangePositions();
         }, [
-            syncPositions,
+            refreshRangePositions,
             viewport.durationSec,
+            viewport.gutterPx,
             viewport.heightPx,
             viewport.maxZoom,
             viewport.widthPx,
@@ -229,6 +294,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             setActiveHandle(null);
             setDragRange(null);
             onDragChangeRef.current?.(false);
+            event.stopPropagation();
             const didChange =
                 drag.range.startMs !== drag.originRange.startMs || drag.range.endMs !== drag.originRange.endMs;
             if (!didChange) {
@@ -250,6 +316,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 if (!root) {
                     return;
                 }
+                drag.lastClientX = event.clientX;
+                onDragPointerXRef.current?.(event.clientX);
                 const rect = root.getBoundingClientRect();
                 const pointerX = event.clientX - rect.left;
                 const vp = viewportRef.current;
@@ -265,6 +333,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     drag.originMs === drag.range.endMs &&
                     pointerMs === drag.originMs
                 ) {
+                    syncPositions(drag.range, vp, durationSecRef.current);
                     return;
                 }
                 const next = dragRangeHandle({
@@ -282,10 +351,17 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             },
             [currentTimeSec, syncPositions],
         );
+        replayDragRef.current = (clientX: number): void => {
+            const drag = dragRef.current;
+            if (!drag || !Number.isFinite(clientX)) {
+                return;
+            }
+            moveDrag({ clientX, pointerId: drag.pointerId } as PointerEvent);
+        };
 
         const startDrag = useCallback(
             (handle: RangeHandle, event: React.PointerEvent<HTMLDivElement>): void => {
-                if (!interactive || event.button > 1 || event.ctrlKey || event.metaKey) {
+                if (readOnly || !interactive || event.button > 1 || event.ctrlKey || event.metaKey) {
                     return;
                 }
                 event.preventDefault();
@@ -293,11 +369,13 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 const resolved = resolveRange(rangeRef.current, durationMsFromSec(durationSecRef.current));
                 dragRef.current = {
                     handle,
+                    lastClientX: event.clientX,
                     originMs: handle === 'start' ? resolved.startMs : resolved.endMs,
                     originRange: { endMs: resolved.endMs, startMs: resolved.startMs },
                     pointerId: event.pointerId,
                     range: resolved,
                 };
+                onDragPointerXRef.current?.(event.clientX);
                 event.currentTarget.setPointerCapture(event.pointerId);
                 setActiveHandle(handle);
                 setDragRange(resolved);
@@ -307,7 +385,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     startMs: resolved.startMs,
                 });
             },
-            [interactive],
+            [interactive, readOnly],
         );
 
         const onHandlePointerDown = useCallback(
@@ -372,45 +450,127 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
         const tooltipMs = tooltipHandle === 'start' ? displayed.startMs : displayed.endMs;
         const collapsed = displayed.startMs === displayed.endMs;
         const highlight = isHighlighted || collapsed;
+        const commentLabel = (
+            <>
+                <IconComment24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                {__('media_range_comment')}
+            </>
+        );
+        let commentButton: JSX.Element | null = null;
+        if (showClearOnly && onRangeClear) {
+            commentButton = (
+                <button
+                    ref={commentButtonRef}
+                    aria-label={__('media_range_clear')}
+                    className="bp-WaveformRange-comment bp-WaveformRange-comment--clearOnly"
+                    data-testid="bp-waveform-range-clear"
+                    onClick={event => {
+                        stopRangeEvent(event);
+                        focusMediaContainer(event);
+                        onRangeClear();
+                    }}
+                    onPointerDown={stopRangeEvent}
+                    onPointerUp={stopRangeEvent}
+                    type="button"
+                >
+                    <IconExit24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                </button>
+            );
+        } else if (showCommentButton && onDragCreate) {
+            const commentAction = (
+                <button
+                    ref={showClearControl ? undefined : commentButtonRef}
+                    className={showClearControl ? 'bp-WaveformRange-commentLabel' : 'bp-WaveformRange-comment'}
+                    data-testid="bp-waveform-range-comment"
+                    onClick={event => {
+                        stopRangeEvent(event);
+                        onDragCreate();
+                    }}
+                    onPointerDown={stopRangeEvent}
+                    onPointerUp={stopRangeEvent}
+                    type="button"
+                >
+                    {commentLabel}
+                </button>
+            );
+            commentButton =
+                showClearControl && onRangeClear ? (
+                    <div
+                        ref={commentPillRef}
+                        className="bp-WaveformRange-comment bp-WaveformRange-comment--withClear"
+                        data-testid="bp-waveform-range-comment-pill"
+                        onPointerDown={stopRangeEvent}
+                        onPointerUp={stopRangeEvent}
+                    >
+                        {commentAction}
+                        <span aria-hidden="true" className="bp-WaveformRange-commentDivider" />
+                        <button
+                            aria-label={__('media_range_clear')}
+                            className="bp-WaveformRange-commentClear"
+                            data-testid="bp-waveform-range-clear"
+                            onClick={event => {
+                                stopRangeEvent(event);
+                                focusMediaContainer(event);
+                                onRangeClear();
+                            }}
+                            onPointerDown={stopRangeEvent}
+                            onPointerUp={stopRangeEvent}
+                            type="button"
+                        >
+                            <IconExit24 aria-hidden="true" className="bp-WaveformRange-commentIcon" />
+                        </button>
+                    </div>
+                ) : (
+                    commentAction
+                );
+        }
 
         return (
             <div
                 ref={rootRef}
-                className={`bp-WaveformRange${keepHighlight ? ' bp-WaveformRange--persist' : ''}${
-                    highlight ? ' bp-WaveformRange--highlight' : ''
-                }`}
+                className={classNames('bp-WaveformRange', {
+                    'bp-WaveformRange--highlight': highlight,
+                    'bp-WaveformRange--persist': keepHighlight,
+                    'bp-WaveformRange--swiping': collapsed && isSwiping,
+                })}
                 data-collapsed={collapsed ? 'true' : 'false'}
                 data-highlighted={highlight ? 'true' : 'false'}
+                data-readonly={readOnly ? 'true' : 'false'}
                 data-testid="bp-waveform-range"
             >
                 <div ref={regionRef} className="bp-WaveformRange-region" data-testid="bp-waveform-range-region" />
-                <div
-                    ref={startHandleRef}
-                    className={`bp-WaveformRange-handle bp-WaveformRange-handle--start${
-                        activeHandle === 'start' ? ' bp-WaveformRange-handle--dragging' : ''
-                    }`}
-                    data-testid="bp-waveform-range-handle-start"
-                    onMouseMove={event => event.stopPropagation()}
-                    onPointerDown={onHandlePointerDown}
-                >
-                    <div className="bp-WaveformRange-handleGrip" />
-                </div>
-                <div
-                    ref={endHandleRef}
-                    className={`bp-WaveformRange-handle bp-WaveformRange-handle--end${
-                        activeHandle === 'end' ? ' bp-WaveformRange-handle--dragging' : ''
-                    }`}
-                    data-testid="bp-waveform-range-handle-end"
-                    onMouseMove={event => event.stopPropagation()}
-                    onPointerDown={onHandlePointerDown}
-                >
-                    <div className="bp-WaveformRange-handleGrip" />
-                </div>
+                {!readOnly && (
+                    <div
+                        ref={startHandleRef}
+                        className={classNames('bp-WaveformRange-handle', 'bp-WaveformRange-handle--start', {
+                            'bp-WaveformRange-handle--dragging': activeHandle === 'start',
+                        })}
+                        data-testid="bp-waveform-range-handle-start"
+                        onMouseMove={event => event.stopPropagation()}
+                        onPointerDown={onHandlePointerDown}
+                    >
+                        <div className="bp-WaveformRange-handleGrip" />
+                    </div>
+                )}
+                {!readOnly && (
+                    <div
+                        ref={endHandleRef}
+                        className={classNames('bp-WaveformRange-handle', 'bp-WaveformRange-handle--end', {
+                            'bp-WaveformRange-handle--dragging': activeHandle === 'end',
+                        })}
+                        data-testid="bp-waveform-range-handle-end"
+                        onMouseMove={event => event.stopPropagation()}
+                        onPointerDown={onHandlePointerDown}
+                    >
+                        <div className="bp-WaveformRange-handleGrip" />
+                    </div>
+                )}
                 {activeHandle && (
                     <div ref={tooltipRef} className="bp-WaveformRange-tooltip" data-testid="bp-waveform-range-tooltip">
                         <div className="bp-WaveformRange-tooltipTime">{formatTime(tooltipMs / 1000)}</div>
                     </div>
                 )}
+                {commentButton}
             </div>
         );
     },

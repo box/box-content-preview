@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import WaveSurfer from 'wavesurfer.js';
 import WaveformView from '../WaveformView';
 import {
@@ -10,6 +11,8 @@ import {
     WAVEFORM_HEIGHT,
     WAVEFORM_PLAYHEAD_JUMP_MS,
     WAVEFORM_RANGE_COLLAPSED_OFFSET_PX,
+    WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
+    WAVEFORM_TAPE_RANGE_LONG_PRESS_MS,
 } from '../constants';
 import { WAVEFORM_COLOR_HOVER_PLAYED, WAVEFORM_COLOR_PLAYED, WAVEFORM_COLOR_UNPLAYED } from '../colors';
 import { getPinnedPlayheadLeft } from '../viewport';
@@ -20,11 +23,13 @@ const mockSetOptions = jest.fn();
 const mockSetTime = jest.fn();
 const mockGetScroll = jest.fn(() => 0);
 const mockGetWidth = jest.fn(() => 200);
-const mockGetWrapper = jest.fn((): {
-    clientWidth: number;
-    parentElement?: { style: { overflowX?: string; scrollbarWidth?: string } } | null;
-    style?: Record<string, string>;
-} => ({ clientWidth: 200 }));
+const mockGetWrapper = jest.fn(
+    (): {
+        clientWidth: number;
+        parentElement?: { style: { overflowX?: string; scrollbarWidth?: string } } | null;
+        style?: Record<string, string>;
+    } => ({ clientWidth: 200 }),
+);
 const mockSetScroll = jest.fn();
 const mockSetScrollTime = jest.fn();
 const mockObserve = jest.fn();
@@ -161,7 +166,7 @@ const mockResizeObserver = jest.fn().mockImplementation((callback: ResizeObserve
         unobserve: jest.fn(),
     };
 });
-((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
 
 jest.mock('wavesurfer.js', () => ({
     __esModule: true,
@@ -386,7 +391,31 @@ describe('WaveformView', () => {
         expect(onSeek).toHaveBeenCalledWith(2);
     });
 
-    test('should clear an open range when clicking the waveform outside it', () => {
+    test('should draw a read-only range without handles and still clear it from outside', () => {
+        const onRangeClear = jest.fn();
+        const onRangeChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                onRangeClear={onRangeClear}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+                rangeReadOnly
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-readonly', 'true');
+        expect(screen.queryByTestId('bp-waveform-range-handle-start')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-handle-end')).not.toBeInTheDocument();
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should clear an open range and seek when clicking the waveform outside it', () => {
         const onRangeClear = jest.fn();
         const onSeek = jest.fn();
         render(
@@ -402,7 +431,7 @@ describe('WaveformView', () => {
         clickHandler?.(0.75);
 
         expect(onRangeClear).toHaveBeenCalledTimes(1);
-        expect(onSeek).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(6);
     });
 
     test('should seek when clicking inside an open range', () => {
@@ -422,6 +451,242 @@ describe('WaveformView', () => {
 
         expect(onRangeClear).not.toHaveBeenCalled();
         expect(onSeek).toHaveBeenCalledWith(3);
+    });
+
+    function mockWaveformRect(): void {
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+    }
+
+    function dispatchTrackPointer(target: EventTarget, type: string, clientX: number): void {
+        const event = new MouseEvent(type, { bubbles: true, button: 0, clientX });
+        if (event.clientX !== clientX) {
+            Object.defineProperty(event, 'clientX', { configurable: true, value: clientX });
+        }
+        Object.defineProperty(event, 'pointerId', { configurable: true, value: 1 });
+        act(() => {
+            target.dispatchEvent(event);
+        });
+    }
+
+    test('should create a draft range when the pointer drags across the waveform', () => {
+        const onRangeChange = jest.fn();
+        const onRangeDragChange = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                onRangeDragChange={onRangeDragChange}
+                onSeek={onSeek}
+                peaks={[0.2, 0.8]}
+            />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+        expect(onRangeDragChange).toHaveBeenCalledWith(true);
+        expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(onRangeChange).toHaveBeenCalledWith({ endMs: 4000, startMs: 400 });
+        expect(onRangeDragChange).toHaveBeenLastCalledWith(false);
+        clickHandler?.(0.75);
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should show Comment without clear after a desktop range drag ends', () => {
+        render(
+            <WaveformView durationSec={8} onRangeClear={jest.fn()} onRangeDragCreate={jest.fn()} peaks={[0.2, 0.8]} />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-comment')).toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+    });
+
+    test('should hide Comment and clear after a desktop range drag when commenting is unavailable', () => {
+        render(<WaveformView durationSec={8} onRangeClear={jest.fn()} peaks={[0.2, 0.8]} />);
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+
+        dispatchTrackPointer(window, 'pointerup', 100);
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+    });
+
+    test('should keep a short press as click-to-seek', () => {
+        const onRangeChange = jest.fn();
+        const onSeek = jest.fn();
+        render(<WaveformView durationSec={8} onRangeChange={onRangeChange} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 10);
+        dispatchTrackPointer(window, 'pointermove', 12);
+        dispatchTrackPointer(window, 'pointerup', 12);
+        clickHandler?.(0.25);
+
+        expect(onRangeChange).not.toHaveBeenCalled();
+        expect(onSeek).toHaveBeenCalledWith(2);
+    });
+
+    test('should not start a new range from a drag inside an open range', () => {
+        const onRangeChange = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeChange={onRangeChange}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+        mockWaveformRect();
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        dispatchTrackPointer(track, 'pointerdown', 75);
+        dispatchTrackPointer(window, 'pointermove', 160);
+        dispatchTrackPointer(window, 'pointerup', 160);
+
+        expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    test('should show Comment without clear above a desktop checkbox range', async () => {
+        const user = userEvent.setup();
+        const onRangeClear = jest.fn();
+        const onRangeDragCreate = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onRangeDragCreate={onRangeDragCreate}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        await user.click(screen.getByTestId('bp-waveform-range-comment'));
+
+        expect(onRangeDragCreate).toHaveBeenCalledTimes(1);
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
+    });
+
+    test('should not clear an open range from a tape waveform click', () => {
+        const onRangeClear = jest.fn();
+        const onSeek = jest.fn();
+        render(
+            <WaveformView
+                cameraMode="tape"
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).not.toHaveBeenCalled();
+        expect(onSeek).not.toHaveBeenCalled();
+    });
+
+    test('should clear a viewed range from a click outside it on desktop', () => {
+        const onRangeClear = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={onRangeClear}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+                rangeReadOnly
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+    });
+
+    test('should show the clear control on a tape viewed range', () => {
+        render(
+            <WaveformView
+                cameraMode="tape"
+                durationSec={8}
+                onRangeClear={jest.fn()}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+                rangeReadOnly
+            />,
+        );
+
+        expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        expect(screen.getByTestId('bp-waveform-range-clear')).toHaveClass('bp-WaveformRange-comment--clearOnly');
+    });
+
+    test('should dismiss a tape range from the clear control beside Comment', async () => {
+        const user = userEvent.setup();
+        const onPlayPause = jest.fn();
+        const onRangeClear = jest.fn();
+        const onRangeDragCreate = jest.fn();
+        render(
+            <WaveformView
+                cameraMode="tape"
+                durationSec={8}
+                isPlaying={false}
+                onPlayPause={onPlayPause}
+                onRangeClear={onRangeClear}
+                onRangeDragCreate={onRangeDragCreate}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        await user.click(screen.getByTestId('bp-waveform-range-clear'));
+
+        expect(onRangeClear).toHaveBeenCalledTimes(1);
+        expect(onRangeDragCreate).not.toHaveBeenCalled();
+        expect(onPlayPause).not.toHaveBeenCalled();
+
+        const pill = screen.getByTestId('bp-waveform-range-comment-pill');
+        await user.pointer([{ keys: '[MouseLeft>]', target: pill }, { keys: '[/MouseLeft]' }]);
+
+        expect(onPlayPause).not.toHaveBeenCalled();
     });
 
     test('should seek when clicking the waveform with only a collapsed draft', () => {
@@ -580,11 +845,11 @@ describe('WaveformView', () => {
         act(() => {
             resizeCallback?.(
                 [
-                    ({
+                    {
                         contentRect: { width: 400 },
-                    } as unknown) as ResizeObserverEntry,
+                    } as unknown as ResizeObserverEntry,
                 ],
-                ({} as unknown) as ResizeObserver,
+                {} as unknown as ResizeObserver,
             );
         });
 
@@ -625,11 +890,11 @@ describe('WaveformView', () => {
         act(() => {
             resizeCallback?.(
                 [
-                    ({
+                    {
                         contentRect: { width: 800 },
-                    } as unknown) as ResizeObserverEntry,
+                    } as unknown as ResizeObserverEntry,
                 ],
-                ({} as unknown) as ResizeObserver,
+                {} as unknown as ResizeObserver,
             );
         });
 
@@ -1210,6 +1475,346 @@ describe('WaveformView', () => {
         expect(onPlayPause).toHaveBeenCalledTimes(1);
     });
 
+    test('should draw a tape range after a long press', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 120);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            });
+            dispatchTrackPointer(window, 'pointermove', 180);
+            dispatchTrackPointer(window, 'pointerup', 180);
+
+            expect(onRangeChange).toHaveBeenCalledWith({ endMs: 3200, startMs: 800 });
+            expect(onPlayPause).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should keep drawing a tape range when a document listener stops the drag', () => {
+        jest.useFakeTimers();
+        const onRangeChange = jest.fn();
+        const stopDocumentMove = (event: Event): void => {
+            event.stopPropagation();
+        };
+        document.addEventListener('pointermove', stopDocumentMove);
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 120);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            });
+            dispatchTrackPointer(track, 'pointermove', 180);
+            dispatchTrackPointer(track, 'pointerup', 180);
+
+            expect(onRangeChange).toHaveBeenCalledWith({ endMs: 3200, startMs: 800 });
+        } finally {
+            document.removeEventListener('pointermove', stopDocumentMove);
+            jest.useRealTimers();
+        }
+    });
+
+    test('should keep a short tape press as play and pause', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 10);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS - 1);
+            });
+            dispatchTrackPointer(track, 'pointerup', 10);
+
+            expect(onRangeChange).not.toHaveBeenCalled();
+            expect(onPlayPause).toHaveBeenCalledWith(true);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not play when a tape hold ends without moving', () => {
+        jest.useFakeTimers();
+        const onPlayPause = jest.fn();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    isPlaying={false}
+                    onPlayPause={onPlayPause}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 10);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS + WAVEFORM_TAPE_CLICK_SUPPRESS_MS);
+            });
+            dispatchTrackPointer(track, 'pointerup', 10);
+
+            expect(onRangeChange).not.toHaveBeenCalled();
+            expect(onPlayPause).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should suppress the context menu during a tape long press', () => {
+        jest.useFakeTimers();
+        try {
+            render(
+                <WaveformView cameraMode="tape" currentTime={0} durationSec={8} isPlaying={false} peaks={[0.2, 0.8]} />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 120);
+            const duringHold = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+            act(() => {
+                track.dispatchEvent(duringHold);
+            });
+            expect(duringHold.defaultPrevented).toBe(true);
+
+            dispatchTrackPointer(track, 'pointerup', 120);
+            const afterRelease = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+            act(() => {
+                track.dispatchEvent(afterRelease);
+            });
+            expect(afterRelease.defaultPrevented).toBe(false);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should not draw a tape range when the finger moves before the hold', () => {
+        jest.useFakeTimers();
+        const onRangeChange = jest.fn();
+        try {
+            render(
+                <WaveformView
+                    cameraMode="tape"
+                    currentTime={0}
+                    durationSec={8}
+                    onRangeChange={onRangeChange}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+            const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+            dispatchTrackPointer(track, 'pointerdown', 10);
+            dispatchTrackPointer(window, 'pointermove', 40);
+            act(() => {
+                jest.advanceTimersByTime(WAVEFORM_TAPE_RANGE_LONG_PRESS_MS);
+            });
+            dispatchTrackPointer(window, 'pointermove', 100);
+            dispatchTrackPointer(window, 'pointerup', 100);
+
+            expect(onRangeChange).not.toHaveBeenCalled();
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('should pin collapsed tape range handles on the playhead, not the left edge', () => {
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-playhead')).toHaveStyle({ left: '50%' });
+        expect(screen.getByTestId('bp-waveform-range-handle-start')).toHaveStyle({
+            left: `calc(50% - ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+        expect(screen.getByTestId('bp-waveform-range-handle-end')).toHaveStyle({
+            left: `calc(50% + ${WAVEFORM_RANGE_COLLAPSED_OFFSET_PX}px)`,
+        });
+    });
+
+    test('should not toggle play when a tape range handle is released', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.releasePointerCapture) {
+            HTMLElement.prototype.releasePointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.hasPointerCapture) {
+            HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
+        }
+        const onPlayPause = jest.fn();
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                isPlaying={false}
+                onPlayPause={onPlayPause}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        const handle = screen.getByTestId('bp-waveform-range-handle-end');
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        fireEvent.pointerDown(handle, { button: 0, clientX: 100, pointerId: 1 });
+        fireEvent.pointerUp(track, { button: 0, clientX: 100, pointerId: 1, pointerType: 'touch' });
+        fireEvent.pointerUp(window, { clientX: 100, pointerId: 1 });
+        fireEvent.pointerUp(track, { button: 0, clientX: 100, pointerId: 1, pointerType: 'touch' });
+
+        expect(onPlayPause).not.toHaveBeenCalled();
+    });
+
+    test('should keep scrolling while a tape range handle is held at the edge', () => {
+        if (!HTMLElement.prototype.setPointerCapture) {
+            HTMLElement.prototype.setPointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.releasePointerCapture) {
+            HTMLElement.prototype.releasePointerCapture = jest.fn();
+        }
+        if (!HTMLElement.prototype.hasPointerCapture) {
+            HTMLElement.prototype.hasPointerCapture = jest.fn(() => true);
+        }
+        const onSeek = jest.fn();
+        const mediaEl = document.createElement('audio');
+        Object.defineProperty(mediaEl, 'paused', { configurable: true, value: true, writable: true });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 0, writable: true });
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockGetWidth.mockReturnValue(200);
+        const previousClientWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth');
+        Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 200 });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        const queued: FrameRequestCallback[] = [];
+        jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+            queued.push(cb);
+            return queued.length;
+        });
+        jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                mediaEl={mediaEl}
+                onSeek={onSeek}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        const flush = (timestampMs: number): void => {
+            const batch = queued.splice(0);
+            act(() => {
+                batch.forEach(cb => cb(timestampMs));
+            });
+        };
+        const advance = (frames: number, startMs: number): void => {
+            for (let frame = 0; frame < frames; frame += 1) {
+                flush(startMs + frame * 16);
+            }
+        };
+        try {
+            flush(0);
+            mockSetScroll.mockClear();
+            onSeek.mockClear();
+
+            act(() => {
+                screen.getByTestId('bp-waveform-range-handle-end').dispatchEvent(
+                    new MouseEvent('pointerdown', {
+                        bubbles: true,
+                        button: 0,
+                        clientX: 200,
+                    }),
+                );
+            });
+            advance(40, 1000);
+            const scrolledPx = mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1]?.[0] ?? 0;
+            expect(scrolledPx).toBeGreaterThan(50);
+            expect(onSeek).toHaveBeenCalled();
+            const seekCount = onSeek.mock.calls.length;
+
+            act(() => {
+                mediaEl.dispatchEvent(new Event('seeked'));
+            });
+            advance(40, 2000);
+            const laterPx = mockSetScroll.mock.calls[mockSetScroll.mock.calls.length - 1]?.[0] ?? 0;
+            expect(laterPx).toBeGreaterThan(scrolledPx + 20);
+            expect(onSeek.mock.calls.length).toBeGreaterThan(seekCount);
+        } finally {
+            if (previousClientWidth) {
+                Object.defineProperty(HTMLElement.prototype, 'clientWidth', previousClientWidth);
+            } else {
+                delete (HTMLElement.prototype as { clientWidth?: number }).clientWidth;
+            }
+        }
+    });
+
     test('should size tape WaveSurfer bars to the canvas box when the stage is taller than 206px', () => {
         render(<WaveformView cameraMode="tape" durationSec={8} peaks={new Array(800).fill(0.5)} />);
 
@@ -1217,11 +1822,11 @@ describe('WaveformView', () => {
         act(() => {
             resizeCallback?.(
                 [
-                    ({
+                    {
                         contentRect: { height: 320, width: 200 },
-                    } as unknown) as ResizeObserverEntry,
+                    } as unknown as ResizeObserverEntry,
                 ],
-                ({} as unknown) as ResizeObserver,
+                {} as unknown as ResizeObserver,
             );
         });
 
@@ -1246,11 +1851,11 @@ describe('WaveformView', () => {
         act(() => {
             resizeCallback?.(
                 [
-                    ({
+                    {
                         contentRect: { height: 320, width: 200 },
-                    } as unknown) as ResizeObserverEntry,
+                    } as unknown as ResizeObserverEntry,
                 ],
-                ({} as unknown) as ResizeObserver,
+                {} as unknown as ResizeObserver,
             );
         });
 
@@ -1282,6 +1887,38 @@ describe('WaveformView', () => {
         const chip = screen.getByTestId('bp-waveform-hover');
         expect(chip).toHaveClass('bp-WaveformView-hover--tape');
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+    });
+
+    test('should hide the point-comment timestamp border while a tape swipe is in progress', () => {
+        jest.useFakeTimers();
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                peaks={new Array(800).fill(0.5)}
+                range={{ endMs: null, startMs: 0 }}
+            />,
+        );
+
+        expect(screen.getByTestId('bp-waveform-range')).not.toHaveClass('bp-WaveformRange--swiping');
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        expect(screen.getByTestId('bp-waveform-range')).toHaveClass('bp-WaveformRange--swiping');
+
+        act(() => {
+            jest.advanceTimersByTime(WAVEFORM_FOLLOW_SCROLL_SETTLE_MS);
+        });
+
+        expect(screen.getByTestId('bp-waveform-range')).not.toHaveClass('bp-WaveformRange--swiping');
+        jest.useRealTimers();
     });
 
     test('should keep the tape scroller pan-able at 1x so gutter swipes can seek', () => {
@@ -1630,5 +2267,284 @@ describe('WaveformView', () => {
 
         clickHandler?.(0.5);
         expect(onSeek).toHaveBeenCalledWith(4);
+    });
+
+    describe('playhead drag', () => {
+        test('should move the playhead while dragging and seek on release', async () => {
+            const user = userEvent.setup();
+            const onRangeChange = jest.fn();
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} onRangeChange={onRangeChange} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+            expect(playhead).toHaveClass('bp-WaveformView-playhead--draggable');
+            expect(playhead).toHaveAttribute('data-target-id', 'Waveform-dragPlayhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 50, y: 10 } },
+            ]);
+            expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--playheadDragging');
+            expect(onSeek).not.toHaveBeenCalled();
+            expect(playhead).toHaveStyle({ left: '25%' });
+            expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+            expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+
+            await user.pointer({ target: playhead, coords: { x: 100, y: 10 } });
+            expect(playhead).toHaveStyle({ left: '50%' });
+            await user.pointer({ keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } });
+
+            expect(onSeek).toHaveBeenCalledTimes(1);
+            expect(onSeek).toHaveBeenCalledWith(4);
+            expect(playhead).toHaveStyle({ left: '50%' });
+            expect(onRangeChange).not.toHaveBeenCalled();
+        });
+
+        test('should keep hover fills when the pointer leaves the track during a playhead drag', async () => {
+            const user = userEvent.setup();
+            render(<WaveformView durationSec={8} onSeek={jest.fn()} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+                { target: document.body, coords: { x: 100, y: 400 } },
+            ]);
+
+            expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:04.00');
+            expect(playhead).toHaveStyle({ left: '50%' });
+        });
+
+        test('should keep waveform progress at the dragged time until currentTime catches up', async () => {
+            const user = userEvent.setup();
+            render(<WaveformView currentTime={0} durationSec={8} onSeek={jest.fn()} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+            mockSetTime.mockClear();
+            await user.pointer({ keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } });
+
+            expect(playhead).toHaveStyle({ left: '50%' });
+            expect(mockSetTime).toHaveBeenCalledWith(4);
+            expect(mockSetTime).not.toHaveBeenCalledWith(0);
+        });
+
+        test('should end a playhead drag when pointer capture is lost', async () => {
+            const user = userEvent.setup();
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+            dispatchTrackPointer(playhead, 'lostpointercapture', 100);
+
+            expect(onSeek).toHaveBeenCalledWith(4);
+            expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--playheadDragging');
+        });
+
+        test('should not drag the playhead on the tape player', async () => {
+            const user = userEvent.setup({ pointerEventsCheck: 0 });
+            const onSeek = jest.fn();
+            render(<WaveformView cameraMode="tape" durationSec={8} onSeek={onSeek} peaks={new Array(800).fill(0.5)} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 80, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 80, y: 10 } },
+            ]);
+
+            expect(playhead).not.toHaveClass('bp-WaveformView-playhead--draggable');
+            expect(onSeek).not.toHaveBeenCalled();
+            expect(playhead).toHaveStyle({ left: '50%' });
+        });
+
+        test('should not seek when the playhead comment is pressed', async () => {
+            const user = userEvent.setup();
+            const onPlayheadComment = jest.fn();
+            const onSeek = jest.fn();
+            render(
+                <WaveformView
+                    durationSec={8}
+                    onPlayheadComment={onPlayheadComment}
+                    onSeek={onSeek}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            mockWaveformRect();
+
+            await user.click(screen.getByTestId('bp-waveform-playhead-comment'));
+
+            expect(onPlayheadComment).toHaveBeenCalledTimes(1);
+            expect(onSeek).not.toHaveBeenCalled();
+        });
+
+        test('should not drag the playhead while the waveform is inert', async () => {
+            const user = userEvent.setup({ pointerEventsCheck: 0 });
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} interactive={false} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+
+            expect(playhead).not.toHaveClass('bp-WaveformView-playhead--draggable');
+            expect(onSeek).not.toHaveBeenCalled();
+        });
+
+        test('should keep the dragged playhead until media time leaves the start', async () => {
+            const user = userEvent.setup();
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'paused', { configurable: true, value: false });
+            Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 0, writable: true });
+            const animationCallbacks: FrameRequestCallback[] = [];
+            jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => {
+                animationCallbacks.push(cb);
+                return animationCallbacks.length;
+            });
+            jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(jest.fn());
+            const onSeek = jest.fn();
+            render(
+                <WaveformView currentTime={0} durationSec={8} mediaEl={mediaEl} onSeek={onSeek} peaks={[0.2, 0.8]} />,
+            );
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+
+            expect(onSeek).toHaveBeenCalledWith(4);
+            act(() => {
+                animationCallbacks[animationCallbacks.length - 1]?.(0);
+            });
+            expect(playhead).toHaveStyle({ left: '50%' });
+        });
+
+        test('should not start a playhead drag if pointer capture fails', async () => {
+            const user = userEvent.setup();
+            if (!HTMLElement.prototype.setPointerCapture) {
+                HTMLElement.prototype.setPointerCapture = jest.fn();
+            }
+            const onSeek = jest.fn();
+            render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            mockWaveformRect();
+            const playhead = screen.getByTestId('bp-waveform-playhead');
+            jest.spyOn(playhead, 'setPointerCapture').mockImplementation(() => {
+                throw new DOMException('Invalid capture', 'InvalidStateError');
+            });
+
+            await user.pointer([
+                { keys: '[MouseLeft>]', target: playhead, coords: { x: 0, y: 10 } },
+                { target: playhead, coords: { x: 100, y: 10 } },
+                { keys: '[/MouseLeft]', target: playhead, coords: { x: 100, y: 10 } },
+            ]);
+
+            expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--playheadDragging');
+            expect(onSeek).not.toHaveBeenCalled();
+            expect(playhead).toHaveStyle({ left: '0%' });
+        });
+    });
+
+    describe('playhead comment', () => {
+        test('should show Comment above the playhead after playback has started and then paused', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+
+            const button = screen.getByTestId('bp-waveform-playhead-comment');
+            expect(button).toHaveAttribute('data-target-id', 'Waveform-commentAtTime');
+            expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
+            expect(button.closest('[data-testid="bp-waveform-playhead"]')).not.toBeNull();
+        });
+
+        test('should hide Comment while playing and before the waveform is interactive', () => {
+            const { rerender } = render(
+                <WaveformView durationSec={8} interactive isPlaying onPlayheadComment={jest.fn()} peaks={[0.2, 0.8]} />,
+            );
+            expect(screen.queryByTestId('bp-waveform-playhead-comment')).not.toBeInTheDocument();
+
+            rerender(
+                <WaveformView
+                    durationSec={8}
+                    interactive={false}
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+            expect(screen.queryByTestId('bp-waveform-playhead-comment')).not.toBeInTheDocument();
+        });
+
+        test('should hide Comment while a range is open', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    range={{ endMs: 4000, startMs: 2000 }}
+                />,
+            );
+
+            expect(screen.queryByTestId('bp-waveform-playhead-comment')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-range')).toBeInTheDocument();
+        });
+
+        test('should keep Comment when the draft is only a start time', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    range={{ endMs: null, startMs: 2000 }}
+                />,
+            );
+
+            expect(screen.getByTestId('bp-waveform-playhead-comment')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-range')).toHaveAttribute('data-collapsed', 'true');
+            expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+        });
+
+        test('should keep Comment visible after it is clicked', () => {
+            const onPlayheadComment = jest.fn();
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isPlaying={false}
+                    onPlayheadComment={onPlayheadComment}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
+
+            fireEvent.click(screen.getByTestId('bp-waveform-playhead-comment'));
+
+            expect(onPlayheadComment).toHaveBeenCalledTimes(1);
+            expect(screen.getByTestId('bp-waveform-playhead-comment')).toBeInTheDocument();
+        });
     });
 });

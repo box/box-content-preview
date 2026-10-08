@@ -4,25 +4,25 @@
     position: absolute;
     bottom: calc(100% + 4px);
     left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    transform: translateX(-50%);
 }
 
 .bp-MarkerAvatarStack-item {
+    cursor: pointer;
     position: relative;
+    overflow: visible;
     flex-shrink: 0;
     box-sizing: content-box;
     width: 20px;
     height: 20px;
     padding: 0;
-    background: none;
     border: 0;
     border-radius: 50%;
-    outline: none;
-    overflow: visible;
-    cursor: pointer;
     appearance: none;
+    background: none;
+    outline: none;
     transition: margin 150ms;
 
     &:focus,
@@ -39,9 +39,9 @@
         top: 50%;
         bottom: auto;
         left: 50%;
-        display: block;
-        transform: translate(-50%, -50%);
         transform-origin: center center;
+        transform: translate(-50%, -50%);
+        display: block;
     }
 
     // Hover or keyboard focus: raise above neighbors. Selected keeps DOM paint order.
@@ -63,8 +63,8 @@
 }
 
 .bp-MarkerAvatarStack-overflowBadge {
-    background-color: #383838; // Gray/90
     color: $white;
+    background-color: #383838; // Gray/90
 
     .bp-MarkerAvatar-initial {
         color: $white;

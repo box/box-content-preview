@@ -381,11 +381,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         test('should call renderer.load() with the entities.json file and options', () => {
             const contentUrl = 'someEntitiesJsonUrl';
             jest.spyOn(box3d, 'createContentUrl').mockReturnValue(contentUrl);
-            sandbox
-                .mock(box3d.renderer)
-                .expects('load')
-                .withArgs(contentUrl, box3d.options)
-                .returns(Promise.resolve());
+            sandbox.mock(box3d.renderer).expects('load').withArgs(contentUrl, box3d.options).returns(Promise.resolve());
 
             box3d.postLoad();
         });
@@ -411,19 +407,13 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             jest.spyOn(box3d, 'createContentUrl').mockReturnValue(contentUrl);
             jest.spyOn(box3d, 'appendAuthHeader').mockReturnValue(headers);
             jest.spyOn(box3d, 'isRepresentationReady').mockReturnValue(true);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .withArgs(contentUrl, { headers, type: 'document' });
+            sandbox.mock(stubs.api).expects('get').withArgs(contentUrl, { headers, type: 'document' });
             box3d.prefetch({ assets: false, content: true });
         });
 
         test('should not prefetch content if content is true but representation is not ready', () => {
             jest.spyOn(box3d, 'isRepresentationReady').mockReturnValue(false);
-            sandbox
-                .mock(stubs.api)
-                .expects('get')
-                .never();
+            sandbox.mock(stubs.api).expects('get').never();
             box3d.prefetch({ assets: false, content: true });
         });
     });

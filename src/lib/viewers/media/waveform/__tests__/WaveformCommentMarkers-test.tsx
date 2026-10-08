@@ -10,7 +10,7 @@ const mockResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
     unobserve: jest.fn(),
 }));
-((global as unknown) as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
+(global as unknown as { ResizeObserver: jest.Mock }).ResizeObserver = mockResizeObserver;
 
 beforeAll(() => {
     Object.defineProperty(HTMLElement.prototype, 'clientWidth', { configurable: true, value: 600 });
@@ -301,6 +301,23 @@ describe('WaveformCommentMarkers', () => {
         rerender(<WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" />);
 
         expect(badge).not.toHaveClass('bp-WaveformCommentMarkers-marker--selected');
+    });
+
+    test('should restore the ring when the same comment is selected again', async () => {
+        const user = userEvent.setup();
+        const { rerender } = render(
+            <WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" selectionSeq={1} />,
+        );
+
+        const badge = screen.getAllByTestId('bp-waveform-comment-marker')[0];
+        await user.click(document.body);
+        expect(badge).not.toHaveClass('bp-WaveformCommentMarkers-marker--selected');
+
+        rerender(
+            <WaveformCommentMarkers commentMarkers={markers} durationSec={60} selectedId="marker-1" selectionSeq={2} />,
+        );
+
+        expect(badge).toHaveClass('bp-WaveformCommentMarkers-marker--selected');
     });
 
     test('should follow the visible window when the waveform viewport changes', () => {
