@@ -114,6 +114,8 @@ describe('WaveformRangeSelection', () => {
         );
 
         const button = screen.getByTestId('bp-waveform-range-comment');
+        expect(button).toHaveAttribute('data-resin-target', 'waveformRangeComment');
+        expect(button).toHaveAttribute('data-target-id', 'Waveform-commentOnRange');
         expect(button).toHaveTextContent(__('media_range_comment'));
         expect(button).toHaveStyle({ left: '37.5%' });
 
@@ -360,18 +362,23 @@ describe('WaveformRangeSelection', () => {
     test('should emit comment range change on pointerup only', () => {
         const onRangeChange = jest.fn();
         const onDragChange = jest.fn();
+        const onResinAction = jest.fn();
         render(
             <WaveformRangeSelection
                 durationSec={8}
                 onDragChange={onDragChange}
                 onRangeChange={onRangeChange}
+                onResinAction={onResinAction}
                 range={{ endMs: null, startMs: 2000 }}
                 viewport={viewport}
             />,
         );
 
         const endHandle = screen.getByTestId('bp-waveform-range-handle-end');
+        expect(endHandle).toHaveAttribute('data-target-id', 'Waveform-resizeRangeEnd');
         dispatchPointer(endHandle, 'pointerdown', 50);
+        expect(onResinAction).toHaveBeenCalledTimes(1);
+        expect(onResinAction).toHaveBeenCalledWith('waveformRangeResize');
         expect(onDragChange).toHaveBeenCalledWith(true);
         expect(onRangeChange).not.toHaveBeenCalled();
         expect(screen.getByTestId('bp-waveform-range-tooltip')).toHaveTextContent('0:02.00');

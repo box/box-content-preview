@@ -49,6 +49,7 @@ export type WaveformRangeSelectionProps = {
     onPreviewChange?: (range: CommentRangeDraft) => void;
     onRangeChange?: (range: { endMs: number; startMs: number }) => void;
     onRangeClear?: () => void;
+    onResinAction?: (target: string) => void;
     range: CommentRangeDraft;
     /** Viewed comment span. Same chrome as a draft, without handles or edge edits. */
     readOnly?: boolean;
@@ -137,6 +138,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             onPreviewChange,
             onRangeChange,
             onRangeClear,
+            onResinAction,
             range,
             readOnly = false,
             viewport,
@@ -366,6 +368,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 }
                 event.preventDefault();
                 event.stopPropagation();
+                onResinAction?.('waveformRangeResize');
                 const resolved = resolveRange(rangeRef.current, durationMsFromSec(durationSecRef.current));
                 dragRef.current = {
                     handle,
@@ -385,7 +388,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     startMs: resolved.startMs,
                 });
             },
-            [interactive, readOnly],
+            [interactive, onResinAction, readOnly],
         );
 
         const onHandlePointerDown = useCallback(
@@ -463,6 +466,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     ref={commentButtonRef}
                     aria-label={__('media_range_clear')}
                     className="bp-WaveformRange-comment bp-WaveformRange-comment--clearOnly"
+                    data-resin-target="waveformRangeClear"
+                    data-target-id="Waveform-clearRange"
                     data-testid="bp-waveform-range-clear"
                     onClick={event => {
                         stopRangeEvent(event);
@@ -481,6 +486,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 <button
                     ref={showClearControl ? undefined : commentButtonRef}
                     className={showClearControl ? 'bp-WaveformRange-commentLabel' : 'bp-WaveformRange-comment'}
+                    data-resin-target="waveformRangeComment"
+                    data-target-id="Waveform-commentOnRange"
                     data-testid="bp-waveform-range-comment"
                     onClick={event => {
                         stopRangeEvent(event);
@@ -507,6 +514,8 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                         <button
                             aria-label={__('media_range_clear')}
                             className="bp-WaveformRange-commentClear"
+                            data-resin-target="waveformRangeClear"
+                            data-target-id="Waveform-clearRange"
                             data-testid="bp-waveform-range-clear"
                             onClick={event => {
                                 stopRangeEvent(event);
@@ -545,6 +554,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                         className={classNames('bp-WaveformRange-handle', 'bp-WaveformRange-handle--start', {
                             'bp-WaveformRange-handle--dragging': activeHandle === 'start',
                         })}
+                        data-target-id="Waveform-resizeRangeStart"
                         data-testid="bp-waveform-range-handle-start"
                         onMouseMove={event => event.stopPropagation()}
                         onPointerDown={onHandlePointerDown}
@@ -558,6 +568,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                         className={classNames('bp-WaveformRange-handle', 'bp-WaveformRange-handle--end', {
                             'bp-WaveformRange-handle--dragging': activeHandle === 'end',
                         })}
+                        data-target-id="Waveform-resizeRangeEnd"
                         data-testid="bp-waveform-range-handle-end"
                         onMouseMove={event => event.stopPropagation()}
                         onPointerDown={onHandlePointerDown}

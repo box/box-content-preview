@@ -48,6 +48,7 @@ export type Props = Omit<DurationLabelsProps, 'mediaEl'> &
         onCommentRangeDragCreate?: () => void;
         onCommentRangeDragChange?: (isDragging: boolean) => void;
         onPlayheadComment?: () => void;
+        onResinAction?: (target: string) => void;
         peaks?: ArrayLike<number>;
         shuttleDirection?: ShuttleDirection | null;
         shuttleRate?: number;
@@ -74,6 +75,7 @@ export default function MP3ControlsV2({
     onCommentRangeDragCreate,
     onCommentRangeDragChange,
     onPlayheadComment,
+    onResinAction,
     onMuteChange,
     onPlayPause,
     onPlayNextChange,
@@ -216,12 +218,13 @@ export default function MP3ControlsV2({
             if (!(target instanceof Element) || target.closest(RANGE_DISMISS_IGNORE)) {
                 return;
             }
+            onResinAction?.('waveformRangeDismiss');
             onCommentRangeClear();
         };
 
         root.addEventListener('pointerdown', onPointerDown);
         return () => root.removeEventListener('pointerdown', onPointerDown);
-    }, [canDismissOpenRange, onCommentRangeClear]);
+    }, [canDismissOpenRange, onCommentRangeClear, onResinAction]);
     const isWaitingToPlay = hasStarted && !hasMediaMetadata;
     const showPlayOverlay = !hasStarted && !isPlaying;
     const hasZoomHandlers = hasRealPeaks && !showPlayOverlay;
@@ -248,6 +251,7 @@ export default function MP3ControlsV2({
                         mediaEl={mediaEl}
                         onPlayheadComment={isWaveformInteractive && !shuttleDirection ? onPlayheadComment : undefined}
                         onPlayPause={isWaveformInteractive ? onPlayPause : undefined}
+                        onResinAction={onResinAction}
                         onRangeChange={isWaveformInteractive ? onCommentRangeChange : undefined}
                         onRangeClear={isWaveformInteractive ? onCommentRangeClear : undefined}
                         onRangeDragChange={onCommentRangeDragChange}
@@ -293,6 +297,8 @@ export default function MP3ControlsV2({
                         // Static SVG from the icons module, same asset video uses for the overlay.
                         // eslint-disable-next-line react/no-danger
                         dangerouslySetInnerHTML={{ __html: ICON_PLAY_LARGE }}
+                        data-resin-target="playOverlay"
+                        data-target-id="MP3ControlsV2-play"
                         data-testid="bp-MP3ControlsV2-play-overlay"
                         onClick={handlePlayOverlayClick}
                         onMouseDown={event => event.preventDefault()}

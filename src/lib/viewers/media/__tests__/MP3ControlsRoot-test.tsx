@@ -28,6 +28,23 @@ describe('MP3ControlsRoot', () => {
 
             expect(instance.controlsEl).toHaveClass('bp-MP3ControlsRoot');
             expect(instance.controlsEl).toHaveAttribute('data-testid', 'bp-controls');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-component', 'toolbar');
+            expect(instance.controlsEl).not.toHaveAttribute('data-resin-feature');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileid', '');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileextension', '');
+        });
+
+        test('should set resin file attributes when a file is provided', () => {
+            const instance = getInstance({ fileExtension: 'mp3', fileId: 1 });
+
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileid', '1');
+            expect(instance.controlsEl).toHaveAttribute('data-resin-fileextension', 'mp3');
+        });
+
+        test('should set the audio player v2 feature only when it is passed in', () => {
+            const instance = getInstance({ resinFeature: 'audioPlayerV2' });
+
+            expect(instance.controlsEl).toHaveAttribute('data-resin-feature', 'audioPlayerV2');
         });
     });
 

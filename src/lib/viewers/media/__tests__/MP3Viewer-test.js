@@ -297,6 +297,41 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.onKeydown('j')).toBe(true);
             expect(mp3.quickSeek).toHaveBeenCalledWith(-10);
         });
+
+        test('should drop audioPlayerV2 resin when falling back to v1', async () => {
+            const recordAction = jest.fn();
+            const originalBox = window.Box;
+            mp3.options.features = { audioPlayerV2: { enabled: true } };
+            jest.spyOn(mp3, 'useReactControls').mockReturnValue(true);
+            mp3.importV2Controls.mockRejectedValue(new Error('chunk failed'));
+            mp3.setup();
+            mp3.options.resin = { recordAction };
+            window.Box = { Preview: { resin: mp3.options.resin } };
+
+            try {
+                mp3.controls = mp3.createControlsRoot();
+                expect(mp3.controls.controlsEl).toHaveAttribute('data-resin-feature', 'audioPlayerV2');
+
+                await mp3.ensureV2Controls();
+
+                expect(mp3.isAudioPlayerV2).toBe(false);
+                expect(mp3.controls.controlsEl).not.toHaveAttribute('data-resin-feature');
+                expect(window.Box.Preview.resin.recordAction).toBe(recordAction);
+
+                window.Box.Preview.resin.recordAction({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'volumeSlider',
+                });
+                expect(recordAction).toHaveBeenCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'volumeSlider',
+                });
+            } finally {
+                window.Box = originalBox;
+            }
+        });
     });
 
     describe('handlePlayRequest()', () => {
@@ -2047,6 +2082,106 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(mp3.quickSeek).toHaveBeenCalledWith(-1);
             expect(mp3.onKeydown('j')).toBe(true);
             expect(mp3.quickSeek).not.toHaveBeenCalledWith(-10);
+        });
+
+        test('should record toolbar resin for audio v2 shortcuts with the file on the payload', () => {
+            enableV2();
+            mp3.options.file.extension = 'mp3';
+            mp3.options.resin = { recordAction: jest.fn() };
+            mp3.commentMarkers = [
+                { id: 'a', time: 4 },
+                { id: 'b', time: 20 },
+            ];
+            mp3.mediaEl.currentTime = 10;
+
+            const resinAction = target => ({
+                action: 'programmatic',
+                component: 'toolbar',
+                feature: 'audioPlayerV2',
+                target,
+                fileId: 1,
+                fileExtension: 'mp3',
+            });
+
+            expect(mp3.onKeydown('Space')).toBe(true);
+            expect(mp3.options.resin.recordAction).toHaveBeenCalledWith(resinAction('playPause'));
+
+            mp3.options.resin.recordAction.mockClear();
+            expect(mp3.onKeydown('j')).toBe(true);
+            expect(mp3.options.resin.recordAction).toHaveBeenCalledWith(resinAction('shuttleReverse'));
+
+            mp3.options.resin.recordAction.mockClear();
+            expect(mp3.onKeydown('+')).toBe(true);
+            expect(mp3.options.resin.recordAction).toHaveBeenCalledWith(resinAction('waveformZoomIn'));
+
+            mp3.options.resin.recordAction.mockClear();
+            expect(mp3.onKeydown('ArrowDown')).toBe(true);
+            expect(mp3.options.resin.recordAction).toHaveBeenCalledWith(resinAction('commentMarkerNext'));
+
+            mp3.options.resin.recordAction.mockClear();
+            expect(mp3.onKeydown('m')).toBe(true);
+            expect(mp3.options.resin.recordAction).toHaveBeenCalledWith(resinAction('volumeToggle'));
+            expect(mp3.toggleMute).toHaveBeenCalled();
+        });
+
+        test('should stamp audioPlayerV2 on Preview.resin so slider and settings events share the feature', () => {
+            enableV2();
+            const recordAction = jest.fn();
+            const originalBox = window.Box;
+            mp3.options.resin = { recordAction };
+            window.Box = { Preview: { resin: mp3.options.resin } };
+
+            try {
+                const root = mp3.createControlsRoot();
+                expect(root.controlsEl).toHaveAttribute('data-resin-feature', 'audioPlayerV2');
+                window.Box.Preview.resin.recordAction({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'volumeSlider',
+                });
+
+                expect(recordAction).toHaveBeenCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    feature: 'audioPlayerV2',
+                    target: 'volumeSlider',
+                });
+
+                mp3.unbindAudioPlayerV2Resin();
+                expect(window.Box.Preview.resin.recordAction).toBe(recordAction);
+            } finally {
+                window.Box = originalBox;
+            }
+        });
+
+        test('should not stamp audioPlayerV2 on v1 controls or Preview.resin', () => {
+            mp3.setup();
+            const recordAction = jest.fn();
+            const originalBox = window.Box;
+            mp3.isAudioPlayerV2 = false;
+            mp3.options.resin = { recordAction };
+            window.Box = { Preview: { resin: mp3.options.resin } };
+
+            try {
+                const root = mp3.createControlsRoot();
+                expect(root.controlsEl).toHaveAttribute('data-resin-component', 'toolbar');
+                expect(root.controlsEl).toHaveAttribute('data-resin-fileid', '1');
+                expect(root.controlsEl).not.toHaveAttribute('data-resin-feature');
+                expect(window.Box.Preview.resin.recordAction).toBe(recordAction);
+
+                window.Box.Preview.resin.recordAction({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'volumeSlider',
+                });
+                expect(recordAction).toHaveBeenCalledWith({
+                    action: 'programmatic',
+                    component: 'toolbar',
+                    target: 'volumeSlider',
+                });
+            } finally {
+                window.Box = originalBox;
+            }
         });
 
         test('should mute on m and seek Home through the shared React map', () => {

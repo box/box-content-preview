@@ -21,6 +21,7 @@ import {
     WAVEFORM_RANGE_EDGE_SCROLL_MAX_FRAME_SEC,
     WAVEFORM_HEIGHT,
     WAVEFORM_TAPE_CLICK_SUPPRESS_MS,
+    WAVEFORM_RESIN_GESTURE_GAP_MS,
     WAVEFORM_TAPE_RANGE_LONG_PRESS_MS,
     WAVEFORM_TAPE_RANGE_LONG_PRESS_CANCEL_PX,
     WAVEFORM_ZOOM_DISMISS_MS,
@@ -59,6 +60,18 @@ import {
     timeLeftPercent,
 } from './viewport';
 import './WaveformView.scss';
+
+function recordGestureSession(
+    lastAtRef: { current: number },
+    target: string,
+    record: ((target: string) => void) | undefined,
+): void {
+    const currentTime = Date.now();
+    if (currentTime - lastAtRef.current > WAVEFORM_RESIN_GESTURE_GAP_MS) {
+        record?.(target);
+    }
+    lastAtRef.current = currentTime;
+}
 
 /** Pointer X in the view and the media time under it; zoom keeps this point fixed. */
 type ZoomOrigin = {
@@ -260,6 +273,7 @@ function WaveformView({
     onRangeClear,
     onRangeDragCreate,
     onRangeDragChange,
+    onResinAction,
     onSeek,
     onViewportChange,
     onZoomChange,
@@ -288,6 +302,7 @@ function WaveformView({
     const onRangeChangeRef = useRef(onRangeChange); // latest range commit; drag-create must not re-bind
     const onRangeClearRef = useRef(onRangeClear); // latest click-outside clear; WaveSurfer click must not re-bind
     const onRangeDragChangeRef = useRef(onRangeDragChange); // latest drag flag; unmount must not re-bind
+    const onResinActionRef = useRef(onResinAction); // latest resin callback; gesture listeners must not re-bind
     const onSeekRef = useRef(onSeek); // latest onSeek; click/scroll handlers must not re-bind
     const onViewportChangeRef = useRef(onViewportChange); // latest viewport callback; camera commits here
     const peaksRef = useRef(peaks); // latest peaks; WaveSurfer create() + morph read this
@@ -302,6 +317,8 @@ function WaveformView({
     const isPlayheadDraggingRef = useRef(false); // playhead drag owns position until pointerup
     const lastObservedWidthRef = useRef(0); // last ResizeObserver width; skip no-op resizes
     const liveHeightRef = useRef(height); // canvas height last applied to WaveSurfer
+    const lastPinchResinAtRef = useRef(0); // last pinch resin time; one zoomIn/zoomOut per WAVEFORM_RESIN_GESTURE_GAP_MS
+    const lastSwipeResinAtRef = useRef(0); // last tape-swipe resin time; one waveformSwipe per burst
     const pinchStartRef = useRef<{ distance: number; zoom: number } | null>(null); // two-finger distance and zoom at pinch start
     const playheadDragRef = useRef<{ fromSec: number; pointerId: number } | null>(null); // active playhead drag; pointerup seeks
     const playheadPinRef = useRef<{ fromSec: number; sec: number } | null>(null); // dragged time until media/props catch up
@@ -328,6 +345,7 @@ function WaveformView({
     onRangeChangeRef.current = onRangeChange;
     onRangeClearRef.current = onRangeClear;
     onRangeDragChangeRef.current = onRangeDragChange;
+    onResinActionRef.current = onResinAction;
     onSeekRef.current = onSeek;
     onViewportChangeRef.current = onViewportChange;
     peaksRef.current = peaks;
@@ -457,6 +475,7 @@ function WaveformView({
             suppressNextTapPlayPauseTimerRef.current = 0;
             return;
         }
+        onResinActionRef.current?.('playPause');
         onPlayPauseRef.current?.(!isPlayingRef.current);
         suppressTapToPlayPause();
     }, [isUserPanning, suppressTapToPlayPause]);
@@ -520,6 +539,7 @@ function WaveformView({
      * show the scrub chip until the swipe settles.
      */
     const handleTapeSwipe = useCallback((timeSec: number): void => {
+        recordGestureSession(lastSwipeResinAtRef, 'waveformSwipe', onResinActionRef.current);
         // Swallow the click WaveSurfer/iOS fires after a swipe or pinch.
         suppressNextTapPlayPauseRef.current = true;
         window.clearTimeout(suppressNextTapPlayPauseTimerRef.current);
@@ -715,12 +735,14 @@ function WaveformView({
                 const pointerX = positionPxFromTime(timeSec, viewportRef.current);
                 if (!isPointerOverRange({ pointerX, range: rangeDraft, viewport: viewportRef.current })) {
                     onRangeClearRef.current?.();
+                    onResinActionRef.current?.('waveformRangeDismiss');
                 }
             }
             if (cameraModeRef.current === 'tape') {
                 toggleTapePlaybackRef.current?.();
                 return;
             }
+            onResinActionRef.current?.('waveformSeek');
             onSeekRef.current?.(timeSec);
         });
         const unsubscribeScroll = wavesurfer.on('scroll', () => {
@@ -1061,6 +1083,11 @@ function WaveformView({
                 return;
             }
             event.preventDefault();
+            recordGestureSession(
+                lastPinchResinAtRef,
+                event.deltaY > 0 ? 'zoomOut' : 'zoomIn',
+                onResinActionRef.current,
+            );
             captureZoomOrigin(event.clientX);
             setZoomLevel(zoomRef.current * Math.exp(-event.deltaY * 0.01));
         };
@@ -1091,9 +1118,17 @@ function WaveformView({
                 return;
             }
             event.preventDefault();
+            const distance = touchDistance(event.touches);
+            if (distance !== pinch.distance) {
+                recordGestureSession(
+                    lastPinchResinAtRef,
+                    distance > pinch.distance ? 'zoomIn' : 'zoomOut',
+                    onResinActionRef.current,
+                );
+            }
             zoomOriginRef.current = zoomOriginFromPinch(event.touches);
             markPointerZoom();
-            setZoomLevel(pinch.zoom * (touchDistance(event.touches) / pinch.distance));
+            setZoomLevel(pinch.zoom * (distance / pinch.distance));
         };
 
         const onTouchEnd = (event: TouchEvent): void => {
@@ -1307,6 +1342,7 @@ function WaveformView({
                 );
                 if (!drag.active) {
                     drag.active = true;
+                    onResinActionRef.current?.('waveformRangeCreate');
                     handleRangeDragChange(true);
                 }
                 setCreateRange(drag.range);
@@ -1536,6 +1572,7 @@ function WaveformView({
         } catch {
             return; // Don't start a drag we cannot track after the pointer leaves.
         }
+        onResinActionRef.current?.('waveformPlayheadDrag');
         const fromSec = mediaElRef.current ? mediaElRef.current.currentTime : currentTimeRef.current;
         playheadDragRef.current = { fromSec, pointerId: event.pointerId };
         playheadPinRef.current = { fromSec, sec: fromSec };
@@ -1655,6 +1692,7 @@ function WaveformView({
                     {showPlayheadComment && (
                         <button
                             className="bp-WaveformRange-comment bp-WaveformView-playheadComment"
+                            data-resin-target="waveformPlayheadComment"
                             data-target-id="Waveform-commentAtTime"
                             data-testid="bp-waveform-playhead-comment"
                             onClick={event => {
@@ -1687,6 +1725,7 @@ function WaveformView({
                         onDragPointerX={clientX => {
                             rangeDragPointerXRef.current = clientX;
                         }}
+                        onResinAction={onResinAction}
                         onPreviewChange={setPreviewRange}
                         onRangeChange={interactive && !isOverlayReadOnly ? onRangeChange : undefined}
                         onRangeClear={isTape && !isRangeDragging ? onRangeClear : undefined}
