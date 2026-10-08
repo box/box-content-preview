@@ -272,7 +272,11 @@ describe('MP3ControlsV2', () => {
             expect(await screen.findByTestId('bp-MP3ControlsV2-bar')).toBeInTheDocument();
             expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('0:12/3:32');
             expect(within(screen.getByTestId('bp-MP3ControlsV2-bar')).getByTitle(__('media_play'))).toBeInTheDocument();
-            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute('data-resin-target', 'playOverlay');
+            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute(
+                'data-target-id',
+                'MP3ControlsV2-play',
+            );
             expect(screen.getByTitle(__('media_mute'))).toBeInTheDocument();
             expect(screen.getByTitle('Settings')).toBeInTheDocument();
             expect(screen.queryByTitle(__('media_skip_forward'))).not.toBeInTheDocument();
@@ -813,12 +817,14 @@ describe('MP3ControlsV2', () => {
 
         test('should dismiss an open draft or viewed range from the player outside the range chrome', async () => {
             const onCommentRangeClear = jest.fn();
+            const onResinAction = jest.fn();
             const { rerender } = getWrapper({
                 commentRangeDraft: { endMs: 4000, startMs: 2000 },
                 commentMarkers: hostCommentMarkers,
                 durationTime: 180,
                 isPlaying: true,
                 onCommentRangeClear,
+                onResinAction,
                 peaks: [0.2, 0.8],
             });
             const user = userEvent.setup();
@@ -826,6 +832,8 @@ describe('MP3ControlsV2', () => {
 
             await user.click(player);
             expect(onCommentRangeClear).toHaveBeenCalledTimes(1);
+            expect(onResinAction).toHaveBeenCalledTimes(1);
+            expect(onResinAction).toHaveBeenCalledWith('waveformRangeDismiss');
 
             onCommentRangeClear.mockClear();
             await user.click(screen.getByTestId('bp-MP3ControlsV2-bar'));

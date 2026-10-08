@@ -382,13 +382,16 @@ describe('WaveformView', () => {
     });
 
     test('should seek from a wavesurfer click', () => {
+        const onResinAction = jest.fn();
         const onSeek = jest.fn();
-        render(<WaveformView durationSec={8} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+        render(<WaveformView durationSec={8} onResinAction={onResinAction} onSeek={onSeek} peaks={[0.2, 0.8]} />);
 
         expect(clickHandler).toBeDefined();
         clickHandler?.(0.25);
 
         expect(onSeek).toHaveBeenCalledWith(2);
+        expect(onResinAction).toHaveBeenCalledTimes(1);
+        expect(onResinAction).toHaveBeenCalledWith('waveformSeek');
     });
 
     test('should draw a read-only range without handles and still clear it from outside', () => {
@@ -432,6 +435,25 @@ describe('WaveformView', () => {
 
         expect(onRangeClear).toHaveBeenCalledTimes(1);
         expect(onSeek).toHaveBeenCalledWith(6);
+    });
+
+    test('should record a range dismiss and a seek when clicking the waveform outside an open range', () => {
+        const onResinAction = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onRangeClear={jest.fn()}
+                onResinAction={onResinAction}
+                onSeek={jest.fn()}
+                peaks={[0.2, 0.8]}
+                range={{ endMs: 4000, startMs: 2000 }}
+            />,
+        );
+
+        clickHandler?.(0.75);
+
+        expect(onResinAction).toHaveBeenNthCalledWith(1, 'waveformRangeDismiss');
+        expect(onResinAction).toHaveBeenNthCalledWith(2, 'waveformSeek');
     });
 
     test('should seek when clicking inside an open range', () => {
@@ -913,6 +935,65 @@ describe('WaveformView', () => {
 
         expect(onZoomChange).toHaveBeenCalled();
         expect(onZoomChange.mock.calls[0][0]).toBeGreaterThan(1);
+    });
+
+    test('should record one zoomIn or zoomOut per pinch burst, matching other viewers', () => {
+        let now = 1000;
+        const nowSpy = jest.spyOn(Date, 'now').mockImplementation(() => now);
+        const onResinAction = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onResinAction={onResinAction}
+                onZoomChange={jest.fn()}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={1}
+            />,
+        );
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+        now += 50;
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: -100 });
+
+        expect(onResinAction).toHaveBeenCalledTimes(1);
+        expect(onResinAction).toHaveBeenCalledWith('zoomIn');
+
+        now += 500;
+        fireEvent.wheel(track, { clientX: 50, ctrlKey: true, deltaY: 100 });
+
+        expect(onResinAction).toHaveBeenCalledTimes(2);
+        expect(onResinAction).toHaveBeenLastCalledWith('zoomOut');
+        nowSpy.mockRestore();
+    });
+
+    test('should record one zoomIn for a two-finger pinch that spreads', () => {
+        const onResinAction = jest.fn();
+        render(
+            <WaveformView
+                durationSec={8}
+                onResinAction={onResinAction}
+                onZoomChange={jest.fn()}
+                peaks={new Array(800).fill(0.5)}
+                zoomLevel={1}
+            />,
+        );
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        const start = [
+            { clientX: 40, clientY: 20, identifier: 1 },
+            { clientX: 80, clientY: 20, identifier: 2 },
+        ];
+        const spread = [
+            { clientX: 20, clientY: 20, identifier: 1 },
+            { clientX: 120, clientY: 20, identifier: 2 },
+        ];
+
+        fireEvent.touchStart(track, { touches: start });
+        fireEvent.touchMove(track, { touches: spread });
+        fireEvent.touchMove(track, { touches: spread });
+
+        expect(onResinAction).toHaveBeenCalledTimes(1);
+        expect(onResinAction).toHaveBeenCalledWith('zoomIn');
     });
 
     test('should not zoom on ctrl+wheel when zoom is not enabled', () => {
@@ -2273,8 +2354,17 @@ describe('WaveformView', () => {
         test('should move the playhead while dragging and seek on release', async () => {
             const user = userEvent.setup();
             const onRangeChange = jest.fn();
+            const onResinAction = jest.fn();
             const onSeek = jest.fn();
-            render(<WaveformView durationSec={8} onRangeChange={onRangeChange} onSeek={onSeek} peaks={[0.2, 0.8]} />);
+            render(
+                <WaveformView
+                    durationSec={8}
+                    onRangeChange={onRangeChange}
+                    onResinAction={onResinAction}
+                    onSeek={onSeek}
+                    peaks={[0.2, 0.8]}
+                />,
+            );
             mockWaveformRect();
             const playhead = screen.getByTestId('bp-waveform-playhead');
             expect(playhead).toHaveClass('bp-WaveformView-playhead--draggable');
@@ -2296,6 +2386,8 @@ describe('WaveformView', () => {
 
             expect(onSeek).toHaveBeenCalledTimes(1);
             expect(onSeek).toHaveBeenCalledWith(4);
+            expect(onResinAction).toHaveBeenCalledTimes(1);
+            expect(onResinAction).toHaveBeenCalledWith('waveformPlayheadDrag');
             expect(playhead).toHaveStyle({ left: '50%' });
             expect(onRangeChange).not.toHaveBeenCalled();
         });
@@ -2473,6 +2565,7 @@ describe('WaveformView', () => {
             );
 
             const button = screen.getByTestId('bp-waveform-playhead-comment');
+            expect(button).toHaveAttribute('data-resin-target', 'waveformPlayheadComment');
             expect(button).toHaveAttribute('data-target-id', 'Waveform-commentAtTime');
             expect(screen.queryByTestId('bp-waveform-range-clear')).not.toBeInTheDocument();
             expect(button.closest('[data-testid="bp-waveform-playhead"]')).not.toBeNull();

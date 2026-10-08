@@ -111,6 +111,7 @@ export const X_REP_HINT_WAVEFORM = '[waveform]';
 
 export const AI_TRANSCRIPTION_FOR_VIDEO_SUBTITLES = 'aiTranscriptionForVideoSubtitles';
 export const AUDIO_PLAYER_V2 = 'audioPlayerV2.enabled';
+export const AUDIO_PLAYER_V2_RESIN_FEATURE = 'audioPlayerV2';
 
 // One per wave of the Blueprint migration. Each is reported as its own metric dimension so a
 // dashboard can compare a wave's timings with its flag on against the same wave with it off.

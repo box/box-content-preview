@@ -41,6 +41,8 @@ export const WAVEFORM_PLAYHEAD_JUMP_MS = 400;
 export const WAVEFORM_FOLLOW_SCROLL_SETTLE_MS = 150;
 /** Ignore a WaveSurfer click after a tape swipe (iOS delayed click). Must outlast the scrub-chip hide. */
 export const WAVEFORM_TAPE_CLICK_SUPPRESS_MS = 200;
+/** One pinch or swipe burst. Same idle gap image, doc, text, and gallery use for pinch resin. */
+export const WAVEFORM_RESIN_GESTURE_GAP_MS = 200;
 
 export const WAVEFORM_BAR_GAP = 2;
 export const WAVEFORM_BAR_WIDTH = 2;

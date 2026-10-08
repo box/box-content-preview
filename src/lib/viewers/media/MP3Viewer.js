@@ -8,7 +8,14 @@ import {
     EVENT_COMMENT_RANGE_DRAFT_DISMISS,
     isValidCommentRangeDraft,
 } from '../controls/media/types';
-import { AUDIO_PLAYER_V2, STATUS_ERROR, STATUS_SUCCESS, STATUS_VIEWABLE, WAVEFORM_REP_NAME } from '../../constants';
+import {
+    AUDIO_PLAYER_V2,
+    AUDIO_PLAYER_V2_RESIN_FEATURE,
+    STATUS_ERROR,
+    STATUS_SUCCESS,
+    STATUS_VIEWABLE,
+    WAVEFORM_REP_NAME,
+} from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import { getRepresentation } from '../../file';
 import MediaBaseViewer from './MediaBaseViewer';
@@ -177,15 +184,94 @@ class MP3Viewer extends MediaBaseViewer {
         return super.onKeydown(key, event);
     }
 
+    /**
+     * One toolbar resin event.
+     *
+     * @param {string} target
+     * @return {void}
+     */
+    recordToolbarAction = target => {
+        const file = this.options.file || {};
+        this.options.resin?.recordAction({
+            action: 'programmatic',
+            component: 'toolbar',
+            feature: AUDIO_PLAYER_V2_RESIN_FEATURE,
+            target,
+            fileId: file.id,
+            fileExtension: file.extension,
+        });
+    };
+
+    /**
+     * Route slider and settings programmatic events through the audio v2 feature.
+     * Clicks pick the same feature up from data-resin-feature on the player root.
+     *
+     * @return {void}
+     */
+    bindAudioPlayerV2Resin() {
+        const host = this.options.resin;
+        if (
+            !this.isAudioPlayerV2 ||
+            !host ||
+            typeof host.recordAction !== 'function' ||
+            this.audioPlayerV2ResinHost
+        ) {
+            return;
+        }
+        this.audioPlayerV2ResinHost = host;
+        const wrapped = {
+            recordAction: props =>
+                host.recordAction({
+                    feature: AUDIO_PLAYER_V2_RESIN_FEATURE,
+                    ...props,
+                }),
+        };
+        this.options.resin = wrapped;
+        if (window.Box?.Preview) {
+            window.Box.Preview.resin = wrapped;
+        }
+    }
+
+    /**
+     * @return {void}
+     */
+    unbindAudioPlayerV2Resin() {
+        const host = this.audioPlayerV2ResinHost;
+        if (!host) {
+            return;
+        }
+        this.options.resin = host;
+        if (window.Box?.Preview) {
+            window.Box.Preview.resin = host;
+        }
+        this.audioPlayerV2ResinHost = null;
+    }
+
+    /**
+     * @return {MP3ControlsRoot}
+     */
+    createControlsRoot() {
+        this.bindAudioPlayerV2Resin();
+        const file = this.options.file || {};
+        return new MP3ControlsRoot({
+            containerEl: this.mediaContainerEl,
+            fileExtension: file.extension || '',
+            fileId: file.id,
+            resinFeature: this.isAudioPlayerV2 ? AUDIO_PLAYER_V2_RESIN_FEATURE : undefined,
+        });
+    }
+
     handleKeydownAudioV2(key, event) {
         const decoded = (key || '').toLowerCase();
         const altKey = !!(event && event.altKey);
 
         switch (decoded) {
             case 'space':
+                this.recordToolbarAction('playPause');
                 this.toggleV2Play();
                 return true;
             case 'k':
+                this.recordToolbarAction('playPause');
                 this.exitShuttle();
                 this.pause(undefined, true);
                 return true;
@@ -196,15 +282,19 @@ class MP3Viewer extends MediaBaseViewer {
                 this.shuttle('forward');
                 return true;
             case 'arrowleft':
+                this.recordToolbarAction('seekBackward');
                 this.quickSeek(-AUDIO_V2_SKIP_SEC);
                 return true;
             case 'arrowright':
+                this.recordToolbarAction('seekForward');
                 this.quickSeek(AUDIO_V2_SKIP_SEC);
                 return true;
             case ',':
+                this.recordToolbarAction('frameBackward');
                 this.frameStep('back');
                 return true;
             case '.':
+                this.recordToolbarAction('frameForward');
                 this.frameStep('forward');
                 return true;
             case 'arrowup':
@@ -225,17 +315,25 @@ class MP3Viewer extends MediaBaseViewer {
                 if (!this.mediaEl || !Number.isFinite(this.mediaEl.duration)) {
                     return false;
                 }
+                this.recordToolbarAction('seekEnd');
                 this.exitShuttle();
                 this.setMediaTime(this.mediaEl.duration);
                 return true;
             case '0':
             case 'home':
+                this.recordToolbarAction('seekStart');
                 this.exitShuttle();
                 return false;
+            case 'm':
+            case 'shift+m':
+                this.recordToolbarAction('volumeToggle');
+                return false;
             case 'shift+arrowleft':
+                this.recordToolbarAction('skipBackward');
                 this.quickSeek(-AUDIO_V2_SHIFT_SKIP_SEC);
                 return true;
             case 'shift+arrowright':
+                this.recordToolbarAction('skipForward');
                 this.quickSeek(AUDIO_V2_SHIFT_SKIP_SEC);
                 return true;
             case 'i':
@@ -248,10 +346,12 @@ class MP3Viewer extends MediaBaseViewer {
             case 'shift++':
             case '+':
             case '=':
+                this.recordToolbarAction('waveformZoomIn');
                 this.stepKeyboardZoom(1);
                 return true;
             case '-':
             case 'shift+_':
+                this.recordToolbarAction('waveformZoomOut');
                 this.stepKeyboardZoom(-1);
                 return true;
             default:
@@ -274,6 +374,7 @@ class MP3Viewer extends MediaBaseViewer {
         if (isTapeWaveformInput()) {
             return;
         }
+        this.recordToolbarAction(direction === 'forward' ? 'shuttleForward' : 'shuttleReverse');
         const sameDirection = this.shuttleDirection === direction;
         const rate = nextShuttleRate(this.shuttleRate, sameDirection);
         if (direction === 'forward') {
@@ -375,10 +476,12 @@ class MP3Viewer extends MediaBaseViewer {
         if (!target || target.id === this.hostSelectedMarkerId) {
             return;
         }
+        this.recordToolbarAction(direction < 0 ? 'commentMarkerPrevious' : 'commentMarkerNext');
         this.handleCommentMarkerClick(target);
     }
 
     stepKeyboardVolume(direction) {
+        this.recordToolbarAction('volumeSlider');
         this.keyboardVolumeStep += 1;
         if (direction > 0) {
             this.increaseVolume();
@@ -425,6 +528,10 @@ class MP3Viewer extends MediaBaseViewer {
      */
     fallbackToV1Controls() {
         this.isAudioPlayerV2 = false;
+        this.unbindAudioPlayerV2Resin();
+        if (this.controls && this.controls.controlsEl) {
+            this.controls.controlsEl.removeAttribute('data-resin-feature');
+        }
         this.abortWaveformLoads();
         if (this.wrapperEl) {
             this.wrapperEl.classList.remove('bp-media--v2');
@@ -473,6 +580,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.shuttleDirection = null;
         this.shuttleRate = 0;
         this.abortWaveformLoads();
+        this.unbindAudioPlayerV2Resin();
         super.destroy();
     }
 
@@ -504,7 +612,7 @@ class MP3Viewer extends MediaBaseViewer {
         this.showMedia();
 
         if (!this.controls) {
-            this.controls = new MP3ControlsRoot({ containerEl: this.mediaContainerEl });
+            this.controls = this.createControlsRoot();
         }
 
         this.ensureV2Controls().then(Mp3ControlsV2 => {
@@ -960,7 +1068,7 @@ class MP3Viewer extends MediaBaseViewer {
         super.loadUIReact();
 
         if (!this.controls) {
-            this.controls = new MP3ControlsRoot({ containerEl: this.mediaContainerEl });
+            this.controls = this.createControlsRoot();
         }
 
         this.bindCommentMarkersListener();
@@ -1367,6 +1475,7 @@ class MP3Viewer extends MediaBaseViewer {
                         this.getCanCreateComment() ? this.handleCommentRangeDragCreate : undefined
                     }
                     onPlayheadComment={this.getCanCreateComment() ? this.handlePlayheadComment : undefined}
+                    onResinAction={this.recordToolbarAction}
                     onPlayNextChange={this.setPlayNext}
                     peaks={this.waveformPeaks}
                     playNext={this.isPlayNextEnabled()}

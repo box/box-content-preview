@@ -4,6 +4,9 @@ import './MP3ControlsRoot.scss';
 
 export type Options = {
     containerEl: HTMLElement;
+    fileExtension?: string;
+    fileId?: number | string;
+    resinFeature?: string;
 };
 
 export default class MP3ControlsRoot {
@@ -13,10 +16,16 @@ export default class MP3ControlsRoot {
 
     root: Root;
 
-    constructor({ containerEl }: Options) {
+    constructor({ containerEl, fileExtension, fileId, resinFeature }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-MP3ControlsRoot');
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
+        this.controlsEl.setAttribute('data-resin-component', 'toolbar');
+        if (resinFeature) {
+            this.controlsEl.setAttribute('data-resin-feature', resinFeature);
+        }
+        this.controlsEl.setAttribute('data-resin-fileid', fileId != null ? String(fileId) : '');
+        this.controlsEl.setAttribute('data-resin-fileextension', fileExtension || '');
 
         this.containerEl = containerEl;
         this.containerEl.appendChild(this.controlsEl);

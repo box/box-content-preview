@@ -199,6 +199,7 @@ export type WaveformViewProps = {
     onRangeDragCreate?: () => void;
     onRangeDragChange?: (isDragging: boolean) => void;
     onSeek?: (timeSec: number) => void;
+    onResinAction?: (target: string) => void;
     onViewportChange?: (viewport: WaveformViewport) => void;
     onZoomChange?: (zoomLevel: number) => void;
     peaks: ArrayLike<number>;
