@@ -2,7 +2,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import PreviewError from '../../PreviewError';
-import { BLUEPRINT_MIGRATION_CONTROLS_BAR, BROWSERS, CLASS_INVISIBLE } from '../../constants';
+import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
 
@@ -223,7 +223,7 @@ class ImageBaseViewer extends BaseViewer {
             containerEl: this.containerEl,
             fileExtension: this.options.file.extension,
             fileId: this.options.file.id,
-            isBlueprint: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR),
+            isBlueprint: this.isBlueprintEnabled(),
         });
     }
 

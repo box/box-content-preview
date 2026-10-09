@@ -257,6 +257,7 @@ class MP3Viewer extends MediaBaseViewer {
             containerEl: this.mediaContainerEl,
             fileExtension: file.extension || '',
             fileId: file.id,
+            isBlueprint: this.isBlueprintEnabled(),
             resinFeature: this.isAudioPlayerV2 ? AUDIO_PLAYER_V2_RESIN_FEATURE : undefined,
         });
     }

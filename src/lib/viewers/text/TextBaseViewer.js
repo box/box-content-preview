@@ -2,12 +2,7 @@ import React from 'react';
 import BaseViewer from '../BaseViewer';
 import ControlsRoot from '../controls';
 import TextControls from './TextControls';
-import {
-    BLUEPRINT_MIGRATION_CONTROLS_BAR,
-    CLASS_IS_PRINTABLE,
-    CLASS_IS_SELECTABLE,
-    PERMISSION_DOWNLOAD,
-} from '../../constants';
+import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 import { checkPermission } from '../../file';
 
 const ZOOM_DEFAULT = 1.0;
@@ -248,7 +243,7 @@ class TextBaseViewer extends BaseViewer {
             containerEl: this.containerEl,
             fileExtension: this.options.file.extension,
             fileId: this.options.file.id,
-            isBlueprint: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR),
+            isBlueprint: this.isBlueprintEnabled(),
         });
         this.bindDOMListeners();
         this.renderUI();

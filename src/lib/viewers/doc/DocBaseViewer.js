@@ -17,7 +17,6 @@ import { AnnotationInput, AnnotationMode, AnnotationState } from '../../Annotati
 import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
-    BLUEPRINT_MIGRATION_CONTROLS_BAR,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -1480,7 +1479,7 @@ class DocBaseViewer extends BaseViewer {
             containerEl: this.containerEl,
             fileExtension: this.options.file.extension,
             fileId: this.options.file.id,
-            isBlueprint: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR),
+            isBlueprint: this.isBlueprintEnabled(),
         });
         this.annotationControlsFSM.subscribe(() => this.renderUI());
         this.renderUI();

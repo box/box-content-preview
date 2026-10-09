@@ -2672,19 +2672,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.renderUI).toBeCalled();
             });
 
-            test.each([true, false])(
-                'should set isBlueprint on the controls root to %s from the controls bar flag',
-                isEnabled => {
-                    jest.spyOn(docBase, 'renderUI').mockImplementation();
-                    jest.spyOn(docBase, 'featureEnabled').mockImplementation(
-                        feature => feature === 'blueprintMigrationControlsBar.enabled' && isEnabled,
-                    );
+            test.each`
+                features                                                | isBlueprint
+                ${{ blueprintMigrationControlsBar: { enabled: true } }} | ${true}
+                ${{ blueprintMigrationArchive: { enabled: true } }}     | ${true}
+                ${{}}                                                   | ${false}
+            `('should set isBlueprint to $isBlueprint for features $features', ({ features, isBlueprint }) => {
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
+                docBase.options.features = features;
 
-                    docBase.loadUI();
+                docBase.loadUI();
 
-                    expect(docBase.controls.isBlueprint).toBe(isEnabled);
-                },
-            );
+                expect(docBase.controls.isBlueprint).toBe(isBlueprint);
+            });
         });
 
         describe('renderUI()', () => {
