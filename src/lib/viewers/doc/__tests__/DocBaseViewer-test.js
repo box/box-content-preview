@@ -2671,6 +2671,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.renderUI).toBeCalled();
             });
+
+            test.each([true, false])(
+                'should set isBlueprint on the controls root to %s from the controls bar flag',
+                isEnabled => {
+                    jest.spyOn(docBase, 'renderUI').mockImplementation();
+                    jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                        feature => feature === 'blueprintMigrationControlsBar.enabled' && isEnabled,
+                    );
+
+                    docBase.loadUI();
+
+                    expect(docBase.controls.isBlueprint).toBe(isEnabled);
+                },
+            );
         });
 
         describe('renderUI()', () => {

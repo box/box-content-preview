@@ -4,6 +4,7 @@ import Box3DControls from '../Box3DControls';
 import ControlsRoot from '../../controls/controls-root';
 import Image360Controls from './Image360Controls';
 import Image360Renderer from './Image360Renderer';
+import { BLUEPRINT_MIGRATION_CONTROLS_BAR } from '../../../constants';
 import './Image360.scss';
 
 const CSS_CLASS_IMAGE_360 = 'bp-image-360';
@@ -34,7 +35,11 @@ class Image360Viewer extends Box3DViewer {
      */
     createSubModules() {
         this.controls = this.getViewerOption('useReactControls')
-            ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
+            ? new ControlsRoot({
+                  containerEl: this.wrapperEl,
+                  fileId: this.options.file.id,
+                  isBlueprint: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR),
+              })
             : new Box3DControls(this.wrapperEl);
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }

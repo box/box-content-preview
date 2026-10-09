@@ -19,6 +19,7 @@ import {
     RENDER_MODE_LIT,
 } from './model3DConstants';
 import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3DConstants';
+import { BLUEPRINT_MIGRATION_CONTROLS_BAR } from '../../../constants';
 import './Model3D.scss';
 
 const DEFAULT_AXIS_UP = '+Y';
@@ -108,7 +109,11 @@ class Model3DViewer extends Box3DViewer {
      */
     createSubModules() {
         this.controls = this.getViewerOption('useReactControls')
-            ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
+            ? new ControlsRoot({
+                  containerEl: this.wrapperEl,
+                  fileId: this.options.file.id,
+                  isBlueprint: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR),
+              })
             : new Model3DControls(this.wrapperEl);
         this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }
