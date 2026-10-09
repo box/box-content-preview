@@ -1,3 +1,8 @@
+## 3.109.0 (2026-10-09)
+
+* feat(audio): tag audio player v2 actions with the audioPlayerV2 resin feature (#1818) ([323cc33](https://github.com/box/box-content-preview/commit/323cc33)), closes [#1818](https://github.com/box/box-content-preview/issues/1818)
+* chore(build): compile Blueprint CSS and ESM in the CDN bundle (#1786) ([93fbf87](https://github.com/box/box-content-preview/commit/93fbf87)), closes [#1786](https://github.com/box/box-content-preview/issues/1786)
+
 ## 3.108.0 (2026-10-08)
 
 * chore(deps): Align Sass, loaders, and test libraries (#1817) ([062a0ee](https://github.com/box/box-content-preview/commit/062a0ee)), closes [#1817](https://github.com/box/box-content-preview/issues/1817)
