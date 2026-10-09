@@ -4,6 +4,7 @@ import * as file from '../file';
 import * as util from '../util';
 import Api from '../api';
 import Browser from '../Browser';
+import { ComparisonBannerRoot } from '../ComparisonBanner';
 import DownloadReachability from '../DownloadReachability';
 import Logger from '../Logger';
 import Preview from '../Preview';
@@ -1582,6 +1583,165 @@ describe('lib/Preview', () => {
 
             preview.setupUI();
         });
+
+        test('should show the version banner after setting up the shell when comparing with version info', () => {
+            jest.spyOn(preview.ui, 'setup').mockReturnValue(containerEl);
+            jest.spyOn(preview.ui, 'setupNotification').mockImplementation();
+            jest.spyOn(preview.ui, 'showLoadingIcon').mockImplementation();
+            jest.spyOn(preview.ui, 'showLoadingIndicator').mockImplementation();
+            jest.spyOn(preview.ui, 'showNavigation').mockImplementation();
+            preview.options = {
+                isComparing: true,
+                comparisonBanner: { currentFileVersion: { version_number: 12 } },
+            };
+
+            preview.setupUI();
+
+            expect(preview.comparisonBannerRoot).toBeDefined();
+        });
+    });
+
+    describe('comparison banner', () => {
+        const currentFileVersion = { version_number: 12, modified_by: { name: 'Emily Huang' } };
+        const previousFileVersion = { version_number: 11, modified_by: { name: 'Jordan Lee' } };
+        let render;
+
+        beforeEach(() => {
+            render = jest.fn();
+            jest.spyOn(ComparisonBannerRoot.prototype, 'render').mockImplementation(render);
+            jest.spyOn(ComparisonBannerRoot.prototype, 'destroy').mockImplementation();
+            preview.options = { comparisonBanner: { currentFileVersion, previousFileVersion } };
+        });
+
+        describe('updateComparisonBanner()', () => {
+            test('should not show a banner when not comparing', () => {
+                preview.updateComparisonBanner();
+
+                expect(preview.comparisonBannerRoot).toBeUndefined();
+                expect(render).not.toHaveBeenCalled();
+            });
+
+            test('should not show a banner before the container exists', () => {
+                preview.container = undefined;
+                preview.options.isComparing = true;
+
+                preview.updateComparisonBanner();
+
+                expect(preview.comparisonBannerRoot).toBeUndefined();
+            });
+
+            test('should show the current version in the current pane', () => {
+                preview.options.isComparing = true;
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(currentFileVersion, {
+                    isComparedPreview: false,
+                    locale: 'en-US',
+                });
+            });
+
+            test('should show the previous version in the compared pane', () => {
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(previousFileVersion, {
+                    isComparedPreview: true,
+                    locale: 'en-US',
+                });
+            });
+
+            test('should reuse the banner when updated again', () => {
+                preview.options.isComparing = true;
+
+                preview.updateComparisonBanner();
+                const { comparisonBannerRoot } = preview;
+                preview.updateComparisonBanner();
+
+                expect(preview.comparisonBannerRoot).toBe(comparisonBannerRoot);
+                expect(render).toHaveBeenCalledTimes(2);
+            });
+
+            test('should still mount when version info is missing (banner renders null)', () => {
+                preview.options.isComparing = true;
+                preview.options.comparisonBanner = {};
+
+                preview.updateComparisonBanner();
+
+                expect(preview.comparisonBannerRoot).toBeDefined();
+                expect(render).toHaveBeenCalledWith(undefined, {
+                    isComparedPreview: false,
+                    locale: 'en-US',
+                });
+            });
+        });
+
+        describe('setComparisonMode()', () => {
+            test('should show the banner when comparison starts', () => {
+                preview.setComparisonMode({ isComparing: true });
+
+                expect(preview.options.isComparing).toBe(true);
+                expect(preview.comparisonBannerRoot).toBeDefined();
+                expect(render).toHaveBeenCalledWith(currentFileVersion, expect.any(Object));
+            });
+
+            test('should treat a compared preview as comparing', () => {
+                preview.setComparisonMode({ isComparedPreview: true });
+
+                expect(preview.options.isComparing).toBe(true);
+                expect(preview.options.isComparedPreview).toBe(true);
+                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ isComparedPreview: true }));
+            });
+
+            test('should not clear isComparedPreview when only isComparing is passed', () => {
+                preview.setComparisonMode({ isComparing: true, isComparedPreview: true });
+                render.mockClear();
+
+                preview.setComparisonMode({ isComparing: true });
+
+                expect(preview.options.isComparedPreview).toBe(true);
+                expect(preview.options.isComparing).toBe(true);
+                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ isComparedPreview: true }));
+            });
+
+            test('should remove the banner when comparison ends', () => {
+                preview.setComparisonMode({ isComparing: true });
+                preview.setComparisonMode({ isComparing: false, isComparedPreview: false });
+
+                expect(ComparisonBannerRoot.prototype.destroy).toHaveBeenCalled();
+                expect(preview.comparisonBannerRoot).toBeUndefined();
+            });
+        });
+
+        describe('destroyComparisonBanner()', () => {
+            test('should do nothing without a banner', () => {
+                expect(() => preview.destroyComparisonBanner()).not.toThrow();
+            });
+
+            test('should survive destroy() so same-file retries that skip setupUI keep the banner', () => {
+                preview.setComparisonMode({ isComparing: true });
+                const { comparisonBannerRoot } = preview;
+
+                preview.destroy();
+
+                expect(ComparisonBannerRoot.prototype.destroy).not.toHaveBeenCalled();
+                expect(preview.comparisonBannerRoot).toBe(comparisonBannerRoot);
+            });
+
+            test('should be invoked by hide() before the shell is cleaned up', () => {
+                preview.setComparisonMode({ isComparing: true });
+                jest.spyOn(preview, 'destroy').mockImplementation();
+                jest.spyOn(preview.ui, 'cleanup').mockImplementation();
+
+                preview.hide();
+
+                expect(ComparisonBannerRoot.prototype.destroy).toHaveBeenCalled();
+                expect(preview.comparisonBannerRoot).toBeUndefined();
+                expect(preview.ui.cleanup).toHaveBeenCalled();
+            });
+        });
     });
 
     describe('parseOptions()', () => {
@@ -1623,6 +1783,24 @@ describe('lib/Preview', () => {
         test('should set the container', () => {
             preview.parseOptions(preview.previewOptions);
             expect(preview.options.container).toBe(containerEl);
+        });
+
+        test('should parse the version comparison options', () => {
+            const comparisonBanner = { currentFileVersion: { version_number: 2 } };
+
+            preview.parseOptions({ ...preview.previewOptions, comparisonBanner, isComparing: true });
+            expect(preview.options.comparisonBanner).toBe(comparisonBanner);
+            expect(preview.options.isComparing).toBe(true);
+            expect(preview.options.isComparedPreview).toBe(false);
+
+            preview.parseOptions({ ...preview.previewOptions, isComparedPreview: true });
+            expect(preview.options.isComparing).toBe(true);
+            expect(preview.options.isComparedPreview).toBe(true);
+
+            preview.parseOptions(preview.previewOptions);
+            expect(preview.options.comparisonBanner).toEqual({});
+            expect(preview.options.isComparing).toBe(false);
+            expect(preview.options.isComparedPreview).toBe(false);
         });
 
         test('should set shared link and shared link password', () => {

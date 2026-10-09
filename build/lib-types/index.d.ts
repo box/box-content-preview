@@ -29,6 +29,27 @@ export type PreviewEventName =
 
 export type PreviewEventListener = (data?: any) => void;
 
+export interface ComparisonBannerFile {
+    created_by?: { name?: string };
+    modified_at?: string;
+    modified_by?: { name?: string };
+    version_number?: string | number;
+}
+
+/** Both panes get the same object; compared pane uses previousFileVersion. */
+export interface ComparisonBannerVersions {
+    currentFileVersion?: ComparisonBannerFile;
+    previousFileVersion?: ComparisonBannerFile;
+}
+
+/** Partial update; only provided flags change. isComparedPreview implies isComparing. */
+export interface ComparisonMode {
+    /** In a comparison (not “current pane”). Current = isComparing && !isComparedPreview. */
+    isComparing?: boolean;
+    /** Compared (previous version) pane. */
+    isComparedPreview?: boolean;
+}
+
 export interface PreviewOptions {
     apiHost?: string;
     appHost?: string;
@@ -36,6 +57,7 @@ export interface PreviewOptions {
     boxAnnotations?: any;
     cache?: { inMemoryOnly?: boolean };
     collection?: Array<string | BoxFile>;
+    comparisonBanner?: ComparisonBannerVersions;
     container?: string | HTMLElement;
     enableAnnotationsImageDiscoverability?: boolean;
     enableThumbnailsSidebar?: boolean;
@@ -43,6 +65,10 @@ export interface PreviewOptions {
     fixDependencies?: boolean;
     header?: 'light' | 'dark' | 'none';
     headerElement?: HTMLElement;
+    /** Compared (previous version) pane; implies isComparing. */
+    isComparedPreview?: boolean;
+    /** In a comparison (not “current pane”). */
+    isComparing?: boolean;
     location?: { staticBaseURI?: string; version?: string; locale?: string };
     logoUrl?: string;
     pauseRequireJS?: boolean;
@@ -86,6 +112,8 @@ export class Preview {
     show(fileIdOrFile: string | BoxFile, token: BoxToken, options?: PreviewOptions): void;
 
     hide(): void;
+
+    setComparisonMode(mode?: ComparisonMode): void;
 
     reload(skipServerUpdate?: boolean): void;
 

@@ -341,9 +341,10 @@ $header-height: 48px;
     white-space: nowrap;
 }
 
-// Video lowers lights on .bp. MP3/MP4 v2 keep the dark stage on .bp-media--v2
-// (a descendant of .bp-content, not an ancestor of the overlay banner).
-:is(.bp-dark, .bp-theme-dark, .bp:has(.bp-media--v2)) {
+// Banner is under .bp-container; dark stage classes live under .bp — use :has.
+.bp-theme-dark,
+.bp-container:has(.bp-dark),
+.bp-container:has(.bp-media--v2) {
     .bp-version-banner {
         background: linear-gradient(180deg, rgb(0 0 0 / 90%) 19.61%, rgb(0 0 0 / 0%) 100%);
     }
