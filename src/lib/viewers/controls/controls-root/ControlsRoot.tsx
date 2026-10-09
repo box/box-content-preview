@@ -11,7 +11,7 @@ export type Options = {
     containerEl: HTMLElement;
     fileExtension?: string;
     fileId: string;
-    isBlueprint?: boolean;
+    isBlueprintEnabled?: boolean;
     onHide?: () => void;
     onShow?: () => void;
 };
@@ -31,7 +31,7 @@ export default class ControlsRoot {
 
     handleShow: () => void;
 
-    isBlueprint: boolean;
+    isBlueprintEnabled: boolean;
 
     root: Root;
 
@@ -40,7 +40,7 @@ export default class ControlsRoot {
         containerEl,
         fileExtension,
         fileId,
-        isBlueprint = false,
+        isBlueprintEnabled = false,
         onHide = noop,
         onShow = noop,
     }: Options) {
@@ -60,7 +60,7 @@ export default class ControlsRoot {
 
         this.handleHide = onHide;
         this.handleShow = onShow;
-        this.isBlueprint = isBlueprint;
+        this.isBlueprintEnabled = isBlueprintEnabled;
     }
 
     handleMount = (helpers: Helpers): void => {
@@ -104,7 +104,7 @@ export default class ControlsRoot {
         );
 
         this.root.render(
-            this.isBlueprint ? <BlueprintProviders container={this.containerEl}>{layer}</BlueprintProviders> : layer,
+            this.isBlueprintEnabled ? <BlueprintProviders container={this.containerEl}>{layer}</BlueprintProviders> : layer,
         );
     }
 }

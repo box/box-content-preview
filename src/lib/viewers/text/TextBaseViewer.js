@@ -243,7 +243,7 @@ class TextBaseViewer extends BaseViewer {
             containerEl: this.containerEl,
             fileExtension: this.options.file.extension,
             fileId: this.options.file.id,
-            isBlueprint: this.isBlueprintEnabled(),
+            isBlueprintEnabled: this.isBlueprintEnabled(),
         });
         this.bindDOMListeners();
         this.renderUI();

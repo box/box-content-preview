@@ -7,7 +7,7 @@ export type Options = {
     containerEl: HTMLElement;
     fileExtension?: string;
     fileId?: number | string;
-    isBlueprint?: boolean;
+    isBlueprintEnabled?: boolean;
     resinFeature?: string;
 };
 
@@ -16,11 +16,11 @@ export default class MP3ControlsRoot {
 
     controlsEl: HTMLElement;
 
-    isBlueprint: boolean;
+    isBlueprintEnabled: boolean;
 
     root: Root;
 
-    constructor({ containerEl, fileExtension, fileId, isBlueprint = false, resinFeature }: Options) {
+    constructor({ containerEl, fileExtension, fileId, isBlueprintEnabled = false, resinFeature }: Options) {
         this.controlsEl = document.createElement('div');
         this.controlsEl.setAttribute('class', 'bp-MP3ControlsRoot');
         this.controlsEl.setAttribute('data-testid', 'bp-controls');
@@ -34,7 +34,7 @@ export default class MP3ControlsRoot {
         this.containerEl = containerEl;
         this.containerEl.appendChild(this.controlsEl);
 
-        this.isBlueprint = isBlueprint;
+        this.isBlueprintEnabled = isBlueprintEnabled;
         this.root = createRoot(this.controlsEl);
     }
 
@@ -48,7 +48,7 @@ export default class MP3ControlsRoot {
 
     render(controls: React.JSX.Element): void {
         this.root.render(
-            this.isBlueprint ? (
+            this.isBlueprintEnabled ? (
                 <BlueprintProviders container={this.containerEl}>{controls}</BlueprintProviders>
             ) : (
                 controls

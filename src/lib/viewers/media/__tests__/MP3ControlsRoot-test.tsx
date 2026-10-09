@@ -69,10 +69,10 @@ describe('MP3ControlsRoot', () => {
             expect(instance.root.render).toHaveBeenCalledWith(controls);
         });
 
-        test('should wrap the controls in Blueprint providers scoped to the container if isBlueprint is set', () => {
+        test('should wrap the controls in Blueprint providers scoped to the container if isBlueprintEnabled is set', () => {
             const containerEl = document.createElement('div');
             const controls = <div className="TestControls">Controls</div>;
-            const instance = getInstance({ containerEl, isBlueprint: true });
+            const instance = getInstance({ containerEl, isBlueprintEnabled: true });
 
             instance.render(controls);
 

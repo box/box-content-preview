@@ -154,10 +154,10 @@ describe('ControlsRoot', () => {
             );
         });
 
-        test('should wrap the controls layer in Blueprint providers scoped to the container if isBlueprint is set', () => {
+        test('should wrap the controls layer in Blueprint providers scoped to the container if isBlueprintEnabled is set', () => {
             const containerEl = document.createElement('div');
             const controls = <div className="TestControls">Controls</div>;
-            const instance = getInstance({ containerEl, isBlueprint: true });
+            const instance = getInstance({ containerEl, isBlueprintEnabled: true });
 
             instance.render(controls);
 

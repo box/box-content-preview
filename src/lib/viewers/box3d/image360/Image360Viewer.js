@@ -37,7 +37,7 @@ class Image360Viewer extends Box3DViewer {
             ? new ControlsRoot({
                   containerEl: this.wrapperEl,
                   fileId: this.options.file.id,
-                  isBlueprint: this.isBlueprintEnabled(),
+                  isBlueprintEnabled: this.isBlueprintEnabled(),
               })
             : new Box3DControls(this.wrapperEl);
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk, { api: this.api });

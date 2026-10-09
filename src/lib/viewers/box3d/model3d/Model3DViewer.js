@@ -111,7 +111,7 @@ class Model3DViewer extends Box3DViewer {
             ? new ControlsRoot({
                   containerEl: this.wrapperEl,
                   fileId: this.options.file.id,
-                  isBlueprint: this.isBlueprintEnabled(),
+                  isBlueprintEnabled: this.isBlueprintEnabled(),
               })
             : new Model3DControls(this.wrapperEl);
         this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
