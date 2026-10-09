@@ -8,6 +8,7 @@ import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
 import Cache from './Cache';
+import { ComparisonBannerRoot } from './ComparisonBanner';
 import PreviewError from './PreviewError';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewPerf from './PreviewPerf';
@@ -154,6 +155,9 @@ class Preview extends EventEmitter {
     /** @property {HTMLElement} - Preview DOM container */
     container;
 
+    /** @property {ComparisonBannerRoot} - Version comparison banner */
+    comparisonBannerRoot;
+
     /** @property {Function} - Throttled mousemove handler */
     throttledMousemoveHandler;
 
@@ -297,6 +301,8 @@ class Preview extends EventEmitter {
         if (this.perf) {
             this.perf.destroy();
         }
+
+        this.destroyComparisonBanner();
 
         // Clean the UI
         this.ui.cleanup();
@@ -1007,6 +1013,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     setupUI() {
+        this.destroyComparisonBanner();
+
         // Setup the shell
         this.container = this.ui.setup(
             this.options,
@@ -1019,6 +1027,8 @@ class Preview extends EventEmitter {
         // Set up the notification
         this.ui.setupNotification();
 
+        this.updateComparisonBanner();
+
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
 
@@ -1029,6 +1039,66 @@ class Preview extends EventEmitter {
         // Start the preview duration timer when the user starts to perceive preview's load
         const previewDurationTag = Timer.createTag(this.file.id, DURATION_METRIC);
         Timer.start(previewDurationTag);
+    }
+
+    /**
+     * @public
+     * @param {Object} [mode]
+     * @param {boolean} [mode.isComparing] - This Preview is in a comparison (not “current pane”)
+     * @param {boolean} [mode.isComparedPreview] - Compared (previous version) pane; implies isComparing
+     * @return {void}
+     */
+    setComparisonMode(mode = {}) {
+        if ('isComparedPreview' in mode) {
+            this.options.isComparedPreview = !!mode.isComparedPreview;
+        }
+        if ('isComparing' in mode) {
+            this.options.isComparing = !!mode.isComparing;
+        }
+        if (this.options.isComparedPreview) {
+            this.options.isComparing = true;
+        }
+        this.updateComparisonBanner();
+    }
+
+    /**
+     * @private
+     * @return {void}
+     */
+    updateComparisonBanner() {
+        const { comparisonBanner, isComparing } = this.options;
+        const isComparedPreview = !!this.options.isComparedPreview;
+
+        if (!isComparing && !isComparedPreview) {
+            this.destroyComparisonBanner();
+            return;
+        }
+
+        if (!this.container) {
+            return;
+        }
+
+        if (!this.comparisonBannerRoot) {
+            this.comparisonBannerRoot = new ComparisonBannerRoot(this.container);
+        }
+
+        const { currentFileVersion, previousFileVersion } = comparisonBanner || {};
+
+        this.comparisonBannerRoot.render(isComparedPreview ? previousFileVersion : currentFileVersion, {
+            isComparedPreview,
+            locale: getProp(this.location, 'locale'),
+        });
+    }
+
+    /**
+     * @private
+     * @return {void}
+     */
+    destroyComparisonBanner() {
+        if (this.comparisonBannerRoot) {
+            this.comparisonBannerRoot.destroy();
+            this.comparisonBannerRoot = undefined;
+        }
     }
 
     /**
@@ -1161,6 +1231,11 @@ class Preview extends EventEmitter {
 
         // Options that are applicable to certain file ids
         this.options.fileOptions = options.fileOptions || {};
+
+        // isComparing = in a comparison; isComparedPreview = compared pane (implies isComparing)
+        this.options.comparisonBanner = options.comparisonBanner || {};
+        this.options.isComparedPreview = !!options.isComparedPreview;
+        this.options.isComparing = !!options.isComparing || this.options.isComparedPreview;
 
         // Option to enable use of thumbnails sidebar for document types
         this.options.enableThumbnailsSidebar = !!options.enableThumbnailsSidebar;

@@ -40,10 +40,18 @@ export function getComparisonBannerAuthor(file: ComparisonBannerFile = {}): stri
     return file.modified_by?.name || file.created_by?.name || '';
 }
 
-export default function ComparisonBanner({ file = {}, isComparedPreview = false, locale }: Props): JSX.Element {
+export default function ComparisonBanner({
+    file = {},
+    isComparedPreview = false,
+    locale,
+}: Props): JSX.Element | null {
     const versionNumber = file.version_number != null && file.version_number !== '' ? String(file.version_number) : '';
     const timestamp = formatComparisonTimestamp(file.modified_at, locale);
     const author = getComparisonBannerAuthor(file);
+
+    if (!versionNumber && !timestamp && !author) {
+        return null;
+    }
 
     return (
         <div

@@ -71,11 +71,11 @@ describe('lib/ComparisonBanner', () => {
             expect(bannerEl).toHaveClass(CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED);
         });
 
-        test('should omit missing fields', () => {
+        test('should render nothing when version content is missing', () => {
             const { container } = render(<ComparisonBanner file={{}} />);
 
-            expect(container.querySelector('.bp-version-banner-badge')).toBeNull();
-            expect(container.querySelector('.bp-version-banner-info')).toBeNull();
+            expect(container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`)).toBeNull();
+            expect(container.firstChild).toBeNull();
         });
     });
 
