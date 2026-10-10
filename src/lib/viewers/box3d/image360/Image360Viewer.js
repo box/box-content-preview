@@ -34,7 +34,11 @@ class Image360Viewer extends Box3DViewer {
      */
     createSubModules() {
         this.controls = this.getViewerOption('useReactControls')
-            ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
+            ? new ControlsRoot({
+                  containerEl: this.wrapperEl,
+                  fileId: this.options.file.id,
+                  isBlueprintEnabled: this.isBlueprintEnabled(),
+              })
             : new Box3DControls(this.wrapperEl);
         this.renderer = new Image360Renderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsLayer from '../../controls-layer';
 import ControlsRoot from '../ControlsRoot';
 
@@ -151,6 +152,35 @@ describe('ControlsRoot', () => {
                     {controls}
                 </ControlsLayer>,
             );
+        });
+
+        test('should wrap the controls layer in Blueprint providers scoped to the container if isBlueprintEnabled is set', () => {
+            const containerEl = document.createElement('div');
+            const controls = <div className="TestControls">Controls</div>;
+            const instance = getInstance({ containerEl, isBlueprintEnabled: true });
+
+            instance.render(controls);
+
+            expect(instance.root.render).toHaveBeenCalledWith(
+                <BlueprintProviders container={containerEl}>
+                    <ControlsLayer
+                        onHide={instance.handleHide}
+                        onMount={instance.handleMount}
+                        onShow={instance.handleShow}
+                    >
+                        {controls}
+                    </ControlsLayer>
+                </BlueprintProviders>,
+            );
+        });
+
+        test('should not wrap the controls layer in Blueprint providers by default', () => {
+            const instance = getInstance();
+
+            instance.render(<div className="TestControls">Controls</div>);
+
+            const [[rendered]] = (instance.root.render as jest.Mock).mock.calls;
+            expect(rendered.type).toBe(ControlsLayer);
         });
     });
 });

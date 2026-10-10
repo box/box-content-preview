@@ -447,6 +447,7 @@ class VideoBaseViewer extends MediaBaseViewer {
             className: 'bp-VideoControlsRoot',
             containerEl: controlsContainerEl,
             fileId: this.options.file.id,
+            isBlueprintEnabled: this.isBlueprintEnabled(),
             onHide: this.handleControlsHide,
             onShow: this.handleControlsShow,
         });

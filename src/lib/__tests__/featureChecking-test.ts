@@ -1,4 +1,4 @@
-import { getFeatureConfig, isFeatureEnabled } from '../featureChecking';
+import { getFeatureConfig, isBlueprintEnabled, isFeatureEnabled } from '../featureChecking';
 
 const features = {
     shouldUseCar: {
@@ -28,6 +28,22 @@ describe('featureChecking', () => {
 
         test('defaults to empty object', () => {
             expect(getFeatureConfig({}, 'unknownKey')).toEqual({});
+        });
+    });
+
+    describe('isBlueprintEnabled', () => {
+        test.each([
+            'blueprintMigrationArchive',
+            'blueprintMigrationControlsBar',
+            'blueprintMigrationMediaControls',
+            'blueprintMigrationSupportingUi',
+        ])('returns true when only %s is enabled', wave => {
+            expect(isBlueprintEnabled({ [wave]: { enabled: true } })).toBe(true);
+        });
+
+        test('returns false when no Blueprint wave is enabled', () => {
+            expect(isBlueprintEnabled({})).toBe(false);
+            expect(isBlueprintEnabled({ blueprintMigrationControlsBar: { enabled: false }, ...features })).toBe(false);
         });
     });
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
+import BlueprintProviders from '../../../BlueprintProviders';
 import ControlsLayer, { Helpers } from '../controls-layer';
 import './ControlsRoot.scss';
 
@@ -10,6 +11,7 @@ export type Options = {
     containerEl: HTMLElement;
     fileExtension?: string;
     fileId: string;
+    isBlueprintEnabled?: boolean;
     onHide?: () => void;
     onShow?: () => void;
 };
@@ -29,6 +31,8 @@ export default class ControlsRoot {
 
     handleShow: () => void;
 
+    isBlueprintEnabled: boolean;
+
     root: Root;
 
     constructor({
@@ -36,6 +40,7 @@ export default class ControlsRoot {
         containerEl,
         fileExtension,
         fileId,
+        isBlueprintEnabled = false,
         onHide = noop,
         onShow = noop,
     }: Options) {
@@ -55,6 +60,7 @@ export default class ControlsRoot {
 
         this.handleHide = onHide;
         this.handleShow = onShow;
+        this.isBlueprintEnabled = isBlueprintEnabled;
     }
 
     handleMount = (helpers: Helpers): void => {
@@ -91,10 +97,14 @@ export default class ControlsRoot {
     }
 
     render(controls: React.JSX.Element): void {
-        this.root.render(
+        const layer = (
             <ControlsLayer onHide={this.handleHide} onMount={this.handleMount} onShow={this.handleShow}>
                 {controls}
-            </ControlsLayer>,
+            </ControlsLayer>
+        );
+
+        this.root.render(
+            this.isBlueprintEnabled ? <BlueprintProviders container={this.containerEl}>{layer}</BlueprintProviders> : layer,
         );
     }
 }

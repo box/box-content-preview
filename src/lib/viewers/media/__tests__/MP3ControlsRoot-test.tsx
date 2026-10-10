@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import BlueprintProviders from '../../../BlueprintProviders';
 import MP3ControlsRoot from '../MP3ControlsRoot';
 
 jest.mock('react-dom/client', () => ({
@@ -66,6 +67,18 @@ describe('MP3ControlsRoot', () => {
             instance.render(controls);
 
             expect(instance.root.render).toHaveBeenCalledWith(controls);
+        });
+
+        test('should wrap the controls in Blueprint providers scoped to the container if isBlueprintEnabled is set', () => {
+            const containerEl = document.createElement('div');
+            const controls = <div className="TestControls">Controls</div>;
+            const instance = getInstance({ containerEl, isBlueprintEnabled: true });
+
+            instance.render(controls);
+
+            expect(instance.root.render).toHaveBeenCalledWith(
+                <BlueprintProviders container={containerEl}>{controls}</BlueprintProviders>,
+            );
         });
     });
 });

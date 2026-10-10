@@ -2671,6 +2671,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.renderUI).toBeCalled();
             });
+
+            test.each`
+                features                                                | isBlueprintEnabled
+                ${{ blueprintMigrationControlsBar: { enabled: true } }} | ${true}
+                ${{ blueprintMigrationArchive: { enabled: true } }}     | ${true}
+                ${{}}                                                   | ${false}
+            `('should set isBlueprintEnabled to $isBlueprintEnabled for features $features', ({ features, isBlueprintEnabled }) => {
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
+                docBase.options.features = features;
+
+                docBase.loadUI();
+
+                expect(docBase.controls.isBlueprintEnabled).toBe(isBlueprintEnabled);
+            });
         });
 
         describe('renderUI()', () => {

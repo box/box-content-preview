@@ -108,7 +108,11 @@ class Model3DViewer extends Box3DViewer {
      */
     createSubModules() {
         this.controls = this.getViewerOption('useReactControls')
-            ? new ControlsRoot({ containerEl: this.wrapperEl, fileId: this.options.file.id })
+            ? new ControlsRoot({
+                  containerEl: this.wrapperEl,
+                  fileId: this.options.file.id,
+                  isBlueprintEnabled: this.isBlueprintEnabled(),
+              })
             : new Model3DControls(this.wrapperEl);
         this.renderer = new Model3DRenderer(this.wrapperEl, this.boxSdk, { api: this.api });
     }

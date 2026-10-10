@@ -223,6 +223,7 @@ class ImageBaseViewer extends BaseViewer {
             containerEl: this.containerEl,
             fileExtension: this.options.file.extension,
             fileId: this.options.file.id,
+            isBlueprintEnabled: this.isBlueprintEnabled(),
         });
     }
 
