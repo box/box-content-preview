@@ -5,7 +5,7 @@ import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
-import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
+import { ORIGINAL_REP_NAME, STATUS_ERROR, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
 
 // Order of the viewers matters. For example, a PDF file can be previewed by using the preferred optimized 'pdf' rep
@@ -100,14 +100,19 @@ class DocLoader extends AssetLoader {
         // The searchable 'ocr_pdf' rep is generated on demand and is deliberately failed for
         // born-digital PDFs, which must never be OCR'd. determineViewer selects the ocr_pdf viewer
         // whenever an ocr_pdf entry is present (even in an errored state), so downgrade to the pdf
-        // rep when the ocr_pdf rep is not successful. The pdf rep itself downgrades to ORIGINAL below.
-        if (rep.representation === 'ocr_pdf' && status !== STATUS_SUCCESS) {
+        // rep only when the ocr_pdf rep has errored. A pending/none/viewable ocr_pdf rep is kept so
+        // RepStatus can wait for an in-progress on-demand OCR conversion rather than skipping it on
+        // first load. The chosen rep downgrades to ORIGINAL below for PDF files.
+        if (rep.representation === 'ocr_pdf' && status === STATUS_ERROR) {
             rep = getRepresentation(file, 'pdf') || rep;
             status = RepStatus.getStatus(rep);
         }
 
-        // For PDF files, use original rep unless PDF rep is successful since it'll be faster
-        if (file.extension === 'pdf' && rep.representation === 'pdf' && status !== STATUS_SUCCESS) {
+        // For PDF files, use the original rep unless the chosen rep is already successful since it'll
+        // be faster. The `!== ORIGINAL_REP_NAME` guard also catches a born-digital PDF whose only
+        // non-original rep is an errored ocr_pdf (no pdf rep to downgrade to above), which would
+        // otherwise load a known-failed representation instead of falling back to ORIGINAL.
+        if (file.extension === 'pdf' && rep.representation !== ORIGINAL_REP_NAME && status !== STATUS_SUCCESS) {
             rep = getRepresentation(file, ORIGINAL_REP_NAME) || rep;
         }
 

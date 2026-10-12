@@ -86,6 +86,33 @@ describe('lib/viewers/doc/DocLoader', () => {
             expect(determinedRep.representation).toBe('pdf');
         });
 
+        test.each(['pending', 'none', 'viewable'])(
+            'should keep the ocr_pdf rep when its conversion is still in progress (%s)',
+            state => {
+                file.representations.entries.unshift({
+                    representation: 'ocr_pdf',
+                    status: { state },
+                });
+                viewer.REP = 'ocr_pdf';
+
+                const determinedRep = DocLoader.determineRepresentation(file, viewer);
+                expect(determinedRep.representation).toBe('ocr_pdf');
+            },
+        );
+
+        test('should fall back to the original rep when a born-digital pdf only has a failed ocr_pdf rep', () => {
+            file.extension = 'pdf';
+            file.representations.entries = [
+                { representation: 'ocr_pdf', status: { state: 'error' } },
+                { representation: 'ORIGINAL', status: { state: 'success' } },
+            ];
+            viewer.REP = 'ocr_pdf';
+            viewer.EXT = ['pdf'];
+
+            const determinedRep = DocLoader.determineRepresentation(file, viewer);
+            expect(determinedRep.representation).toBe('ORIGINAL');
+        });
+
         test('should fall back from a failed ocr_pdf through pdf to the original rep for pdf files', () => {
             file.extension = 'pdf';
             file.representations.entries = [
