@@ -24,6 +24,14 @@ const VIEWERS = [
         REP: 'pdf',
         EXT: ['dwg'],
     },
+    // Prefer the searchable 'ocr_pdf' rep over 'pdf' when it is present. determineRepresentation
+    // downgrades to 'pdf' (then ORIGINAL) when the ocr_pdf rep is not successful.
+    {
+        NAME: 'Document',
+        CONSTRUCTOR: DocumentViewer,
+        REP: 'ocr_pdf',
+        EXT: DOCUMENT_EXTENSIONS,
+    },
     {
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
@@ -86,16 +94,24 @@ class DocLoader extends AssetLoader {
      * @return {Object} The representation to load
      */
     determineRepresentation(file, viewer) {
-        let repOverride;
+        let rep = super.determineRepresentation(file, viewer);
+        let status = RepStatus.getStatus(rep);
 
-        // For PDF files, use original rep unless PDF rep is successful since it'll be faster
-        const rep = super.determineRepresentation(file, viewer);
-        const status = RepStatus.getStatus(rep);
-        if (file.extension === 'pdf' && rep.representation === 'pdf' && status !== STATUS_SUCCESS) {
-            repOverride = getRepresentation(file, ORIGINAL_REP_NAME);
+        // The searchable 'ocr_pdf' rep is generated on demand and is deliberately failed for
+        // born-digital PDFs, which must never be OCR'd. determineViewer selects the ocr_pdf viewer
+        // whenever an ocr_pdf entry is present (even in an errored state), so downgrade to the pdf
+        // rep when the ocr_pdf rep is not successful. The pdf rep itself downgrades to ORIGINAL below.
+        if (rep.representation === 'ocr_pdf' && status !== STATUS_SUCCESS) {
+            rep = getRepresentation(file, 'pdf') || rep;
+            status = RepStatus.getStatus(rep);
         }
 
-        return repOverride || rep;
+        // For PDF files, use original rep unless PDF rep is successful since it'll be faster
+        if (file.extension === 'pdf' && rep.representation === 'pdf' && status !== STATUS_SUCCESS) {
+            rep = getRepresentation(file, ORIGINAL_REP_NAME) || rep;
+        }
+
+        return rep;
     }
 }
 
