@@ -1,3 +1,8 @@
+## 3.110.0 (2026-10-12)
+
+* feat(controls): mount Blueprint providers on controls roots (#1821) ([0ff3e93](https://github.com/box/box-content-preview/commit/0ff3e93)), closes [#1821](https://github.com/box/box-content-preview/issues/1821)
+* feat(preview): mount the version comparison banner for side-by-side view (#1819) ([11f4a45](https://github.com/box/box-content-preview/commit/11f4a45)), closes [#1819](https://github.com/box/box-content-preview/issues/1819)
+
 ## 3.109.0 (2026-10-09)
 
 * feat(audio): tag audio player v2 actions with the audioPlayerV2 resin feature (#1818) ([323cc33](https://github.com/box/box-content-preview/commit/323cc33)), closes [#1818](https://github.com/box/box-content-preview/issues/1818)
