@@ -55,6 +55,11 @@ function updateConfig(conf, language, index) {
                     // Default is os.cpus().length, which combined with 26 parallel
                     // language compilations OOMs the Jenkins agent.
                     parallel: 2,
+                    // pdfjs chunks are minified separately. Re-compressing them with
+                    // Terser's default `sequences: true` builds the very long comma
+                    // sequences pdf.js disables because V8 fails to run them, which
+                    // paints complex pages (tall Figma PDFs with soft masks) black.
+                    exclude: /pdfjs/,
                     terserOptions: {
                         compress: {
                             drop_console: true,
@@ -64,6 +69,25 @@ function updateConfig(conf, language, index) {
                         },
                     },
                     extractComments: false,
+                }),
+                new TerserPlugin({
+                    include: /pdfjs/,
+                    parallel: 2,
+                    extractComments: false,
+                    terserOptions: {
+                        compress: {
+                            // Same workaround as mozilla/pdf.js gulpfile and build/upgrade_pdfjs.sh.
+                            sequences: false,
+                        },
+                        mangle: {
+                            reserved: ['__webpack_exports__'],
+                        },
+                        keep_classnames: true,
+                        keep_fnames: true,
+                        format: {
+                            comments: /^\/*!/,
+                        },
+                    },
                 }),
                 new CssMinimizerPlugin(),
             ],
