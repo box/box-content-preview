@@ -289,6 +289,20 @@ $header-height: 48px;
     background: linear-gradient(180deg, #f5f5f5 19.61%, rgb(255 255 255 / 0%) 100%);
 }
 
+.bp-version-banner-details {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+}
+
+.bp-version-banner-actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin-left: auto;
+}
+
 .bp-version-banner-badge {
     display: flex;
     flex: none;
@@ -361,5 +375,19 @@ $header-height: 48px;
         border-color: rgb(255 255 255 / 12%);
         color: #fff;
         background-color: rgb(255 255 255 / 30%);
+    }
+
+    // Default IconButton icon is black, which disappears on the dark MP3/MP4 stage.
+    .bp-version-banner-actions button,
+    .bp-version-banner-actions button:hover,
+    .bp-version-banner-actions button:active {
+        background-color: rgb(255 255 255 / 16%);
+    }
+
+    .bp-version-banner-actions svg,
+    .bp-version-banner-actions svg *,
+    .bp-version-banner-actions button:hover svg *,
+    .bp-version-banner-actions button:active svg * {
+        fill: #fff;
     }
 }

@@ -1638,6 +1638,11 @@ describe('lib/Preview', () => {
                 expect(render).toHaveBeenCalledWith(currentFileVersion, {
                     isComparedPreview: false,
                     locale: 'en-US',
+                    menuContainer: containerEl,
+                    onDelete: undefined,
+                    onDownload: undefined,
+                    onMakeCurrent: undefined,
+                    onOpenFullPreview: undefined,
                 });
             });
 
@@ -1650,6 +1655,11 @@ describe('lib/Preview', () => {
                 expect(render).toHaveBeenCalledWith(previousFileVersion, {
                     isComparedPreview: true,
                     locale: 'en-US',
+                    menuContainer: containerEl,
+                    onDelete: undefined,
+                    onDownload: undefined,
+                    onMakeCurrent: undefined,
+                    onOpenFullPreview: undefined,
                 });
             });
 
@@ -1674,7 +1684,90 @@ describe('lib/Preview', () => {
                 expect(render).toHaveBeenCalledWith(undefined, {
                     isComparedPreview: false,
                     locale: 'en-US',
+                    menuContainer: containerEl,
+                    onDelete: undefined,
+                    onDownload: undefined,
+                    onMakeCurrent: undefined,
+                    onOpenFullPreview: undefined,
                 });
+            });
+
+            test('should not download from Preview when the banner has no download handler', () => {
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onDownload: undefined }),
+                );
+            });
+
+            test('should pass the host open-full-preview handler on the compared pane', () => {
+                const onOpenFullPreview = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+                preview.options.comparisonBanner = { ...preview.options.comparisonBanner, onOpenFullPreview };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ onOpenFullPreview }));
+            });
+
+            test('should pass version actions from comparisonBanner on the compared pane', () => {
+                const onDelete = jest.fn();
+                const onDownload = jest.fn();
+                const onMakeCurrent = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+                preview.options.comparisonBanner = {
+                    ...preview.options.comparisonBanner,
+                    onDelete,
+                    onDownload,
+                    onMakeCurrent,
+                };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onDelete, onDownload, onMakeCurrent }),
+                );
+            });
+
+            test('should not pass version actions on the current pane', () => {
+                const onDelete = jest.fn();
+                const onDownload = jest.fn();
+                const onMakeCurrent = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.comparisonBanner = {
+                    ...preview.options.comparisonBanner,
+                    onDelete,
+                    onDownload,
+                    onMakeCurrent,
+                };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    currentFileVersion,
+                    expect.objectContaining({
+                        onDelete: undefined,
+                        onDownload: undefined,
+                        onMakeCurrent: undefined,
+                    }),
+                );
+            });
+
+            test('should not pass the host open-full-preview handler on the current pane', () => {
+                const onOpenFullPreview = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.comparisonBanner = { ...preview.options.comparisonBanner, onOpenFullPreview };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(currentFileVersion, expect.objectContaining({ onOpenFullPreview: undefined }));
             });
         });
 

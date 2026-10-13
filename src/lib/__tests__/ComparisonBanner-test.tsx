@@ -1,5 +1,6 @@
 import React from 'react';
-import { act, render } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from '../constants';
 import ComparisonBanner, {
     ComparisonBannerRoot,
@@ -54,21 +55,92 @@ describe('lib/ComparisonBanner', () => {
         test('should render badge, timestamp, and author for the current pane', () => {
             const { container } = render(<ComparisonBanner file={file} locale="en-US" />);
             const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`) as HTMLElement;
+            const statusEl = bannerEl.querySelector('[role="status"]') as HTMLElement;
 
-            expect(bannerEl).toHaveAttribute('role', 'status');
-            expect(bannerEl).toHaveAttribute('aria-label', __('comparison_banner_current'));
+            expect(statusEl).toHaveAttribute('aria-label', __('comparison_banner_current'));
             expect(bannerEl).not.toHaveClass(CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED);
             expect(bannerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('12');
             expect(bannerEl.querySelector('.bp-version-banner-time')).toHaveTextContent(/Aug/);
             expect(bannerEl.querySelector('.bp-version-banner-author')).toHaveTextContent('Emily Huang');
         });
 
+        test('should not render the actions menu on the current pane', () => {
+            render(<ComparisonBanner file={file} locale="en-US" onDownload={jest.fn()} />);
+
+            expect(screen.queryByRole('button', { name: __('comparison_banner_actions') })).not.toBeInTheDocument();
+        });
+
         test('should use the previous-version aria label on the compared pane', () => {
             const { container } = render(<ComparisonBanner file={file} isComparedPreview />);
             const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`) as HTMLElement;
+            const statusEl = bannerEl.querySelector('[role="status"]') as HTMLElement;
 
-            expect(bannerEl).toHaveAttribute('aria-label', __('comparison_banner_previous'));
+            expect(statusEl).toHaveAttribute('aria-label', __('comparison_banner_previous'));
             expect(bannerEl).toHaveClass(CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED);
+        });
+
+        test('should download the previewed file from the actions menu', async () => {
+            const onDownload = jest.fn();
+            const user = userEvent.setup();
+
+            render(<ComparisonBanner file={file} isComparedPreview locale="en-US" onDownload={onDownload} />);
+
+            const menuButton = screen.getByRole('button', { name: __('comparison_banner_actions') });
+            expect(menuButton).toHaveAttribute('data-target-id', 'ComparisonBanner-openActions');
+
+            await user.click(menuButton);
+
+            const downloadItem = screen.getByRole('menuitem', { name: __('download') });
+            expect(downloadItem).toHaveAttribute('data-target-id', 'ComparisonBanner-download');
+
+            await user.click(downloadItem);
+
+            expect(onDownload).toHaveBeenCalledTimes(1);
+        });
+
+        test('should promote and delete the compared version from the actions menu', async () => {
+            const onDelete = jest.fn();
+            const onMakeCurrent = jest.fn();
+            const user = userEvent.setup();
+
+            render(
+                <ComparisonBanner
+                    file={file}
+                    isComparedPreview
+                    locale="en-US"
+                    onDelete={onDelete}
+                    onMakeCurrent={onMakeCurrent}
+                />,
+            );
+
+            await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
+
+            const makeCurrentItem = screen.getByRole('menuitem', { name: __('comparison_banner_make_current') });
+            expect(makeCurrentItem).toHaveAttribute('data-target-id', 'ComparisonBanner-makeCurrent');
+            await user.click(makeCurrentItem);
+            expect(onMakeCurrent).toHaveBeenCalledTimes(1);
+
+            await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
+            const deleteItem = screen.getByRole('menuitem', { name: __('comparison_banner_delete') });
+            expect(deleteItem).toHaveAttribute('data-target-id', 'ComparisonBanner-delete');
+            await user.click(deleteItem);
+            expect(onDelete).toHaveBeenCalledTimes(1);
+        });
+
+        test('should leave side-by-side comparison from the actions menu', async () => {
+            const onOpenFullPreview = jest.fn();
+            const user = userEvent.setup();
+
+            render(<ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={onOpenFullPreview} />);
+
+            await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
+
+            const openFullPreviewItem = screen.getByRole('menuitem', { name: __('comparison_banner_open_full_preview') });
+            expect(openFullPreviewItem).toHaveAttribute('data-target-id', 'ComparisonBanner-openFullPreview');
+
+            await user.click(openFullPreviewItem);
+
+            expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
         });
 
         test('should render nothing when version content is missing', () => {

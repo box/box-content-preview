@@ -1082,11 +1082,25 @@ class Preview extends EventEmitter {
             this.comparisonBannerRoot = new ComparisonBannerRoot(this.container);
         }
 
-        const { currentFileVersion, previousFileVersion } = comparisonBanner || {};
+        const {
+            currentFileVersion,
+            previousFileVersion,
+            onDelete,
+            onDownload: onDownloadVersion,
+            onMakeCurrent,
+            onOpenFullPreview,
+        } = comparisonBanner || {};
 
         this.comparisonBannerRoot.render(isComparedPreview ? previousFileVersion : currentFileVersion, {
             isComparedPreview,
             locale: getProp(this.location, 'locale'),
+            menuContainer: this.container,
+            // The actions menu belongs on the compared pane. Download, promote, and delete
+            // come from the versions sidebar on comparisonBanner.
+            onDelete: isComparedPreview ? onDelete : undefined,
+            onDownload: isComparedPreview ? onDownloadVersion : undefined,
+            onMakeCurrent: isComparedPreview ? onMakeCurrent : undefined,
+            onOpenFullPreview: isComparedPreview ? onOpenFullPreview : undefined,
         });
     }
 
