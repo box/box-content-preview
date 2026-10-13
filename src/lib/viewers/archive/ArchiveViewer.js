@@ -1,13 +1,18 @@
 /* eslint-disable no-unused-vars */
 import get from 'lodash/get';
+import { isNpmBuild } from '../../isNpmBuild';
 import BaseViewer from '../BaseViewer';
 import PreviewError from '../../PreviewError';
 import { BLUEPRINT_MIGRATION_ARCHIVE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import './Archive.scss';
 
-const JS = ['archive.js'];
-const CSS = ['archive.css'];
+const npmBoxArchive =
+    typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__ ? require('./BoxArchive').default : null;
+
+function viewerAssets() {
+    return isNpmBuild() ? { js: [], css: [] } : { js: ['archive.js'], css: ['archive.css'] };
+}
 
 class ArchiveViewer extends BaseViewer {
     /**
@@ -45,7 +50,8 @@ class ArchiveViewer extends BaseViewer {
     load() {
         super.load();
 
-        return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
+        const { js, css } = viewerAssets();
+        return Promise.all([this.loadAssets(js, css), this.getRepStatus().getPromise()])
             .then(() => {
                 const { representation } = this.options;
                 const template = get(representation, 'content.url_template');
@@ -71,8 +77,9 @@ class ArchiveViewer extends BaseViewer {
         }
 
         try {
-            /* global BoxArchive loaded from archive.js */
-            this.archiveComponent = new BoxArchive(this.archiveEl, this.options.file.name, data, {
+            /* global BoxArchive */
+            const ArchiveComponent = npmBoxArchive || BoxArchive;
+            this.archiveComponent = new ArchiveComponent(this.archiveEl, this.options.file.name, data, {
                 isArchiveV2Enabled: this.isBlueprintEnabled() && this.featureEnabled(BLUEPRINT_MIGRATION_ARCHIVE),
                 resin: this.options.resin,
             });
