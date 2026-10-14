@@ -162,6 +162,26 @@ describe('lib/viewers/archive/ArchiveTableV2', () => {
         expect(onItemClick).toHaveBeenCalledTimes(2);
     });
 
+    test('should log each folder open, by click or Enter, through the resin prop and nothing for files', async () => {
+        const user = userEvent.setup();
+        const recordAction = jest.fn();
+        render(getWrapper({ resin: { recordAction } }));
+
+        await user.click(screen.getByText('folder'));
+        act(() => screen.getByRole('row', { name: 'folder' }).focus());
+        await user.keyboard('{Enter}');
+        await user.click(screen.getByText('file.txt'));
+        await user.keyboard('{Enter}');
+
+        expect(recordAction).toHaveBeenCalledTimes(2);
+        expect(recordAction).toHaveBeenCalledWith({
+            action: 'programmatic',
+            component: 'archive',
+            feature: 'archive',
+            target: 'folder',
+        });
+    });
+
     test('should show empty folder metadata and formatted file metadata', () => {
         render(getWrapper());
 
