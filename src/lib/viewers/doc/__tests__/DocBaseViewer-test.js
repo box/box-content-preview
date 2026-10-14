@@ -15,6 +15,8 @@ import DocBaseViewer, {
     PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER,
     countPdfOperations,
 } from '../DocBaseViewer';
+import DocControls from '../DocControls';
+import DocControlsV2 from '../DocControlsV2';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
@@ -2730,6 +2732,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pageNumber: docBase.pdfViewer.currentPageNumber,
                     scale: 0.9,
                 });
+            });
+
+            test.each`
+                features                                                 | Controls
+                ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${DocControlsV2}
+                ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${DocControls}
+                ${{}}                                                    | ${DocControls}
+            `('should render $Controls.name for features $features', ({ features, Controls }) => {
+                docBase.options.features = features;
+                docBase.renderUI();
+
+                expect(docBase.controls.render.mock.calls[0][0].type).toBe(Controls);
             });
 
             test('should not add annotation controls if missing create permission', () => {
