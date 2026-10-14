@@ -32,6 +32,9 @@
         "access": "public"
     },
     "dependencies": {
+        "@box/item-icon": "3.5.12",
+        "@box/types": "^3.2.23",
+        "@tanstack/react-virtual": "^3.14.10",
         "pdfjs-dist": "6.4.299",
         "wavesurfer.js": "7.12.11"
     },

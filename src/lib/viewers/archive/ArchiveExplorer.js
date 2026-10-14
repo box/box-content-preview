@@ -37,6 +37,7 @@ class ArchiveExplorer extends React.Component {
         }),
         // Loaded archive v2 parts (see ArchiveV2.tsx); absent renders the v1 UI
         v2: PropTypes.shape({
+            ArchiveTableV2: PropTypes.elementType.isRequired,
             BreadcrumbsV2: PropTypes.elementType.isRequired,
             SearchBarV2: PropTypes.elementType.isRequired,
         }),
@@ -234,50 +235,60 @@ class ArchiveExplorer extends React.Component {
                         view={view}
                     />
                     <div className="bp-ArchiveExplorer-table">
-                        <AutoSizer>
-                            {({ height, width }) => (
-                                <VirtualizedTable
-                                    height={height}
-                                    rowData={itemList}
-                                    rowGetter={this.getRowData(itemList)}
-                                    scrollToIndex={0}
-                                    sort={this.handleSort}
-                                    sortBy={sortBy}
-                                    sortDirection={sortDirection}
-                                    width={width}
-                                >
-                                    {intl => [
-                                        <Column
-                                            key={KEY_NAME}
-                                            cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
-                                            dataKey={KEY_NAME}
-                                            flexGrow={3}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('filename')}
-                                            width={1}
-                                        />,
-                                        <Column
-                                            key={KEY_MODIFIED_AT}
-                                            cellRenderer={readableTimeCellRenderer}
-                                            dataKey={KEY_MODIFIED_AT}
-                                            flexGrow={2}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('last_modified_date')}
-                                            width={1}
-                                        />,
-                                        <Column
-                                            key={KEY_SIZE}
-                                            cellRenderer={sizeCellRenderer()}
-                                            dataKey={KEY_SIZE}
-                                            flexGrow={1}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('size')}
-                                            width={1}
-                                        />,
-                                    ]}
-                                </VirtualizedTable>
-                            )}
-                        </AutoSizer>
+                        {v2 ? (
+                            <v2.ArchiveTableV2
+                                items={itemList}
+                                onItemClick={item => this.handleItemClick({ fullPath: item.absolute_path })}
+                                onSort={this.handleSort}
+                                sortBy={sortBy}
+                                sortDirection={sortDirection}
+                            />
+                        ) : (
+                            <AutoSizer>
+                                {({ height, width }) => (
+                                    <VirtualizedTable
+                                        height={height}
+                                        rowData={itemList}
+                                        rowGetter={this.getRowData(itemList)}
+                                        scrollToIndex={0}
+                                        sort={this.handleSort}
+                                        sortBy={sortBy}
+                                        sortDirection={sortDirection}
+                                        width={width}
+                                    >
+                                        {intl => [
+                                            <Column
+                                                key={KEY_NAME}
+                                                cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
+                                                dataKey={KEY_NAME}
+                                                flexGrow={3}
+                                                headerRenderer={sortableColumnHeaderRenderer}
+                                                label={__('filename')}
+                                                width={1}
+                                            />,
+                                            <Column
+                                                key={KEY_MODIFIED_AT}
+                                                cellRenderer={readableTimeCellRenderer}
+                                                dataKey={KEY_MODIFIED_AT}
+                                                flexGrow={2}
+                                                headerRenderer={sortableColumnHeaderRenderer}
+                                                label={__('last_modified_date')}
+                                                width={1}
+                                            />,
+                                            <Column
+                                                key={KEY_SIZE}
+                                                cellRenderer={sizeCellRenderer()}
+                                                dataKey={KEY_SIZE}
+                                                flexGrow={1}
+                                                headerRenderer={sortableColumnHeaderRenderer}
+                                                label={__('size')}
+                                                width={1}
+                                            />,
+                                        ]}
+                                    </VirtualizedTable>
+                                )}
+                            </AutoSizer>
+                        )}
                     </div>
                 </div>
             </Internationalize>
