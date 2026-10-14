@@ -1,13 +1,10 @@
-// stylelint-disable-next-line scss/load-partial-extension
-@import '~@box/blueprint-web-assets/tokens/tokens.scss';
-
 .bp-ArchiveTableV2 {
     height: 100%;
 }
 
 .bp-ArchiveTableV2-name {
     display: flex;
-    gap: $space-1;
+    gap: var(--bp-space-010);
     align-items: center;
 
     svg {
