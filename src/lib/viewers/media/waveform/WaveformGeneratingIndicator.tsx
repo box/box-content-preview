@@ -1,7 +1,12 @@
 import React from 'react';
+import { Text } from '@box/blueprint-web';
 import './WaveformGeneratingIndicator.scss';
 
-export default function WaveformGeneratingIndicator(): JSX.Element {
+type Props = {
+    isBlueprintEnabled?: boolean;
+};
+
+export default function WaveformGeneratingIndicator({ isBlueprintEnabled = false }: Props): JSX.Element {
     const label = __('media_generating_waveform');
 
     return (
@@ -16,7 +21,15 @@ export default function WaveformGeneratingIndicator(): JSX.Element {
                 <span className="bp-WaveformGeneratingIndicator-bar" />
                 <span className="bp-WaveformGeneratingIndicator-bar" />
             </span>
-            <span className="bp-WaveformGeneratingIndicator-label">{label}</span>
+            <span className="bp-WaveformGeneratingIndicator-label">
+                {isBlueprintEnabled ? (
+                    <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                        {label}
+                    </Text>
+                ) : (
+                    label
+                )}
+            </span>
         </div>
     );
 }

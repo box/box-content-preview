@@ -248,6 +248,7 @@ export default function MP3ControlsV2({
                         currentTime={currentTime}
                         durationSec={waveformDurationSec}
                         interactive={isWaveformInteractive}
+                        isBlueprintEnabled={isBlueprintEnabled}
                         isPlaying={isPlaying}
                         mediaEl={mediaEl}
                         onPlayheadComment={isWaveformInteractive && !shuttleDirection ? onPlayheadComment : undefined}
@@ -276,14 +277,19 @@ export default function MP3ControlsV2({
                     />
                 </div>
                 {showShuttle && shuttleDirection && (
-                    <WaveformShuttleIndicator direction={shuttleDirection} rate={shuttleRate} />
+                    <WaveformShuttleIndicator
+                        direction={shuttleDirection}
+                        isBlueprintEnabled={isBlueprintEnabled}
+                        rate={shuttleRate}
+                    />
                 )}
                 {(showGeneratingWaveformIndicator || hasZoomControl) && (
                     <div className="bp-MP3ControlsV2-waveformZoom">
                         {showGeneratingWaveformIndicator ? (
-                            <WaveformGeneratingIndicator />
+                            <WaveformGeneratingIndicator isBlueprintEnabled={isBlueprintEnabled} />
                         ) : (
                             <WaveformZoomControl
+                                isBlueprintEnabled={isBlueprintEnabled}
                                 isRevealed={isZoomRevealed}
                                 maxZoom={maxZoom}
                                 onZoomChange={handleWaveformZoom}
