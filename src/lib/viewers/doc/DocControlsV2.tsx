@@ -3,12 +3,12 @@ import AnnotationsControls from '../controls/annotations';
 import ControlsBar, { ControlsBarV2 } from '../controls/controls-bar';
 import DrawingControls from '../controls/annotations/DrawingControls';
 import ExperiencesProvider from '../controls/experiences';
-import FindBarToggle from '../controls/findbar';
-import FullscreenToggle from '../controls/fullscreen';
-import GalleryToggle from '../controls/gallery';
+import { FindBarToggleV2 } from '../controls/findbar';
+import { FullscreenToggleV2 } from '../controls/fullscreen';
+import { GalleryToggleV2 } from '../controls/gallery';
 import PageControls from '../controls/page';
-import RotateControl from '../controls/rotate/RotateControl';
-import ThumbnailsToggle from '../controls/sidebar';
+import { RotateControlV2 } from '../controls/rotate';
+import { ThumbnailsToggleV2 } from '../controls/sidebar';
 import ZoomControls from '../controls/zoom';
 import { Props } from './DocControls';
 
@@ -45,8 +45,11 @@ export default function DocControlsV2({
             <ControlsBarV2>
                 {!isGalleryOpen && (
                     <>
-                        <ThumbnailsToggle isThumbnailsOpen={isThumbnailsOpen} onThumbnailsToggle={onThumbnailsToggle} />
-                        <FindBarToggle onFindBarToggle={onFindBarToggle} />
+                        <ThumbnailsToggleV2
+                            isThumbnailsOpen={isThumbnailsOpen}
+                            onThumbnailsToggle={onThumbnailsToggle}
+                        />
+                        <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />
                         <PageControls
                             onPageChange={onPageChange}
                             onPageSubmit={onPageSubmit}
@@ -66,9 +69,9 @@ export default function DocControlsV2({
                         scale={scale}
                     />
                 )}
-                {!isGalleryOpen && onRotateLeft && <RotateControl onRotateLeft={onRotateLeft} />}
-                <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
-                <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                {!isGalleryOpen && onRotateLeft && <RotateControlV2 onRotateLeft={onRotateLeft} />}
+                <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
+                <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />
                 {!isGalleryOpen && (
                     <AnnotationsControls
                         annotationColor={annotationColor}

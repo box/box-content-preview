@@ -178,6 +178,38 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.thumbnailsSidebarEl).toBeUndefined();
         });
 
+        test('should focus the gallery toggle when the gallery controller returns focus', () => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+
+            const toggle = document.createElement('button');
+            toggle.setAttribute('data-resin-target', 'galleryView');
+            docBase.containerEl.appendChild(toggle);
+
+            docBase.galleryController.focusToggle();
+
+            expect(document.activeElement).toBe(toggle);
+        });
+
         test('should default the thumbnails open if thumbnails toggle state is open', () => {
             docBase = new DocBaseViewer({
                 cache: {

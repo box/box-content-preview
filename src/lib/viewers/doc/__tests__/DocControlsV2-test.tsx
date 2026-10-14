@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import DocControlsV2 from '../DocControlsV2';
 import { Props } from '../DocControls';
 
@@ -18,6 +19,7 @@ describe('DocControlsV2', () => {
                 pageNumber={1}
                 {...props}
             />,
+            { wrapper: BlueprintProviders },
         );
 
     describe('render', () => {
@@ -27,7 +29,7 @@ describe('DocControlsV2', () => {
             const toolbar = screen.getByRole('toolbar');
 
             expect(toolbar).toContainElement(screen.getByTitle(__('zoom_in')));
-            expect(toolbar).toContainElement(screen.getByTitle(__('enter_fullscreen')));
+            expect(toolbar).toContainElement(screen.getByRole('button', { name: __('enter_fullscreen') }));
             expect(toolbar).toContainElement(screen.getByTitle(__('previous_page')));
         });
 
@@ -37,7 +39,7 @@ describe('DocControlsV2', () => {
             getWrapper({ onFullscreenToggle, onZoomIn });
 
             await userEvent.click(screen.getByTitle(__('zoom_in')));
-            await userEvent.click(screen.getByTitle(__('enter_fullscreen')));
+            await userEvent.click(screen.getByRole('button', { name: __('enter_fullscreen') }));
 
             expect(onZoomIn).toHaveBeenCalled();
             expect(onFullscreenToggle).toHaveBeenCalled();
@@ -51,10 +53,10 @@ describe('DocControlsV2', () => {
                 onThumbnailsToggle: jest.fn(),
             });
 
-            expect(screen.queryByTitle(__('toggle_thumbnails'))).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('toggle_findbar'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('toggle_thumbnails') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('toggle_findbar') })).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('previous_page'))).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('rotate_left'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('rotate_left') })).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('zoom_in'))).not.toBeInTheDocument();
         });
 
