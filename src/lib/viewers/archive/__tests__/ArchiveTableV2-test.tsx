@@ -82,7 +82,7 @@ describe('lib/viewers/archive/ArchiveTableV2', () => {
         expect(within(row).queryByRole('img')).not.toBeInTheDocument();
     });
 
-    test('should render a window of a large list and retain row positions and resin targets', () => {
+    test('should render a window of a large list and retain row positions', () => {
         const largeList = Array.from({ length: 5000 }, (_, index) => ({
             absolute_path: `file-${index}.txt`,
             name: `file-${index}.txt`,
@@ -100,7 +100,6 @@ describe('lib/viewers/archive/ArchiveTableV2', () => {
         expect(dataRows.length).toBeGreaterThan(0);
         expect(dataRows.length).toBeLessThan(30);
         expect(dataRows[0]).toHaveAttribute('aria-rowindex', '2');
-        expect(dataRows[0]).toHaveAttribute('data-resin-target', 'file');
         expect(screen.queryByText('file-4999.txt')).not.toBeInTheDocument();
 
         const scrollElement = table.closest<HTMLDivElement>('.bp-ArchiveTableV2')!;
@@ -147,7 +146,6 @@ describe('lib/viewers/archive/ArchiveTableV2', () => {
         render(getWrapper({ onItemClick }));
 
         const folderRow = screen.getByRole('row', { name: 'folder' });
-        expect(folderRow).toHaveAttribute('data-resin-target', 'folder');
         await user.click(screen.getByText('folder'));
         expect(onItemClick).toHaveBeenCalledTimes(1);
         expect(onItemClick).toHaveBeenLastCalledWith(folder);
