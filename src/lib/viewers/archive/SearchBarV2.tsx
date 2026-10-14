@@ -18,6 +18,7 @@ export default function SearchBarV2({ onSearch, searchQuery }: Props): JSX.Eleme
                 placeholder={__('search_placeholder')}
                 searchInputAriaLabel={__('search')}
                 searchInputClearAriaLabel={__('search_clear')}
+                searchInputClearButtonTooltip={__('search_clear')}
                 value={searchQuery}
             />
         </div>
