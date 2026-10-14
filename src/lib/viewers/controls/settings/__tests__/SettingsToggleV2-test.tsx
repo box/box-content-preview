@@ -3,7 +3,7 @@ import { DropdownMenu, Popover, Toolbar } from '@box/blueprint-web';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
-import SettingsToggleV2, { Props } from '../SettingsToggleV2';
+import SettingsToggleV2, { ToolbarProps } from '../SettingsToggleV2';
 
 class ResizeObserverMock {
     disconnect = jest.fn();
@@ -35,7 +35,7 @@ describe('SettingsToggleV2', () => {
                 <BlueprintProviders container={container}>{wrapped}</BlueprintProviders>
             ),
         });
-    const getWrapper = (props: Partial<Props> = {}) =>
+    const getWrapper = (props: Partial<ToolbarProps> = {}) =>
         renderInToolbar(<SettingsToggleV2 label="Settings" {...props} />);
     const getToggle = () => screen.getByRole('button', { name: 'Settings' });
 
@@ -115,6 +115,94 @@ describe('SettingsToggleV2', () => {
 
             expect(getToggle()).toHaveAttribute('aria-expanded', 'false');
             expect(getToggle()).toHaveAttribute('data-state', 'closed');
+
+            await user.click(getToggle());
+
+            expect(getToggle()).toHaveAttribute('aria-expanded', 'true');
+            expect(getToggle()).toHaveAttribute('data-state', 'open');
+            expect(within(container).getByText('Item')).toBeInTheDocument();
+
+            await user.keyboard('{Escape}');
+
+            expect(getToggle()).toHaveAttribute('aria-expanded', 'false');
+            expect(getToggle()).toHaveAttribute('data-state', 'closed');
+            expect(getToggle()).toHaveFocus();
+        });
+    });
+
+    describe('with buttonType="icon"', () => {
+        const renderStandalone = (children: React.ReactNode) =>
+            render(<>{children}</>, {
+                wrapper: ({ children: wrapped }) => (
+                    <BlueprintProviders container={container}>{wrapped}</BlueprintProviders>
+                ),
+            });
+
+        test('should render an icon button without a toolbar', () => {
+            renderStandalone(<SettingsToggleV2 buttonType="icon" label="Settings" />);
+
+            expect(screen.queryByRole('toolbar')).toBeNull();
+            expect(getToggle()).toHaveAttribute('data-resin-target', 'settingsOpen');
+        });
+
+        test('should pass size and variant through to the icon button', () => {
+            renderStandalone(<SettingsToggleV2 buttonType="icon" label="Settings" size="large" variant="on-dark" />);
+
+            expect(getToggle().className).toMatch(/large/);
+            expect(getToggle().className).toMatch(/on-dark/);
+        });
+
+        test('should show the label in a tooltip portaled into the container', async () => {
+            const user = userEvent.setup();
+            renderStandalone(<SettingsToggleV2 buttonType="icon" label="Media settings" />);
+
+            await user.hover(screen.getByRole('button', { name: 'Media settings' }));
+
+            expect(await within(container).findByRole('tooltip')).toHaveTextContent('Media settings');
+        });
+
+        test('should render the badge beside the button if provided', () => {
+            renderStandalone(
+                <SettingsToggleV2 badge={<span data-testid="badge">HD</span>} buttonType="icon" label="Settings" />,
+            );
+
+            expect(getToggle()).not.toContainElement(screen.getByTestId('badge'));
+            expect(getToggle().parentElement).toContainElement(screen.getByTestId('badge'));
+        });
+
+        test('should forward its ref and extra props to the button', async () => {
+            const user = userEvent.setup();
+            const onClick = jest.fn();
+            const ref = React.createRef<HTMLButtonElement>();
+            renderStandalone(
+                <SettingsToggleV2
+                    ref={ref}
+                    buttonType="icon"
+                    data-testid="toggle"
+                    label="Settings"
+                    onClick={onClick}
+                />,
+            );
+
+            await user.click(getToggle());
+
+            expect(ref.current).toBe(getToggle());
+            expect(getToggle()).toHaveAttribute('data-testid', 'toggle');
+            expect(onClick).toHaveBeenCalledTimes(1);
+        });
+
+        test('should reflect the DropdownMenu open state on the button', async () => {
+            const user = userEvent.setup();
+            renderStandalone(
+                <DropdownMenu.Root modal={false}>
+                    <DropdownMenu.Trigger asChild>
+                        <SettingsToggleV2 buttonType="icon" label="Settings" />
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content container={container}>
+                        <DropdownMenu.Item>Item</DropdownMenu.Item>
+                    </DropdownMenu.Content>
+                </DropdownMenu.Root>,
+            );
 
             await user.click(getToggle());
 
