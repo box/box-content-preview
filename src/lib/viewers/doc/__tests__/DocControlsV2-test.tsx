@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import DocControlsV2 from '../DocControlsV2';
 import { Props } from '../DocControls';
 
@@ -18,6 +19,7 @@ describe('DocControlsV2', () => {
                 pageNumber={1}
                 {...props}
             />,
+            { wrapper: BlueprintProviders },
         );
 
     describe('render', () => {
@@ -28,7 +30,7 @@ describe('DocControlsV2', () => {
 
             expect(toolbar).toContainElement(screen.getByTitle(__('zoom_in')));
             expect(toolbar).toContainElement(screen.getByTitle(__('enter_fullscreen')));
-            expect(toolbar).toContainElement(screen.getByTitle(__('previous_page')));
+            expect(toolbar).toContainElement(screen.getByRole('button', { name: __('previous_page') }));
         });
 
         test('should pass down props to the controls', async () => {
@@ -53,7 +55,7 @@ describe('DocControlsV2', () => {
 
             expect(screen.queryByTitle(__('toggle_thumbnails'))).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('toggle_findbar'))).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('previous_page'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('previous_page') })).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('rotate_left'))).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('zoom_in'))).not.toBeInTheDocument();
         });

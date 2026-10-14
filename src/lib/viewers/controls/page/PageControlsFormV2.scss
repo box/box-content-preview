@@ -1,0 +1,16 @@
+.bp-PageControlsFormV2 {
+    display: flex;
+    flex: none;
+    align-items: center;
+}
+
+// Toolbar.Input grows from a zero basis, so it needs a sized parent to show the page number
+.bp-PageControlsFormV2-input {
+    display: flex;
+    width: var(--bp-size-140);
+}
+
+// Keeps the "1 / 12" label from wrapping, which would grow the height of the whole bar
+.bp-PageControlsFormV2-button-label {
+    white-space: nowrap;
+}
