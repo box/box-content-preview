@@ -18,6 +18,11 @@
     height: 24px;
 }
 
+// LoadingIndicator is absolutely positioned and centers itself in its nearest positioned ancestor.
+.bp-WaveformGeneratingIndicator-bars--blueprint {
+    position: relative;
+}
+
 .bp-WaveformGeneratingIndicator-bar {
     width: 2px;
     height: 10px;

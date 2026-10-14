@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from '@box/blueprint-web';
+import { LoadingIndicator, Text } from '@box/blueprint-web';
 import './WaveformGeneratingIndicator.scss';
 
 type Props = {
@@ -16,11 +16,20 @@ export default function WaveformGeneratingIndicator({ isBlueprintEnabled = false
             data-testid="bp-waveform-generating"
             role="status"
         >
-            <span aria-hidden="true" className="bp-WaveformGeneratingIndicator-bars">
-                <span className="bp-WaveformGeneratingIndicator-bar" />
-                <span className="bp-WaveformGeneratingIndicator-bar" />
-                <span className="bp-WaveformGeneratingIndicator-bar" />
-            </span>
+            {isBlueprintEnabled ? (
+                <div
+                    aria-hidden="true"
+                    className="bp-WaveformGeneratingIndicator-bars bp-WaveformGeneratingIndicator-bars--blueprint"
+                >
+                    <LoadingIndicator aria-label={label} variant="light" />
+                </div>
+            ) : (
+                <span aria-hidden="true" className="bp-WaveformGeneratingIndicator-bars">
+                    <span className="bp-WaveformGeneratingIndicator-bar" />
+                    <span className="bp-WaveformGeneratingIndicator-bar" />
+                    <span className="bp-WaveformGeneratingIndicator-bar" />
+                </span>
+            )}
             <span className="bp-WaveformGeneratingIndicator-label">
                 {isBlueprintEnabled ? (
                     <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
