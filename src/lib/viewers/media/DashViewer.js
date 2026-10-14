@@ -1390,6 +1390,7 @@ class DashViewer extends VideoBaseViewer {
                     {...sharedProps}
                     onPlayNextChange={this.setPlayNext}
                     playNext={this.isPlayNextEnabled()}
+                    isBlueprintEnabled={this.isBlueprintMediaControlsEnabled()}
                 />,
             );
             return;
