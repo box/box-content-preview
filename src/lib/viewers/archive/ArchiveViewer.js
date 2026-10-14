@@ -107,6 +107,7 @@ class ArchiveViewer extends BaseViewer {
      * @return {void}
      */
     finishRender() {
+        this.emitFirstRenderMetric();
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
     }

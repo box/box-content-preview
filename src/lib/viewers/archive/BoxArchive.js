@@ -1,4 +1,5 @@
 import React from 'react';
+import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import ArchiveExplorer from './ArchiveExplorer';
 
@@ -58,9 +59,11 @@ class BoxArchive {
             />
         );
 
-        this.root.render(
-            v2 ? <v2.BlueprintProviders container={this.archiveEl}>{explorer}</v2.BlueprintProviders> : explorer,
-        );
+        flushSync(() => {
+            this.root.render(
+                v2 ? <v2.BlueprintProviders container={this.archiveEl}>{explorer}</v2.BlueprintProviders> : explorer,
+            );
+        });
     }
 
     /**
