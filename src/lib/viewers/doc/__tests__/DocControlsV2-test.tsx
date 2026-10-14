@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import DocControlsV2 from '../DocControlsV2';
 import { Props } from '../DocControls';
 
@@ -18,6 +19,7 @@ describe('DocControlsV2', () => {
                 pageNumber={1}
                 {...props}
             />,
+            { wrapper: BlueprintProviders },
         );
 
     describe('render', () => {
@@ -26,7 +28,7 @@ describe('DocControlsV2', () => {
 
             const toolbar = screen.getByRole('toolbar');
 
-            expect(toolbar).toContainElement(screen.getByTitle(__('zoom_in')));
+            expect(toolbar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
             expect(toolbar).toContainElement(screen.getByTitle(__('enter_fullscreen')));
             expect(toolbar).toContainElement(screen.getByTitle(__('previous_page')));
         });
@@ -36,7 +38,7 @@ describe('DocControlsV2', () => {
             const onZoomIn = jest.fn();
             getWrapper({ onFullscreenToggle, onZoomIn });
 
-            await userEvent.click(screen.getByTitle(__('zoom_in')));
+            await userEvent.click(screen.getByRole('button', { name: __('zoom_in') }));
             await userEvent.click(screen.getByTitle(__('enter_fullscreen')));
 
             expect(onZoomIn).toHaveBeenCalled();
@@ -55,13 +57,13 @@ describe('DocControlsV2', () => {
             expect(screen.queryByTitle(__('toggle_findbar'))).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('previous_page'))).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('rotate_left'))).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('zoom_in'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('zoom_in') })).not.toBeInTheDocument();
         });
 
         test('should keep zoom while the gallery is open if gallery zoom is enabled', () => {
             getWrapper({ hasGalleryZoom: true, isGalleryOpen: true });
 
-            expect(screen.getByTitle(__('zoom_in'))).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: __('zoom_in') })).toBeInTheDocument();
         });
     });
 });
