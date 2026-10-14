@@ -1,13 +1,9 @@
-// The package exports the Sass tokens only with the extension; './tokens/tokens' resolves to the JS tokens
-// stylelint-disable-next-line scss/load-partial-extension
-@import '~@box/blueprint-web-assets/tokens/tokens.scss';
-
 .bp-BreadcrumbsV2 {
     display: flex;
     flex: 0 0 50px;
     align-items: center;
     justify-content: space-between;
-    padding: 0 $space-5;
-    border-bottom: 1px solid $border-divider-border;
-    box-shadow: 0 4px 6px -2px $black-opacity-04;
+    padding: 0 var(--bp-space-050);
+    border-bottom: var(--bp-border-01) solid var(--bp-border-divider-border);
+    box-shadow: 0 4px 6px -2px var(--bp-black-opacity-04);
 }

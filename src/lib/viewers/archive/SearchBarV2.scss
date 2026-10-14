@@ -1,14 +1,10 @@
-// The package exports the Sass tokens only with the extension; './tokens/tokens' resolves to the JS tokens
-// stylelint-disable-next-line scss/load-partial-extension
-@import '~@box/blueprint-web-assets/tokens/tokens.scss';
-
 .bp-SearchBarV2 {
     display: flex;
     flex: 0 0 70px;
     align-items: center;
-    padding: 0 $space-5;
-    border-bottom: 1px solid $border-divider-border;
-    background: $surface-surface-secondary;
+    padding: 0 var(--bp-space-050);
+    border-bottom: var(--bp-border-01) solid var(--bp-border-divider-border);
+    background: var(--bp-surface-surface-secondary);
 
     > * {
         width: 100%;
