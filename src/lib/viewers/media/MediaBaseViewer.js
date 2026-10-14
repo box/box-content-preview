@@ -7,6 +7,7 @@ import PreviewError from '../../PreviewError';
 import Timer from '../../Timer';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import {
+    BLUEPRINT_MIGRATION_MEDIA_CONTROLS,
     CLASS_ELEM_KEYBOARD_FOCUS,
     CLASS_HIDDEN,
     CLASS_IS_BUFFERING,
@@ -533,6 +534,16 @@ class MediaBaseViewer extends BaseViewer {
      */
     isPlayNextEnabled() {
         return this.cache.get(MEDIA_PLAY_NEXT_CACHE_KEY) === 'Enabled';
+    }
+
+    /**
+     * Determines if the media controls render their Blueprint versions
+     *
+     * @protected
+     * @return {boolean} Indicates if the Blueprint media controls flag is on
+     */
+    isBlueprintMediaControlsEnabled() {
+        return this.featureEnabled(BLUEPRINT_MIGRATION_MEDIA_CONTROLS);
     }
 
     /**

@@ -87,6 +87,7 @@ export default function MP3ControlsV2({
     rate,
     shuttleDirection = null,
     shuttleRate = 0,
+    isBlueprintEnabled = false,
     volume,
 }: Props): JSX.Element {
     const durationValue = typeof durationTime === 'number' && isFinite(durationTime) ? durationTime : 0;
@@ -313,7 +314,12 @@ export default function MP3ControlsV2({
             {hasMediaMetadata && (
                 <div className="bp-MP3ControlsV2-bar" data-testid="bp-MP3ControlsV2-bar">
                     <div className="bp-MP3ControlsV2-group">
-                        <PlayPauseToggle hasSkipButtons={false} isPlaying={isPlaying} onPlayPause={onPlayPause} />
+                        <PlayPauseToggle
+                            hasSkipButtons={false}
+                            isPlaying={isPlaying}
+                            onPlayPause={onPlayPause}
+                            isBlueprintEnabled={isBlueprintEnabled}
+                        />
                         <div className="bp-MP3ControlsV2-divider" />
                         <TimestampControl currentTime={currentTime} durationTime={durationValue} />
                     </div>
@@ -323,6 +329,7 @@ export default function MP3ControlsV2({
                             keyboardVolumeStep={keyboardVolumeStep}
                             onMuteChange={onMuteChange}
                             onVolumeChange={onVolumeChange}
+                            isBlueprintEnabled={isBlueprintEnabled}
                             volume={volume}
                         />
                         <MediaSettings

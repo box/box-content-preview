@@ -1,18 +1,26 @@
 import React from 'react';
+import { IconButton, Tooltip } from '@box/blueprint-web';
+import { ArrowsMaximize, ArrowsMinimize } from '@box/blueprint-web-assets/icons/Medium';
 import IconArrowsMaximizeMedium24 from '../icons/IconArrowsMaximizeMedium24';
 import IconArrowsMinimizeMedium24 from '../icons/IconArrowsMinimizeMedium24';
+import { stopActivationKeyPropagation } from './utils';
 import useFullscreen from '../hooks/useFullscreen';
 import './VideoFullscreenButton.scss';
 
 export type Props = {
     mediaEl?: HTMLVideoElement | null;
     onFullscreenToggle: (isFullscreen: boolean, toggleFullscreenEl: EventTarget | null) => void;
+    isBlueprintEnabled?: boolean;
 };
 
-export default function VideoFullscreenButton({ mediaEl, onFullscreenToggle }: Props): JSX.Element {
+export default function VideoFullscreenButton({
+    mediaEl,
+    onFullscreenToggle,
+    isBlueprintEnabled = false,
+}: Props): JSX.Element {
     const isFullscreen = useFullscreen();
     const title = isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen');
-    const ref = React.useRef<HTMLButtonElement>(null);
+    const ref = React.useRef<HTMLElement>(null);
     const [position, setPosition] = React.useState<{ top: number; right: number } | null>(null);
 
     React.useEffect(() => {
@@ -54,13 +62,38 @@ export default function VideoFullscreenButton({ mediaEl, onFullscreenToggle }: P
         onFullscreenToggle(!isFullscreen, target);
     };
 
+    const positionStyle = position ? { top: position.top, right: position.right } : undefined;
+
+    if (isBlueprintEnabled) {
+        return (
+            <div
+                ref={ref as React.RefObject<HTMLDivElement>}
+                className="bp-VideoFullscreenButton-position"
+                style={positionStyle}
+            >
+                <Tooltip content={title}>
+                    <IconButton
+                        aria-label={title}
+                        data-resin-target="videoFullscreen"
+                        data-target-id="VideoFullscreenButton-toggle"
+                        icon={isFullscreen ? ArrowsMinimize : ArrowsMaximize}
+                        onClick={handleClick}
+                        onKeyDown={stopActivationKeyPropagation}
+                        size="large"
+                        variant="on-dark"
+                    />
+                </Tooltip>
+            </div>
+        );
+    }
+
     return (
         <button
-            ref={ref}
+            ref={ref as React.RefObject<HTMLButtonElement>}
             className="bp-VideoFullscreenButton"
             data-resin-target="videoFullscreen"
             onClick={handleClick}
-            style={position ? { top: position.top, right: position.right } : undefined}
+            style={positionStyle}
             title={title}
             type="button"
         >
