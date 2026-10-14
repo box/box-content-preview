@@ -12,17 +12,6 @@ import { VIEWS } from '../constants';
 }));
 
 describe('lib/viewers/archive/BreadcrumbsV2', () => {
-    const recordAction = jest.fn();
-
-    beforeEach(() => {
-        window.Box = { Preview: { resin: { recordAction } } };
-    });
-
-    afterEach(() => {
-        recordAction.mockClear();
-        delete window.Box;
-    });
-
     const getWrapper = (props = {}) =>
         render(
             <BlueprintProviders>
@@ -63,17 +52,32 @@ describe('lib/viewers/archive/BreadcrumbsV2', () => {
         expect(onClick).toHaveBeenCalledWith('root/');
     });
 
-    test('should log the click for analytics', async () => {
-        getWrapper();
+    test('should log the click as an archive feature event through the resin prop', async () => {
+        const recordAction = jest.fn();
+        getWrapper({ resin: { recordAction } });
 
         await userEvent.setup().click(screen.getByRole('button', { name: 'test' }));
 
         expect(recordAction).toHaveBeenCalledTimes(1);
-        expect(recordAction).toHaveBeenCalledWith(expect.objectContaining({ target: 'breadcrumb' }));
+        expect(recordAction).toHaveBeenCalledWith({
+            action: 'programmatic',
+            component: 'archive',
+            feature: 'archive',
+            target: 'breadcrumb',
+        });
     });
 
-    test('should still navigate when no analytics instance is present', async () => {
-        delete window.Box;
+    test('should log without a global Preview, as in the npm build', async () => {
+        const recordAction = jest.fn();
+        expect(window.Box).toBeUndefined();
+        getWrapper({ resin: { recordAction } });
+
+        await userEvent.setup().click(screen.getByRole('button', { name: 'test' }));
+
+        expect(recordAction).toHaveBeenCalledTimes(1);
+    });
+
+    test('should still navigate when no resin instance is passed', async () => {
         const onClick = jest.fn();
         getWrapper({ onClick });
 

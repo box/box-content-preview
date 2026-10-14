@@ -184,6 +184,14 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 expect(archiveOptions.isArchiveV2Enabled).toBe(true);
             });
 
+            test('should pass the viewer resin instance to BoxArchive', () => {
+                archive.options.resin = { recordAction: jest.fn() };
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.resin).toBe(archive.options.resin);
+            });
+
             test('should not enable archive v2 when only another wave flag is on', () => {
                 archive.options.features = { blueprintMigrationControlsBar: { enabled: true } };
 

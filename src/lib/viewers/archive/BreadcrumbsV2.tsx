@@ -7,22 +7,13 @@ export type Props = {
     filename: string;
     fullPath: string;
     onClick: (fullPath: string) => void;
+    resin?: {
+        recordAction: (payload: { action: string; component: string; feature: string; target: string }) => void;
+    };
     view: string;
 };
 
-// Blueprint crumbs accept no per-item attributes, so the click is logged programmatically
-// (precedent: SettingsRadioItem.tsx)
-const recordBreadcrumbClick = (): void => {
-    const recordAction = window.Box?.Preview?.resin?.recordAction;
-
-    recordAction?.({
-        action: 'programmatic',
-        component: 'archive',
-        target: 'breadcrumb',
-    });
-};
-
-export default function BreadcrumbsV2({ filename, fullPath, onClick, view }: Props): JSX.Element {
+export default function BreadcrumbsV2({ filename, fullPath, onClick, resin, view }: Props): JSX.Element {
     const pathNames = fullPath === ROOT_FOLDER ? [] : fullPath.split('/').slice(0, -1);
     const crumbs = [
         { id: ROOT_FOLDER, name: filename },
@@ -30,7 +21,14 @@ export default function BreadcrumbsV2({ filename, fullPath, onClick, view }: Pro
     ];
 
     const handlePageLinkClick = (path: string): void => {
-        recordBreadcrumbClick();
+        // Blueprint crumbs accept no per-item attributes, so the click is logged programmatically
+        // (precedent: MP3Viewer.js recordToolbarAction)
+        resin?.recordAction({
+            action: 'programmatic',
+            component: 'archive',
+            feature: 'archive',
+            target: 'breadcrumb',
+        });
         onClick(path);
     };
 

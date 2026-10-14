@@ -74,6 +74,7 @@ class ArchiveViewer extends BaseViewer {
             /* global BoxArchive loaded from archive.js */
             this.archiveComponent = new BoxArchive(this.archiveEl, this.options.file.name, data, {
                 isArchiveV2Enabled: this.isBlueprintEnabled() && this.featureEnabled(BLUEPRINT_MIGRATION_ARCHIVE),
+                resin: this.options.resin,
             });
         } catch (error) {
             throw new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_reupload'), error);

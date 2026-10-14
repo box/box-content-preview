@@ -11,12 +11,14 @@ class BoxArchive {
      * @param {Object} data - Archive data
      * @param {Object} [options] - Archive options
      * @param {boolean} [options.isArchiveV2Enabled] - Whether to render the Blueprint UI, loaded as its own chunk
+     * @param {Object} [options.resin] - Resin analytics instance from the viewer options
      * @return {BoxArchive} Instance
      */
-    constructor(archiveEl, filename, data, { isArchiveV2Enabled = false } = {}) {
+    constructor(archiveEl, filename, data, { isArchiveV2Enabled = false, resin } = {}) {
         this.archiveEl = archiveEl;
         this.data = data;
         this.filename = filename;
+        this.resin = resin;
         this.root = createRoot(archiveEl);
 
         if (!isArchiveV2Enabled) {
@@ -47,7 +49,13 @@ class BoxArchive {
      */
     render(v2) {
         const explorer = (
-            <ArchiveExplorer ref={this.setRef} filename={this.filename} itemCollection={this.data} v2={v2} />
+            <ArchiveExplorer
+                ref={this.setRef}
+                filename={this.filename}
+                itemCollection={this.data}
+                resin={this.resin}
+                v2={v2}
+            />
         );
 
         this.root.render(

@@ -94,10 +94,10 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             global.ResizeObserver = originalResizeObserver;
         });
 
-        const renderV2 = () =>
+        const renderV2 = (props = {}) =>
             render(
                 <v2.BlueprintProviders>
-                    <ArchiveExplorer filename={filename} itemCollection={data} v2={v2} />
+                    <ArchiveExplorer filename={filename} itemCollection={data} v2={v2} {...props} />
                 </v2.BlueprintProviders>,
             );
 
@@ -131,14 +131,16 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
         });
 
         test('should navigate back to the root from a breadcrumb', async () => {
+            const recordAction = jest.fn();
             const user = userEvent.setup();
-            renderV2();
+            renderV2({ resin: { recordAction } });
 
             await user.click(screen.getByText('test'));
             await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: 'test.zip' }));
 
             expect(screen.queryByText('subfolder')).not.toBeInTheDocument();
             expect(screen.getByText('level-0.txt')).toBeInTheDocument();
+            expect(recordAction).toHaveBeenCalledWith(expect.objectContaining({ target: 'breadcrumb' }));
         });
     });
 

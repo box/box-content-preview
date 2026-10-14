@@ -97,6 +97,15 @@ describe('lib/viewers/archive/BoxArchive', () => {
             expect(rendered.props.children.props.v2).toBe(v2);
         });
 
+        test('should pass the resin instance to the explorer', async () => {
+            const resin = { recordAction: jest.fn() };
+            archiveComponent = new BoxArchive(containerEl, 'test.zip', [], { isArchiveV2Enabled: true, resin });
+
+            await archiveComponent.ready;
+
+            expect(archiveComponent.root.render.mock.calls[0][0].props.children.props.resin).toBe(resin);
+        });
+
         test('should not render if destroyed while the v2 module is loading', async () => {
             archiveComponent = new BoxArchive(containerEl, 'test.zip', [], { isArchiveV2Enabled: true });
 
