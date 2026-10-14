@@ -1,7 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import DocControlsV2 from '../DocControlsV2';
+import { AnnotationMode } from '../../../types';
 import { Props } from '../DocControls';
 
 describe('DocControlsV2', () => {
@@ -18,6 +20,7 @@ describe('DocControlsV2', () => {
                 pageNumber={1}
                 {...props}
             />,
+            { wrapper: BlueprintProviders },
         );
 
     describe('render', () => {
@@ -62,6 +65,41 @@ describe('DocControlsV2', () => {
             getWrapper({ hasGalleryZoom: true, isGalleryOpen: true });
 
             expect(screen.getByTitle(__('zoom_in'))).toBeInTheDocument();
+        });
+    });
+
+    describe('annotations', () => {
+        const annotationProps = { hasDrawing: true, hasHighlight: true, hasRegion: true };
+
+        test('should render the markup toggle on the main bar and keep the palette closed', async () => {
+            const onAnnotationModeClick = jest.fn();
+            getWrapper({ ...annotationProps, onAnnotationModeClick });
+
+            const toggle = screen.getByRole('button', { name: __('annotation_tools') });
+
+            expect(screen.getByRole('toolbar')).toContainElement(toggle);
+            expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+
+            await userEvent.click(toggle);
+
+            expect(onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.REGION });
+        });
+
+        test('should open the palette outside the main bar while a mode is active', () => {
+            getWrapper({ ...annotationProps, annotationMode: AnnotationMode.REGION });
+
+            const [mainBar, paletteBar] = screen.getAllByRole('toolbar');
+
+            expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toContainElement(paletteBar);
+            expect(paletteBar).toContainElement(screen.getByTestId('bp-AnnotationsControls-regionBtn'));
+            expect(mainBar).not.toContainElement(screen.getByTestId('bp-AnnotationsControls-regionBtn'));
+        });
+
+        test('should hide the markup toggle and the palette while the gallery is open', () => {
+            getWrapper({ ...annotationProps, annotationMode: AnnotationMode.REGION, isGalleryOpen: true });
+
+            expect(screen.queryByRole('button', { name: __('annotation_tools') })).not.toBeInTheDocument();
+            expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
         });
     });
 });
