@@ -123,7 +123,6 @@ export default function ArchiveTableV2({
                                 // React Aria's Row drops an aria-rowindex prop, so it's set through the ref
                                 ref={row => row?.setAttribute('aria-rowindex', String(index + FIRST_DATA_ROW_INDEX))}
                                 className={classNames('bp-ArchiveTableV2-row', { 'is-folder': isFolder })}
-                                data-resin-target={item.type}
                                 id={item.absolute_path}
                                 onAction={isFolder ? () => handleFolderAction(item) : undefined}
                                 style={{ height: `${ROW_HEIGHT_PX}px` }}
