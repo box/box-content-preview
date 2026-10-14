@@ -2,6 +2,7 @@
 import get from 'lodash/get';
 import BaseViewer from '../BaseViewer';
 import PreviewError from '../../PreviewError';
+import { BLUEPRINT_MIGRATION_ARCHIVE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import './Archive.scss';
 
@@ -62,23 +63,52 @@ class ArchiveViewer extends BaseViewer {
      *
      * @private
      * @param {Array<Object>} data - archive data collection
-     * @return {void}
+     * @return {Promise<void>|undefined} pending only when the v2 chunk is loading
      */
     finishLoading = data => {
         if (this.isDestroyed()) {
-            return;
+            return undefined;
         }
 
         try {
             /* global BoxArchive loaded from archive.js */
-            this.archiveComponent = new BoxArchive(this.archiveEl, this.options.file.name, data);
+            this.archiveComponent = new BoxArchive(this.archiveEl, this.options.file.name, data, {
+                isArchiveV2Enabled: this.isBlueprintEnabled() && this.featureEnabled(BLUEPRINT_MIGRATION_ARCHIVE),
+            });
         } catch (error) {
             throw new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_reupload'), error);
         }
 
+        const { ready } = this.archiveComponent;
+
+        if (!ready) {
+            this.finishRender();
+            return undefined;
+        }
+
+        // Flag on: hold `load` until the v2 chunk has loaded and rendered
+        return ready.then(
+            () => {
+                if (!this.isDestroyed()) {
+                    this.finishRender();
+                }
+            },
+            error => {
+                throw new PreviewError(ERROR_CODE.LOAD_VIEWER, __('error_reupload'), error);
+            },
+        );
+    };
+
+    /**
+     * Marks the viewer loaded once the archive has rendered
+     *
+     * @private
+     * @return {void}
+     */
+    finishRender() {
         this.loaded = true;
         this.emit(VIEWER_EVENT.load);
-    };
+    }
 }
 
 export default ArchiveViewer;

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import ArchiveExplorer from '../ArchiveExplorer';
+import * as v2 from '../ArchiveV2';
 
 describe('lib/viewers/archive/ArchiveExplorer', () => {
     const originalOffsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
@@ -75,6 +76,69 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(screen.getByTestId('bp-archive-explorer')).toBeInTheDocument();
             expect(screen.getByRole('searchbox')).toBeInTheDocument();
             expect(screen.getByLabelText('Breadcrumb')).toBeInTheDocument();
+        });
+    });
+
+    describe('archive v2', () => {
+        const originalResizeObserver = global.ResizeObserver;
+
+        beforeAll(() => {
+            global.ResizeObserver = jest.fn(() => ({
+                disconnect: jest.fn(),
+                observe: jest.fn(),
+                unobserve: jest.fn(),
+            }));
+        });
+
+        afterAll(() => {
+            global.ResizeObserver = originalResizeObserver;
+        });
+
+        const renderV2 = () =>
+            render(
+                <v2.BlueprintProviders>
+                    <ArchiveExplorer filename={filename} itemCollection={data} v2={v2} />
+                </v2.BlueprintProviders>,
+            );
+
+        test('should keep search and folder navigation working with the v2 parts', async () => {
+            const user = userEvent.setup();
+            renderV2();
+
+            await user.click(screen.getByText('test'));
+
+            expect(screen.getByText('subfolder')).toBeInTheDocument();
+            expect(
+                within(screen.getByRole('navigation')).getByRole('button', { name: 'test.zip' }),
+            ).toBeInTheDocument();
+
+            await user.type(screen.getByRole('searchbox'), 'level');
+
+            expect(screen.getByText('Search Results')).toBeInTheDocument();
+            expect(screen.getByText('level-0.txt')).toBeInTheDocument();
+        });
+
+        test('should return from search results to the folder view when the search is cleared', async () => {
+            const user = userEvent.setup();
+            renderV2();
+
+            await user.type(screen.getByRole('searchbox'), 'level');
+            await user.keyboard('{Escape}');
+
+            expect(screen.getByRole('searchbox')).toHaveValue('');
+            expect(screen.queryByText('Search Results')).not.toBeInTheDocument();
+            expect(screen.getByRole('navigation')).toBeInTheDocument();
+        });
+
+        test('should navigate back to the root from a breadcrumb', async () => {
+            const user = userEvent.setup();
+            renderV2();
+
+            await user.click(screen.getByText('test'));
+            await user.click(within(screen.getByRole('navigation')).getByRole('button', { name: 'test.zip' }));
+
+            expect(screen.queryByText('subfolder')).not.toBeInTheDocument();
+            expect(screen.getByText('level-0.txt')).toBeInTheDocument();
         });
     });
 
