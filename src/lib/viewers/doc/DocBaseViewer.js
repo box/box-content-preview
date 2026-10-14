@@ -4,6 +4,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
+import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
@@ -17,6 +18,7 @@ import { AnnotationInput, AnnotationMode, AnnotationState } from '../../Annotati
 import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -1516,9 +1518,10 @@ class DocBaseViewer extends BaseViewer {
         const canRotate = this.featureEnabled('rotate.enabled');
         const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
         const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isEnhancedGalleryEnabled;
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? DocControlsV2 : DocControls;
 
         this.controls.render(
-            <DocControls
+            <Controls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
