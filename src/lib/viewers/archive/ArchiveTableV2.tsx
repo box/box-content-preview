@@ -36,12 +36,34 @@ export type Props = {
     items: ArchiveItem[];
     onItemClick: (item: ArchiveItem) => void;
     onSort: (sort: Sort) => void;
+    resin?: {
+        recordAction: (payload: { action: string; component: string; feature: string; target: string }) => void;
+    };
     sortBy: string;
     sortDirection: SortDirection;
 };
 
-export default function ArchiveTableV2({ items, onItemClick, onSort, sortBy, sortDirection }: Props): JSX.Element {
+export default function ArchiveTableV2({
+    items,
+    onItemClick,
+    onSort,
+    resin,
+    sortBy,
+    sortDirection,
+}: Props): JSX.Element {
     const scrollRef = React.useRef<HTMLDivElement>(null);
+
+    // React Aria's row press stops the click before Resin's document listener sees it, so the
+    // folder open is logged programmatically (precedent: BreadcrumbsV2.tsx)
+    const handleFolderAction = (item: ArchiveItem): void => {
+        resin?.recordAction({
+            action: 'programmatic',
+            component: 'archive',
+            feature: 'archive',
+            target: 'folder',
+        });
+        onItemClick(item);
+    };
 
     const virtualizer = useVirtualizer({
         count: items.length,
@@ -103,7 +125,7 @@ export default function ArchiveTableV2({ items, onItemClick, onSort, sortBy, sor
                                 className={classNames('bp-ArchiveTableV2-row', { 'is-folder': isFolder })}
                                 data-resin-target={item.type}
                                 id={item.absolute_path}
-                                onAction={isFolder ? () => onItemClick(item) : undefined}
+                                onAction={isFolder ? () => handleFolderAction(item) : undefined}
                                 style={{ height: `${ROW_HEIGHT_PX}px` }}
                                 textValue={item.name}
                             >

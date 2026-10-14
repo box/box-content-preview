@@ -240,6 +240,7 @@ class ArchiveExplorer extends React.Component {
                                 items={itemList}
                                 onItemClick={item => this.handleItemClick({ fullPath: item.absolute_path })}
                                 onSort={this.handleSort}
+                                resin={resin}
                                 sortBy={sortBy}
                                 sortDirection={sortDirection}
                             />
