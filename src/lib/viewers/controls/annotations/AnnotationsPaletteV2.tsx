@@ -4,23 +4,29 @@ import { Toolbar } from '@box/blueprint-web';
 import DashedSquareBubble from '@box/blueprint-web-assets/icons/Medium/DashedSquareBubble';
 import PencilScribble from '@box/blueprint-web-assets/icons/Medium/PencilScribble';
 import TextHighlight from '@box/blueprint-web-assets/icons/Medium/TextHighlight';
+import ColorPickerControlV2 from '../color-picker/ColorPickerControlV2';
 import ControlsBarV2 from '../controls-bar/ControlsBarV2';
 import ToggleTooltipV2 from '../tooltip/ToggleTooltipV2';
 import useAnnotationModes from './useAnnotationModes';
+import { ANNOTATION_COLORS } from '../../../AnnotationModule';
 import { AnnotationMode } from '../../../types';
 import { Props as AnnotationsControlsProps } from './AnnotationsControls';
+import { Props as DrawingControlsProps } from './DrawingControls';
 import './AnnotationsPaletteV2.scss';
 
 export type Props = Pick<
     AnnotationsControlsProps,
-    'annotationMode' | 'hasDrawing' | 'hasHighlight' | 'hasRegion' | 'onAnnotationModeClick'
->;
+    'hasDrawing' | 'hasHighlight' | 'hasRegion' | 'onAnnotationModeClick'
+> &
+    DrawingControlsProps;
 
 export default function AnnotationsPaletteV2({
+    annotationColor,
     annotationMode = AnnotationMode.NONE,
     hasDrawing = false,
     hasHighlight = false,
     hasRegion = false,
+    onAnnotationColorChange,
     onAnnotationModeClick = noop,
 }: Props): JSX.Element | null {
     const { hasAnyMode, showDrawing, showHighlight, showRegion } = useAnnotationModes({
@@ -86,6 +92,16 @@ export default function AnnotationsPaletteV2({
                         </ToggleTooltipV2>
                     )}
                 </Toolbar.ToggleGroup>
+                {annotationMode === AnnotationMode.DRAWING && (
+                    <>
+                        <Toolbar.Separator />
+                        <ColorPickerControlV2
+                            activeColor={annotationColor}
+                            colors={ANNOTATION_COLORS}
+                            onColorSelect={onAnnotationColorChange}
+                        />
+                    </>
+                )}
             </ControlsBarV2>
         </div>
     );

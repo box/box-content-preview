@@ -95,6 +95,15 @@ describe('DocControlsV2', () => {
             expect(mainBar).not.toContainElement(screen.getByTestId('bp-AnnotationsControls-regionBtn'));
         });
 
+        test('should show the drawing colors in the palette rather than in a bar of their own', () => {
+            getWrapper({ ...annotationProps, annotationMode: AnnotationMode.DRAWING });
+
+            const [, paletteBar] = screen.getAllByRole('toolbar');
+
+            expect(paletteBar).toContainElement(screen.getByTestId('bp-color-picker-control'));
+            expect(screen.getAllByTestId('bp-ControlsBar')).toHaveLength(2);
+        });
+
         test('should hide the markup toggle and the palette while the gallery is open', () => {
             getWrapper({ ...annotationProps, annotationMode: AnnotationMode.REGION, isGalleryOpen: true });
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import AnnotationsPaletteV2 from '../controls/annotations/AnnotationsPaletteV2';
 import AnnotationsToggleV2 from '../controls/annotations/AnnotationsToggleV2';
-import ControlsBar, { ControlsBarV2 } from '../controls/controls-bar';
-import DrawingControls from '../controls/annotations/DrawingControls';
+import { ControlsBarV2 } from '../controls/controls-bar';
 import ExperiencesProvider from '../controls/experiences';
 import FindBarToggle from '../controls/findbar';
 import FullscreenToggle from '../controls/fullscreen';
@@ -83,21 +82,14 @@ export default function DocControlsV2({
             </ControlsBarV2>
             {!isGalleryOpen && (
                 <AnnotationsPaletteV2
+                    annotationColor={annotationColor}
                     annotationMode={annotationMode}
                     hasDrawing={hasDrawing}
                     hasHighlight={hasHighlight}
                     hasRegion={hasRegion}
+                    onAnnotationColorChange={onAnnotationColorChange}
                     onAnnotationModeClick={onAnnotationModeClick}
                 />
-            )}
-            {!isGalleryOpen && (
-                <ControlsBar>
-                    <DrawingControls
-                        annotationColor={annotationColor}
-                        annotationMode={annotationMode}
-                        onAnnotationColorChange={onAnnotationColorChange}
-                    />
-                </ControlsBar>
             )}
         </ExperiencesProvider>
     );
