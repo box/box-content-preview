@@ -291,7 +291,7 @@ $header-height: 48px;
 
 .bp-version-banner-details {
     display: flex;
-    gap: 12px;
+    gap: var(--bp-space-030);
     align-items: center;
     min-width: 0;
 }
@@ -381,13 +381,13 @@ $header-height: 48px;
     .bp-version-banner-actions button,
     .bp-version-banner-actions button:hover,
     .bp-version-banner-actions button:active {
-        background-color: rgb(255 255 255 / 16%);
+        background-color: var(--bp-white-opacity-16);
     }
 
     .bp-version-banner-actions svg,
     .bp-version-banner-actions svg *,
     .bp-version-banner-actions button:hover svg *,
     .bp-version-banner-actions button:active svg * {
-        fill: #fff;
+        fill: var(--bp-gray-white);
     }
 }
