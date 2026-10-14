@@ -1,6 +1,6 @@
 {
     "name": "box-content-preview",
-    "version": "3.111.0",
+    "version": "3.112.0",
     "description": "Box Content Preview UI Element",
     "author": "Box (https://www.box.com/)",
     "license": "SEE LICENSE IN LICENSE",
@@ -151,7 +151,7 @@
         "build:lib:verify": "node build/verifyLibBundle.js",
         "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
         "build:lib:types": "cp build/lib-types/index.d.ts dist/lib/index.d.ts",
-        "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
+        "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=8192 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
         "cy:run": "yarn cy:wait; yarn cypress run --spec test/integration/**/*.test.js",
