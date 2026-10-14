@@ -203,6 +203,13 @@ describe('lib/viewers/media/MP4Viewer', () => {
             expect(getProps(mp4)).not.toHaveProperty('onPlayNextChange');
             expect(getProps(mp4)).not.toHaveProperty('playNext');
         });
+
+        test('should pass isBlueprintEnabled to VideoControlsV2 when the media Blueprint flag is on', () => {
+            mp4.isVideoPlayerV2 = true;
+            mp4.featureEnabled.mockImplementation(feature => feature === 'blueprintMigrationMediaControls.enabled');
+            mp4.renderUI();
+            expect(getProps(mp4).isBlueprintEnabled).toBe(true);
+        });
     });
 
     describe('calculateVideoDimensions()', () => {

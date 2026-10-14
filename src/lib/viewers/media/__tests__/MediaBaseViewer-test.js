@@ -610,6 +610,19 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('isBlueprintMediaControlsEnabled()', () => {
+        test.each`
+            features                                                   | expected
+            ${{ blueprintMigrationMediaControls: { enabled: true } }}  | ${true}
+            ${{ blueprintMigrationMediaControls: { enabled: false } }} | ${false}
+            ${{}}                                                      | ${false}
+        `('should return $expected for features $features', ({ features, expected }) => {
+            media.options.features = features;
+
+            expect(media.isBlueprintMediaControlsEnabled()).toBe(expected);
+        });
+    });
+
     describe('handlePlayNext()', () => {
         test('should emit the new play next value', () => {
             jest.spyOn(media, 'isPlayNextEnabled').mockReturnValue(false);

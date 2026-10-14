@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import VideoControlsV2 from '../VideoControlsV2';
 import subtitles from '../../controls/media/__mocks__/subtitles';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
@@ -81,6 +82,31 @@ describe('VideoControlsV2', () => {
             render(<VideoControlsV2 {...defaultProps} />);
             expect(screen.getByRole('button', { name: /fullscreen/i })).toBeInTheDocument();
         });
+
+        test('should render Blueprint play and skip buttons when isBlueprintEnabled is true', async () => {
+            const user = userEvent.setup();
+            const onPlayPause = jest.fn();
+            const movePlayback = jest.fn();
+            render(
+                <VideoControlsV2
+                    {...defaultProps}
+                    movePlayback={movePlayback}
+                    onPlayPause={onPlayPause}
+                    isBlueprintEnabled
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            const play = screen.getByRole('button', { name: 'Play' });
+            expect(play).toHaveAttribute('data-resin-target', 'playPause');
+            await user.click(play);
+            expect(onPlayPause).toHaveBeenCalledWith(true);
+
+            await user.click(screen.getByRole('button', { name: 'Skip forward' }));
+            expect(movePlayback).toHaveBeenCalledWith(true, 5);
+            await user.click(screen.getByRole('button', { name: 'Skip backward' }));
+            expect(movePlayback).toHaveBeenCalledWith(false, 5);
+        });
     });
 
     describe('timestamp', () => {
@@ -128,6 +154,19 @@ describe('VideoControlsV2', () => {
             render(<VideoControlsV2 {...defaultProps} onMuteChange={onMuteChange} />);
 
             await user.click(screen.getByTitle('Mute'));
+            expect(onMuteChange).toHaveBeenCalledTimes(1);
+        });
+
+        test('should render Blueprint volume mute when isBlueprintEnabled is true', async () => {
+            const user = userEvent.setup();
+            const onMuteChange = jest.fn();
+            render(<VideoControlsV2 {...defaultProps} onMuteChange={onMuteChange} isBlueprintEnabled />, {
+                wrapper: BlueprintProviders,
+            });
+
+            const mute = screen.getByRole('button', { name: 'Mute' });
+            expect(mute).toHaveAttribute('data-resin-target', 'volumeToggle');
+            await user.click(mute);
             expect(onMuteChange).toHaveBeenCalledTimes(1);
         });
     });

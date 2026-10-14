@@ -2241,6 +2241,15 @@ describe('lib/viewers/media/DashViewer', () => {
             });
         });
 
+        test('should pass isBlueprintEnabled to VideoControlsV2 when the media Blueprint flag is on', () => {
+            dash.isVideoPlayerV2 = true;
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature => feature === 'blueprintMigrationMediaControls.enabled',
+            );
+            dash.renderUI();
+            expect(getProps(dash).isBlueprintEnabled).toBe(true);
+        });
+
         test('should not enable annotations if video annotations are disabled', () => {
             dash.videoAnnotationsEnabled = false;
             dash.annotator = {};
