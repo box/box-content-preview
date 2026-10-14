@@ -1,3 +1,7 @@
+## 3.111.0 (2026-10-14)
+
+* fix(doc): Keep pdf.js hidden canvas rule unscoped (#1827) ([58de5e2](https://github.com/box/box-content-preview/commit/58de5e2)), closes [#1827](https://github.com/box/box-content-preview/issues/1827)
+
 ## 3.110.0 (2026-10-12)
 
 * feat(controls): mount Blueprint providers on controls roots (#1821) ([0ff3e93](https://github.com/box/box-content-preview/commit/0ff3e93)), closes [#1821](https://github.com/box/box-content-preview/issues/1821)
