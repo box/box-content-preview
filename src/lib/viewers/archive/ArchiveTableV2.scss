@@ -1,0 +1,24 @@
+// stylelint-disable-next-line scss/load-partial-extension
+@import '~@box/blueprint-web-assets/tokens/tokens.scss';
+
+.bp-ArchiveTableV2 {
+    height: 100%;
+}
+
+.bp-ArchiveTableV2-name {
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.bp-ArchiveTableV2-row {
+    cursor: default;
+
+    &.is-folder {
+        cursor: pointer;
+    }
+}

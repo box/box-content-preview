@@ -1105,6 +1105,11 @@
     rimraf "^3.0.0"
     semver "^7.4.0"
 
+"@box/item-icon@3.5.12":
+  version "3.5.12"
+  resolved "https://registry.yarnpkg.com/@box/item-icon/-/item-icon-3.5.12.tgz#189a16b7ed1624425a58f91aedb36a62cbf689ec"
+  integrity sha512-AFgiBwzxm3twdPhkSVfvqrw2LE/ZpydwsneC7xoGOOancEmWbc67oIZAo7anPlCalC8qVIUHK42g0b9K0pjfzg==
+
 "@box/languages@^1.0.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@box/languages/-/languages-1.1.0.tgz"
@@ -1121,6 +1126,11 @@
     loose-envify "^1.4.0"
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
+
+"@box/types@^3.2.23":
+  version "3.2.23"
+  resolved "https://registry.yarnpkg.com/@box/types/-/types-3.2.23.tgz#985c9055b76301ad4be1a839fb8caf7a0b3a47b9"
+  integrity sha512-bCz1wa81gw0ddq0GNQwpiFI/n2RMuSa3j+czzGKaXApN6iNxXGAqjNfKjAfEXjC72O535G93uiRQCFlG1GrWMw==
 
 "@cacheable/memory@^2.2.0":
   version "2.2.0"
@@ -3620,6 +3630,18 @@
   integrity sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==
   dependencies:
     tslib "^2.8.0"
+
+"@tanstack/react-virtual@^3.14.10":
+  version "3.14.19"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-virtual/-/react-virtual-3.14.19.tgz#7650f00a1a093071131b6bf35df7f788e3e56ff9"
+  integrity sha512-zmVdJO8DDqHphZ2H6SnTmgpVXcUy5DprB+clZF0ik679/d0MQ1UPEb2jtaX6F5VTAX4o3ozSLQaRCnybS2KYLA==
+  dependencies:
+    "@tanstack/virtual-core" "3.19.4"
+
+"@tanstack/virtual-core@3.19.4":
+  version "3.19.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.19.4.tgz#f0661bd299f63f27172a93d579abe44bc0a56812"
+  integrity sha512-ygZ3O99Il18dl0gG0q7sH78iSkb96F07G+xK9V83eCgV8NQbcNd7R+cgcJJMFO7llBoebd0A82sCCstQq2Vp6Q==
 
 "@testing-library/dom@^10.4.1":
   version "10.4.2"
