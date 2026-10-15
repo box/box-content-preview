@@ -32,9 +32,6 @@
         "access": "public"
     },
     "dependencies": {
-        "@box/item-icon": "3.5.12",
-        "@box/types": "^3.2.23",
-        "@tanstack/react-virtual": "^3.14.10",
         "pdfjs-dist": "6.4.299",
         "wavesurfer.js": "7.12.11"
     },
@@ -67,6 +64,7 @@
         "@commitlint/cli": "^19.8.0",
         "@commitlint/config-conventional": "^19.8.0",
         "@commitlint/travis-cli": "^19.8.0",
+        "@tanstack/react-virtual": "^3.14.10",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "6.9.1",
         "@testing-library/react": "^16.3.2",
