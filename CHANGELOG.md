@@ -1,3 +1,8 @@
+## 3.113.0 (2026-10-15)
+
+* feat(archive): add Blueprint v2 search and breadcrumbs (#1829) ([d185964](https://github.com/box/box-content-preview/commit/d185964)), closes [#1829](https://github.com/box/box-content-preview/issues/1829)
+* feat(media): add Blueprint play/pause, skip, volume and fullscreen controls (#1836) ([c246419](https://github.com/box/box-content-preview/commit/c246419)), closes [#1836](https://github.com/box/box-content-preview/issues/1836)
+
 ## 3.112.0 (2026-10-14)
 
 * chore(build): Raise webpack heap limit to 8 GB (#1828) ([c731be0](https://github.com/box/box-content-preview/commit/c731be0)), closes [#1828](https://github.com/box/box-content-preview/issues/1828)
