@@ -6,7 +6,7 @@ import ExperiencesProvider from '../controls/experiences';
 import { FindBarToggleV2 } from '../controls/findbar';
 import { FullscreenToggleV2 } from '../controls/fullscreen';
 import { GalleryToggleV2 } from '../controls/gallery';
-import PageControls from '../controls/page';
+import { PageControlsV2 } from '../controls/page';
 import { RotateControlV2 } from '../controls/rotate';
 import { ThumbnailsToggleV2 } from '../controls/sidebar';
 import ZoomControls from '../controls/zoom';
@@ -50,7 +50,7 @@ export default function DocControlsV2({
                             onThumbnailsToggle={onThumbnailsToggle}
                         />
                         <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />
-                        <PageControls
+                        <PageControlsV2
                             onPageChange={onPageChange}
                             onPageSubmit={onPageSubmit}
                             pageCount={pageCount}

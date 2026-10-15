@@ -30,7 +30,7 @@ describe('DocControlsV2', () => {
 
             expect(toolbar).toContainElement(screen.getByTitle(__('zoom_in')));
             expect(toolbar).toContainElement(screen.getByRole('button', { name: __('enter_fullscreen') }));
-            expect(toolbar).toContainElement(screen.getByTitle(__('previous_page')));
+            expect(toolbar).toContainElement(screen.getByRole('button', { name: __('previous_page') }));
         });
 
         test('should pass down props to the controls', async () => {
@@ -55,7 +55,7 @@ describe('DocControlsV2', () => {
 
             expect(screen.queryByRole('button', { name: __('toggle_thumbnails') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('toggle_findbar') })).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('previous_page'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('previous_page') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('rotate_left') })).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('zoom_in'))).not.toBeInTheDocument();
         });
