@@ -6,6 +6,9 @@ const SCOPE_CLASS = '.bp-doc';
 // scoping, upstream selectors like `.sidebar` and `.toggleButton` collide with
 // host-app selectors when the npm pdfjs path is used.
 const SCOPE_FILE_RE = /pdfjs-dist[\\/]web[\\/]pdf_viewer\.css$/;
+// pdf.js appends its opaque text-measurement canvas to document.body and relies on
+// this rule to hide it, so a scoped selector leaves a black box over the page.
+const BODY_LEVEL_SELECTORS = new Set(['.hiddenCanvasElement']);
 
 const scopePdfjsViewerCss = () => ({
     postcssPlugin: 'scope-pdfjs-viewer-css',
@@ -24,6 +27,9 @@ const scopePdfjsViewerCss = () => ({
                 // properties declared there only apply inside the viewer.
                 if (trimmed === ':root') {
                     return SCOPE_CLASS;
+                }
+                if (BODY_LEVEL_SELECTORS.has(trimmed)) {
+                    return trimmed;
                 }
                 return `${SCOPE_CLASS} ${trimmed}`;
             });

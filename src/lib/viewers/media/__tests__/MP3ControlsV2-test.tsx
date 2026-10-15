@@ -2,6 +2,7 @@ import React, { useEffect as mockUseEffect } from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { replacePlaceholders } from '../../../util';
+import BlueprintProviders from '../../../BlueprintProviders';
 import MP3ControlsV2, { Props } from '../MP3ControlsV2';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../waveform/constants';
 import useTapeWaveform from '../waveform/useTapeWaveform';
@@ -217,7 +218,7 @@ describe('MP3ControlsV2', () => {
             nextProps.mediaEl = mediaElWithDuration(props.durationTime);
         }
 
-        return render(<MP3ControlsV2 {...defaultControlsProps} {...nextProps} />);
+        return render(<MP3ControlsV2 {...defaultControlsProps} {...nextProps} />, { wrapper: BlueprintProviders });
     };
 
     describe('render', () => {
@@ -234,6 +235,19 @@ describe('MP3ControlsV2', () => {
             expect(shuttle).toHaveTextContent('2x');
             expect(shuttle).toHaveAttribute('aria-label', replacePlaceholders(__('media_shuttle_forward'), ['2']));
             expect(shuttle).not.toHaveClass('bp-is-reverse');
+        });
+
+        test('should render the shuttle rate as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({
+                durationTime: 8,
+                isBlueprintEnabled: true,
+                peaks: [0.2, 0.8],
+                shuttleDirection: 'forward',
+                shuttleRate: 2,
+            });
+
+            const shuttle = await screen.findByTestId('bp-waveform-shuttle');
+            expect(shuttle.querySelector('[data-modern]')).toHaveTextContent('2x');
         });
 
         test('should withhold the playhead comment while shuttle is moving', async () => {
@@ -342,6 +356,30 @@ describe('MP3ControlsV2', () => {
             expect(onPlayPause).toHaveBeenCalled();
         });
 
+        test('should render Blueprint play when isBlueprintEnabled is true', async () => {
+            const onPlayPause = jest.fn();
+            getWrapper({ durationTime: 8, onPlayPause, peaks: [0.2, 0.8], isBlueprintEnabled: true });
+            const toggle = await within(screen.getByTestId('bp-MP3ControlsV2-bar')).findByRole('button', {
+                name: __('media_play'),
+            });
+
+            expect(toggle).toHaveAttribute('data-resin-target', 'playPause');
+            await userEvent.click(toggle);
+            expect(onPlayPause).toHaveBeenCalled();
+        });
+
+        test('should render Blueprint volume mute when isBlueprintEnabled is true', async () => {
+            const onMuteChange = jest.fn();
+            getWrapper({ durationTime: 8, onMuteChange, peaks: [0.2, 0.8], isBlueprintEnabled: true });
+            const mute = await within(screen.getByTestId('bp-MP3ControlsV2-bar')).findByRole('button', {
+                name: __('media_mute'),
+            });
+
+            expect(mute).toHaveAttribute('data-resin-target', 'volumeToggle');
+            await userEvent.click(mute);
+            expect(onMuteChange).toHaveBeenCalled();
+        });
+
         test('should start playback and unlock the waveform when the overlay is clicked', async () => {
             const onPlayPause = jest.fn();
             getWrapper({ durationTime: 8, onPlayPause, peaks: [0.2, 0.8] });
@@ -434,6 +472,13 @@ describe('MP3ControlsV2', () => {
                 __('media_generating_waveform'),
             );
             expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should render the generating waveform label as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({ durationTime: 8, isBlueprintEnabled: true, isGeneratingWaveform: true });
+
+            const indicator = await screen.findByTestId('bp-waveform-generating');
+            expect(indicator.querySelector('[data-modern]')).toHaveTextContent(__('media_generating_waveform'));
         });
 
         test('should hide generating waveform once real peaks are available', async () => {

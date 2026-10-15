@@ -1,3 +1,17 @@
+## 3.113.0 (2026-10-15)
+
+* feat(archive): add Blueprint v2 search and breadcrumbs (#1829) ([d185964](https://github.com/box/box-content-preview/commit/d185964)), closes [#1829](https://github.com/box/box-content-preview/issues/1829)
+* feat(media): add Blueprint play/pause, skip, volume and fullscreen controls (#1836) ([c246419](https://github.com/box/box-content-preview/commit/c246419)), closes [#1836](https://github.com/box/box-content-preview/issues/1836)
+
+## 3.112.0 (2026-10-14)
+
+* chore(build): Raise webpack heap limit to 8 GB (#1828) ([c731be0](https://github.com/box/box-content-preview/commit/c731be0)), closes [#1828](https://github.com/box/box-content-preview/issues/1828)
+* feat(controls): add the Blueprint controls bar shell behind the controls bar flag (#1824) ([cf6abf3](https://github.com/box/box-content-preview/commit/cf6abf3)), closes [#1824](https://github.com/box/box-content-preview/issues/1824)
+
+## 3.111.0 (2026-10-14)
+
+* fix(doc): Keep pdf.js hidden canvas rule unscoped (#1827) ([58de5e2](https://github.com/box/box-content-preview/commit/58de5e2)), closes [#1827](https://github.com/box/box-content-preview/issues/1827)
+
 ## 3.110.0 (2026-10-12)
 
 * feat(controls): mount Blueprint providers on controls roots (#1821) ([0ff3e93](https://github.com/box/box-content-preview/commit/0ff3e93)), closes [#1821](https://github.com/box/box-content-preview/issues/1821)
