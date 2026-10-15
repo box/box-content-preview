@@ -2,6 +2,7 @@ import React, { act } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fullscreen from '../../../../Fullscreen';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import VideoFullscreenButton from '../VideoFullscreenButton';
 
 const mockResizeObserver = jest.fn().mockImplementation(() => ({
@@ -25,7 +26,9 @@ describe('VideoFullscreenButton', () => {
     });
 
     const renderComponent = (props = {}) =>
-        render(<VideoFullscreenButton mediaEl={mediaEl} onFullscreenToggle={jest.fn()} {...props} />);
+        render(<VideoFullscreenButton mediaEl={mediaEl} onFullscreenToggle={jest.fn()} {...props} />, {
+            wrapper: BlueprintProviders,
+        });
 
     describe('render', () => {
         test('should render the fullscreen button', () => {
@@ -207,6 +210,50 @@ describe('VideoFullscreenButton', () => {
 
             const button = screen.getByRole('button', { name: /fullscreen/i });
             expect(button).not.toHaveAttribute('style');
+        });
+
+        test('should keep Blueprint overlay placement on the Preview-owned wrapper', () => {
+            mediaEl.getBoundingClientRect = jest.fn(() =>
+                rect({ top: 100, right: 800, bottom: 500, left: 200, width: 600, height: 400 }),
+            );
+
+            const parent = document.createElement('div');
+            parent.style.position = 'relative';
+            document.body.appendChild(parent);
+            parent.getBoundingClientRect = jest.fn(() =>
+                rect({ top: 0, right: 1000, bottom: 700, left: 0, width: 1000, height: 700 }),
+            );
+
+            render(<VideoFullscreenButton mediaEl={mediaEl} onFullscreenToggle={jest.fn()} isBlueprintEnabled />, {
+                container: parent,
+                wrapper: BlueprintProviders,
+            });
+
+            act(() => {
+                observerCallback();
+            });
+
+            expect(parent.querySelector('.bp-VideoFullscreenButton-position')).toHaveStyle({
+                top: '124px',
+                right: '224px',
+            });
+
+            document.body.removeChild(parent);
+        });
+    });
+
+    describe('Blueprint', () => {
+        test('should render a Blueprint fullscreen button with resin and labels', async () => {
+            const onToggle = jest.fn();
+            renderComponent({ onFullscreenToggle: onToggle, isBlueprintEnabled: true });
+
+            const button = screen.getByRole('button', { name: /fullscreen/i });
+            expect(button).toHaveAttribute('data-resin-target', 'videoFullscreen');
+            expect(button).toHaveAccessibleName('Enter fullscreen');
+            expect(button).not.toHaveAttribute('title');
+
+            await userEvent.click(button);
+            expect(onToggle).toHaveBeenCalledWith(true, expect.any(Object));
         });
     });
 });
