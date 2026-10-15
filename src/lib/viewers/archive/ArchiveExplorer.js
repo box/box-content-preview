@@ -31,6 +31,15 @@ class ArchiveExplorer extends React.Component {
                 item_collection: PropTypes.arrayOf(PropTypes.string),
             }),
         ).isRequired,
+        // Resin analytics instance for programmatic v2 events
+        resin: PropTypes.shape({
+            recordAction: PropTypes.func.isRequired,
+        }),
+        // Loaded archive v2 parts (see ArchiveV2.tsx); absent renders the v1 UI
+        v2: PropTypes.shape({
+            BreadcrumbsV2: PropTypes.elementType.isRequired,
+            SearchBarV2: PropTypes.elementType.isRequired,
+        }),
     };
 
     /**
@@ -202,7 +211,7 @@ class ArchiveExplorer extends React.Component {
      * @return {jsx} VirtualizedTable
      */
     render() {
-        const { filename, itemCollection } = this.props;
+        const { filename, itemCollection, resin, v2 } = this.props;
         const { fullPath, searchQuery, sortBy, sortDirection, view } = this.state;
         const itemList = this.sortItemList(
             view === VIEW_SEARCH
@@ -210,14 +219,18 @@ class ArchiveExplorer extends React.Component {
                 : this.getItemList(itemCollection, fullPath),
         );
 
+        const SearchBarComponent = v2 ? v2.SearchBarV2 : SearchBar;
+        const BreadcrumbsComponent = v2 ? v2.BreadcrumbsV2 : Breadcrumbs;
+
         return (
             <Internationalize language={language} messages={elementsMessages}>
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
-                    <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
-                    <Breadcrumbs
+                    <SearchBarComponent onSearch={this.handleSearch} searchQuery={searchQuery} />
+                    <BreadcrumbsComponent
                         filename={filename}
                         fullPath={fullPath}
                         onClick={this.handleBreadcrumbClick}
+                        resin={resin}
                         view={view}
                     />
                     <div className="bp-ArchiveExplorer-table">
