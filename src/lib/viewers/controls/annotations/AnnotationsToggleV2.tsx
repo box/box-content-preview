@@ -1,61 +1,41 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import { IconButton, IconToggleButton, IconToggleButtonProps, Toolbar, Tooltip } from '@box/blueprint-web';
-import DashedSquareBubble from '@box/blueprint-web-assets/icons/Medium/DashedSquareBubble';
-import PencilScribble from '@box/blueprint-web-assets/icons/Medium/PencilScribble';
-import TextHighlight from '@box/blueprint-web-assets/icons/Medium/TextHighlight';
-import XMark from '@box/blueprint-web-assets/icons/Medium/XMark';
+import { IconToggleButton, IconToggleButtonProps, Toolbar } from '@box/blueprint-web';
+import ANNOTATION_MODE_ICONS, { ActiveAnnotationMode } from './annotationModeIcons';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import ToggleTooltipV2 from '../tooltip/ToggleTooltipV2';
 import { ExperiencesContext } from '../experiences';
-import useAnnotationModes from './useAnnotationModes';
 import { AnnotationMode } from '../../../types';
-import { Props as AnnotationsControlsProps } from './AnnotationsControls';
-import './AnnotationsToggleV2.scss';
 
-// The toolbar parts throw outside a Toolbar.Root, so surfaces without one (the media bar) use standalone buttons.
-export type ToolbarProps = AnnotationsControlsProps & { buttonType?: 'toolbar' };
-export type IconProps = AnnotationsControlsProps &
+type BaseProps = {
+    annotationMode?: AnnotationMode;
+    // The modes the surface offers, in the order the toggle falls back to when it has no mode to resume
+    modes: ActiveAnnotationMode[];
+    onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
+    onAnnotationModeEscape?: () => void;
+};
+
+// The toolbar parts throw outside a Toolbar.Root, so surfaces without one (the media bar) use a standalone button.
+export type ToolbarProps = BaseProps & { buttonType?: 'toolbar' };
+export type IconProps = BaseProps &
     Pick<IconToggleButtonProps, 'size' | 'variant'> & {
         buttonType: 'icon';
     };
 export type Props = ToolbarProps | IconProps;
 
-const MODE_ICONS: Partial<Record<AnnotationMode, React.ComponentProps<typeof Toolbar.ToggleItem>['icon']>> = {
-    [AnnotationMode.DRAWING]: PencilScribble,
-    [AnnotationMode.HIGHLIGHT]: TextHighlight,
-    [AnnotationMode.REGION]: DashedSquareBubble,
-};
-
 const TOGGLE_VALUE = 'annotations';
 
-export default function AnnotationsToggleV2(props: Props): JSX.Element | null {
+function AnnotationsToggleV2(props: Props, ref: React.ForwardedRef<HTMLButtonElement>): JSX.Element | null {
     const {
         annotationMode = AnnotationMode.NONE,
-        hasDrawing = false,
-        hasHighlight = false,
-        hasRegion = false,
-        isVideo = false,
+        modes,
         onAnnotationModeClick = noop,
         onAnnotationModeEscape = noop,
     } = props;
-    const toggleRef = React.useRef<HTMLButtonElement | null>(null);
     const { experiences } = React.useContext(ExperiencesContext);
-    const { defaultMode, hasAnyMode, showDrawing, showHighlight, showRegion } = useAnnotationModes({
-        hasDrawing,
-        hasHighlight,
-        hasRegion,
-    });
-    const [lastMode, setLastMode] = React.useState(AnnotationMode.NONE);
+    const [lastMode, setLastMode] = React.useState<ActiveAnnotationMode | null>(null);
     const isActive = annotationMode !== AnnotationMode.NONE;
-    const isLastModeShown = {
-        [AnnotationMode.DRAWING]: showDrawing,
-        [AnnotationMode.HIGHLIGHT]: showHighlight,
-        [AnnotationMode.NONE]: false,
-        [AnnotationMode.REGION]: showRegion,
-    }[lastMode];
-    const resumeMode = isLastModeShown ? lastMode : defaultMode;
-    const icon = MODE_ICONS[isActive ? annotationMode : resumeMode];
+    const resumeMode = lastMode && modes.includes(lastMode) ? lastMode : modes[0];
 
     React.useEffect(() => {
         if (annotationMode !== AnnotationMode.NONE) {
@@ -85,40 +65,28 @@ export default function AnnotationsToggleV2(props: Props): JSX.Element | null {
         };
     }, [annotationMode, onAnnotationModeEscape]);
 
-    if (!hasAnyMode || !icon) {
+    if (!resumeMode) {
         return null;
     }
-
-    const handleExitClick = (): void => {
-        if (toggleRef.current !== null) {
-            toggleRef.current.focus();
-        }
-
-        onAnnotationModeClick({ mode: AnnotationMode.NONE });
-    };
 
     const handleToggle = (isPressed: boolean): void => {
         onAnnotationModeClick({ mode: isPressed ? resumeMode : AnnotationMode.NONE });
     };
 
     const toggleProps = {
-        ref: toggleRef,
+        ref,
         'aria-expanded': isActive,
         'aria-label': __('annotation_tools'),
         'data-resin-target': 'annotations',
         'data-testid': 'bp-AnnotationsControls-toggleBtn',
-        icon,
-    };
-    const exitProps = {
-        'aria-label': __('exit_annotations'),
-        'data-resin-target': 'exit',
-        'data-testid': 'bp-annotations-controls-exit-btn',
-        onClick: handleExitClick,
+        icon: ANNOTATION_MODE_ICONS[isActive ? (annotationMode as ActiveAnnotationMode) : resumeMode],
     };
 
     // With no experience from the host, the box-ui-elements tooltip falls back to opening on hover
     const renderToggle = (toggle: JSX.Element): JSX.Element => (
-        <AnnotationsTargetedTooltip isEnabled={showRegion && !!experiences.tooltipFlowAnnotationsExperience}>
+        <AnnotationsTargetedTooltip
+            isEnabled={modes.includes(AnnotationMode.REGION) && !!experiences.tooltipFlowAnnotationsExperience}
+        >
             <ToggleTooltipV2 content={__('annotation_tools')}>{toggle}</ToggleTooltipV2>
         </AnnotationsTargetedTooltip>
     );
@@ -126,47 +94,26 @@ export default function AnnotationsToggleV2(props: Props): JSX.Element | null {
     if (props.buttonType === 'icon') {
         const { size, variant } = props;
 
-        return (
-            <>
-                {!isVideo && (
-                    <span className="bp-AnnotationsControls-exitBtn">
-                        <Tooltip content={__('exit_annotations')}>
-                            <IconButton icon={XMark} {...exitProps} />
-                        </Tooltip>
-                    </span>
-                )}
-                {renderToggle(
-                    <IconToggleButton
-                        {...toggleProps}
-                        onPressedChange={handleToggle}
-                        pressed={isActive}
-                        size={size}
-                        variant={variant}
-                    />,
-                )}
-            </>
+        return renderToggle(
+            <IconToggleButton
+                {...toggleProps}
+                onPressedChange={handleToggle}
+                pressed={isActive}
+                size={size}
+                variant={variant}
+            />,
         );
     }
 
     return (
-        <>
-            <Toolbar.Separator />
-            {!isVideo && (
-                <span className="bp-AnnotationsControls-exitBtn">
-                    <Tooltip content={__('exit_annotations')}>
-                        <Toolbar.Button {...exitProps}>
-                            <Toolbar.Icon icon={XMark} />
-                        </Toolbar.Button>
-                    </Tooltip>
-                </span>
-            )}
-            <Toolbar.ToggleGroup
-                onValueChange={(value: string[]): void => handleToggle(value.includes(TOGGLE_VALUE))}
-                type="multiple"
-                value={isActive ? [TOGGLE_VALUE] : []}
-            >
-                {renderToggle(<Toolbar.ToggleItem {...toggleProps} value={TOGGLE_VALUE} />)}
-            </Toolbar.ToggleGroup>
-        </>
+        <Toolbar.ToggleGroup
+            onValueChange={(value: string[]): void => handleToggle(value.includes(TOGGLE_VALUE))}
+            type="multiple"
+            value={isActive ? [TOGGLE_VALUE] : []}
+        >
+            {renderToggle(<Toolbar.ToggleItem {...toggleProps} value={TOGGLE_VALUE} />)}
+        </Toolbar.ToggleGroup>
     );
 }
+
+export default React.forwardRef(AnnotationsToggleV2);

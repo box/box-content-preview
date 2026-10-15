@@ -1,27 +1,30 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnnotationsToggleV2, { IconProps } from '../AnnotationsToggleV2';
+import AnnotationsToggleV2, { IconProps, ToolbarProps } from '../AnnotationsToggleV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsBarV2 from '../../controls-bar/ControlsBarV2';
 import ExperiencesProvider from '../../experiences';
-import fullscreen from '../../../../Fullscreen';
+import { ActiveAnnotationMode } from '../annotationModeIcons';
 import { AnnotationMode, Experiences } from '../../../../types';
-import { Props } from '../AnnotationsControls';
+
+type WithRef = { ref?: React.Ref<HTMLButtonElement> };
 
 describe('AnnotationsToggleV2', () => {
-    const renderToggle = (props: Props = {}, experiences: Experiences = {}) =>
+    const allModes: ActiveAnnotationMode[] = [AnnotationMode.REGION, AnnotationMode.HIGHLIGHT, AnnotationMode.DRAWING];
+    const getWrapper =
+        (experiences: Experiences = {}) =>
+        ({ children }: { children: React.ReactNode }) => (
+            <BlueprintProviders>
+                <ExperiencesProvider experiences={experiences}>{children}</ExperiencesProvider>
+            </BlueprintProviders>
+        );
+    const renderToggle = (props: Partial<ToolbarProps> & WithRef = {}, experiences: Experiences = {}) =>
         render(
             <ControlsBarV2>
-                <AnnotationsToggleV2 {...props} />
+                <AnnotationsToggleV2 modes={allModes} {...props} />
             </ControlsBarV2>,
-            {
-                wrapper: ({ children }) => (
-                    <BlueprintProviders>
-                        <ExperiencesProvider experiences={experiences}>{children}</ExperiencesProvider>
-                    </BlueprintProviders>
-                ),
-            },
+            { wrapper: getWrapper(experiences) },
         );
     const getToggle = () => screen.getByRole('button', { name: __('annotation_tools') });
 
@@ -41,19 +44,19 @@ describe('AnnotationsToggleV2', () => {
         });
 
         test('should not render tooltip if annotations experience can show is false', () => {
-            renderToggle({ hasHighlight: true, hasRegion: true }, getExperiences(false));
+            renderToggle({}, getExperiences(false));
 
             expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
         });
 
         test('should render tooltip if annotations experience can show is true', () => {
-            renderToggle({ hasHighlight: true, hasRegion: true }, getExperiences(true));
+            renderToggle({}, getExperiences(true));
 
             expect(screen.getByRole('tooltip')).toBeInTheDocument();
         });
 
         test('should not show the discoverability tooltip on hover if the host passes no annotations experience', async () => {
-            renderToggle({ hasHighlight: true, hasRegion: true });
+            renderToggle();
 
             await userEvent.hover(getToggle());
 
@@ -61,18 +64,14 @@ describe('AnnotationsToggleV2', () => {
             expect(screen.queryByText(__('annotations_tooltip_title'))).not.toBeInTheDocument();
         });
 
-        test('should not render tooltip if region mode is not enabled', () => {
-            renderToggle({ hasHighlight: true }, getExperiences(true));
+        test('should not render tooltip if region mode is not offered', () => {
+            renderToggle({ modes: [AnnotationMode.HIGHLIGHT] }, getExperiences(true));
 
             expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
         });
 
         test('should add and remove its event handlers on mount and unmount', () => {
-            const { unmount } = renderToggle({
-                annotationMode: AnnotationMode.REGION,
-                hasHighlight: true,
-                hasRegion: true,
-            });
+            const { unmount } = renderToggle({ annotationMode: AnnotationMode.REGION });
 
             expect(document.addEventListener).toHaveBeenCalledWith('keydown', expect.any(Function));
 
@@ -82,7 +81,7 @@ describe('AnnotationsToggleV2', () => {
         });
 
         test('should not add a handler if the annotation mode is set to none', () => {
-            renderToggle({ hasHighlight: true, hasRegion: true });
+            renderToggle();
 
             expect(document.addEventListener).not.toHaveBeenCalledWith('keydown', expect.any(Function));
         });
@@ -90,45 +89,45 @@ describe('AnnotationsToggleV2', () => {
 
     describe('event handlers', () => {
         test.each`
-            options                                                      | result
-            ${{ hasDrawing: true, hasHighlight: true, hasRegion: true }} | ${AnnotationMode.REGION}
-            ${{ hasDrawing: true, hasHighlight: true }}                  | ${AnnotationMode.HIGHLIGHT}
-            ${{ hasDrawing: true }}                                      | ${AnnotationMode.DRAWING}
-        `('should turn on $result when the toggle is clicked with $options enabled', async ({ options, result }) => {
-            const onClick = jest.fn();
-            renderToggle({ ...options, onAnnotationModeClick: onClick });
-
-            await userEvent.click(getToggle());
-
-            expect(onClick).toHaveBeenCalledWith({ mode: result });
-        });
-
-        test.each([AnnotationMode.DRAWING, AnnotationMode.HIGHLIGHT, AnnotationMode.REGION])(
-            'should turn off %s mode when the toggle is clicked',
-            async mode => {
+            modes                                                                        | result
+            ${[AnnotationMode.REGION, AnnotationMode.HIGHLIGHT, AnnotationMode.DRAWING]} | ${AnnotationMode.REGION}
+            ${[AnnotationMode.HIGHLIGHT, AnnotationMode.DRAWING]}                        | ${AnnotationMode.HIGHLIGHT}
+            ${[AnnotationMode.DRAWING, AnnotationMode.REGION]}                           | ${AnnotationMode.DRAWING}
+        `(
+            'should turn on the first mode, $result, when the toggle is clicked with $modes',
+            async ({ modes, result }) => {
                 const onClick = jest.fn();
-                renderToggle({
-                    annotationMode: mode,
-                    hasDrawing: true,
-                    hasHighlight: true,
-                    hasRegion: true,
-                    onAnnotationModeClick: onClick,
-                });
+                renderToggle({ modes, onAnnotationModeClick: onClick });
 
                 await userEvent.click(getToggle());
 
-                expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+                expect(onClick).toHaveBeenCalledWith({ mode: result });
             },
         );
 
+        test.each(allModes)('should turn off %s mode when the toggle is clicked', async mode => {
+            const onClick = jest.fn();
+            renderToggle({ annotationMode: mode, onAnnotationModeClick: onClick });
+
+            await userEvent.click(getToggle());
+
+            expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+        });
+
         test('should resume the last mode used when the toggle is clicked again', async () => {
             const onClick = jest.fn();
-            const props = { hasDrawing: true, hasHighlight: true, hasRegion: true, onAnnotationModeClick: onClick };
-            const { rerender } = renderToggle({ ...props, annotationMode: AnnotationMode.DRAWING });
+            const { rerender } = renderToggle({
+                annotationMode: AnnotationMode.DRAWING,
+                onAnnotationModeClick: onClick,
+            });
 
             rerender(
                 <ControlsBarV2>
-                    <AnnotationsToggleV2 {...props} annotationMode={AnnotationMode.NONE} />
+                    <AnnotationsToggleV2
+                        annotationMode={AnnotationMode.NONE}
+                        modes={allModes}
+                        onAnnotationModeClick={onClick}
+                    />
                 </ControlsBarV2>,
             );
             await userEvent.click(getToggle());
@@ -136,14 +135,20 @@ describe('AnnotationsToggleV2', () => {
             expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.DRAWING });
         });
 
-        test('should fall back to the default mode if the last mode used is no longer enabled', async () => {
+        test('should fall back to the first mode if the last mode used is no longer offered', async () => {
             const onClick = jest.fn();
-            const props = { hasHighlight: true, hasRegion: true, onAnnotationModeClick: onClick };
-            const { rerender } = renderToggle({ ...props, annotationMode: AnnotationMode.DRAWING, hasDrawing: true });
+            const { rerender } = renderToggle({
+                annotationMode: AnnotationMode.DRAWING,
+                onAnnotationModeClick: onClick,
+            });
 
             rerender(
                 <ControlsBarV2>
-                    <AnnotationsToggleV2 {...props} annotationMode={AnnotationMode.NONE} hasDrawing={false} />
+                    <AnnotationsToggleV2
+                        annotationMode={AnnotationMode.NONE}
+                        modes={[AnnotationMode.REGION, AnnotationMode.HIGHLIGHT]}
+                        onAnnotationModeClick={onClick}
+                    />
                 </ControlsBarV2>,
             );
             await userEvent.click(getToggle());
@@ -153,12 +158,7 @@ describe('AnnotationsToggleV2', () => {
 
         test('should invoke the escape callback if the escape key is pressed while in a mode', async () => {
             const onEscape = jest.fn();
-            renderToggle({
-                annotationMode: AnnotationMode.REGION,
-                hasHighlight: true,
-                hasRegion: true,
-                onAnnotationModeEscape: onEscape,
-            });
+            renderToggle({ annotationMode: AnnotationMode.REGION, onAnnotationModeEscape: onEscape });
 
             await userEvent.keyboard('{Escape}');
 
@@ -167,12 +167,7 @@ describe('AnnotationsToggleV2', () => {
 
         test('should not invoke the escape callback if any key other than escape is pressed', async () => {
             const onEscape = jest.fn();
-            renderToggle({
-                annotationMode: AnnotationMode.REGION,
-                hasHighlight: true,
-                hasRegion: true,
-                onAnnotationModeEscape: onEscape,
-            });
+            renderToggle({ annotationMode: AnnotationMode.REGION, onAnnotationModeEscape: onEscape });
 
             await userEvent.keyboard('{Enter}');
 
@@ -181,68 +176,34 @@ describe('AnnotationsToggleV2', () => {
 
         test('should not invoke the escape callback if no mode is active', async () => {
             const onEscape = jest.fn();
-            renderToggle({ hasHighlight: true, hasRegion: true, onAnnotationModeEscape: onEscape });
+            renderToggle({ onAnnotationModeEscape: onEscape });
 
             await userEvent.keyboard('{Escape}');
 
             expect(onEscape).not.toHaveBeenCalled();
         });
-
-        test.each([AnnotationMode.DRAWING, AnnotationMode.HIGHLIGHT, AnnotationMode.REGION])(
-            'while in %s mode, should exit and focus on the toggle when exit button is clicked',
-            async mode => {
-                const onClick = jest.fn();
-                renderToggle({
-                    annotationMode: mode,
-                    hasDrawing: true,
-                    hasHighlight: true,
-                    hasRegion: true,
-                    onAnnotationModeClick: onClick,
-                });
-
-                await userEvent.click(screen.getByTestId('bp-annotations-controls-exit-btn'));
-
-                expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
-                expect(getToggle()).toHaveFocus();
-            },
-        );
     });
 
     describe('render', () => {
-        test('should render nothing if no mode is enabled', () => {
+        test('should render nothing if no mode is offered', () => {
+            renderToggle({ modes: [] });
+
+            expect(screen.queryByTestId('bp-AnnotationsControls-toggleBtn')).not.toBeInTheDocument();
+        });
+
+        test('should render the toggle with its tracking target and no exit button', () => {
             renderToggle();
-
-            expect(screen.queryByTestId('bp-AnnotationsControls-toggleBtn')).not.toBeInTheDocument();
-            expect(screen.queryByTestId('bp-annotations-controls-exit-btn')).not.toBeInTheDocument();
-        });
-
-        test('should render nothing while in fullscreen', () => {
-            jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
-
-            renderToggle({ hasDrawing: true, hasHighlight: true, hasRegion: true });
-
-            expect(screen.queryByTestId('bp-AnnotationsControls-toggleBtn')).not.toBeInTheDocument();
-        });
-
-        test('should render the toggle and the exit button', () => {
-            renderToggle({ hasHighlight: true, hasRegion: true });
 
             expect(getToggle()).toHaveAttribute('data-resin-target', 'annotations');
             expect(getToggle()).toHaveAttribute('data-testid', 'bp-AnnotationsControls-toggleBtn');
-            expect(screen.getByRole('button', { name: __('exit_annotations') })).toHaveAttribute(
-                'data-resin-target',
-                'exit',
-            );
-            expect(screen.getByTestId('bp-annotations-controls-exit-btn').parentElement).toHaveClass(
-                'bp-AnnotationsControls-exitBtn',
-            );
+            expect(screen.queryByTestId('bp-annotations-controls-exit-btn')).not.toBeInTheDocument();
         });
 
-        test('should not render the exit button for video', () => {
-            renderToggle({ hasHighlight: true, hasRegion: true, isVideo: true });
+        test('should forward its ref to the toggle button', () => {
+            const ref = React.createRef<HTMLButtonElement>();
+            renderToggle({ ref });
 
-            expect(getToggle()).toBeInTheDocument();
-            expect(screen.queryByTestId('bp-annotations-controls-exit-btn')).not.toBeInTheDocument();
+            expect(ref.current).toBe(getToggle());
         });
 
         test.each`
@@ -252,7 +213,7 @@ describe('AnnotationsToggleV2', () => {
             ${AnnotationMode.HIGHLIGHT} | ${true}
             ${AnnotationMode.REGION}    | ${true}
         `('should be pressed $isPressed while in $annotationMode mode', ({ annotationMode, isPressed }) => {
-            renderToggle({ annotationMode, hasDrawing: true, hasHighlight: true, hasRegion: true });
+            renderToggle({ annotationMode });
 
             expect(getToggle()).toHaveAttribute('aria-pressed', `${isPressed}`);
             expect(getToggle()).toHaveAttribute('aria-expanded', `${isPressed}`);
@@ -260,51 +221,35 @@ describe('AnnotationsToggleV2', () => {
     });
 
     describe('with buttonType="icon"', () => {
-        const renderIconToggle = (props: Omit<IconProps, 'buttonType'> = {}, experiences: Experiences = {}) =>
-            render(<AnnotationsToggleV2 buttonType="icon" {...props} />, {
-                wrapper: ({ children }) => (
-                    <BlueprintProviders>
-                        <ExperiencesProvider experiences={experiences}>{children}</ExperiencesProvider>
-                    </BlueprintProviders>
-                ),
+        const mediaModes: ActiveAnnotationMode[] = [AnnotationMode.REGION, AnnotationMode.DRAWING];
+        const renderIconToggle = (
+            props: Partial<Omit<IconProps, 'buttonType'>> & WithRef = {},
+            experiences: Experiences = {},
+        ) =>
+            render(<AnnotationsToggleV2 buttonType="icon" modes={mediaModes} {...props} />, {
+                wrapper: getWrapper(experiences),
             });
-        const videoModes = { hasDrawing: true, hasRegion: true, isVideo: true };
 
-        test('should render a standalone toggle without a toolbar or separator', () => {
-            renderIconToggle(videoModes);
+        test('should render a standalone toggle without a toolbar', () => {
+            renderIconToggle();
 
             expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
-            expect(screen.queryByRole('separator')).not.toBeInTheDocument();
             expect(getToggle()).toHaveAttribute('data-resin-target', 'annotations');
             expect(getToggle()).toHaveAttribute('data-testid', 'bp-AnnotationsControls-toggleBtn');
         });
 
         test('should pass size and variant through to the toggle button', () => {
-            renderIconToggle({ ...videoModes, size: 'small', variant: 'high-contrast' });
+            renderIconToggle({ size: 'small', variant: 'high-contrast' });
 
             expect(getToggle().className).toMatch(/small/);
             expect(getToggle().className).toMatch(/high-contrast/);
         });
 
-        test('should not render the exit button for video', () => {
-            renderIconToggle(videoModes);
+        test('should forward its ref to the toggle button', () => {
+            const ref = React.createRef<HTMLButtonElement>();
+            renderIconToggle({ ref });
 
-            expect(screen.queryByTestId('bp-annotations-controls-exit-btn')).not.toBeInTheDocument();
-        });
-
-        test('should render the exit button outside video', async () => {
-            const onClick = jest.fn();
-            renderIconToggle({
-                annotationMode: AnnotationMode.REGION,
-                hasRegion: true,
-                onAnnotationModeClick: onClick,
-            });
-
-            await userEvent.click(screen.getByRole('button', { name: __('exit_annotations') }));
-
-            expect(screen.getByTestId('bp-annotations-controls-exit-btn')).toHaveAttribute('data-resin-target', 'exit');
-            expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
-            expect(getToggle()).toHaveFocus();
+            expect(ref.current).toBe(getToggle());
         });
 
         test.each`
@@ -313,15 +258,15 @@ describe('AnnotationsToggleV2', () => {
             ${AnnotationMode.DRAWING} | ${true}
             ${AnnotationMode.REGION}  | ${true}
         `('should be pressed $isPressed while in $annotationMode mode', ({ annotationMode, isPressed }) => {
-            renderIconToggle({ ...videoModes, annotationMode });
+            renderIconToggle({ annotationMode });
 
             expect(getToggle()).toHaveAttribute('aria-pressed', `${isPressed}`);
             expect(getToggle()).toHaveAttribute('aria-expanded', `${isPressed}`);
         });
 
-        test('should turn on the default mode for the enabled modes when pressed', async () => {
+        test('should turn on the first mode offered when pressed', async () => {
             const onClick = jest.fn();
-            renderIconToggle({ hasDrawing: true, isVideo: true, onAnnotationModeClick: onClick });
+            renderIconToggle({ modes: [AnnotationMode.DRAWING], onAnnotationModeClick: onClick });
 
             await userEvent.click(getToggle());
 
@@ -330,7 +275,7 @@ describe('AnnotationsToggleV2', () => {
 
         test('should exit the mode when pressed while a mode is on', async () => {
             const onClick = jest.fn();
-            renderIconToggle({ ...videoModes, annotationMode: AnnotationMode.REGION, onAnnotationModeClick: onClick });
+            renderIconToggle({ annotationMode: AnnotationMode.REGION, onAnnotationModeClick: onClick });
 
             await userEvent.click(getToggle());
 
@@ -339,11 +284,7 @@ describe('AnnotationsToggleV2', () => {
 
         test('should invoke the escape callback if the escape key is pressed while in a mode', async () => {
             const onEscape = jest.fn();
-            renderIconToggle({
-                ...videoModes,
-                annotationMode: AnnotationMode.DRAWING,
-                onAnnotationModeEscape: onEscape,
-            });
+            renderIconToggle({ annotationMode: AnnotationMode.DRAWING, onAnnotationModeEscape: onEscape });
 
             await userEvent.keyboard('{Escape}');
 
@@ -352,7 +293,7 @@ describe('AnnotationsToggleV2', () => {
 
         test('should show the discoverability tooltip only when the host targets it', () => {
             const experience = { canShow: true, onClose: jest.fn(), onComplete: jest.fn(), onShow: jest.fn() };
-            renderIconToggle(videoModes, { tooltipFlowAnnotationsExperience: experience });
+            renderIconToggle({}, { tooltipFlowAnnotationsExperience: experience });
 
             expect(screen.getByText(__('annotations_tooltip_title'))).toBeInTheDocument();
             expect(experience.onShow).toHaveBeenCalled();
