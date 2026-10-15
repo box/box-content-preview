@@ -1095,8 +1095,6 @@ class Preview extends EventEmitter {
             isComparedPreview,
             locale: getProp(this.location, 'locale'),
             menuContainer: this.container,
-            // The actions menu belongs on the compared pane. Download, promote, and delete
-            // come from the versions sidebar on comparisonBanner.
             onDelete: isComparedPreview ? onDelete : undefined,
             onDownload: isComparedPreview ? onDownloadVersion : undefined,
             onMakeCurrent: isComparedPreview ? onMakeCurrent : undefined,

@@ -21,15 +21,10 @@ export type ComparisonBannerFile = {
 export type ComparisonBannerOptions = {
     isComparedPreview?: boolean;
     locale?: string;
-    /** Preview container the menu portals into so it stays inside fullscreen. */
     menuContainer?: HTMLElement | null;
-    /** Deletes the compared version. Passed on comparisonBanner from the versions sidebar. */
     onDelete?: () => void;
-    /** Downloads the compared version. Passed on comparisonBanner from the versions sidebar. */
     onDownload?: () => void;
-    /** Promotes the compared version to current. Passed on comparisonBanner from the versions sidebar. */
     onMakeCurrent?: () => void;
-    /** Host handler that leaves side-by-side comparison. Passed on comparisonBanner. */
     onOpenFullPreview?: () => void;
 };
 
