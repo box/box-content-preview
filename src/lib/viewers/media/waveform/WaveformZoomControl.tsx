@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Text } from '@box/blueprint-web';
 import IconZoomIn24 from '../../controls/icons/IconZoomIn24';
 import IconZoomOut24 from '../../controls/icons/IconZoomOut24';
 import MediaToggle from '../../controls/media/MediaToggle';
@@ -16,6 +17,7 @@ import {
 import './WaveformZoomControl.scss';
 
 export default function WaveformZoomControl({
+    isBlueprintEnabled = false,
     isRevealed = false,
     maxZoom,
     onZoomChange,
@@ -123,13 +125,25 @@ export default function WaveformZoomControl({
         >
             {zoomMultiplier && (
                 <>
-                    <span
-                        className="bp-WaveformZoomControl-multiplier"
-                        data-testid="bp-waveform-zoom-multiplier"
-                        title={__('zoom_current_scale')}
-                    >
-                        {zoomMultiplier}
-                    </span>
+                    {isBlueprintEnabled ? (
+                        <div
+                            className="bp-WaveformZoomControl-multiplier"
+                            data-testid="bp-waveform-zoom-multiplier"
+                            title={__('zoom_current_scale')}
+                        >
+                            <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
+                                {zoomMultiplier}
+                            </Text>
+                        </div>
+                    ) : (
+                        <span
+                            className="bp-WaveformZoomControl-multiplier"
+                            data-testid="bp-waveform-zoom-multiplier"
+                            title={__('zoom_current_scale')}
+                        >
+                            {zoomMultiplier}
+                        </span>
+                    )}
                     <span
                         aria-hidden="true"
                         className="bp-WaveformZoomControl-divider"
