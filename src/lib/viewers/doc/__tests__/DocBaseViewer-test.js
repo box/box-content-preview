@@ -4008,6 +4008,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'resize').mockImplementation();
                 jest.spyOn(docBase, 'emitMetric').mockImplementation();
                 jest.spyOn(docBase, 'emit').mockImplementation();
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
 
                 stubs.toggleSidebar = jest.fn();
                 stubs.isSidebarOpen = jest.fn();
@@ -4029,6 +4030,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.toggleThumbnails();
                 jest.advanceTimersByTime(300);
 
+                expect(docBase.resize).not.toBeCalled();
+                expect(docBase.renderUI).not.toBeCalled();
+            });
+
+            test('should re-render the controls with the new open state right away', () => {
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+                stubs.toggleSidebar.mockImplementation(() => {
+                    thumbnailsSidebar.isOpen = true;
+                });
+                let isOpenWhenRendered;
+                docBase.renderUI.mockImplementation(() => {
+                    isOpenWhenRendered = thumbnailsSidebar.isOpen;
+                });
+
+                docBase.toggleThumbnails();
+
+                expect(docBase.renderUI).toBeCalledTimes(1);
+                expect(isOpenWhenRendered).toBe(true);
                 expect(docBase.resize).not.toBeCalled();
             });
 
