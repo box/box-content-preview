@@ -12,7 +12,7 @@ export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggl
     }
 
     return (
-        <span className="bp-ThumbnailsToggleV2">
+        <div className="bp-ThumbnailsToggleV2">
             <Toolbar.ToggleGroup
                 onValueChange={(): void => onThumbnailsToggle()}
                 type="multiple"
@@ -28,6 +28,6 @@ export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggl
                     />
                 </ToggleTooltipV2>
             </Toolbar.ToggleGroup>
-        </span>
+        </div>
     );
 }
