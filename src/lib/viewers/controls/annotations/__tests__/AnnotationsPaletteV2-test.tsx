@@ -4,13 +4,16 @@ import userEvent from '@testing-library/user-event';
 import AnnotationsPaletteV2, { Props } from '../AnnotationsPaletteV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import fullscreen from '../../../../Fullscreen';
+import { AnnotationColor } from '../../../../AnnotationModule';
 import { AnnotationMode } from '../../../../types';
 
 describe('AnnotationsPaletteV2', () => {
-    const renderPalette = (props: Props = {}) =>
-        render(<AnnotationsPaletteV2 hasDrawing hasHighlight hasRegion {...props} />, {
-            wrapper: BlueprintProviders,
-        });
+    const noModes = { hasDrawing: false, hasHighlight: false, hasRegion: false };
+    const renderPalette = (props: Partial<Props> = {}) =>
+        render(
+            <AnnotationsPaletteV2 hasDrawing hasHighlight hasRegion onAnnotationColorChange={jest.fn()} {...props} />,
+            { wrapper: BlueprintProviders },
+        );
 
     describe('event handlers', () => {
         test.each`
@@ -62,13 +65,21 @@ describe('AnnotationsPaletteV2', () => {
         test('should close once the mode is turned off', () => {
             const { rerender } = renderPalette({ annotationMode: AnnotationMode.REGION });
 
-            rerender(<AnnotationsPaletteV2 annotationMode={AnnotationMode.NONE} hasDrawing hasHighlight hasRegion />);
+            rerender(
+                <AnnotationsPaletteV2
+                    annotationMode={AnnotationMode.NONE}
+                    hasDrawing
+                    hasHighlight
+                    hasRegion
+                    onAnnotationColorChange={jest.fn()}
+                />,
+            );
 
             expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
         });
 
         test('should render nothing if no mode is enabled', () => {
-            render(<AnnotationsPaletteV2 annotationMode={AnnotationMode.REGION} />, { wrapper: BlueprintProviders });
+            renderPalette({ ...noModes, annotationMode: AnnotationMode.REGION });
 
             expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
         });
@@ -104,9 +115,7 @@ describe('AnnotationsPaletteV2', () => {
             ${{ hasHighlight: true }}                   | ${['bp-AnnotationsControls-highlightBtn']}
             ${{ hasDrawing: true, hasHighlight: true }} | ${['bp-AnnotationsControls-highlightBtn', 'bp-AnnotationsControls-drawBtn']}
         `('should only render the buttons for $options', ({ options, testIds }) => {
-            render(<AnnotationsPaletteV2 annotationMode={AnnotationMode.HIGHLIGHT} {...options} />, {
-                wrapper: BlueprintProviders,
-            });
+            renderPalette({ ...noModes, annotationMode: AnnotationMode.HIGHLIGHT, ...options });
 
             expect(screen.queryAllByRole('radio').map(button => button.dataset.testid)).toEqual(testIds);
         });
@@ -120,6 +129,49 @@ describe('AnnotationsPaletteV2', () => {
             renderPalette({ annotationMode });
 
             expect(screen.getByRole('radio', { checked: true })).toHaveAttribute('data-testid', selector);
+        });
+    });
+
+    describe('drawing colors', () => {
+        beforeEach(() => {
+            window.ResizeObserver = jest.fn().mockImplementation(() => ({
+                disconnect: jest.fn(),
+                observe: jest.fn(),
+                unobserve: jest.fn(),
+            }));
+        });
+
+        afterEach(() => {
+            // @ts-expect-error jsdom has no ResizeObserver to restore it to
+            delete window.ResizeObserver;
+        });
+
+        test.each([AnnotationMode.HIGHLIGHT, AnnotationMode.REGION])(
+            'should not render the color picker in %s mode',
+            annotationMode => {
+                renderPalette({ annotationMode });
+
+                expect(screen.queryByTestId('bp-color-picker-control')).not.toBeInTheDocument();
+            },
+        );
+
+        test('should render the color picker in the palette while drawing', () => {
+            renderPalette({ annotationColor: AnnotationColor.YELLOW, annotationMode: AnnotationMode.DRAWING });
+
+            const toggle = screen.getByTestId('bp-ColorPickerControl-toggle');
+
+            expect(screen.getByRole('toolbar')).toContainElement(toggle);
+            expect(toggle.style.getPropertyValue('--toolbar-button-color')).toBe(AnnotationColor.YELLOW);
+        });
+
+        test('should change the annotation color when a color is selected', async () => {
+            const onAnnotationColorChange = jest.fn();
+            renderPalette({ annotationMode: AnnotationMode.DRAWING, onAnnotationColorChange });
+
+            await userEvent.click(screen.getByTestId('bp-ColorPickerControl-toggle'));
+            await userEvent.click(screen.getByRole('button', { name: __('drawing_color_red') }));
+
+            expect(onAnnotationColorChange).toHaveBeenCalledWith(AnnotationColor.WATERMELON_RED);
         });
     });
 });
