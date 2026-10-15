@@ -30,15 +30,13 @@ export default function WaveformGeneratingIndicator({ isBlueprintEnabled = false
                     <span className="bp-WaveformGeneratingIndicator-bar" />
                 </span>
             )}
-            <span className="bp-WaveformGeneratingIndicator-label">
-                {isBlueprintEnabled ? (
-                    <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
-                        {label}
-                    </Text>
-                ) : (
-                    label
-                )}
-            </span>
+            {isBlueprintEnabled ? (
+                <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                    {label}
+                </Text>
+            ) : (
+                <span className="bp-WaveformGeneratingIndicator-label">{label}</span>
+            )}
         </div>
     );
 }

@@ -7,6 +7,7 @@
     align-items: center;
     height: 48px;
     padding: 8px 16px 8px 12px;
+    white-space: nowrap;
 }
 
 .bp-WaveformGeneratingIndicator-bars {
@@ -46,7 +47,6 @@
     font-weight: normal;
     line-height: 22px;
     color: $white;
-    white-space: nowrap;
 }
 
 @keyframes bp-WaveformGeneratingIndicator-pulse {

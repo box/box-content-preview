@@ -27,15 +27,13 @@ export default function WaveformShuttleIndicator({ direction, isBlueprintEnabled
             role="status"
         >
             <IconShuttleForward aria-hidden="true" className="bp-WaveformShuttle-glyph" />
-            <span className="bp-WaveformShuttle-rate">
-                {isBlueprintEnabled ? (
-                    <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
-                        {rateLabel}
-                    </Text>
-                ) : (
-                    rateLabel
-                )}
-            </span>
+            {isBlueprintEnabled ? (
+                <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
+                    {rateLabel}
+                </Text>
+            ) : (
+                <span className="bp-WaveformShuttle-rate">{rateLabel}</span>
+            )}
         </div>
     );
 }

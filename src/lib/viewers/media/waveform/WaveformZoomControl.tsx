@@ -125,19 +125,25 @@ export default function WaveformZoomControl({
         >
             {zoomMultiplier && (
                 <>
-                    <span
-                        className="bp-WaveformZoomControl-multiplier"
-                        data-testid="bp-waveform-zoom-multiplier"
-                        title={__('zoom_current_scale')}
-                    >
-                        {isBlueprintEnabled ? (
+                    {isBlueprintEnabled ? (
+                        <div
+                            className="bp-WaveformZoomControl-multiplier"
+                            data-testid="bp-waveform-zoom-multiplier"
+                            title={__('zoom_current_scale')}
+                        >
                             <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
                                 {zoomMultiplier}
                             </Text>
-                        ) : (
-                            zoomMultiplier
-                        )}
-                    </span>
+                        </div>
+                    ) : (
+                        <span
+                            className="bp-WaveformZoomControl-multiplier"
+                            data-testid="bp-waveform-zoom-multiplier"
+                            title={__('zoom_current_scale')}
+                        >
+                            {zoomMultiplier}
+                        </span>
+                    )}
                     <span
                         aria-hidden="true"
                         className="bp-WaveformZoomControl-divider"
