@@ -155,20 +155,19 @@ describe('AnnotationsPaletteV2', () => {
             },
         );
 
-        test('should render the color picker in the palette while drawing', () => {
+        test('should render the colors inline in the palette while drawing', () => {
             renderPalette({ annotationColor: AnnotationColor.YELLOW, annotationMode: AnnotationMode.DRAWING });
 
-            const toggle = screen.getByTestId('bp-ColorPickerControl-toggle');
+            const colors = screen.getByRole('grid', { name: __('drawing_color') });
 
-            expect(screen.getByRole('toolbar')).toContainElement(toggle);
-            expect(toggle.style.getPropertyValue('--toolbar-button-color')).toBe(AnnotationColor.YELLOW);
+            expect(screen.getByRole('toolbar')).toContainElement(colors);
+            expect(screen.getByRole('button', { name: __('drawing_color_yellow') }).className).toMatch(/active/);
         });
 
         test('should change the annotation color when a color is selected', async () => {
             const onAnnotationColorChange = jest.fn();
             renderPalette({ annotationMode: AnnotationMode.DRAWING, onAnnotationColorChange });
 
-            await userEvent.click(screen.getByTestId('bp-ColorPickerControl-toggle'));
             await userEvent.click(screen.getByRole('button', { name: __('drawing_color_red') }));
 
             expect(onAnnotationColorChange).toHaveBeenCalledWith(AnnotationColor.WATERMELON_RED);

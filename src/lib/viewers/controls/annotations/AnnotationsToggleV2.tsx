@@ -7,6 +7,7 @@ import TextHighlight from '@box/blueprint-web-assets/icons/Medium/TextHighlight'
 import XMark from '@box/blueprint-web-assets/icons/Medium/XMark';
 import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import ToggleTooltipV2 from '../tooltip/ToggleTooltipV2';
+import { ExperiencesContext } from '../experiences';
 import useAnnotationModes from './useAnnotationModes';
 import { AnnotationMode } from '../../../types';
 import { Props } from './AnnotationsControls';
@@ -30,6 +31,7 @@ export default function AnnotationsToggleV2({
     onAnnotationModeEscape = noop,
 }: Props): JSX.Element | null {
     const toggleRef = React.useRef<HTMLButtonElement | null>(null);
+    const { experiences } = React.useContext(ExperiencesContext);
     const { defaultMode, hasAnyMode, showDrawing, showHighlight, showRegion } = useAnnotationModes({
         hasDrawing,
         hasHighlight,
@@ -108,7 +110,8 @@ export default function AnnotationsToggleV2({
                 </span>
             )}
             <Toolbar.ToggleGroup onValueChange={handleToggle} type="multiple" value={isActive ? [TOGGLE_VALUE] : []}>
-                <AnnotationsTargetedTooltip isEnabled={showRegion}>
+                {/* With no experience from the host, the box-ui-elements tooltip falls back to opening on hover */}
+                <AnnotationsTargetedTooltip isEnabled={showRegion && !!experiences.tooltipFlowAnnotationsExperience}>
                     <ToggleTooltipV2 content={__('annotation_tools')}>
                         <Toolbar.ToggleItem
                             ref={toggleRef}

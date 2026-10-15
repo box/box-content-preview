@@ -8,16 +8,11 @@ export type Props = {
     container?: HTMLElement | null;
 };
 
-// Tooltips read the container from TooltipProvider; Popover and DropdownMenu content take it as a prop.
-export const PortalContainerContext = React.createContext<HTMLElement | null | undefined>(undefined);
-
 // Preview has no Split client, so Blueprint's treatment-driven configuration resolves to its defaults.
 export default function BlueprintProviders({ children, container }: Props): JSX.Element {
     return (
         <BlueprintProvider useTreatment={useNoopTreatment}>
-            <PortalContainerContext.Provider value={container}>
-                <TooltipProvider container={container}>{children}</TooltipProvider>
-            </PortalContainerContext.Provider>
+            <TooltipProvider container={container}>{children}</TooltipProvider>
         </BlueprintProvider>
     );
 }

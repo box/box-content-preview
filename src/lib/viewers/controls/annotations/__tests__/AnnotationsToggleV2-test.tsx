@@ -52,6 +52,15 @@ describe('AnnotationsToggleV2', () => {
             expect(screen.getByRole('tooltip')).toBeInTheDocument();
         });
 
+        test('should not show the discoverability tooltip on hover if the host passes no annotations experience', async () => {
+            renderToggle({ hasHighlight: true, hasRegion: true });
+
+            await userEvent.hover(getToggle());
+
+            expect(await screen.findByRole('tooltip')).toHaveTextContent(__('annotation_tools'));
+            expect(screen.queryByText(__('annotations_tooltip_title'))).not.toBeInTheDocument();
+        });
+
         test('should not render tooltip if region mode is not enabled', () => {
             renderToggle({ hasHighlight: true }, getExperiences(true));
 
