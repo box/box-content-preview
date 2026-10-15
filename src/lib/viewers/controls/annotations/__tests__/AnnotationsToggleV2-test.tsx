@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AnnotationsToggleV2 from '../AnnotationsToggleV2';
+import AnnotationsToggleV2, { IconProps } from '../AnnotationsToggleV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsBarV2 from '../../controls-bar/ControlsBarV2';
 import ExperiencesProvider from '../../experiences';
@@ -256,6 +256,106 @@ describe('AnnotationsToggleV2', () => {
 
             expect(getToggle()).toHaveAttribute('aria-pressed', `${isPressed}`);
             expect(getToggle()).toHaveAttribute('aria-expanded', `${isPressed}`);
+        });
+    });
+
+    describe('with buttonType="icon"', () => {
+        const renderIconToggle = (props: Omit<IconProps, 'buttonType'> = {}, experiences: Experiences = {}) =>
+            render(<AnnotationsToggleV2 buttonType="icon" {...props} />, {
+                wrapper: ({ children }) => (
+                    <BlueprintProviders>
+                        <ExperiencesProvider experiences={experiences}>{children}</ExperiencesProvider>
+                    </BlueprintProviders>
+                ),
+            });
+        const videoModes = { hasDrawing: true, hasRegion: true, isVideo: true };
+
+        test('should render a standalone toggle without a toolbar or separator', () => {
+            renderIconToggle(videoModes);
+
+            expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+            expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+            expect(getToggle()).toHaveAttribute('data-resin-target', 'annotations');
+            expect(getToggle()).toHaveAttribute('data-testid', 'bp-AnnotationsControls-toggleBtn');
+        });
+
+        test('should pass size and variant through to the toggle button', () => {
+            renderIconToggle({ ...videoModes, size: 'small', variant: 'high-contrast' });
+
+            expect(getToggle().className).toMatch(/small/);
+            expect(getToggle().className).toMatch(/high-contrast/);
+        });
+
+        test('should not render the exit button for video', () => {
+            renderIconToggle(videoModes);
+
+            expect(screen.queryByTestId('bp-annotations-controls-exit-btn')).not.toBeInTheDocument();
+        });
+
+        test('should render the exit button outside video', async () => {
+            const onClick = jest.fn();
+            renderIconToggle({
+                annotationMode: AnnotationMode.REGION,
+                hasRegion: true,
+                onAnnotationModeClick: onClick,
+            });
+
+            await userEvent.click(screen.getByRole('button', { name: __('exit_annotations') }));
+
+            expect(screen.getByTestId('bp-annotations-controls-exit-btn')).toHaveAttribute('data-resin-target', 'exit');
+            expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+            expect(getToggle()).toHaveFocus();
+        });
+
+        test.each`
+            annotationMode            | isPressed
+            ${AnnotationMode.NONE}    | ${false}
+            ${AnnotationMode.DRAWING} | ${true}
+            ${AnnotationMode.REGION}  | ${true}
+        `('should be pressed $isPressed while in $annotationMode mode', ({ annotationMode, isPressed }) => {
+            renderIconToggle({ ...videoModes, annotationMode });
+
+            expect(getToggle()).toHaveAttribute('aria-pressed', `${isPressed}`);
+            expect(getToggle()).toHaveAttribute('aria-expanded', `${isPressed}`);
+        });
+
+        test('should turn on the default mode for the enabled modes when pressed', async () => {
+            const onClick = jest.fn();
+            renderIconToggle({ hasDrawing: true, isVideo: true, onAnnotationModeClick: onClick });
+
+            await userEvent.click(getToggle());
+
+            expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.DRAWING });
+        });
+
+        test('should exit the mode when pressed while a mode is on', async () => {
+            const onClick = jest.fn();
+            renderIconToggle({ ...videoModes, annotationMode: AnnotationMode.REGION, onAnnotationModeClick: onClick });
+
+            await userEvent.click(getToggle());
+
+            expect(onClick).toHaveBeenCalledWith({ mode: AnnotationMode.NONE });
+        });
+
+        test('should invoke the escape callback if the escape key is pressed while in a mode', async () => {
+            const onEscape = jest.fn();
+            renderIconToggle({
+                ...videoModes,
+                annotationMode: AnnotationMode.DRAWING,
+                onAnnotationModeEscape: onEscape,
+            });
+
+            await userEvent.keyboard('{Escape}');
+
+            expect(onEscape).toHaveBeenCalled();
+        });
+
+        test('should show the discoverability tooltip only when the host targets it', () => {
+            const experience = { canShow: true, onClose: jest.fn(), onComplete: jest.fn(), onShow: jest.fn() };
+            renderIconToggle(videoModes, { tooltipFlowAnnotationsExperience: experience });
+
+            expect(screen.getByText(__('annotations_tooltip_title'))).toBeInTheDocument();
+            expect(experience.onShow).toHaveBeenCalled();
         });
     });
 });
