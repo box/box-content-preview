@@ -178,7 +178,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.thumbnailsSidebarEl).toBeUndefined();
         });
 
-        test('should focus the gallery toggle when the gallery controller returns focus', () => {
+        test.each`
+            toggleType | markToggle
+            ${'v1'}    | ${toggle => toggle.classList.add('bp-GalleryToggle')}
+            ${'v2'}    | ${toggle => toggle.setAttribute('data-bp-gallery-toggle', '')}
+        `('should focus the $toggleType gallery toggle when the gallery controller returns focus', ({ markToggle }) => {
             docBase = new DocBaseViewer({
                 cache: {
                     set: () => {},
@@ -202,7 +206,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setup();
 
             const toggle = document.createElement('button');
-            toggle.setAttribute('data-resin-target', 'galleryView');
+            markToggle(toggle);
             docBase.containerEl.appendChild(toggle);
 
             docBase.galleryController.focusToggle();

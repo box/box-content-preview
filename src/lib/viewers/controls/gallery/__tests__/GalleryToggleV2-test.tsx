@@ -30,6 +30,7 @@ describe('GalleryToggleV2', () => {
             getWrapper({ onGalleryToggle: jest.fn() });
 
             expect(getButton()).toHaveAttribute('data-resin-target', 'galleryView');
+            expect(getButton()).toHaveAttribute('data-bp-gallery-toggle');
         });
 
         test('should render the GridView icon', () => {

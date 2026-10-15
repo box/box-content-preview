@@ -251,7 +251,7 @@ class DocBaseViewer extends BaseViewer {
             toggleThumbnails: () => this.toggleThumbnails(),
             requestUiUpdate: () => this.renderUI(),
             focusToggle: () => {
-                const toggle = this.containerEl.querySelector('[data-resin-target="galleryView"]');
+                const toggle = this.containerEl.querySelector('.bp-GalleryToggle, [data-bp-gallery-toggle]');
                 if (toggle && toggle.focus) {
                     toggle.focus();
                 }

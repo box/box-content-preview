@@ -18,6 +18,7 @@ export default function GalleryToggleV2({ isGalleryOpen, onGalleryToggle }: Prop
             <ToggleTooltipV2 content={__('gallery_view')}>
                 <Toolbar.ToggleItem
                     aria-label={__('gallery_view')}
+                    data-bp-gallery-toggle=""
                     data-resin-target="galleryView"
                     icon={GridView}
                     value="gallery"
