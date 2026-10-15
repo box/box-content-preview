@@ -143,6 +143,35 @@ describe('lib/ComparisonBanner', () => {
             expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
         });
 
+        test('should not let actions menu keydown events reach document listeners', async () => {
+            const onDocumentKeyDown = jest.fn();
+            const user = userEvent.setup();
+
+            document.addEventListener('keydown', onDocumentKeyDown);
+
+            try {
+                render(<ComparisonBanner file={file} isComparedPreview locale="en-US" onDownload={jest.fn()} />);
+
+                const menuButton = screen.getByRole('button', { name: __('comparison_banner_actions') });
+
+                act(() => menuButton.focus());
+                await user.keyboard('{Enter}');
+
+                expect(screen.getByRole('menuitem', { name: __('download') })).toBeInTheDocument();
+
+                await user.keyboard('{ArrowDown}');
+
+                expect(onDocumentKeyDown).not.toHaveBeenCalled();
+
+                await user.keyboard('{Escape}');
+                document.body.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowDown' }));
+
+                expect(onDocumentKeyDown).toHaveBeenCalledTimes(1);
+            } finally {
+                document.removeEventListener('keydown', onDocumentKeyDown);
+            }
+        });
+
         test('should render nothing when version content is missing', () => {
             const { container } = render(<ComparisonBanner file={{}} />);
 

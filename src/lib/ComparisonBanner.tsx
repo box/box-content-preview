@@ -94,7 +94,13 @@ export default function ComparisonBanner({
                 )}
             </div>
             {isComparedPreview && (onMakeCurrent || onDownload || onOpenFullPreview || onDelete) && (
-                <div className="bp-version-banner-actions">
+                <div
+                    className="bp-version-banner-actions"
+                    onKeyDown={(event: React.KeyboardEvent): void => {
+                        event.stopPropagation(); // Prevents global key handling
+                    }}
+                    role="presentation"
+                >
                     <BlueprintProviders container={menuContainer}>
                         <DropdownMenu.Root>
                             <DropdownMenu.Trigger asChild>
@@ -169,8 +175,15 @@ export class ComparisonBannerRoot {
     }
 
     render(file: ComparisonBannerFile = {}, options: ComparisonBannerOptions = {}): void {
-        const { isComparedPreview = false, locale, menuContainer, onDelete, onDownload, onMakeCurrent, onOpenFullPreview } =
-            options;
+        const {
+            isComparedPreview = false,
+            locale,
+            menuContainer,
+            onDelete,
+            onDownload,
+            onMakeCurrent,
+            onOpenFullPreview,
+        } = options;
 
         this.root.render(
             <ComparisonBanner
