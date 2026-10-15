@@ -125,7 +125,6 @@ export default function ArchiveTableV2({
                                 className={classNames('bp-ArchiveTableV2-row', { 'is-folder': isFolder })}
                                 id={item.absolute_path}
                                 onAction={isFolder ? () => handleFolderAction(item) : undefined}
-                                style={{ height: `${ROW_HEIGHT_PX}px` }}
                                 textValue={item.name}
                             >
                                 <Cell>
