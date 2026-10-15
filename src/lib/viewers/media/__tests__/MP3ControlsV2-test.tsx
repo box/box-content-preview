@@ -237,6 +237,19 @@ describe('MP3ControlsV2', () => {
             expect(shuttle).not.toHaveClass('bp-is-reverse');
         });
 
+        test('should render the shuttle rate as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({
+                durationTime: 8,
+                isBlueprintEnabled: true,
+                peaks: [0.2, 0.8],
+                shuttleDirection: 'forward',
+                shuttleRate: 2,
+            });
+
+            const shuttle = await screen.findByTestId('bp-waveform-shuttle');
+            expect(shuttle.querySelector('[data-modern]')).toHaveTextContent('2x');
+        });
+
         test('should withhold the playhead comment while shuttle is moving', async () => {
             getWrapper({
                 durationTime: 8,
@@ -459,6 +472,13 @@ describe('MP3ControlsV2', () => {
                 __('media_generating_waveform'),
             );
             expect(screen.queryByTestId('bp-waveform-zoom')).not.toBeInTheDocument();
+        });
+
+        test('should render the generating waveform label as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({ durationTime: 8, isBlueprintEnabled: true, isGeneratingWaveform: true });
+
+            const indicator = await screen.findByTestId('bp-waveform-generating');
+            expect(indicator.querySelector('[data-modern]')).toHaveTextContent(__('media_generating_waveform'));
         });
 
         test('should hide generating waveform once real peaks are available', async () => {
