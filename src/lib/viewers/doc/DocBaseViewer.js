@@ -2143,7 +2143,10 @@ class DocBaseViewer extends BaseViewer {
         const { pagesCount } = this.pdfViewer;
 
         this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
-        this.renderUI();
+
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.renderUI();
+        }
 
         let metricName;
         let eventName;

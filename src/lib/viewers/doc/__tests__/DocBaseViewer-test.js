@@ -4034,7 +4034,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.renderUI).not.toBeCalled();
             });
 
-            test('should re-render the controls with the new open state right away', () => {
+            test('should not re-render the controls if the controls bar flag is off', () => {
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+
+                docBase.toggleThumbnails();
+
+                expect(stubs.toggleSidebar).toBeCalled();
+                expect(docBase.renderUI).not.toBeCalled();
+            });
+
+            test('should re-render the controls with the new open state right away if the controls bar flag is on', () => {
+                docBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
                 docBase.thumbnailsSidebar = thumbnailsSidebar;
                 docBase.pdfViewer = { pagesCount: 10 };
                 stubs.toggleSidebar.mockImplementation(() => {
