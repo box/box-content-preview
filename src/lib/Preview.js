@@ -5,6 +5,7 @@ import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
 import Api from './api';
 import Browser from './Browser';
+import { isNpmBuild } from './isNpmBuild';
 import Logger from './Logger';
 import loaderList from './loaders';
 import Cache from './Cache';
@@ -95,9 +96,8 @@ const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
 
 // document.currentScript is this file only while it evaluates.
-const IS_NPM_BUILD = typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__;
 let PREVIEW_LOCATION = {};
-if (!IS_NPM_BUILD) {
+if (!isNpmBuild()) {
     try {
         PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
     } catch (e) {
@@ -257,8 +257,8 @@ class Preview extends EventEmitter {
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
             // npm consumers have no CDN-served pdfjs at runtime; force the bundled npm pdfjs path.
-            const finalOptions = IS_NPM_BUILD
-                ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
+            const finalOptions = isNpmBuild()
+                ? { ...options, features: { ...(options.features || {}), useNpmPdfjs: true } }
                 : options;
             this.previewOptions = { ...finalOptions, token };
         } else {
@@ -2507,7 +2507,7 @@ class Preview extends EventEmitter {
     };
 }
 
-if (!IS_NPM_BUILD) {
+if (!isNpmBuild()) {
     global.Box = global.Box || {};
     global.Box.Preview = Preview;
 }

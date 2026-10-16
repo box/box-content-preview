@@ -8,6 +8,7 @@ import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
+import { isNpmBuild } from '../../isNpmBuild';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -504,7 +505,7 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            if (this.featureEnabled('useNpmPdfjs')) {
+            if (this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
                 this.prefetchAssets(EXIF_READER, CSS);
             } else {
                 const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
@@ -545,7 +546,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadViewerAssets({ isUseNpmPdfjsEnabled = false } = {}) {
-        if (isUseNpmPdfjsEnabled) {
+        if (isUseNpmPdfjsEnabled || this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
             this.loadAssets(EXIF_READER, []);
             // Kick off the dynamic imports so the pdfjs chunks land in cache
             // before per-file load() awaits them. Errors are swallowed; load()
@@ -1056,7 +1057,8 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
-        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        const cMapUrl = useNpmPdfjs ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
             cMapUrl,
@@ -1064,10 +1066,17 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
-            isEvalSupported: false,
             rangeChunkSize,
             url: pdfUrl,
         };
+
+        if (useNpmPdfjs) {
+            pdfDocConfig.iccUrl = assetUrlCreator('iccs/');
+            pdfDocConfig.standardFontDataUrl = assetUrlCreator('standard_fonts/');
+            pdfDocConfig.wasmUrl = assetUrlCreator('wasm/');
+        } else {
+            pdfDocConfig.isEvalSupported = false;
+        }
 
         pdfDocConfig.httpHeaders = this.appendAuthHeader();
 
@@ -1338,9 +1347,11 @@ class DocBaseViewer extends BaseViewer {
     async loadPdfjsFromNpm() {
         // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
         // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
-        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
-        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/legacy/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(
+            /* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
+        );
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/legacy/web/pdf_viewer.css');
     }
 
     /**
