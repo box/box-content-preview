@@ -1,6 +1,7 @@
 import React from 'react';
-import { DropdownMenu, Text, Toolbar, ToolbarButtonProps, Tooltip } from '@box/blueprint-web';
+import { DropdownMenu, Text, Toolbar, ToolbarButtonProps } from '@box/blueprint-web';
 import { Video } from '@box/blueprint-web-assets/icons/Medium';
+import MenuTriggerTooltipV2 from '../tooltip/MenuTriggerTooltipV2';
 import { formatDuration, Props } from './AnimationClipsControl';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 
@@ -12,8 +13,10 @@ const settingsRadioItemAction = {
 
 // The Tooltip sits inside the DropdownMenu trigger so the trigger keeps the menu's data-state.
 function AnimationClipsToggle(props: ToolbarButtonProps, ref: React.Ref<HTMLButtonElement>): JSX.Element {
+    const isMenuOpen = props['aria-expanded'] === true || props['aria-expanded'] === 'true';
+
     return (
-        <Tooltip content={__('box3d_animation_clips')}>
+        <MenuTriggerTooltipV2 content={__('box3d_animation_clips')} isMenuOpen={isMenuOpen}>
             <Toolbar.Button
                 ref={ref}
                 aria-label={__('box3d_animation_clips')}
@@ -22,7 +25,7 @@ function AnimationClipsToggle(props: ToolbarButtonProps, ref: React.Ref<HTMLButt
             >
                 <Toolbar.Icon icon={Video} />
             </Toolbar.Button>
-        </Tooltip>
+        </MenuTriggerTooltipV2>
     );
 }
 

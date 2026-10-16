@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toolbar } from '@box/blueprint-web';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AnimationClipsControlV2 from '../AnimationClipsControlV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
@@ -147,6 +147,24 @@ describe('AnimationClipsControlV2', () => {
             expect(screen.queryByRole('menu')).not.toBeInTheDocument();
             expect(getToggle()).toHaveAttribute('aria-expanded', 'false');
             expect(getToggle()).toHaveFocus();
+        });
+
+        test('should keep the tooltip closed over the open menu so Escape closes the menu', async () => {
+            jest.useFakeTimers();
+            const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+            getWrapper();
+
+            await user.click(getToggle());
+            act(() => {
+                jest.advanceTimersByTime(2000);
+            });
+
+            expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+            await user.keyboard('{Escape}');
+
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+            jest.useRealTimers();
         });
     });
 });

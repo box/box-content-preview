@@ -1,6 +1,6 @@
 import React from 'react';
 import { DropdownMenu, Popover, Toolbar } from '@box/blueprint-web';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import SettingsToggleV2, { ToolbarProps } from '../SettingsToggleV2';
@@ -128,6 +128,27 @@ describe('SettingsToggleV2', () => {
             expect(getToggle()).toHaveAttribute('data-state', 'closed');
             expect(getToggle()).toHaveFocus();
         });
+
+        test.each([
+            ['DropdownMenu', renderDropdownMenu],
+            ['Popover', renderPopover],
+        ])('should keep the tooltip closed over the open %s so Escape closes it', async (_name, renderTrigger) => {
+            jest.useFakeTimers();
+            const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+            renderTrigger();
+
+            await user.click(getToggle());
+            act(() => {
+                jest.advanceTimersByTime(2000);
+            });
+
+            expect(within(container).queryByRole('tooltip')).not.toBeInTheDocument();
+
+            await user.keyboard('{Escape}');
+
+            expect(getToggle()).toHaveAttribute('aria-expanded', 'false');
+            jest.useRealTimers();
+        });
     });
 
     describe('with buttonType="icon"', () => {
@@ -191,8 +212,7 @@ describe('SettingsToggleV2', () => {
             expect(onClick).toHaveBeenCalledTimes(1);
         });
 
-        test('should reflect the DropdownMenu open state on the button', async () => {
-            const user = userEvent.setup();
+        const renderIconDropdownMenu = () =>
             renderStandalone(
                 <DropdownMenu.Root modal={false}>
                     <DropdownMenu.Trigger asChild>
@@ -203,6 +223,28 @@ describe('SettingsToggleV2', () => {
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>,
             );
+
+        test('should keep the tooltip closed over the open DropdownMenu so Escape closes it', async () => {
+            jest.useFakeTimers();
+            const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+            renderIconDropdownMenu();
+
+            await user.click(getToggle());
+            act(() => {
+                jest.advanceTimersByTime(2000);
+            });
+
+            expect(within(container).queryByRole('tooltip')).not.toBeInTheDocument();
+
+            await user.keyboard('{Escape}');
+
+            expect(getToggle()).toHaveAttribute('aria-expanded', 'false');
+            jest.useRealTimers();
+        });
+
+        test('should reflect the DropdownMenu open state on the button', async () => {
+            const user = userEvent.setup();
+            renderIconDropdownMenu();
 
             await user.click(getToggle());
 
