@@ -15,7 +15,7 @@ import GalleryToggle from '../controls/gallery';
 import { PageControlsV2 } from '../controls/page';
 import RotateControl from '../controls/rotate/RotateControl';
 import ThumbnailsToggle from '../controls/sidebar';
-import ZoomControls from '../controls/zoom';
+import { ZoomControlsV2 } from '../controls/zoom';
 import { ANNOTATION_COLORS } from '../../AnnotationModule';
 import { AnnotationMode } from '../../types';
 import { Props } from './DocControls';
@@ -89,7 +89,7 @@ export default function DocControlsV2({
                     </>
                 )}
                 {(!isGalleryOpen || hasGalleryZoom) && (
-                    <ZoomControls
+                    <ZoomControlsV2
                         maxScale={maxScale}
                         minScale={minScale}
                         onZoomIn={onZoomIn}

@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WaveSurfer from 'wavesurfer.js';
+import { Text } from '@box/blueprint-web';
 import { getCurrentTimeMs } from '../../../util';
 import {
     getBufferedProgress,
@@ -265,6 +266,7 @@ function WaveformView({
     durationSec,
     height = WAVEFORM_HEIGHT,
     interactive = true,
+    isBlueprintEnabled = false,
     isPlaying = false,
     mediaEl,
     onPlayPause,
@@ -1627,11 +1629,23 @@ function WaveformView({
         onSeekRef.current?.(timeSec);
     };
 
+    const renderHoverTime = (timeSec: number): React.ReactNode => {
+        const label = formatTime(timeSec);
+
+        return isBlueprintEnabled ? (
+            <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                {label}
+            </Text>
+        ) : (
+            label
+        );
+    };
+
     const scrubTimeChip =
         isTape && scrubPreviewTimeSec != null ? (
             <div className="bp-WaveformView-hover bp-WaveformView-hover--tape" data-testid="bp-waveform-hover">
                 <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
-                    {formatTime(scrubPreviewTimeSec)}
+                    {renderHoverTime(scrubPreviewTimeSec)}
                 </div>
             </div>
         ) : null;
@@ -1737,7 +1751,7 @@ function WaveformView({
                 {hoverLeft != null && hoverProgress != null && !isRangeDragging && (
                     <div className="bp-WaveformView-hover" data-testid="bp-waveform-hover" style={{ left: hoverLeft }}>
                         <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
-                            {formatTime(hoverProgress * durationSec)}
+                            {renderHoverTime(hoverProgress * durationSec)}
                         </div>
                     </div>
                 )}

@@ -21,18 +21,13 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
-        "pdfjs-dist": "4.3.136",
+        "pdfjs-dist": "6.4.299",
         "wavesurfer.js": "7.12.11"
     },
     "peerDependencies": {
@@ -139,7 +134,7 @@
         "webpack-dev-server": "^5.2.6"
     },
     "engines": {
-        "node": ">=20.0.0",
+        "node": ">=22.13.0",
         "yarn": ">=1.19.x"
     },
     "scripts": {
@@ -196,7 +191,6 @@
         "**/react-intl/**/@types/react": "18.3.1",
         "@types/node": "^22.18.10",
         "acorn": "8.14.0",
-        "canvas": "^3.2.3",
         "js-yaml": "^4.3.0"
     }
 }
