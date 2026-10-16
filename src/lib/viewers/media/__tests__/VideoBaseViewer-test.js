@@ -1596,6 +1596,24 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             });
         });
 
+        test.each([true, false])(
+            'should pass isBlueprintEnabled=%s and the portal container to the preloader',
+            isBlueprintEnabled => {
+                jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(isBlueprintEnabled);
+                jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+                videoBase.showPreload();
+
+                return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                    expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                        expect.any(String),
+                        videoBase.mediaContainerEl,
+                        expect.objectContaining({ isBlueprintEnabled, portalContainer: videoBase.containerEl }),
+                    );
+                });
+            },
+        );
+
         test('should size the shared media frame when early paint is enabled', () => {
             videoBase.isVideoPlayerV2 = true;
             videoBase.isVideoPosterEarlyPaint = true;

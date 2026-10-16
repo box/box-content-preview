@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { act } from 'react';
 import Api from '../../../api';
 import VideoPreloader from '../VideoPreloader';
 import {
@@ -105,6 +106,38 @@ describe('lib/viewers/media/VideoPreloader', () => {
                 expect(containerEl).toContainElement(videoPreloader.wrapperEl);
                 expect(videoPreloader.bindDOMListeners).toBeCalled();
             });
+        });
+
+        test('should render the legacy play overlay icon when isBlueprintEnabled is not set', () => {
+            return videoPreloader.showPreload('someUrl', containerEl).then(() => {
+                const overlay = videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+
+                expect(overlay).not.toHaveClass(`${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}--blueprint`);
+                expect(overlay.querySelector('svg')).not.toBeNull();
+                expect(videoPreloader.playOverlayRoot).toBeUndefined();
+            });
+        });
+
+        test('should render the play overlay as a 48px Blueprint icon button when isBlueprintEnabled is true', async () => {
+            global.IS_REACT_ACT_ENVIRONMENT = true;
+            await act(async () => {
+                await videoPreloader.showPreload('someUrl', containerEl, { isBlueprintEnabled: true });
+            });
+
+            const overlay = videoPreloader.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+            const button = overlay.querySelector('[data-testid="bp-video-preload-play-button"]');
+
+            expect(overlay).toHaveClass(`${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}--blueprint`);
+            expect(button).toHaveClass('bp-video-preload-play-button');
+            expect(button).toHaveAttribute('aria-label', __('media_play'));
+            expect(button).toHaveAttribute('data-resin-target', 'playOverlay');
+            expect(button).toHaveAttribute('data-target-id', 'VideoPreloader-play');
+            expect(button.querySelector('svg')).toHaveAttribute('width', '48');
+            expect(button.querySelector('svg')).toHaveAttribute('height', '48');
+
+            act(() => videoPreloader.cleanupPreload());
+            expect(videoPreloader.playOverlayRoot).toBeUndefined();
+            global.IS_REACT_ACT_ENVIRONMENT = false;
         });
 
         test('should call loadHandler immediately if image is already cached', () => {
@@ -286,6 +319,19 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             const overlay = videoPreloader.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
             expect(overlay).toHaveClass('bp-is-hidden');
+        });
+
+        test('should move focus to the container when the focused play button is hidden', () => {
+            const button = document.createElement('button');
+            videoPreloader.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`).appendChild(button);
+            videoPreloader.containerEl = containerEl;
+            containerEl.tabIndex = -1;
+            containerEl.appendChild(videoPreloader.wrapperEl);
+            button.focus();
+
+            videoPreloader.showLoading();
+
+            expect(document.activeElement).toBe(containerEl);
         });
 
         test('should add a spinner element to the placeholder', () => {

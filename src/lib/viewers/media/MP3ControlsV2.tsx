@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import isFinite from 'lodash/isFinite';
+import { IconButton, Tooltip } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
+import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import TimestampControl from '../controls/media/TimestampControl';
 import { CommentMarker } from '../controls/media/markers';
 import { CommentRangeDraft } from '../controls/media/types';
+import { stopActivationKeyPropagation } from '../controls/media/utils';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
@@ -298,7 +301,24 @@ export default function MP3ControlsV2({
                         )}
                     </div>
                 )}
-                {showPlayOverlay && (
+                {showPlayOverlay && isBlueprintEnabled && (
+                    <Tooltip content={__('media_play')}>
+                        <IconButton
+                            aria-label={__('media_play')}
+                            className="bp-MP3ControlsV2-playOverlayButton"
+                            data-resin-target="playOverlay"
+                            data-target-id="MP3ControlsV2-play"
+                            data-testid="bp-MP3ControlsV2-play-overlay"
+                            icon={PlayOverlayIcon}
+                            onClick={handlePlayOverlayClick}
+                            onKeyDown={stopActivationKeyPropagation}
+                            onMouseDown={event => event.preventDefault()}
+                            size="large"
+                            variant="on-dark"
+                        />
+                    </Tooltip>
+                )}
+                {showPlayOverlay && !isBlueprintEnabled && (
                     <button
                         className="bp-MP3ControlsV2-playOverlay"
                         // Static SVG from the icons module, same asset video uses for the overlay.

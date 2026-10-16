@@ -286,7 +286,10 @@ describe('MP3ControlsV2', () => {
             expect(await screen.findByTestId('bp-MP3ControlsV2-bar')).toBeInTheDocument();
             expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('0:12/3:32');
             expect(within(screen.getByTestId('bp-MP3ControlsV2-bar')).getByTitle(__('media_play'))).toBeInTheDocument();
-            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute('data-resin-target', 'playOverlay');
+            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute(
+                'data-resin-target',
+                'playOverlay',
+            );
             expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute(
                 'data-target-id',
                 'MP3ControlsV2-play',
@@ -304,6 +307,23 @@ describe('MP3ControlsV2', () => {
             expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
             expect(screen.getByTestId('bp-MP3ControlsV2-bar')).toBeInTheDocument();
             expect(screen.queryByRole('slider', { name: __('media_time_slider') })).not.toBeInTheDocument();
+        });
+
+        test('should render the play overlay as a 48px Blueprint icon button when isBlueprintEnabled is true', async () => {
+            const onPlayPause = jest.fn();
+            getWrapper({ durationTime: 212, isBlueprintEnabled: true, onPlayPause, peaks: [0.2, 0.8] });
+
+            const overlay = await screen.findByTestId('bp-MP3ControlsV2-play-overlay');
+            expect(overlay).toHaveClass('bp-MP3ControlsV2-playOverlayButton');
+            expect(overlay).not.toHaveClass('bp-MP3ControlsV2-playOverlay');
+            expect(overlay).toHaveAttribute('aria-label', __('media_play'));
+            expect(overlay).toHaveAttribute('data-resin-target', 'playOverlay');
+            expect(overlay).toHaveAttribute('data-target-id', 'MP3ControlsV2-play');
+            expect(overlay.querySelector('svg')).toHaveAttribute('width', '48');
+            expect(overlay.querySelector('svg')).toHaveAttribute('height', '48');
+
+            await userEvent.click(overlay);
+            expect(onPlayPause).toHaveBeenCalledWith(true);
         });
 
         test('should keep the waveform inert until play, with overlay on the fallback shell', async () => {
