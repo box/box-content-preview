@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Text } from '@box/blueprint-web';
+import { Backward, Forward } from '@box/blueprint-web-assets/icons/MediumFilled';
+import { bpIconIconOnDark, Size5 } from '@box/blueprint-web-assets/tokens/tokens';
 import IconShuttleForward from '../../controls/icons/IconShuttleForward';
 import { replacePlaceholders } from '../../../util';
 import { ShuttleDirection } from './types';
@@ -18,6 +20,7 @@ export default function WaveformShuttleIndicator({ direction, isBlueprintEnabled
     const label = replacePlaceholders(isReverse ? __('media_shuttle_reverse') : __('media_shuttle_forward'), [
         String(rate),
     ]);
+    const ShuttleIcon = isReverse ? Backward : Forward;
 
     return (
         <div
@@ -26,13 +29,24 @@ export default function WaveformShuttleIndicator({ direction, isBlueprintEnabled
             data-testid="bp-waveform-shuttle"
             role="status"
         >
-            <IconShuttleForward aria-hidden="true" className="bp-WaveformShuttle-glyph" />
             {isBlueprintEnabled ? (
-                <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
-                    {rateLabel}
-                </Text>
+                <>
+                    <ShuttleIcon
+                        aria-hidden
+                        color={bpIconIconOnDark}
+                        data-testid="bp-waveform-shuttle-icon"
+                        height={Size5}
+                        width={Size5}
+                    />
+                    <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
+                        {rateLabel}
+                    </Text>
+                </>
             ) : (
-                <span className="bp-WaveformShuttle-rate">{rateLabel}</span>
+                <>
+                    <IconShuttleForward aria-hidden="true" className="bp-WaveformShuttle-glyph" />
+                    <span className="bp-WaveformShuttle-rate">{rateLabel}</span>
+                </>
             )}
         </div>
     );
