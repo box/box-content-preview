@@ -1062,10 +1062,17 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * @private
+     * Renders or refreshes the comparison banner.
+     *
+     * @public
+     * @param {Object} [newComparisonBanner] - Replaces the comparisonBanner option (versions and action handlers)
      * @return {void}
      */
-    updateComparisonBanner() {
+    updateComparisonBanner(newComparisonBanner) {
+        if (newComparisonBanner !== undefined) {
+            this.options.comparisonBanner = newComparisonBanner;
+        }
+
         const { comparisonBanner, isComparing } = this.options;
         const isComparedPreview = !!this.options.isComparedPreview;
 

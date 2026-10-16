@@ -1677,6 +1677,27 @@ describe('lib/Preview', () => {
                 expect(render).toHaveBeenCalledTimes(2);
             });
 
+            test('should use the banner passed in and store it in the options', () => {
+                const onDownload = jest.fn();
+                const comparisonBanner = { previousFileVersion, onDownload };
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+
+                preview.updateComparisonBanner(comparisonBanner);
+
+                expect(preview.options.comparisonBanner).toBe(comparisonBanner);
+                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ onDownload }));
+            });
+
+            test('should keep the existing banner when called without one', () => {
+                const { comparisonBanner } = preview.options;
+                preview.options.isComparing = true;
+
+                preview.updateComparisonBanner();
+
+                expect(preview.options.comparisonBanner).toBe(comparisonBanner);
+            });
+
             test.each`
                 name      | isAudioPlayerV2 | isOnDark
                 ${'MP4'}  | ${undefined}    | ${true}
