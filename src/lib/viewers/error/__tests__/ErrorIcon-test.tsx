@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import type { ItemIconProps } from '@box/item-icon';
 import { getIcon } from 'box-ui-elements/es/components/preview';
 import ErrorIcon from '../ErrorIcon';
 
 jest.mock('@box/item-icon', () => ({
     ...jest.requireActual('@box/item-icon'),
-    ItemIcon: ({ ariaHidden, iconType }: { ariaHidden?: boolean; iconType: string }) => (
+    ItemIcon: ({ ariaHidden, iconType }: Pick<ItemIconProps, 'ariaHidden' | 'iconType'>) => (
         <span aria-hidden={ariaHidden} data-icon-type={iconType} data-testid="item-icon" />
     ),
 }));

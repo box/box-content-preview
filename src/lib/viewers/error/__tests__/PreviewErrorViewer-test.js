@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import { act } from '@testing-library/react';
 import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
@@ -84,6 +83,16 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             act(() => error.load(new PreviewError('some_code')));
 
             expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: undefined, isBlueprintEnabled: false });
+        });
+
+        test('should render into the same icon element when load is called twice', () => {
+            const { iconRoot } = error;
+
+            act(() => error.load(new PreviewError('some_code')));
+            act(() => error.load(new PreviewError('some_code')));
+
+            expect(error.iconRoot).toBe(iconRoot);
+            expect(error.iconEl).toHaveTextContent(/^error icon$/);
         });
 
         test('should add link button if error has linkText and linkUrl defined', () => {
@@ -227,6 +236,10 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             act(() => error.destroy());
 
             expect(error.iconEl).toBeEmptyDOMElement();
+        });
+
+        test('should not throw when destroyed before load', () => {
+            expect(() => act(() => error.destroy())).not.toThrow();
         });
     });
 });
