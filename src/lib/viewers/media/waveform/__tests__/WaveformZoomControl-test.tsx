@@ -100,13 +100,13 @@ describe('WaveformZoomControl', () => {
             wrapper: BlueprintProviders,
         });
         expect(
-            screen.getByTestId('bp-waveform-zoom-multiplier').querySelector('[data-modern]'),
+            screen.getByTestId('bp-waveform-zoom-multiplier').querySelector('[data-typography]'),
         ).not.toBeInTheDocument();
 
         rerender(<WaveformZoomControl isBlueprintEnabled maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />);
         const multiplier = screen.getByTestId('bp-waveform-zoom-multiplier');
         expect(multiplier).toHaveAttribute('title', __('zoom_current_scale'));
-        expect(multiplier.querySelector('[data-modern]')).toHaveTextContent('2x');
+        expect(multiplier.querySelector('[data-typography]')).toHaveTextContent('2x');
     });
 
     test('should show a multiplier left of zoom in when zoom is above 1x', async () => {

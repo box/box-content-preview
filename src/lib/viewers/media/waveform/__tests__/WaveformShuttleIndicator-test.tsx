@@ -15,7 +15,7 @@ describe('WaveformShuttleIndicator', () => {
         expect(indicator).toHaveAttribute('role', 'status');
         expect(indicator).toHaveTextContent('2x');
         expect(indicator.classList.contains('bp-is-reverse')).toBe(isReverse);
-        expect(indicator.querySelector('[data-modern]')).not.toBeInTheDocument();
+        expect(indicator.querySelector('[data-typography]')).not.toBeInTheDocument();
     });
 
     test('should render the rate as Blueprint text when isBlueprintEnabled is true', () => {
@@ -23,6 +23,6 @@ describe('WaveformShuttleIndicator', () => {
             wrapper: BlueprintProviders,
         });
 
-        expect(screen.getByTestId('bp-waveform-shuttle').querySelector('[data-modern]')).toHaveTextContent('4x');
+        expect(screen.getByTestId('bp-waveform-shuttle').querySelector('[data-typography]')).toHaveTextContent('4x');
     });
 });

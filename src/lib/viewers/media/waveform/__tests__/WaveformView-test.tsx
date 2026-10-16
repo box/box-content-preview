@@ -301,7 +301,7 @@ describe('WaveformView', () => {
 
         fireEvent.mouseMove(track, { clientX: 50 });
 
-        expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-modern]')).toHaveTextContent(
+        expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-typography]')).toHaveTextContent(
             '0:02.00',
         );
     });
