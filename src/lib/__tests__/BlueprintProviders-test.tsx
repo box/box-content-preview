@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip, useBlueprintConfiguration } from '@box/blueprint-web';
 import { render, screen, within } from '@testing-library/react';
-import BlueprintProviders from '../BlueprintProviders';
+import BlueprintProviders, { PortalContainerContext } from '../BlueprintProviders';
 
 describe('lib/BlueprintProviders', () => {
     test('should render its children', () => {
@@ -45,5 +45,22 @@ describe('lib/BlueprintProviders', () => {
         expect(within(container).getByRole('tooltip')).toHaveTextContent('Zoom in');
 
         container.remove();
+    });
+
+    test('should provide the container to portaled content that takes it as a prop', () => {
+        const container = document.createElement('div');
+        let portalContainer;
+        const Consumer = (): null => {
+            portalContainer = React.useContext(PortalContainerContext);
+            return null;
+        };
+
+        render(
+            <BlueprintProviders container={container}>
+                <Consumer />
+            </BlueprintProviders>,
+        );
+
+        expect(portalContainer).toBe(container);
     });
 });
