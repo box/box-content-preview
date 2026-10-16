@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import { act } from '@testing-library/react';
 import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -7,7 +8,7 @@ import PreviewError from '../../../PreviewError';
 import PreviewErrorViewer from '../PreviewErrorViewer';
 import { VIEWER_EVENT } from '../../../events';
 
-jest.mock('../ErrorIcon');
+jest.mock('../ErrorIcon', () => jest.fn(() => 'error icon'));
 
 let error;
 let containerEl;
@@ -35,7 +36,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (error && typeof error.destroy === 'function') {
-            error.destroy();
+            act(() => error.destroy());
         }
         error = null;
     });
@@ -57,13 +58,32 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             ['flv', 'flv'],
             ['pdf', 'pdf'],
             ['pptx', 'pptx'],
-        ])('should set appropriate icon', (fileExtension, iconExtension) => {
-            const err = new PreviewError('some_code');
-            error.options.file.extension = fileExtension;
-            error.load(err);
+        ])(
+            'should render the error icon for the %s file extension into the icon element',
+            (fileExtension, iconExtension) => {
+                error.options.file.extension = fileExtension;
 
-            expect(error.errorIcon).toBeInstanceOf(ErrorIcon);
-            expect(error.errorIcon.render).toBeCalledWith(iconExtension);
+                act(() => error.load(new PreviewError('some_code')));
+
+                expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: iconExtension, isBlueprintEnabled: false });
+                expect(error.iconEl).toHaveTextContent('error icon');
+            },
+        );
+
+        test('should pass isBlueprintEnabled true to ErrorIcon when the supporting UI flag is on', () => {
+            error.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+
+            act(() => error.load(new PreviewError('some_code')));
+
+            expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: undefined, isBlueprintEnabled: true });
+        });
+
+        test('should pass isBlueprintEnabled false to ErrorIcon when only another Blueprint wave is on', () => {
+            error.options.features = { blueprintMigrationArchive: { enabled: true } };
+
+            act(() => error.load(new PreviewError('some_code')));
+
+            expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: undefined, isBlueprintEnabled: false });
         });
 
         test('should add link button if error has linkText and linkUrl defined', () => {
@@ -75,7 +95,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 linkUrl: 'someUrl',
             });
 
-            error.load(err);
+            act(() => error.load(err));
 
             expect(error.addLinkButton).toBeCalledWith('test', 'someUrl');
             expect(error.addDownloadButton).not.toBeCalled();
@@ -85,7 +105,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             jest.spyOn(error, 'addDownloadButton');
             jest.spyOn(file, 'canDownload').mockReturnValue(true);
 
-            error.load('reason');
+            act(() => error.load('reason'));
 
             expect(error.addDownloadButton).toBeCalled();
         });
@@ -94,14 +114,14 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             jest.spyOn(error, 'addDownloadButton');
             jest.spyOn(file, 'canDownload').mockReturnValue(false);
 
-            error.load('reason');
+            act(() => error.load('reason'));
 
             expect(error.addDownloadButton).not.toBeCalled();
         });
 
         test('should set the display message', () => {
             const err = new PreviewError('some_error_code', 'error!');
-            error.load(err);
+            act(() => error.load(err));
             expect(error.messageEl.textContent).toBe('error!');
         });
 
@@ -109,7 +129,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             jest.spyOn(error, 'addDownloadButton');
             jest.spyOn(Browser, 'canDownload').mockReturnValue(false);
 
-            error.load('reason');
+            act(() => error.load('reason'));
 
             expect(error.addDownloadButton).not.toBeCalled();
         });
@@ -118,7 +138,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             jest.spyOn(error, 'emit');
             const err = new PreviewError('some_code', 'reason', {}, 'this is bad');
 
-            error.load(err);
+            act(() => error.load(err));
 
             expect(error.emit).toBeCalledWith(VIEWER_EVENT.load, {
                 error: 'this is bad',
@@ -129,7 +149,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             jest.spyOn(error, 'emit');
             const err = new PreviewError('some_code', 'display message!');
 
-            error.load(err);
+            act(() => error.load(err));
 
             expect(error.emit).toBeCalledWith(VIEWER_EVENT.load, {
                 error: 'display message!',
@@ -145,7 +165,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"',
             );
 
-            error.load(err);
+            act(() => error.load(err));
 
             expect(error.emit).toBeCalledWith(VIEWER_EVENT.load, {
                 error: 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"',
@@ -195,10 +215,18 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             jest.spyOn(error, 'download');
 
             error.addDownloadButton();
-            error.destroy();
+            act(() => error.destroy());
 
             error.downloadBtnEl.dispatchEvent(new Event('click'));
             expect(error.download).not.toBeCalled();
+        });
+
+        test('should unmount the error icon', () => {
+            act(() => error.load(new PreviewError('some_code')));
+
+            act(() => error.destroy());
+
+            expect(error.iconEl).toBeEmptyDOMElement();
         });
     });
 });

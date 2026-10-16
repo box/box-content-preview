@@ -33,6 +33,6 @@ module.exports = {
         '^.+\\.(svg|html)$': '<rootDir>/build/jest/stringLoader.js',
     },
     transformIgnorePatterns: [
-        'node_modules/(?!(box-ui-elements|react-virtualized|@box/blueprint-web|@box/blueprint-web-assets|@ariakit)/)',
+        'node_modules/(?!(box-ui-elements|react-virtualized|@box/blueprint-web|@box/blueprint-web-assets|@box/item-icon|@box/types|@ariakit)/)',
     ],
 };

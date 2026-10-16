@@ -1105,6 +1105,11 @@
     rimraf "^3.0.0"
     semver "^7.4.0"
 
+"@box/item-icon@3.6.19":
+  version "3.6.19"
+  resolved "https://registry.yarnpkg.com/@box/item-icon/-/item-icon-3.6.19.tgz#b0c4f0edc20d8470b108044ae27e536c4a78891a"
+  integrity sha512-0v+dFo+ZvKnfhmHeWmcCYoRr3Mm/08I6d20bOeb6mDOcH39bXjMl7HP+zmaZEbUvvG/690lWzd0MRnenp76gFw==
+
 "@box/languages@^1.0.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@box/languages/-/languages-1.1.0.tgz"
@@ -1121,6 +1126,11 @@
     loose-envify "^1.4.0"
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
+
+"@box/types@^3.2.30":
+  version "3.2.30"
+  resolved "https://registry.yarnpkg.com/@box/types/-/types-3.2.30.tgz#64e96da3d7185d520ccdd23b8914b8436a12ea7b"
+  integrity sha512-ca7E95B9XH3Zz4zc2oyi5Yw3tIfz0UpdD0C++HOfvfFipw2O4YDQLqoLT2Hrqc+PEVRa0OZGEuzxpYWhY/bwOA==
 
 "@cacheable/memory@^2.2.0":
   version "2.2.0"
