@@ -1127,6 +1127,11 @@
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
 
+"@box/readable-time@2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@box/readable-time/-/readable-time-2.3.0.tgz#926fe7f8bf78ecf3c53ec34df430a169c566e8e3"
+  integrity sha512-qzG4o+5u3x40RGOyF5UdVMIf6HxH1FjAh0PoBnA4fHEPjExXmWxwGu3EHoRJ7KO7GzMGkTxXS/WQyrjJzfa/EA==
+
 "@box/types@^3.2.23":
   version "3.2.23"
   resolved "https://registry.yarnpkg.com/@box/types/-/types-3.2.23.tgz#985c9055b76301ad4be1a839fb8caf7a0b3a47b9"
