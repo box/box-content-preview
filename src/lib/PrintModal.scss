@@ -6,7 +6,7 @@
     text-align: center;
 }
 
-// Sizes the slot for the absolutely positioned LoadingIndicator so it lines up with the checkmark.
+// Boxes the absolutely positioned LoadingIndicator to the checkmark's size.
 .bp-PrintModal-status {
     position: relative;
     display: flex;

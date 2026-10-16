@@ -118,8 +118,7 @@ export class PrintModalRoot {
         this.root.unmount();
         this.hostEl.remove();
 
-        // Restores released pointer events after the modal's Radix cleanup, which React defers when
-        // destroy runs during a host React commit.
+        // React defers the unmount, and so Radix's cleanup, when destroy runs during a host commit.
         queueMicrotask(() => {
             this.restoreReleasedBodyPointerEvents();
             this.bodyStyleObserver.disconnect();
@@ -158,8 +157,7 @@ export class PrintModalRoot {
         this.update({ isButtonDisabled: false, isReady: true, message });
     }
 
-    // Reapplies body pointer events that a host page menu or dialog released while this modal was open,
-    // since Radix restores the stale `none` it captured when this modal opened.
+    // Reapplies what a host menu released while open; Radix restores the `none` it captured on open.
     // https://github.com/radix-ui/primitives/issues/3317
     handleBodyStyleChange = (): void => {
         if (!this.state.isOpen) {
