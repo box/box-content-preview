@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import CheckmarkCircle from '@box/blueprint-web-assets/icons/Medium/CheckmarkCircle';
-import { BoxBlue100 } from '@box/blueprint-web-assets/tokens/tokens';
+import { BoxBlue100, Size8 } from '@box/blueprint-web-assets/tokens/tokens';
 import { LoadingIndicator, Modal, Text, VisuallyHidden } from '@box/blueprint-web';
 import BlueprintProviders from './BlueprintProviders';
 import './PrintModal.scss';
@@ -50,8 +50,8 @@ export default function PrintModal({
                                     aria-hidden="true"
                                     color={BoxBlue100}
                                     data-testid="bp-PrintModal-checkmark"
-                                    height={32}
-                                    width={32}
+                                    height={Size8}
+                                    width={Size8}
                                 />
                             ) : (
                                 <LoadingIndicator aria-label={message} size="large" />
