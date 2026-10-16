@@ -3,7 +3,7 @@ import noop from 'lodash/noop';
 import { Popover, Select, Switch } from '@box/blueprint-web';
 import RotateAxisControlsV2 from './RotateAxisControlsV2';
 import SettingsToggleV2 from '../settings/SettingsToggleV2';
-import stopEscapePropagation from '../settings/stopEscapePropagation';
+import { stopEscapePropagation, stopKeyPropagation } from '../settings/stopMenuKeyPropagation';
 import { CameraProjection, cameraProjectionOptions, Props, RenderMode, renderModeOptions } from './Model3DSettings';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 import './Model3DSettingsV2.scss';
@@ -44,6 +44,7 @@ export default function Model3DSettingsV2({
                 container={container}
                 data-testid="bp-model3d-settings"
                 onEscapeKeyDown={stopEscapePropagation}
+                onKeyDown={stopKeyPropagation}
                 side="top"
             >
                 <Popover.MainContent>

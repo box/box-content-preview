@@ -2,7 +2,7 @@ import React from 'react';
 import { DropdownMenu, Text, Toolbar, ToolbarButtonProps } from '@box/blueprint-web';
 import { Video } from '@box/blueprint-web-assets/icons/Medium';
 import MenuTriggerTooltipV2 from '../tooltip/MenuTriggerTooltipV2';
-import stopEscapePropagation from '../settings/stopEscapePropagation';
+import { stopEscapePropagation, stopKeyPropagation } from '../settings/stopMenuKeyPropagation';
 import { formatDuration, Props } from './AnimationClipsControl';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 
@@ -55,6 +55,7 @@ export default function AnimationClipsControlV2({
                 align="start"
                 container={container}
                 onEscapeKeyDown={stopEscapePropagation}
+                onKeyDown={stopKeyPropagation}
                 side="top"
             >
                 <DropdownMenu.RadioGroup onValueChange={handleValueChange} value={currentAnimationClipId}>

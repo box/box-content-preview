@@ -163,6 +163,22 @@ describe('AnimationClipsControlV2', () => {
             window.removeEventListener('keydown', onHostKeyDown);
         });
 
+        test('should keep other keys pressed in the menu from reaching preview and host listeners', async () => {
+            const user = userEvent.setup();
+            const onKeyDown = jest.fn();
+            document.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keydown', onKeyDown);
+            getWrapper();
+
+            await user.click(getToggle());
+            await user.keyboard('{ArrowDown}{ArrowLeft}{ArrowRight}s');
+
+            expect(screen.getByRole('menu')).toBeInTheDocument();
+            expect(onKeyDown).not.toHaveBeenCalled();
+            document.removeEventListener('keydown', onKeyDown);
+            window.removeEventListener('keydown', onKeyDown);
+        });
+
         test('should keep the tooltip closed over the open menu so Escape closes the menu', async () => {
             jest.useFakeTimers();
             const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });

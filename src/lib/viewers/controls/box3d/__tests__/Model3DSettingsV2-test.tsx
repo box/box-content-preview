@@ -151,6 +151,24 @@ describe('Model3DSettingsV2', () => {
             window.removeEventListener('keydown', onHostKeyDown);
         });
 
+        test('should keep other keys pressed in the panel or its selects from reaching preview and host listeners', async () => {
+            const user = userEvent.setup();
+            const onKeyDown = jest.fn();
+            document.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keydown', onKeyDown);
+            getWrapper();
+
+            const panel = await openPanel(user);
+            await user.keyboard('{ArrowLeft}{ArrowRight}');
+            await user.click(within(panel).getByRole('combobox', { name: 'Render mode' }));
+            await user.keyboard('{ArrowDown}{ArrowLeft}{ArrowRight}');
+
+            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(onKeyDown).not.toHaveBeenCalled();
+            document.removeEventListener('keydown', onKeyDown);
+            window.removeEventListener('keydown', onKeyDown);
+        });
+
         test('should close and call onClose when clicking outside', async () => {
             const user = userEvent.setup();
             const onClose = jest.fn();
