@@ -306,6 +306,11 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         }
     }
 
+    // Containing block for the pdf.js 6 canvas, so it stays in the content box.
+    .pdfViewer .canvasWrapper {
+        position: relative;
+    }
+
     .pdfViewer .page.pinch-page {
         padding: 0;
         visibility: visible;

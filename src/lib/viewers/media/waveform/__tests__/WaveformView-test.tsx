@@ -2,6 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import WaveSurfer from 'wavesurfer.js';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import WaveformView from '../WaveformView';
 import {
     WAVEFORM_BAR_GAP,
@@ -279,6 +280,30 @@ describe('WaveformView', () => {
 
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
         expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should render the hover time as Blueprint text when isBlueprintEnabled is true', () => {
+        render(<WaveformView durationSec={8} isBlueprintEnabled peaks={[0.2, 0.8]} />, {
+            wrapper: BlueprintProviders,
+        });
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-modern]')).toHaveTextContent(
+            '0:02.00',
+        );
     });
 
     test('should not apply hover fills from a touch pointer', () => {

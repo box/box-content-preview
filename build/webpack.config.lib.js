@@ -33,6 +33,9 @@ const thirdPartyModel3d = path.resolve('src/third-party/model3d');
 const thirdPartySwf = path.resolve('src/third-party/swf');
 const exifAssets = path.resolve('src/lib/exif');
 const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
+const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
+const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
+const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
 const outDir = path.resolve('dist/lib');
 
 const language = 'en-US';
@@ -113,7 +116,7 @@ module.exports = {
             {
                 test: /pdf\.worker\.min\.mjs$/,
                 type: 'asset/resource',
-                include: [path.resolve('node_modules/pdfjs-dist/build')],
+                include: [path.resolve('node_modules/pdfjs-dist/legacy/build')],
                 generator: {
                     filename: 'pdf.worker.min.mjs',
                 },
@@ -143,14 +146,16 @@ module.exports = {
         new MiniCssExtractPlugin({ filename: '[name].css' }),
         new NormalModuleReplacementPlugin(/\/iconv-loader$/),
         // Copy static assets that the legacy code resolves at runtime via createAssetUrlCreator.
-        // These need to be served alongside the bundle for npm consumers. pdfjs is excluded —
-        // it's bundled from the pdfjs-dist npm package (useNpmPdfjs=true on the npm path).
+        // These need to be served alongside the bundle for npm consumers. The pdf.js script is bundled.
         new CopyAssetsPlugin(thirdPartyMedia, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartyText, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartyModel3d, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartySwf, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(exifAssets, outDir),
         new CopyAssetsPlugin(pdfjsCmaps, outDir),
+        new CopyAssetsPlugin(pdfjsIccs, outDir),
+        new CopyAssetsPlugin(pdfjsStandardFonts, outDir),
+        new CopyAssetsPlugin(pdfjsWasm, outDir),
     ],
     resolve: {
         alias: {

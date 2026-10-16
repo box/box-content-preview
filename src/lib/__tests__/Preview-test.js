@@ -149,6 +149,7 @@ describe('lib/Preview', () => {
                 expect(load).not.toHaveBeenCalled();
 
                 npmInstance.show('123', 'token', {
+                    features: { useNpmPdfjs: false },
                     location: {
                         locale: 'de-DE',
                         staticBaseURI: 'https://cdn.example/preview/',
