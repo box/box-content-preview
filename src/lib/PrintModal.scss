@@ -1,0 +1,16 @@
+.bp-PrintModal-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bp-space-020);
+    align-items: center;
+    text-align: center;
+}
+
+// Sizes the slot for the absolutely positioned LoadingIndicator so it lines up with the checkmark.
+.bp-PrintModal-status {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 2rem;
+    height: 2rem;
+}

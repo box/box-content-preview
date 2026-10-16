@@ -1,7 +1,14 @@
 import Browser from '../../Browser';
 import Popup from '../../Popup';
 import TextBaseViewer from './TextBaseViewer';
-import { BROWSERS, CLASS_HIDDEN, CLASS_IS_SCROLLABLE, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
+import { PrintModalRoot } from '../../PrintModal';
+import {
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
+    BROWSERS,
+    CLASS_HIDDEN,
+    CLASS_IS_SCROLLABLE,
+    TEXT_STATIC_ASSETS_VERSION,
+} from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
@@ -34,6 +41,11 @@ class PlainTextViewer extends TextBaseViewer {
             if (downloadBtnEl) {
                 downloadBtnEl.removeEventListener('click', this.download.bind(this));
             }
+        }
+
+        if (this.printPopup) {
+            this.printPopup.destroy();
+            this.printPopup = null;
         }
 
         this.printIframe = null;
@@ -259,6 +271,11 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {void}
      */
     initPrint() {
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            this.printPopup = new PrintModalRoot(this.rootEl);
+            return;
+        }
+
         this.printPopup = new Popup(this.rootEl);
 
         const printCheckmark = document.createElement('div');
@@ -296,7 +313,9 @@ class PlainTextViewer extends TextBaseViewer {
         });
 
         setTimeout(() => {
-            if (this.printPopup) {
+            if (this.printPopup instanceof PrintModalRoot) {
+                this.printPopup.showReady(__('print_ready'));
+            } else if (this.printPopup) {
                 // Update popup UI to reflect that print is ready
                 this.printPopup.enableButton();
                 this.printPopup.messageEl.textContent = __('print_ready');
