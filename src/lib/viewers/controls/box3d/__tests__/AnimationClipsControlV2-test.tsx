@@ -149,6 +149,20 @@ describe('AnimationClipsControlV2', () => {
             expect(getToggle()).toHaveFocus();
         });
 
+        test('should not let Escape reach a host hotkey listener on window', async () => {
+            const user = userEvent.setup();
+            const onHostKeyDown = jest.fn();
+            window.addEventListener('keydown', onHostKeyDown);
+            getWrapper();
+
+            await user.click(getToggle());
+            await user.keyboard('{Escape}');
+
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+            expect(onHostKeyDown).not.toHaveBeenCalledWith(expect.objectContaining({ key: 'Escape' }));
+            window.removeEventListener('keydown', onHostKeyDown);
+        });
+
         test('should keep the tooltip closed over the open menu so Escape closes the menu', async () => {
             jest.useFakeTimers();
             const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });

@@ -3,6 +3,7 @@ import noop from 'lodash/noop';
 import { Popover, Select, Switch } from '@box/blueprint-web';
 import RotateAxisControlsV2 from './RotateAxisControlsV2';
 import SettingsToggleV2 from '../settings/SettingsToggleV2';
+import stopEscapePropagation from '../settings/stopEscapePropagation';
 import { CameraProjection, cameraProjectionOptions, Props, RenderMode, renderModeOptions } from './Model3DSettings';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 import './Model3DSettingsV2.scss';
@@ -42,6 +43,7 @@ export default function Model3DSettingsV2({
                 aria-label={__('box3d_settings')}
                 container={container}
                 data-testid="bp-model3d-settings"
+                onEscapeKeyDown={stopEscapePropagation}
                 side="top"
             >
                 <Popover.MainContent>
@@ -53,7 +55,7 @@ export default function Model3DSettingsV2({
                             placeholder={__('box3d_settings_render_label')}
                             value={renderMode}
                         >
-                            <Select.Content container={container}>
+                            <Select.Content container={container} onEscapeKeyDown={stopEscapePropagation}>
                                 {renderModeOptions.map(({ label, value }) => (
                                     <Select.Option key={value} text={label} value={value} />
                                 ))}
@@ -87,7 +89,7 @@ export default function Model3DSettingsV2({
                             placeholder={__('box3d_settings_projection_label')}
                             value={cameraProjection}
                         >
-                            <Select.Content container={container}>
+                            <Select.Content container={container} onEscapeKeyDown={stopEscapePropagation}>
                                 {cameraProjectionOptions.map(({ label, value }) => (
                                     <Select.Option key={value} text={label} value={value} />
                                 ))}

@@ -137,6 +137,20 @@ describe('Model3DSettingsV2', () => {
             expect(getToggle()).toHaveFocus();
         });
 
+        test('should not let Escape reach a host hotkey listener on window', async () => {
+            const user = userEvent.setup();
+            const onHostKeyDown = jest.fn();
+            window.addEventListener('keydown', onHostKeyDown);
+            getWrapper();
+
+            await openPanel(user);
+            await user.keyboard('{Escape}');
+
+            expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+            expect(onHostKeyDown).not.toHaveBeenCalledWith(expect.objectContaining({ key: 'Escape' }));
+            window.removeEventListener('keydown', onHostKeyDown);
+        });
+
         test('should close and call onClose when clicking outside', async () => {
             const user = userEvent.setup();
             const onClose = jest.fn();
@@ -203,6 +217,8 @@ describe('Model3DSettingsV2', () => {
         test('should close only the open select on Escape', async () => {
             const user = userEvent.setup();
             const onClose = jest.fn();
+            const onHostKeyDown = jest.fn();
+            window.addEventListener('keydown', onHostKeyDown);
             getWrapper({ onClose });
 
             const panel = await openPanel(user);
@@ -212,6 +228,8 @@ describe('Model3DSettingsV2', () => {
             expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
             expect(getPanel()).toBeInTheDocument();
             expect(onClose).not.toHaveBeenCalled();
+            expect(onHostKeyDown).not.toHaveBeenCalledWith(expect.objectContaining({ key: 'Escape' }));
+            window.removeEventListener('keydown', onHostKeyDown);
         });
 
         test('should call onRotateOnAxisChange from the rotate controls', async () => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { DropdownMenu, Text, Toolbar, ToolbarButtonProps } from '@box/blueprint-web';
 import { Video } from '@box/blueprint-web-assets/icons/Medium';
 import MenuTriggerTooltipV2 from '../tooltip/MenuTriggerTooltipV2';
+import stopEscapePropagation from '../settings/stopEscapePropagation';
 import { formatDuration, Props } from './AnimationClipsControl';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 
@@ -50,7 +51,12 @@ export default function AnimationClipsControlV2({
             <DropdownMenu.Trigger asChild>
                 <AnimationClipsToggleV2 />
             </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="start" container={container} side="top">
+            <DropdownMenu.Content
+                align="start"
+                container={container}
+                onEscapeKeyDown={stopEscapePropagation}
+                side="top"
+            >
                 <DropdownMenu.RadioGroup onValueChange={handleValueChange} value={currentAnimationClipId}>
                     {animationClips.map(({ duration, id, name }) => (
                         <DropdownMenu.RadioSelectItem key={id} data-resin-target="settingsRadioItem" value={id}>
