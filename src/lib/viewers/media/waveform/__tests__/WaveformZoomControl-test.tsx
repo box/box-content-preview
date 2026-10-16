@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import { WAVEFORM_ZOOM_DISMISS_MS } from '../constants';
 import WaveformZoomControl from '../WaveformZoomControl';
 
@@ -92,6 +93,20 @@ describe('WaveformZoomControl', () => {
         rerender(<WaveformZoomControl isRevealed={false} maxZoom={4} onZoomChange={onZoomChange} zoomLevel={2.5} />);
         expect(control).not.toHaveClass('bp-is-open');
         expect(screen.getByTestId('bp-waveform-zoom-multiplier')).toHaveTextContent('2x');
+    });
+
+    test('should render the multiplier as Blueprint text only when isBlueprintEnabled is true', () => {
+        const { rerender } = render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />, {
+            wrapper: BlueprintProviders,
+        });
+        expect(
+            screen.getByTestId('bp-waveform-zoom-multiplier').querySelector('[data-modern]'),
+        ).not.toBeInTheDocument();
+
+        rerender(<WaveformZoomControl isBlueprintEnabled maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />);
+        const multiplier = screen.getByTestId('bp-waveform-zoom-multiplier');
+        expect(multiplier).toHaveAttribute('title', __('zoom_current_scale'));
+        expect(multiplier.querySelector('[data-modern]')).toHaveTextContent('2x');
     });
 
     test('should show a multiplier left of zoom in when zoom is above 1x', async () => {

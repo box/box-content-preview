@@ -56,6 +56,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             archive.destroy();
         }
         archive = null;
+        delete global.__BCP_NPM_BUILD__;
     });
 
     describe('setup()', () => {
@@ -89,9 +90,33 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             jest.spyOn(archive, 'appendAuthHeader').mockReturnValue(mockHeaders);
 
             return archive.load().then(() => {
+                expect(archive.loadAssets).toBeCalledWith(['archive.js'], ['archive.css']);
                 expect(archive.createContentUrlV2).toBeCalledWith('archiveUrl{+asset_path}');
                 expect(stubs.api.get).toBeCalledWith('contentUrl', { headers: mockHeaders });
             });
+        });
+
+        test('should skip archive.js and archive.css in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            let loadPromise;
+            jest.isolateModules(() => {
+                const { default: NpmArchiveViewer } = jest.requireActual('../ArchiveViewer');
+                const npmArchive = new NpmArchiveViewer(options);
+                npmArchive.containerEl = containerEl;
+                npmArchive.setup();
+                Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
+                jest.spyOn(npmArchive, 'loadAssets').mockResolvedValue(undefined);
+                jest.spyOn(npmArchive, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+                jest.spyOn(npmArchive, 'finishLoading').mockImplementation();
+
+                loadPromise = npmArchive.load().then(() => {
+                    expect(npmArchive.loadAssets).toBeCalledWith([], []);
+                    npmArchive.destroy();
+                });
+            });
+
+            return loadPromise;
         });
 
         test('should invoke startLoadTimer()', () => {
@@ -213,6 +238,26 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 archive.finishLoading([]);
 
                 expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+        });
+
+        test('should mount the bundled BoxArchive in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            jest.isolateModules(() => {
+                const { default: NpmArchiveViewer } = jest.requireActual('../ArchiveViewer');
+                const npmArchive = new NpmArchiveViewer(options);
+                npmArchive.containerEl = containerEl;
+                npmArchive.setup();
+                npmArchive.options.file.name = 'test.zip';
+                jest.spyOn(npmArchive, 'emit');
+
+                npmArchive.finishLoading([]);
+
+                expect(npmArchive.archiveComponent).toBeTruthy();
+                expect(npmArchive.loaded).toBe(true);
+                expect(npmArchive.emit).toBeCalledWith(VIEWER_EVENT.load);
+                npmArchive.destroy();
             });
         });
     });

@@ -293,6 +293,10 @@ describe('lib/util', () => {
             expect(assetUrlCreator('somename')).toEqual('base/somename');
             expect(assetUrlCreator('http://somename')).toEqual('http://somename');
             expect(assetUrlCreator('third-party/somename')).toEqual('static/third-party/somename');
+            expect(assetUrlCreator('cmaps/')).toEqual('static/cmaps/');
+            expect(assetUrlCreator('iccs/')).toEqual('static/iccs/');
+            expect(assetUrlCreator('wasm/')).toEqual('static/wasm/');
+            expect(assetUrlCreator('standard_fonts/')).toEqual('static/standard_fonts/');
         });
     });
 

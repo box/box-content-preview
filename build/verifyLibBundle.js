@@ -9,7 +9,10 @@ const path = require('path');
 // webpack.config.lib.js prevent it; this check keeps that from silently regressing.
 const bundlePath = path.resolve(__dirname, '../dist/lib/index.js');
 const packagePath = path.resolve(__dirname, '../package.json');
-const pdfjsWorkerPath = path.resolve(__dirname, '../node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
+const pdfjsWorkerPath = path.resolve(
+    __dirname,
+    '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+);
 const emittedWorkerPath = path.resolve(__dirname, '../dist/lib/pdf.worker.min.mjs');
 
 if (!fs.existsSync(bundlePath)) {

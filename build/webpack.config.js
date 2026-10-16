@@ -29,6 +29,9 @@ const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
 const exifAssets = path.resolve('src/lib/exif');
 const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
+const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
+const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
+const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
 const staticFolder = path.resolve('dist');
 const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
 
@@ -95,6 +98,9 @@ function updateConfig(conf, language, index) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
         config.plugins.push(new RsyncPlugin(exifAssets, staticFolder));
         config.plugins.push(new RsyncPlugin(pdfjsCmaps, staticFolder));
+        config.plugins.push(new RsyncPlugin(pdfjsIccs, staticFolder));
+        config.plugins.push(new RsyncPlugin(pdfjsStandardFonts, staticFolder));
+        config.plugins.push(new RsyncPlugin(pdfjsWasm, staticFolder));
     }
 
     if (isDev) {
