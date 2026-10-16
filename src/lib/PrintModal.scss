@@ -1,0 +1,16 @@
+.bp-PrintModal-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bp-space-020);
+    align-items: center;
+    text-align: center;
+}
+
+// Boxes the absolutely positioned LoadingIndicator to the checkmark's size.
+.bp-PrintModal-status {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: var(--bp-size-080);
+    height: var(--bp-size-080);
+}
