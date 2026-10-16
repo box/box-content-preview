@@ -5,7 +5,7 @@ import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
-import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
+import { ORIGINAL_REP_NAME, STATUS_ERROR, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
 
 // Order of the viewers matters. For example, a PDF file can be previewed by using the preferred optimized 'pdf' rep
@@ -23,6 +23,13 @@ const VIEWERS = [
         CONSTRUCTOR: AutoCADViewer,
         REP: 'pdf',
         EXT: ['dwg'],
+    },
+    // Prefer the searchable 'ocr_pdf' rep over 'pdf'
+    {
+        NAME: 'Document',
+        CONSTRUCTOR: DocumentViewer,
+        REP: 'ocr_pdf',
+        EXT: DOCUMENT_EXTENSIONS,
     },
     {
         NAME: 'Document',
@@ -86,16 +93,19 @@ class DocLoader extends AssetLoader {
      * @return {Object} The representation to load
      */
     determineRepresentation(file, viewer) {
-        let repOverride;
+        let rep = super.determineRepresentation(file, viewer);
+        let status = RepStatus.getStatus(rep);
 
-        // For PDF files, use original rep unless PDF rep is successful since it'll be faster
-        const rep = super.determineRepresentation(file, viewer);
-        const status = RepStatus.getStatus(rep);
-        if (file.extension === 'pdf' && rep.representation === 'pdf' && status !== STATUS_SUCCESS) {
-            repOverride = getRepresentation(file, ORIGINAL_REP_NAME);
+        if (rep.representation === 'ocr_pdf' && status === STATUS_ERROR) {
+            rep = getRepresentation(file, 'pdf') || rep;
+            status = RepStatus.getStatus(rep);
         }
 
-        return repOverride || rep;
+        if (file.extension === 'pdf' && rep.representation !== ORIGINAL_REP_NAME && status !== STATUS_SUCCESS) {
+            rep = getRepresentation(file, ORIGINAL_REP_NAME) || rep;
+        }
+
+        return rep;
     }
 }
 
