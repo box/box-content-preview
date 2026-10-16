@@ -131,16 +131,34 @@ describe('lib/ComparisonBanner', () => {
             const onOpenFullPreview = jest.fn();
             const user = userEvent.setup();
 
-            render(<ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={onOpenFullPreview} />);
+            render(
+                <ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={onOpenFullPreview} />,
+            );
 
             await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
 
-            const openFullPreviewItem = screen.getByRole('menuitem', { name: __('comparison_banner_open_full_preview') });
+            const openFullPreviewItem = screen.getByRole('menuitem', {
+                name: __('comparison_banner_open_full_preview'),
+            });
             expect(openFullPreviewItem).toHaveAttribute('data-target-id', 'ComparisonBanner-openFullPreview');
 
             await user.click(openFullPreviewItem);
 
             expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
+        });
+
+        test('should use the on-dark button variant only when requested', () => {
+            const { rerender } = render(
+                <ComparisonBanner file={file} isComparedPreview locale="en-US" onDownload={jest.fn()} />,
+            );
+            const getMenuButton = (): HTMLElement =>
+                screen.getByRole('button', { name: __('comparison_banner_actions') });
+
+            expect(getMenuButton().className).not.toMatch(/on-dark/);
+
+            rerender(<ComparisonBanner file={file} isComparedPreview isOnDark locale="en-US" onDownload={jest.fn()} />);
+
+            expect(getMenuButton().className).toMatch(/on-dark/);
         });
 
         test('should not let actions menu keydown events reach document listeners', async () => {

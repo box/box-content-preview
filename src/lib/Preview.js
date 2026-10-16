@@ -1091,8 +1091,15 @@ class Preview extends EventEmitter {
             onOpenFullPreview,
         } = comparisonBanner || {};
 
+        // Videos always lower the lights; MP3 is dark only on the v2 player.
+        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
+        const isOnDark =
+            VIDEO_VIEWER_NAMES.indexOf(viewerName) > -1 ||
+            (viewerName === 'MP3' && !!getProp(this.viewer, 'isAudioPlayerV2'));
+
         this.comparisonBannerRoot.render(isComparedPreview ? previousFileVersion : currentFileVersion, {
             isComparedPreview,
+            isOnDark,
             locale: getProp(this.location, 'locale'),
             menuContainer: this.container,
             onDelete: isComparedPreview ? onDelete : undefined,
@@ -1588,6 +1595,9 @@ class Preview extends EventEmitter {
 
         // Setup the viewer DOM
         this.viewer.setup();
+
+        // The banner renders before the viewer exists, so refresh it once the viewer's stage is known
+        this.updateComparisonBanner();
 
         // Load the representation into the viewer
         this.viewer.load();

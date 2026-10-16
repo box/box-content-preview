@@ -376,18 +376,4 @@ $header-height: 48px;
         color: #fff;
         background-color: rgb(255 255 255 / 30%);
     }
-
-    // Default IconButton icon is black, which disappears on the dark MP3/MP4 stage.
-    .bp-version-banner-actions button,
-    .bp-version-banner-actions button:hover,
-    .bp-version-banner-actions button:active {
-        background-color: var(--bp-white-opacity-16);
-    }
-
-    .bp-version-banner-actions svg,
-    .bp-version-banner-actions svg *,
-    .bp-version-banner-actions button:hover svg *,
-    .bp-version-banner-actions button:active svg * {
-        fill: var(--bp-gray-white);
-    }
 }

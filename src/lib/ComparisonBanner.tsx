@@ -20,6 +20,7 @@ export type ComparisonBannerFile = {
 
 export type ComparisonBannerOptions = {
     isComparedPreview?: boolean;
+    isOnDark?: boolean;
     locale?: string;
     menuContainer?: HTMLElement | null;
     onDelete?: () => void;
@@ -57,6 +58,7 @@ export function getComparisonBannerAuthor(file: ComparisonBannerFile = {}): stri
 export default function ComparisonBanner({
     file = {},
     isComparedPreview = false,
+    isOnDark = false,
     locale,
     menuContainer,
     onDelete,
@@ -109,6 +111,7 @@ export default function ComparisonBanner({
                                     data-target-id="ComparisonBanner-openActions"
                                     icon={Ellipsis}
                                     size="small"
+                                    variant={isOnDark ? 'on-dark' : 'default'}
                                 />
                             </DropdownMenu.Trigger>
                             <DropdownMenu.Content align="end" container={menuContainer ?? undefined} side="bottom">
@@ -177,6 +180,7 @@ export class ComparisonBannerRoot {
     render(file: ComparisonBannerFile = {}, options: ComparisonBannerOptions = {}): void {
         const {
             isComparedPreview = false,
+            isOnDark,
             locale,
             menuContainer,
             onDelete,
@@ -189,6 +193,7 @@ export class ComparisonBannerRoot {
             <ComparisonBanner
                 file={file}
                 isComparedPreview={isComparedPreview}
+                isOnDark={isOnDark}
                 locale={locale}
                 menuContainer={menuContainer ?? this.containerEl}
                 onDelete={onDelete}
