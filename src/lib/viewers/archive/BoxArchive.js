@@ -35,7 +35,7 @@ class BoxArchive {
     }
 
     /**
-     * @return {Promise<Object>} archive v2 module: BlueprintProviders, BreadcrumbsV2, SearchBarV2
+     * @return {Promise<Object>} archive v2 module: ArchiveTableV2, BlueprintProviders, BreadcrumbsV2, SearchBarV2
      */
     importV2() {
         return import(/* webpackChunkName: "archive-v2" */ './ArchiveV2');
