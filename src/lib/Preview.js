@@ -1082,11 +1082,30 @@ class Preview extends EventEmitter {
             this.comparisonBannerRoot = new ComparisonBannerRoot(this.container);
         }
 
-        const { currentFileVersion, previousFileVersion } = comparisonBanner || {};
+        const {
+            currentFileVersion,
+            previousFileVersion,
+            onDelete,
+            onDownload: onDownloadVersion,
+            onMakeCurrent,
+            onOpenFullPreview,
+        } = comparisonBanner || {};
+
+        // Videos always lower the lights; MP3 is dark only on the v2 player.
+        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
+        const isOnDark =
+            VIDEO_VIEWER_NAMES.indexOf(viewerName) > -1 ||
+            (viewerName === 'MP3' && !!getProp(this.viewer, 'isAudioPlayerV2'));
 
         this.comparisonBannerRoot.render(isComparedPreview ? previousFileVersion : currentFileVersion, {
             isComparedPreview,
+            isOnDark,
             locale: getProp(this.location, 'locale'),
+            menuContainer: this.container,
+            onDelete: isComparedPreview ? onDelete : undefined,
+            onDownload: isComparedPreview ? onDownloadVersion : undefined,
+            onMakeCurrent: isComparedPreview ? onMakeCurrent : undefined,
+            onOpenFullPreview: isComparedPreview ? onOpenFullPreview : undefined,
         });
     }
 
@@ -1576,6 +1595,9 @@ class Preview extends EventEmitter {
 
         // Setup the viewer DOM
         this.viewer.setup();
+
+        // The banner renders before the viewer exists, so refresh it once the viewer's stage is known
+        this.updateComparisonBanner();
 
         // Load the representation into the viewer
         this.viewer.load();
