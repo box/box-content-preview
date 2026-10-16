@@ -40,10 +40,6 @@ export interface ComparisonBannerFile {
 export interface ComparisonBannerVersions {
     currentFileVersion?: ComparisonBannerFile;
     previousFileVersion?: ComparisonBannerFile;
-    onDelete?: () => void;
-    onDownload?: () => void;
-    onMakeCurrent?: () => void;
-    onOpenFullPreview?: () => void;
 }
 
 /** Partial update; only provided flags change. isComparedPreview implies isComparing. */
@@ -118,8 +114,6 @@ export class Preview {
     hide(): void;
 
     setComparisonMode(mode?: ComparisonMode): void;
-
-    updateComparisonBanner(comparisonBanner?: ComparisonBannerVersions): void;
 
     reload(skipServerUpdate?: boolean): void;
 
