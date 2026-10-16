@@ -108,7 +108,7 @@ export class PrintModalRoot {
         this.hostEl.className = 'bp-PrintModalRoot';
         containerEl.appendChild(this.hostEl);
         this.root = createRoot(this.hostEl);
-        this.bodyStyleObserver = new MutationObserver(this.handleBodyStyleChange);
+        this.bodyStyleObserver = new MutationObserver(this.trackBodyPointerEvents);
         this.bodyStyleObserver.observe(document.body, { attributeFilter: ['style'] });
     }
 
@@ -157,9 +157,9 @@ export class PrintModalRoot {
         this.update({ isButtonDisabled: false, isReady: true, message });
     }
 
-    // Reapplies what a host menu released while open; Radix restores the `none` it captured on open.
+    // Keeps the page clickable after close; Radix restores a stale body pointer-events none set by a host menu.
     // https://github.com/radix-ui/primitives/issues/3317
-    handleBodyStyleChange = (): void => {
+    trackBodyPointerEvents = (): void => {
         if (!this.state.isOpen) {
             this.restoreReleasedBodyPointerEvents();
             return;
