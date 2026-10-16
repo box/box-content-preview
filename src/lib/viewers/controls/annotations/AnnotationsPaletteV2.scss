@@ -1,0 +1,10 @@
+// Stacks above the main bar, flush with its right edge so it opens over the markup trigger. Taken out
+// of flow because the controls layer lays its children out in a row. The gap is padding rather than
+// margin so the cursor stays inside the layer's hover area while crossing it.
+.bp-AnnotationsPaletteV2 {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    width: max-content;
+    padding-bottom: var(--bp-space-020);
+}
