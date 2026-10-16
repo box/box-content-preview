@@ -1,9 +1,11 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Text } from '@box/blueprint-web';
+import { IconButton, Text, Tooltip } from '@box/blueprint-web';
+import { ZoomIn, ZoomOut } from '@box/blueprint-web-assets/icons/Medium';
 import IconZoomIn24 from '../../controls/icons/IconZoomIn24';
 import IconZoomOut24 from '../../controls/icons/IconZoomOut24';
 import MediaToggle from '../../controls/media/MediaToggle';
+import { stopActivationKeyPropagation } from '../../controls/media/utils';
 import SliderControl from '../../controls/slider';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_SLIDER_MAX } from './constants';
 import { WaveformZoomControlProps } from './types';
@@ -91,6 +93,12 @@ export default function WaveformZoomControl({
         }
     }, [handleStep, isAtMaxZoom]);
 
+    const handleZoomOutClick = useCallback((): void => {
+        if (!isAtMinZoom) {
+            handleStep(-WAVEFORM_ZOOM_BUTTON_STEP);
+        }
+    }, [handleStep, isAtMinZoom]);
+
     return (
         <div
             ref={zoomControlElRef}
@@ -151,36 +159,70 @@ export default function WaveformZoomControl({
                     />
                 </>
             )}
-            <MediaToggle
-                aria-disabled={isOpen && isAtMaxZoom}
-                className="bp-WaveformZoomControl-button"
-                data-resin-target="waveformZoomIn"
-                data-testid="bp-waveform-zoom-in"
-                onClick={handleZoomInClick}
-                onPointerDown={handleZoomInPointerDown}
-                title={__('zoom_in')}
-            >
-                <IconZoomIn24 />
-            </MediaToggle>
+            {isBlueprintEnabled ? (
+                <Tooltip content={__('zoom_in')}>
+                    <IconButton
+                        aria-disabled={isOpen && isAtMaxZoom}
+                        aria-label={__('zoom_in')}
+                        className="bp-WaveformZoomControl-iconButton"
+                        data-resin-target="waveformZoomIn"
+                        data-target-id="WaveformZoomControl-zoomIn"
+                        data-testid="bp-waveform-zoom-in"
+                        icon={ZoomIn}
+                        onClick={handleZoomInClick}
+                        onKeyDown={stopActivationKeyPropagation}
+                        onPointerDown={handleZoomInPointerDown}
+                        size="large"
+                        variant="on-dark"
+                    />
+                </Tooltip>
+            ) : (
+                <MediaToggle
+                    aria-disabled={isOpen && isAtMaxZoom}
+                    className="bp-WaveformZoomControl-button"
+                    data-resin-target="waveformZoomIn"
+                    data-testid="bp-waveform-zoom-in"
+                    onClick={handleZoomInClick}
+                    onPointerDown={handleZoomInPointerDown}
+                    title={__('zoom_in')}
+                >
+                    <IconZoomIn24 />
+                </MediaToggle>
+            )}
             <div
                 aria-hidden={!isOpen}
                 className={classNames('bp-WaveformZoomControl-flyout', { 'bp-is-open': isOpen })}
             >
-                <MediaToggle
-                    aria-disabled={isAtMinZoom}
-                    className="bp-WaveformZoomControl-button"
-                    data-resin-target="waveformZoomOut"
-                    data-testid="bp-waveform-zoom-out"
-                    onClick={() => {
-                        if (!isAtMinZoom) {
-                            handleStep(-WAVEFORM_ZOOM_BUTTON_STEP);
-                        }
-                    }}
-                    tabIndex={isOpen ? 0 : -1}
-                    title={__('zoom_out')}
-                >
-                    <IconZoomOut24 />
-                </MediaToggle>
+                {isBlueprintEnabled ? (
+                    <Tooltip content={__('zoom_out')}>
+                        <IconButton
+                            aria-disabled={isAtMinZoom}
+                            aria-label={__('zoom_out')}
+                            className="bp-WaveformZoomControl-iconButton"
+                            data-resin-target="waveformZoomOut"
+                            data-target-id="WaveformZoomControl-zoomOut"
+                            data-testid="bp-waveform-zoom-out"
+                            icon={ZoomOut}
+                            onClick={handleZoomOutClick}
+                            onKeyDown={stopActivationKeyPropagation}
+                            size="large"
+                            tabIndex={isOpen ? 0 : -1}
+                            variant="on-dark"
+                        />
+                    </Tooltip>
+                ) : (
+                    <MediaToggle
+                        aria-disabled={isAtMinZoom}
+                        className="bp-WaveformZoomControl-button"
+                        data-resin-target="waveformZoomOut"
+                        data-testid="bp-waveform-zoom-out"
+                        onClick={handleZoomOutClick}
+                        tabIndex={isOpen ? 0 : -1}
+                        title={__('zoom_out')}
+                    >
+                        <IconZoomOut24 />
+                    </MediaToggle>
+                )}
                 <SliderControl
                     aria-hidden={!isOpen}
                     className="bp-WaveformZoomControl-slider"
