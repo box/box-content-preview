@@ -2664,5 +2664,53 @@ describe('WaveformView', () => {
             expect(onPlayheadComment).toHaveBeenCalledTimes(1);
             expect(screen.getByTestId('bp-waveform-playhead-comment')).toBeInTheDocument();
         });
+
+        test('should render Comment as a Blueprint toolbar on the playhead when isBlueprintEnabled is true', async () => {
+            const user = userEvent.setup();
+            const onPlayheadComment = jest.fn();
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isBlueprintEnabled
+                    isPlaying={false}
+                    onPlayheadComment={onPlayheadComment}
+                    peaks={[0.2, 0.8]}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            const toolbar = screen.getByRole('toolbar', { name: __('media_range_comment') });
+            expect(toolbar.closest('[data-testid="bp-waveform-playhead"]')).not.toBeNull();
+            expect(screen.getByTestId('bp-waveform-playhead-comment-toolbar')).toHaveClass(
+                'bp-WaveformView-playheadComment',
+            );
+
+            const button = screen.getByTestId('bp-waveform-playhead-comment');
+            expect(button).toHaveAttribute('data-resin-target', 'waveformPlayheadComment');
+            expect(button).toHaveAttribute('data-target-id', 'Waveform-commentAtTime');
+            expect(button.querySelector('[data-modern]')).toHaveTextContent(__('media_range_comment'));
+
+            await user.click(button);
+            expect(onPlayheadComment).toHaveBeenCalledTimes(1);
+        });
+
+        test('should render the range Comment as a Blueprint toolbar when isBlueprintEnabled is true', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isBlueprintEnabled
+                    isPlaying={false}
+                    onRangeDragCreate={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    range={{ endMs: 4000, startMs: 2000 }}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            expect(screen.getByTestId('bp-waveform-range-comment-toolbar')).toBeInTheDocument();
+            expect(screen.getByRole('toolbar')).toContainElement(screen.getByTestId('bp-waveform-range-comment'));
+        });
     });
 });
