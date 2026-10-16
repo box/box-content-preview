@@ -68,7 +68,12 @@ describe('lib/viewers/archive/BoxArchive', () => {
     });
 
     describe('archive v2', () => {
-        const v2 = { BlueprintProviders, BreadcrumbsV2: () => null, SearchBarV2: () => null };
+        const v2 = {
+            ArchiveTableV2: () => null,
+            BlueprintProviders,
+            BreadcrumbsV2: () => null,
+            SearchBarV2: () => null,
+        };
 
         beforeEach(() => {
             jest.spyOn(BoxArchive.prototype, 'importV2').mockImplementation(() => Promise.resolve(v2));
