@@ -1,3 +1,12 @@
+## 3.114.0 (2026-10-16)
+
+* feat(audio): render waveform labels and generating indicator with Blueprint (#1842) ([606691a](https://github.com/box/box-content-preview/commit/606691a)), closes [#1842](https://github.com/box/box-content-preview/issues/1842)
+* feat(controls): add Blueprint page controls to the v2 document controls bar (#1831) ([c7bec88](https://github.com/box/box-content-preview/commit/c7bec88)), closes [#1831](https://github.com/box/box-content-preview/issues/1831)
+* feat(controls): add the Blueprint markup toggle, annotation palette and drawing colors to the v2 doc ([b8e8763](https://github.com/box/box-content-preview/commit/b8e8763)), closes [#1833](https://github.com/box/box-content-preview/issues/1833)
+* feat(controls): add the Blueprint zoom controls to the v2 document controls bar (#1830) ([1468211](https://github.com/box/box-content-preview/commit/1468211)), closes [#1830](https://github.com/box/box-content-preview/issues/1830)
+* feat(preview): Upgrade pdf.js to 6.4.299 and bundle npm viewers (#1825) ([341ebeb](https://github.com/box/box-content-preview/commit/341ebeb)), closes [#1825](https://github.com/box/box-content-preview/issues/1825)
+* ci(mergify): Check the merge against latest master in place (#1843) ([f8531a5](https://github.com/box/box-content-preview/commit/f8531a5)), closes [#1843](https://github.com/box/box-content-preview/issues/1843)
+
 ## 3.113.0 (2026-10-15)
 
 * feat(archive): add Blueprint v2 search and breadcrumbs (#1829) ([d185964](https://github.com/box/box-content-preview/commit/d185964)), closes [#1829](https://github.com/box/box-content-preview/issues/1829)

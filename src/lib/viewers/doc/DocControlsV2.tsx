@@ -1,7 +1,13 @@
 import React from 'react';
-import AnnotationsControls from '../controls/annotations';
-import ControlsBar, { ControlsBarV2 } from '../controls/controls-bar';
-import DrawingControls from '../controls/annotations/DrawingControls';
+import noop from 'lodash/noop';
+import { Toolbar } from '@box/blueprint-web';
+import AnnotationsExitButtonV2 from '../controls/annotations/AnnotationsExitButtonV2';
+import AnnotationsPaletteV2 from '../controls/annotations/AnnotationsPaletteV2';
+import AnnotationsToggleV2 from '../controls/annotations/AnnotationsToggleV2';
+import ColorPickerControlV2 from '../controls/color-picker/ColorPickerControlV2';
+import useFullscreen from '../controls/hooks/useFullscreen';
+import { ActiveAnnotationMode } from '../controls/annotations/annotationModeIcons';
+import { ControlsBarV2 } from '../controls/controls-bar';
 import ExperiencesProvider from '../controls/experiences';
 import FindBarToggle from '../controls/findbar';
 import FullscreenToggle from '../controls/fullscreen';
@@ -10,11 +16,13 @@ import { PageControlsV2 } from '../controls/page';
 import RotateControl from '../controls/rotate/RotateControl';
 import ThumbnailsToggle from '../controls/sidebar';
 import { ZoomControlsV2 } from '../controls/zoom';
+import { ANNOTATION_COLORS } from '../../AnnotationModule';
+import { AnnotationMode } from '../../types';
 import { Props } from './DocControls';
 
 export default function DocControlsV2({
     annotationColor,
-    annotationMode,
+    annotationMode = AnnotationMode.NONE,
     experiences,
     hasDrawing,
     hasGalleryZoom = false,
@@ -25,7 +33,7 @@ export default function DocControlsV2({
     maxScale,
     minScale,
     onAnnotationColorChange,
-    onAnnotationModeClick,
+    onAnnotationModeClick = noop,
     onAnnotationModeEscape,
     onFindBarToggle,
     onFullscreenToggle,
@@ -40,6 +48,31 @@ export default function DocControlsV2({
     pageNumber,
     scale,
 }: Props): JSX.Element {
+    const annotationsToggleRef = React.useRef<HTMLButtonElement | null>(null);
+    const isFullscreen = useFullscreen();
+
+    // Listed in the palette's button order, which is also the order the toggle falls back to
+    const annotationModes: ActiveAnnotationMode[] = [];
+
+    if (!isFullscreen) {
+        if (hasRegion) {
+            annotationModes.push(AnnotationMode.REGION);
+        }
+        if (hasHighlight) {
+            annotationModes.push(AnnotationMode.HIGHLIGHT);
+        }
+        if (hasDrawing) {
+            annotationModes.push(AnnotationMode.DRAWING);
+        }
+    }
+
+    const hasAnnotations = !isGalleryOpen && annotationModes.length > 0;
+
+    const handleAnnotationsExit = (): void => {
+        annotationsToggleRef.current?.focus();
+        onAnnotationModeClick({ mode: AnnotationMode.NONE });
+    };
+
     return (
         <ExperiencesProvider experiences={experiences}>
             <ControlsBarV2>
@@ -69,26 +102,41 @@ export default function DocControlsV2({
                 {!isGalleryOpen && onRotateLeft && <RotateControl onRotateLeft={onRotateLeft} />}
                 <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
                 <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
-                {!isGalleryOpen && (
-                    <AnnotationsControls
-                        annotationColor={annotationColor}
-                        annotationMode={annotationMode}
-                        hasDrawing={hasDrawing}
-                        hasHighlight={hasHighlight}
-                        hasRegion={hasRegion}
-                        onAnnotationModeClick={onAnnotationModeClick}
-                        onAnnotationModeEscape={onAnnotationModeEscape}
-                    />
+                {hasAnnotations && (
+                    <>
+                        <Toolbar.Separator />
+                        <AnnotationsExitButtonV2 onClick={handleAnnotationsExit} />
+                        <AnnotationsToggleV2
+                            ref={annotationsToggleRef}
+                            annotationMode={annotationMode}
+                            modes={annotationModes}
+                            onAnnotationModeClick={onAnnotationModeClick}
+                            onAnnotationModeEscape={onAnnotationModeEscape}
+                        />
+                    </>
                 )}
             </ControlsBarV2>
-            {!isGalleryOpen && (
-                <ControlsBar>
-                    <DrawingControls
-                        annotationColor={annotationColor}
+            {hasAnnotations && annotationMode !== AnnotationMode.NONE && (
+                <AnnotationsPaletteV2>
+                    <AnnotationsPaletteV2.Modes
                         annotationMode={annotationMode}
-                        onAnnotationColorChange={onAnnotationColorChange}
-                    />
-                </ControlsBar>
+                        onAnnotationModeClick={onAnnotationModeClick}
+                    >
+                        {annotationModes.map(mode => (
+                            <AnnotationsPaletteV2.Mode key={mode} value={mode} />
+                        ))}
+                    </AnnotationsPaletteV2.Modes>
+                    {annotationMode === AnnotationMode.DRAWING && (
+                        <>
+                            <Toolbar.Separator />
+                            <ColorPickerControlV2
+                                activeColor={annotationColor}
+                                colors={ANNOTATION_COLORS}
+                                onColorSelect={onAnnotationColorChange}
+                            />
+                        </>
+                    )}
+                </AnnotationsPaletteV2>
             )}
         </ExperiencesProvider>
     );
