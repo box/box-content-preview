@@ -1,11 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import ReadableTime from 'box-ui-elements/es/components/time/ReadableTime';
 import { EMPTY_VALUE } from 'box-ui-elements/es/features/virtualized-table-renderers/constants';
 import getSize from 'box-ui-elements/es/utils/size';
 import { Cell, Column, DataTableWrapper, Row, Table, TableBody, TableHeader, Text } from '@box/blueprint-web';
 import { getFileCategoryByExtension, ItemIcon } from '@box/item-icon';
+import { ReadableTime } from '@box/readable-time';
 import { TABLE_COLUMNS } from './constants';
 import './ArchiveTableV2.scss';
 
@@ -138,13 +138,15 @@ export default function ArchiveTableV2({
                                 </Cell>
                                 <Cell>
                                     {/* ReadableTime needs an intl provider; ArchiveExplorer supplies one with Internationalize */}
-                                    <Text as="span">
-                                        {item.modified_at ? (
-                                            <ReadableTime alwaysShowTime timestamp={Date.parse(item.modified_at)} />
-                                        ) : (
-                                            EMPTY_VALUE
-                                        )}
-                                    </Text>
+                                    {item.modified_at ? (
+                                        <ReadableTime
+                                            alwaysShowTime
+                                            textProps={{ as: 'span' }}
+                                            timestamp={Date.parse(item.modified_at)}
+                                        />
+                                    ) : (
+                                        <Text as="span">{EMPTY_VALUE}</Text>
+                                    )}
                                 </Cell>
                                 <Cell>
                                     <Text as="span">{isFolder ? EMPTY_VALUE : getSize(item.size)}</Text>
