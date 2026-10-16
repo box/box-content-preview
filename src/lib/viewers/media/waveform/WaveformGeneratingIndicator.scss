@@ -7,6 +7,7 @@
     align-items: center;
     height: 48px;
     padding: 8px 16px 8px 12px;
+    white-space: nowrap;
 }
 
 .bp-WaveformGeneratingIndicator-bars {
@@ -16,6 +17,11 @@
     justify-content: center;
     width: 24px;
     height: 24px;
+}
+
+// LoadingIndicator is absolutely positioned and centers itself in its nearest positioned ancestor.
+.bp-WaveformGeneratingIndicator-bars--blueprint {
+    position: relative;
 }
 
 .bp-WaveformGeneratingIndicator-bar {
@@ -41,7 +47,6 @@
     font-weight: normal;
     line-height: 22px;
     color: $white;
-    white-space: nowrap;
 }
 
 @keyframes bp-WaveformGeneratingIndicator-pulse {

@@ -3,7 +3,8 @@ import createReactClass from 'create-react-class';
 import Api from '../../../api';
 import ArchiveViewer from '../ArchiveViewer';
 import BaseViewer from '../../BaseViewer';
-import { VIEWER_EVENT } from '../../../events';
+import { ERROR_CODE, VIEWER_EVENT } from '../../../events';
+import PreviewError from '../../../PreviewError';
 
 const stubs = {};
 let containerEl;
@@ -55,6 +56,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             archive.destroy();
         }
         archive = null;
+        delete global.__BCP_NPM_BUILD__;
     });
 
     describe('setup()', () => {
@@ -88,9 +90,33 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             jest.spyOn(archive, 'appendAuthHeader').mockReturnValue(mockHeaders);
 
             return archive.load().then(() => {
+                expect(archive.loadAssets).toBeCalledWith(['archive.js'], ['archive.css']);
                 expect(archive.createContentUrlV2).toBeCalledWith('archiveUrl{+asset_path}');
                 expect(stubs.api.get).toBeCalledWith('contentUrl', { headers: mockHeaders });
             });
+        });
+
+        test('should skip archive.js and archive.css in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            let loadPromise;
+            jest.isolateModules(() => {
+                const { default: NpmArchiveViewer } = jest.requireActual('../ArchiveViewer');
+                const npmArchive = new NpmArchiveViewer(options);
+                npmArchive.containerEl = containerEl;
+                npmArchive.setup();
+                Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
+                jest.spyOn(npmArchive, 'loadAssets').mockResolvedValue(undefined);
+                jest.spyOn(npmArchive, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+                jest.spyOn(npmArchive, 'finishLoading').mockImplementation();
+
+                loadPromise = npmArchive.load().then(() => {
+                    expect(npmArchive.loadAssets).toBeCalledWith([], []);
+                    npmArchive.destroy();
+                });
+            });
+
+            return loadPromise;
         });
 
         test('should invoke startLoadTimer()', () => {
@@ -113,6 +139,126 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
 
             expect(archive.loaded).toBe(true);
             expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
+        });
+
+        describe('archive v2', () => {
+            let resolveReady;
+            let rejectReady;
+            let archiveOptions;
+
+            beforeEach(() => {
+                archiveOptions = undefined;
+                window.BoxArchive = jest.fn(function BoxArchiveStub(el, name, data, opts) {
+                    archiveOptions = opts;
+                    this.destroy = jest.fn();
+                    this.ready = new Promise((resolve, reject) => {
+                        resolveReady = resolve;
+                        rejectReady = reject;
+                    });
+                });
+                archive.options.file.name = 'test.zip';
+                jest.spyOn(archive, 'emit');
+            });
+
+            const enableV2 = () => {
+                archive.options.features = { blueprintMigrationArchive: { enabled: true } };
+            };
+
+            test('should hold the load event until the v2 module has rendered', async () => {
+                enableV2();
+
+                const pending = archive.finishLoading([]);
+
+                expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.loaded).toBeFalsy();
+
+                resolveReady();
+                await pending;
+
+                expect(archive.loaded).toBe(true);
+                expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
+            });
+
+            test('should throw a load-viewer error if the v2 module fails to load', async () => {
+                enableV2();
+
+                const pending = archive.finishLoading([]);
+                rejectReady(new Error('chunk failed'));
+
+                await expect(pending).rejects.toBeInstanceOf(PreviewError);
+                await expect(pending).rejects.toMatchObject({ code: ERROR_CODE.LOAD_VIEWER });
+                expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+            });
+
+            test('should not emit load if destroyed while the v2 module is loading', async () => {
+                enableV2();
+
+                const pending = archive.finishLoading([]);
+                jest.spyOn(archive, 'isDestroyed').mockReturnValue(true);
+                resolveReady();
+                await pending;
+
+                expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+            });
+
+            test('should enable archive v2 when the archive flag is on', () => {
+                enableV2();
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(true);
+            });
+
+            test('should pass the viewer resin instance to BoxArchive', () => {
+                archive.options.resin = { recordAction: jest.fn() };
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.resin).toBe(archive.options.resin);
+            });
+
+            test('should not enable archive v2 when only another wave flag is on', () => {
+                archive.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+
+            test('should not enable archive v2 when no flag is on', () => {
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+
+            test('should not enable archive v2 when the shared Blueprint gate is off', () => {
+                enableV2();
+                jest.spyOn(archive, 'isBlueprintEnabled').mockReturnValue(false);
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+        });
+
+        test('should mount the bundled BoxArchive in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            jest.isolateModules(() => {
+                const { default: NpmArchiveViewer } = jest.requireActual('../ArchiveViewer');
+                const npmArchive = new NpmArchiveViewer(options);
+                npmArchive.containerEl = containerEl;
+                npmArchive.setup();
+                npmArchive.options.file.name = 'test.zip';
+                jest.spyOn(npmArchive, 'emit');
+
+                npmArchive.finishLoading([]);
+
+                expect(npmArchive.archiveComponent).toBeTruthy();
+                expect(npmArchive.loaded).toBe(true);
+                expect(npmArchive.emit).toBeCalledWith(VIEWER_EVENT.load);
+                npmArchive.destroy();
+            });
         });
     });
 });
