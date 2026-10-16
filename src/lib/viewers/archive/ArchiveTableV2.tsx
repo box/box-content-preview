@@ -1,12 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { EMPTY_VALUE } from 'box-ui-elements/es/features/virtualized-table-renderers/constants';
-import getSize from 'box-ui-elements/es/utils/size';
 import { Cell, Column, DataTableWrapper, Row, Table, TableBody, TableHeader, Text } from '@box/blueprint-web';
 import { getFileCategoryByExtension, ItemIcon } from '@box/item-icon';
 import { ReadableTime } from '@box/readable-time';
-import { TABLE_COLUMNS } from './constants';
+import { EMPTY_VALUE, TABLE_COLUMNS } from './constants';
 import './ArchiveTableV2.scss';
 
 const { KEY_MODIFIED_AT, KEY_NAME, KEY_SIZE } = TABLE_COLUMNS;
@@ -16,6 +14,17 @@ const ROW_HEIGHT_PX = 56;
 
 // The header row is row 1, so the first data row is row 2
 const FIRST_DATA_ROW_INDEX = 2;
+
+const SIZE_UNITS = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+// Same output as the legacy table's size column, e.g. 1536 -> "1.5 KB"
+const formatSize = (bytes: number): string => {
+    if (!bytes) {
+        return '0 Byte';
+    }
+    const exponent = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), SIZE_UNITS.length - 1);
+    return `${parseFloat((bytes / 1024 ** exponent).toFixed(2))} ${SIZE_UNITS[exponent]}`;
+};
 
 export type ArchiveItem = {
     absolute_path: string;
@@ -149,7 +158,7 @@ export default function ArchiveTableV2({
                                     )}
                                 </Cell>
                                 <Cell>
-                                    <Text as="span">{isFolder ? EMPTY_VALUE : getSize(item.size)}</Text>
+                                    <Text as="span">{isFolder ? EMPTY_VALUE : formatSize(item.size)}</Text>
                                 </Cell>
                             </Row>
                         );
