@@ -72,6 +72,14 @@ describe('FilmstripV2', () => {
             const timeEl = screen.getByTestId('bp-FilmstripV2-time');
             expect(timeEl).toHaveTextContent('00:01:01:15');
         });
+
+        test('should render the time as Blueprint text only when isBlueprintEnabled is true', () => {
+            const { rerender } = render(<FilmstripV2 time={65} />);
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-modern]')).not.toBeInTheDocument();
+
+            rerender(<FilmstripV2 isBlueprintEnabled time={65} />);
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-modern]')).toHaveTextContent('1:05');
+        });
     });
 
     describe('loading state', () => {
