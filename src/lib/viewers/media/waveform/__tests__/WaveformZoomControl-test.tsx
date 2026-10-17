@@ -109,6 +109,44 @@ describe('WaveformZoomControl', () => {
         expect(multiplier.querySelector('[data-typography]')).toHaveTextContent('2x');
     });
 
+    test('should render Blueprint icon buttons only when isBlueprintEnabled is true', async () => {
+        const user = userEvent.setup();
+        const onZoomChange = jest.fn();
+        const { rerender } = render(
+            <WaveformZoomControl isRevealed maxZoom={4} onZoomChange={onZoomChange} zoomLevel={2.5} />,
+            { wrapper: BlueprintProviders },
+        );
+        expect(screen.getByTestId('bp-waveform-zoom-in')).toHaveClass('bp-WaveformZoomControl-button');
+
+        rerender(
+            <WaveformZoomControl
+                isBlueprintEnabled
+                isRevealed
+                maxZoom={4}
+                onZoomChange={onZoomChange}
+                zoomLevel={2.5}
+            />,
+        );
+        const zoomIn = screen.getByRole('button', { name: __('zoom_in') });
+        const zoomOut = screen.getByRole('button', { name: __('zoom_out') });
+        expect(zoomIn).toHaveClass('bp-WaveformZoomControl-iconButton');
+        expect(zoomIn).not.toHaveClass('bp-WaveformZoomControl-button');
+        expect(zoomIn).toHaveAttribute('data-resin-target', 'waveformZoomIn');
+        expect(zoomOut).toHaveAttribute('data-resin-target', 'waveformZoomOut');
+
+        await user.click(zoomIn);
+        expect(onZoomChange).toHaveBeenCalledWith(2.8);
+
+        onZoomChange.mockClear();
+        await user.click(zoomOut);
+        expect(onZoomChange).toHaveBeenCalledWith(2.2);
+
+        rerender(
+            <WaveformZoomControl isBlueprintEnabled isRevealed maxZoom={4} onZoomChange={onZoomChange} zoomLevel={4} />,
+        );
+        expect(screen.getByRole('button', { name: __('zoom_in') })).toHaveAttribute('aria-disabled', 'true');
+    });
+
     test('should show a multiplier left of zoom in when zoom is above 1x', async () => {
         const user = userEvent.setup();
         const { rerender } = render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1} />);

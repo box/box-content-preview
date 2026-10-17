@@ -17,3 +17,12 @@ export const stopActivationKeyPropagation = (event: React.KeyboardEvent): void =
         event.stopPropagation();
     }
 };
+
+const TOOLBAR_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'End', 'Enter', 'Home', 'Space']);
+
+// Toolbars move focus with the arrow, Home and End keys, which the viewer maps to seeking.
+export const stopToolbarKeyPropagation = (event: React.KeyboardEvent): void => {
+    if (TOOLBAR_KEYS.has(decodeKeydown(event))) {
+        event.stopPropagation();
+    }
+};

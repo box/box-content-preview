@@ -32,7 +32,7 @@ describe('DocControlsV2', () => {
             const toolbar = screen.getByRole('toolbar');
 
             expect(toolbar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
-            expect(toolbar).toContainElement(screen.getByTitle(__('enter_fullscreen')));
+            expect(toolbar).toContainElement(screen.getByRole('button', { name: __('enter_fullscreen') }));
             expect(toolbar).toContainElement(screen.getByRole('button', { name: __('previous_page') }));
         });
 
@@ -42,7 +42,7 @@ describe('DocControlsV2', () => {
             getWrapper({ onFullscreenToggle, onZoomIn });
 
             await userEvent.click(screen.getByRole('button', { name: __('zoom_in') }));
-            await userEvent.click(screen.getByTitle(__('enter_fullscreen')));
+            await userEvent.click(screen.getByRole('button', { name: __('enter_fullscreen') }));
 
             expect(onZoomIn).toHaveBeenCalled();
             expect(onFullscreenToggle).toHaveBeenCalled();
@@ -56,10 +56,10 @@ describe('DocControlsV2', () => {
                 onThumbnailsToggle: jest.fn(),
             });
 
-            expect(screen.queryByTitle(__('toggle_thumbnails'))).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('toggle_findbar'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('toggle_thumbnails') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('toggle_findbar') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('previous_page') })).not.toBeInTheDocument();
-            expect(screen.queryByTitle(__('rotate_left'))).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('rotate_left') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('zoom_in') })).not.toBeInTheDocument();
         });
 
