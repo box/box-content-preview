@@ -303,7 +303,7 @@ describe('MP3ControlsV2', () => {
 
             const timestamp = await screen.findByTestId('bp-TimestampControl-static');
             expect(timestamp).toHaveTextContent('0:12/3:32');
-            expect(timestamp.querySelectorAll('[data-modern]')).toHaveLength(3);
+            expect(timestamp.querySelectorAll('[data-typography]')).toHaveLength(3);
         });
 
         test('should render a placeholder waveform until peaks load', async () => {

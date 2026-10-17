@@ -101,7 +101,7 @@ describe('TimestampControl', () => {
             getBlueprintWrapper();
 
             expect(getButton()).toHaveTextContent('1:05/2:00');
-            expect(getButton().querySelectorAll('[data-modern]')).toHaveLength(3);
+            expect(getButton().querySelectorAll('[data-typography]')).toHaveLength(3);
             expect(getButton().querySelector('.bp-TimestampControl-chevron path')).toHaveAttribute(
                 'fill',
                 'rgba(255, 255, 255, 0.8)',
@@ -128,7 +128,7 @@ describe('TimestampControl', () => {
 
             const timestamp = screen.getByTestId('bp-TimestampControl-static');
             expect(timestamp).toHaveTextContent('1:05/2:00');
-            expect(timestamp.querySelectorAll('[data-modern]')).toHaveLength(3);
+            expect(timestamp.querySelectorAll('[data-typography]')).toHaveLength(3);
             expect(screen.queryByTestId('bp-TimestampControl-button')).not.toBeInTheDocument();
         });
 
