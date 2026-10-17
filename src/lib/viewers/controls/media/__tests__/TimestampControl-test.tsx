@@ -1,7 +1,16 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import TimestampControl from '../TimestampControl';
+
+class ResizeObserverMock {
+    disconnect = jest.fn();
+
+    observe = jest.fn();
+
+    unobserve = jest.fn();
+}
 
 describe('TimestampControl', () => {
     let mediaContainer: HTMLDivElement;
@@ -52,6 +61,173 @@ describe('TimestampControl', () => {
         test('should not render the flyout by default', () => {
             getWrapper();
             expect(screen.queryByTestId('bp-TimestampControl-flyout')).not.toBeInTheDocument();
+        });
+
+        test('should render the legacy chevrons by default', async () => {
+            const user = userEvent.setup();
+            getWrapper();
+
+            expect(screen.getByTestId('IconChevronDownMedium24')).toHaveClass('bp-TimestampControl-chevron');
+
+            await user.click(getButton());
+            expect(screen.getByTestId('IconChevronUpMedium24')).toHaveClass('bp-TimestampControl-chevron');
+        });
+    });
+
+    describe('when isBlueprintEnabled is true', () => {
+        beforeAll(() => {
+            global.ResizeObserver = ResizeObserverMock;
+        });
+
+        const getBlueprintWrapper = (props = {}) =>
+            render(
+                <TimestampControl
+                    canChangeTimeFormat
+                    currentTime={65}
+                    durationTime={120}
+                    fps={24}
+                    isBlueprintEnabled
+                    mediaEl={videoEl}
+                    {...props}
+                />,
+                {
+                    wrapper: ({ children }) => (
+                        <BlueprintProviders container={mediaContainer}>{children}</BlueprintProviders>
+                    ),
+                },
+            );
+
+        test('should render the time as Blueprint text with a Blueprint chevron', () => {
+            getBlueprintWrapper();
+
+            expect(getButton()).toHaveTextContent('1:05/2:00');
+            expect(getButton().querySelectorAll('[data-modern]')).toHaveLength(3);
+            expect(getButton().querySelector('.bp-TimestampControl-chevron path')).toHaveAttribute(
+                'fill',
+                'rgba(255, 255, 255, 0.8)',
+            );
+            expect(screen.queryByTestId('IconChevronDownMedium24')).not.toBeInTheDocument();
+        });
+
+        test('should render each digit of the current time and duration in a fixed-width box', () => {
+            getBlueprintWrapper();
+
+            const digits = Array.from(getButton().querySelectorAll('.bp-TabularDigit'));
+            expect(digits.map(digit => digit.textContent)).toEqual(['1', '0', '5', '2', '0', '0']);
+        });
+
+        test('should render only current time when isNarrowWidth is true', () => {
+            getBlueprintWrapper({ isNarrowWidth: true });
+
+            expect(getButton()).toHaveTextContent('1:05');
+            expect(getButton()).not.toHaveTextContent('/');
+        });
+
+        test('should render static Blueprint text when canChangeTimeFormat is false', () => {
+            getBlueprintWrapper({ canChangeTimeFormat: false });
+
+            const timestamp = screen.getByTestId('bp-TimestampControl-static');
+            expect(timestamp).toHaveTextContent('1:05/2:00');
+            expect(timestamp.querySelectorAll('[data-modern]')).toHaveLength(3);
+            expect(screen.queryByTestId('bp-TimestampControl-button')).not.toBeInTheDocument();
+        });
+
+        test('should open a Blueprint menu with the current format checked', async () => {
+            const user = userEvent.setup();
+            getBlueprintWrapper();
+
+            await user.click(getButton());
+
+            const menu = screen.getByRole('menu');
+            expect(mediaContainer).toContainElement(menu);
+            expect(getButton()).toHaveAttribute('aria-expanded', 'true');
+            expect(getButton()).toHaveAttribute('data-resin-target', 'timeFormat');
+            expect(screen.getByText(__('media_time_format'))).toBeInTheDocument();
+            expect(screen.getByRole('menuitemradio', { name: 'Standard time' })).toHaveAttribute(
+                'aria-checked',
+                'true',
+            );
+            expect(screen.getByRole('menuitemradio', { name: 'Timecode' })).toHaveAttribute(
+                'data-resin-target',
+                'timeFormat-timecode',
+            );
+            expect(screen.getAllByRole('menuitemradio')).toHaveLength(3);
+        });
+
+        test('should change the format and close the menu on selection', async () => {
+            const user = userEvent.setup();
+            getBlueprintWrapper({ currentTime: 61.5, fps: 30 });
+
+            await user.click(getButton());
+            await user.click(screen.getByRole('menuitemradio', { name: 'Timecode' }));
+
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+            expect(getButton()).toHaveTextContent('00:01:01:15/00:02:00:00');
+            expect(mediaContainer.getAttribute('data-time-format')).toBe('timecode');
+        });
+
+        test('should display frame numbers when selected', async () => {
+            const user = userEvent.setup();
+            getBlueprintWrapper({ currentTime: 10 });
+
+            await user.click(getButton());
+            await user.click(screen.getByRole('menuitemradio', { name: 'Frame numbers' }));
+
+            expect(getButton()).toHaveTextContent('240/2880');
+        });
+
+        test('should close the menu on Escape and return focus to the trigger', async () => {
+            const user = userEvent.setup();
+            getBlueprintWrapper();
+
+            await user.click(getButton());
+            await user.keyboard('{Escape}');
+
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+            expect(getButton()).toHaveFocus();
+        });
+
+        test('should keep menu keys from reaching the viewer shortcuts', async () => {
+            const user = userEvent.setup();
+            const onDocumentKeyDown = jest.fn();
+            document.addEventListener('keydown', onDocumentKeyDown);
+            getBlueprintWrapper();
+
+            getButton().focus();
+            await user.keyboard('{ArrowDown}');
+            expect(screen.getByRole('menu')).toBeInTheDocument();
+
+            await user.keyboard('{ArrowDown}{ArrowUp}{Enter}');
+
+            expect(onDocumentKeyDown).not.toHaveBeenCalled();
+            document.removeEventListener('keydown', onDocumentKeyDown);
+        });
+
+        test('should close the menu on Escape without the key reaching the document', async () => {
+            const user = userEvent.setup();
+            const onDocumentKeyDown = jest.fn();
+            getBlueprintWrapper();
+
+            await user.click(getButton());
+            document.addEventListener('keydown', onDocumentKeyDown);
+            await user.keyboard('{Escape}');
+
+            expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+            expect(onDocumentKeyDown).not.toHaveBeenCalled();
+            document.removeEventListener('keydown', onDocumentKeyDown);
+        });
+
+        test('should keep ArrowUp on the trigger from reaching the viewer shortcuts', async () => {
+            const user = userEvent.setup();
+            const onDocumentKeyDown = jest.fn();
+            document.addEventListener('keydown', onDocumentKeyDown);
+            getBlueprintWrapper();
+
+            getButton().focus();
+            await user.keyboard('{ArrowUp}');
+
+            expect(onDocumentKeyDown).not.toHaveBeenCalled();
+            document.removeEventListener('keydown', onDocumentKeyDown);
         });
     });
 

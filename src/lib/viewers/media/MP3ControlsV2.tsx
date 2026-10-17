@@ -327,7 +327,11 @@ export default function MP3ControlsV2({
                             isBlueprintEnabled={isBlueprintEnabled}
                         />
                         <div className="bp-MP3ControlsV2-divider" />
-                        <TimestampControl currentTime={currentTime} durationTime={durationValue} />
+                        <TimestampControl
+                            currentTime={currentTime}
+                            durationTime={durationValue}
+                            isBlueprintEnabled={isBlueprintEnabled}
+                        />
                     </div>
 
                     <div className="bp-MP3ControlsV2-group">

@@ -1,11 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
+import { DropdownMenu, Text } from '@box/blueprint-web';
+import { ChevronDown, ChevronUp } from '@box/blueprint-web-assets/icons/Medium';
+import { bpIconCtaIconOnDark } from '@box/blueprint-web-assets/tokens/tokens';
 import formatTimecode from '../../media/formatTimecode';
 import IconCheckMark24 from '../icons/IconCheckMark24';
 import IconChevronDownMedium24 from '../icons/IconChevronDownMedium24';
 import IconChevronUpMedium24 from '../icons/IconChevronUpMedium24';
 import useClickOutside from '../hooks/useClickOutside';
+import { renderTabularDigits } from '../../../TabularDigits';
 import { DEFAULT_FPS } from '../../media/videoFps';
+import { PortalContainerContext } from '../../../BlueprintProviders';
 import { decodeKeydown } from '../../../util';
 import { formatTime } from './DurationLabels';
 import './TimestampControl.scss';
@@ -21,6 +26,7 @@ export type Props = {
     durationTime?: number;
     fps?: number;
     canChangeTimeFormat?: boolean;
+    isBlueprintEnabled?: boolean;
     isNarrowWidth?: boolean;
     mediaEl?: HTMLVideoElement | null;
 };
@@ -37,6 +43,15 @@ export function formatLabel(time: number, format: TimeFormat, fps: number): stri
     }
 }
 
+// The viewer maps Space, Enter and the arrow keys to playback, seek and volume shortcuts.
+const stopMenuTriggerKeyPropagation = (event: React.KeyboardEvent): void => {
+    const key = decodeKeydown(event);
+
+    if (key === 'Enter' || key === 'Space' || key === 'ArrowDown' || key === 'ArrowUp') {
+        event.stopPropagation();
+    }
+};
+
 const FORMAT_OPTIONS = [
     { label: () => __('media_time_format_standard'), value: TimeFormat.STANDARD },
     { label: () => __('media_time_format_timecode'), value: TimeFormat.TIMECODE },
@@ -48,6 +63,7 @@ export default function TimestampControl({
     durationTime = 0,
     fps = DEFAULT_FPS,
     canChangeTimeFormat = false,
+    isBlueprintEnabled = false,
     isNarrowWidth = false,
     mediaEl,
 }: Props): JSX.Element {
@@ -56,9 +72,17 @@ export default function TimestampControl({
     const containerElRef = React.useRef<HTMLDivElement>(null);
     const buttonElRef = React.useRef<HTMLButtonElement>(null);
     const currentElRef = React.useRef<HTMLSpanElement>(null);
+    const durationElRef = React.useRef<HTMLSpanElement>(null);
     const rafIdRef = React.useRef<number>(0);
 
-    useClickOutside(containerElRef, () => setIsOpen(false));
+    const portalContainer = React.useContext(PortalContainerContext) ?? undefined;
+
+    useClickOutside(containerElRef, () => {
+        // The Blueprint menu portals outside the container and handles outside clicks itself.
+        if (!isBlueprintEnabled) {
+            setIsOpen(false);
+        }
+    });
 
     React.useEffect(() => {
         const container = mediaEl?.closest('.bp-media-container');
@@ -77,7 +101,13 @@ export default function TimestampControl({
 
         const tick = (): void => {
             if (currentElRef.current && mediaEl) {
-                currentElRef.current.textContent = formatLabel(mediaEl.currentTime, format, fps);
+                const label = formatLabel(mediaEl.currentTime, format, fps);
+
+                if (isBlueprintEnabled) {
+                    renderTabularDigits(currentElRef.current, label);
+                } else {
+                    currentElRef.current.textContent = label;
+                }
             }
             rafIdRef.current = requestAnimationFrame(tick);
         };
@@ -103,7 +133,26 @@ export default function TimestampControl({
             mediaEl.removeEventListener('play', startLoop);
             mediaEl.removeEventListener('pause', stopLoop);
         };
-    }, [format, fps, mediaEl]);
+    }, [format, fps, isBlueprintEnabled, mediaEl]);
+
+    const currentLabel = formatLabel(currentTime, format, fps);
+
+    React.useLayoutEffect(() => {
+        // The animation frame loop owns the label while a frame-accurate format is playing.
+        const isFrameLoopRunning = format !== TimeFormat.STANDARD && mediaEl?.paused === false;
+
+        if (isBlueprintEnabled && currentElRef.current && !isFrameLoopRunning) {
+            renderTabularDigits(currentElRef.current, currentLabel);
+        }
+    }, [currentLabel, format, isBlueprintEnabled, mediaEl]);
+
+    const durationLabel = formatLabel(durationTime, format, fps);
+
+    React.useLayoutEffect(() => {
+        if (isBlueprintEnabled && durationElRef.current) {
+            renderTabularDigits(durationElRef.current, durationLabel);
+        }
+    }, [durationLabel, isBlueprintEnabled, isNarrowWidth]);
 
     const handleKeyDown = (event: React.KeyboardEvent): void => {
         const key = decodeKeydown(event);
@@ -117,6 +166,13 @@ export default function TimestampControl({
 
             event.stopPropagation();
         }
+    };
+
+    // Menu keys must not reach the viewer shortcuts or the host page, which may close the preview
+    // on Escape. The Blueprint menu's own Escape listener is on the document, so close it here.
+    const handleMenuKeyDown = (event: React.KeyboardEvent): void => {
+        event.stopPropagation();
+        handleKeyDown(event);
     };
 
     const handleSelect = (selectedFormat: TimeFormat): void => {
@@ -141,6 +197,100 @@ export default function TimestampControl({
             event.stopPropagation();
             handleSelect(selectedFormat);
         };
+
+    const renderChevron = (): JSX.Element => {
+        if (isBlueprintEnabled) {
+            const Chevron = isOpen ? ChevronUp : ChevronDown;
+            return <Chevron className="bp-TimestampControl-chevron" color={bpIconCtaIconOnDark} />;
+        }
+
+        return isOpen ? (
+            <IconChevronUpMedium24 className="bp-TimestampControl-chevron" />
+        ) : (
+            <IconChevronDownMedium24 className="bp-TimestampControl-chevron" />
+        );
+    };
+
+    const renderBlueprintTime = (): JSX.Element => (
+        <>
+            {/* Blueprint types Text's ref as its props rather than the rendered element. The time
+                children are written by renderTabularDigits, which the animation frame loop also calls. */}
+            <Text
+                ref={currentElRef as unknown as React.ComponentProps<typeof Text>['ref']}
+                as="span"
+                color="textOnDarkDefault"
+                variant="bodyDefault"
+            />
+            {!isNarrowWidth && (
+                <>
+                    <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                        /
+                    </Text>
+                    <Text
+                        ref={durationElRef as unknown as React.ComponentProps<typeof Text>['ref']}
+                        as="span"
+                        color="textOnDarkDefault"
+                        variant="bodyDefault"
+                    />
+                </>
+            )}
+        </>
+    );
+
+    if (isBlueprintEnabled && !canChangeTimeFormat) {
+        return (
+            <div className="bp-TimestampControl" data-testid="bp-TimestampControl">
+                <span className="bp-TimestampControl-static" data-testid="bp-TimestampControl-static">
+                    {renderBlueprintTime()}
+                </span>
+            </div>
+        );
+    }
+
+    if (isBlueprintEnabled) {
+        return (
+            <div ref={containerElRef} className="bp-TimestampControl" data-testid="bp-TimestampControl">
+                <DropdownMenu.Root modal={false} onOpenChange={setIsOpen} open={isOpen}>
+                    <DropdownMenu.Trigger asChild>
+                        <button
+                            aria-label={__('media_time_format')}
+                            className={classNames('bp-TimestampControl-button', { 'bp-is-open': isOpen })}
+                            data-resin-target="timeFormat"
+                            data-testid="bp-TimestampControl-button"
+                            onKeyDown={stopMenuTriggerKeyPropagation}
+                            type="button"
+                        >
+                            {renderBlueprintTime()}
+                            {renderChevron()}
+                        </button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content
+                        align="center"
+                        container={portalContainer}
+                        data-testid="bp-TimestampControl-flyout"
+                        onKeyDown={handleMenuKeyDown}
+                        side="top"
+                    >
+                        <DropdownMenu.SubHeader>{__('media_time_format')}</DropdownMenu.SubHeader>
+                        <DropdownMenu.RadioGroup
+                            onValueChange={(value): void => setFormat(value as TimeFormat)}
+                            value={format}
+                        >
+                            {FORMAT_OPTIONS.map(({ label, value }) => (
+                                <DropdownMenu.RadioSelectItem
+                                    key={value}
+                                    data-resin-target={`timeFormat-${value}`}
+                                    value={value}
+                                >
+                                    <Text as="span">{label()}</Text>
+                                </DropdownMenu.RadioSelectItem>
+                            ))}
+                        </DropdownMenu.RadioGroup>
+                    </DropdownMenu.Content>
+                </DropdownMenu.Root>
+            </div>
+        );
+    }
 
     if (!canChangeTimeFormat) {
         return (
@@ -185,11 +335,7 @@ export default function TimestampControl({
                         </span>
                     </>
                 )}
-                {isOpen ? (
-                    <IconChevronUpMedium24 className="bp-TimestampControl-chevron" />
-                ) : (
-                    <IconChevronDownMedium24 className="bp-TimestampControl-chevron" />
-                )}
+                {renderChevron()}
             </button>
             {isOpen && (
                 <div

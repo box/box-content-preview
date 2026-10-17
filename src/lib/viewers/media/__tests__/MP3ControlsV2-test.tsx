@@ -298,6 +298,14 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-DurationLabels')).not.toBeInTheDocument();
         });
 
+        test('should render the timestamp as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({ currentTime: 12, durationTime: 212, isBlueprintEnabled: true, peaks: [0.2, 0.8] });
+
+            const timestamp = await screen.findByTestId('bp-TimestampControl-static');
+            expect(timestamp).toHaveTextContent('0:12/3:32');
+            expect(timestamp.querySelectorAll('[data-modern]')).toHaveLength(3);
+        });
+
         test('should render a placeholder waveform until peaks load', async () => {
             getWrapper({ durationTime: 8 });
 
