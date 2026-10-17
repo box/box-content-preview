@@ -178,6 +178,42 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.thumbnailsSidebarEl).toBeUndefined();
         });
 
+        test.each`
+            toggleType | markToggle
+            ${'v1'}    | ${toggle => toggle.classList.add('bp-GalleryToggle')}
+            ${'v2'}    | ${toggle => toggle.setAttribute('data-bp-gallery-toggle', '')}
+        `('should focus the $toggleType gallery toggle when the gallery controller returns focus', ({ markToggle }) => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+
+            const toggle = document.createElement('button');
+            markToggle(toggle);
+            docBase.containerEl.appendChild(toggle);
+
+            docBase.galleryController.focusToggle();
+
+            expect(document.activeElement).toBe(toggle);
+        });
+
         test('should default the thumbnails open if thumbnails toggle state is open', () => {
             docBase = new DocBaseViewer({
                 cache: {
@@ -4041,6 +4077,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'resize').mockImplementation();
                 jest.spyOn(docBase, 'emitMetric').mockImplementation();
                 jest.spyOn(docBase, 'emit').mockImplementation();
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
 
                 stubs.toggleSidebar = jest.fn();
                 stubs.isSidebarOpen = jest.fn();
@@ -4062,6 +4099,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.toggleThumbnails();
                 jest.advanceTimersByTime(300);
 
+                expect(docBase.resize).not.toBeCalled();
+                expect(docBase.renderUI).not.toBeCalled();
+            });
+
+            test('should not re-render the controls if the controls bar flag is off', () => {
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+
+                docBase.toggleThumbnails();
+
+                expect(stubs.toggleSidebar).toBeCalled();
+                expect(docBase.renderUI).not.toBeCalled();
+            });
+
+            test('should re-render the controls with the new open state right away if the controls bar flag is on', () => {
+                docBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+                stubs.toggleSidebar.mockImplementation(() => {
+                    thumbnailsSidebar.isOpen = true;
+                });
+                let isOpenWhenRendered;
+                docBase.renderUI.mockImplementation(() => {
+                    isOpenWhenRendered = thumbnailsSidebar.isOpen;
+                });
+
+                docBase.toggleThumbnails();
+
+                expect(docBase.renderUI).toBeCalledTimes(1);
+                expect(isOpenWhenRendered).toBe(true);
                 expect(docBase.resize).not.toBeCalled();
             });
 
