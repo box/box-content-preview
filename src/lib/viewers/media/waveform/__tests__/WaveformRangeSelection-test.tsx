@@ -617,7 +617,7 @@ describe('WaveformRangeSelection', () => {
             const comment = screen.getByTestId('bp-waveform-range-comment');
             expect(comment).toHaveAttribute('data-resin-target', 'waveformRangeComment');
             expect(comment).toHaveAttribute('data-target-id', 'Waveform-commentOnRange');
-            expect(comment.querySelector('[data-modern]')).toHaveTextContent(__('media_range_comment'));
+            expect(comment.querySelector('[data-typography]')).toHaveTextContent(__('media_range_comment'));
             await user.click(comment);
             expect(onDragCreate).toHaveBeenCalledTimes(1);
 
