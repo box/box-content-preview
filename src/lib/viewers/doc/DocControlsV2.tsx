@@ -9,12 +9,12 @@ import useFullscreen from '../controls/hooks/useFullscreen';
 import { ActiveAnnotationMode } from '../controls/annotations/annotationModeIcons';
 import { ControlsBarV2 } from '../controls/controls-bar';
 import ExperiencesProvider from '../controls/experiences';
-import FindBarToggle from '../controls/findbar';
-import FullscreenToggle from '../controls/fullscreen';
-import GalleryToggle from '../controls/gallery';
+import { FindBarToggleV2 } from '../controls/findbar';
+import { FullscreenToggleV2 } from '../controls/fullscreen';
+import { GalleryToggleV2 } from '../controls/gallery';
 import { PageControlsV2 } from '../controls/page';
-import RotateControl from '../controls/rotate/RotateControl';
-import ThumbnailsToggle from '../controls/sidebar';
+import { RotateControlV2 } from '../controls/rotate';
+import { ThumbnailsToggleV2 } from '../controls/sidebar';
 import { ZoomControlsV2 } from '../controls/zoom';
 import { ANNOTATION_COLORS } from '../../AnnotationModule';
 import { AnnotationMode } from '../../types';
@@ -78,8 +78,11 @@ export default function DocControlsV2({
             <ControlsBarV2>
                 {!isGalleryOpen && (
                     <>
-                        <ThumbnailsToggle isThumbnailsOpen={isThumbnailsOpen} onThumbnailsToggle={onThumbnailsToggle} />
-                        <FindBarToggle onFindBarToggle={onFindBarToggle} />
+                        <ThumbnailsToggleV2
+                            isThumbnailsOpen={isThumbnailsOpen}
+                            onThumbnailsToggle={onThumbnailsToggle}
+                        />
+                        <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />
                         <PageControlsV2
                             onPageChange={onPageChange}
                             onPageSubmit={onPageSubmit}
@@ -99,9 +102,9 @@ export default function DocControlsV2({
                         scale={scale}
                     />
                 )}
-                {!isGalleryOpen && onRotateLeft && <RotateControl onRotateLeft={onRotateLeft} />}
-                <GalleryToggle isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
-                <FullscreenToggle onFullscreenToggle={onFullscreenToggle} />
+                {!isGalleryOpen && onRotateLeft && <RotateControlV2 onRotateLeft={onRotateLeft} />}
+                <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />
+                <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />
                 {hasAnnotations && (
                     <>
                         <Toolbar.Separator />

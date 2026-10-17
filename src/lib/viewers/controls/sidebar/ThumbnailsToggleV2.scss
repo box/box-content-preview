@@ -1,0 +1,13 @@
+@import '~box-ui-elements/es/styles/constants/media-queries';
+
+.bp-ThumbnailsToggleV2 {
+    display: none;
+
+    @media (min-width: $size-large-min) {
+        display: flex;
+    }
+
+    .bp-is-fullscreen & {
+        display: none;
+    }
+}
