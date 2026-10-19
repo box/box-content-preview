@@ -69,8 +69,9 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             jest.spyOn(markdown, 'preparePrint').mockImplementation();
             markdown.printReady = false;
             markdown.printPopup = {
-                show: jest.fn(),
+                destroy: jest.fn(),
                 disableButton: jest.fn(),
+                show: jest.fn(),
             };
 
             markdown.print();

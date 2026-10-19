@@ -4,6 +4,7 @@ import Browser from '../../../Browser';
 import PlainTextViewer from '../PlainTextViewer';
 import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
+import { PrintModalRoot } from '../../../PrintModal';
 import TextBaseViewer from '../TextBaseViewer';
 import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
@@ -110,6 +111,16 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'destroy', { value: jest.fn() });
             text.destroy();
         });
+
+        test('should destroy the print popup', () => {
+            const { printPopup } = text;
+            jest.spyOn(printPopup, 'destroy');
+
+            text.destroy();
+
+            expect(printPopup.destroy).toBeCalled();
+            expect(text.printPopup).toBeNull();
+        });
     });
 
     describe('load()', () => {
@@ -186,8 +197,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             jest.spyOn(text, 'preparePrint').mockImplementation();
             text.printReady = false;
             text.printPopup = {
-                show: jest.fn(),
+                destroy: jest.fn(),
                 disableButton: jest.fn(),
+                show: jest.fn(),
             };
 
             text.print();
@@ -368,6 +380,16 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             expect(text.printPopup.printCheckmark instanceof HTMLElement);
             expect(text.printPopup.printCheckmark.classList.contains('bp-print-check'));
         });
+
+        test('should initialize the Blueprint print modal when the supporting UI flag is on', () => {
+            text.printPopup.destroy();
+            text.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+
+            text.initPrint();
+
+            expect(text.printPopup).toBeInstanceOf(PrintModalRoot);
+            expect(createRoot).toBeCalledWith(text.printPopup.hostEl);
+        });
     });
 
     describe('preparePrint()', () => {
@@ -421,6 +443,27 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             expect(text.printPopup.messageEl.textContent).toBe('Ready to print.');
             expect(text.printPopup.loadingIndicator.classList.contains('bp-is-hidden')).toBe(true);
             expect(text.printPopup.printCheckmark.classList.contains('bp-is-hidden')).toBe(false);
+            expect(text.printReady).toBe(true);
+        });
+
+        test('should show the ready state in the Blueprint print modal after a delay', () => {
+            jest.spyOn(util, 'createAssetUrlCreator').mockReturnValue(jest.fn());
+            jest.spyOn(util, 'openContentInsideIframe').mockReturnValue({
+                contentDocument: {
+                    head: {
+                        appendChild: jest.fn(),
+                    },
+                },
+            });
+            text.printPopup.destroy();
+            text.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+            text.initPrint();
+            jest.spyOn(text.printPopup, 'showReady');
+
+            text.preparePrint(['blah']);
+            jest.advanceTimersByTime(5001);
+
+            expect(text.printPopup.showReady).toBeCalledWith('Ready to print.');
             expect(text.printReady).toBe(true);
         });
     });
