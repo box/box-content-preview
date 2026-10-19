@@ -214,7 +214,9 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         const { url_template: template } = preloadRep.content;
         const options = {
+            isBlueprintEnabled: this.isBlueprintMediaControlsEnabled(),
             onImageClick: () => this.handlePlayRequest(),
+            portalContainer: this.containerEl,
         };
         if (this.isVideoPosterEarlyPaint) {
             // Resolve viewport at paint time so sidebar/layout changes after showPreload
