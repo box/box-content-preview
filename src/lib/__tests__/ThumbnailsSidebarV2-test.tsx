@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ThumbnailsSidebar from '../ThumbnailsSidebar';
 import ThumbnailsSidebarV2 from '../ThumbnailsSidebarV2';
@@ -46,6 +46,7 @@ describe('ThumbnailsSidebarV2', () => {
     beforeEach(() => {
         jest.spyOn(window, 'requestAnimationFrame').mockImplementation(() => 1);
         anchorEl = document.createElement('nav');
+        anchorEl.tabIndex = 0;
         document.body.appendChild(anchorEl);
         onSelect = jest.fn();
         sidebar = new ThumbnailsSidebarV2(anchorEl, { pagesCount: 500 });
@@ -174,11 +175,13 @@ describe('ThumbnailsSidebarV2', () => {
         expect(onSelect).not.toBeCalled();
     });
 
-    test('should select the adjacent page with the arrow keys', () => {
-        fireEvent.keyDown(anchorEl, { key: 'ArrowDown' });
+    test('should select the adjacent page with the arrow keys', async () => {
+        anchorEl.focus();
+
+        await userEvent.keyboard('{ArrowDown}');
         expect(onSelect).toBeCalledWith(3);
 
-        fireEvent.keyDown(anchorEl, { key: 'ArrowUp' });
+        await userEvent.keyboard('{ArrowUp}');
         expect(onSelect).toBeCalledWith(1);
     });
 
