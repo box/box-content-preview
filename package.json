@@ -1,6 +1,6 @@
 {
     "name": "box-content-preview",
-    "version": "3.114.0",
+    "version": "3.115.0",
     "description": "Box Content Preview UI Element",
     "author": "Box (https://www.box.com/)",
     "license": "SEE LICENSE IN LICENSE",
@@ -21,8 +21,13 @@
         "./pdf.worker.min.mjs": "./dist/lib/pdf.worker.min.mjs",
         "./package.json": "./package.json"
     },
-    "files": ["dist/lib"],
-    "sideEffects": ["*.css", "*.scss"],
+    "files": [
+        "dist/lib"
+    ],
+    "sideEffects": [
+        "*.css",
+        "*.scss"
+    ],
     "publishConfig": {
         "access": "public"
     },
@@ -52,8 +57,10 @@
         "@box/blueprint-web": "^18.3.0",
         "@box/blueprint-web-assets": "^5.12.2",
         "@box/frontend": "^11.0.1",
+        "@box/item-icon": "3.6.19",
         "@box/languages": "^1.0.0",
         "@box/react-virtualized": "^9.22.3-rc-box.10",
+        "@box/types": "^3.2.30",
         "@commitlint/cli": "^19.8.0",
         "@commitlint/config-conventional": "^19.8.0",
         "@commitlint/travis-cli": "^19.8.0",
