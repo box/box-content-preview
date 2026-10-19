@@ -408,6 +408,23 @@ describe('MP3ControlsV2', () => {
             expect(onMuteChange).toHaveBeenCalled();
         });
 
+        test('should render the Blueprint settings menu with audio options when isBlueprintEnabled is true', async () => {
+            const onAutoplayChange = jest.fn();
+            getWrapper({ durationTime: 8, isBlueprintEnabled: true, onAutoplayChange, peaks: [0.2, 0.8] });
+            const settings = await within(screen.getByTestId('bp-MP3ControlsV2-bar')).findByRole('button', {
+                name: __('media_settings'),
+            });
+
+            expect(screen.queryByTestId('bp-settings')).not.toBeInTheDocument();
+            await userEvent.click(settings);
+
+            const menu = screen.getByRole('menu');
+            await userEvent.click(within(menu).getByRole('menuitemcheckbox', { name: __('media_autoplay') }));
+            expect(onAutoplayChange).toHaveBeenCalledWith(true);
+            expect(within(menu).getByTestId('bp-media-settings-speed')).toBeInTheDocument();
+            expect(within(menu).queryByTestId('bp-media-settings-quality')).not.toBeInTheDocument();
+        });
+
         test('should start playback and unlock the waveform when the overlay is clicked', async () => {
             const onPlayPause = jest.fn();
             getWrapper({ durationTime: 8, onPlayPause, peaks: [0.2, 0.8] });

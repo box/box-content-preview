@@ -18,6 +18,8 @@ const QUALITY_LABEL_MAP: Record<Quality, string> = {
     [Quality.SD]: '480p',
 };
 
+export const QUALITIES = [Quality.SD, Quality.HD, Quality.AUTO];
+
 export const getLabel = (quality: Quality): string => QUALITY_LABEL_MAP[quality];
 
 export default function MediaSettingsMenuQuality({ onQualityChange, quality }: Props): JSX.Element | null {
@@ -35,24 +37,15 @@ export default function MediaSettingsMenuQuality({ onQualityChange, quality }: P
     return (
         <Settings.Menu name={Menu.QUALITY}>
             <Settings.MenuBack label={__('media_quality')} />
-            <Settings.RadioItem<Quality>
-                isSelected={quality === Quality.SD}
-                label="480p"
-                onChange={handleChange}
-                value={Quality.SD}
-            />
-            <Settings.RadioItem<Quality>
-                isSelected={quality === Quality.HD}
-                label="1080p"
-                onChange={handleChange}
-                value={Quality.HD}
-            />
-            <Settings.RadioItem<Quality>
-                isSelected={quality === Quality.AUTO}
-                label={__('media_quality_auto')}
-                onChange={handleChange}
-                value={Quality.AUTO}
-            />
+            {QUALITIES.map(value => (
+                <Settings.RadioItem<Quality>
+                    key={value}
+                    isSelected={quality === value}
+                    label={getLabel(value)}
+                    onChange={handleChange}
+                    value={value}
+                />
+            ))}
         </Settings.Menu>
     );
 }

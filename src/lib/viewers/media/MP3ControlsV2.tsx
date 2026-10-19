@@ -3,6 +3,7 @@ import isFinite from 'lodash/isFinite';
 import { IconButton, Tooltip } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
+import MediaSettingsV2 from '../controls/media/MediaSettingsV2';
 import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import { Props as TimeControlsProps } from '../controls/media/TimeControls';
@@ -362,15 +363,26 @@ export default function MP3ControlsV2({
                             isBlueprintEnabled={isBlueprintEnabled}
                             volume={volume}
                         />
-                        <MediaSettings
-                            autoplay={autoplay}
-                            className="bp-MP3Controls-settings"
-                            onAutoplayChange={onAutoplayChange}
-                            onPlayNextChange={onPlayNextChange}
-                            onRateChange={onRateChange}
-                            playNext={playNext}
-                            rate={rate}
-                        />
+                        {isBlueprintEnabled ? (
+                            <MediaSettingsV2
+                                autoplay={autoplay}
+                                onAutoplayChange={onAutoplayChange}
+                                onPlayNextChange={onPlayNextChange}
+                                onRateChange={onRateChange}
+                                playNext={playNext}
+                                rate={rate}
+                            />
+                        ) : (
+                            <MediaSettings
+                                autoplay={autoplay}
+                                className="bp-MP3Controls-settings"
+                                onAutoplayChange={onAutoplayChange}
+                                onPlayNextChange={onPlayNextChange}
+                                onRateChange={onRateChange}
+                                playNext={playNext}
+                                rate={rate}
+                            />
+                        )}
                     </div>
                 </div>
             )}

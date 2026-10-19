@@ -48,7 +48,7 @@ const GUIDE_NAME_MAP: Record<Guide, string> = {
     [Guide.R_21_9]: __('media_guides_ultrawide') as string,
 };
 
-const GUIDE_ORDER: Guide[] = [
+export const GUIDE_ORDER: Guide[] = [
     Guide.OFF,
     Guide.R_16_9,
     Guide.R_9_16,
@@ -66,7 +66,7 @@ const GUIDE_ORDER: Guide[] = [
 export const getLabel = (guide: Guide): string =>
     guide === Guide.OFF ? (__('media_guides_off') as string) : GUIDE_LABEL_MAP[guide];
 
-const formatRadioLabel = (guide: Guide): string => {
+export const formatRadioLabel = (guide: Guide): string => {
     const ratio = guide === Guide.OFF ? (__('media_guides_off') as string) : GUIDE_LABEL_MAP[guide];
     return `${ratio} — ${GUIDE_NAME_MAP[guide]}`;
 };
