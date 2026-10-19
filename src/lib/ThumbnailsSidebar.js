@@ -5,7 +5,7 @@ import Thumbnail from './Thumbnail';
 
 const CLASS_BOX_PREVIEW_THUMBNAIL = 'bp-thumbnail';
 const CLASS_BOX_PREVIEW_THUMBNAIL_NAV = 'bp-thumbnail-nav';
-const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
+export const CLASS_BOX_PREVIEW_THUMBNAIL_IMAGE_LOADED = 'bp-thumbnail-image-loaded';
 const CLASS_BOX_PREVIEW_THUMBNAIL_IS_SELECTED = 'bp-thumbnail-is-selected';
 const CLASS_BOX_PREVIEW_THUMBNAIL_PAGE_NUMBER = 'bp-thumbnail-page-number';
 export const THUMBNAIL_TOTAL_WIDTH = 150; // 190px sidebar width - 40px margins
