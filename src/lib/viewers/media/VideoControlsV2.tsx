@@ -111,6 +111,7 @@ export default function VideoControlsV2({
                     filmstripInterval={filmstripInterval}
                     filmstripUrl={filmstripUrl}
                     fps={fps}
+                    isBlueprintEnabled={isBlueprintEnabled}
                     onCommentMarkerClick={onCommentMarkerClick}
                     onTimeChange={onTimeChange}
                 />
