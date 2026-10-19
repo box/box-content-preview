@@ -1,25 +1,18 @@
 import React from 'react';
-import { createRoot, Root } from 'react-dom/client';
+import { getFileCategoryByExtension, ItemIcon } from '@box/item-icon';
 import { getIcon } from 'box-ui-elements/es/components/preview';
 
-export type Options = {
-    containerEl: HTMLElement;
+export type Props = {
+    extension?: string;
+    isBlueprintEnabled?: boolean;
 };
 
-export default class ErrorIcon {
-    root: Root;
-
-    constructor({ containerEl }: Options) {
-        this.root = createRoot(containerEl);
+export default function ErrorIcon({ extension, isBlueprintEnabled = false }: Props): JSX.Element {
+    if (isBlueprintEnabled) {
+        return <ItemIcon ariaHidden iconType={getFileCategoryByExtension(extension?.toLowerCase())} />;
     }
 
-    destroy(): void {
-        this.root.unmount();
-    }
+    const Icon = getIcon(extension);
 
-    render(extension?: string): void {
-        const Icon = getIcon(extension);
-
-        this.root.render(<Icon extension={extension} />);
-    }
+    return <Icon extension={extension} />;
 }
