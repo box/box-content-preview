@@ -367,6 +367,19 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();
         });
 
+        test('should show the Blueprint loading indicator after overlay click when isBlueprintEnabled is true', async () => {
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'duration', { configurable: true, value: NaN });
+            getWrapper({ durationTime: 180, isBlueprintEnabled: true, mediaEl, peaks: [0.2, 0.8] });
+
+            await userEvent.click(await screen.findByTestId('bp-MP3ControlsV2-play-overlay'));
+
+            const loading = screen.getByTestId('bp-MP3ControlsV2-loading');
+            expect(loading).toHaveClass('bp-MediaLoadingIndicator');
+            expect(loading).not.toHaveClass('bp-media-buffering-spinner');
+            expect(within(loading).getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+        });
+
         test('should keep the waveform inert after metadata until play is requested', async () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
