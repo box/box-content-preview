@@ -1,6 +1,9 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import BaseViewer from '../BaseViewer';
 import ErrorIcon from './ErrorIcon';
 import PreviewError from '../../PreviewError';
+import { BLUEPRINT_MIGRATION_SUPPORTING_UI } from '../../constants';
 import { canDownload } from '../../file';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { stripAuthFromString } from '../../util';
@@ -33,6 +36,7 @@ class PreviewErrorViewer extends BaseViewer {
 
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.iconEl.className = 'bp-icon bp-icon-file';
+        this.iconRoot = createRoot(this.iconEl);
 
         this.messageEl = this.infoEl.appendChild(document.createElement('p'));
         this.messageEl.className = 'bp-error-text';
@@ -58,8 +62,8 @@ class PreviewErrorViewer extends BaseViewer {
             this.downloadBtnEl.removeEventListener('click', this.download);
         }
 
-        if (this.errorIcon) {
-            this.errorIcon.destroy();
+        if (this.iconRoot) {
+            this.iconRoot.unmount();
         }
 
         super.destroy();
@@ -83,8 +87,12 @@ class PreviewErrorViewer extends BaseViewer {
         const { extension: iconExtension } = file || {};
 
         // Display the default or file-specific error icon
-        this.errorIcon = new ErrorIcon({ containerEl: this.iconEl });
-        this.errorIcon.render(iconExtension);
+        this.iconRoot.render(
+            <ErrorIcon
+                extension={iconExtension}
+                isBlueprintEnabled={this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)}
+            />,
+        );
 
         // Display user-friendly error message
         this.messageEl.textContent = displayMessage;
