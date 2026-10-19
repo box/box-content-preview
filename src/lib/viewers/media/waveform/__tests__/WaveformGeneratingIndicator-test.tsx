@@ -10,7 +10,7 @@ describe('WaveformGeneratingIndicator', () => {
         const indicator = screen.getByTestId('bp-waveform-generating');
         expect(indicator).toHaveAttribute('role', 'status');
         expect(indicator).toHaveTextContent(__('media_generating_waveform'));
-        expect(indicator.querySelector('[data-modern]')).not.toBeInTheDocument();
+        expect(indicator.querySelector('[data-typography]')).not.toBeInTheDocument();
         expect(indicator.querySelectorAll('.bp-WaveformGeneratingIndicator-bar')).toHaveLength(3);
     });
 
@@ -19,7 +19,7 @@ describe('WaveformGeneratingIndicator', () => {
 
         const indicator = screen.getByTestId('bp-waveform-generating');
         expect(screen.getAllByRole('status')).toEqual([indicator]);
-        expect(indicator.querySelector('[data-modern]')).toHaveTextContent(__('media_generating_waveform'));
+        expect(indicator.querySelector('[data-typography]')).toHaveTextContent(__('media_generating_waveform'));
         expect(indicator.querySelector('.bp-WaveformGeneratingIndicator-bar')).not.toBeInTheDocument();
         expect(
             indicator.querySelector('.bp-WaveformGeneratingIndicator-bars--blueprint [role="status"]'),

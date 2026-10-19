@@ -252,7 +252,7 @@ class DocBaseViewer extends BaseViewer {
             toggleThumbnails: () => this.toggleThumbnails(),
             requestUiUpdate: () => this.renderUI(),
             focusToggle: () => {
-                const toggle = this.containerEl.querySelector('.bp-GalleryToggle');
+                const toggle = this.containerEl.querySelector('.bp-GalleryToggle, [data-bp-gallery-toggle]');
                 if (toggle && toggle.focus) {
                     toggle.focus();
                 }
@@ -2154,6 +2154,10 @@ class DocBaseViewer extends BaseViewer {
         const { pagesCount } = this.pdfViewer;
 
         this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
+
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.renderUI();
+        }
 
         let metricName;
         let eventName;

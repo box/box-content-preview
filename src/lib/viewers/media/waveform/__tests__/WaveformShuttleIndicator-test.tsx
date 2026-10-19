@@ -15,7 +15,7 @@ describe('WaveformShuttleIndicator', () => {
         expect(indicator).toHaveAttribute('role', 'status');
         expect(indicator).toHaveTextContent('2x');
         expect(indicator.classList.contains('bp-is-reverse')).toBe(isReverse);
-        expect(indicator.querySelector('[data-modern]')).not.toBeInTheDocument();
+        expect(indicator.querySelector('[data-typography]')).not.toBeInTheDocument();
     });
 
     test('should render the rate as Blueprint text when isBlueprintEnabled is true', () => {
@@ -23,6 +23,21 @@ describe('WaveformShuttleIndicator', () => {
             wrapper: BlueprintProviders,
         });
 
-        expect(screen.getByTestId('bp-waveform-shuttle').querySelector('[data-modern]')).toHaveTextContent('4x');
+        expect(screen.getByTestId('bp-waveform-shuttle').querySelector('[data-typography]')).toHaveTextContent('4x');
+        expect(screen.queryByTestId('IconShuttleForward')).not.toBeInTheDocument();
+    });
+
+    test.each`
+        direction    | path
+        ${'forward'} | ${'M12 6.4'}
+        ${'reverse'} | ${'M19.28 5.04'}
+    `('should render the filled $direction icon when isBlueprintEnabled is true', ({ direction, path }) => {
+        render(<WaveformShuttleIndicator direction={direction} isBlueprintEnabled rate={2} />, {
+            wrapper: BlueprintProviders,
+        });
+
+        const icon = screen.getByTestId('bp-waveform-shuttle-icon');
+        expect(icon).toHaveAttribute('aria-hidden', 'true');
+        expect(icon.querySelector('path')?.getAttribute('d')).toMatch(new RegExp(`^${path}`));
     });
 });

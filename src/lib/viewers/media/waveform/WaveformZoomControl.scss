@@ -156,6 +156,12 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     }
 }
 
+.bp-WaveformZoomControl-iconButton {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .bp-WaveformZoomControl,
     .bp-WaveformZoomControl-flyout {

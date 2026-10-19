@@ -2,6 +2,19 @@ merge_queue:
     max_parallel_checks: 1
 
 queue_rules:
+    - name: translations
+      batch_size: 1
+      queue_conditions:
+          - base=master
+          - author=boxmoji
+          - title~=(?i)^chore\(i18n\):\supdate translations$
+          - -files~=^(?!src/i18n/)
+          - '#approved-reviews-by>=1'
+          - '#changes-requested-reviews-by=0'
+          - status-success=Travis CI - Pull Request
+          - label!=do-not-merge
+      merge_method: squash
+
     - name: default
       batch_size: 1
       queue_conditions:
