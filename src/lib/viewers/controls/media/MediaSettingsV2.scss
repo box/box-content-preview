@@ -1,0 +1,10 @@
+// Keeps the menu from resizing as it switches between the main list and a submenu.
+.bp-MediaSettingsV2 {
+    min-width: 240px;
+}
+
+.bp-MediaSettingsV2-value {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
