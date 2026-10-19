@@ -6,6 +6,7 @@ import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
+import { DocFindBarV2Root } from './DocFindBarV2';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import { isNpmBuild } from '../../isNpmBuild';
@@ -20,6 +21,7 @@ import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
     BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -1210,7 +1212,8 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.findBar = new DocFindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
+        const FindBar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI) ? DocFindBarV2Root : DocFindBar;
+        this.findBar = new FindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
     }

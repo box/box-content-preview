@@ -1,0 +1,32 @@
+.bp-DocFindBarV2 {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    right: 17px; // Clears the document scrollbar
+    display: flex;
+    gap: var(--bp-space-010);
+    align-items: center;
+    padding: var(--bp-space-020);
+    border: var(--bp-border-01) solid var(--bp-border-card-border);
+    border-radius: var(--bp-radius-04);
+    background: var(--bp-surface-surface);
+}
+
+.bp-DocFindBarV2-search {
+    width: 200px;
+}
+
+// Overlays the count on its hidden sizer so the slot width never changes
+.bp-DocFindBarV2-count {
+    display: grid;
+    justify-items: center;
+    white-space: nowrap;
+
+    > * {
+        grid-area: 1 / 1;
+    }
+}
+
+.bp-DocFindBarV2-countSizer {
+    visibility: hidden;
+}
