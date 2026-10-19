@@ -8,11 +8,14 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import { Text, Toolbar, Tooltip } from '@box/blueprint-web';
+import { Comment, XMark } from '@box/blueprint-web-assets/icons/Medium';
 import IconComment24 from '../../controls/icons/IconComment24';
 import IconExit24 from '../../controls/icons/IconExit24';
 import { CommentRangeDraft } from '../../controls/media/types';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from './constants';
 import { formatTime } from './peaks';
+import { stopToolbarKeyPropagation } from '../../controls/media/utils';
 import {
     commitRangeChange,
     dragRangeHandle,
@@ -40,6 +43,7 @@ export type WaveformRangeSelectionProps = {
     getPlayheadSec?: () => number;
     isSwiping?: boolean;
     interactive?: boolean;
+    isBlueprintEnabled?: boolean;
     isHighlighted?: boolean;
     keepHighlight?: boolean;
     onDragChange?: (isDragging: boolean) => void;
@@ -130,6 +134,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             getPlayheadSec,
             isSwiping = false,
             interactive = true,
+            isBlueprintEnabled = false,
             isHighlighted = false,
             keepHighlight = true,
             onDragChange,
@@ -460,7 +465,54 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             </>
         );
         let commentButton: JSX.Element | null = null;
-        if (showClearOnly && onRangeClear) {
+        if (isBlueprintEnabled && (showCommentButton || showClearControl)) {
+            commentButton = (
+                <div
+                    ref={commentPillRef}
+                    className="bp-WaveformRange-comment bp-WaveformRange-comment--blueprint"
+                    data-testid="bp-waveform-range-comment-toolbar"
+                    role="presentation"
+                    onKeyDown={stopToolbarKeyPropagation}
+                    onPointerDown={stopRangeEvent}
+                    onPointerUp={stopRangeEvent}
+                >
+                    <Toolbar.Root aria-label={__('media_range_comment')}>
+                        {showCommentButton && onDragCreate && (
+                            <Toolbar.Button
+                                data-resin-target="waveformRangeComment"
+                                data-target-id="Waveform-commentOnRange"
+                                data-testid="bp-waveform-range-comment"
+                                onClick={event => {
+                                    stopRangeEvent(event);
+                                    onDragCreate();
+                                }}
+                            >
+                                <Toolbar.Icon icon={Comment} />
+                                <Text as="span">{__('media_range_comment')}</Text>
+                            </Toolbar.Button>
+                        )}
+                        {showCommentButton && showClearControl && <Toolbar.Separator />}
+                        {showClearControl && onRangeClear && (
+                            <Tooltip content={__('media_range_clear')}>
+                                <Toolbar.Button
+                                    aria-label={__('media_range_clear')}
+                                    data-resin-target="waveformRangeClear"
+                                    data-target-id="Waveform-clearRange"
+                                    data-testid="bp-waveform-range-clear"
+                                    onClick={event => {
+                                        stopRangeEvent(event);
+                                        focusMediaContainer(event);
+                                        onRangeClear();
+                                    }}
+                                >
+                                    <Toolbar.Icon icon={XMark} />
+                                </Toolbar.Button>
+                            </Tooltip>
+                        )}
+                    </Toolbar.Root>
+                </div>
+            );
+        } else if (showClearOnly && onRangeClear) {
             commentButton = (
                 <button
                     ref={commentButtonRef}

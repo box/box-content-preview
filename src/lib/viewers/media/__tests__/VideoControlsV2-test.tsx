@@ -145,6 +145,17 @@ describe('VideoControlsV2', () => {
             await user.click(screen.getByTestId('bp-TimestampControl-button'));
             expect(screen.getByTestId('bp-TimestampControl-flyout')).toBeInTheDocument();
         });
+
+        test('should render Blueprint timestamp chevron when isBlueprintEnabled is true', () => {
+            render(<VideoControlsV2 {...defaultProps} canChangeTimeFormat isBlueprintEnabled />, {
+                wrapper: BlueprintProviders,
+            });
+
+            expect(
+                screen.getByTestId('bp-TimestampControl-button').querySelector('.bp-TimestampControl-chevron'),
+            ).toBeInTheDocument();
+            expect(screen.queryByTestId('IconChevronDownMedium24')).not.toBeInTheDocument();
+        });
     });
 
     describe('volume controls', () => {

@@ -31,12 +31,12 @@ export type Props = Pick<SettingsProps, 'onClose' | 'onOpen'> & {
     showWireframes: boolean;
 };
 
-const cameraProjectionOptions = [
+export const cameraProjectionOptions = [
     { label: __('box3d_camera_projection_perspective'), value: CameraProjection.PERSPECTIVE },
     { label: __('box3d_camera_projection_orthographic'), value: CameraProjection.ORTHOGRAPHIC },
 ];
 
-const renderModeOptions = [
+export const renderModeOptions = [
     { label: __('box3d_render_mode_lit'), value: RenderMode.LIT },
     { label: __('box3d_render_mode_unlit'), value: RenderMode.UNLIT },
     { label: __('box3d_render_mode_normals'), value: RenderMode.NORMALS },

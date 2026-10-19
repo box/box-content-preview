@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import { WAVEFORM_RANGE_COLLAPSED_OFFSET_PX, WAVEFORM_RANGE_HANDLE_LINE_PX } from '../constants';
 import { createWaveformViewport } from '../viewport';
 import WaveformRangeSelection, { WaveformRangeSelectionHandle } from '../WaveformRangeSelection';
@@ -586,5 +587,79 @@ describe('WaveformRangeSelection', () => {
 
         expect(onDragChange).toHaveBeenCalledWith(false);
         expect(onRangeChange).not.toHaveBeenCalled();
+    });
+
+    describe('when isBlueprintEnabled is true', () => {
+        const renderBlueprint = (props: Partial<React.ComponentProps<typeof WaveformRangeSelection>> = {}) =>
+            render(
+                <WaveformRangeSelection
+                    durationSec={8}
+                    isBlueprintEnabled
+                    range={{ endMs: 4000, startMs: 2000 }}
+                    viewport={viewport}
+                    {...props}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+        test('should render Comment and clear as one Blueprint toolbar above the range', async () => {
+            const user = userEvent.setup();
+            const onDragCreate = jest.fn();
+            const onRangeClear = jest.fn();
+            renderBlueprint({ onDragCreate, onRangeClear });
+
+            const toolbar = screen.getByRole('toolbar', { name: __('media_range_comment') });
+            expect(screen.getByTestId('bp-waveform-range-comment-toolbar')).toHaveStyle({ left: '37.5%' });
+            expect(screen.getByTestId('bp-waveform-range-comment-toolbar')).toContainElement(toolbar);
+            expect(screen.getByRole('separator')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
+
+            const comment = screen.getByTestId('bp-waveform-range-comment');
+            expect(comment).toHaveAttribute('data-resin-target', 'waveformRangeComment');
+            expect(comment).toHaveAttribute('data-target-id', 'Waveform-commentOnRange');
+            expect(comment.querySelector('[data-typography]')).toHaveTextContent(__('media_range_comment'));
+            await user.click(comment);
+            expect(onDragCreate).toHaveBeenCalledTimes(1);
+
+            const clear = screen.getByRole('button', { name: __('media_range_clear') });
+            expect(clear).toHaveAttribute('data-resin-target', 'waveformRangeClear');
+            expect(clear).toHaveAttribute('data-target-id', 'Waveform-clearRange');
+            await user.click(clear);
+            expect(onRangeClear).toHaveBeenCalledTimes(1);
+        });
+
+        test('should render only the clear button when the range cannot be commented on', () => {
+            renderBlueprint({ onRangeClear: jest.fn(), readOnly: true });
+
+            expect(screen.getByRole('toolbar')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-waveform-range-clear')).toBeInTheDocument();
+            expect(screen.queryByTestId('bp-waveform-range-comment')).not.toBeInTheDocument();
+            expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+        });
+
+        test('should not render a toolbar for a collapsed range', () => {
+            renderBlueprint({
+                onDragCreate: jest.fn(),
+                onRangeClear: jest.fn(),
+                range: { endMs: null, startMs: 2000 },
+            });
+
+            expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+        });
+
+        test('should keep toolbar navigation keys from reaching the viewer shortcuts', () => {
+            const onDocumentKeyDown = jest.fn();
+            document.addEventListener('keydown', onDocumentKeyDown);
+            renderBlueprint({ onDragCreate: jest.fn(), onRangeClear: jest.fn() });
+
+            const comment = screen.getByTestId('bp-waveform-range-comment');
+            fireEvent.keyDown(comment, { key: 'ArrowRight' });
+            fireEvent.keyDown(comment, { key: ' ' });
+            expect(onDocumentKeyDown).not.toHaveBeenCalled();
+
+            fireEvent.keyDown(comment, { key: 'm' });
+            expect(onDocumentKeyDown).toHaveBeenCalledTimes(1);
+            document.removeEventListener('keydown', onDocumentKeyDown);
+        });
     });
 });

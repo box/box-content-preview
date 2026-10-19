@@ -144,6 +144,7 @@ export default function VideoControlsV2({
                             currentTime={currentTime}
                             durationTime={durationTime}
                             fps={fps}
+                            isBlueprintEnabled={isBlueprintEnabled}
                             isNarrowWidth={isNarrowVideo}
                             mediaEl={mediaEl}
                         />

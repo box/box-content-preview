@@ -1,0 +1,14 @@
+.bp-SettingsToggleV2 {
+    position: relative;
+    display: inline-flex;
+}
+
+.bp-SettingsToggleV2-badge {
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-100%);
+    display: flex;
+    align-items: center;
+}

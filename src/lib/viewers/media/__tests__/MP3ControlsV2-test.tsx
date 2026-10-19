@@ -247,7 +247,7 @@ describe('MP3ControlsV2', () => {
             });
 
             const shuttle = await screen.findByTestId('bp-waveform-shuttle');
-            expect(shuttle.querySelector('[data-modern]')).toHaveTextContent('2x');
+            expect(shuttle.querySelector('[data-typography]')).toHaveTextContent('2x');
         });
 
         test('should withhold the playhead comment while shuttle is moving', async () => {
@@ -299,6 +299,14 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTitle(__('media_skip_forward'))).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('media_skip_backward'))).not.toBeInTheDocument();
             expect(screen.queryByTestId('bp-DurationLabels')).not.toBeInTheDocument();
+        });
+
+        test('should render the timestamp as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({ currentTime: 12, durationTime: 212, isBlueprintEnabled: true, peaks: [0.2, 0.8] });
+
+            const timestamp = await screen.findByTestId('bp-TimestampControl-static');
+            expect(timestamp).toHaveTextContent('0:12/3:32');
+            expect(timestamp.querySelectorAll('[data-typography]')).toHaveLength(3);
         });
 
         test('should render a placeholder waveform until peaks load', async () => {
@@ -498,7 +506,7 @@ describe('MP3ControlsV2', () => {
             getWrapper({ durationTime: 8, isBlueprintEnabled: true, isGeneratingWaveform: true });
 
             const indicator = await screen.findByTestId('bp-waveform-generating');
-            expect(indicator.querySelector('[data-modern]')).toHaveTextContent(__('media_generating_waveform'));
+            expect(indicator.querySelector('[data-typography]')).toHaveTextContent(__('media_generating_waveform'));
         });
 
         test('should hide generating waveform once real peaks are available', async () => {
