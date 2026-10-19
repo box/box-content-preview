@@ -40,10 +40,10 @@ describe('TimeControlsV2', () => {
     describe('filmstrip', () => {
         test('should pass isBlueprintEnabled to the filmstrip', () => {
             const { rerender } = render(<TimeControlsV2 {...defaultProps} filmstripInterval={1} />);
-            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-modern]')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).not.toBeInTheDocument();
 
             rerender(<TimeControlsV2 {...defaultProps} filmstripInterval={1} isBlueprintEnabled />);
-            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-modern]')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).toBeInTheDocument();
         });
     });
 

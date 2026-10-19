@@ -75,10 +75,10 @@ describe('FilmstripV2', () => {
 
         test('should render the time as Blueprint text only when isBlueprintEnabled is true', () => {
             const { rerender } = render(<FilmstripV2 time={65} />);
-            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-modern]')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).not.toBeInTheDocument();
 
             rerender(<FilmstripV2 isBlueprintEnabled time={65} />);
-            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-modern]')).toHaveTextContent('1:05');
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).toHaveTextContent('1:05');
         });
     });
 
