@@ -540,6 +540,15 @@ describe('lib/viewers/BaseViewer', () => {
             base.toggleFullscreen();
             expect(fullscreen.toggle).toBeCalledWith(base.containerEl);
         });
+
+        test('should keep the last fullscreen toggle when the keyboard shortcut passes none', () => {
+            const toggle = document.createElement('button');
+            base.fullscreenToggleEl = toggle;
+
+            base.toggleFullscreen();
+
+            expect(base.fullscreenToggleEl).toBe(toggle);
+        });
     });
 
     describe('handleFullscreenEnter()', () => {

@@ -254,7 +254,9 @@ class DocBaseViewer extends BaseViewer {
             toggleThumbnails: () => this.toggleThumbnails(),
             requestUiUpdate: () => this.renderUI(),
             focusToggle: () => {
-                const toggle = this.containerEl.querySelector('.bp-GalleryToggle, [data-bp-gallery-toggle]');
+                const toggle = this.containerEl.querySelector(
+                    '.bp-GalleryToggle, [data-bp-gallery-toggle], [data-overflow-ids~="gallery"]',
+                );
                 if (toggle && toggle.focus) {
                     toggle.focus();
                 }
@@ -971,6 +973,26 @@ class DocBaseViewer extends BaseViewer {
             case ']':
                 this.nextPage();
                 break;
+            case 'r':
+            case 'R':
+                // The rotate control is hidden while the gallery is open, so the key follows it.
+                // These bare keys belong to the v2 controls bar; the older bar has no such shortcuts.
+                if (
+                    this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) &&
+                    !this.galleryController?.isOpen &&
+                    this.featureEnabled('rotate.enabled')
+                ) {
+                    this.rotateLeft();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
+            case 'f':
+            case 'F':
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    this.toggleFullscreen();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
             default:
                 if (this.findBar) {
                     return this.findBar.onKeydown(event);

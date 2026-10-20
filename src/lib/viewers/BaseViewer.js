@@ -610,7 +610,10 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     toggleFullscreen(isFullscreen, fullscreenToggleEl) {
-        this.fullscreenToggleEl = fullscreenToggleEl;
+        // The keyboard shortcut has no button to return focus to, so keep the last toggle
+        if (fullscreenToggleEl) {
+            this.fullscreenToggleEl = fullscreenToggleEl;
+        }
         fullscreen.toggle(this.containerEl);
     }
 
