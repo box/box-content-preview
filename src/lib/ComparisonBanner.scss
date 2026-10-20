@@ -7,11 +7,11 @@ $comparison-compared-stage: var(--bp-gray-10);
     right: 0;
     left: 0;
     display: flex;
-    gap: 12px;
+    gap: var(--bp-space-030);
     align-items: center;
     height: var(--bp-comparison-banner-height, 4.5rem);
-    padding: 16px;
-    background: linear-gradient(180deg, #f5f5f5 19.61%, rgb(255 255 255 / 0%) 100%);
+    padding: var(--bp-space-040);
+    background: linear-gradient(180deg, var(--bp-gray-05) 19.61%, var(--bp-white-opacity-00) 100%);
 }
 
 .bp-version-banner-details {
@@ -33,22 +33,22 @@ $comparison-compared-stage: var(--bp-gray-10);
     flex: none;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 8px;
-    border: 1px solid rgb(0 0 0 / 12%);
+    min-width: var(--bp-size-080);
+    height: var(--bp-size-080);
+    padding: 0 var(--bp-space-020);
+    border: var(--bp-border-01) solid var(--bp-black-opacity-12);
     border-radius: 50%;
-    font-size: 15px;
+    font-size: var(--bp-font-size-05);
     font-weight: 500;
     line-height: 20px;
-    color: #fff;
-    background-color: #26c281;
+    color: var(--bp-gray-white);
+    background-color: var(--bp-green-light-100);
 }
 
 .bp-version-banner--compared .bp-version-banner-badge {
-    font-weight: bold;
-    color: #000;
-    background-color: rgb(255 255 255 / 70%);
+    font-weight: var(--bp-font-weight-bold);
+    color: var(--bp-gray-black);
+    background-color: var(--bp-white-opacity-70);
 }
 
 .bp-version-banner-info {
@@ -59,30 +59,30 @@ $comparison-compared-stage: var(--bp-gray-10);
 
 .bp-version-banner-time {
     overflow: hidden;
-    font-size: 15px;
+    font-size: var(--bp-font-size-05);
     font-weight: 500;
     line-height: 20px;
-    color: #000;
+    color: var(--bp-gray-black);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .bp-version-banner--compared .bp-version-banner-time {
-    color: #222;
+    color: var(--bp-text-text-on-light);
 }
 
 .bp-version-banner-author {
     overflow: hidden;
-    font-size: 12px;
+    font-size: var(--bp-font-size-03);
     line-height: 14px;
-    color: #000;
+    color: var(--bp-gray-black);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 // Compared pane background; the banner fades from the same color so it blends in
 .bp-version-banner--compared {
-    background: linear-gradient(180deg, $comparison-compared-stage 19.61%, transparent 100%);
+    background: linear-gradient(180deg, $comparison-compared-stage 19.61%, var(--bp-black-opacity-00) 100%);
 }
 
 // Dark stages keep their own background
@@ -101,20 +101,20 @@ $comparison-compared-stage: var(--bp-gray-10);
 .bp-container:has(.bp-dark),
 .bp-container:has(.bp-media--v2) {
     .bp-version-banner {
-        background: linear-gradient(180deg, rgb(0 0 0 / 90%) 19.61%, rgb(0 0 0 / 0%) 100%);
+        background: linear-gradient(180deg, var(--bp-black-opacity-90) 19.61%, var(--bp-black-opacity-00) 100%);
     }
 
     .bp-version-banner-time {
-        color: #fff;
+        color: var(--bp-text-text-on-dark);
     }
 
     .bp-version-banner-author {
-        color: rgb(255 255 255 / 70%);
+        color: var(--bp-white-opacity-70);
     }
 
     .bp-version-banner--compared .bp-version-banner-badge {
-        border-color: rgb(255 255 255 / 12%);
-        color: #fff;
-        background-color: rgb(255 255 255 / 30%);
+        border-color: var(--bp-white-opacity-12);
+        color: var(--bp-text-text-on-dark);
+        background-color: var(--bp-white-opacity-30);
     }
 }
