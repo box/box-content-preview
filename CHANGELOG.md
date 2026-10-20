@@ -1,3 +1,9 @@
+## 3.117.0 (2026-10-20)
+
+* fix(i18n): localize npm library strings with host-provided messages (#1869) ([e397a41](https://github.com/box/box-content-preview/commit/e397a41)), closes [#1869](https://github.com/box/box-content-preview/issues/1869)
+* feat(controls): render the Blueprint controls bar with the dark color scheme (#1867) ([2aa0cbe](https://github.com/box/box-content-preview/commit/2aa0cbe)), closes [#1867](https://github.com/box/box-content-preview/issues/1867)
+* test(e2e): trim redundant e2e tests and backfill unit coverage (#1860) ([1f31ec7](https://github.com/box/box-content-preview/commit/1f31ec7)), closes [#1860](https://github.com/box/box-content-preview/issues/1860)
+
 ## 3.116.0 (2026-10-20)
 
 * chore(i18n): update translations (#1863) ([8323ac0](https://github.com/box/box-content-preview/commit/8323ac0)), closes [#1863](https://github.com/box/box-content-preview/issues/1863)

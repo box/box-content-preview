@@ -12,15 +12,15 @@ export type Props = {
     quality?: Quality;
 };
 
-const QUALITY_LABEL_MAP: Record<Quality, string> = {
+const getQualityLabelMap = (): Record<Quality, string> => ({
     [Quality.AUTO]: __('media_quality_auto') as string,
     [Quality.HD]: '1080p',
     [Quality.SD]: '480p',
-};
+});
 
 export const QUALITIES = [Quality.SD, Quality.HD, Quality.AUTO];
 
-export const getLabel = (quality: Quality): string => QUALITY_LABEL_MAP[quality];
+export const getLabel = (quality: Quality): string => getQualityLabelMap()[quality];
 
 export default function MediaSettingsMenuQuality({ onQualityChange, quality }: Props): JSX.Element | null {
     const { setActiveMenu } = React.useContext(Settings.Context);
