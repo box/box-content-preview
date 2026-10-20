@@ -355,6 +355,24 @@ $header-height: 48px;
     white-space: nowrap;
 }
 
+// Compared pane background; the banner fades from the same color so it blends in
+$comparison-compared-stage: var(--bp-gray-10);
+
+.bp-version-banner--compared {
+    background: linear-gradient(180deg, $comparison-compared-stage 19.61%, transparent 100%);
+}
+
+// Dark stages keep their own background
+.bp-container:has(.bp-version-banner--compared):not(.bp-theme-dark, :has(.bp-dark, .bp-media--v2)) .bp {
+    background-color: $comparison-compared-stage;
+}
+
+// Divider between the panes
+.bp-container:has(.bp-version-banner--compared) {
+    border-right: var(--bp-border-01) solid var(--bp-black-opacity-12);
+    border-left: var(--bp-border-01) solid var(--bp-black-opacity-12);
+}
+
 // Banner is under .bp-container; dark stage classes live under .bp — use :has.
 .bp-theme-dark,
 .bp-container:has(.bp-dark),
