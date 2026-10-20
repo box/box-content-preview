@@ -19,7 +19,7 @@ import { VIEWER_EVENT } from '../../events';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
-import MediaLoadingIndicator, { CLASS_MEDIA_LOADING_INDICATOR } from '../controls/media/MediaLoadingIndicator';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
 import MediaBaseViewer from './MediaBaseViewer';
 import VideoPreloader from './VideoPreloader';
 import fitFrameToViewport from './fitFrameToViewport';
@@ -119,16 +119,19 @@ class VideoBaseViewer extends MediaBaseViewer {
         // Buffering spinner
         this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
+        // Shift up by half the control bar + half the spinner to visually center above the controls
+        const spinnerMarginTop =
+            this.useReactControls() && !this.isVideoPlayerV2
+                ? `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`
+                : undefined;
         if (this.isBlueprintMediaControlsEnabled()) {
-            this.bufferingSpinnerEl.classList.add(CLASS_MEDIA_LOADING_INDICATOR);
             this.bufferingSpinnerRoot = createRoot(this.bufferingSpinnerEl);
-            this.bufferingSpinnerRoot.render(<MediaLoadingIndicator />);
+            this.bufferingSpinnerRoot.render(<MediaLoadingIndicator style={{ marginTop: spinnerMarginTop }} />);
         } else {
             this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
-        }
-        if (this.useReactControls() && !this.isVideoPlayerV2) {
-            // Shift up by half the control bar + half the spinner to visually center above the controls
-            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
+            if (spinnerMarginTop) {
+                this.bufferingSpinnerEl.style.marginTop = spinnerMarginTop;
+            }
         }
 
         this.lowerLights();

@@ -20,7 +20,7 @@ import {
 } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { handleRepresentationBlobFetch } from '../../util';
-import MediaLoadingIndicator, { CLASS_MEDIA_LOADING_INDICATOR } from '../controls/media/MediaLoadingIndicator';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
 import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
 import { stopActivationKeyPropagation } from '../controls/media/utils';
 import fitFrameToViewport from './fitFrameToViewport';
@@ -339,9 +339,7 @@ class VideoPreloader extends EventEmitter {
 
         if (this.placeholderEl && this.preloadOptions?.isBlueprintEnabled) {
             if (!this.loadingRoot) {
-                const indicatorEl = this.placeholderEl.appendChild(document.createElement('div'));
-                indicatorEl.className = CLASS_MEDIA_LOADING_INDICATOR;
-                this.loadingRoot = createRoot(indicatorEl);
+                this.loadingRoot = createRoot(this.placeholderEl.appendChild(document.createElement('div')));
                 this.loadingRoot.render(<MediaLoadingIndicator />);
             }
         } else if (this.placeholderEl) {

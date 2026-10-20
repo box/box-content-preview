@@ -2,9 +2,12 @@ import React from 'react';
 import { LoadingIndicator } from '@box/blueprint-web';
 import './MediaLoadingIndicator.scss';
 
-export const CLASS_MEDIA_LOADING_INDICATOR = 'bp-MediaLoadingIndicator';
+export type Props = Omit<React.ComponentPropsWithoutRef<'div'>, 'className'>;
 
-// Renders inside an element with CLASS_MEDIA_LOADING_INDICATOR, which draws the dark disc.
-export default function MediaLoadingIndicator(): JSX.Element {
-    return <LoadingIndicator aria-label={__('media_loading')} size="x-large" variant="light" />;
+export default function MediaLoadingIndicator(props: Props): JSX.Element {
+    return (
+        <div className="bp-MediaLoadingIndicator" {...props}>
+            <LoadingIndicator aria-label={__('media_loading')} size="x-large" variant="light" />
+        </div>
+    );
 }

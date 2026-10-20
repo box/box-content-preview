@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import isFinite from 'lodash/isFinite';
 import { IconButton, Tooltip } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
-import MediaLoadingIndicator, { CLASS_MEDIA_LOADING_INDICATOR } from '../controls/media/MediaLoadingIndicator';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
 import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
@@ -335,9 +335,7 @@ export default function MP3ControlsV2({
                     />
                 )}
                 {isWaitingToPlay && isBlueprintEnabled && (
-                    <div className={CLASS_MEDIA_LOADING_INDICATOR} data-testid="bp-MP3ControlsV2-loading">
-                        <MediaLoadingIndicator />
-                    </div>
+                    <MediaLoadingIndicator data-testid="bp-MP3ControlsV2-loading" />
                 )}
                 {isWaitingToPlay && !isBlueprintEnabled && (
                     <div className="bp-media-buffering-spinner" data-testid="bp-MP3ControlsV2-loading" />

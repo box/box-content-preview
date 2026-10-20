@@ -393,12 +393,13 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             test('should unmount the indicator on cleanup', () => {
                 act(() => videoPreloader.showLoading());
-                const indicator = videoPreloader.placeholderEl.querySelector('.bp-MediaLoadingIndicator');
+                const indicatorHost =
+                    videoPreloader.placeholderEl.querySelector('.bp-MediaLoadingIndicator').parentElement;
 
                 act(() => videoPreloader.cleanupPreload());
 
                 expect(videoPreloader.loadingRoot).toBeUndefined();
-                expect(indicator.childElementCount).toBe(0);
+                expect(indicatorHost.childElementCount).toBe(0);
             });
         });
     });

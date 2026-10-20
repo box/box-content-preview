@@ -249,10 +249,11 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             act(() => videoBase.setup());
 
             const { bufferingSpinnerEl } = videoBase;
-            expect(bufferingSpinnerEl).toHaveClass('bp-MediaLoadingIndicator');
+            const indicator = bufferingSpinnerEl.querySelector('.bp-MediaLoadingIndicator');
             expect(bufferingSpinnerEl).toHaveClass('bp-is-hidden');
             expect(bufferingSpinnerEl).not.toHaveClass('bp-media-buffering-spinner');
-            expect(bufferingSpinnerEl.querySelector('[role="status"]')).toHaveAttribute('aria-label', 'Loading');
+            expect(indicator.style.marginTop).toBe('');
+            expect(indicator.querySelector('[role="status"]')).toHaveAttribute('aria-label', 'Loading');
 
             act(() => videoBase.destroy());
             expect(videoBase.bufferingSpinnerRoot).toBeUndefined();
@@ -283,6 +284,36 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('-100px');
 
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should shift the Blueprint loading indicator when useReactControls is true but videoPlayerV2 is disabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            jest.spyOn(videoBase, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+            videoBase.containerEl = containerEl;
+            act(() => videoBase.setup());
+
+            expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('');
+            expect(videoBase.bufferingSpinnerEl.querySelector('.bp-MediaLoadingIndicator').style.marginTop).toBe(
+                '-100px',
+            );
+
+            act(() => videoBase.destroy());
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
                 value: lowerLights,
             });
