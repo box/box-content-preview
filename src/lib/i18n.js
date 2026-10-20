@@ -3,7 +3,8 @@ import { getLanguage } from './translations';
 const annotationMessages = {};
 
 const getLocale = lang => {
-    return lang.substr(0, lang.indexOf('-'));
+    const separatorIndex = lang.indexOf('-');
+    return separatorIndex === -1 ? lang : lang.substr(0, separatorIndex);
 };
 
 /**

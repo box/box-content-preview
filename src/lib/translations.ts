@@ -16,7 +16,6 @@ const defaultStrings: StringTable = isNpmBuild() ? __BCP_DEFAULT_MESSAGES__ : {}
 
 let language = typeof __LANGUAGE__ !== 'undefined' && __LANGUAGE__ ? __LANGUAGE__ : DEFAULT_LANGUAGE;
 let strings: StringTable = defaultStrings;
-let currentMessages: Record<string, unknown> | undefined;
 
 export function getLanguage(): string {
     return language;
@@ -27,11 +26,6 @@ export function setLanguage(nextLanguage?: string): void {
 }
 
 export function setMessages(messages?: Record<string, unknown>): void {
-    if (messages === currentMessages) {
-        return;
-    }
-
-    currentMessages = messages;
     strings = { ...defaultStrings };
 
     if (!messages) {

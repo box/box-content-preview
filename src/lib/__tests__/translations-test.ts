@@ -60,6 +60,17 @@ describe('lib/translations', () => {
             expect(translate('media_autoplay')).toBe('Autoplay');
         });
 
+        test('should pick up changes when the same messages object is passed again', () => {
+            const { setMessages, translate } = loadTranslations();
+            const messages: Record<string, string> = { 'bcp.media_autoplay': '自動再生' };
+
+            setMessages(messages);
+            messages['bcp.media_autoplay'] = 'Automatische Wiedergabe';
+            setMessages(messages);
+
+            expect(translate('media_autoplay')).toBe('Automatische Wiedergabe');
+        });
+
         test('should return the key when no message has it', () => {
             const { translate } = loadTranslations();
 

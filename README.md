@@ -92,15 +92,23 @@ The npm package bundles en-US strings only. For other locales, pass that locale'
 
 ```js
 import { Preview } from 'box-content-preview';
-
-const { default: messages } = await import(
-  `box-content-preview/i18n/${locale}`
-);
+import messages from 'box-content-preview/i18n/ja-JP';
 
 new Preview().show(fileId, token, {
   intl: { messages },
-  location: { locale, staticBaseURI, version },
+  location: { locale: 'ja-JP', staticBaseURI, version },
 });
+```
+
+To choose the locale at runtime, map each supported locale to a static import. Some bundlers can't resolve a template-literal import such as ``import(`box-content-preview/i18n/${locale}`)`` through the package's `exports` map.
+
+```js
+const loaders = {
+  'de-DE': () => import('box-content-preview/i18n/de-DE'),
+  'ja-JP': () => import('box-content-preview/i18n/ja-JP'),
+};
+
+const { default: messages } = await loaders[locale]();
 ```
 
 Message keys are prefixed with `bcp.`, so you can also merge `box-content-preview/i18n/<locale>` into an existing react-intl language bundle and pass the merged messages. Missing keys fall back to en-US.
