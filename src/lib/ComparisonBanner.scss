@@ -99,6 +99,9 @@ $comparison-compared-stage: var(--bp-gray-10);
 .bp-container.bp-theme-dark:has(.bp-version-banner--compared),
 .bp-container:has(.bp-version-banner--compared):has(.bp-dark, .bp-media--v2) {
     border-color: var(--bp-white-opacity-30);
+
+    // The border sits outside the stage, so it needs a dark surface to blend with
+    background-color: var(--bp-gray-black);
 }
 
 // Banner is under .bp-container; dark stage classes live under .bp — use :has.
