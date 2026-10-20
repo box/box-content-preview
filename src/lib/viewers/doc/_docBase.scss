@@ -230,13 +230,11 @@ $comparison-banner-height: var(--bp-comparison-banner-height, 4.5rem);
 
 // Leave room for the comparison banner so it doesn't cover the first page or thumbnail at the top
 .bp-container:has(.bp-version-banner) {
-    // Padding on the scroller lets thumbnails scroll up under the banner
     .bp-thumbnails-container .bp-vs {
         scroll-padding-top: $comparison-banner-height;
         padding-top: calc(#{$comparison-banner-height} - #{$thumbnail-list-margin});
     }
 
-    // Subtract the padding pages and thumbnails already have
     .bp-doc.bp-doc-document .pdfViewer {
         padding-top: calc(#{$comparison-banner-height} - #{$pdfjs-page-padding});
     }
