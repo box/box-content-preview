@@ -4,7 +4,13 @@ import { Popover, Select, Switch } from '@box/blueprint-web';
 import RotateAxisControlsV2 from './RotateAxisControlsV2';
 import SettingsToggleV2 from '../settings/SettingsToggleV2';
 import { stopEscapePropagation, stopKeyPropagation } from '../settings/stopMenuKeyPropagation';
-import { CameraProjection, cameraProjectionOptions, Props, RenderMode, renderModeOptions } from './Model3DSettings';
+import {
+    CameraProjection,
+    getCameraProjectionOptions,
+    getRenderModeOptions,
+    Props,
+    RenderMode,
+} from './Model3DSettings';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 import './Model3DSettingsV2.scss';
 
@@ -57,7 +63,7 @@ export default function Model3DSettingsV2({
                             value={renderMode}
                         >
                             <Select.Content container={container} onEscapeKeyDown={stopEscapePropagation}>
-                                {renderModeOptions.map(({ label, value }) => (
+                                {getRenderModeOptions().map(({ label, value }) => (
                                     <Select.Option key={value} text={label} value={value} />
                                 ))}
                             </Select.Content>
@@ -91,7 +97,7 @@ export default function Model3DSettingsV2({
                             value={cameraProjection}
                         >
                             <Select.Content container={container} onEscapeKeyDown={stopEscapePropagation}>
-                                {cameraProjectionOptions.map(({ label, value }) => (
+                                {getCameraProjectionOptions().map(({ label, value }) => (
                                     <Select.Option key={value} text={label} value={value} />
                                 ))}
                             </Select.Content>

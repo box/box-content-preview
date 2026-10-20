@@ -5,6 +5,7 @@ module.exports = {
         __NAME__: 'name',
         __VERSION__: 'version',
         __LANGUAGE__: 'en-US',
+        __BCP_DEFAULT_MESSAGES__: {},
     },
     moduleFileExtensions: ['js', 'jsx', 'json', 'ts', 'tsx'],
     moduleNameMapper: {

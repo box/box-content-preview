@@ -137,6 +137,11 @@ describe('lib/Preview', () => {
             jest.isolateModules(() => {
                 // eslint-disable-next-line global-require
                 const NpmPreview = require('../Preview').default;
+                // eslint-disable-next-line global-require
+                const translations = require('../translations');
+                const setLanguage = jest.spyOn(translations, 'setLanguage');
+                const setMessages = jest.spyOn(translations, 'setMessages');
+                const messages = { 'bcp.media_autoplay': 'Automatische Wiedergabe' };
                 const npmInstance = new NpmPreview();
                 const load = jest.spyOn(npmInstance, 'load').mockImplementation();
 
@@ -150,6 +155,7 @@ describe('lib/Preview', () => {
 
                 npmInstance.show('123', 'token', {
                     features: { useNpmPdfjs: false },
+                    intl: { messages },
                     location: {
                         locale: 'de-DE',
                         staticBaseURI: 'https://cdn.example/preview/',
@@ -157,6 +163,8 @@ describe('lib/Preview', () => {
                     },
                 });
                 expect(npmInstance.location.locale).toBe('de-DE');
+                expect(setLanguage).toHaveBeenCalledWith('de-DE');
+                expect(setMessages).toHaveBeenCalledWith(messages);
                 expect(npmInstance.previewOptions.features.useNpmPdfjs).toBe(true);
                 expect(load).toHaveBeenCalledWith('123');
                 npmInstance.destroy();

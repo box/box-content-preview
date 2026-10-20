@@ -16,6 +16,7 @@ import PreviewPerf from './PreviewPerf';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
+import { setLanguage, setMessages } from './translations';
 import {
     getProp,
     decodeKeydown,
@@ -1277,6 +1278,11 @@ class Preview extends EventEmitter {
         // preview.js <script> tag for findScriptLocation to read.
         if (options.location) {
             this.location = { ...this.location, ...options.location };
+        }
+
+        if (isNpmBuild()) {
+            setLanguage(this.location.locale);
+            setMessages(options.intl && options.intl.messages);
         }
 
         this.options.pdfjs = options.pdfjs || {};

@@ -86,6 +86,33 @@ To self-host the Box Content Preview library, follow these steps:
 - https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
 - https://cdn.YOUR_SITE.com/box-assets/third-party/model3d/1.12.0/three.min.js
 
+### Localizing the npm package
+
+The npm package bundles en-US strings only. For other locales, pass that locale's messages to `show()` as `intl.messages`:
+
+```js
+import { Preview } from 'box-content-preview';
+import messages from 'box-content-preview/i18n/ja-JP';
+
+new Preview().show(fileId, token, {
+  intl: { messages },
+  location: { locale: 'ja-JP', staticBaseURI, version },
+});
+```
+
+To choose the locale at runtime, map each supported locale to a static import. Some bundlers can't resolve a template-literal import such as ``import(`box-content-preview/i18n/${locale}`)`` through the package's `exports` map.
+
+```js
+const loaders = {
+  'de-DE': () => import('box-content-preview/i18n/de-DE'),
+  'ja-JP': () => import('box-content-preview/i18n/ja-JP'),
+};
+
+const { default: messages } = await loaders[locale]();
+```
+
+Message keys are prefixed with `bcp.`, so you can also merge `box-content-preview/i18n/<locale>` into an existing react-intl language bundle and pass the merged messages. Missing keys fall back to en-US.
+
 ### Importing Preview as a React Component
 
 Preview can also be used as a React Component with the Box Element framework. The source code for the Content Preview Element wrapper is located at https://github.com/box/box-ui-elements/tree/master/src/components/ContentPreview. Please reference https://github.com/box/box-content-preview-demo for a minimal React application using this wrapper.

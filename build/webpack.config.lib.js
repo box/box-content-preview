@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('webpack');
+const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin, ProvidePlugin } = require('webpack');
 const license = require('./license');
 const pkg = require('../package.json');
 
@@ -38,6 +38,8 @@ const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts'
 const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
 const outDir = path.resolve('dist/lib');
 
+// Strings resolve at runtime: en-US is bundled as the default, and hosts pass other
+// languages to Preview.show() as intl.messages (see build/buildLibI18n.js).
 const language = 'en-US';
 const langJson = require(`${path.resolve('src/i18n/json')}/${language}.json`);
 
@@ -85,7 +87,7 @@ module.exports = {
                     { loader: 'babel-loader' },
                     {
                         loader: path.resolve('build/i18n-loader.js'),
-                        options: { translations: langJson },
+                        options: { runtime: true, translations: langJson },
                     },
                 ],
                 include: [path.resolve('src/lib'), path.resolve('src/index.ts')],
@@ -138,6 +140,7 @@ module.exports = {
         new BannerPlugin(license),
         new DefinePlugin({
             __BCP_NPM_BUILD__: JSON.stringify(true),
+            __BCP_DEFAULT_MESSAGES__: JSON.stringify(langJson),
             __LANGUAGE__: JSON.stringify(language),
             __NAME__: JSON.stringify(pkg.name),
             __VERSION__: JSON.stringify(pkg.version),
@@ -145,6 +148,7 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({ filename: '[name].css' }),
         new NormalModuleReplacementPlugin(/\/iconv-loader$/),
+        new ProvidePlugin({ __: [path.resolve('src/lib/translations'), 'translate'] }),
         // Copy static assets that the legacy code resolves at runtime via createAssetUrlCreator.
         // These need to be served alongside the bundle for npm consumers. The pdf.js script is bundled.
         new CopyAssetsPlugin(thirdPartyMedia, path.join(outDir, 'third-party')),
