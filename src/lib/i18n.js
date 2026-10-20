@@ -1,6 +1,6 @@
-const annotationMessages = {};
+import { getLanguage } from './translations';
 
-const language = __LANGUAGE__ || 'en-US'; // eslint-disable-line
+const annotationMessages = {};
 
 const getLocale = lang => {
     return lang.substr(0, lang.indexOf('-'));
@@ -13,6 +13,7 @@ const getLocale = lang => {
  * @return {Object}
  */
 const createAnnotatorIntl = () => {
+    const language = getLanguage();
     return {
         language,
         locale: getLocale(language),
