@@ -19,7 +19,8 @@ import DocControls from '../DocControls';
 import DocControlsV2 from '../DocControlsV2';
 import DocFindBar from '../DocFindBar';
 import DocPreloader from '../DocPreloader';
-import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
+import GalleryController from '../../gallery/GalleryController';
+import { GALLERY_MAX_PAGES, GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
 import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
@@ -40,6 +41,7 @@ import {
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
 import {
+    ERROR_CODE,
     LOAD_METRIC,
     RENDER_EVENT,
     REPORT_ACI,
@@ -2113,21 +2115,41 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.startLoadTimer).toBeCalled();
             });
 
-            test('should handle any download error', () => {
-                const doc = {
-                    url: 'url',
-                };
-
+            test('should handle any download error', async () => {
                 stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                 stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
-                stubs.getDocument.mockReturnValue({ promise: Promise.reject(doc) });
+                stubs.getDocument.mockReturnValue({ promise: Promise.reject(new Error('network')) });
                 docBase.options.location = {
                     locale: 'en-US',
                 };
 
-                return docBase.initViewer('url').catch(() => {
-                    expect(stubs.handleDownloadError).toBeCalled();
+                await docBase.initViewer('url');
+
+                expect(stubs.handleDownloadError).toBeCalledWith(
+                    expect.objectContaining({ code: ERROR_CODE.CONTENT_DOWNLOAD }),
+                    'url',
+                );
+            });
+
+            test('should raise a deleted representations error when PDF.js reports a 202 status', async () => {
+                jest.spyOn(console, 'error').mockImplementation();
+                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                stubs.getDocument.mockReturnValue({
+                    promise: Promise.reject(Object.assign(new Error('pending'), { status: 202 })),
                 });
+                docBase.options.location = {
+                    locale: 'en-US',
+                };
+
+                await docBase.initViewer('url');
+
+                expect(stubs.handleDownloadError).toBeCalledWith(
+                    expect.objectContaining({
+                        code: ERROR_CODE.DELETED_REPS,
+                        details: { isRepDeleted: true },
+                    }),
+                    'url',
+                );
             });
 
             test('should adjust the layout if thumbnails should be toggled', () => {
@@ -2780,14 +2802,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 ${{ blueprintMigrationControlsBar: { enabled: true } }} | ${true}
                 ${{ blueprintMigrationArchive: { enabled: true } }}     | ${true}
                 ${{}}                                                   | ${false}
-            `('should set isBlueprintEnabled to $isBlueprintEnabled for features $features', ({ features, isBlueprintEnabled }) => {
-                jest.spyOn(docBase, 'renderUI').mockImplementation();
-                docBase.options.features = features;
+            `(
+                'should set isBlueprintEnabled to $isBlueprintEnabled for features $features',
+                ({ features, isBlueprintEnabled }) => {
+                    jest.spyOn(docBase, 'renderUI').mockImplementation();
+                    docBase.options.features = features;
 
-                docBase.loadUI();
+                    docBase.loadUI();
 
-                expect(docBase.controls.isBlueprintEnabled).toBe(isBlueprintEnabled);
-            });
+                    expect(docBase.controls.isBlueprintEnabled).toBe(isBlueprintEnabled);
+                },
+            );
         });
 
         describe('renderUI()', () => {
@@ -2933,6 +2958,33 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(getProps(docBase)).toMatchObject({
                     onGalleryToggle: isMobile ? undefined : docBase.galleryController.toggle,
                 });
+            });
+
+            test.each`
+                description                     | features                               | pagesCount
+                ${'the flag is omitted'}        | ${undefined}                           | ${4}
+                ${'the flag is disabled'}       | ${{ galleryView: { enabled: false } }} | ${4}
+                ${'the document has 1 page'}    | ${{ galleryView: { enabled: true } }}  | ${1}
+                ${'the page limit is exceeded'} | ${{ galleryView: { enabled: true } }}  | ${GALLERY_MAX_PAGES + 1}
+            `('should hide the gallery toggle when $description', ({ features, pagesCount }) => {
+                docBase.galleryController = new GalleryController({ containerEl: docBase.containerEl, features });
+                docBase.pdfViewer.pagesCount = pagesCount;
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).onGalleryToggle).toBeUndefined();
+            });
+
+            test('should show the gallery toggle when the flag is enabled and the page count is in range', () => {
+                docBase.galleryController = new GalleryController({
+                    containerEl: docBase.containerEl,
+                    features: { galleryView: { enabled: true } },
+                });
+                docBase.pdfViewer.pagesCount = GALLERY_MAX_PAGES;
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).onGalleryToggle).toBe(docBase.galleryController.toggle);
             });
 
             test('should hide annotation create controls when in bounding box mode', () => {
@@ -3493,6 +3545,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.handleViewerPageChange = jest.spyOn(docBase.pageTracker, 'handleViewerPageChange');
                 docBase.pagechangingHandler(docBase.event);
                 expect(stubs.handleViewerPageChange).toBeCalled();
+            });
+
+            test('should select the new page in the thumbnails sidebar', () => {
+                docBase.thumbnailsSidebar = { setCurrentPage: jest.fn(), destroy: jest.fn() };
+
+                docBase.pagechangingHandler({ pageNumber: 2 });
+
+                expect(docBase.thumbnailsSidebar.setCurrentPage).toBeCalledWith(2);
+            });
+        });
+
+        describe('onThumbnailSelectHandler()', () => {
+            test('should navigate to the selected page and emit the navigate metric', () => {
+                jest.spyOn(docBase, 'setPage').mockImplementation();
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+
+                docBase.onThumbnailSelectHandler(3);
+
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE, data: 3 });
             });
         });
 
@@ -4159,6 +4231,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.resize).toBeCalled();
                 expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
                 expect(docBase.emit).toBeCalledWith('thumbnailsClose');
+            });
+
+            test.each([true, false])('should cache the sidebar open state (%s) after toggling', isOpen => {
+                jest.spyOn(docBase, 'cacheThumbnailsToggledState').mockImplementation();
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+                stubs.toggleSidebar.mockImplementation(() => {
+                    thumbnailsSidebar.isOpen = isOpen;
+                });
+
+                docBase.toggleThumbnails();
+
+                expect(docBase.cacheThumbnailsToggledState).toBeCalledWith(isOpen);
             });
         });
 
