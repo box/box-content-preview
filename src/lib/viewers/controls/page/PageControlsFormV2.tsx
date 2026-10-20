@@ -114,7 +114,7 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
                             className="bp-PageControlsFormV2-button-label"
                             data-testid="bp-PageControlsForm-button-label"
                         >
-                            <Text as="span">{`${pageNumber} / ${pageCount}`}</Text>
+                            <Text as="span" color="textOnDarkDefault">{`${pageNumber} / ${pageCount}`}</Text>
                         </span>
                     </Toolbar.Button>
                 </Tooltip>

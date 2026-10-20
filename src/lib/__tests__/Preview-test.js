@@ -1292,6 +1292,28 @@ describe('lib/Preview', () => {
             });
         });
 
+        test.each`
+            description                    | errorData                          | message
+            ${'a generic forbidden error'} | ${{}}                              | ${'notification_cannot_download'}
+            ${'an access policy error'}    | ${{ code: 'forbidden_by_policy' }} | ${'notification_cannot_download_due_to_policy'}
+        `(
+            'should show the matching notification when the original download URL request fails with $description',
+            async ({ errorData, message }) => {
+                file.canDownload.mockReturnValue(true);
+                file.shouldDownloadWM.mockReturnValue(false);
+                util.appendQueryParams.mockReturnValue('someurl');
+                stubs.api.get.mockRejectedValue({ response: { status: 403, data: errorData } });
+
+                preview.download();
+                await new Promise(resolve => {
+                    setTimeout(resolve);
+                });
+
+                expect(preview.ui.showNotification).toHaveBeenCalledWith(__(message));
+                expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
+            },
+        );
+
         test('should emit the download attempted metric', () => {
             file.canDownload.mockReturnValue(true);
             file.shouldDownloadWM.mockReturnValue(false);
@@ -1752,7 +1774,10 @@ describe('lib/Preview', () => {
 
                 preview.updateComparisonBanner();
 
-                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ onOpenFullPreview }));
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onOpenFullPreview }),
+                );
             });
 
             test('should pass version actions from comparisonBanner on the compared pane', () => {
@@ -1807,7 +1832,10 @@ describe('lib/Preview', () => {
 
                 preview.updateComparisonBanner();
 
-                expect(render).toHaveBeenCalledWith(currentFileVersion, expect.objectContaining({ onOpenFullPreview: undefined }));
+                expect(render).toHaveBeenCalledWith(
+                    currentFileVersion,
+                    expect.objectContaining({ onOpenFullPreview: undefined }),
+                );
             });
         });
 
@@ -1825,7 +1853,10 @@ describe('lib/Preview', () => {
 
                 expect(preview.options.isComparing).toBe(true);
                 expect(preview.options.isComparedPreview).toBe(true);
-                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ isComparedPreview: true }));
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ isComparedPreview: true }),
+                );
             });
 
             test('should not clear isComparedPreview when only isComparing is passed', () => {
@@ -1836,7 +1867,10 @@ describe('lib/Preview', () => {
 
                 expect(preview.options.isComparedPreview).toBe(true);
                 expect(preview.options.isComparing).toBe(true);
-                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ isComparedPreview: true }));
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ isComparedPreview: true }),
+                );
             });
 
             test('should remove the banner when comparison ends', () => {

@@ -30,6 +30,14 @@ describe('ColorPickerControlV2', () => {
             swatches.forEach(swatch => expect(swatch).toHaveAttribute('data-resin-target', 'colorSelect'));
         });
 
+        test('should style the swatches for the dark palette', () => {
+            getWrapper();
+
+            within(getGrid())
+                .getAllByRole('button')
+                .forEach(swatch => expect(swatch).toHaveClass('bp-ColorPickerControlV2-swatch'));
+        });
+
         test('should render the swatches in a single row', () => {
             getWrapper();
 

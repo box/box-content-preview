@@ -33,7 +33,7 @@ export default function ZoomControlsV2({
             </Tooltip>
             <Text
                 as="span"
-                color="textOnLightSecondary"
+                color="textOnDarkDefault"
                 data-testid="bp-ZoomControls-current"
                 title={__('zoom_current_scale')}
                 variant="bodyDefaultSemibold"
