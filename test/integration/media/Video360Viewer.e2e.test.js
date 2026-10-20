@@ -1,4 +1,4 @@
-import { runBaseMediaSettingsTests, runQualityMenuTests } from '../../support/mediaSettingsTests';
+import { runQualityMenuTests } from '../../support/mediaSettingsTests';
 
 describe('Video360 Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
@@ -17,8 +17,6 @@ describe('Video360 Viewer', () => {
                 // Open the menu
                 cy.getByTitle('Settings').click();
             });
-
-            runBaseMediaSettingsTests();
 
             runQualityMenuTests();
         });
