@@ -128,4 +128,17 @@ describe('ResponsiveControlsBarV2', () => {
         expect(screen.queryByRole('button', { name: 'a control' })).not.toBeInTheDocument();
         expect(getTrigger()).toHaveAttribute('data-overflow-ids', 'a');
     });
+
+    test('should find the viewer content once controls arrive after rendering none', () => {
+        containerWidth = 41;
+        const { rerender } = render(<ResponsiveControlsBarV2 items={[]} />, {
+            container: container.appendChild(document.createElement('div')),
+            wrapper: BlueprintProviders,
+        });
+
+        rerender(<ResponsiveControlsBarV2 items={[item('a', 1), item('b')]} />);
+
+        expect(screen.queryByRole('button', { name: 'a control' })).not.toBeInTheDocument();
+        expect(getTrigger()).toHaveAttribute('data-overflow-ids', 'a');
+    });
 });

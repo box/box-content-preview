@@ -126,6 +126,9 @@ export default function useControlsOverflow(items: ControlsBarItem[]): ControlsO
         }
     });
 
+    // The bar renders nothing without items, so the viewer lookup reruns once it mounts
+    const hasItems = items.length > 0;
+
     // The controls root is centered and shrinks to fit the bar, so the space the bar can grow into is the
     // viewer's. Fullscreen resizes the viewer too, which the observer picks up.
     React.useLayoutEffect(() => {
@@ -154,7 +157,7 @@ export default function useControlsOverflow(items: ControlsBarItem[]): ControlsO
         observer.observe(container);
 
         return (): void => observer.disconnect();
-    }, [portalContainer]);
+    }, [hasItems, portalContainer]);
 
     const overflowIds = getOverflowIds(items, availableWidth, metricsRef.current);
 
