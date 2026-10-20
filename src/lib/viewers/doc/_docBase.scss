@@ -11,7 +11,7 @@ $thumbnail-border-radius: 6px;
 $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
 $thumbnail-list-margin: 15px; // Keep in sync with THUMBNAIL_MARGIN in ThumbnailsSidebar.js
 
-// Matches .bp-version-banner in _common.scss
+// Matches .bp-version-banner in ComparisonBanner.scss
 $comparison-banner-height: var(--bp-comparison-banner-height, 4.5rem);
 
 .bp {
