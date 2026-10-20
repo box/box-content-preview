@@ -1,3 +1,6 @@
+// Placeholder for a missing date or a folder's size, matching the legacy table
+const EMPTY_VALUE = '--';
+
 const ROOT_FOLDER = 'root/';
 
 const TABLE_COLUMNS = {
@@ -11,4 +14,4 @@ const VIEWS = {
     VIEW_SEARCH: 'search',
 };
 
-export { ROOT_FOLDER, TABLE_COLUMNS, VIEWS };
+export { EMPTY_VALUE, ROOT_FOLDER, TABLE_COLUMNS, VIEWS };

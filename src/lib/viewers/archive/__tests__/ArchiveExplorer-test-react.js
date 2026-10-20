@@ -101,6 +101,27 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 </v2.BlueprintProviders>,
             );
 
+        test('should render the v2 table and navigate into a folder from search results', async () => {
+            const user = userEvent.setup();
+            renderV2();
+
+            expect(screen.getByRole('grid', { name: 'Name' })).toHaveAttribute('aria-rowcount', '3');
+            expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveAttribute('aria-sort', 'ascending');
+
+            await user.type(screen.getByRole('searchbox'), 'subfolder');
+            await user.click(screen.getByText('subfolder'));
+
+            expect(screen.getByRole('searchbox')).toHaveValue('');
+            expect(screen.queryByText('Search Results')).not.toBeInTheDocument();
+            expect(screen.getByText('test-level-2.jpg')).toBeVisible();
+            expect(screen.queryByText('level-0.txt')).not.toBeInTheDocument();
+            expect(screen.getByRole('grid', { name: 'Name' })).toHaveAttribute('aria-rowcount', '2');
+            expect(within(screen.getByRole('navigation')).getByText('subfolder')).toHaveAttribute(
+                'aria-current',
+                'page',
+            );
+        });
+
         test('should keep search and folder navigation working with the v2 parts', async () => {
             const user = userEvent.setup();
             renderV2();

@@ -1,0 +1,21 @@
+.bp-ArchiveTableV2 {
+    height: 100%;
+}
+
+.bp-ArchiveTableV2-name {
+    display: flex;
+    gap: var(--bp-space-010);
+    align-items: center;
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.bp-ArchiveTableV2-row {
+    cursor: default;
+
+    &.is-folder {
+        cursor: pointer;
+    }
+}
