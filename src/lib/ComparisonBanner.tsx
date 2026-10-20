@@ -7,6 +7,7 @@ import Download from '@box/blueprint-web-assets/icons/Medium/Download';
 import Ellipsis from '@box/blueprint-web-assets/icons/Medium/Ellipsis';
 import Expand from '@box/blueprint-web-assets/icons/Medium/Expand';
 import Trash from '@box/blueprint-web-assets/icons/Medium/Trash';
+import XMark from '@box/blueprint-web-assets/icons/Medium/XMark';
 
 import BlueprintProviders from './BlueprintProviders';
 import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from './constants';
@@ -158,6 +159,19 @@ export default function ComparisonBanner({
                                 )}
                             </DropdownMenu.Content>
                         </DropdownMenu.Root>
+                        {onOpenFullPreview && (
+                            <>
+                                <span aria-hidden="true" className="bp-version-banner-divider" />
+                                <IconButton
+                                    aria-label={__('comparison_banner_close')}
+                                    data-target-id="ComparisonBanner-close"
+                                    icon={XMark}
+                                    onClick={onOpenFullPreview}
+                                    size="small"
+                                    variant={isOnDark ? 'on-dark' : 'default'}
+                                />
+                            </>
+                        )}
                     </BlueprintProviders>
                 </div>
             )}

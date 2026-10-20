@@ -147,6 +147,32 @@ describe('lib/ComparisonBanner', () => {
             expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
         });
 
+        test('should leave side-by-side comparison from the close button', async () => {
+            const onOpenFullPreview = jest.fn();
+            const user = userEvent.setup();
+
+            const { container } = render(
+                <ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={onOpenFullPreview} />,
+            );
+
+            const closeButton = screen.getByRole('button', { name: __('comparison_banner_close') });
+            expect(closeButton).toHaveAttribute('data-target-id', 'ComparisonBanner-close');
+            expect(container.querySelector('.bp-version-banner-divider')).toBeInTheDocument();
+
+            await user.click(closeButton);
+
+            expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not render the close button or divider without an open full preview handler', () => {
+            const { container } = render(
+                <ComparisonBanner file={file} isComparedPreview locale="en-US" onDownload={jest.fn()} />,
+            );
+
+            expect(screen.queryByRole('button', { name: __('comparison_banner_close') })).not.toBeInTheDocument();
+            expect(container.querySelector('.bp-version-banner-divider')).toBeNull();
+        });
+
         test('should use the on-dark button variant only when requested', () => {
             const { rerender } = render(
                 <ComparisonBanner file={file} isComparedPreview locale="en-US" onDownload={jest.fn()} />,
