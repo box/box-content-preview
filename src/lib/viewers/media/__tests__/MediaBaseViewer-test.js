@@ -513,6 +513,34 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('setRate()', () => {
+        test('should cache the new rate and apply it', () => {
+            jest.spyOn(media, 'handleRate').mockImplementation();
+            jest.spyOn(media.cache, 'set').mockImplementation();
+
+            media.setRate('0.5');
+
+            expect(media.cache.set).toBeCalledWith('media-speed', '0.5', true);
+            expect(media.handleRate).toBeCalled();
+        });
+    });
+
+    describe('setAutoplay()', () => {
+        test.each`
+            autoplay | cachedValue
+            ${true}  | ${'Enabled'}
+            ${false} | ${'Disabled'}
+        `('should cache autoplay as $cachedValue and apply it', ({ autoplay, cachedValue }) => {
+            jest.spyOn(media, 'handleAutoplay').mockImplementation();
+            jest.spyOn(media.cache, 'set').mockImplementation();
+
+            media.setAutoplay(autoplay);
+
+            expect(media.cache.set).toBeCalledWith('media-autoplay', cachedValue, true);
+            expect(media.handleAutoplay).toBeCalled();
+        });
+    });
+
     describe('updateVolumeIcon()', () => {
         test('should update the controls volume icon', () => {
             const volume = 0.5;

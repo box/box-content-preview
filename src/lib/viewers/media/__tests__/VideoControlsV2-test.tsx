@@ -145,6 +145,17 @@ describe('VideoControlsV2', () => {
             await user.click(screen.getByTestId('bp-TimestampControl-button'));
             expect(screen.getByTestId('bp-TimestampControl-flyout')).toBeInTheDocument();
         });
+
+        test('should render Blueprint timestamp chevron when isBlueprintEnabled is true', () => {
+            render(<VideoControlsV2 {...defaultProps} canChangeTimeFormat isBlueprintEnabled />, {
+                wrapper: BlueprintProviders,
+            });
+
+            expect(
+                screen.getByTestId('bp-TimestampControl-button').querySelector('.bp-TimestampControl-chevron'),
+            ).toBeInTheDocument();
+            expect(screen.queryByTestId('IconChevronDownMedium24')).not.toBeInTheDocument();
+        });
     });
 
     describe('volume controls', () => {
@@ -182,6 +193,30 @@ describe('VideoControlsV2', () => {
         test('should render settings button', () => {
             render(<VideoControlsV2 {...defaultProps} />);
             expect(screen.getByTitle('Settings')).toBeInTheDocument();
+        });
+
+        test('should render the Blueprint settings menu with video options when isBlueprintEnabled is true', async () => {
+            const user = userEvent.setup();
+            render(
+                <VideoControlsV2
+                    {...defaultProps}
+                    isHDSupported
+                    isBlueprintEnabled
+                    onSubtitleChange={jest.fn()}
+                    subtitle={SUBTITLES_OFF}
+                    subtitles={subtitles}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            expect(screen.queryByTestId('bp-settings')).not.toBeInTheDocument();
+            await user.click(screen.getByRole('button', { name: __('media_settings') }));
+
+            const menu = screen.getByRole('menu');
+            expect(menu).toContainElement(screen.getByRole('menuitemcheckbox', { name: __('media_autoplay') }));
+            expect(menu).toContainElement(screen.getByTestId('bp-media-settings-speed'));
+            expect(menu).toContainElement(screen.getByTestId('bp-media-settings-quality'));
+            expect(menu).toContainElement(screen.getByTestId('bp-media-settings-subtitles'));
         });
     });
 

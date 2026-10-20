@@ -63,7 +63,7 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
-const ANNOTATION_BUTTONS = {
+const getAnnotationButtons = () => ({
     point: {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
         title: __('annotation_point_toggle'),
@@ -72,7 +72,7 @@ const ANNOTATION_BUTTONS = {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
         title: __('annotation_draw_toggle'),
     },
-};
+});
 
 class BaseViewer extends EventEmitter {
     /** @property {Api} - Api instance used for XHR calls */
@@ -1085,7 +1085,7 @@ class BaseViewer extends EventEmitter {
             initialColor: this.annotationModule.getColor(),
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
-            modeButtons: ANNOTATION_BUTTONS,
+            modeButtons: getAnnotationButtons(),
             onCopyLink: options && options.onCopyLink,
         });
 

@@ -2,7 +2,7 @@
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/box/box-content-preview&style=flat)](https://mergify.io)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v3.114.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v3.116.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 # [Box Content Preview](https://developer.box.com/docs/box-content-preview)
@@ -22,11 +22,11 @@ We encourage all users to update their applications to utilize modern browsers f
 
 ## Current Version
 
-- Version: v3.114.0
+- Version: v3.116.0
 - Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/3.114.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/3.114.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/3.116.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/3.116.0/en-US/preview.css
 
 ## Supported Locales
 
@@ -52,10 +52,10 @@ You can self-host the Box Content Preview library or reference the versions avai
     <title>Box Content Preview Demo</title>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/3.114.0/en-US/preview.js"></script>
+    <script src="https://cdn01.boxcdn.net/platform/preview/3.116.0/en-US/preview.js"></script>
     <link
       rel="stylesheet"
-      href="https://cdn01.boxcdn.net/platform/preview/3.114.0/en-US/preview.css"
+      href="https://cdn01.boxcdn.net/platform/preview/3.116.0/en-US/preview.css"
     />
   </head>
   <body>
@@ -76,7 +76,7 @@ To self-host the Box Content Preview library, follow these steps:
 
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
 
-- Check out a specific version with `git checkout v3.114.0`
+- Check out a specific version with `git checkout v3.116.0`
 - Download a specific version as a zip from https://github.com/box/box-content-preview/releases
 
 2. Install dependencies and build the library with `yarn install && yarn build:i18n && yarn build:prod`
@@ -85,6 +85,33 @@ To self-host the Box Content Preview library, follow these steps:
 - https://cdn.YOUR_SITE.com/box-assets/2.4.0/en-US/preview.js
 - https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
 - https://cdn.YOUR_SITE.com/box-assets/third-party/model3d/1.12.0/three.min.js
+
+### Localizing the npm package
+
+The npm package bundles en-US strings only. For other locales, pass that locale's messages to `show()` as `intl.messages`:
+
+```js
+import { Preview } from 'box-content-preview';
+import messages from 'box-content-preview/i18n/ja-JP';
+
+new Preview().show(fileId, token, {
+  intl: { messages },
+  location: { locale: 'ja-JP', staticBaseURI, version },
+});
+```
+
+To choose the locale at runtime, map each supported locale to a static import. Some bundlers can't resolve a template-literal import such as ``import(`box-content-preview/i18n/${locale}`)`` through the package's `exports` map.
+
+```js
+const loaders = {
+  'de-DE': () => import('box-content-preview/i18n/de-DE'),
+  'ja-JP': () => import('box-content-preview/i18n/ja-JP'),
+};
+
+const { default: messages } = await loaders[locale]();
+```
+
+Message keys are prefixed with `bcp.`, so you can also merge `box-content-preview/i18n/<locale>` into an existing react-intl language bundle and pass the merged messages. Missing keys fall back to en-US.
 
 ### Importing Preview as a React Component
 

@@ -247,7 +247,7 @@ describe('MP3ControlsV2', () => {
             });
 
             const shuttle = await screen.findByTestId('bp-waveform-shuttle');
-            expect(shuttle.querySelector('[data-modern]')).toHaveTextContent('2x');
+            expect(shuttle.querySelector('[data-typography]')).toHaveTextContent('2x');
         });
 
         test('should withhold the playhead comment while shuttle is moving', async () => {
@@ -286,7 +286,10 @@ describe('MP3ControlsV2', () => {
             expect(await screen.findByTestId('bp-MP3ControlsV2-bar')).toBeInTheDocument();
             expect(screen.getByTestId('bp-TimestampControl-static')).toHaveTextContent('0:12/3:32');
             expect(within(screen.getByTestId('bp-MP3ControlsV2-bar')).getByTitle(__('media_play'))).toBeInTheDocument();
-            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute('data-resin-target', 'playOverlay');
+            expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute(
+                'data-resin-target',
+                'playOverlay',
+            );
             expect(screen.getByTestId('bp-MP3ControlsV2-play-overlay')).toHaveAttribute(
                 'data-target-id',
                 'MP3ControlsV2-play',
@@ -298,12 +301,37 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-DurationLabels')).not.toBeInTheDocument();
         });
 
+        test('should render the timestamp as Blueprint text when isBlueprintEnabled is true', async () => {
+            getWrapper({ currentTime: 12, durationTime: 212, isBlueprintEnabled: true, peaks: [0.2, 0.8] });
+
+            const timestamp = await screen.findByTestId('bp-TimestampControl-static');
+            expect(timestamp).toHaveTextContent('0:12/3:32');
+            expect(timestamp.querySelectorAll('[data-typography]')).toHaveLength(3);
+        });
+
         test('should render a placeholder waveform until peaks load', async () => {
             getWrapper({ durationTime: 8 });
 
             expect(await screen.findByTestId('bp-waveform-view')).toBeInTheDocument();
             expect(screen.getByTestId('bp-MP3ControlsV2-bar')).toBeInTheDocument();
             expect(screen.queryByRole('slider', { name: __('media_time_slider') })).not.toBeInTheDocument();
+        });
+
+        test('should render the play overlay as a 48px Blueprint icon button when isBlueprintEnabled is true', async () => {
+            const onPlayPause = jest.fn();
+            getWrapper({ durationTime: 212, isBlueprintEnabled: true, onPlayPause, peaks: [0.2, 0.8] });
+
+            const overlay = await screen.findByTestId('bp-MP3ControlsV2-play-overlay');
+            expect(overlay).toHaveClass('bp-MP3ControlsV2-playOverlayButton');
+            expect(overlay).not.toHaveClass('bp-MP3ControlsV2-playOverlay');
+            expect(overlay).toHaveAttribute('aria-label', __('media_play'));
+            expect(overlay).toHaveAttribute('data-resin-target', 'playOverlay');
+            expect(overlay).toHaveAttribute('data-target-id', 'MP3ControlsV2-play');
+            expect(overlay.querySelector('svg')).toHaveAttribute('width', '48');
+            expect(overlay.querySelector('svg')).toHaveAttribute('height', '48');
+
+            await userEvent.click(overlay);
+            expect(onPlayPause).toHaveBeenCalledWith(true);
         });
 
         test('should keep the waveform inert until play, with overlay on the fallback shell', async () => {
@@ -378,6 +406,23 @@ describe('MP3ControlsV2', () => {
             expect(mute).toHaveAttribute('data-resin-target', 'volumeToggle');
             await userEvent.click(mute);
             expect(onMuteChange).toHaveBeenCalled();
+        });
+
+        test('should render the Blueprint settings menu with audio options when isBlueprintEnabled is true', async () => {
+            const onAutoplayChange = jest.fn();
+            getWrapper({ durationTime: 8, isBlueprintEnabled: true, onAutoplayChange, peaks: [0.2, 0.8] });
+            const settings = await within(screen.getByTestId('bp-MP3ControlsV2-bar')).findByRole('button', {
+                name: __('media_settings'),
+            });
+
+            expect(screen.queryByTestId('bp-settings')).not.toBeInTheDocument();
+            await userEvent.click(settings);
+
+            const menu = screen.getByRole('menu');
+            await userEvent.click(within(menu).getByRole('menuitemcheckbox', { name: __('media_autoplay') }));
+            expect(onAutoplayChange).toHaveBeenCalledWith(true);
+            expect(within(menu).getByTestId('bp-media-settings-speed')).toBeInTheDocument();
+            expect(within(menu).queryByTestId('bp-media-settings-quality')).not.toBeInTheDocument();
         });
 
         test('should start playback and unlock the waveform when the overlay is clicked', async () => {
@@ -478,7 +523,7 @@ describe('MP3ControlsV2', () => {
             getWrapper({ durationTime: 8, isBlueprintEnabled: true, isGeneratingWaveform: true });
 
             const indicator = await screen.findByTestId('bp-waveform-generating');
-            expect(indicator.querySelector('[data-modern]')).toHaveTextContent(__('media_generating_waveform'));
+            expect(indicator.querySelector('[data-typography]')).toHaveTextContent(__('media_generating_waveform'));
         });
 
         test('should hide generating waveform once real peaks are available', async () => {

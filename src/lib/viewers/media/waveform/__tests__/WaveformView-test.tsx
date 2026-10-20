@@ -301,7 +301,7 @@ describe('WaveformView', () => {
 
         fireEvent.mouseMove(track, { clientX: 50 });
 
-        expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-modern]')).toHaveTextContent(
+        expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-typography]')).toHaveTextContent(
             '0:02.00',
         );
     });
@@ -2689,7 +2689,7 @@ describe('WaveformView', () => {
             const button = screen.getByTestId('bp-waveform-playhead-comment');
             expect(button).toHaveAttribute('data-resin-target', 'waveformPlayheadComment');
             expect(button).toHaveAttribute('data-target-id', 'Waveform-commentAtTime');
-            expect(button.querySelector('[data-modern]')).toHaveTextContent(__('media_range_comment'));
+            expect(button.querySelector('[data-typography]')).toHaveTextContent(__('media_range_comment'));
 
             await user.click(button);
             expect(onPlayheadComment).toHaveBeenCalledTimes(1);

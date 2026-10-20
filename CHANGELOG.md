@@ -1,3 +1,24 @@
+## 3.116.0 (2026-10-20)
+
+* chore(i18n): update translations (#1863) ([8323ac0](https://github.com/box/box-content-preview/commit/8323ac0)), closes [#1863](https://github.com/box/box-content-preview/issues/1863)
+* feat(archive): add Blueprint v2 table (#1838) ([bff8613](https://github.com/box/box-content-preview/commit/bff8613)), closes [#1838](https://github.com/box/box-content-preview/issues/1838)
+* feat(error): render Blueprint file type icons on the error screen (#1854) ([e175dd4](https://github.com/box/box-content-preview/commit/e175dd4)), closes [#1854](https://github.com/box/box-content-preview/issues/1854)
+* feat(media): add the Blueprint settings menu with drill-in submenus to the audio and video controls ([31ed5e2](https://github.com/box/box-content-preview/commit/31ed5e2)), closes [#1856](https://github.com/box/box-content-preview/issues/1856)
+* feat(print): render print dialog with Blueprint modal for supporting UI (#1844) ([6dadb43](https://github.com/box/box-content-preview/commit/6dadb43)), closes [#1844](https://github.com/box/box-content-preview/issues/1844)
+* feat(video): render the filmstrip time with Blueprint text (#1848) ([bf14233](https://github.com/box/box-content-preview/commit/bf14233)), closes [#1848](https://github.com/box/box-content-preview/issues/1848)
+
+## 3.115.0 (2026-10-19)
+
+* feat(audio): migrate the waveform zoom, shuttle and range controls to Blueprint (#1845) ([ceb59b5](https://github.com/box/box-content-preview/commit/ceb59b5)), closes [#1845](https://github.com/box/box-content-preview/issues/1845)
+* feat(comparison): Add the compared-pane version actions menu (#1823) ([acc3889](https://github.com/box/box-content-preview/commit/acc3889)), closes [#1823](https://github.com/box/box-content-preview/issues/1823)
+* feat(controls): add Blueprint 3D settings and animation clips controls (#1839) ([07d429b](https://github.com/box/box-content-preview/commit/07d429b)), closes [#1839](https://github.com/box/box-content-preview/issues/1839)
+* feat(controls): add Blueprint fullscreen, find, thumbnails, gallery and rotate toggles (#1832) ([d221d65](https://github.com/box/box-content-preview/commit/d221d65)), closes [#1832](https://github.com/box/box-content-preview/issues/1832)
+* feat(deps): Peer Blueprint 18.3.0 and assets 5.12.2 (#1847) ([ccf8994](https://github.com/box/box-content-preview/commit/ccf8994)), closes [#1847](https://github.com/box/box-content-preview/issues/1847)
+* feat(media): migrate the timestamp control to Blueprint with fixed-width digits (#1846) ([086f428](https://github.com/box/box-content-preview/commit/086f428)), closes [#1846](https://github.com/box/box-content-preview/issues/1846)
+* feat(media): render the audio and video play overlay as a Blueprint icon button (#1849) ([a34b3de](https://github.com/box/box-content-preview/commit/a34b3de)), closes [#1849](https://github.com/box/box-content-preview/issues/1849)
+* ci(mergify): Queue translation PRs without the ready-to-merge label (#1851) ([340f359](https://github.com/box/box-content-preview/commit/340f359)), closes [#1851](https://github.com/box/box-content-preview/issues/1851)
+* chore(i18n): update translations (#1766) ([105c860](https://github.com/box/box-content-preview/commit/105c860)), closes [#1766](https://github.com/box/box-content-preview/issues/1766)
+
 ## 3.114.0 (2026-10-16)
 
 * feat(audio): render waveform labels and generating indicator with Blueprint (#1842) ([606691a](https://github.com/box/box-content-preview/commit/606691a)), closes [#1842](https://github.com/box/box-content-preview/issues/1842)

@@ -25,6 +25,7 @@ export default function ColorPickerControlV2({ activeColor = bdlBoxBlue, colors,
                         key={color}
                         active={color === activeColor}
                         aria-label={colorLabels[color] || color}
+                        className="bp-ColorPickerControlV2-swatch"
                         color={color}
                         data-resin-target="colorSelect"
                         onClick={(): void => onColorSelect(color)}

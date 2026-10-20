@@ -101,6 +101,27 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                 </v2.BlueprintProviders>,
             );
 
+        test('should render the v2 table and navigate into a folder from search results', async () => {
+            const user = userEvent.setup();
+            renderV2();
+
+            expect(screen.getByRole('grid', { name: 'Name' })).toHaveAttribute('aria-rowcount', '3');
+            expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveAttribute('aria-sort', 'ascending');
+
+            await user.type(screen.getByRole('searchbox'), 'subfolder');
+            await user.click(screen.getByText('subfolder'));
+
+            expect(screen.getByRole('searchbox')).toHaveValue('');
+            expect(screen.queryByText('Search Results')).not.toBeInTheDocument();
+            expect(screen.getByText('test-level-2.jpg')).toBeVisible();
+            expect(screen.queryByText('level-0.txt')).not.toBeInTheDocument();
+            expect(screen.getByRole('grid', { name: 'Name' })).toHaveAttribute('aria-rowcount', '2');
+            expect(within(screen.getByRole('navigation')).getByText('subfolder')).toHaveAttribute(
+                'aria-current',
+                'page',
+            );
+        });
+
         test('should keep search and folder navigation working with the v2 parts', async () => {
             const user = userEvent.setup();
             renderV2();
@@ -175,6 +196,19 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(within(screen.getByLabelText('Breadcrumb')).getByText('test.zip')).toBeInTheDocument();
             expect(within(screen.queryByLabelText('Breadcrumb')).queryByText('test')).not.toBeInTheDocument();
         });
+
+        test('should navigate to an intermediate folder from its breadcrumb', async () => {
+            const user = userEvent.setup();
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            await user.click(screen.getByText('test'));
+            await user.click(screen.getByText('subfolder'));
+            await user.click(within(screen.getByLabelText('Breadcrumb')).getByText('test'));
+
+            expect(screen.getByRole('gridcell', { name: 'subfolder' })).toBeInTheDocument();
+            expect(screen.getByRole('gridcell', { name: 'pdf-level-1.pdf' })).toBeInTheDocument();
+            expect(screen.queryByRole('gridcell', { name: 'test-level-2.jpg' })).not.toBeInTheDocument();
+        });
     });
 
     describe('Items list', () => {
@@ -214,6 +248,16 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(screen.getByRole('gridcell', { name: 'level-0.txt' })).toBeInTheDocument();
             expect(screen.queryByRole('gridcell', { name: 'test-level-2.jpg' })).not.toBeInTheDocument();
         });
+
+        test('should match a query with skipped characters', async () => {
+            const user = userEvent.setup();
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            await user.type(screen.getByRole('searchbox'), 'pdflevel');
+
+            expect(screen.getByRole('gridcell', { name: 'pdf-level-1.pdf' })).toBeInTheDocument();
+            expect(screen.queryByRole('gridcell', { name: 'csv-level-1.csv' })).not.toBeInTheDocument();
+        });
     });
 
     describe('Sorting', () => {
@@ -223,6 +267,17 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(screen.getByTitle('Name').querySelector('svg')).toHaveClass('bdl-icon-sort-chevron');
             expect(screen.queryByTitle('Modified').querySelector('svg')).not.toBeInTheDocument();
             expect(screen.queryByTitle('Size').querySelector('svg')).not.toBeInTheDocument();
+        });
+
+        test('should list folders first, then files by name ascending, by default', async () => {
+            const user = userEvent.setup();
+            render(<ArchiveExplorer filename={filename} itemCollection={[...data].reverse()} />);
+
+            await user.click(within(screen.getByTitle('test')).getByRole('button'));
+
+            expect(screen.getAllByRole('row').at(1).textContent).toContain('subfolder');
+            expect(screen.getAllByRole('row').at(2).textContent).toContain('csv-level-1.csv');
+            expect(screen.getAllByRole('row').at(3).textContent).toContain('pdf-level-1.pdf');
         });
 
         test('should sort itemList by clicking on the Size column header', async () => {
