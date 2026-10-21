@@ -611,6 +611,7 @@ describe('WaveformRangeSelection', () => {
             const toolbar = screen.getByRole('toolbar', { name: __('media_range_comment') });
             expect(screen.getByTestId('bp-waveform-range-comment-toolbar')).toHaveStyle({ left: '37.5%' });
             expect(screen.getByTestId('bp-waveform-range-comment-toolbar')).toContainElement(toolbar);
+            expect(toolbar).toHaveAttribute('data-color-scheme', 'dark');
             expect(screen.getByRole('separator')).toBeInTheDocument();
             expect(screen.queryByTestId('bp-waveform-range-comment-pill')).not.toBeInTheDocument();
 
