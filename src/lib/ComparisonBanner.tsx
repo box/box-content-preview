@@ -72,6 +72,9 @@ export default function ComparisonBanner({
     const versionNumber = file.version_number != null && file.version_number !== '' ? String(file.version_number) : '';
     const timestamp = formatComparisonTimestamp(file.modified_at, locale);
     const author = getComparisonBannerAuthor(file);
+    // When "Open Full Preview" is the only action, the close button covers it, so skip the menu
+    const showMenu = !!(onMakeCurrent || onDownload || onDelete);
+    const showClose = !!onOpenFullPreview;
 
     if (!versionNumber && !timestamp && !author) {
         return null;
@@ -107,70 +110,75 @@ export default function ComparisonBanner({
                     role="presentation"
                 >
                     <BlueprintProviders container={menuContainer}>
-                        <DropdownMenu.Root>
-                            <DropdownMenu.Trigger asChild>
-                                <IconButton
-                                    aria-label={__('comparison_banner_actions')}
-                                    data-target-id="ComparisonBanner-openActions"
-                                    icon={Ellipsis}
-                                    size="small"
-                                    variant={isOnDark ? 'on-dark' : 'default'}
-                                />
-                            </DropdownMenu.Trigger>
-                            <DropdownMenu.Content align="end" container={menuContainer ?? undefined} side="bottom">
-                                {onMakeCurrent && (
-                                    <DropdownMenu.Item
-                                        data-target-id="ComparisonBanner-makeCurrent"
-                                        onSelect={onMakeCurrent}
-                                    >
-                                        <DropdownMenu.Item.StartElement icon={Checkmark} />
-                                        <DropdownMenu.Item.MainContent label={__('comparison_banner_make_current')} />
-                                    </DropdownMenu.Item>
-                                )}
-                                {onDownload && (
-                                    <DropdownMenu.Item data-target-id="ComparisonBanner-download" onSelect={onDownload}>
-                                        <DropdownMenu.Item.StartElement icon={Download} />
-                                        <DropdownMenu.Item.MainContent label={__('download')} />
-                                    </DropdownMenu.Item>
-                                )}
-                                {onOpenFullPreview && (
-                                    <DropdownMenu.Item
-                                        data-target-id="ComparisonBanner-openFullPreview"
-                                        onSelect={onOpenFullPreview}
-                                    >
-                                        <DropdownMenu.Item.StartElement icon={Expand} />
-                                        <DropdownMenu.Item.MainContent
-                                            label={__('comparison_banner_open_full_preview')}
-                                        />
-                                    </DropdownMenu.Item>
-                                )}
-                                {onDelete && (onMakeCurrent || onDownload || onOpenFullPreview) && (
-                                    <DropdownMenu.Separator />
-                                )}
-                                {onDelete && (
-                                    <DropdownMenu.Item
-                                        data-target-id="ComparisonBanner-delete"
-                                        onSelect={onDelete}
-                                        variant="destructive"
-                                    >
-                                        <DropdownMenu.Item.StartElement icon={Trash} />
-                                        <DropdownMenu.Item.MainContent label={__('comparison_banner_delete')} />
-                                    </DropdownMenu.Item>
-                                )}
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Root>
-                        {onOpenFullPreview && (
-                            <>
-                                <span aria-hidden="true" className="bp-version-banner-divider" />
-                                <IconButton
-                                    aria-label={__('comparison_banner_close')}
-                                    data-target-id="ComparisonBanner-close"
-                                    icon={XMark}
-                                    onClick={onOpenFullPreview}
-                                    size="small"
-                                    variant={isOnDark ? 'on-dark' : 'default'}
-                                />
-                            </>
+                        {showMenu && (
+                            <DropdownMenu.Root>
+                                <DropdownMenu.Trigger asChild>
+                                    <IconButton
+                                        aria-label={__('comparison_banner_actions')}
+                                        data-target-id="ComparisonBanner-openActions"
+                                        icon={Ellipsis}
+                                        size="small"
+                                        variant={isOnDark ? 'on-dark' : 'default'}
+                                    />
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content align="end" container={menuContainer ?? undefined} side="bottom">
+                                    {onMakeCurrent && (
+                                        <DropdownMenu.Item
+                                            data-target-id="ComparisonBanner-makeCurrent"
+                                            onSelect={onMakeCurrent}
+                                        >
+                                            <DropdownMenu.Item.StartElement icon={Checkmark} />
+                                            <DropdownMenu.Item.MainContent
+                                                label={__('comparison_banner_make_current')}
+                                            />
+                                        </DropdownMenu.Item>
+                                    )}
+                                    {onDownload && (
+                                        <DropdownMenu.Item
+                                            data-target-id="ComparisonBanner-download"
+                                            onSelect={onDownload}
+                                        >
+                                            <DropdownMenu.Item.StartElement icon={Download} />
+                                            <DropdownMenu.Item.MainContent label={__('download')} />
+                                        </DropdownMenu.Item>
+                                    )}
+                                    {onOpenFullPreview && (
+                                        <DropdownMenu.Item
+                                            data-target-id="ComparisonBanner-openFullPreview"
+                                            onSelect={onOpenFullPreview}
+                                        >
+                                            <DropdownMenu.Item.StartElement icon={Expand} />
+                                            <DropdownMenu.Item.MainContent
+                                                label={__('comparison_banner_open_full_preview')}
+                                            />
+                                        </DropdownMenu.Item>
+                                    )}
+                                    {onDelete && (onMakeCurrent || onDownload || onOpenFullPreview) && (
+                                        <DropdownMenu.Separator />
+                                    )}
+                                    {onDelete && (
+                                        <DropdownMenu.Item
+                                            data-target-id="ComparisonBanner-delete"
+                                            onSelect={onDelete}
+                                            variant="destructive"
+                                        >
+                                            <DropdownMenu.Item.StartElement icon={Trash} />
+                                            <DropdownMenu.Item.MainContent label={__('comparison_banner_delete')} />
+                                        </DropdownMenu.Item>
+                                    )}
+                                </DropdownMenu.Content>
+                            </DropdownMenu.Root>
+                        )}
+                        {showMenu && showClose && <span aria-hidden="true" className="bp-version-banner-divider" />}
+                        {showClose && (
+                            <IconButton
+                                aria-label={__('comparison_banner_close')}
+                                data-target-id="ComparisonBanner-close"
+                                icon={XMark}
+                                onClick={onOpenFullPreview}
+                                size="small"
+                                variant={isOnDark ? 'on-dark' : 'default'}
+                            />
                         )}
                     </BlueprintProviders>
                 </div>

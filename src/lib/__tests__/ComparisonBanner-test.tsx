@@ -132,7 +132,13 @@ describe('lib/ComparisonBanner', () => {
             const user = userEvent.setup();
 
             render(
-                <ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={onOpenFullPreview} />,
+                <ComparisonBanner
+                    file={file}
+                    isComparedPreview
+                    locale="en-US"
+                    onDownload={jest.fn()}
+                    onOpenFullPreview={onOpenFullPreview}
+                />,
             );
 
             await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
@@ -151,17 +157,42 @@ describe('lib/ComparisonBanner', () => {
             const onOpenFullPreview = jest.fn();
             const user = userEvent.setup();
 
-            const { container } = render(
+            render(
                 <ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={onOpenFullPreview} />,
             );
 
             const closeButton = screen.getByRole('button', { name: __('comparison_banner_close') });
             expect(closeButton).toHaveAttribute('data-target-id', 'ComparisonBanner-close');
-            expect(container.querySelector('.bp-version-banner-divider')).toBeInTheDocument();
 
             await user.click(closeButton);
 
             expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
+        });
+
+        test('should show only the close button when open full preview is the only action', () => {
+            const { container } = render(
+                <ComparisonBanner file={file} isComparedPreview locale="en-US" onOpenFullPreview={jest.fn()} />,
+            );
+
+            expect(screen.getByRole('button', { name: __('comparison_banner_close') })).toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('comparison_banner_actions') })).not.toBeInTheDocument();
+            expect(container.querySelector('.bp-version-banner-divider')).toBeNull();
+        });
+
+        test('should show the divider between the actions menu and the close button when both render', () => {
+            const { container } = render(
+                <ComparisonBanner
+                    file={file}
+                    isComparedPreview
+                    locale="en-US"
+                    onDownload={jest.fn()}
+                    onOpenFullPreview={jest.fn()}
+                />,
+            );
+
+            expect(screen.getByRole('button', { name: __('comparison_banner_actions') })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: __('comparison_banner_close') })).toBeInTheDocument();
+            expect(container.querySelector('.bp-version-banner-divider')).toBeInTheDocument();
         });
 
         test('should not render the close button or divider without an open full preview handler', () => {
