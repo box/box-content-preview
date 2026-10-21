@@ -29,13 +29,8 @@
         },
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -51,7 +46,8 @@
         "box-annotations": "^5.2.1-beta.0",
         "box-ui-elements": "^20.0.0",
         "react": "^18.0.0",
-        "react-dom": "^18.0.0"
+        "react-dom": "^18.0.0",
+        "react-intl": ">=6.4.2"
     },
     "devDependencies": {
         "@babel/core": "^7.18.6",
