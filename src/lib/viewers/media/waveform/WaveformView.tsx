@@ -1714,7 +1714,7 @@ function WaveformView({
                             onPointerDown={event => event.stopPropagation()}
                             onPointerUp={event => event.stopPropagation()}
                         >
-                            <Toolbar.Root aria-label={__('media_range_comment')}>
+                            <Toolbar.Root aria-label={__('media_range_comment')} colorScheme="dark">
                                 <Toolbar.Button
                                     data-resin-target="waveformPlayheadComment"
                                     data-target-id="Waveform-commentAtTime"
@@ -1725,7 +1725,9 @@ function WaveformView({
                                     }}
                                 >
                                     <Toolbar.Icon icon={Comment} />
-                                    <Text as="span">{__('media_range_comment')}</Text>
+                                    <Text as="span" color="textOnDarkDefault">
+                                        {__('media_range_comment')}
+                                    </Text>
                                 </Toolbar.Button>
                             </Toolbar.Root>
                         </div>
