@@ -1,3 +1,7 @@
+## 3.119.0 (2026-10-21)
+
+* feat(comparison): add a close button and divider to the compared pane banner (#1862) ([790fdb1](https://github.com/box/box-content-preview/commit/790fdb1)), closes [#1862](https://github.com/box/box-content-preview/issues/1862)
+
 ## 3.118.0 (2026-10-21)
 
 * feat(controls): add the measuring hook, responsive bar and overflow menu for Blueprint controls (#18 ([0a15407](https://github.com/box/box-content-preview/commit/0a15407)), closes [#1868](https://github.com/box/box-content-preview/issues/1868)

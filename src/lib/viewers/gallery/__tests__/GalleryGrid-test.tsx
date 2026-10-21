@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import { GALLERY_THUMB_MAX_WIDTH, GALLERY_THUMB_WIDTH_TIERS } from '../constants';
 import GalleryGrid from '../GalleryGrid';
 
@@ -96,6 +97,22 @@ describe('GalleryGrid', () => {
                 const badge = tile.querySelector('.bp-gallery-tile-badge');
                 expect(badge).toBeInTheDocument();
                 expect(badge).toHaveAttribute('aria-hidden', 'true');
+            });
+        });
+
+        test('should render the badge page number as plain text when isBlueprintEnabled is false', () => {
+            getWrapper();
+            const badge = screen.getByLabelText('Page 3').querySelector('.bp-gallery-tile-badge');
+            expect(badge).toHaveTextContent('3');
+            expect(badge?.querySelector('[data-typography]')).not.toBeInTheDocument();
+        });
+
+        test('should render the badge page number as Blueprint text when isBlueprintEnabled is true', () => {
+            render(<GalleryGrid {...defaultProps} isBlueprintEnabled />, { wrapper: BlueprintProviders });
+            screen.getAllByRole('option').forEach((tile, index) => {
+                const badge = tile.querySelector('.bp-gallery-tile-badge');
+                expect(badge).toHaveAttribute('aria-hidden', 'true');
+                expect(badge?.querySelector('[data-typography]')).toHaveTextContent(String(index + 1));
             });
         });
 
