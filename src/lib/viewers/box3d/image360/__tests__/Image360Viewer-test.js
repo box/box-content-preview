@@ -146,6 +146,30 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
         });
     });
 
+    describe('onKeydown()', () => {
+        beforeEach(() => {
+            jest.spyOn(viewer, 'toggleFullscreen').mockImplementation();
+        });
+
+        test.each`
+            enabled  | consumed
+            ${true}  | ${true}
+            ${false} | ${false}
+        `('should consume F as fullscreen: $consumed if the controls bar flag is $enabled', ({ consumed, enabled }) => {
+            viewer.options.features = { blueprintMigrationControlsBar: { enabled } };
+
+            expect(viewer.onKeydown('f')).toBe(consumed);
+            expect(viewer.toggleFullscreen).toHaveBeenCalledTimes(consumed ? 1 : 0);
+        });
+
+        test('should leave other keys, like the arrows for file navigation, to preview', () => {
+            viewer.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(viewer.onKeydown('ArrowRight')).toBe(false);
+            expect(viewer.toggleFullscreen).not.toBeCalled();
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
 

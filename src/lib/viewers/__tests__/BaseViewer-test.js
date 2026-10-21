@@ -542,6 +542,33 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('handleFullscreenKey()', () => {
+        beforeEach(() => {
+            jest.spyOn(base, 'toggleFullscreen').mockImplementation();
+        });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s if the controls bar flag is on', key => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey(key)).toBe(true);
+            expect(base.toggleFullscreen).toBeCalled();
+        });
+
+        test('should leave F to the host if the controls bar flag is off', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+
+            expect(base.handleFullscreenKey('f')).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
+
+        test('should leave other keys alone', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey('r')).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
+    });
+
     describe('handleFullscreenEnter()', () => {
         beforeEach(() => {
             base.containerEl = document.querySelector('.bp-content');

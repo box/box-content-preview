@@ -72,6 +72,16 @@ class Image360Viewer extends Box3DViewer {
         }
     }
 
+    /**
+     * Handles keyboard events
+     *
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    onKeydown(key) {
+        return this.handleFullscreenKey(key);
+    }
+
     renderUI() {
         if (!this.controls) {
             return;
