@@ -97,4 +97,39 @@ if (emittedWorkerCopies.length !== 1 || emittedWorkerCopies[0] !== path.basename
     process.exit(1);
 }
 
+// Hosts merge these files into their language bundles (see build/buildLibI18n.js).
+// Bundlers import them without an extension; @box/frontend's buildLanguageBundles
+// resolves them with ".js" appended, so both specifiers must resolve.
+const i18nSourceDir = path.resolve(__dirname, '../src/i18n/json');
+const expectedLocales = fs
+    .readdirSync(i18nSourceDir)
+    .filter(filename => filename.endsWith('.json'))
+    .map(filename => path.basename(filename, '.json'));
+
+expectedLocales.forEach(locale => {
+    const localePath = path.resolve(__dirname, `../dist/lib/i18n/${locale}.js`);
+
+    [`box-content-preview/i18n/${locale}`, `box-content-preview/i18n/${locale}.js`].forEach(specifier => {
+        let resolvedPath;
+
+        try {
+            resolvedPath = require.resolve(specifier);
+        } catch (error) {
+            console.error(`verifyLibBundle: require.resolve("${specifier}") failed.`);
+            console.error(error.message);
+            process.exit(1);
+        }
+
+        if (resolvedPath !== localePath) {
+            console.error(`verifyLibBundle: ${specifier} resolved to ${resolvedPath}, expected ${localePath}.`);
+            process.exit(1);
+        }
+    });
+
+    if (!fs.readFileSync(localePath, 'utf8').includes('"bcp.')) {
+        console.error(`verifyLibBundle: ${localePath} has no "bcp."-prefixed messages.`);
+        process.exit(1);
+    }
+});
+
 console.log('verifyLibBundle: OK, library bundle is self-contained and package exports resolve to verified assets');

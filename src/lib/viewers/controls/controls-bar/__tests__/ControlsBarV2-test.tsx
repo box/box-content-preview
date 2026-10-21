@@ -27,6 +27,18 @@ describe('ControlsBarV2', () => {
             expect(screen.getByRole('toolbar')).toHaveAttribute('data-color-scheme', 'dark');
         });
 
+        test('should forward its ref to the toolbar', () => {
+            const ref = React.createRef<HTMLDivElement>();
+
+            render(
+                <ControlsBarV2 ref={ref}>
+                    <button type="button">Hello</button>
+                </ControlsBarV2>,
+            );
+
+            expect(ref.current).toBe(screen.getByRole('toolbar'));
+        });
+
         test('should render nothing if the children property is undefined', () => {
             render(<ControlsBarV2>{undefined}</ControlsBarV2>);
 

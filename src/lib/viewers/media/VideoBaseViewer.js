@@ -1,3 +1,5 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import {
@@ -17,6 +19,7 @@ import { VIEWER_EVENT } from '../../events';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
 import ControlsRoot from '../controls';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
 import MediaBaseViewer from './MediaBaseViewer';
 import VideoPreloader from './VideoPreloader';
 import fitFrameToViewport from './fitFrameToViewport';
@@ -28,7 +31,7 @@ const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
 const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
 const CLASS_SEEK_BUTTON = 'bp-media-overlay-seek-button';
 const SMALL_VIDEO_WIDTH_THRESHOLD = 580;
-const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (defined in _mediaBase.scss)
+const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (_mediaBase.scss and MediaLoadingIndicator.scss)
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 
 export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
@@ -115,11 +118,20 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         // Buffering spinner
         this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
-        this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
-        if (this.useReactControls() && !this.isVideoPlayerV2) {
-            // Shift up by half the control bar + half the spinner to visually center above the controls
-            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
+        // Shift up by half the control bar + half the spinner to visually center above the controls
+        const spinnerMarginTop =
+            this.useReactControls() && !this.isVideoPlayerV2
+                ? `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`
+                : undefined;
+        if (this.isBlueprintMediaControlsEnabled()) {
+            this.bufferingSpinnerRoot = createRoot(this.bufferingSpinnerEl);
+            this.bufferingSpinnerRoot.render(<MediaLoadingIndicator style={{ marginTop: spinnerMarginTop }} />);
+        } else {
+            this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
+            if (spinnerMarginTop) {
+                this.bufferingSpinnerEl.style.marginTop = spinnerMarginTop;
+            }
         }
 
         this.lowerLights();
@@ -377,6 +389,10 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.seekBackwardButtonEl.removeEventListener('click', () => this.movePlayback(false, 5));
         }
 
+        if (this.bufferingSpinnerRoot) {
+            this.bufferingSpinnerRoot.unmount();
+            this.bufferingSpinnerRoot = undefined;
+        }
         this.bufferingSpinnerEl = null;
 
         super.destroy();
@@ -577,10 +593,34 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
-     * @inheritdoc
+     * Shows the player's buffering indicator in place of the page-level crawler when Blueprint media
+     * controls are on, so quality and track switches use the same loading state as buffering.
+     *
+     * @override
+     * @return {void}
      */
     showLoadingIcon() {
-        super.showLoadingIcon();
+        if (!this.isBlueprintMediaControlsEnabled()) {
+            super.showLoadingIcon();
+            return;
+        }
+
+        if (this.containerEl && this.mediaEl && !this.mediaEl.paused && !this.mediaEl.ended) {
+            this.showBufferingSpinner();
+            this.hidePlayButton();
+        }
+    }
+
+    /**
+     * @override
+     * @return {void}
+     */
+    hideLoadingIcon() {
+        super.hideLoadingIcon();
+
+        if (this.isBlueprintMediaControlsEnabled()) {
+            this.hideBufferingSpinner();
+        }
     }
 
     /**
