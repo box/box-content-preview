@@ -29,8 +29,13 @@
         },
         "./package.json": "./package.json"
     },
-    "files": ["dist/lib"],
-    "sideEffects": ["*.css", "*.scss"],
+    "files": [
+        "dist/lib"
+    ],
+    "sideEffects": [
+        "*.css",
+        "*.scss"
+    ],
     "publishConfig": {
         "access": "public"
     },
