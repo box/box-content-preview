@@ -54,6 +54,7 @@ import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
 import { CMAP, EXIF, EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
+import ThumbnailsSidebarV2 from '../../../ThumbnailsSidebarV2';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -5104,6 +5105,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     onSelect: docBaseObj.onThumbnailSelectHandler,
                 };
                 expect(init).toHaveBeenCalledWith(params);
+            });
+
+            test('should keep the legacy ThumbnailsSidebar when the supporting UI flag is off', () => {
+                jest.spyOn(ThumbnailsSidebar.prototype, 'init').mockImplementation();
+                docBaseObj.initThumbnails();
+                expect(docBaseObj.thumbnailsSidebar).toBeInstanceOf(ThumbnailsSidebar);
+                expect(docBaseObj.thumbnailsSidebar).not.toBeInstanceOf(ThumbnailsSidebarV2);
+            });
+
+            test('should create the Blueprint ThumbnailsSidebarV2 when the supporting UI flag is on', () => {
+                jest.spyOn(ThumbnailsSidebar.prototype, 'init').mockImplementation();
+                docBaseObj.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+                docBaseObj.initThumbnails();
+                expect(docBaseObj.thumbnailsSidebar).toBeInstanceOf(ThumbnailsSidebarV2);
+                expect(docBaseObj.thumbnailsSidebar.anchorEl).toBe(docBaseObj.thumbnailsSidebarEl);
+                expect(docBaseObj.thumbnailsSidebar.init).toHaveBeenCalledWith({
+                    currentPage: docBaseObj.pdfViewer.currentPageNumber,
+                    isOpen: true,
+                    onSelect: docBaseObj.onThumbnailSelectHandler,
+                });
             });
         });
         describe('prefetchPreloaderImages()', () => {

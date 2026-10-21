@@ -20,6 +20,7 @@ import {
 } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { handleRepresentationBlobFetch } from '../../util';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
 import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
 import { stopActivationKeyPropagation } from '../controls/media/utils';
 import fitFrameToViewport from './fitFrameToViewport';
@@ -60,6 +61,9 @@ class VideoPreloader extends EventEmitter {
 
     /** @property {Root|undefined} - React root for the Blueprint play overlay */
     playOverlayRoot;
+
+    /** @property {Root|undefined} - React root for the Blueprint loading indicator */
+    loadingRoot;
 
     /**
      * [constructor]
@@ -333,7 +337,12 @@ class VideoPreloader extends EventEmitter {
         }
         this.wrapperEl.style.cursor = '';
 
-        if (this.placeholderEl) {
+        if (this.placeholderEl && this.preloadOptions?.isBlueprintEnabled) {
+            if (!this.loadingRoot) {
+                this.loadingRoot = createRoot(this.placeholderEl.appendChild(document.createElement('div')));
+                this.loadingRoot.render(<MediaLoadingIndicator />);
+            }
+        } else if (this.placeholderEl) {
             const spinner = document.createElement('div');
             spinner.className = 'bp-media-buffering-spinner';
             this.placeholderEl.appendChild(spinner);
@@ -363,6 +372,10 @@ class VideoPreloader extends EventEmitter {
      */
     cleanupPreload = () => {
         this.unmountBlueprintPlayOverlay();
+        if (this.loadingRoot) {
+            this.loadingRoot.unmount();
+            this.loadingRoot = undefined;
+        }
 
         if (this.wrapperEl) {
             if (this.wrapperEl.parentNode) {

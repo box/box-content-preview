@@ -105,7 +105,8 @@
     @include bp-PlayOverlayButton;
 }
 
-.bp-MP3ControlsV2-stage .bp-media-buffering-spinner {
+.bp-MP3ControlsV2-stage .bp-media-buffering-spinner,
+.bp-MP3ControlsV2-stage .bp-MediaLoadingIndicator {
     pointer-events: none;
     z-index: 2;
 }

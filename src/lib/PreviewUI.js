@@ -1,7 +1,10 @@
 import LoadingIcon from './LoadingIcon';
 import Notification from './Notification';
 import shellTemplate from './shell.html';
+import { CollectionNavigationRoot } from './CollectionNavigation';
+import { isFeatureEnabled } from './featureChecking';
 import {
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     CLASS_BOX_PREVIEW_BASE_HEADER,
     CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_HAS_NAVIGATION,
@@ -24,6 +27,9 @@ import {
 import { insertTemplate } from './util';
 
 class PreviewUI {
+    /** @property {CollectionNavigationRoot} - Blueprint navigation arrows, set only with the supporting UI flag */
+    collectionNavigation;
+
     /** @property {HTMLElement} - Container element */
     container;
 
@@ -62,6 +68,11 @@ class PreviewUI {
         if (this.loadingIcon) {
             this.loadingIcon.destroy();
             this.loadingIcon = null;
+        }
+
+        if (this.collectionNavigation) {
+            this.collectionNavigation.destroy();
+            this.collectionNavigation = null;
         }
 
         if (this.container) {
@@ -113,6 +124,10 @@ class PreviewUI {
         this.previewContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
+        if (isFeatureEnabled(options.features, BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            this.setupCollectionNavigation();
+        }
+
         // Setup the header, buttons, and theme
         if (options.header !== 'none') {
             this.setupHeader(options.header, options.logoUrl);
@@ -143,8 +158,8 @@ class PreviewUI {
      * Shows navigation arrows if there is a need
      *
      * @public
-     * @param {number} id - File ID of current preview
-     * @param {number[]} collection - Array of File IDs being previewed
+     * @param {string} id - File ID of current preview
+     * @param {string[]} collection - Array of File IDs being previewed
      * @return {void}
      */
     showNavigation(id, collection) {
@@ -152,6 +167,11 @@ class PreviewUI {
         // that may be needed if the collection changes
 
         if (!this.container) {
+            return;
+        }
+
+        if (this.collectionNavigation) {
+            this.showCollectionNavigation(id, collection);
             return;
         }
 
@@ -357,6 +377,50 @@ class PreviewUI {
         }
 
         loadingIconEl.parentElement.removeChild(loadingIconEl);
+    }
+
+    /**
+     * Replaces the shell's navigation arrows with Blueprint arrows.
+     *
+     * @private
+     * @return {void}
+     */
+    setupCollectionNavigation() {
+        this.contentContainer
+            .querySelectorAll(`${SELECTOR_NAVIGATION_LEFT}, ${SELECTOR_NAVIGATION_RIGHT}`)
+            .forEach(navEl => navEl.remove());
+
+        this.collectionNavigation = new CollectionNavigationRoot({
+            containerEl: this.contentContainer,
+            onNext: this.rightHandler,
+            onPrevious: this.leftHandler,
+        });
+    }
+
+    /**
+     * Shows the Blueprint arrows for the current file's position in the collection.
+     *
+     * @private
+     * @param {string} id - File ID of current preview
+     * @param {string[]} collection - Array of File IDs being previewed
+     * @return {void}
+     */
+    showCollectionNavigation(id, collection) {
+        const hasNavigation = collection.length > 1;
+        const index = collection.indexOf(id);
+
+        this.previewContainer.classList.remove(CLASS_BOX_PREVIEW_HAS_NAVIGATION);
+        this.previewContainer.removeEventListener('mousemove', this.mousemoveHandler);
+
+        if (hasNavigation) {
+            this.previewContainer.classList.add(CLASS_BOX_PREVIEW_HAS_NAVIGATION);
+            this.previewContainer.addEventListener('mousemove', this.mousemoveHandler);
+        }
+
+        this.collectionNavigation.render({
+            hasNext: hasNavigation && index < collection.length - 1,
+            hasPrevious: hasNavigation && index > 0,
+        });
     }
 
     /**
