@@ -1,7 +1,8 @@
 import React from 'react';
 import MarkdownControls from './MarkdownControls';
+import MarkdownControlsV2 from './MarkdownControlsV2';
 import PlainTextViewer from './PlainTextViewer';
-import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
+import { BLUEPRINT_MIGRATION_CONTROLS_BAR, CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
 import './Markdown.scss';
 
@@ -95,7 +96,9 @@ class MarkdownViewer extends PlainTextViewer {
             return;
         }
 
-        this.controls.render(<MarkdownControls onFullscreenToggle={this.toggleFullscreen} />);
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? MarkdownControlsV2 : MarkdownControls;
+
+        this.controls.render(<Controls onFullscreenToggle={this.toggleFullscreen} />);
     }
 
     /**
