@@ -1,5 +1,6 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+import { flushSync } from 'react-dom';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
@@ -252,7 +253,15 @@ class DocBaseViewer extends BaseViewer {
             getThumbnailsSidebar: () => this.thumbnailsSidebar,
             setPage: n => this.setPage(n),
             toggleThumbnails: () => this.toggleThumbnails(),
-            requestUiUpdate: () => this.renderUI(),
+            requestUiUpdate: () => {
+                // The v2 bar moves the gallery toggle between the bar and its overflow menu, so the bar must be
+                // committed before focusToggle looks the toggle up
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    flushSync(() => this.renderUI());
+                } else {
+                    this.renderUI();
+                }
+            },
             focusToggle: () => {
                 const toggle = this.containerEl.querySelector(
                     '.bp-GalleryToggle, [data-bp-gallery-toggle], [data-overflow-ids~="gallery"]',

@@ -219,6 +219,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(document.activeElement).toBe(toggle);
         });
 
+        test.each`
+            features                                                 | isSync
+            ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${true}
+            ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${false}
+        `('should commit the controls synchronously for the gallery only with the v2 bar', ({ features, isSync }) => {
+            // The module object, not a namespace copy, so the spy sees the viewer's calls
+            const ReactDOM = require('react-dom');
+            jest.spyOn(ReactDOM, 'flushSync');
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                features,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+            jest.spyOn(docBase, 'renderUI').mockImplementation();
+
+            docBase.galleryController.requestUiUpdate();
+
+            expect(docBase.renderUI).toHaveBeenCalledTimes(1);
+            expect(ReactDOM.flushSync).toHaveBeenCalledTimes(isSync ? 1 : 0);
+        });
+
         test('should default the thumbnails open if thumbnails toggle state is open', () => {
             docBase = new DocBaseViewer({
                 cache: {
