@@ -4,6 +4,8 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import Location from '../../../Location';
 import OfficeViewer from '../OfficeViewer';
+import Popup from '../../../Popup';
+import { PrintModalRoot } from '../../../PrintModal';
 import { CLASS_HIDDEN, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
 
@@ -374,6 +376,22 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(office.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).toBe(true);
             expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).toBe(false);
         });
+
+        test('should show the ready state in the Blueprint print modal if it is visible', () => {
+            office.printPopup.destroy();
+            office.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+            office.initPrint();
+            office.printBlob = {};
+            office.printDialogTimeout = null;
+            jest.spyOn(office.printPopup, 'isVisible').mockReturnValue(true);
+            jest.spyOn(office.printPopup, 'showReady');
+            jest.spyOn(office, 'browserPrint');
+
+            office.print();
+
+            expect(office.printPopup.showReady).toBeCalledWith(__('print_ready'));
+            expect(office.browserPrint).not.toBeCalled();
+        });
     });
 
     describe('initPrint()', () => {
@@ -387,6 +405,17 @@ describe('lib/viewers/office/OfficeViewer', () => {
         test('should hide the print checkmark', () => {
             office.initPrint();
             expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
+        });
+
+        test('should keep the legacy print popup when the supporting UI flag is off', () => {
+            office.initPrint();
+            expect(office.printPopup).toBeInstanceOf(Popup);
+        });
+
+        test('should initialize the Blueprint print modal when the supporting UI flag is on', () => {
+            office.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+            office.initPrint();
+            expect(office.printPopup).toBeInstanceOf(PrintModalRoot);
         });
     });
 

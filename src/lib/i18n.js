@@ -1,9 +1,10 @@
+import { getLanguage } from './translations';
+
 const annotationMessages = {};
 
-const language = __LANGUAGE__ || 'en-US'; // eslint-disable-line
-
 const getLocale = lang => {
-    return lang.substr(0, lang.indexOf('-'));
+    const separatorIndex = lang.indexOf('-');
+    return separatorIndex === -1 ? lang : lang.substr(0, separatorIndex);
 };
 
 /**
@@ -13,6 +14,7 @@ const getLocale = lang => {
  * @return {Object}
  */
 const createAnnotatorIntl = () => {
+    const language = getLanguage();
     return {
         language,
         locale: getLocale(language),

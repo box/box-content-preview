@@ -1,0 +1,15 @@
+// Matches the play overlay disc so loading reads as the same control swapping state.
+.bp-MediaLoadingIndicator {
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    margin: -40px 0 0 -40px;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 50%);
+}

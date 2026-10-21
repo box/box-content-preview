@@ -11,6 +11,8 @@ import Trash from '@box/blueprint-web-assets/icons/Medium/Trash';
 import BlueprintProviders from './BlueprintProviders';
 import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from './constants';
 
+import './ComparisonBanner.scss';
+
 export type ComparisonBannerFile = {
     created_by?: { name?: string };
     modified_at?: string;

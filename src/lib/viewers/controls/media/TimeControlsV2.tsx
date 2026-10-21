@@ -20,6 +20,7 @@ export type Props = {
     filmstripInterval?: number;
     filmstripUrl?: string;
     fps?: number;
+    isBlueprintEnabled?: boolean;
     onCommentMarkerClick?: (marker: CommentMarker) => void;
     onTimeChange: (volume: number) => void;
 };
@@ -33,6 +34,7 @@ export default function TimeControlsV2({
     filmstripInterval,
     filmstripUrl,
     fps,
+    isBlueprintEnabled = false,
     onCommentMarkerClick,
     onTimeChange,
 }: Props): JSX.Element {
@@ -120,6 +122,7 @@ export default function TimeControlsV2({
                     fps={fps}
                     imageUrl={filmstripUrl}
                     interval={filmstripInterval}
+                    isBlueprintEnabled={isBlueprintEnabled}
                     isShown={isSliderHovered}
                     position={hoverPosition}
                     positionMax={hoverPositionMax}

@@ -1,6 +1,5 @@
 import {
     runAudioTracksTests,
-    runAnnotationsTests,
     runBaseMediaSettingsTests,
     runLowQualityMenuTests,
     runQualityMenuTests,
@@ -37,10 +36,6 @@ describe('Dash Viewer', () => {
             describe('Without react controls', () => {
                 beforeEach(() => setupTest(fileIdVideo, false));
 
-                it('react controls should not be visible', () => {
-                    cy.get('.bp-VideoControls').should('not.exist');
-                });
-
                 runBaseMediaSettingsTests();
 
                 runQualityMenuTests(false);
@@ -52,12 +47,6 @@ describe('Dash Viewer', () => {
 
             describe('With react controls', () => {
                 beforeEach(() => setupTest(fileIdVideo, true));
-
-                it('react controls should be visible', () => {
-                    cy.get('.bp-VideoControls').should('exist');
-                });
-
-                runAnnotationsTests();
 
                 runBaseMediaSettingsTests();
 

@@ -2,15 +2,10 @@ import React from 'react';
 import { DropdownMenu, Text, Toolbar, ToolbarButtonProps } from '@box/blueprint-web';
 import { Video } from '@box/blueprint-web-assets/icons/Medium';
 import MenuTriggerTooltipV2 from '../tooltip/MenuTriggerTooltipV2';
+import { settingsRadioItemAction } from '../settings/SettingsRadioItem';
 import { stopEscapePropagation, stopKeyPropagation } from '../settings/stopMenuKeyPropagation';
 import { formatDuration, Props } from './AnimationClipsControl';
 import { PortalContainerContext } from '../../../BlueprintProviders';
-
-const settingsRadioItemAction = {
-    action: 'programmatic',
-    component: 'toolbar',
-    target: 'settingsRadioItem',
-} as const;
 
 // The Tooltip sits inside the DropdownMenu trigger so the trigger keeps the menu's data-state.
 function AnimationClipsToggle(props: ToolbarButtonProps, ref: React.Ref<HTMLButtonElement>): JSX.Element {

@@ -367,6 +367,19 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTestId('bp-MP3ControlsV2-bar')).not.toBeInTheDocument();
         });
 
+        test('should show the Blueprint loading indicator after overlay click when isBlueprintEnabled is true', async () => {
+            const mediaEl = document.createElement('audio');
+            Object.defineProperty(mediaEl, 'duration', { configurable: true, value: NaN });
+            getWrapper({ durationTime: 180, isBlueprintEnabled: true, mediaEl, peaks: [0.2, 0.8] });
+
+            await userEvent.click(await screen.findByTestId('bp-MP3ControlsV2-play-overlay'));
+
+            const loading = screen.getByTestId('bp-MP3ControlsV2-loading');
+            expect(loading).toHaveClass('bp-MediaLoadingIndicator');
+            expect(loading).not.toHaveClass('bp-media-buffering-spinner');
+            expect(within(loading).getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+        });
+
         test('should keep the waveform inert after metadata until play is requested', async () => {
             getWrapper({ durationTime: 8, peaks: [0.2, 0.8] });
 
@@ -406,6 +419,23 @@ describe('MP3ControlsV2', () => {
             expect(mute).toHaveAttribute('data-resin-target', 'volumeToggle');
             await userEvent.click(mute);
             expect(onMuteChange).toHaveBeenCalled();
+        });
+
+        test('should render the Blueprint settings menu with audio options when isBlueprintEnabled is true', async () => {
+            const onAutoplayChange = jest.fn();
+            getWrapper({ durationTime: 8, isBlueprintEnabled: true, onAutoplayChange, peaks: [0.2, 0.8] });
+            const settings = await within(screen.getByTestId('bp-MP3ControlsV2-bar')).findByRole('button', {
+                name: __('media_settings'),
+            });
+
+            expect(screen.queryByTestId('bp-settings')).not.toBeInTheDocument();
+            await userEvent.click(settings);
+
+            const menu = screen.getByRole('menu');
+            await userEvent.click(within(menu).getByRole('menuitemcheckbox', { name: __('media_autoplay') }));
+            expect(onAutoplayChange).toHaveBeenCalledWith(true);
+            expect(within(menu).getByTestId('bp-media-settings-speed')).toBeInTheDocument();
+            expect(within(menu).queryByTestId('bp-media-settings-quality')).not.toBeInTheDocument();
         });
 
         test('should start playback and unlock the waveform when the overlay is clicked', async () => {
