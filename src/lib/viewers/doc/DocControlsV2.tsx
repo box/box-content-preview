@@ -1,18 +1,16 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import { DropdownMenu, Toolbar } from '@box/blueprint-web';
-import ArrowsMaximize from '@box/blueprint-web-assets/icons/Medium/ArrowsMaximize';
-import ArrowsMinimize from '@box/blueprint-web-assets/icons/Medium/ArrowsMinimize';
+import { DropdownMenu } from '@box/blueprint-web';
 import GridView from '@box/blueprint-web-assets/icons/Medium/GridView';
 import Nav from '@box/blueprint-web-assets/icons/Medium/Nav';
-import RotateLeft from '@box/blueprint-web-assets/icons/Medium/RotateLeft';
 import Search from '@box/blueprint-web-assets/icons/Medium/Search';
-import AnnotationsExitButtonV2 from '../controls/annotations/AnnotationsExitButtonV2';
-import AnnotationsPaletteV2 from '../controls/annotations/AnnotationsPaletteV2';
-import AnnotationsToggleV2 from '../controls/annotations/AnnotationsToggleV2';
-import ColorPickerControlV2 from '../controls/color-picker/ColorPickerControlV2';
+import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2';
+import AnnotationsPaletteControlsV2 from '../controls/annotations/AnnotationsPaletteControlsV2';
 import ExperiencesProvider from '../controls/experiences';
-import { ActiveAnnotationMode } from '../controls/annotations/annotationModeIcons';
+import getFullscreenItem from '../controls/fullscreen/getFullscreenItem';
+import getRotateItem from '../controls/rotate/getRotateItem';
+import getZoomItem from '../controls/zoom/getZoomItem';
+import useAnnotationModes from '../controls/annotations/useAnnotationModes';
 import {
     ALWAYS_OVERFLOW,
     ControlsBarItem,
@@ -20,14 +18,10 @@ import {
     ResponsiveControlsBarV2,
 } from '../controls/controls-bar';
 import { FindBarToggleV2 } from '../controls/findbar';
-import { FullscreenToggleV2 } from '../controls/fullscreen';
 import { GalleryToggleV2 } from '../controls/gallery';
 import { PageControlsV2 } from '../controls/page';
-import { RotateControlV2 } from '../controls/rotate';
 import { ThumbnailsToggleV2 } from '../controls/sidebar';
 import { useFullscreen, useMediaQuery } from '../controls/hooks';
-import { ZoomControlsV2, ZoomMenuItemsV2 } from '../controls/zoom';
-import { ANNOTATION_COLORS } from '../../AnnotationModule';
 import { AnnotationMode } from '../../types';
 import { Props } from './DocControls';
 
@@ -75,31 +69,10 @@ export default function DocControlsV2({
     pageNumber,
     scale,
 }: Props): JSX.Element {
-    const annotationsToggleRef = React.useRef<HTMLButtonElement | null>(null);
     const isFullscreen = useFullscreen();
     const canShowThumbnails = useMediaQuery(THUMBNAILS_MEDIA_QUERY);
-
-    // Listed in the palette's button order, which is also the order the toggle falls back to
-    const annotationModes: ActiveAnnotationMode[] = [];
-
-    if (!isFullscreen) {
-        if (hasRegion) {
-            annotationModes.push(AnnotationMode.REGION);
-        }
-        if (hasHighlight) {
-            annotationModes.push(AnnotationMode.HIGHLIGHT);
-        }
-        if (hasDrawing) {
-            annotationModes.push(AnnotationMode.DRAWING);
-        }
-    }
-
+    const annotationModes = useAnnotationModes({ hasDrawing, hasHighlight, hasRegion });
     const hasAnnotations = !isGalleryOpen && annotationModes.length > 0;
-
-    const handleAnnotationsExit = (): void => {
-        annotationsToggleRef.current?.focus();
-        onAnnotationModeClick({ mode: AnnotationMode.NONE });
-    };
 
     const zoomProps = {
         maxScale,
@@ -147,12 +120,7 @@ export default function DocControlsV2({
                 ),
                 id: 'page',
             },
-        (!isGalleryOpen || hasGalleryZoom) && {
-            control: <ZoomControlsV2 {...zoomProps} />,
-            id: 'zoom',
-            menu: !isGalleryOpen && <ZoomMenuItemsV2 {...zoomProps} />,
-            priority: isGalleryOpen ? undefined : PRIORITY.zoom,
-        },
+        (!isGalleryOpen || hasGalleryZoom) && getZoomItem(zoomProps, isGalleryOpen ? undefined : PRIORITY.zoom),
         !isGalleryOpen &&
             onFindBarToggle && {
                 control: <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />,
@@ -169,20 +137,8 @@ export default function DocControlsV2({
                 priority: PRIORITY.find,
             },
         !isGalleryOpen &&
-            onRotateLeft && {
-                control: <RotateControlV2 onRotateLeft={onRotateLeft} />,
-                id: 'rotate',
-                menu: (
-                    <ControlsMenuItemV2
-                        data-resin-target="rotate"
-                        icon={RotateLeft}
-                        bareKey="R"
-                        label={__('controls_rotate_document')}
-                        onSelect={(): void => onRotateLeft()}
-                    />
-                ),
-                priority: PRIORITY.rotate,
-            },
+            onRotateLeft &&
+            getRotateItem({ menuLabel: __('controls_rotate_document'), onRotateLeft }, PRIORITY.rotate),
         onGalleryToggle && {
             control: <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />,
             id: 'gallery',
@@ -196,33 +152,15 @@ export default function DocControlsV2({
             ),
             priority: isGalleryOpen ? undefined : PRIORITY.gallery,
         },
-        {
-            control: <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />,
-            id: 'fullscreen',
-            menu: !isGalleryOpen && (
-                <ControlsMenuItemV2
-                    data-resin-target="fullscreen"
-                    icon={isFullscreen ? ArrowsMinimize : ArrowsMaximize}
-                    bareKey="F"
-                    label={isFullscreen ? __('exit_fullscreen') : __('enter_fullscreen')}
-                    onSelect={(trigger): void => onFullscreenToggle(!isFullscreen, trigger)}
-                />
-            ),
-            priority: isGalleryOpen ? undefined : PRIORITY.fullscreen,
-        },
+        getFullscreenItem({ onFullscreenToggle }, isGalleryOpen ? undefined : PRIORITY.fullscreen),
         hasAnnotations && {
             control: (
-                <>
-                    <Toolbar.Separator />
-                    <AnnotationsExitButtonV2 onClick={handleAnnotationsExit} />
-                    <AnnotationsToggleV2
-                        ref={annotationsToggleRef}
-                        annotationMode={annotationMode}
-                        modes={annotationModes}
-                        onAnnotationModeClick={onAnnotationModeClick}
-                        onAnnotationModeEscape={onAnnotationModeEscape}
-                    />
-                </>
+                <AnnotationsControlsV2
+                    annotationMode={annotationMode}
+                    modes={annotationModes}
+                    onAnnotationModeClick={onAnnotationModeClick}
+                    onAnnotationModeEscape={onAnnotationModeEscape}
+                />
             ),
             id: 'annotations',
         },
@@ -231,27 +169,14 @@ export default function DocControlsV2({
     return (
         <ExperiencesProvider experiences={experiences}>
             <ResponsiveControlsBarV2 items={items.filter((item): item is ControlsBarItem => !!item)} />
-            {hasAnnotations && annotationMode !== AnnotationMode.NONE && (
-                <AnnotationsPaletteV2>
-                    <AnnotationsPaletteV2.Modes
-                        annotationMode={annotationMode}
-                        onAnnotationModeClick={onAnnotationModeClick}
-                    >
-                        {annotationModes.map(mode => (
-                            <AnnotationsPaletteV2.Mode key={mode} value={mode} />
-                        ))}
-                    </AnnotationsPaletteV2.Modes>
-                    {annotationMode === AnnotationMode.DRAWING && (
-                        <>
-                            <Toolbar.Separator />
-                            <ColorPickerControlV2
-                                activeColor={annotationColor}
-                                colors={ANNOTATION_COLORS}
-                                onColorSelect={onAnnotationColorChange}
-                            />
-                        </>
-                    )}
-                </AnnotationsPaletteV2>
+            {hasAnnotations && (
+                <AnnotationsPaletteControlsV2
+                    annotationColor={annotationColor}
+                    annotationMode={annotationMode}
+                    modes={annotationModes}
+                    onAnnotationColorChange={onAnnotationColorChange}
+                    onAnnotationModeClick={onAnnotationModeClick}
+                />
             )}
         </ExperiencesProvider>
     );
