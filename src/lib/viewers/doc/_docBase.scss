@@ -9,6 +9,10 @@ $pdfjs-highlight-selected: #006400 !default;
 $pdfjs-page-padding: 15px;
 $thumbnail-border-radius: 6px;
 $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
+$thumbnail-list-margin: 15px; // Keep in sync with THUMBNAIL_MARGIN in ThumbnailsSidebar.js
+
+// Matches .bp-version-banner in ComparisonBanner.scss
+$comparison-banner-height: var(--bp-comparison-banner-height, 4.5rem);
 
 .bp {
     .bp-ThumbnailsToggle {
@@ -221,6 +225,23 @@ $thumbnail-sidebar-width: 191px; // Extra pixel to account for sidebar border
         .bp-thumbnails-container {
             border-right-color: $twos;
         }
+    }
+}
+
+// Leave room for the comparison banner so it doesn't cover the first page or thumbnail at the top
+.bp-container:has(.bp-version-banner) {
+    .bp-thumbnails-container .bp-vs {
+        scroll-padding-top: $comparison-banner-height;
+        padding-top: calc(#{$comparison-banner-height} - #{$thumbnail-list-margin});
+    }
+
+    .bp-doc.bp-doc-document .pdfViewer {
+        padding-top: calc(#{$comparison-banner-height} - #{$pdfjs-page-padding});
+    }
+
+    .bp-document-preload-wrapper {
+        box-sizing: border-box;
+        padding-top: calc(#{$comparison-banner-height} - #{$pdfjs-page-padding});
     }
 }
 

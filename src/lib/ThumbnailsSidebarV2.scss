@@ -1,0 +1,101 @@
+// Matches THUMBNAIL_TOTAL_WIDTH in Thumbnail.js.
+$bp-ThumbnailsSidebarV2-page-width: 150px;
+
+.bp-ThumbnailsSidebarV2 {
+    .bp-ThumbnailsSidebarV2-item {
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        margin: 0 var(--bp-space-050);
+        transition: transform 0.2s ease-in-out;
+
+        &:hover {
+            transform: translateY(-1px) scale(1.02);
+
+            .bp-ThumbnailsSidebarV2-page {
+                box-shadow:
+                    0 0 0 var(--bp-border-01) var(--bp-gray-65),
+                    var(--dropshadow-3);
+            }
+
+            .bp-ThumbnailsSidebarV2-pageNumber {
+                opacity: 1;
+            }
+        }
+
+        &.bp-ThumbnailsSidebarV2-item--selected {
+            .bp-ThumbnailsSidebarV2-page {
+                box-shadow:
+                    0 0 0 var(--bp-border-03) var(--bp-border-item-border-selected),
+                    var(--dropshadow-3);
+            }
+
+            .bp-ThumbnailsSidebarV2-pageNumber {
+                opacity: 1;
+                background-color: var(--bp-box-blue-100);
+            }
+        }
+
+        &.bp-thumbnail-image-loaded {
+            .bp-ThumbnailsSidebarV2-ghost {
+                display: none;
+            }
+
+            // Fills the letterbox around the page image so it reads as part of the ring.
+            &:hover .bp-ThumbnailsSidebarV2-page {
+                background-color: var(--bp-gray-65);
+            }
+
+            &.bp-ThumbnailsSidebarV2-item--selected .bp-ThumbnailsSidebarV2-page {
+                background-color: var(--bp-border-item-border-selected);
+            }
+        }
+    }
+
+    .bp-ThumbnailsSidebarV2-page {
+        overflow: hidden;
+        flex: 0 0 $bp-ThumbnailsSidebarV2-page-width;
+        border-radius: var(--bp-radius-03);
+        background-color: var(--bp-gray-white);
+        box-shadow: 0 0 0 var(--bp-border-01) var(--bp-gray-10);
+        transition: box-shadow 0.2s ease-in-out;
+    }
+
+    .bp-ThumbnailsSidebarV2-overlay {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+    }
+
+    .bp-ThumbnailsSidebarV2-ghost {
+        display: block;
+        height: 100%;
+    }
+
+    .bp-ThumbnailsSidebarV2-pageNumber {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--bp-size-070);
+        height: var(--bp-size-060);
+        padding: 0 var(--bp-space-010);
+
+        // Tighter than the page radius so the badge covers the ring's anti-aliased seam.
+        border-radius: calc(var(--bp-radius-03) / 2) 0 var(--bp-radius-03);
+        opacity: 0;
+        background-color: var(--bp-gray-65);
+        transition: opacity 0.15s;
+    }
+
+    &:focus-visible .bp-ThumbnailsSidebarV2-item--selected .bp-ThumbnailsSidebarV2-page {
+        outline: var(--bp-border-02) solid var(--bp-outline-focus-on-light);
+        outline-offset: var(--bp-border-03);
+    }
+
+    &.bp-thumbnails-container--dark:focus-visible .bp-ThumbnailsSidebarV2-item--selected .bp-ThumbnailsSidebarV2-page {
+        outline-color: var(--bp-outline-focus-on-dark);
+    }
+}

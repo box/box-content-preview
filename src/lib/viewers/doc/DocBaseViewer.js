@@ -13,6 +13,7 @@ import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
+import ThumbnailsSidebarV2 from '../../ThumbnailsSidebarV2';
 import Thumbnail from '../../Thumbnail';
 
 import { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
@@ -20,6 +21,7 @@ import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
     BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -1672,7 +1674,10 @@ class DocBaseViewer extends BaseViewer {
         // if the preloader has initialized the thumbnails sidebar don't reinitialize it when the pdf loads
         // we only need one thumbnail sidebar for both the preloader and the pdfViewer
         if (!this.thumbnailsSidebar) {
-            this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
+            const Sidebar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)
+                ? ThumbnailsSidebarV2
+                : ThumbnailsSidebar;
+            this.thumbnailsSidebar = new Sidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
 
             this.thumbnailsSidebar.init({
                 currentPage: this.pdfViewer?.currentPageNumber,
