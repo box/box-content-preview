@@ -65,6 +65,12 @@ export interface PreviewOptions {
     fixDependencies?: boolean;
     header?: 'light' | 'dark' | 'none';
     headerElement?: HTMLElement;
+    /**
+     * UI strings for a non-English locale. Pass the default export of
+     * `box-content-preview/i18n/<locale>`, or a react-intl bundle that includes it.
+     * Only "bcp."-prefixed keys are read; missing keys fall back to en-US.
+     */
+    intl?: { messages?: Record<string, string> };
     /** Compared (previous version) pane; implies isComparing. */
     isComparedPreview?: boolean;
     /** In a comparison (not “current pane”). */

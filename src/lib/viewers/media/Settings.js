@@ -26,7 +26,7 @@ const SETTINGS_MENU_PADDING = 18;
 const SETTINGS_MENU_PADDING_SCROLL = 32;
 const SETTINGS_MENU_MAX_HEIGHT = 210;
 
-const SETTINGS_TEMPLATE = `<div class="bp-media-settings" data-testid="bp-settings-flyout">
+const getSettingsTemplate = () => `<div class="bp-media-settings" data-testid="bp-settings-flyout">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-item bp-media-settings-item-autoplay" data-testid="bp-media-settings-autoplay" data-type="autoplay" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_autoplay')}">${__('media_autoplay')}</div>
@@ -183,7 +183,11 @@ class Settings extends EventEmitter {
         this.blurHandler = this.blurHandler.bind(this);
         this.menuEventHandler = this.menuEventHandler.bind(this);
 
-        insertTemplate(this.containerEl, SETTINGS_TEMPLATE, containerEl.querySelector('.bp-media-controls-wrapper'));
+        insertTemplate(
+            this.containerEl,
+            getSettingsTemplate(),
+            containerEl.querySelector('.bp-media-controls-wrapper'),
+        );
         this.settingsEl = this.containerEl.querySelector('.bp-media-settings');
         this.firstMenuItem = this.settingsEl.querySelectorAll('.bp-media-settings-item')[0];
 

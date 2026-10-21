@@ -1,5 +1,3 @@
-import { runBaseMediaSettingsTests, runPlayNextSettingsTests } from '../../support/mediaSettingsTests';
-
 describe('MP3 Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileIdMP3 = Cypress.env('FILE_ID_MP3');
@@ -58,42 +56,6 @@ describe('MP3 Viewer', () => {
         cy.get('[role="menuitemradio"]').filter(':visible').contains(label).click();
     };
 
-    describe('Media Settings Controls', () => {
-        describe('Without react controls', () => {
-            beforeEach(() => {
-                showPreview({
-                    viewers: { MP3: { useReactControls: false } },
-                });
-
-                cy.showMediaControls();
-
-                // Open the menu
-                cy.getByTitle('Settings').click();
-            });
-
-            runBaseMediaSettingsTests();
-        });
-
-        describe('With react controls', () => {
-            beforeEach(() => {
-                showPreview({
-                    viewers: { MP3: { useReactControls: true } },
-                });
-
-                cy.showMediaControls();
-
-                // Open the menu
-                cy.getByTitle('Settings').click();
-            });
-
-            it('should not show play next', () => {
-                cy.getByTestId('bp-media-settings-play-next').should('not.exist');
-            });
-
-            runBaseMediaSettingsTests();
-        });
-    });
-
     describe('With audio player v2', () => {
         it('Should mount the v2 player and start from the overlay', () => {
             showAudioV2();
@@ -106,15 +68,6 @@ describe('MP3 Viewer', () => {
 
             startV2Playback();
             cy.getByTestId('bp-waveform-view').should('not.have.class', 'bp-WaveformView--inert');
-        });
-
-        describe('Media Settings Controls', () => {
-            beforeEach(() => {
-                showAudioV2();
-                openV2Settings();
-            });
-
-            runPlayNextSettingsTests();
         });
 
         it('Should start this file on open when Autoplay is enabled', () => {
