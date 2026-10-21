@@ -2,7 +2,13 @@ import React from 'react';
 import BaseViewer from '../BaseViewer';
 import ControlsRoot from '../controls';
 import TextControls from './TextControls';
-import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
+import TextControlsV2 from './TextControlsV2';
+import {
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    CLASS_IS_PRINTABLE,
+    CLASS_IS_SELECTABLE,
+    PERMISSION_DOWNLOAD,
+} from '../../constants';
 import { checkPermission } from '../../file';
 
 const ZOOM_DEFAULT = 1.0;
@@ -260,8 +266,10 @@ class TextBaseViewer extends BaseViewer {
             return;
         }
 
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? TextControlsV2 : TextControls;
+
         this.controls.render(
-            <TextControls
+            <Controls
                 maxScale={ZOOM_MAX}
                 minScale={ZOOM_MIN}
                 onFullscreenToggle={this.toggleFullscreen}

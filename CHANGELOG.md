@@ -1,3 +1,14 @@
+## 3.118.0 (2026-10-21)
+
+* feat(controls): add the measuring hook, responsive bar and overflow menu for Blueprint controls (#18 ([0a15407](https://github.com/box/box-content-preview/commit/0a15407)), closes [#1868](https://github.com/box/box-content-preview/issues/1868)
+* feat(media): show the Blueprint loading indicator on a dark disc while audio and video load (#1857) ([6f4597c](https://github.com/box/box-content-preview/commit/6f4597c)), closes [#1857](https://github.com/box/box-content-preview/issues/1857)
+* feat(navigation): render collection arrows with Blueprint IconButton (#1852) ([83510be](https://github.com/box/box-content-preview/commit/83510be)), closes [#1852](https://github.com/box/box-content-preview/issues/1852)
+* feat(text): add Blueprint controls bars for text and markdown (#1861) ([9647be8](https://github.com/box/box-content-preview/commit/9647be8)), closes [#1861](https://github.com/box/box-content-preview/issues/1861)
+* feat(thumbnails): render the sidebar tiles with Blueprint (#1858) ([dd2d037](https://github.com/box/box-content-preview/commit/dd2d037)), closes [#1858](https://github.com/box/box-content-preview/issues/1858)
+* chore(deps): bump follow-redirects from 1.16.0 to 1.16.1 (#1865) ([045ba82](https://github.com/box/box-content-preview/commit/045ba82)), closes [#1865](https://github.com/box/box-content-preview/issues/1865)
+* chore(i18n): update translations (#1864) ([2908e82](https://github.com/box/box-content-preview/commit/2908e82)), closes [#1864](https://github.com/box/box-content-preview/issues/1864)
+* fix(comparison): keep the version banner off document pages and thumbnails, style the compared pane ([b802b97](https://github.com/box/box-content-preview/commit/b802b97)), closes [#1866](https://github.com/box/box-content-preview/issues/1866)
+
 ## 3.117.0 (2026-10-20)
 
 * fix(i18n): localize npm library strings with host-provided messages (#1869) ([e397a41](https://github.com/box/box-content-preview/commit/e397a41)), closes [#1869](https://github.com/box/box-content-preview/issues/1869)

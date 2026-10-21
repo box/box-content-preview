@@ -3,6 +3,7 @@ import React from 'react';
 import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls/controls-root';
 import MarkdownControls from '../MarkdownControls';
+import MarkdownControlsV2 from '../MarkdownControlsV2';
 import MarkdownViewer from '../MarkdownViewer';
 import Popup from '../../../Popup';
 import { linkify, Remarkable } from '../../../../third-party/text/2.65.0/remarkable.min.js';
@@ -164,6 +165,18 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             expect(markdown.controls.render).toBeCalledWith(
                 <MarkdownControls onFullscreenToggle={markdown.toggleFullscreen} />,
             );
+        });
+
+        test.each`
+            features                                                 | Controls
+            ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${MarkdownControlsV2}
+            ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${MarkdownControls}
+            ${{}}                                                    | ${MarkdownControls}
+        `('should render $Controls.name for features $features', ({ features, Controls }) => {
+            markdown.options.features = features;
+            markdown.loadUI();
+
+            expect(markdown.controls.render.mock.calls[0][0].type).toBe(Controls);
         });
     });
 });
