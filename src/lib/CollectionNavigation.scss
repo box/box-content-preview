@@ -1,0 +1,42 @@
+.bp-CollectionNavigation-arrow {
+    // Stays clickable while .bp disables pointer events during loading.
+    pointer-events: all;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+
+    // Fits the legacy .bp-navigate box to the IconButton so it stays centered and unclipped.
+    &.bp-navigate {
+        overflow: visible;
+        width: auto;
+        height: auto;
+    }
+
+    &:hover,
+    &:focus-within {
+        opacity: 1;
+    }
+
+    .bp-is-navigation-visible & {
+        opacity: 0.8;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .bp-is-fullscreen &,
+    .bp-is-gallery-open & {
+        display: none;
+    }
+}
+
+.bp-CollectionNavigation-previous {
+    left: var(--bp-space-050);
+}
+
+.bp-CollectionNavigation-next {
+    right: var(--bp-space-050);
+}
