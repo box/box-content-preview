@@ -12,6 +12,7 @@ import PreviewError from '../PreviewError';
 import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
+import BaseViewer from '../viewers/BaseViewer';
 import {
     API_HOST,
     CLASS_NAVIGATION_VISIBILITY,
@@ -22,6 +23,7 @@ import {
     VIEWER_EVENT,
     ERROR_CODE,
     LOAD_METRIC,
+    FIRST_RENDER_METRIC,
     CACHE_STATUS,
     PREVIEW_METRIC,
     PREVIEW_PRELOAD_OUTCOME_EVENT,
@@ -1498,6 +1500,60 @@ describe('lib/Preview', () => {
 
             expect(timer).toBeDefined();
             expect(timer.start).toBeDefined();
+        });
+
+        describe('first render timing', () => {
+            beforeEach(() => {
+                Timer.reset(Timer.createTag(stubs.file.id, FIRST_RENDER_METRIC));
+            });
+
+            afterEach(() => {
+                Timer.reset(Timer.createTag(stubs.file.id, FIRST_RENDER_METRIC));
+            });
+
+            test('should emit first render time again when reopening a cached file', () => {
+                const emitMetric = jest.fn();
+                const now = jest.spyOn(global.performance, 'now').mockReturnValue(100);
+                stubs.getCachedFile.mockReturnValue(stubs.file);
+
+                preview.load(stubs.file.id);
+                preview.viewer = new BaseViewer({ file: preview.file });
+                preview.viewer.on(VIEWER_EVENT.metric, emitMetric);
+                now.mockReturnValue(150);
+                preview.viewer.emitFirstRenderMetric();
+                preview.viewer.emitFirstRenderMetric();
+
+                expect(emitMetric).toHaveBeenCalledTimes(1);
+                expect(emitMetric).toHaveBeenLastCalledWith({ event: LOAD_METRIC.firstRenderTime, data: 50 });
+
+                preview.destroy();
+                now.mockReturnValue(300);
+                preview.load(stubs.file.id);
+                preview.viewer = new BaseViewer({ file: preview.file });
+                preview.viewer.on(VIEWER_EVENT.metric, emitMetric);
+                now.mockReturnValue(325);
+                preview.viewer.emitFirstRenderMetric();
+                preview.viewer.emitFirstRenderMetric();
+
+                expect(emitMetric).toHaveBeenCalledTimes(2);
+                expect(emitMetric).toHaveBeenLastCalledWith({ event: LOAD_METRIC.firstRenderTime, data: 25 });
+            });
+
+            test('should measure first render from reopening after a close before rendering', () => {
+                const now = jest.spyOn(global.performance, 'now').mockReturnValue(100);
+
+                preview.load(stubs.file.id);
+                preview.destroy();
+
+                now.mockReturnValue(300);
+                preview.load(stubs.file.id);
+                preview.viewer = new BaseViewer({ file: preview.file });
+                const emitMetric = jest.spyOn(preview.viewer, 'emitMetric');
+                now.mockReturnValue(325);
+                preview.viewer.emitFirstRenderMetric();
+
+                expect(emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 25);
+            });
         });
 
         test('should get the tokens when file id is available', () => {
