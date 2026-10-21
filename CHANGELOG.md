@@ -1,3 +1,18 @@
+## 3.117.0 (2026-10-20)
+
+* fix(i18n): localize npm library strings with host-provided messages (#1869) ([e397a41](https://github.com/box/box-content-preview/commit/e397a41)), closes [#1869](https://github.com/box/box-content-preview/issues/1869)
+* feat(controls): render the Blueprint controls bar with the dark color scheme (#1867) ([2aa0cbe](https://github.com/box/box-content-preview/commit/2aa0cbe)), closes [#1867](https://github.com/box/box-content-preview/issues/1867)
+* test(e2e): trim redundant e2e tests and backfill unit coverage (#1860) ([1f31ec7](https://github.com/box/box-content-preview/commit/1f31ec7)), closes [#1860](https://github.com/box/box-content-preview/issues/1860)
+
+## 3.116.0 (2026-10-20)
+
+* chore(i18n): update translations (#1863) ([8323ac0](https://github.com/box/box-content-preview/commit/8323ac0)), closes [#1863](https://github.com/box/box-content-preview/issues/1863)
+* feat(archive): add Blueprint v2 table (#1838) ([bff8613](https://github.com/box/box-content-preview/commit/bff8613)), closes [#1838](https://github.com/box/box-content-preview/issues/1838)
+* feat(error): render Blueprint file type icons on the error screen (#1854) ([e175dd4](https://github.com/box/box-content-preview/commit/e175dd4)), closes [#1854](https://github.com/box/box-content-preview/issues/1854)
+* feat(media): add the Blueprint settings menu with drill-in submenus to the audio and video controls ([31ed5e2](https://github.com/box/box-content-preview/commit/31ed5e2)), closes [#1856](https://github.com/box/box-content-preview/issues/1856)
+* feat(print): render print dialog with Blueprint modal for supporting UI (#1844) ([6dadb43](https://github.com/box/box-content-preview/commit/6dadb43)), closes [#1844](https://github.com/box/box-content-preview/issues/1844)
+* feat(video): render the filmstrip time with Blueprint text (#1848) ([bf14233](https://github.com/box/box-content-preview/commit/bf14233)), closes [#1848](https://github.com/box/box-content-preview/issues/1848)
+
 ## 3.115.0 (2026-10-19)
 
 * feat(audio): migrate the waveform zoom, shuttle and range controls to Blueprint (#1845) ([ceb59b5](https://github.com/box/box-content-preview/commit/ceb59b5)), closes [#1845](https://github.com/box/box-content-preview/issues/1845)

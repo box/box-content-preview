@@ -2,6 +2,7 @@ import React from 'react';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
+import MediaSettingsV2 from '../controls/media/MediaSettingsV2';
 import PlayPauseButton from '../controls/media/PlayPauseButton';
 import SkipButton from '../controls/media/SkipButton';
 import TimestampControl from '../controls/media/TimestampControl';
@@ -110,6 +111,7 @@ export default function VideoControlsV2({
                     filmstripInterval={filmstripInterval}
                     filmstripUrl={filmstripUrl}
                     fps={fps}
+                    isBlueprintEnabled={isBlueprintEnabled}
                     onCommentMarkerClick={onCommentMarkerClick}
                     onTimeChange={onTimeChange}
                 />
@@ -162,27 +164,50 @@ export default function VideoControlsV2({
                             onSubtitlesToggle={onSubtitlesToggle}
                             subtitles={subtitles}
                         />
-                        <MediaSettings
-                            audioTrack={audioTrack}
-                            audioTracks={audioTracks}
-                            autoplay={autoplay}
-                            className="bp-VideoControls-settings"
-                            guide={guide}
-                            isGuidesEnabled={isGuidesEnabled}
-                            isHDSupported={isHDSupported}
-                            onAudioTrackChange={onAudioTrackChange}
-                            onAutoplayChange={onAutoplayChange}
-                            onGuideChange={onGuideChange}
-                            onPlayNextChange={onPlayNextChange}
-                            onQualityChange={onQualityChange}
-                            onRateChange={onRateChange}
-                            onSubtitleChange={onSubtitleChange}
-                            playNext={playNext}
-                            quality={quality}
-                            rate={rate}
-                            subtitle={subtitle}
-                            subtitles={subtitles}
-                        />
+                        {isBlueprintEnabled ? (
+                            <MediaSettingsV2
+                                audioTrack={audioTrack}
+                                audioTracks={audioTracks}
+                                autoplay={autoplay}
+                                guide={guide}
+                                isGuidesEnabled={isGuidesEnabled}
+                                isHDSupported={isHDSupported}
+                                onAudioTrackChange={onAudioTrackChange}
+                                onAutoplayChange={onAutoplayChange}
+                                onGuideChange={onGuideChange}
+                                onPlayNextChange={onPlayNextChange}
+                                onQualityChange={onQualityChange}
+                                onRateChange={onRateChange}
+                                onSubtitleChange={onSubtitleChange}
+                                playNext={playNext}
+                                quality={quality}
+                                rate={rate}
+                                subtitle={subtitle}
+                                subtitles={subtitles}
+                            />
+                        ) : (
+                            <MediaSettings
+                                audioTrack={audioTrack}
+                                audioTracks={audioTracks}
+                                autoplay={autoplay}
+                                className="bp-VideoControls-settings"
+                                guide={guide}
+                                isGuidesEnabled={isGuidesEnabled}
+                                isHDSupported={isHDSupported}
+                                onAudioTrackChange={onAudioTrackChange}
+                                onAutoplayChange={onAutoplayChange}
+                                onGuideChange={onGuideChange}
+                                onPlayNextChange={onPlayNextChange}
+                                onQualityChange={onQualityChange}
+                                onRateChange={onRateChange}
+                                onSubtitleChange={onSubtitleChange}
+                                playNext={playNext}
+                                quality={quality}
+                                rate={rate}
+                                subtitle={subtitle}
+                                subtitles={subtitles}
+                            />
+                        )}
                         {videoAnnotationsEnabled && (
                             <>
                                 <div className="bp-VideoControlsV2-divider" />

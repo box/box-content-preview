@@ -5,6 +5,7 @@ module.exports = {
         __NAME__: 'name',
         __VERSION__: 'version',
         __LANGUAGE__: 'en-US',
+        __BCP_DEFAULT_MESSAGES__: {},
     },
     moduleFileExtensions: ['js', 'jsx', 'json', 'ts', 'tsx'],
     moduleNameMapper: {
@@ -33,6 +34,6 @@ module.exports = {
         '^.+\\.(svg|html)$': '<rootDir>/build/jest/stringLoader.js',
     },
     transformIgnorePatterns: [
-        'node_modules/(?!(box-ui-elements|react-virtualized|@box/blueprint-web|@box/blueprint-web-assets|@box/item-icon|@box/types|@ariakit)/)',
+        'node_modules/(?!(box-ui-elements|react-virtualized|@tanstack|@box/blueprint-web|@box/blueprint-web-assets|@box/item-icon|@box/readable-time|@box/types|@ariakit)/)',
     ],
 };

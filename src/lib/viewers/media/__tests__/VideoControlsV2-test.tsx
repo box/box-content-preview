@@ -194,6 +194,30 @@ describe('VideoControlsV2', () => {
             render(<VideoControlsV2 {...defaultProps} />);
             expect(screen.getByTitle('Settings')).toBeInTheDocument();
         });
+
+        test('should render the Blueprint settings menu with video options when isBlueprintEnabled is true', async () => {
+            const user = userEvent.setup();
+            render(
+                <VideoControlsV2
+                    {...defaultProps}
+                    isHDSupported
+                    isBlueprintEnabled
+                    onSubtitleChange={jest.fn()}
+                    subtitle={SUBTITLES_OFF}
+                    subtitles={subtitles}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            expect(screen.queryByTestId('bp-settings')).not.toBeInTheDocument();
+            await user.click(screen.getByRole('button', { name: __('media_settings') }));
+
+            const menu = screen.getByRole('menu');
+            expect(menu).toContainElement(screen.getByRole('menuitemcheckbox', { name: __('media_autoplay') }));
+            expect(menu).toContainElement(screen.getByTestId('bp-media-settings-speed'));
+            expect(menu).toContainElement(screen.getByTestId('bp-media-settings-quality'));
+            expect(menu).toContainElement(screen.getByTestId('bp-media-settings-subtitles'));
+        });
     });
 
     describe('annotations', () => {

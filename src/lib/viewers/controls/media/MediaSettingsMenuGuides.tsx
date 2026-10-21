@@ -34,7 +34,7 @@ const GUIDE_LABEL_MAP: Record<Guide, string> = {
     [Guide.R_21_9]: '21x9',
 };
 
-const GUIDE_NAME_MAP: Record<Guide, string> = {
+const getGuideNameMap = (): Record<Guide, string> => ({
     [Guide.OFF]: __('media_guides_default') as string,
     [Guide.R_16_9]: __('media_guides_widescreen_hd') as string,
     [Guide.R_9_16]: __('media_guides_vertical') as string,
@@ -46,9 +46,9 @@ const GUIDE_NAME_MAP: Record<Guide, string> = {
     [Guide.R_2_35_1]: __('media_guides_scope') as string,
     [Guide.R_4_3]: __('media_guides_fullscreen') as string,
     [Guide.R_21_9]: __('media_guides_ultrawide') as string,
-};
+});
 
-const GUIDE_ORDER: Guide[] = [
+export const GUIDE_ORDER: Guide[] = [
     Guide.OFF,
     Guide.R_16_9,
     Guide.R_9_16,
@@ -66,9 +66,9 @@ const GUIDE_ORDER: Guide[] = [
 export const getLabel = (guide: Guide): string =>
     guide === Guide.OFF ? (__('media_guides_off') as string) : GUIDE_LABEL_MAP[guide];
 
-const formatRadioLabel = (guide: Guide): string => {
+export const formatRadioLabel = (guide: Guide): string => {
     const ratio = guide === Guide.OFF ? (__('media_guides_off') as string) : GUIDE_LABEL_MAP[guide];
-    return `${ratio} — ${GUIDE_NAME_MAP[guide]}`;
+    return `${ratio} — ${getGuideNameMap()[guide]}`;
 };
 
 export default function MediaSettingsMenuGuides({ guide, onGuideChange }: Props): JSX.Element {

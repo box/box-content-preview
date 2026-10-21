@@ -5,14 +5,16 @@ export type Props = {
     children?: React.ReactNode;
 };
 
-export default function ControlsBarV2({ children, ...rest }: Props): JSX.Element | null {
+function ControlsBarV2({ children, ...rest }: Props, ref: React.Ref<HTMLDivElement>): JSX.Element | null {
     if (!children) {
         return null;
     }
 
     return (
-        <Toolbar.Root data-testid="bp-ControlsBar" {...rest}>
+        <Toolbar.Root ref={ref} colorScheme="dark" data-testid="bp-ControlsBar" {...rest}>
             {children}
         </Toolbar.Root>
     );
 }
+
+export default React.forwardRef(ControlsBarV2);

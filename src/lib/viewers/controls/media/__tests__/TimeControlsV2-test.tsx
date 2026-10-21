@@ -37,6 +37,16 @@ describe('TimeControlsV2', () => {
         onTimeChange: jest.fn(),
     };
 
+    describe('filmstrip', () => {
+        test('should pass isBlueprintEnabled to the filmstrip', () => {
+            const { rerender } = render(<TimeControlsV2 {...defaultProps} filmstripInterval={1} />);
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).not.toBeInTheDocument();
+
+            rerender(<TimeControlsV2 {...defaultProps} filmstripInterval={1} isBlueprintEnabled />);
+            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).toBeInTheDocument();
+        });
+    });
+
     describe('comment markers', () => {
         const markers: CommentMarker[] = [
             { id: 'marker-1', time: 10, type: 'comment' as const, initial: 'A', colorIndex: 0 },
