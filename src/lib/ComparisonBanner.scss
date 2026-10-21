@@ -28,6 +28,14 @@ $comparison-compared-stage: var(--bp-gray-10);
     margin-left: auto;
 }
 
+.bp-version-banner-divider {
+    flex: none;
+    width: var(--bp-border-01);
+    height: var(--bp-size-060);
+    margin: 0 var(--bp-space-020);
+    background-color: var(--bp-black-opacity-12);
+}
+
 .bp-version-banner-badge {
     display: flex;
     flex: none;
@@ -116,6 +124,10 @@ $comparison-compared-stage: var(--bp-gray-10);
 
     .bp-version-banner-author {
         color: var(--bp-white-opacity-70);
+    }
+
+    .bp-version-banner-divider {
+        background-color: var(--bp-white-opacity-30);
     }
 
     .bp-version-banner--compared .bp-version-banner-badge {
