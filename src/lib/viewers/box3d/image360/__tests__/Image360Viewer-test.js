@@ -3,6 +3,8 @@ import Image360Viewer from '../Image360Viewer';
 import BaseViewer from '../../../BaseViewer';
 import Box3DControls from '../../Box3DControls';
 import ControlsRoot from '../../../controls';
+import Image360Controls from '../Image360Controls';
+import Image360ControlsV2 from '../Image360ControlsV2';
 import Image360Renderer from '../Image360Renderer';
 import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../../constants';
 
@@ -144,6 +146,30 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
         });
     });
 
+    describe('onKeydown()', () => {
+        beforeEach(() => {
+            jest.spyOn(viewer, 'toggleFullscreen').mockImplementation();
+        });
+
+        test.each`
+            enabled  | consumed
+            ${true}  | ${true}
+            ${false} | ${false}
+        `('should consume F as fullscreen: $consumed if the controls bar flag is $enabled', ({ consumed, enabled }) => {
+            viewer.options.features = { blueprintMigrationControlsBar: { enabled } };
+
+            expect(viewer.onKeydown('f')).toBe(consumed);
+            expect(viewer.toggleFullscreen).toHaveBeenCalledTimes(consumed ? 1 : 0);
+        });
+
+        test('should leave other keys, like the arrows for file navigation, to preview', () => {
+            viewer.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(viewer.onKeydown('ArrowRight')).toBe(false);
+            expect(viewer.toggleFullscreen).not.toBeCalled();
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
 
@@ -163,6 +189,17 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
                 onFullscreenToggle: viewer.toggleFullscreen,
                 onVrToggle: viewer.handleToggleVr,
             });
+        });
+
+        test.each`
+            enabled  | Controls
+            ${true}  | ${Image360ControlsV2}
+            ${false} | ${Image360Controls}
+        `('should render $Controls.name if the controls bar flag is $enabled', ({ Controls, enabled }) => {
+            viewer.options.features = { blueprintMigrationControlsBar: { enabled } };
+            viewer.renderUI();
+
+            expect(viewer.controls.render).toBeCalledWith(expect.objectContaining({ type: Controls }));
         });
     });
 });
