@@ -9,6 +9,21 @@ import ComparisonBanner, {
 } from '../ComparisonBanner';
 
 describe('lib/ComparisonBanner', () => {
+    const originalResizeObserver = global.ResizeObserver;
+
+    // Blueprint's EllipsizableText observes its size to decide whether to show a tooltip
+    beforeAll(() => {
+        global.ResizeObserver = jest.fn(() => ({
+            disconnect: jest.fn(),
+            observe: jest.fn(),
+            unobserve: jest.fn(),
+        })) as unknown as typeof ResizeObserver;
+    });
+
+    afterAll(() => {
+        global.ResizeObserver = originalResizeObserver;
+    });
+
     describe('formatComparisonTimestamp()', () => {
         test('should return an empty string when the timestamp is missing', () => {
             expect(formatComparisonTimestamp()).toBe('');

@@ -1,13 +1,8 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-import { DropdownMenu, IconButton } from '@box/blueprint-web';
-import Checkmark from '@box/blueprint-web-assets/icons/Medium/Checkmark';
-import Download from '@box/blueprint-web-assets/icons/Medium/Download';
-import Ellipsis from '@box/blueprint-web-assets/icons/Medium/Ellipsis';
-import Expand from '@box/blueprint-web-assets/icons/Medium/Expand';
-import Trash from '@box/blueprint-web-assets/icons/Medium/Trash';
-import XMark from '@box/blueprint-web-assets/icons/Medium/XMark';
+import { DropdownMenu, EllipsizableText, IconButton } from '@box/blueprint-web';
+import { Checkmark, Download, Ellipsis, Expand, Trash, XMark } from '@box/blueprint-web-assets/icons/Medium';
 
 import BlueprintProviders from './BlueprintProviders';
 import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from './constants';
@@ -81,35 +76,53 @@ export default function ComparisonBanner({
     }
 
     return (
-        <div
-            className={
-                isComparedPreview
-                    ? `${CLASS_BOX_PREVIEW_VERSION_BANNER} ${CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED}`
-                    : CLASS_BOX_PREVIEW_VERSION_BANNER
-            }
-        >
+        <BlueprintProviders container={menuContainer}>
             <div
-                aria-label={isComparedPreview ? __('comparison_banner_previous') : __('comparison_banner_current')}
-                className="bp-version-banner-details"
-                role="status"
+                className={
+                    isComparedPreview
+                        ? `${CLASS_BOX_PREVIEW_VERSION_BANNER} ${CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED}`
+                        : CLASS_BOX_PREVIEW_VERSION_BANNER
+                }
             >
-                {versionNumber && <span className="bp-version-banner-badge">{versionNumber}</span>}
-                {(timestamp || author) && (
-                    <div className="bp-version-banner-info">
-                        {timestamp && <div className="bp-version-banner-time">{timestamp}</div>}
-                        {author && <div className="bp-version-banner-author">{author}</div>}
-                    </div>
-                )}
-            </div>
-            {isComparedPreview && (onMakeCurrent || onDownload || onOpenFullPreview || onDelete) && (
                 <div
-                    className="bp-version-banner-actions"
-                    onKeyDown={(event: React.KeyboardEvent): void => {
-                        event.stopPropagation(); // Prevents global key handling
-                    }}
-                    role="presentation"
+                    aria-label={isComparedPreview ? __('comparison_banner_previous') : __('comparison_banner_current')}
+                    className="bp-version-banner-details"
+                    role="status"
                 >
-                    <BlueprintProviders container={menuContainer}>
+                    {versionNumber && <span className="bp-version-banner-badge">{versionNumber}</span>}
+                    {(timestamp || author) && (
+                        <div className="bp-version-banner-info">
+                            {timestamp && (
+                                <EllipsizableText
+                                    as="div"
+                                    className="bp-version-banner-time"
+                                    lineClamp={1}
+                                    variant="bodyDefaultSemibold"
+                                >
+                                    {timestamp}
+                                </EllipsizableText>
+                            )}
+                            {author && (
+                                <EllipsizableText
+                                    as="div"
+                                    className="bp-version-banner-author"
+                                    lineClamp={1}
+                                    variant="caption"
+                                >
+                                    {author}
+                                </EllipsizableText>
+                            )}
+                        </div>
+                    )}
+                </div>
+                {isComparedPreview && (onMakeCurrent || onDownload || onOpenFullPreview || onDelete) && (
+                    <div
+                        className="bp-version-banner-actions"
+                        onKeyDown={(event: React.KeyboardEvent): void => {
+                            event.stopPropagation(); // Prevents global key handling
+                        }}
+                        role="presentation"
+                    >
                         {showMenu && (
                             <DropdownMenu.Root>
                                 <DropdownMenu.Trigger asChild>
@@ -180,10 +193,10 @@ export default function ComparisonBanner({
                                 variant={isOnDark ? 'on-dark' : 'default'}
                             />
                         )}
-                    </BlueprintProviders>
-                </div>
-            )}
-        </div>
+                    </div>
+                )}
+            </div>
+        </BlueprintProviders>
     );
 }
 

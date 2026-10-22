@@ -14,6 +14,12 @@ $comparison-compared-stage: var(--bp-gray-10);
     background: linear-gradient(180deg, var(--bp-gray-05) 19.61%, var(--bp-white-opacity-00) 100%);
 }
 
+// Side-by-side panes can be narrower than .bp-container's 300px min-width. The container would then overflow its
+// pane and the banner (sized to the container) would too, pushing the actions off-screen and defeating ellipsis.
+.bp-container:has(.bp-version-banner) {
+    min-width: 0;
+}
+
 .bp-version-banner-details {
     display: flex;
     gap: var(--bp-space-030);
@@ -66,13 +72,7 @@ $comparison-compared-stage: var(--bp-gray-10);
 }
 
 .bp-version-banner-time {
-    overflow: hidden;
-    font-size: var(--bp-font-size-05);
-    font-weight: 500;
-    line-height: 20px;
     color: var(--bp-gray-black);
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .bp-version-banner--compared .bp-version-banner-time {
@@ -80,12 +80,7 @@ $comparison-compared-stage: var(--bp-gray-10);
 }
 
 .bp-version-banner-author {
-    overflow: hidden;
-    font-size: var(--bp-font-size-03);
-    line-height: 14px;
     color: var(--bp-gray-black);
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 // Compared pane background; the banner fades from the same color so it blends in
