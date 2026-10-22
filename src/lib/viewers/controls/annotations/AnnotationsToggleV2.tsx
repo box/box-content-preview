@@ -2,9 +2,7 @@ import React from 'react';
 import noop from 'lodash/noop';
 import { IconToggleButton, IconToggleButtonProps, Toolbar } from '@box/blueprint-web';
 import ANNOTATION_MODE_ICONS, { ActiveAnnotationMode } from './annotationModeIcons';
-import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import ToggleTooltipV2 from '../tooltip/ToggleTooltipV2';
-import { ExperiencesContext } from '../experiences';
 import { AnnotationMode } from '../../../types';
 
 type BaseProps = {
@@ -32,7 +30,6 @@ function AnnotationsToggleV2(props: Props, ref: React.ForwardedRef<HTMLButtonEle
         onAnnotationModeClick = noop,
         onAnnotationModeEscape = noop,
     } = props;
-    const { experiences } = React.useContext(ExperiencesContext);
     const [lastMode, setLastMode] = React.useState<ActiveAnnotationMode | null>(null);
     const isActive = annotationMode !== AnnotationMode.NONE;
     const resumeMode = lastMode && modes.includes(lastMode) ? lastMode : modes[0];
@@ -82,13 +79,8 @@ function AnnotationsToggleV2(props: Props, ref: React.ForwardedRef<HTMLButtonEle
         icon: ANNOTATION_MODE_ICONS[isActive ? (annotationMode as ActiveAnnotationMode) : resumeMode],
     };
 
-    // With no experience from the host, the box-ui-elements tooltip falls back to opening on hover
     const renderToggle = (toggle: JSX.Element): JSX.Element => (
-        <AnnotationsTargetedTooltip
-            isEnabled={modes.includes(AnnotationMode.REGION) && !!experiences.tooltipFlowAnnotationsExperience}
-        >
-            <ToggleTooltipV2 content={__('annotation_tools')}>{toggle}</ToggleTooltipV2>
-        </AnnotationsTargetedTooltip>
+        <ToggleTooltipV2 content={__('annotation_tools')}>{toggle}</ToggleTooltipV2>
     );
 
     if (props.buttonType === 'icon') {

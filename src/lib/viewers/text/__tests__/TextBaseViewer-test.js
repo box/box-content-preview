@@ -4,6 +4,7 @@ import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls/controls-root';
 import TextBaseViewer from '../TextBaseViewer';
 import TextControls from '../TextControls';
+import TextControlsV2 from '../TextControlsV2';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 jest.mock('../../controls/controls-root');
@@ -158,6 +159,18 @@ describe('lib/viewers/text/TextBaseViewer', () => {
                     scale={1}
                 />,
             );
+        });
+
+        test.each`
+            features                                                 | Controls
+            ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${TextControlsV2}
+            ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${TextControls}
+            ${{}}                                                    | ${TextControls}
+        `('should render $Controls.name for features $features', ({ features, Controls }) => {
+            textBase.options.features = features;
+            textBase.loadUI();
+
+            expect(textBase.controls.render.mock.calls[0][0].type).toBe(Controls);
         });
     });
 

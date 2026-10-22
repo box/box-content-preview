@@ -18,5 +18,5 @@
 .bp-ControlsBarGroup--distinct {
     height: $bp-controls-size-small;
     border-radius: $bp-controls-radius-inner;
-    background-color: fade-out($bdl-gray-80, 0.2);
+    background-color: color-mix(in srgb, var(--bp-gray-80) 80%, transparent);
 }

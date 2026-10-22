@@ -542,6 +542,33 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('handleFullscreenKey()', () => {
+        beforeEach(() => {
+            jest.spyOn(base, 'toggleFullscreen').mockImplementation();
+        });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s if the controls bar flag is on', key => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey(key)).toBe(true);
+            expect(base.toggleFullscreen).toBeCalled();
+        });
+
+        test('should leave F to the host if the controls bar flag is off', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+
+            expect(base.handleFullscreenKey('f')).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
+
+        test('should leave other keys alone', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey('r')).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
+    });
+
     describe('handleFullscreenEnter()', () => {
         beforeEach(() => {
             base.containerEl = document.querySelector('.bp-content');
@@ -1307,6 +1334,47 @@ describe('lib/viewers/BaseViewer', () => {
             base.createAnnotator();
 
             expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining({ onCopyLink }));
+        });
+
+        test.each`
+            enabled  | expected
+            ${true}  | ${{ blueprintMigrationControlsBar: true, enabledFeature: true }}
+            ${false} | ${{ enabledFeature: true }}
+        `(
+            'should only add blueprintMigrationControlsBar to the annotator features if the controls bar flag is $enabled',
+            ({ enabled, expected }) => {
+                jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+                jest.spyOn(base, 'createAnnotatorOptions');
+
+                base.options.features = { blueprintMigrationControlsBar: { enabled } };
+                base.options.boxAnnotations = {
+                    determineAnnotator: jest.fn().mockReturnValue(conf),
+                    getOptions: jest
+                        .fn()
+                        .mockReturnValue({ ...annotationsOptions, features: { enabledFeature: true } }),
+                };
+
+                base.createAnnotator();
+
+                expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining({ features: expected }));
+            },
+        );
+
+        test('should add blueprintMigrationControlsBar even if boxAnnotations has no features', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'createAnnotatorOptions');
+
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            base.options.boxAnnotations = {
+                determineAnnotator: jest.fn().mockReturnValue(conf),
+                getOptions: jest.fn().mockReturnValue(undefined),
+            };
+
+            base.createAnnotator();
+
+            expect(base.createAnnotatorOptions).toBeCalledWith(
+                expect.objectContaining({ features: { blueprintMigrationControlsBar: true } }),
+            );
         });
 
         test('should use default intl lib if annotator options not present ', () => {
