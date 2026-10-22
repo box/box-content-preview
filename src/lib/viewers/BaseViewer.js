@@ -611,7 +611,13 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     toggleFullscreen(isFullscreen, fullscreenToggleEl) {
-        this.fullscreenToggleEl = fullscreenToggleEl;
+        // The keyboard shortcut has no button to return focus to, so keep the last toggle unless it has
+        // since unmounted, as when it collapses into or out of the overflow menu
+        if (fullscreenToggleEl) {
+            this.fullscreenToggleEl = fullscreenToggleEl;
+        } else if (this.fullscreenToggleEl && !this.fullscreenToggleEl.isConnected) {
+            this.fullscreenToggleEl = null;
+        }
         fullscreen.toggle(this.containerEl);
     }
 
