@@ -1096,10 +1096,14 @@ class BaseViewer extends EventEmitter {
         }
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
+        const features = options && options.features;
 
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
-            features: options && options.features,
+            // Annotations moves its popups to the Blueprint toolbar together with the controls bar
+            features: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)
+                ? { ...features, blueprintMigrationControlsBar: true }
+                : features,
             initialColor: this.annotationModule.getColor(),
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
