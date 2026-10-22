@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { SVGProps } from 'react';
 import { IconButton, Text } from '@box/blueprint-web';
-import { ArrowCurveForward, RotateLeft } from '@box/blueprint-web-assets/icons/Medium';
+import { RotateLeft } from '@box/blueprint-web-assets/icons/Medium';
 import { Axis, AxisChange } from './RotateAxisControl';
 import { replacePlaceholders } from '../../../util';
 import './RotateAxisControlV2.scss';
+
+// Blueprint has RotateLeft and no RotateRight. Mirror the left glyph for the clockwise control.
+const RotateRight = (props: SVGProps<SVGSVGElement>): JSX.Element => (
+    <RotateLeft
+        {...props}
+        className={['bp-RotateAxisControlV2-mirror', props.className].filter(Boolean).join(' ')}
+    />
+);
 
 export type Props = {
     axis: Axis;
@@ -33,7 +41,7 @@ export default function RotateAxisControlV2({ axis, onRotateOnAxisChange }: Prop
                 aria-label={replacePlaceholders(__('box3d_settings_rotate_right'), [axisName])}
                 data-resin-target="rotateAxisRight"
                 data-testid="bp-rotate-axis-control-right"
-                icon={ArrowCurveForward}
+                icon={RotateRight}
                 onClick={handleClickRight}
             />
         </div>
