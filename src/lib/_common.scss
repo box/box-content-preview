@@ -1,7 +1,7 @@
-@import '~box-ui-elements/es/styles/variables';
 @import 'boxui';
 
 $header-height: 48px;
+$overlay-z-index: 190;
 
 .bp-is-hidden {
     /* stylelint-disable declaration-no-important */

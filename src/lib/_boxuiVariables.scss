@@ -9,6 +9,8 @@ $black: #000 !default;
 // Secondary colors
 $baby-blue: #bed4de !default;
 $hover-blue: #48b6f3 !default;
+$hover-blue-background: #f6fafd !default;
+$dark-cerulean: #1a5976 !default;
 $dusty-plum: #9b59b6 !default;
 $sad-sunjin: #72388f !default;
 $thats-mint: #26c281 !default;
@@ -49,3 +51,7 @@ $sunset-grey: #464a4f !default;
 $seventy-sixers: #767676 !default;
 $approx-mischka-grey: #a3adb9 !default;
 $d-eight: #d8d8d8 !default;
+
+// Breakpoints
+// Mirrors Blueprint's breakpoint-medium token, since custom properties can't be read in @media conditions.
+$bp-breakpoint-medium: 767px !default;
