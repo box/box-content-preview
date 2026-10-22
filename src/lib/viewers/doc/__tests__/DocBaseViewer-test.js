@@ -37,6 +37,7 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
     STATUS_NONE,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
@@ -182,9 +183,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         test.each`
-            toggleType | markToggle
-            ${'v1'}    | ${toggle => toggle.classList.add('bp-GalleryToggle')}
-            ${'v2'}    | ${toggle => toggle.setAttribute('data-bp-gallery-toggle', '')}
+            toggleType            | markToggle
+            ${'v1'}               | ${toggle => toggle.classList.add('bp-GalleryToggle')}
+            ${'v2'}               | ${toggle => toggle.setAttribute('data-bp-gallery-toggle', '')}
+            ${'v2 overflow menu'} | ${toggle => toggle.setAttribute('data-overflow-ids', 'find gallery')}
         `('should focus the $toggleType gallery toggle when the gallery controller returns focus', ({ markToggle }) => {
             docBase = new DocBaseViewer({
                 cache: {
@@ -215,6 +217,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.galleryController.focusToggle();
 
             expect(document.activeElement).toBe(toggle);
+        });
+
+        test.each`
+            features                                                 | isSync
+            ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${true}
+            ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${false}
+        `('should commit the controls synchronously for the gallery only with the v2 bar', ({ features, isSync }) => {
+            // The module object, not a namespace copy, so the spy sees the viewer's calls
+            const ReactDOM = require('react-dom');
+            jest.spyOn(ReactDOM, 'flushSync');
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                features,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+            jest.spyOn(docBase, 'renderUI').mockImplementation();
+
+            docBase.galleryController.requestUiUpdate();
+
+            expect(docBase.renderUI).toHaveBeenCalledTimes(1);
+            expect(ReactDOM.flushSync).toHaveBeenCalledTimes(isSync ? 1 : 0);
         });
 
         test('should default the thumbnails open if thumbnails toggle state is open', () => {
@@ -1661,6 +1701,65 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.previousPage).not.toBeCalled();
                 expect(stubs.nextPage).not.toBeCalled();
                 expect(arrowLeft).toBe(false);
+            });
+
+            test('should rotate on R when the v2 controls bar and rotate are enabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                    feature => feature === 'rotate.enabled' || feature === BLUEPRINT_MIGRATION_CONTROLS_BAR,
+                );
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+
+                expect(docBase.onKeydown('r')).toBe(true);
+                expect(docBase.onKeydown('R')).toBe(true);
+
+                expect(stubs.rotateLeft).toBeCalledTimes(2);
+            });
+
+            test('should not rotate on R when rotate is disabled or a modifier is held', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+
+                expect(docBase.onKeydown('r')).toBe(false);
+                expect(docBase.onKeydown('Shift+R')).toBe(false);
+                expect(stubs.rotateLeft).not.toBeCalled();
+            });
+
+            test('should toggle fullscreen on F when the v2 controls bar is enabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                    feature => feature === BLUEPRINT_MIGRATION_CONTROLS_BAR,
+                );
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+
+                expect(docBase.onKeydown('f')).toBe(true);
+                expect(docBase.onKeydown('F')).toBe(true);
+
+                expect(stubs.toggleFullscreen).toBeCalledTimes(2);
+            });
+
+            test('should ignore R and F when the v2 controls bar is off', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+
+                expect(docBase.onKeydown('r')).toBe(false);
+                expect(docBase.onKeydown('f')).toBe(false);
+                expect(stubs.rotateLeft).not.toBeCalled();
+                expect(stubs.toggleFullscreen).not.toBeCalled();
+            });
+
+            test('should leave Cmd or Ctrl F for the find bar', () => {
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+                const onKeydownStub = jest.fn();
+                docBase.findBar = {
+                    onKeydown: onKeydownStub,
+                    destroy: jest.fn(),
+                    removeListener: jest.fn(),
+                };
+
+                docBase.onKeydown('Meta+F', {});
+
+                expect(onKeydownStub).toBeCalledTimes(1);
+                expect(stubs.toggleFullscreen).not.toBeCalled();
             });
 
             describe('while the gallery is open', () => {

@@ -73,6 +73,7 @@ module.exports = {
         'react-dom/client',
         'react/jsx-runtime',
         'box-annotations',
+        'react-intl',
         /^box-ui-elements(\/.*)?$/,
         /^@box\/blueprint-web(\/.*)?$/,
         /^@box\/blueprint-web-assets(\/.*)?$/,

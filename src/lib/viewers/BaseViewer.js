@@ -611,7 +611,13 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     toggleFullscreen(isFullscreen, fullscreenToggleEl) {
-        this.fullscreenToggleEl = fullscreenToggleEl;
+        // The keyboard shortcut has no button to return focus to, so keep the last toggle unless it has
+        // since unmounted, as when it collapses into or out of the overflow menu
+        if (fullscreenToggleEl) {
+            this.fullscreenToggleEl = fullscreenToggleEl;
+        } else if (this.fullscreenToggleEl && !this.fullscreenToggleEl.isConnected) {
+            this.fullscreenToggleEl = null;
+        }
         fullscreen.toggle(this.containerEl);
     }
 
@@ -1096,10 +1102,14 @@ class BaseViewer extends EventEmitter {
         }
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
+        const features = options && options.features;
 
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
-            features: options && options.features,
+            // Annotations moves its popups to the Blueprint toolbar together with the controls bar
+            features: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)
+                ? { ...features, blueprintMigrationControlsBar: true }
+                : features,
             initialColor: this.annotationModule.getColor(),
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),

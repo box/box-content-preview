@@ -1,5 +1,6 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+import { flushSync } from 'react-dom';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
@@ -252,9 +253,19 @@ class DocBaseViewer extends BaseViewer {
             getThumbnailsSidebar: () => this.thumbnailsSidebar,
             setPage: n => this.setPage(n),
             toggleThumbnails: () => this.toggleThumbnails(),
-            requestUiUpdate: () => this.renderUI(),
+            requestUiUpdate: () => {
+                // The v2 bar moves the gallery toggle between the bar and its overflow menu, so the bar must be
+                // committed before focusToggle looks the toggle up
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    flushSync(() => this.renderUI());
+                } else {
+                    this.renderUI();
+                }
+            },
             focusToggle: () => {
-                const toggle = this.containerEl.querySelector('.bp-GalleryToggle, [data-bp-gallery-toggle]');
+                const toggle = this.containerEl.querySelector(
+                    '.bp-GalleryToggle, [data-bp-gallery-toggle], [data-overflow-ids~="gallery"]',
+                );
                 if (toggle && toggle.focus) {
                     toggle.focus();
                 }
@@ -971,6 +982,26 @@ class DocBaseViewer extends BaseViewer {
             case ']':
                 this.nextPage();
                 break;
+            case 'r':
+            case 'R':
+                // The rotate control is hidden while the gallery is open, so the key follows it.
+                // These bare keys belong to the v2 controls bar; the older bar has no such shortcuts.
+                if (
+                    this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) &&
+                    !this.galleryController?.isOpen &&
+                    this.featureEnabled('rotate.enabled')
+                ) {
+                    this.rotateLeft();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
+            case 'f':
+            case 'F':
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    this.toggleFullscreen();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
             default:
                 if (this.findBar) {
                     return this.findBar.onKeydown(event);
