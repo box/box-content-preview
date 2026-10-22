@@ -852,6 +852,17 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.emitMetric).not.toHaveBeenCalled();
         });
+
+        test('should not stop the timer if the viewer is destroyed', () => {
+            jest.spyOn(image, 'emitMetric').mockImplementation();
+            jest.spyOn(Timer, 'stop');
+            image.destroyed = true;
+
+            image.emitFirstRenderMetric();
+
+            expect(Timer.stop).not.toHaveBeenCalled();
+            expect(image.emitMetric).not.toHaveBeenCalled();
+        });
     });
 
     describe('handleAnnotationColorChange', () => {

@@ -2030,6 +2030,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emitMetric).not.toHaveBeenCalled();
             expect(base.firstRenderEmitted).toBe(false);
         });
+
+        test('should not stop the timer if the viewer is destroyed', () => {
+            jest.spyOn(Timer, 'stop');
+            base.destroyed = true;
+
+            base.emitFirstRenderMetric();
+
+            expect(Timer.stop).not.toHaveBeenCalled();
+            expect(base.emitMetric).not.toHaveBeenCalled();
+        });
     });
 
     describe('canHandleAnnotationControls()', () => {
