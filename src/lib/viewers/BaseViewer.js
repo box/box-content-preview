@@ -616,6 +616,23 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Toggles fullscreen on F for viewers that opt in from onKeydown. The key belongs to the Blueprint
+     * controls bar, so the older bar keeps no such shortcut.
+     *
+     * @protected
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    handleFullscreenKey(key) {
+        if ((key === 'f' || key === 'F') && this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.toggleFullscreen();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Resize the document depending on fullscreen state
      *
      * @return {void}
