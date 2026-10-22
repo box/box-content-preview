@@ -1,17 +1,10 @@
-import React, { SVGProps } from 'react';
+import React from 'react';
 import { IconButton, Text } from '@box/blueprint-web';
 import { RotateLeft } from '@box/blueprint-web-assets/icons/Medium';
 import { Axis, AxisChange } from './RotateAxisControl';
+import RotateRight from './RotateRight';
 import { replacePlaceholders } from '../../../util';
 import './RotateAxisControlV2.scss';
-
-// Blueprint has RotateLeft and no RotateRight. Mirror the left glyph for the clockwise control.
-const RotateRight = (props: SVGProps<SVGSVGElement>): JSX.Element => (
-    <RotateLeft
-        {...props}
-        className={['bp-RotateAxisControlV2-mirror', props.className].filter(Boolean).join(' ')}
-    />
-);
 
 export type Props = {
     axis: Axis;
