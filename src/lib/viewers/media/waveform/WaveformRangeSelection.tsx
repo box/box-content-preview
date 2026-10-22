@@ -476,7 +476,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     onPointerDown={stopRangeEvent}
                     onPointerUp={stopRangeEvent}
                 >
-                    <Toolbar.Root aria-label={__('media_range_comment')}>
+                    <Toolbar.Root aria-label={__('media_range_comment')} colorScheme="dark">
                         {showCommentButton && onDragCreate && (
                             <Toolbar.Button
                                 data-resin-target="waveformRangeComment"
@@ -488,7 +488,9 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                                 }}
                             >
                                 <Toolbar.Icon icon={Comment} />
-                                <Text as="span">{__('media_range_comment')}</Text>
+                                <Text as="span" color="textOnDarkDefault">
+                                    {__('media_range_comment')}
+                                </Text>
                             </Toolbar.Button>
                         )}
                         {showCommentButton && showClearControl && <Toolbar.Separator />}

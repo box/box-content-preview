@@ -24,3 +24,20 @@
     letter-spacing: 0.1em;
     background-color: rgba($black, 0.3); // Anything less than .3 looks too transparent on IE/Edge
 }
+
+// IconToggleButton has no on-dark variant, so its own custom properties take the tokens the dark
+// Toolbar uses for toggle items. [aria-pressed] outranks IconToggleButton's same-specificity defaults.
+.bp-SubtitlesToggleV2[aria-pressed] {
+    --icon-toggle-button-off-color: var(--bp-text-text-on-dark);
+    --icon-toggle-button-off-background: var(--bp-surface-cta-surface-icon-on-dark);
+    --icon-toggle-button-off-background-hover: var(--bp-surface-cta-surface-icon-on-dark-hover);
+    --icon-toggle-button-off-background-pressed: var(--bp-surface-cta-surface-icon-on-dark-pressed);
+    --icon-toggle-button-off-icon-color: var(--bp-icon-cta-icon-on-dark);
+    --icon-toggle-button-on-background: var(--bp-light-blue-opacity-12);
+    --icon-toggle-button-on-background-hover: var(--bp-light-blue-opacity-16);
+    --icon-toggle-button-on-background-pressed: var(--bp-light-blue-opacity-20);
+    --icon-toggle-button-on-border: var(--bp-border-01) solid var(--bp-light-blue-opacity-20);
+    --icon-toggle-button-on-border-focus: var(--bp-border-01) solid var(--bp-light-blue-opacity-30);
+    --icon-toggle-button-on-icon-color: var(--bp-light-blue-100);
+    --icon-toggle-button-focus-outline: var(--bp-border-02) solid var(--bp-outline-focus-on-dark);
+}

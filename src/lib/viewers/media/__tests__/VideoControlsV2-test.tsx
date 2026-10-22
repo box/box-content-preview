@@ -187,6 +187,17 @@ describe('VideoControlsV2', () => {
             render(<VideoControlsV2 {...defaultProps} subtitle={SUBTITLES_OFF} subtitles={subtitles} />);
             expect(screen.getByTitle('Subtitles/Closed Captions')).toBeInTheDocument();
         });
+
+        test('should render the Blueprint subtitles toggle when isBlueprintEnabled is true', () => {
+            render(
+                <VideoControlsV2 {...defaultProps} isBlueprintEnabled subtitle={SUBTITLES_OFF} subtitles={subtitles} />,
+                { wrapper: BlueprintProviders },
+            );
+
+            const toggle = screen.getByRole('button', { name: __('media_subtitles_cc') });
+            expect(toggle).toHaveClass('bp-SubtitlesToggleV2');
+            expect(toggle).toHaveAttribute('aria-pressed', 'false');
+        });
     });
 
     describe('settings', () => {

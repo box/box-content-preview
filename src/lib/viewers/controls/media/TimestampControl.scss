@@ -77,7 +77,7 @@
     font-size: 14px;
     font-weight: bold;
     line-height: 20px;
-    color: $bdl-gray-62;
+    color: $seventy-sixers;
     letter-spacing: 0.3px;
 }
 
@@ -98,7 +98,7 @@
 
     &:hover,
     &:focus {
-        background: $bdl-gray-05;
+        background: var(--bp-gray-05);
     }
 }
 
