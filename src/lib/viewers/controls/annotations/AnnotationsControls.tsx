@@ -2,7 +2,6 @@ import React from 'react';
 import noop from 'lodash/noop';
 import { bdlBoxBlue, white } from 'box-ui-elements/es/styles/variables';
 import AnnotationsButton from './AnnotationsButton';
-import AnnotationsTargetedTooltip from './AnnotationsTargetedTooltip';
 import IconPencilScribbleMedium24 from '../icons/IconPencilScribbleMedium24';
 import IconExit24 from '../icons/IconExit24';
 import IconTextHighlightMedium24 from '../icons/IconTextHighlightMedium24';
@@ -114,20 +113,18 @@ export default function AnnotationsControls({
             >
                 <IconPencilScribbleMedium24 style={{ color: isDrawingActive ? annotationColor : white }} />
             </AnnotationsButton>
-            <AnnotationsTargetedTooltip isEnabled={showRegion}>
-                <AnnotationsButton
-                    ref={annotationBtnRefs[AnnotationMode.REGION]}
-                    data-resin-target="highlightRegion"
-                    data-testid="bp-AnnotationsControls-regionBtn"
-                    isActive={isRegionActive}
-                    isEnabled={showRegion}
-                    mode={AnnotationMode.REGION}
-                    onClick={handleModeClick}
-                    title={__('region_comment')}
-                >
-                    <IconDashedSquareBubbleMedium24 />
-                </AnnotationsButton>
-            </AnnotationsTargetedTooltip>
+            <AnnotationsButton
+                ref={annotationBtnRefs[AnnotationMode.REGION]}
+                data-resin-target="highlightRegion"
+                data-testid="bp-AnnotationsControls-regionBtn"
+                isActive={isRegionActive}
+                isEnabled={showRegion}
+                mode={AnnotationMode.REGION}
+                onClick={handleModeClick}
+                title={__('region_comment')}
+            >
+                <IconDashedSquareBubbleMedium24 />
+            </AnnotationsButton>
             <AnnotationsButton
                 ref={annotationBtnRefs[AnnotationMode.HIGHLIGHT]}
                 data-resin-target="highlightText"
