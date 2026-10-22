@@ -4,70 +4,29 @@ import userEvent from '@testing-library/user-event';
 import AnnotationsToggleV2, { IconProps, ToolbarProps } from '../AnnotationsToggleV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsBarV2 from '../../controls-bar/ControlsBarV2';
-import ExperiencesProvider from '../../experiences';
 import { ActiveAnnotationMode } from '../annotationModeIcons';
-import { AnnotationMode, Experiences } from '../../../../types';
+import { AnnotationMode } from '../../../../types';
 
 type WithRef = { ref?: React.Ref<HTMLButtonElement> };
 
 describe('AnnotationsToggleV2', () => {
     const allModes: ActiveAnnotationMode[] = [AnnotationMode.REGION, AnnotationMode.HIGHLIGHT, AnnotationMode.DRAWING];
-    const getWrapper =
-        (experiences: Experiences = {}) =>
-        ({ children }: { children: React.ReactNode }) => (
-            <BlueprintProviders>
-                <ExperiencesProvider experiences={experiences}>{children}</ExperiencesProvider>
-            </BlueprintProviders>
-        );
-    const renderToggle = (props: Partial<ToolbarProps> & WithRef = {}, experiences: Experiences = {}) =>
+    const getWrapper = ({ children }: { children: React.ReactNode }) => (
+        <BlueprintProviders>{children}</BlueprintProviders>
+    );
+    const renderToggle = (props: Partial<ToolbarProps> & WithRef = {}) =>
         render(
             <ControlsBarV2>
                 <AnnotationsToggleV2 modes={allModes} {...props} />
             </ControlsBarV2>,
-            { wrapper: getWrapper(experiences) },
+            { wrapper: getWrapper },
         );
     const getToggle = () => screen.getByRole('button', { name: __('annotation_tools') });
 
     describe('lifecycle', () => {
-        const getExperiences = (canShow: boolean): Experiences => ({
-            tooltipFlowAnnotationsExperience: {
-                canShow,
-                onClose: jest.fn(),
-                onComplete: jest.fn(),
-                onShow: jest.fn(),
-            },
-        });
-
         beforeEach(() => {
             jest.spyOn(document, 'addEventListener');
             jest.spyOn(document, 'removeEventListener');
-        });
-
-        test('should not render tooltip if annotations experience can show is false', () => {
-            renderToggle({}, getExperiences(false));
-
-            expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-        });
-
-        test('should render tooltip if annotations experience can show is true', () => {
-            renderToggle({}, getExperiences(true));
-
-            expect(screen.getByRole('tooltip')).toBeInTheDocument();
-        });
-
-        test('should not show the discoverability tooltip on hover if the host passes no annotations experience', async () => {
-            renderToggle();
-
-            await userEvent.hover(getToggle());
-
-            expect(await screen.findByRole('tooltip')).toHaveTextContent(__('annotation_tools'));
-            expect(screen.queryByText(__('annotations_tooltip_title'))).not.toBeInTheDocument();
-        });
-
-        test('should not render tooltip if region mode is not offered', () => {
-            renderToggle({ modes: [AnnotationMode.HIGHLIGHT] }, getExperiences(true));
-
-            expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
         });
 
         test('should add and remove its event handlers on mount and unmount', () => {
@@ -222,12 +181,9 @@ describe('AnnotationsToggleV2', () => {
 
     describe('with buttonType="icon"', () => {
         const mediaModes: ActiveAnnotationMode[] = [AnnotationMode.REGION, AnnotationMode.DRAWING];
-        const renderIconToggle = (
-            props: Partial<Omit<IconProps, 'buttonType'>> & WithRef = {},
-            experiences: Experiences = {},
-        ) =>
+        const renderIconToggle = (props: Partial<Omit<IconProps, 'buttonType'>> & WithRef = {}) =>
             render(<AnnotationsToggleV2 buttonType="icon" modes={mediaModes} {...props} />, {
-                wrapper: getWrapper(experiences),
+                wrapper: getWrapper,
             });
 
         test('should render a standalone toggle without a toolbar', () => {
@@ -289,14 +245,6 @@ describe('AnnotationsToggleV2', () => {
             await userEvent.keyboard('{Escape}');
 
             expect(onEscape).toHaveBeenCalled();
-        });
-
-        test('should show the discoverability tooltip only when the host targets it', () => {
-            const experience = { canShow: true, onClose: jest.fn(), onComplete: jest.fn(), onShow: jest.fn() };
-            renderIconToggle({}, { tooltipFlowAnnotationsExperience: experience });
-
-            expect(screen.getByText(__('annotations_tooltip_title'))).toBeInTheDocument();
-            expect(experience.onShow).toHaveBeenCalled();
         });
     });
 });

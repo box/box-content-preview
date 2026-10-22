@@ -1,9 +1,9 @@
-@import '~box-ui-elements/es/styles/constants/media-queries';
+@import '../../../boxuiVariables';
 
 .bp-ThumbnailsToggleV2 {
     display: none;
 
-    @media (min-width: $size-large-min) {
+    @media (width > $bp-breakpoint-medium) {
         display: flex;
     }
 
