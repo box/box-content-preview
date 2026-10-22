@@ -2682,6 +2682,7 @@ describe('WaveformView', () => {
 
             const toolbar = screen.getByRole('toolbar', { name: __('media_range_comment') });
             expect(toolbar.closest('[data-testid="bp-waveform-playhead"]')).not.toBeNull();
+            expect(toolbar).toHaveAttribute('data-color-scheme', 'dark');
             expect(screen.getByTestId('bp-waveform-playhead-comment-toolbar')).toHaveClass(
                 'bp-WaveformView-playheadComment',
             );
