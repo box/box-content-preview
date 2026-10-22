@@ -1,3 +1,16 @@
+## 3.120.0 (2026-10-22)
+
+* fix(build): Externalize react-intl in the npm lib (#1872) ([01e57d7](https://github.com/box/box-content-preview/commit/01e57d7)), closes [#1872](https://github.com/box/box-content-preview/issues/1872)
+* feat(annotations): forward the controls bar flag to box-annotations (#1877) ([b24e0a5](https://github.com/box/box-content-preview/commit/b24e0a5)), closes [#1877](https://github.com/box/box-content-preview/issues/1877)
+* feat(gallery): render tile page numbers with Blueprint Text (#1871) ([a95ecf5](https://github.com/box/box-content-preview/commit/a95ecf5)), closes [#1871](https://github.com/box/box-content-preview/issues/1871)
+* feat(image360): add the Blueprint controls bar for 360 images (#1880) ([c9528b0](https://github.com/box/box-content-preview/commit/c9528b0)), closes [#1880](https://github.com/box/box-content-preview/issues/1880)
+* feat(media): render the subtitles toggle as a Blueprint icon toggle and darken the waveform comment ([4b159de](https://github.com/box/box-content-preview/commit/4b159de)), closes [#1874](https://github.com/box/box-content-preview/issues/1874)
+* chore(deps): bump launch-editor from 2.14.1 to 2.14.2 (#1870) ([d1f5f5e](https://github.com/box/box-content-preview/commit/d1f5f5e)), closes [#1870](https://github.com/box/box-content-preview/issues/1870)
+* chore(i18n): update translations (#1873) ([88fe053](https://github.com/box/box-content-preview/commit/88fe053)), closes [#1873](https://github.com/box/box-content-preview/issues/1873)
+* refactor(annotations): remove the unused annotations FTUX tooltip (#1882) ([53f1445](https://github.com/box/box-content-preview/commit/53f1445)), closes [#1882](https://github.com/box/box-content-preview/issues/1882)
+* refactor(annotations): source annotation palette from Blueprint tokens (#1879) ([e539686](https://github.com/box/box-content-preview/commit/e539686)), closes [#1879](https://github.com/box/box-content-preview/issues/1879)
+* refactor(styles): replace BUIE Sass imports with Blueprint tokens (#1875) ([e43876e](https://github.com/box/box-content-preview/commit/e43876e)), closes [#1875](https://github.com/box/box-content-preview/issues/1875)
+
 ## 3.119.0 (2026-10-21)
 
 * feat(comparison): add a close button and divider to the compared pane banner (#1862) ([790fdb1](https://github.com/box/box-content-preview/commit/790fdb1)), closes [#1862](https://github.com/box/box-content-preview/issues/1862)
