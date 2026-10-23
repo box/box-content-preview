@@ -33,7 +33,28 @@ const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
 const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
 const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
 const staticFolder = path.resolve('dist');
-const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
+
+// LANGUAGE selects one locale so a caller can compile that locale in its own
+// Node process. Unset keeps the previous behavior: every production locale,
+// or en-US for dev and CI.
+function resolveLanguages() {
+    const requested = process.env.LANGUAGE;
+
+    if (!requested) {
+        return isProd ? locales : ['en-US'];
+    }
+
+    if (!locales.includes(requested)) {
+        throw new Error(`LANGUAGE=${requested} is not a known @box/languages locale`);
+    }
+
+    return [requested];
+}
+
+const languages = resolveLanguages();
+// The per-locale driver copies these once. RsyncPlugin uses --delete, so
+// parallel locale processes must not each treat themselves as the copier.
+const skipSharedAssets = process.env.SKIP_SHARED_ASSETS === '1';
 
 /* eslint-disable key-spacing, require-jsdoc */
 function updateConfig(conf, language, index) {
@@ -94,7 +115,7 @@ function updateConfig(conf, language, index) {
         },
     };
 
-    if (index === 0) {
+    if (index === 0 && !skipSharedAssets) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
         config.plugins.push(new RsyncPlugin(exifAssets, staticFolder));
         config.plugins.push(new RsyncPlugin(pdfjsCmaps, staticFolder));
