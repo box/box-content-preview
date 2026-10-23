@@ -58,6 +58,11 @@ $comparison-compared-stage: var(--bp-gray-10);
     background-color: var(--bp-green-light-100);
 }
 
+// "999+" is wider than a number, so use a smaller font to keep it inside the fixed-size circle
+.bp-version-banner-badge--truncated {
+    font-size: var(--bp-font-size-03);
+}
+
 .bp-version-banner--compared .bp-version-banner-badge {
     font-weight: var(--bp-font-weight-bold);
     color: var(--bp-gray-black);

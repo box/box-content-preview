@@ -1,13 +1,17 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-import { DropdownMenu, EllipsizableText, IconButton } from '@box/blueprint-web';
+import { DropdownMenu, EllipsizableText, IconButton, Tooltip } from '@box/blueprint-web';
 import { Checkmark, Download, Ellipsis, Expand, Trash, XMark } from '@box/blueprint-web-assets/icons/Medium';
 
 import BlueprintProviders from './BlueprintProviders';
 import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from './constants';
+import { replacePlaceholders } from './util';
 
 import './ComparisonBanner.scss';
+
+// The badge is a fixed-size circle, so larger version numbers are shown as "999+"
+export const MAX_BADGE_VERSION = 999;
 
 export type ComparisonBannerFile = {
     created_by?: { name?: string };
@@ -53,6 +57,32 @@ export function getComparisonBannerAuthor(file: ComparisonBannerFile = {}): stri
     return file.modified_by?.name || file.created_by?.name || '';
 }
 
+function VersionBadge({
+    fullLabel,
+    isTruncated,
+    label,
+}: {
+    fullLabel: string;
+    isTruncated: boolean;
+    label: string;
+}): JSX.Element {
+    const badge = (
+        <span
+            aria-label={fullLabel}
+            className={
+                isTruncated ? 'bp-version-banner-badge bp-version-banner-badge--truncated' : 'bp-version-banner-badge'
+            }
+            role="img"
+            // The tooltip already shows the full label when truncated, so skip the native title then
+            title={isTruncated ? undefined : fullLabel}
+        >
+            {label}
+        </span>
+    );
+
+    return isTruncated ? <Tooltip content={fullLabel}>{badge}</Tooltip> : badge;
+}
+
 export default function ComparisonBanner({
     file = {},
     isComparedPreview = false,
@@ -67,6 +97,9 @@ export default function ComparisonBanner({
     const versionNumber = file.version_number != null && file.version_number !== '' ? String(file.version_number) : '';
     const timestamp = formatComparisonTimestamp(file.modified_at, locale);
     const author = getComparisonBannerAuthor(file);
+    const isBadgeTruncated = Number(versionNumber) > MAX_BADGE_VERSION;
+    const badgeLabel = isBadgeTruncated ? `${MAX_BADGE_VERSION}+` : versionNumber;
+    const badgeFullLabel = replacePlaceholders(__('comparison_banner_version'), [versionNumber]);
     // When "Open Full Preview" is the only action, the close button covers it, so skip the menu
     const showMenu = !!(onMakeCurrent || onDownload || onDelete);
     const showClose = !!onOpenFullPreview;
@@ -89,7 +122,9 @@ export default function ComparisonBanner({
                     className="bp-version-banner-details"
                     role="status"
                 >
-                    {versionNumber && <span className="bp-version-banner-badge">{versionNumber}</span>}
+                    {versionNumber && (
+                        <VersionBadge fullLabel={badgeFullLabel} isTruncated={isBadgeTruncated} label={badgeLabel} />
+                    )}
                     {(timestamp || author) && (
                         <div className="bp-version-banner-info">
                             {timestamp && (

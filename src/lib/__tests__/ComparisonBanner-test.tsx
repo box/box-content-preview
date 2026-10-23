@@ -79,6 +79,40 @@ describe('lib/ComparisonBanner', () => {
             expect(bannerEl.querySelector('.bp-version-banner-author')).toHaveTextContent('Emily Huang');
         });
 
+        test('should label the badge with the full version number', () => {
+            render(<ComparisonBanner file={file} locale="en-US" />);
+
+            const badgeEl = screen.getByRole('img', { name: 'Version 12' });
+
+            expect(badgeEl).toHaveTextContent('12');
+            expect(badgeEl).toHaveAttribute('title', 'Version 12');
+            expect(badgeEl).not.toHaveClass('bp-version-banner-badge--truncated');
+        });
+
+        test('should show version numbers up to 999 as-is', () => {
+            render(<ComparisonBanner file={{ ...file, version_number: 999 }} locale="en-US" />);
+
+            const badgeEl = screen.getByRole('img', { name: 'Version 999' });
+
+            expect(badgeEl).toHaveTextContent(/^999$/);
+            expect(badgeEl).not.toHaveClass('bp-version-banner-badge--truncated');
+        });
+
+        test('should truncate version numbers above 999 and keep the full number accessible', async () => {
+            const user = userEvent.setup();
+            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+
+            const badgeEl = screen.getByRole('img', { name: 'Version 1234' });
+
+            expect(badgeEl).toHaveTextContent(/^999\+$/);
+            expect(badgeEl).toHaveClass('bp-version-banner-badge--truncated');
+            expect(badgeEl).not.toHaveAttribute('title');
+
+            await user.hover(badgeEl);
+
+            expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
+        });
+
         test('should not render the actions menu on the current pane', () => {
             render(<ComparisonBanner file={file} locale="en-US" onDownload={jest.fn()} />);
 
