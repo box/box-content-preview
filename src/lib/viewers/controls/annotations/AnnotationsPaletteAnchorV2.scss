@@ -1,0 +1,6 @@
+// A zero-size point the palette opens above, right-aligned. Matches the annotator's drawing and region
+// layers (3) and comes later in the DOM, so it paints over them while comment popups (4) stay on top.
+.bp-AnnotationsPaletteAnchorV2 {
+    position: absolute;
+    z-index: 3;
+}
