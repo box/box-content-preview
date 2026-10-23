@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import Comment from '@box/blueprint-web-assets/icons/Medium/Comment';
 import AnnotationsToggleV2, { IconProps, ToolbarProps } from '../AnnotationsToggleV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsBarV2 from '../../controls-bar/ControlsBarV2';
@@ -22,6 +23,31 @@ describe('AnnotationsToggleV2', () => {
             { wrapper: getWrapper },
         );
     const getToggle = () => screen.getByRole('button', { name: __('annotation_tools') });
+    const getIconPath = (el: Element) => el.querySelector('svg path')?.getAttribute('d');
+
+    describe('icon', () => {
+        const getCommentPath = () => getIconPath(render(<Comment />).container);
+
+        test.each([AnnotationMode.NONE, AnnotationMode.DRAWING, AnnotationMode.HIGHLIGHT, AnnotationMode.REGION])(
+            'should show the comment icon in the toolbar in %s mode',
+            annotationMode => {
+                renderToggle({ annotationMode });
+
+                expect(getIconPath(getToggle())).toBe(getCommentPath());
+            },
+        );
+
+        test.each([AnnotationMode.NONE, AnnotationMode.DRAWING, AnnotationMode.REGION])(
+            'should show the comment icon as an icon button in %s mode',
+            annotationMode => {
+                render(<AnnotationsToggleV2 annotationMode={annotationMode} buttonType="icon" modes={allModes} />, {
+                    wrapper: getWrapper,
+                });
+
+                expect(getIconPath(getToggle())).toBe(getCommentPath());
+            },
+        );
+    });
 
     describe('lifecycle', () => {
         beforeEach(() => {
@@ -199,6 +225,26 @@ describe('AnnotationsToggleV2', () => {
 
             expect(getToggle().className).toMatch(/small/);
             expect(getToggle().className).toMatch(/high-contrast/);
+        });
+
+        test.each`
+            annotationMode            | isExpanded   | expanded
+            ${AnnotationMode.DRAWING} | ${false}     | ${'false'}
+            ${AnnotationMode.NONE}    | ${true}      | ${'true'}
+            ${AnnotationMode.DRAWING} | ${undefined} | ${'true'}
+        `(
+            'should set aria-expanded to $expanded when isExpanded is $isExpanded in $annotationMode mode',
+            ({ annotationMode, expanded, isExpanded }) => {
+                renderIconToggle({ annotationMode, isExpanded });
+
+                expect(getToggle()).toHaveAttribute('aria-expanded', expanded);
+            },
+        );
+
+        test('should pass className through to the toggle button', () => {
+            renderIconToggle({ className: 'custom-toggle' });
+
+            expect(getToggle()).toHaveClass('custom-toggle');
         });
 
         test('should forward its ref to the toggle button', () => {
