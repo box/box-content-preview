@@ -36,6 +36,7 @@ const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
 const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
 const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
 const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
+const pdfjsImages = path.resolve('node_modules/pdfjs-dist/legacy/web/images');
 const outDir = path.resolve('dist/lib');
 
 // Strings resolve at runtime: en-US is bundled as the default, and hosts pass other
@@ -161,6 +162,7 @@ module.exports = {
         new CopyAssetsPlugin(pdfjsIccs, outDir),
         new CopyAssetsPlugin(pdfjsStandardFonts, outDir),
         new CopyAssetsPlugin(pdfjsWasm, outDir),
+        new CopyAssetsPlugin(`${pdfjsImages}/`, path.join(outDir, 'pdfjs-images')),
     ],
     resolve: {
         alias: {

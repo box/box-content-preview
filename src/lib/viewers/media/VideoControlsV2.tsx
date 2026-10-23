@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toolbar } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
@@ -10,10 +11,17 @@ import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/medi
 import TimeControlsV2, { Props as TimeControlsProps } from '../controls/media/TimeControlsV2';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import VideoFullscreenButton from '../controls/media/VideoFullscreenButton';
+import { ANNOTATION_COLORS } from '../../AnnotationModule';
 import { SUBTITLES_OFF } from '../../constants';
 import { AnnotationMode } from '../../types/annotations';
 import AnnotationsControls from '../controls/annotations/AnnotationsControls';
+import AnnotationsPaletteAnchorV2 from '../controls/annotations/AnnotationsPaletteAnchorV2';
+import AnnotationsPaletteV2 from '../controls/annotations/AnnotationsPaletteV2';
+import AnnotationsToggleV2 from '../controls/annotations/AnnotationsToggleV2';
+import ColorPickerControlV2 from '../controls/color-picker/ColorPickerControlV2';
 import DrawingControls from '../controls/annotations/DrawingControls';
+import useFullscreen from '../controls/hooks/useFullscreen';
+import { ActiveAnnotationMode } from '../controls/annotations/annotationModeIcons';
 import ExperiencesProvider from '../controls/experiences';
 import { Experiences } from '../../types/targeting';
 import './VideoControlsV2.scss';
@@ -44,7 +52,7 @@ export type Props = DurationLabelsProps &
 
 export default function VideoControlsV2({
     annotationColor,
-    annotationMode,
+    annotationMode = AnnotationMode.NONE,
     aspectRatio,
     audioTrack,
     audioTracks,
@@ -94,6 +102,68 @@ export default function VideoControlsV2({
     videoAnnotationsEnabled = false,
     volume,
 }: Props): JSX.Element {
+    const isFullscreen = useFullscreen();
+
+    // Listed in the palette's button order, which is also the order the toggle falls back to
+    const annotationModes: ActiveAnnotationMode[] = [];
+
+    if (videoAnnotationsEnabled && isBlueprintEnabled && !isFullscreen) {
+        if (hasRegion) {
+            annotationModes.push(AnnotationMode.REGION);
+        }
+        if (hasDrawing) {
+            annotationModes.push(AnnotationMode.DRAWING);
+        }
+    }
+
+    const hasAnnotationsV2 = annotationModes.length > 0;
+    const isAnnotating = hasAnnotationsV2 && annotationMode !== AnnotationMode.NONE;
+    const [isPaletteDismissed, setIsPaletteDismissed] = React.useState(false);
+    const [paletteMode, setPaletteMode] = React.useState(annotationMode);
+    const isPaletteOpen = isAnnotating && !isPaletteDismissed;
+    const annotationsToggleRef = React.useRef<HTMLButtonElement>(null);
+
+    if (paletteMode !== annotationMode) {
+        setPaletteMode(annotationMode);
+        setIsPaletteDismissed(false);
+    }
+
+    // The annotator mounts its drawing and region layers beside the video, so a press anywhere in its
+    // container starts a markup. Capture runs before the annotator's own handlers can stop the event.
+    React.useEffect(() => {
+        const surfaceEl = mediaEl?.parentElement;
+
+        if (!isAnnotating || !surfaceEl) {
+            return undefined;
+        }
+
+        const handlePointerDown = (): void => setIsPaletteDismissed(true);
+
+        surfaceEl.addEventListener('pointerdown', handlePointerDown, true);
+
+        return (): void => {
+            surfaceEl.removeEventListener('pointerdown', handlePointerDown, true);
+        };
+    }, [isAnnotating, mediaEl]);
+
+    React.useEffect(() => {
+        const toggleEl = annotationsToggleRef.current;
+
+        if (!isAnnotating || !isPaletteDismissed || !toggleEl) {
+            return undefined;
+        }
+
+        const handleRestore = (): void => setIsPaletteDismissed(false);
+
+        toggleEl.addEventListener('focus', handleRestore);
+        toggleEl.addEventListener('pointerenter', handleRestore);
+
+        return (): void => {
+            toggleEl.removeEventListener('focus', handleRestore);
+            toggleEl.removeEventListener('pointerenter', handleRestore);
+        };
+    }, [isAnnotating, isPaletteDismissed]);
+
     return (
         <ExperiencesProvider experiences={experiences}>
             <div className="bp-VideoControlsV2" data-testid="media-controls-wrapper-v2">
@@ -209,7 +279,47 @@ export default function VideoControlsV2({
                                 subtitles={subtitles}
                             />
                         )}
-                        {videoAnnotationsEnabled && (
+                        {hasAnnotationsV2 && (
+                            <>
+                                <div className="bp-VideoControlsV2-divider" />
+                                <AnnotationsToggleV2
+                                    ref={annotationsToggleRef}
+                                    annotationMode={annotationMode}
+                                    buttonType="icon"
+                                    className="bp-VideoControlsV2-annotationsToggle"
+                                    isExpanded={isPaletteOpen}
+                                    modes={annotationModes}
+                                    onAnnotationModeClick={onAnnotationModeClick}
+                                    onAnnotationModeEscape={onAnnotationModeEscape}
+                                    tooltipSide={isPaletteOpen ? 'left' : undefined}
+                                />
+                                {isPaletteOpen && (
+                                    <AnnotationsPaletteAnchorV2 anchorRef={annotationsToggleRef}>
+                                        <AnnotationsPaletteV2>
+                                            <AnnotationsPaletteV2.Modes
+                                                annotationMode={annotationMode}
+                                                onAnnotationModeClick={onAnnotationModeClick}
+                                            >
+                                                {annotationModes.map(mode => (
+                                                    <AnnotationsPaletteV2.Mode key={mode} value={mode} />
+                                                ))}
+                                            </AnnotationsPaletteV2.Modes>
+                                            {annotationMode === AnnotationMode.DRAWING && (
+                                                <>
+                                                    <Toolbar.Separator />
+                                                    <ColorPickerControlV2
+                                                        activeColor={annotationColor}
+                                                        colors={ANNOTATION_COLORS}
+                                                        onColorSelect={onAnnotationColorChange}
+                                                    />
+                                                </>
+                                            )}
+                                        </AnnotationsPaletteV2>
+                                    </AnnotationsPaletteAnchorV2>
+                                )}
+                            </>
+                        )}
+                        {videoAnnotationsEnabled && !isBlueprintEnabled && (
                             <>
                                 <div className="bp-VideoControlsV2-divider" />
                                 <AnnotationsControls
