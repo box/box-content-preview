@@ -11,7 +11,6 @@ import ComparisonBanner, {
 describe('lib/ComparisonBanner', () => {
     const originalResizeObserver = global.ResizeObserver;
 
-    // Blueprint's EllipsizableText observes its size to decide whether to show a tooltip
     beforeAll(() => {
         global.ResizeObserver = jest.fn(() => ({
             disconnect: jest.fn(),
