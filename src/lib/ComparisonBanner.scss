@@ -14,8 +14,7 @@ $comparison-compared-stage: var(--bp-gray-10);
     background: linear-gradient(180deg, var(--bp-gray-05) 19.61%, var(--bp-white-opacity-00) 100%);
 }
 
-// Side-by-side panes can be narrower than .bp-container's 300px min-width. The container would then overflow its
-// pane and the banner (sized to the container) would too, pushing the actions off-screen and defeating ellipsis.
+// Let narrow side-by-side panes shrink below .bp-container's 300px min-width so the banner fits
 .bp-container:has(.bp-version-banner) {
     min-width: 0;
 }
