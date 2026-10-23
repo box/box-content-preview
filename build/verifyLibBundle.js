@@ -9,10 +9,7 @@ const path = require('path');
 // webpack.config.lib.js prevent it; this check keeps that from silently regressing.
 const bundlePath = path.resolve(__dirname, '../dist/lib/index.js');
 const packagePath = path.resolve(__dirname, '../package.json');
-const pdfjsWorkerPath = path.resolve(
-    __dirname,
-    '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs',
-);
+const pdfjsWorkerPath = path.resolve(__dirname, '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs');
 const emittedWorkerPath = path.resolve(__dirname, '../dist/lib/pdf.worker.min.mjs');
 
 if (!fs.existsSync(bundlePath)) {
@@ -128,6 +125,32 @@ expectedLocales.forEach(locale => {
 
     if (!fs.readFileSync(localePath, 'utf8').includes('"bcp.')) {
         console.error(`verifyLibBundle: ${localePath} has no "bcp."-prefixed messages.`);
+        process.exit(1);
+    }
+});
+
+function containsNonEmptyFile(dirPath) {
+    if (!fs.existsSync(dirPath) || !fs.statSync(dirPath).isDirectory()) {
+        return false;
+    }
+
+    return fs.readdirSync(dirPath).some(entry => {
+        const entryPath = path.join(dirPath, entry);
+        const stat = fs.statSync(entryPath);
+
+        if (stat.isDirectory()) {
+            return containsNonEmptyFile(entryPath);
+        }
+
+        return stat.isFile() && stat.size > 0;
+    });
+}
+
+['wasm', 'cmaps', 'iccs', 'standard_fonts', 'pdfjs-images', 'exif', 'third-party'].forEach(assetName => {
+    const assetDir = path.resolve(__dirname, '../dist/lib', assetName);
+
+    if (!containsNonEmptyFile(assetDir)) {
+        console.error(`verifyLibBundle: dist/lib/${assetName} is missing or empty.`);
         process.exit(1);
     }
 });
