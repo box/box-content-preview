@@ -519,7 +519,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (assets) {
             if (this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
-                this.prefetchAssets(EXIF_READER, CSS);
+                this.prefetchAssets(EXIF_READER, []);
             } else {
                 const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
                 this.prefetchAssets(ASSETS, CSS);
@@ -1221,7 +1221,9 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             eventBus: this.pdfEventBus,
             findController: this.pdfFindController,
-            imageResourcesPath: assetUrlCreator(IMAGES),
+            imageResourcesPath: this.featureEnabled('useNpmPdfjs')
+                ? assetUrlCreator('pdfjs-images/')
+                : assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
             maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
@@ -1381,9 +1383,7 @@ class DocBaseViewer extends BaseViewer {
         // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
         // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
         this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/legacy/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(
-            /* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
-        );
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs');
         await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/legacy/web/pdf_viewer.css');
     }
 

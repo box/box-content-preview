@@ -53,7 +53,7 @@ import {
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
-import { CMAP, EXIF, EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
+import { CMAP, EXIF, EXIF_READER, IMAGES, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
 import ThumbnailsSidebarV2 from '../../../ThumbnailsSidebarV2';
 
@@ -569,17 +569,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.prefetchAssets).toHaveBeenCalledWith(JS, CSS);
             });
 
-            test('npm build prefetches exif only and skips the vendored pdfjs scripts', () => {
+            test('npm build prefetches exif only and skips vendored pdf.js scripts and stylesheets', () => {
                 global.__BCP_NPM_BUILD__ = true;
                 jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
 
                 try {
                     docBase.prefetch({ assets: true, preload: false, content: false });
-                    expect(docBase.prefetchAssets).toHaveBeenCalledWith(EXIF_READER, CSS);
+                    expect(docBase.prefetchAssets).toHaveBeenCalledWith(EXIF_READER, []);
                     expect(docBase.prefetchAssets).not.toHaveBeenCalledWith(PRELOAD_JS, [], true);
                 } finally {
                     delete global.__BCP_NPM_BUILD__;
                 }
+            });
+
+            test('useNpmPdfjs prefetches exif only and skips vendored pdf.js scripts and stylesheets', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+
+                docBase.prefetch({ assets: true, preload: false, content: false });
+
+                expect(docBase.prefetchAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                expect(docBase.prefetchAssets).not.toHaveBeenCalledWith(PRELOAD_JS, [], true);
             });
 
             test('should not prefetch doc first pages if assets is true and ff is on and preload is true and is watermarked', () => {
@@ -2492,7 +2502,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 );
             });
 
-            test('should point the npm pdf.js path at wasm and standard fonts and omit isEvalSupported', () => {
+            test('should point the npm pdf.js path at v6 assets and images and omit isEvalSupported', () => {
                 stubs.urlCreator.mockRestore();
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
                 docBase.options.location = {
@@ -2508,6 +2518,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(config.wasmUrl).toBe('https://cdn.example/preview/wasm/');
                 expect(config.standardFontDataUrl).toBe('https://cdn.example/preview/standard_fonts/');
                 expect(config).not.toHaveProperty('isEvalSupported');
+                expect(stubs.pdfViewerClass).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        imageResourcesPath: 'https://cdn.example/preview/pdfjs-images/',
+                    }),
+                );
             });
 
             test('should keep isEvalSupported false and skip v6 asset urls when useNpmPdfjs is off', () => {
@@ -2526,6 +2541,53 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(config).not.toHaveProperty('iccUrl');
                 expect(config).not.toHaveProperty('wasmUrl');
                 expect(config).not.toHaveProperty('standardFontDataUrl');
+                expect(stubs.pdfViewerClass).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        imageResourcesPath: `https://cdn.example/preview/${IMAGES}`,
+                    }),
+                );
+            });
+
+            test('npm build resolves every pdf.js asset url under staticBaseURI', () => {
+                global.__BCP_NPM_BUILD__ = true;
+                stubs.urlCreator.mockRestore();
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+                const staticBaseURI = 'https://static.example/preview/';
+                docBase.options.location = {
+                    locale: 'en-US',
+                    baseURI: 'https://cdn.example/preview/3.119.0/en-US/',
+                    staticBaseURI,
+                };
+                const prefetched = jest.spyOn(util, 'prefetchAssets').mockImplementation();
+
+                try {
+                    docBase.initViewer('url');
+                    docBase.prefetch({ assets: true, preload: false, content: false });
+
+                    const config = stubs.getDocument.mock.calls[0][0];
+                    const viewerOptions = stubs.pdfViewerClass.mock.calls[0][0];
+                    const exifUrls = prefetched.mock.calls.map(call => call[0]).find(urls => urls.length);
+
+                    expect(config.cMapUrl).toBe(`${staticBaseURI}cmaps/`);
+                    expect(config.iccUrl).toBe(`${staticBaseURI}iccs/`);
+                    expect(config.wasmUrl).toBe(`${staticBaseURI}wasm/`);
+                    expect(config.standardFontDataUrl).toBe(`${staticBaseURI}standard_fonts/`);
+                    expect(viewerOptions.imageResourcesPath).toBe(`${staticBaseURI}pdfjs-images/`);
+                    expect(exifUrls).toEqual([`${staticBaseURI}exif/exif-reader.min.js`]);
+                    [
+                        config.cMapUrl,
+                        config.iccUrl,
+                        config.wasmUrl,
+                        config.standardFontDataUrl,
+                        viewerOptions.imageResourcesPath,
+                        ...exifUrls,
+                    ].forEach(url => {
+                        expect(url.startsWith(staticBaseURI)).toBe(true);
+                        expect(url.includes('third-party/doc/')).toBe(false);
+                    });
+                } finally {
+                    delete global.__BCP_NPM_BUILD__;
+                }
             });
 
             test('should pass httpHeaders to pdf.js', () => {

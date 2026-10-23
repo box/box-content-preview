@@ -32,6 +32,7 @@ const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
 const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
 const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
 const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
+const pdfjsImages = path.resolve('node_modules/pdfjs-dist/legacy/web/images');
 const staticFolder = path.resolve('dist');
 const languages = isProd ? locales : ['en-US']; // Only 1 language needed for dev
 
@@ -101,6 +102,7 @@ function updateConfig(conf, language, index) {
         config.plugins.push(new RsyncPlugin(pdfjsIccs, staticFolder));
         config.plugins.push(new RsyncPlugin(pdfjsStandardFonts, staticFolder));
         config.plugins.push(new RsyncPlugin(pdfjsWasm, staticFolder));
+        config.plugins.push(new RsyncPlugin(`${pdfjsImages}/`, path.join(staticFolder, 'pdfjs-images')));
     }
 
     if (isDev) {
