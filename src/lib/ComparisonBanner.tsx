@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-import { DropdownMenu, EllipsizableText, IconButton, Tooltip } from '@box/blueprint-web';
+import { DropdownMenu, EllipsizableText, Focusable, IconButton, Tooltip } from '@box/blueprint-web';
 import { Checkmark, Download, Ellipsis, Expand, Trash, XMark } from '@box/blueprint-web-assets/icons/Medium';
 
 import BlueprintProviders from './BlueprintProviders';
@@ -73,14 +73,19 @@ function VersionBadge({
                 isTruncated ? 'bp-version-banner-badge bp-version-banner-badge--truncated' : 'bp-version-banner-badge'
             }
             role="img"
-            // The tooltip already shows the full label when truncated, so skip the native title then
-            title={isTruncated ? undefined : fullLabel}
         >
             {label}
         </span>
     );
 
-    return isTruncated ? <Tooltip content={fullLabel}>{badge}</Tooltip> : badge;
+    // Tooltip triggers must be focusable so keyboard users can open the full version number
+    return isTruncated ? (
+        <Tooltip content={fullLabel}>
+            <Focusable>{badge}</Focusable>
+        </Tooltip>
+    ) : (
+        badge
+    );
 }
 
 export default function ComparisonBanner({

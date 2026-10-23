@@ -84,7 +84,7 @@ describe('lib/ComparisonBanner', () => {
             const badgeEl = screen.getByRole('img', { name: 'Version 12' });
 
             expect(badgeEl).toHaveTextContent('12');
-            expect(badgeEl).toHaveAttribute('title', 'Version 12');
+            expect(badgeEl).not.toHaveAttribute('title');
             expect(badgeEl).not.toHaveClass('bp-version-banner-badge--truncated');
         });
 
@@ -110,6 +110,25 @@ describe('lib/ComparisonBanner', () => {
             await user.hover(badgeEl);
 
             expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
+        });
+
+        test('should show the full version number in a tooltip when the truncated badge is focused', async () => {
+            const user = userEvent.setup();
+            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+
+            await user.tab();
+
+            expect(screen.getByRole('img', { name: 'Version 1234' })).toHaveFocus();
+            expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
+        });
+
+        test('should keep the badge out of the tab order when it is not truncated', async () => {
+            const user = userEvent.setup();
+            render(<ComparisonBanner file={{ ...file, version_number: '999' }} locale="en-US" />);
+
+            await user.tab();
+
+            expect(screen.getByRole('img', { name: 'Version 999' })).not.toHaveFocus();
         });
 
         test('should not render the actions menu on the current pane', () => {
