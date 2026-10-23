@@ -68,11 +68,12 @@ function VersionBadge({
 }): JSX.Element {
     const badge = (
         <span
-            aria-label={fullLabel}
+            // When truncated, the tooltip supplies the full number
+            aria-label={isTruncated ? undefined : fullLabel}
             className={
                 isTruncated ? 'bp-version-banner-badge bp-version-banner-badge--truncated' : 'bp-version-banner-badge'
             }
-            role="img"
+            role={isTruncated ? undefined : 'img'}
         >
             {label}
         </span>

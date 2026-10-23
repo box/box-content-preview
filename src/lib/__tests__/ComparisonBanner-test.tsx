@@ -101,15 +101,18 @@ describe('lib/ComparisonBanner', () => {
             const user = userEvent.setup();
             render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
 
-            const badgeEl = screen.getByRole('img', { name: 'Version 1234' });
+            const badgeEl = screen.getByText('999+');
 
-            expect(badgeEl).toHaveTextContent(/^999\+$/);
             expect(badgeEl).toHaveClass('bp-version-banner-badge--truncated');
             expect(badgeEl).not.toHaveAttribute('title');
+            // The tooltip supplies the full number, so the badge has no label that would repeat it
+            expect(badgeEl).not.toHaveAttribute('aria-label');
+            expect(badgeEl).not.toHaveAttribute('role');
 
             await user.hover(badgeEl);
 
             expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
+            expect(badgeEl).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id);
         });
 
         test('should show the full version number in a tooltip when the truncated badge is focused', async () => {
@@ -118,7 +121,7 @@ describe('lib/ComparisonBanner', () => {
 
             await user.tab();
 
-            expect(screen.getByRole('img', { name: 'Version 1234' })).toHaveFocus();
+            expect(screen.getByText('999+')).toHaveFocus();
             expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
         });
 
