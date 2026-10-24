@@ -39,7 +39,7 @@ class Breadcrumbs extends React.PureComponent {
         const { fullPath, onClick, view } = this.props;
 
         return (
-            <div className="bp-Breadcrumbs">
+            <div className="bp-Breadcrumbs" data-testid="bp-archive-breadcrumbs">
                 <Breadcrumb>
                     {view === VIEWS.VIEW_SEARCH ? (
                         <span>{__('search_results')}</span>
