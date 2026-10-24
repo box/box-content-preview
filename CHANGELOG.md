@@ -1,3 +1,8 @@
+## 3.122.0 (2026-10-24)
+
+* chore(i18n): update translations (#1885) ([f35a114](https://github.com/box/box-content-preview/commit/f35a114)), closes [#1885](https://github.com/box/box-content-preview/issues/1885)
+* feat(video): add Blueprint annotations toggle and toolbar to video controls (#1887) ([c39e229](https://github.com/box/box-content-preview/commit/c39e229)), closes [#1887](https://github.com/box/box-content-preview/issues/1887)
+
 ## 3.121.0 (2026-10-23)
 
 * fix(doc): Ship pdf.js viewer images with the npm and CDN builds (#1883) ([9bf2b67](https://github.com/box/box-content-preview/commit/9bf2b67)), closes [#1883](https://github.com/box/box-content-preview/issues/1883)
