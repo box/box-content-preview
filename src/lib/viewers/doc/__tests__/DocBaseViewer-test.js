@@ -64,6 +64,7 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 
@@ -1984,6 +1985,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.pdfViewerClass).toBeCalledWith(
                         expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
                     );
+                });
+            });
+
+            test('should keep the mobile maxCanvasPixels on mobile when useNpmPdfjs is on', () => {
+                docBase.isMobile = true;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            test('should set a positive maxCanvasPixels on desktop when useNpmPdfjs is on so zoomed pages stay sharp', () => {
+                docBase.isMobile = false;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: NPM_PDFJS_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            test('should leave maxCanvasPixels unlimited on desktop when useNpmPdfjs is off', () => {
+                docBase.isMobile = false;
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ maxCanvasPixels: -1 }));
                 });
             });
 

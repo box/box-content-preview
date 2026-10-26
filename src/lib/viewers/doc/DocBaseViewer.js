@@ -87,6 +87,9 @@ const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
+// npm pdf.js draws its sharp detail canvas over zoomed pages only when maxCanvasPixels is positive
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25; // pdf.js desktop default
+const LEGACY_PDFJS_MAX_CANVAS_SIZE = -1; // Unlimited
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 const PDFJS_TEXT_LAYER_MODE = {
@@ -1225,10 +1228,17 @@ class DocBaseViewer extends BaseViewer {
                 ? assetUrlCreator('pdfjs-images/')
                 : assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
-            maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            maxCanvasPixels: this.getMaxCanvasPixels(),
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? enabledTextLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
+    }
+
+    getMaxCanvasPixels() {
+        if (this.isMobile) {
+            return MOBILE_MAX_CANVAS_SIZE;
+        }
+        return this.featureEnabled('useNpmPdfjs') ? NPM_PDFJS_MAX_CANVAS_SIZE : LEGACY_PDFJS_MAX_CANVAS_SIZE;
     }
 
     /**
