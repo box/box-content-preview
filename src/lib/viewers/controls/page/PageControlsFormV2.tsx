@@ -10,6 +10,8 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
     const [isInputShown, setIsInputShown] = React.useState(false);
     // A string because Toolbar.Input only supports text types, so a parsed number would show "NaN" once cleared
     const [inputValue, setInputValue] = React.useState(pageNumber.toString());
+    // The input takes the button's size, so the bar keeps its width and height while the page number is edited
+    const [inputSize, setInputSize] = React.useState<React.CSSProperties>();
 
     const buttonElRef = React.useRef<HTMLButtonElement>(null);
     const inputElRef = React.useRef<HTMLInputElement>(null);
@@ -34,6 +36,13 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
         }
 
         setIsInputShown(false);
+    };
+
+    const handleButtonClick = (): void => {
+        const rect = buttonElRef.current?.getBoundingClientRect();
+
+        setInputSize(rect?.width ? { height: rect.height, width: rect.width } : undefined);
+        setIsInputShown(true);
     };
 
     const handleNumInputChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -95,7 +104,7 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
     return (
         <div className="bp-PageControlsFormV2" data-testid="bp-PageControlsForm">
             {isInputShown ? (
-                <div className="bp-PageControlsFormV2-input">
+                <div className="bp-PageControlsFormV2-input" style={inputSize}>
                     <Toolbar.Input
                         ref={inputElRef}
                         aria-label={__('enter_page_num')}
@@ -118,7 +127,7 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
                         data-resin-target="pageNumberOpen"
                         data-testid="bp-PageControlsForm-button"
                         disabled={pageCount <= 1}
-                        onClick={(): void => setIsInputShown(true)}
+                        onClick={handleButtonClick}
                     >
                         <span
                             className="bp-PageControlsFormV2-button-label"

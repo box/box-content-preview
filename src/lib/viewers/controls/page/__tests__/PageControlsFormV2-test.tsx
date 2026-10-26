@@ -56,6 +56,18 @@ describe('PageControlsFormV2', () => {
             expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
         });
 
+        test('should size the input to the button so the bar keeps its size', async () => {
+            const user = userEvent.setup();
+            getWrapper();
+
+            const button = screen.getByRole('button', { name: '1 / 3' });
+            jest.spyOn(button, 'getBoundingClientRect').mockReturnValue({ height: 24, width: 40 } as DOMRect);
+
+            await user.click(button);
+
+            expect(getInput().closest('.bp-PageControlsFormV2-input')).toHaveStyle({ height: '24px', width: '40px' });
+        });
+
         test('should tell the controls layer it is editing while the input is shown', async () => {
             const user = userEvent.setup();
             const setIsEditing = jest.fn();
