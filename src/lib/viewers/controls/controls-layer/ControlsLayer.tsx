@@ -105,8 +105,9 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         isEditingRef.current = value;
 
         // Ending an edit can remove the focused field without a blur, so check where focus is now and hide
-        // once neither focus nor the cursor is on the layer
-        if (wasEditing && !value) {
+        // once neither focus nor the cursor is on the layer. The layer is already gone if the edit ended
+        // because the controls unmounted.
+        if (wasEditing && !value && layerElRef.current) {
             hasFocusRef.current = !!layerElRef.current?.contains(document.activeElement);
             helpersRef.current.hide();
         }

@@ -250,6 +250,33 @@ describe('ControlsLayer', () => {
 
             expect(element).not.toHaveClass(SHOW_CLASSNAME);
         });
+
+        test('should not hide after the controls unmount mid-edit', () => {
+            const EditingField = (): JSX.Element => {
+                const { setIsEditing } = React.useContext(ControlsLayerContext);
+
+                React.useEffect(() => {
+                    setIsEditing(true);
+
+                    return (): void => setIsEditing(false);
+                }, [setIsEditing]);
+
+                return <input aria-label="Page" />;
+            };
+            const onHide = jest.fn();
+            const { unmount } = render(
+                <ControlsLayer onHide={onHide}>
+                    <EditingField />
+                </ControlsLayer>,
+            );
+
+            unmount();
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
+
+            expect(onHide).not.toHaveBeenCalled();
+        });
     });
 
     describe('unmount', () => {
