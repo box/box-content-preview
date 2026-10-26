@@ -220,6 +220,36 @@ describe('ControlsLayer', () => {
 
             expect(input).not.toHaveFocus();
         });
+
+        test('should hide once editing ends with the field removed while the cursor is outside', async () => {
+            const RemovableField = ({ isEditing }: { isEditing: boolean }): JSX.Element | null => {
+                const { setIsEditing } = React.useContext(ControlsLayerContext);
+
+                React.useEffect(() => setIsEditing(isEditing), [isEditing, setIsEditing]);
+
+                return isEditing ? <input aria-label="Page" data-testid="inner-input" /> : null;
+            };
+            const { rerender } = render(
+                <ControlsLayer>
+                    <RemovableField isEditing />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+
+            fireEvent.mouseEnter(element);
+            fireEvent.focus(screen.getByTestId('inner-input'));
+            fireEvent.mouseLeave(element);
+            rerender(
+                <ControlsLayer>
+                    <RemovableField isEditing={false} />
+                </ControlsLayer>,
+            );
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
+
+            expect(element).not.toHaveClass(SHOW_CLASSNAME);
+        });
     });
 
     describe('unmount', () => {
