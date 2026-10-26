@@ -47,11 +47,7 @@ class Video360Viewer extends DashViewer {
         this.onCanvasMouseUp = this.onCanvasMouseUp.bind(this);
     }
 
-    /**
-     * The V2 layout pads and centers the video, which breaks the full-bleed skybox canvas.
-     *
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     supportsVideoPlayerV2() {
         return false;
     }
