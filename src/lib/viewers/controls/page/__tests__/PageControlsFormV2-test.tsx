@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
+import { TABULAR_DIGIT_CLASS } from '../../../../TabularDigits';
 import ControlsLayerContext from '../../controls-layer/ControlsLayerContext';
 import PageControlsFormV2 from '../PageControlsFormV2';
 import { ControlsBarV2 } from '../../controls-bar';
@@ -195,6 +196,18 @@ describe('PageControlsFormV2', () => {
 
             expect(screen.getByRole('button', { name: '2 / 3' })).toBeInTheDocument();
             expect(screen.getByTestId('bp-PageControlsForm-button-label')).toHaveTextContent('2 / 3');
+        });
+
+        test('should give each page digit a fixed width so the next button does not shift', () => {
+            getWrapper({ pageCount: 12, pageNumber: 10 });
+
+            const label = screen.getByTestId('bp-PageControlsForm-button-label');
+
+            expect(label.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)).toHaveLength(4);
+            expect(label.querySelector('[aria-hidden]')).toContainElement(
+                label.querySelector(`.${TABULAR_DIGIT_CLASS}`),
+            );
+            expect(screen.getByRole('button', { name: '10 / 12' })).toBeInTheDocument();
         });
 
         test('should render disabled button when pageCount is 1', () => {

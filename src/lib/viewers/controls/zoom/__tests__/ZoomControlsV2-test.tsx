@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
+import { TABULAR_DIGIT_CLASS } from '../../../../TabularDigits';
 import ControlsBarV2 from '../../controls-bar/ControlsBarV2';
 import ZoomControlsV2 from '../ZoomControlsV2';
 
@@ -114,7 +115,19 @@ describe('ZoomControlsV2', () => {
         test('should default the scale to 100%', () => {
             getWrapper();
 
-            expect(screen.getByText('100%')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-ZoomControls-current')).toHaveTextContent('100%');
+        });
+
+        test('should give each zoom digit a fixed width so the zoom in button does not shift', () => {
+            getWrapper({ scale: 1.25 });
+
+            const current = screen.getByTestId('bp-ZoomControls-current');
+
+            expect(current.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)).toHaveLength(3);
+            expect(current.querySelector('[aria-hidden]')).toContainElement(
+                current.querySelector(`.${TABULAR_DIGIT_CLASS}`),
+            );
+            expect(screen.getByText('125%')).toBeInTheDocument(); // The whole value, read once by screen readers
         });
 
         test('should default the resin targets', () => {
