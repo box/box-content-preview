@@ -3,6 +3,8 @@ import BaseViewer from '../../../BaseViewer';
 import Box3DRuntime from '../../__mocks__/Box3DRuntime';
 import ControlsRoot from '../../../controls/controls-root';
 import Model3DControls from '../Model3DControls';
+import Model3DControlsNew from '../Model3DControlsNew';
+import Model3DControlsV2 from '../Model3DControlsV2';
 import Model3DRenderer from '../Model3DRenderer';
 import Model3DViewer from '../Model3DViewer';
 import {
@@ -954,6 +956,17 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 showSkeletons: false,
                 showWireframes: false,
             });
+        });
+
+        test.each`
+            enabled  | Controls
+            ${true}  | ${Model3DControlsV2}
+            ${false} | ${Model3DControlsNew}
+        `('should render $Controls.name if the controls bar flag is $enabled', ({ Controls, enabled }) => {
+            model3d.options.features = { blueprintMigrationControlsBar: { enabled } };
+            model3d.renderUI();
+
+            expect(model3d.controls.render).toBeCalledWith(expect.objectContaining({ type: Controls }));
         });
     });
 });
