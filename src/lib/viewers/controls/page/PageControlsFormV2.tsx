@@ -136,7 +136,12 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
                             className="bp-PageControlsFormV2-button-label"
                             data-testid="bp-PageControlsForm-button-label"
                         >
-                            <Text as="span" className="bp-ControlsPillV2-text" variant="bodyDefaultSemibold">
+                            <Text
+                                as="span"
+                                className="bp-ControlsPillV2-text"
+                                color="textOnDarkDefault"
+                                variant="bodyDefaultSemibold"
+                            >
                                 {/* Screen readers would read the fixed-width digits one by one */}
                                 <span aria-hidden>
                                     <TabularDigits>{pageLabel}</TabularDigits>

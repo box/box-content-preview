@@ -36,11 +36,13 @@
         --toolbar-item-text-indent: 0;
     }
 
-    // Text has no on-dark color that matches the icons, so pill text takes the icon color, or the
-    // button's color inside a label so it follows the hover and pressed states
+    // Pill text uses Text's on-dark color, retinted to match the icons, or the button's color inside a label
+    // so it follows the hover and pressed states. Setting Text's color property directly would tie with its
+    // own color rule, leaving the winner to stylesheet load order.
     .bp-ControlsPillV2-text {
+        --text-color-on-dark-default: var(--bp-icon-cta-icon-on-dark);
+
         padding-inline: var(--controls-pill-text-spacing);
-        color: var(--bp-icon-cta-icon-on-dark);
         white-space: nowrap;
     }
 

@@ -54,6 +54,7 @@ export default function ZoomControlsV2({
             <Text
                 as="span"
                 className="bp-ControlsPillV2-text"
+                color="textOnDarkDefault"
                 data-testid="bp-ZoomControls-current"
                 title={__('zoom_current_scale')}
                 variant="bodyDefault"

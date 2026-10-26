@@ -118,6 +118,12 @@ describe('ZoomControlsV2', () => {
             expect(screen.getByTestId('bp-ZoomControls-current')).toHaveTextContent('100%');
         });
 
+        test('should render the scale in the on-dark text color', () => {
+            getWrapper();
+
+            expect(screen.getByTestId('bp-ZoomControls-current').className).toMatch(/textOnDarkDefault/);
+        });
+
         test('should give each zoom digit a fixed width so the zoom in button does not shift', () => {
             getWrapper({ scale: 1.25 });
 
