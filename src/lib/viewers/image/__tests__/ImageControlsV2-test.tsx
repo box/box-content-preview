@@ -6,32 +6,15 @@ import fullscreen from '../../../Fullscreen';
 import ImageControlsV2 from '../ImageControlsV2';
 import { AnnotationMode } from '../../../types';
 import { Props } from '../ImageControls';
+import { mockResizeObserver, triggerResize } from '../../controls/__mocks__/resizeObserver';
 
 describe('ImageControlsV2', () => {
     let container: HTMLDivElement;
     let containerWidth: number;
-    let resizeCallbacks: Map<Element, () => void>;
-
-    class ResizeObserverMock {
-        callback: () => void;
-
-        constructor(callback: () => void) {
-            this.callback = callback;
-        }
-
-        disconnect = jest.fn();
-
-        observe = (element: Element): void => {
-            resizeCallbacks.set(element, this.callback);
-        };
-
-        unobserve = jest.fn();
-    }
 
     beforeEach(() => {
         containerWidth = 0;
-        resizeCallbacks = new Map();
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
 
         container = document.createElement('div');
         Object.defineProperty(container, 'clientWidth', { get: () => containerWidth });
@@ -60,7 +43,7 @@ describe('ImageControlsV2', () => {
     const getMoreOptions = () => screen.queryByRole('button', { name: __('controls_more') });
     const resize = (width: number): void => {
         containerWidth = width;
-        act(() => resizeCallbacks.get(container)?.());
+        triggerResize(container);
     };
 
     describe('render', () => {

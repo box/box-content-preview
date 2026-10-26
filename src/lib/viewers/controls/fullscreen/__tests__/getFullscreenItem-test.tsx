@@ -7,18 +7,11 @@ import ControlsOverflowMenuV2 from '../../controls-bar/ControlsOverflowMenuV2';
 import fullscreen from '../../../../Fullscreen';
 import FullscreenToggleV2 from '../FullscreenToggleV2';
 import getFullscreenItem from '../getFullscreenItem';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('getFullscreenItem', () => {
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
     });
 
     afterEach(() => {

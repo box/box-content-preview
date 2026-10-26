@@ -6,18 +6,11 @@ import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsOverflowMenuV2 from '../../controls-bar/ControlsOverflowMenuV2';
 import getRotateItem from '../getRotateItem';
 import RotateControlV2 from '../RotateControlV2';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('getRotateItem', () => {
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
     });
 
     test('should render the rotate button on the bar', () => {

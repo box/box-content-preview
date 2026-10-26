@@ -4,22 +4,15 @@ import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../BlueprintProviders';
 import MultiImageControlsV2 from '../MultiImageControlsV2';
 import { Props } from '../MultiImageControls';
+import { mockResizeObserver } from '../../controls/__mocks__/resizeObserver';
 
 describe('MultiImageControlsV2', () => {
     let container: HTMLDivElement;
     let containerWidth: number;
 
-    class ResizeObserverMock {
-        disconnect = jest.fn();
-
-        observe = jest.fn();
-
-        unobserve = jest.fn();
-    }
-
     beforeEach(() => {
         containerWidth = 0;
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
 
         container = document.createElement('div');
         Object.defineProperty(container, 'clientWidth', { get: () => containerWidth });
