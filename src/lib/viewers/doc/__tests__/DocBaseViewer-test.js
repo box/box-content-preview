@@ -4111,7 +4111,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 event = {
                     ctrlKey: true,
-                    deltaY: -50,
+                    deltaY: -10,
                     clientX: 400,
                     clientY: 300,
                     preventDefault: jest.fn(),
@@ -4139,27 +4139,46 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should zoom in with cursor anchoring when above initial scale', () => {
                 docBase.pdfViewer.currentScale = 1;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // trackpad pinch in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
-                expect(docBase.updateScale).toBeCalledWith(1.5);
+                expect(docBase.updateScale).toBeCalledWith(1.1);
             });
 
             test('should zoom out with cursor anchoring', () => {
                 docBase.pdfViewer.currentScale = 0.5;
 
-                event.deltaY = 100; // zoom out
+                event.deltaY = 10; // trackpad pinch out
 
                 docBase.trackpadPinchToZoomHandler(event);
 
-                expect(docBase.updateScale).toBeCalledWith(0.1);
+                expect(docBase.updateScale).toBeCalledWith(0.4);
                 expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+            });
+
+            test('should step a mouse-wheel notch by 10%', () => {
+                docBase.pdfViewer.currentScale = 1;
+                event.deltaY = -100;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(1.1);
+            });
+
+            test('should step a line-mode mouse wheel by 10%', () => {
+                docBase.pdfViewer.currentScale = 1;
+                event.deltaY = 3;
+                event.deltaMode = 1;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(0.9);
             });
 
             test('should not exceed MAX_SCALE', () => {
                 docBase.pdfViewer.currentScale = 5.0;
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4168,7 +4187,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not go below MIN_SCALE', () => {
                 docBase.pdfViewer.currentScale = 0.1;
-                event.deltaY = 50; // zoom out
+                event.deltaY = 10; // zoom out
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4178,7 +4197,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should use page-relative anchoring when a page element is found', () => {
                 docBase.pdfViewer.currentScale = 1.5;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4190,7 +4209,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 document.elementFromPoint.mockReturnValue(null);
                 docBase.pdfViewer.currentScale = 1.5;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4202,7 +4221,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.file = { id: '0', extension: 'pdf' };
                 docBase.isTrackpadPinching = false;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
                 docBase.trackpadPinchToZoomHandler(event);
 
                 expect(docBase.options.resin.recordAction).toBeCalledWith({
@@ -4220,7 +4239,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.isTrackpadPinching = false;
                 docBase.pdfViewer.currentScale = 2;
 
-                event.deltaY = 50; // zoom out
+                event.deltaY = 10; // zoom out
                 docBase.trackpadPinchToZoomHandler(event);
 
                 expect(docBase.options.resin.recordAction).toBeCalledWith({

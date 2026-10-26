@@ -453,6 +453,19 @@ describe('GalleryGrid', () => {
                 expect(grid.scrollTop).toBe(80);
             });
 
+            test('should step a ctrl+wheel mouse notch by 10%', () => {
+                const onScaleChange = jest.fn();
+                getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -100 }));
+                });
+                act(() => rafCallback!(0));
+
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
+            });
+
             test('should clear the pinch focal point when the scale change is rejected', () => {
                 const onScaleChange = jest.fn().mockReturnValue(false);
                 const { rerender } = getWrapper({ isPinchZoomEnabled: true, onScaleChange });

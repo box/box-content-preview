@@ -282,6 +282,19 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             expect(textBase.renderUI).toBeCalled();
         });
 
+        test('should step a mouse-wheel notch by 10%', () => {
+            const event = new WheelEvent('wheel', {
+                deltaY: -100,
+                ctrlKey: true,
+                clientX: 400,
+                clientY: 300,
+            });
+
+            textBase.wheelZoomHandler(event);
+
+            expect(textBase.scale).toBeCloseTo(1.1);
+        });
+
         test('should zoom out on positive deltaY', () => {
             const event = new WheelEvent('wheel', {
                 deltaY: 10,

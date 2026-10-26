@@ -47,6 +47,7 @@ import {
     getPreloadImageRequestPromises,
     getPreloadImageRequestPromisesByBatch,
 } from '../../util';
+import { getWheelZoomScaleDelta } from '../../wheelZoom';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { CMAP, CSS, EXIF, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
@@ -97,7 +98,6 @@ const PDFJS_TEXT_LAYER_MODE = {
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
 const WHEEL_ZOOM_MAX_SCALE = 5.0;
-const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -2049,7 +2049,7 @@ class DocBaseViewer extends BaseViewer {
         event.preventDefault();
 
         const { currentScale } = this.pdfViewer;
-        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const scaleDelta = getWheelZoomScaleDelta(event);
         const newScale = Math.min(WHEEL_ZOOM_MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
 
         if (newScale === currentScale) {

@@ -693,6 +693,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.imageEl.style.height).toBe('');
         });
 
+        test('should step a mouse-wheel notch by 10% of the current width', () => {
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -100, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            expect(parseFloat(imageBase.imageEl.style.width)).toBeCloseTo(110);
+        });
+
         test('should apply proportional zoom on pinch out', () => {
             const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: 5, preventDefault: jest.fn() };
             imageBase.imageEl.getBoundingClientRect = jest
