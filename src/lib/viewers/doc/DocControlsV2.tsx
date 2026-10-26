@@ -4,13 +4,9 @@ import { DropdownMenu } from '@box/blueprint-web';
 import GridView from '@box/blueprint-web-assets/icons/Medium/GridView';
 import Nav from '@box/blueprint-web-assets/icons/Medium/Nav';
 import Search from '@box/blueprint-web-assets/icons/Medium/Search';
+import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2';
 import AnnotationsPaletteControlsV2 from '../controls/annotations/AnnotationsPaletteControlsV2';
 import ExperiencesProvider from '../controls/experiences';
-import getAnnotationsItem from '../controls/annotations/getAnnotationsItem';
-import getFullscreenItem from '../controls/fullscreen/getFullscreenItem';
-import getPageItem from '../controls/page/getPageItem';
-import getRotateItem from '../controls/rotate/getRotateItem';
-import getZoomItem from '../controls/zoom/getZoomItem';
 import useAnnotationModes from '../controls/annotations/useAnnotationModes';
 import {
     ALWAYS_OVERFLOW,
@@ -19,9 +15,13 @@ import {
     ResponsiveControlsBarV2,
 } from '../controls/controls-bar';
 import { FindBarToggleV2 } from '../controls/findbar';
+import { FullscreenMenuItemV2, FullscreenToggleV2 } from '../controls/fullscreen';
 import { GalleryToggleV2 } from '../controls/gallery';
+import { PageControlsV2 } from '../controls/page';
+import { RotateControlV2, RotateMenuItemV2 } from '../controls/rotate';
 import { ThumbnailsToggleV2 } from '../controls/sidebar';
 import { useFullscreen, useMediaQuery } from '../controls/hooks';
+import { ZoomControlsV2, ZoomMenuItemsV2 } from '../controls/zoom';
 import { AnnotationMode } from '../../types';
 import { Props } from './DocControls';
 
@@ -72,6 +72,7 @@ export default function DocControlsV2({
     const isFullscreen = useFullscreen();
     const canShowThumbnails = useMediaQuery(THUMBNAILS_MEDIA_QUERY);
     const annotationModes = useAnnotationModes({ hasDrawing, hasHighlight, hasRegion });
+    const hasAnnotations = !isGalleryOpen && annotationModes.length > 0;
 
     const zoomProps = {
         maxScale,
@@ -107,8 +108,24 @@ export default function DocControlsV2({
                 ),
                 priority: PRIORITY.thumbnails,
             },
-        !isGalleryOpen && getPageItem({ onPageChange, onPageSubmit, pageCount, pageNumber }),
-        (!isGalleryOpen || hasGalleryZoom) && getZoomItem(zoomProps, isGalleryOpen ? undefined : PRIORITY.zoom),
+        !isGalleryOpen &&
+            pageCount > 1 && {
+                control: (
+                    <PageControlsV2
+                        onPageChange={onPageChange}
+                        onPageSubmit={onPageSubmit}
+                        pageCount={pageCount}
+                        pageNumber={pageNumber}
+                    />
+                ),
+                id: 'page',
+            },
+        (!isGalleryOpen || hasGalleryZoom) && {
+            control: <ZoomControlsV2 {...zoomProps} />,
+            id: 'zoom',
+            menu: !isGalleryOpen && <ZoomMenuItemsV2 {...zoomProps} />,
+            priority: isGalleryOpen ? undefined : PRIORITY.zoom,
+        },
         !isGalleryOpen &&
             onFindBarToggle && {
                 control: <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />,
@@ -125,8 +142,12 @@ export default function DocControlsV2({
                 priority: PRIORITY.find,
             },
         !isGalleryOpen &&
-            onRotateLeft &&
-            getRotateItem({ menuLabel: __('controls_rotate_document'), onRotateLeft }, PRIORITY.rotate),
+            onRotateLeft && {
+                control: <RotateControlV2 onRotateLeft={onRotateLeft} />,
+                id: 'rotate',
+                menu: <RotateMenuItemV2 label={__('controls_rotate_document')} onRotateLeft={onRotateLeft} />,
+                priority: PRIORITY.rotate,
+            },
         onGalleryToggle && {
             control: <GalleryToggleV2 isGalleryOpen={isGalleryOpen} onGalleryToggle={onGalleryToggle} />,
             id: 'gallery',
@@ -140,20 +161,29 @@ export default function DocControlsV2({
             ),
             priority: isGalleryOpen ? undefined : PRIORITY.gallery,
         },
-        getFullscreenItem({ onFullscreenToggle }, isGalleryOpen ? undefined : PRIORITY.fullscreen),
-        !isGalleryOpen &&
-            getAnnotationsItem({
-                annotationMode,
-                modes: annotationModes,
-                onAnnotationModeClick,
-                onAnnotationModeEscape,
-            }),
+        {
+            control: <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />,
+            id: 'fullscreen',
+            menu: !isGalleryOpen && <FullscreenMenuItemV2 onFullscreenToggle={onFullscreenToggle} />,
+            priority: isGalleryOpen ? undefined : PRIORITY.fullscreen,
+        },
+        hasAnnotations && {
+            control: (
+                <AnnotationsControlsV2
+                    annotationMode={annotationMode}
+                    modes={annotationModes}
+                    onAnnotationModeClick={onAnnotationModeClick}
+                    onAnnotationModeEscape={onAnnotationModeEscape}
+                />
+            ),
+            id: 'annotations',
+        },
     ];
 
     return (
         <ExperiencesProvider experiences={experiences}>
-            <ResponsiveControlsBarV2 items={items} />
-            {!isGalleryOpen && (
+            <ResponsiveControlsBarV2 items={items.filter((item): item is ControlsBarItem => !!item)} />
+            {hasAnnotations && (
                 <AnnotationsPaletteControlsV2
                     annotationColor={annotationColor}
                     annotationMode={annotationMode}

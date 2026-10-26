@@ -4,24 +4,12 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsOverflowMenuV2 from '../../controls-bar/ControlsOverflowMenuV2';
-import getRotateItem from '../getRotateItem';
-import RotateControlV2 from '../RotateControlV2';
+import RotateMenuItemV2 from '../RotateMenuItemV2';
 import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
-describe('getRotateItem', () => {
+describe('RotateMenuItemV2', () => {
     beforeAll(() => {
         mockResizeObserver();
-    });
-
-    test('should render the rotate button on the bar', () => {
-        const onRotateLeft = jest.fn();
-        const item = getRotateItem({ menuLabel: 'Rotate image', onRotateLeft }, 1);
-
-        expect(item).toMatchObject({
-            control: <RotateControlV2 onRotateLeft={onRotateLeft} />,
-            id: 'rotate',
-            priority: 1,
-        });
     });
 
     test('should render a menu row with the given label and the R shortcut that rotates left', async () => {
@@ -30,7 +18,16 @@ describe('getRotateItem', () => {
 
         render(
             <Toolbar.Root aria-label="Controls">
-                <ControlsOverflowMenuV2 items={[getRotateItem({ menuLabel: 'Rotate image', onRotateLeft }, 1)]} />
+                <ControlsOverflowMenuV2
+                    items={[
+                        {
+                            control: <span />,
+                            id: 'rotate',
+                            menu: <RotateMenuItemV2 label="Rotate image" onRotateLeft={onRotateLeft} />,
+                            priority: 1,
+                        },
+                    ]}
+                />
             </Toolbar.Root>,
             { wrapper: BlueprintProviders },
         );

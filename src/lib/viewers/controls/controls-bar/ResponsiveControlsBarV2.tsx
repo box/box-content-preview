@@ -5,16 +5,12 @@ import useControlsOverflow, { ControlsBarItem } from './useControlsOverflow';
 import './ResponsiveControlsBarV2.scss';
 
 export type Props = {
-    // Falsy entries are skipped, so bars can gate a control inline
-    items: Array<ControlsBarItem | false | null | undefined>;
+    items: ControlsBarItem[];
 };
-
-const isItem = (item: ControlsBarItem | false | null | undefined): item is ControlsBarItem => !!item;
 
 // Moves controls into an overflow menu as the viewer narrows. Bars that always show everything, like the
 // annotations palette, use ControlsBarV2 directly.
-export default function ResponsiveControlsBarV2({ items: allItems }: Props): JSX.Element | null {
-    const items = allItems.filter(isItem);
+export default function ResponsiveControlsBarV2({ items }: Props): JSX.Element | null {
     const { barRef, overflowItems, visibleItems } = useControlsOverflow(items);
 
     if (!items.length) {

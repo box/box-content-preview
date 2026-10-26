@@ -5,11 +5,10 @@ import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsOverflowMenuV2 from '../../controls-bar/ControlsOverflowMenuV2';
 import fullscreen from '../../../../Fullscreen';
-import FullscreenToggleV2 from '../FullscreenToggleV2';
-import getFullscreenItem from '../getFullscreenItem';
+import FullscreenMenuItemV2 from '../FullscreenMenuItemV2';
 import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
-describe('getFullscreenItem', () => {
+describe('FullscreenMenuItemV2', () => {
     beforeAll(() => {
         mockResizeObserver();
     });
@@ -23,7 +22,16 @@ describe('getFullscreenItem', () => {
 
         render(
             <Toolbar.Root aria-label="Controls">
-                <ControlsOverflowMenuV2 items={[getFullscreenItem({ onFullscreenToggle }, 2)]} />
+                <ControlsOverflowMenuV2
+                    items={[
+                        {
+                            control: <span />,
+                            id: 'fullscreen',
+                            menu: <FullscreenMenuItemV2 onFullscreenToggle={onFullscreenToggle} />,
+                            priority: 2,
+                        },
+                    ]}
+                />
             </Toolbar.Root>,
             { wrapper: BlueprintProviders },
         );
@@ -32,23 +40,6 @@ describe('getFullscreenItem', () => {
 
         return user;
     };
-
-    test('should render the fullscreen toggle on the bar', () => {
-        const onFullscreenToggle = jest.fn();
-
-        expect(getFullscreenItem({ onFullscreenToggle }, 2)).toMatchObject({
-            control: <FullscreenToggleV2 onFullscreenToggle={onFullscreenToggle} />,
-            id: 'fullscreen',
-            priority: 2,
-        });
-    });
-
-    test('should leave out the menu form if fullscreen has no priority', () => {
-        const item = getFullscreenItem({ onFullscreenToggle: jest.fn() });
-
-        expect(item.menu).toBe(false);
-        expect(item.priority).toBeUndefined();
-    });
 
     test('should enter fullscreen from the menu with the menu trigger and show the F shortcut', async () => {
         const onFullscreenToggle = jest.fn();
