@@ -234,7 +234,7 @@ class ArchiveExplorer extends React.Component {
                         resin={resin}
                         view={view}
                     />
-                    <div className="bp-ArchiveExplorer-table">
+                    <div className="bp-ArchiveExplorer-table" data-testid="bp-archive-table">
                         {v2 ? (
                             <v2.ArchiveTableV2
                                 items={itemList}
