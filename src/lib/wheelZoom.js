@@ -5,12 +5,11 @@ const DOM_DELTA_LINE = 1;
 const DOM_DELTA_PAGE = 2;
 const PINCH_SCALE_FACTOR = 0.01;
 const NOTCH_SCALE_STEP = 0.1;
-const MOUSE_WHEEL_PIXEL_THRESHOLD = 50;
 
 /**
  * Scale change for one ctrl+wheel event. Negative zooms out.
- * A mouse notch steps by the same 10% as the +/- buttons. A trackpad pinch
- * stays proportional to its small pixel delta.
+ * Line and page mode are one notch per event. Pixel mode stays proportional
+ * to deltaY and is capped at one 10% step, matching the +/- buttons.
  *
  * @param {Pick<WheelEvent, 'deltaY' | 'deltaMode'>} event - wheel event
  * @return {number} amount to add to the current scale
@@ -22,12 +21,11 @@ export function getWheelZoomScaleDelta(event) {
     }
 
     const deltaMode = event.deltaMode || DOM_DELTA_PIXEL;
-    const isDiscreteWheel = deltaMode === DOM_DELTA_LINE || deltaMode === DOM_DELTA_PAGE;
-    const isPixelNotch = deltaMode === DOM_DELTA_PIXEL && Math.abs(deltaY) >= MOUSE_WHEEL_PIXEL_THRESHOLD;
-
-    if (isDiscreteWheel || isPixelNotch) {
+    if (deltaMode === DOM_DELTA_LINE || deltaMode === DOM_DELTA_PAGE) {
         return -Math.sign(deltaY) * NOTCH_SCALE_STEP;
     }
 
-    return -deltaY * PINCH_SCALE_FACTOR;
+    const proportional = -deltaY * PINCH_SCALE_FACTOR;
+    const magnitude = Math.min(Math.abs(proportional), NOTCH_SCALE_STEP);
+    return Math.sign(proportional) * magnitude;
 }

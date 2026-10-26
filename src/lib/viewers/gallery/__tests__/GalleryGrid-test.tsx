@@ -436,7 +436,7 @@ describe('GalleryGrid', () => {
                 expect(event.defaultPrevented).toBe(true);
 
                 act(() => rafCallback!(0));
-                expect(onScaleChange).toHaveBeenCalledWith(1.2);
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
 
                 const pinchTile = screen.getByLabelText('Page 5');
                 document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
