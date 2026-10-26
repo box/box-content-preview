@@ -436,6 +436,24 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.zoomOut).not.toBeCalled();
             expect(consumed).toBe(false);
         });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s with the Blueprint controls bar', key => {
+            imageBase.loadUI();
+            imageBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(imageBase, 'toggleFullscreen').mockImplementation();
+
+            expect(imageBase.onKeydown(key)).toBe(true);
+            expect(imageBase.toggleFullscreen).toBeCalledWith();
+        });
+
+        test('should not toggle fullscreen on f with the older controls bar', () => {
+            imageBase.loadUI();
+            imageBase.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+            jest.spyOn(imageBase, 'toggleFullscreen').mockImplementation();
+
+            expect(imageBase.onKeydown('f')).toBe(false);
+            expect(imageBase.toggleFullscreen).not.toBeCalled();
+        });
     });
 
     describe('bindDOMListeners()', () => {
