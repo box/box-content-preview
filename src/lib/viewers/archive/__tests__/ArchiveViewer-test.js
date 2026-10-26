@@ -1,10 +1,13 @@
 /* eslint-disable no-unused-expressions */
 import createReactClass from 'create-react-class';
 import Api from '../../../api';
+import * as ArchiveV2 from '../ArchiveV2';
 import ArchiveViewer from '../ArchiveViewer';
 import BaseViewer from '../../BaseViewer';
-import { ERROR_CODE, VIEWER_EVENT } from '../../../events';
+import BoxArchive from '../BoxArchive';
+import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../../events';
 import PreviewError from '../../../PreviewError';
+import Timer from '../../../Timer';
 
 const stubs = {};
 let containerEl;
@@ -134,11 +137,77 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
     describe('finishLoading()', () => {
         test('should render BoxArchive component and emit load event', () => {
             jest.spyOn(archive, 'emit');
+            jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
 
             archive.finishLoading([]);
 
             expect(archive.loaded).toBe(true);
             expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
+            expect(archive.emitFirstRenderMetric).toHaveBeenCalledTimes(1);
+            expect(archive.emitFirstRenderMetric.mock.invocationCallOrder[0]).toBeLessThan(
+                archive.emit.mock.invocationCallOrder[0],
+            );
+        });
+
+        test('should emit first render time only once', () => {
+            jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 250 });
+            jest.spyOn(archive, 'emitMetric').mockImplementation();
+
+            archive.finishLoading([]);
+            archive.finishRender();
+
+            expect(Timer.stop).toHaveBeenCalledWith(Timer.createTag(options.file.id, FIRST_RENDER_METRIC));
+            expect(archive.emitMetric).toHaveBeenCalledTimes(1);
+            expect(archive.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
+        });
+
+        test('should not emit first render if the constructor throws', () => {
+            window.BoxArchive = jest.fn(() => {
+                throw new Error('render failed');
+            });
+            jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
+
+            expect(() => archive.finishLoading([])).toThrow(PreviewError);
+            expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+        });
+
+        test('should not emit first render if already destroyed', () => {
+            jest.spyOn(archive, 'isDestroyed').mockReturnValue(true);
+            jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
+
+            archive.finishLoading([]);
+
+            expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+        });
+
+        describe('render commit', () => {
+            const originalResizeObserver = global.ResizeObserver;
+
+            beforeAll(() => {
+                global.ResizeObserver = jest.fn(() => ({
+                    disconnect: jest.fn(),
+                    observe: jest.fn(),
+                    unobserve: jest.fn(),
+                }));
+            });
+
+            afterAll(() => {
+                global.ResizeObserver = originalResizeObserver;
+            });
+
+            test.each([false, true])('should commit the archive DOM before first render with v2=%s', async enabled => {
+                window.BoxArchive = BoxArchive;
+                archive.options.file.name = 'test.zip';
+                archive.options.features = { blueprintMigrationArchive: { enabled } };
+                jest.spyOn(BoxArchive.prototype, 'importV2').mockResolvedValue(ArchiveV2);
+                jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation(() => {
+                    expect(archive.archiveEl.querySelector('[data-testid="bp-archive-explorer"]')).toBeInTheDocument();
+                });
+
+                await archive.finishLoading([]);
+
+                expect(archive.emitFirstRenderMetric).toHaveBeenCalledTimes(1);
+            });
         });
 
         describe('archive v2', () => {
@@ -158,6 +227,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 });
                 archive.options.file.name = 'test.zip';
                 jest.spyOn(archive, 'emit');
+                jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
             });
 
             const enableV2 = () => {
@@ -170,6 +240,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 const pending = archive.finishLoading([]);
 
                 expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
                 expect(archive.loaded).toBeFalsy();
 
                 resolveReady();
@@ -177,6 +248,10 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
 
                 expect(archive.loaded).toBe(true);
                 expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).toHaveBeenCalledTimes(1);
+                expect(archive.emitFirstRenderMetric.mock.invocationCallOrder[0]).toBeLessThan(
+                    archive.emit.mock.invocationCallOrder[0],
+                );
             });
 
             test('should throw a load-viewer error if the v2 module fails to load', async () => {
@@ -188,6 +263,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 await expect(pending).rejects.toBeInstanceOf(PreviewError);
                 await expect(pending).rejects.toMatchObject({ code: ERROR_CODE.LOAD_VIEWER });
                 expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
             });
 
             test('should not emit load if destroyed while the v2 module is loading', async () => {
@@ -199,6 +275,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 await pending;
 
                 expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
             });
 
             test('should enable archive v2 when the archive flag is on', () => {

@@ -1,3 +1,14 @@
+## 3.122.0 (2026-10-24)
+
+* chore(i18n): update translations (#1885) ([f35a114](https://github.com/box/box-content-preview/commit/f35a114)), closes [#1885](https://github.com/box/box-content-preview/issues/1885)
+* feat(video): add Blueprint annotations toggle and toolbar to video controls (#1887) ([c39e229](https://github.com/box/box-content-preview/commit/c39e229)), closes [#1887](https://github.com/box/box-content-preview/issues/1887)
+
+## 3.121.0 (2026-10-23)
+
+* fix(doc): Ship pdf.js viewer images with the npm and CDN builds (#1883) ([9bf2b67](https://github.com/box/box-content-preview/commit/9bf2b67)), closes [#1883](https://github.com/box/box-content-preview/issues/1883)
+* feat(archive): emit first render time (#1841) ([474af2d](https://github.com/box/box-content-preview/commit/474af2d)), closes [#1841](https://github.com/box/box-content-preview/issues/1841)
+* feat(controls): collapse the Blueprint document controls into a more options menu (#1853) ([3b6ef8f](https://github.com/box/box-content-preview/commit/3b6ef8f)), closes [#1853](https://github.com/box/box-content-preview/issues/1853)
+
 ## 3.120.0 (2026-10-22)
 
 * fix(build): Externalize react-intl in the npm lib (#1872) ([01e57d7](https://github.com/box/box-content-preview/commit/01e57d7)), closes [#1872](https://github.com/box/box-content-preview/issues/1872)

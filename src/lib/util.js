@@ -318,9 +318,10 @@ export function createAssetUrlCreator(location) {
             name.indexOf('cmaps/') === 0 ||
             name.indexOf('iccs/') === 0 ||
             name.indexOf('wasm/') === 0 ||
-            name.indexOf('standard_fonts/') === 0
+            name.indexOf('standard_fonts/') === 0 ||
+            name.indexOf('pdfjs-images/') === 0
         ) {
-            // Static, non-localized asset (third-party libs, shared exif, pdfjs cmaps, ICC profiles, wasm, standard fonts).
+            // Static asset shared by every version and locale
             asset = staticBaseURI + name;
         } else {
             // This is our own asset that is localized

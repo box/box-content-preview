@@ -1,9 +1,12 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import BlueprintProviders from '../../../BlueprintProviders';
 import VideoControlsV2 from '../VideoControlsV2';
+import fullscreen from '../../../Fullscreen';
 import subtitles from '../../controls/media/__mocks__/subtitles';
+import { AnnotationColor } from '../../../AnnotationModule';
+import { AnnotationMode } from '../../../types/annotations';
 import { Quality } from '../../controls/media/MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../constants';
 
@@ -240,6 +243,234 @@ describe('VideoControlsV2', () => {
         test('should render annotations controls when enabled', () => {
             render(<VideoControlsV2 {...defaultProps} hasDrawing hasRegion videoAnnotationsEnabled />);
             expect(screen.getByTestId('bp-annotations-controls')).toBeInTheDocument();
+        });
+
+        describe('with Blueprint', () => {
+            afterEach(() => {
+                jest.restoreAllMocks();
+            });
+
+            const renderBlueprint = (props: Partial<React.ComponentProps<typeof VideoControlsV2>> = {}) =>
+                render(
+                    <VideoControlsV2
+                        {...defaultProps}
+                        hasDrawing
+                        hasRegion
+                        isBlueprintEnabled
+                        videoAnnotationsEnabled
+                        {...props}
+                    />,
+                    { wrapper: BlueprintProviders },
+                );
+
+            test('should render the markup toggle in the bar and keep the palette closed', async () => {
+                const user = userEvent.setup();
+                const onAnnotationModeClick = jest.fn();
+                renderBlueprint({ onAnnotationModeClick });
+
+                expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('bp-AnnotationsControls-regionBtn')).not.toBeInTheDocument();
+                await user.click(screen.getByTestId('bp-AnnotationsControls-toggleBtn'));
+                expect(onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.REGION });
+            });
+
+            test('should style the markup toggle for the dark bar', () => {
+                renderBlueprint();
+                expect(screen.getByTestId('bp-AnnotationsControls-toggleBtn')).toHaveClass(
+                    'bp-VideoControlsV2-annotationsToggle',
+                );
+            });
+
+            test('should not render the toggle when no mode is available', () => {
+                renderBlueprint({ hasDrawing: false, hasRegion: false });
+                expect(screen.queryByTestId('bp-AnnotationsControls-toggleBtn')).not.toBeInTheDocument();
+            });
+
+            test('should open the palette with region and drawing modes while a mode is active', async () => {
+                const user = userEvent.setup();
+                const onAnnotationModeClick = jest.fn();
+                renderBlueprint({ annotationMode: AnnotationMode.REGION, onAnnotationModeClick });
+
+                const palette = screen.getByTestId('bp-AnnotationsPaletteV2');
+                expect(palette).toContainElement(screen.getByTestId('bp-AnnotationsControls-regionBtn'));
+                expect(palette).toContainElement(screen.getByTestId('bp-AnnotationsControls-drawBtn'));
+                expect(screen.queryByTestId('bp-AnnotationsControls-highlightBtn')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('bp-color-picker-control')).not.toBeInTheDocument();
+
+                await user.click(screen.getByTestId('bp-AnnotationsControls-drawBtn'));
+                expect(onAnnotationModeClick).toHaveBeenCalledWith({ mode: AnnotationMode.DRAWING });
+            });
+
+            test('should open the palette outside the controls, anchored to the markup toggle', () => {
+                jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function getRect(
+                    this: HTMLElement,
+                ) {
+                    return this.dataset.testid === 'bp-AnnotationsControls-toggleBtn'
+                        ? ({ right: 640, top: 500 } as DOMRect)
+                        : ({ left: 0, top: 0 } as DOMRect);
+                });
+                renderBlueprint({ annotationMode: AnnotationMode.REGION });
+
+                const anchor = screen.getByTestId('bp-AnnotationsPaletteAnchorV2');
+                expect(anchor).toContainElement(screen.getByTestId('bp-AnnotationsPaletteV2'));
+                expect(screen.getByTestId('media-controls-wrapper-v2')).not.toContainElement(anchor);
+                expect(anchor).toHaveStyle({ left: '640px', top: '500px' });
+            });
+
+            test.each`
+                annotationMode            | side
+                ${AnnotationMode.NONE}    | ${'top'}
+                ${AnnotationMode.DRAWING} | ${'left'}
+            `(
+                'should open the toggle tooltip on the $side in $annotationMode mode',
+                async ({ annotationMode, side }) => {
+                    const user = userEvent.setup();
+                    renderBlueprint({ annotationMode });
+
+                    await user.hover(screen.getByTestId('bp-AnnotationsControls-toggleBtn'));
+                    await screen.findByRole('tooltip');
+
+                    expect(document.querySelector(`[data-side="${side}"]`)).toBeInTheDocument();
+                },
+            );
+
+            test('should show the drawing colors in the palette in drawing mode', async () => {
+                const user = userEvent.setup();
+                const onAnnotationColorChange = jest.fn();
+                renderBlueprint({ annotationMode: AnnotationMode.DRAWING, onAnnotationColorChange });
+
+                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toContainElement(
+                    screen.getByTestId('bp-color-picker-control'),
+                );
+
+                await user.click(screen.getByRole('button', { name: __('drawing_color_red') }));
+                expect(onAnnotationColorChange).toHaveBeenCalledWith(AnnotationColor.WATERMELON_RED);
+            });
+
+            describe('when a markup starts on the video', () => {
+                const surfaces: HTMLElement[] = [];
+                const createSurface = (): { layerEl: HTMLDivElement; mediaEl: HTMLVideoElement } => {
+                    const containerEl = document.createElement('div');
+                    const mediaEl = containerEl.appendChild(document.createElement('video'));
+                    const layerEl = containerEl.appendChild(document.createElement('div'));
+                    surfaces.push(document.body.appendChild(containerEl));
+
+                    return { layerEl, mediaEl };
+                };
+
+                afterEach(() => {
+                    surfaces.splice(0).forEach(surfaceEl => surfaceEl.remove());
+                });
+
+                test.each([AnnotationMode.DRAWING, AnnotationMode.REGION])(
+                    'should dismiss the palette and keep the toggle pressed in %s mode',
+                    async mode => {
+                        const user = userEvent.setup();
+                        const { layerEl, mediaEl } = createSurface();
+                        renderBlueprint({ annotationMode: mode, mediaEl });
+
+                        await user.click(layerEl);
+
+                        const toggle = screen.getByTestId('bp-AnnotationsControls-toggleBtn');
+                        expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+                        expect(toggle).toHaveAttribute('aria-pressed', 'true');
+                        expect(toggle).toHaveAttribute('aria-expanded', 'false');
+                    },
+                );
+
+                test('should keep the palette open for presses inside it', async () => {
+                    const user = userEvent.setup();
+                    const { mediaEl } = createSurface();
+                    renderBlueprint({ annotationMode: AnnotationMode.DRAWING, mediaEl });
+
+                    await user.click(screen.getByTestId('bp-color-picker-control'));
+
+                    expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toBeInTheDocument();
+                });
+
+                test('should bring the palette back when the toggle is hovered after a markup starts', async () => {
+                    const user = userEvent.setup();
+                    const { layerEl, mediaEl } = createSurface();
+                    renderBlueprint({ annotationMode: AnnotationMode.DRAWING, mediaEl });
+
+                    await user.click(layerEl);
+                    await user.hover(screen.getByTestId('bp-AnnotationsControls-toggleBtn'));
+
+                    const toggle = screen.getByTestId('bp-AnnotationsControls-toggleBtn');
+                    expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toBeInTheDocument();
+                    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+                    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+                });
+
+                test('should bring the palette back when the toggle gets keyboard focus after a markup starts', async () => {
+                    const user = userEvent.setup();
+                    const { layerEl, mediaEl } = createSurface();
+                    renderBlueprint({ annotationMode: AnnotationMode.REGION, mediaEl });
+
+                    await user.click(layerEl);
+                    act(() => screen.getByTestId('bp-AnnotationsControls-toggleBtn').focus());
+
+                    expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toBeInTheDocument();
+                });
+
+                test('should not open the palette on hover while no mode is on', async () => {
+                    const user = userEvent.setup();
+                    const { mediaEl } = createSurface();
+                    renderBlueprint({ mediaEl });
+
+                    await user.hover(screen.getByTestId('bp-AnnotationsControls-toggleBtn'));
+
+                    expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+                });
+
+                test('should reopen the palette once the toggle exits and re-enters a mode', async () => {
+                    const user = userEvent.setup();
+                    const { layerEl, mediaEl } = createSurface();
+                    const { rerender } = renderBlueprint({ annotationMode: AnnotationMode.DRAWING, mediaEl });
+
+                    await user.click(layerEl);
+
+                    const renderMode = (annotationMode: AnnotationMode): void =>
+                        rerender(
+                            <VideoControlsV2
+                                {...defaultProps}
+                                annotationMode={annotationMode}
+                                hasDrawing
+                                hasRegion
+                                isBlueprintEnabled
+                                mediaEl={mediaEl}
+                                videoAnnotationsEnabled
+                            />,
+                        );
+
+                    renderMode(AnnotationMode.NONE);
+                    renderMode(AnnotationMode.DRAWING);
+
+                    expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toBeInTheDocument();
+                });
+            });
+
+            test('should call onAnnotationModeEscape on Escape while a mode is active', async () => {
+                const user = userEvent.setup();
+                const onAnnotationModeEscape = jest.fn();
+                renderBlueprint({ annotationMode: AnnotationMode.DRAWING, onAnnotationModeEscape });
+
+                await user.keyboard('{Escape}');
+                expect(onAnnotationModeEscape).toHaveBeenCalled();
+            });
+
+            test('should hide the annotation controls while in fullscreen', () => {
+                jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
+                renderBlueprint({ annotationMode: AnnotationMode.REGION });
+
+                expect(screen.queryByTestId('bp-AnnotationsControls-toggleBtn')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+            });
+
+            test('should not render the legacy annotations controls', () => {
+                renderBlueprint();
+                expect(screen.queryByTestId('bp-annotations-controls')).not.toBeInTheDocument();
+            });
         });
     });
 });
