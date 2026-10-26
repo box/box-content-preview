@@ -162,7 +162,10 @@ describe('lib/ComparisonBanner', () => {
 
             const downloadItem = screen.getByRole('menuitem', { name: __('download') });
             expect(downloadItem).toHaveAttribute('data-target-id', 'ComparisonBanner-download');
-            expect(downloadItem).toHaveAttribute('data-resin-feature', 'versionComparison');
+            expect(downloadItem.closest('[data-resin-feature]')).toHaveAttribute(
+                'data-resin-feature',
+                'versionComparison',
+            );
             expect(downloadItem).toHaveAttribute('data-resin-target', 'downloadVersion');
 
             await user.click(downloadItem);
@@ -189,7 +192,10 @@ describe('lib/ComparisonBanner', () => {
 
             const makeCurrentItem = screen.getByRole('menuitem', { name: __('comparison_banner_make_current') });
             expect(makeCurrentItem).toHaveAttribute('data-target-id', 'ComparisonBanner-makeCurrent');
-            expect(makeCurrentItem).toHaveAttribute('data-resin-feature', 'versionComparison');
+            expect(makeCurrentItem.closest('[data-resin-feature]')).toHaveAttribute(
+                'data-resin-feature',
+                'versionComparison',
+            );
             expect(makeCurrentItem).toHaveAttribute('data-resin-target', 'makeCurrentVersion');
             await user.click(makeCurrentItem);
             expect(onMakeCurrent).toHaveBeenCalledTimes(1);
@@ -197,7 +203,10 @@ describe('lib/ComparisonBanner', () => {
             await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
             const deleteItem = screen.getByRole('menuitem', { name: __('comparison_banner_delete') });
             expect(deleteItem).toHaveAttribute('data-target-id', 'ComparisonBanner-delete');
-            expect(deleteItem).toHaveAttribute('data-resin-feature', 'versionComparison');
+            expect(deleteItem.closest('[data-resin-feature]')).toHaveAttribute(
+                'data-resin-feature',
+                'versionComparison',
+            );
             expect(deleteItem).toHaveAttribute('data-resin-target', 'deleteVersion');
             await user.click(deleteItem);
             expect(onDelete).toHaveBeenCalledTimes(1);
@@ -223,7 +232,10 @@ describe('lib/ComparisonBanner', () => {
                 name: __('comparison_banner_open_full_preview'),
             });
             expect(openFullPreviewItem).toHaveAttribute('data-target-id', 'ComparisonBanner-openFullPreview');
-            expect(openFullPreviewItem).toHaveAttribute('data-resin-feature', 'versionComparison');
+            expect(openFullPreviewItem.closest('[data-resin-feature]')).toHaveAttribute(
+                'data-resin-feature',
+                'versionComparison',
+            );
             expect(openFullPreviewItem).toHaveAttribute('data-resin-target', 'openFullPreview');
 
             await user.click(openFullPreviewItem);
@@ -241,7 +253,10 @@ describe('lib/ComparisonBanner', () => {
 
             const closeButton = screen.getByRole('button', { name: __('comparison_banner_close') });
             expect(closeButton).toHaveAttribute('data-target-id', 'ComparisonBanner-close');
-            expect(closeButton).toHaveAttribute('data-resin-feature', 'versionComparison');
+            expect(closeButton.closest('[data-resin-feature]')).toHaveAttribute(
+                'data-resin-feature',
+                'versionComparison',
+            );
             expect(closeButton).toHaveAttribute('data-resin-target', 'closeComparison');
 
             await user.click(closeButton);
