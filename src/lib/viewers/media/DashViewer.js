@@ -1315,12 +1315,21 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Extra props a subclass passes to the V2 controls.
+     *
+     * @protected
+     * @return {Object} props spread onto VideoControlsV2
+     */
+    getVideoControlsV2Props() {
+        return {};
+    }
+
+    /**
      * @inheritdoc
      */
     renderUI() {
         // Extra guard for `render` is needed because Video360Viewer extends DashViewer
-        // and creates and assigns the 360 control to this.controls which usually has
-        // been reserved for new React controls
+        // and, without React controls, assigns its imperative 360 controls to this.controls
         if (!this.controls || !this.controls.render) {
             return;
         }
@@ -1382,12 +1391,13 @@ class DashViewer extends VideoBaseViewer {
             this.guidesRoot.render(<VideoGuidesOverlay guide={this.selectedGuide} mediaEl={this.mediaEl} />);
         }
 
-        if (this.isVideoPlayerV2) {
+        if (this.isVideoControlsV2Enabled()) {
             this.controls.render(
                 <VideoControlsV2
                     commentMarkers={this.commentMarkers}
                     onCommentMarkerClick={this.handleCommentMarkerClick}
                     {...sharedProps}
+                    {...this.getVideoControlsV2Props()}
                     onPlayNextChange={this.setPlayNext}
                     playNext={this.isPlayNextEnabled()}
                     isBlueprintEnabled={this.isBlueprintMediaControlsEnabled()}
