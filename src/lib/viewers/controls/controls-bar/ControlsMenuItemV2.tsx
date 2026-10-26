@@ -1,5 +1,5 @@
 import React from 'react';
-import { DropdownMenu, MenuItemStartElementProps } from '@box/blueprint-web';
+import { DropdownMenu, MenuItemStartElementProps, Text } from '@box/blueprint-web';
 import { ControlsOverflowTriggerContext } from './ControlsOverflowMenuV2';
 import { getShortcut } from './shortcuts';
 import './ControlsMenuItemV2.scss';
@@ -56,7 +56,13 @@ export default function ControlsMenuItemV2({
         >
             <DropdownMenu.Item.StartElement icon={icon} />
             <DropdownMenu.Item.MainContent label={label} />
-            {shortcut && <DropdownMenu.Item.EndElement aria-hidden>{shortcut.label}</DropdownMenu.Item.EndElement>}
+            {shortcut && (
+                <DropdownMenu.Item.EndElement aria-hidden>
+                    <Text as="span" color="textOnLightSecondary">
+                        {shortcut.label}
+                    </Text>
+                </DropdownMenu.Item.EndElement>
+            )}
         </DropdownMenu.Item>
     );
 }
