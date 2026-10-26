@@ -6,18 +6,11 @@ import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsMenuItemV2, { Props } from '../ControlsMenuItemV2';
 import ControlsOverflowMenuV2 from '../ControlsOverflowMenuV2';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('ControlsMenuItemV2', () => {
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
     });
 
     afterEach(() => {

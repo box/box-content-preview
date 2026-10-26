@@ -3,27 +3,11 @@ import { act, render, screen } from '@testing-library/react';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ResponsiveControlsBarV2 from '../ResponsiveControlsBarV2';
 import { ALWAYS_OVERFLOW, ControlsBarItem } from '../useControlsOverflow';
+import { mockResizeObserver, triggerResize } from '../../__mocks__/resizeObserver';
 
 describe('ResponsiveControlsBarV2', () => {
     let container: HTMLDivElement;
     let containerWidth: number;
-    let resizeCallbacks: Map<Element, () => void>;
-
-    class ResizeObserverMock {
-        callback: () => void;
-
-        constructor(callback: () => void) {
-            this.callback = callback;
-        }
-
-        disconnect = jest.fn();
-
-        observe = (element: Element): void => {
-            resizeCallbacks.set(element, this.callback);
-        };
-
-        unobserve = jest.fn();
-    }
 
     const item = (id: string, priority?: number): ControlsBarItem => ({
         control: <button type="button">{`${id} control`}</button>,
@@ -34,8 +18,7 @@ describe('ResponsiveControlsBarV2', () => {
 
     beforeEach(() => {
         containerWidth = 0;
-        resizeCallbacks = new Map();
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
 
         container = document.createElement('div');
         container.className = 'bp-content';
@@ -55,7 +38,7 @@ describe('ResponsiveControlsBarV2', () => {
     const getTrigger = () => screen.queryByRole('button', { name: __('controls_more') });
     const resize = (width: number): void => {
         containerWidth = width;
-        act(() => resizeCallbacks.get(container)?.());
+        triggerResize(container);
     };
 
     test('should render each control on the dark toolbar in order, without a menu if nothing collapses', () => {

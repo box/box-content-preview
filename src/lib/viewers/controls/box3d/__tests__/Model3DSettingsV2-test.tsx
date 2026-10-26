@@ -5,20 +5,13 @@ import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import Model3DSettingsV2 from '../Model3DSettingsV2';
 import { CameraProjection, Props, RenderMode } from '../Model3DSettings';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('Model3DSettingsV2', () => {
     let container: HTMLDivElement;
 
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock;
+        mockResizeObserver();
         Element.prototype.hasPointerCapture = jest.fn();
         Element.prototype.releasePointerCapture = jest.fn();
         Element.prototype.scrollIntoView = jest.fn();

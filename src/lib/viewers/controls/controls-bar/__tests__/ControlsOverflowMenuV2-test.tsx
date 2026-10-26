@@ -8,21 +8,14 @@ import BlueprintProviders from '../../../../BlueprintProviders';
 import ControlsLayerContext from '../../controls-layer/ControlsLayerContext';
 import ControlsMenuItemV2 from '../ControlsMenuItemV2';
 import ControlsOverflowMenuV2 from '../ControlsOverflowMenuV2';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('ControlsOverflowMenuV2', () => {
     const setIsForced = jest.fn();
     let container: HTMLDivElement;
 
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
     });
 
     beforeEach(() => {

@@ -3,14 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import TimestampControl from '../TimestampControl';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('TimestampControl', () => {
     let mediaContainer: HTMLDivElement;
@@ -76,7 +69,7 @@ describe('TimestampControl', () => {
 
     describe('when isBlueprintEnabled is true', () => {
         beforeAll(() => {
-            global.ResizeObserver = ResizeObserverMock;
+            mockResizeObserver();
         });
 
         const getBlueprintWrapper = (props = {}) =>

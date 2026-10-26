@@ -5,18 +5,11 @@ import userEvent from '@testing-library/user-event';
 import AnimationControlsV2 from '../AnimationControlsV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import { Props } from '../AnimationControls';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('AnimationControlsV2', () => {
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock;
+        mockResizeObserver();
     });
 
     const getWrapper = (props: Partial<Props> = {}) =>

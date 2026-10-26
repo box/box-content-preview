@@ -4,20 +4,13 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import SettingsToggleV2, { ToolbarProps } from '../SettingsToggleV2';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('SettingsToggleV2', () => {
     let container: HTMLDivElement;
 
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock;
+        mockResizeObserver();
     });
 
     beforeEach(() => {

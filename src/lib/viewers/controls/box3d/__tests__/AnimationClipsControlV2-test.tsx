@@ -5,21 +5,14 @@ import userEvent from '@testing-library/user-event';
 import AnimationClipsControlV2 from '../AnimationClipsControlV2';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import { Props } from '../AnimationClipsControl';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('AnimationClipsControlV2', () => {
     const recordAction = jest.fn();
     let container: HTMLDivElement;
 
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock;
+        mockResizeObserver();
     });
 
     beforeEach(() => {

@@ -6,21 +6,14 @@ import MediaSettingsV2, { Props } from '../MediaSettingsV2';
 import { Guide } from '../MediaSettingsMenuGuides';
 import { Quality } from '../MediaSettingsMenuQuality';
 import { SUBTITLES_OFF } from '../../../../constants';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('MediaSettingsV2', () => {
     const recordAction = jest.fn();
     let container: HTMLDivElement;
 
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock;
+        mockResizeObserver();
     });
 
     beforeEach(() => {

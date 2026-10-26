@@ -8,35 +8,18 @@ import { AnnotationColor } from '../../../AnnotationModule';
 import { AnnotationMode } from '../../../types';
 import { replacePlaceholders } from '../../../util';
 import { Props } from '../DocControls';
+import { mockResizeObserver, triggerResize } from '../../controls/__mocks__/resizeObserver';
 
 describe('DocControlsV2', () => {
     const originalMatchMedia = window.matchMedia;
     let container: HTMLDivElement;
     let containerWidth: number;
     let isLargeViewport: boolean;
-    let resizeCallbacks: Map<Element, () => void>;
-
-    class ResizeObserverMock {
-        callback: () => void;
-
-        constructor(callback: () => void) {
-            this.callback = callback;
-        }
-
-        disconnect = jest.fn();
-
-        observe = (element: Element): void => {
-            resizeCallbacks.set(element, this.callback);
-        };
-
-        unobserve = jest.fn();
-    }
 
     beforeEach(() => {
         containerWidth = 0;
         isLargeViewport = true;
-        resizeCallbacks = new Map();
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
         window.matchMedia = jest.fn().mockImplementation((query: string) => ({
             addEventListener: jest.fn(),
             matches: isLargeViewport,
@@ -75,7 +58,7 @@ describe('DocControlsV2', () => {
     const getMoreOptions = () => screen.queryByRole('button', { name: __('controls_more') });
     const resize = (width: number): void => {
         containerWidth = width;
-        act(() => resizeCallbacks.get(container)?.());
+        triggerResize(container);
     };
 
     describe('render', () => {

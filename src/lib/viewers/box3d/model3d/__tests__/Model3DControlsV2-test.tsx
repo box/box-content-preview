@@ -5,18 +5,11 @@ import BlueprintProviders from '../../../../BlueprintProviders';
 import Model3DControlsV2 from '../Model3DControlsV2';
 import { CameraProjection, RenderMode } from '../../../controls/box3d/Model3DSettings';
 import { Props } from '../Model3DControlsNew';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../../controls/__mocks__/resizeObserver';
 
 describe('Model3DControlsV2', () => {
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock;
+        mockResizeObserver();
     });
 
     const getWrapper = (props: Partial<Props> = {}) =>

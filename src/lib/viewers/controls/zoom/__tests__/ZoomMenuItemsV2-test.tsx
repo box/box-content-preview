@@ -7,18 +7,11 @@ import ControlsOverflowMenuV2 from '../../controls-bar/ControlsOverflowMenuV2';
 import ZoomMenuItemsV2 from '../ZoomMenuItemsV2';
 import { replacePlaceholders } from '../../../../util';
 import { Props } from '../ZoomControls';
-
-class ResizeObserverMock {
-    disconnect = jest.fn();
-
-    observe = jest.fn();
-
-    unobserve = jest.fn();
-}
+import { mockResizeObserver } from '../../__mocks__/resizeObserver';
 
 describe('ZoomMenuItemsV2', () => {
     beforeAll(() => {
-        global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
+        mockResizeObserver();
     });
 
     const renderMenu = async (props: Partial<Props> = {}) => {
