@@ -1,13 +1,13 @@
 import React from 'react';
 import noop from 'lodash/noop';
-import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2';
 import AnnotationsPaletteControlsV2 from '../controls/annotations/AnnotationsPaletteControlsV2';
 import ExperiencesProvider from '../controls/experiences';
+import getAnnotationsItem from '../controls/annotations/getAnnotationsItem';
 import getFullscreenItem from '../controls/fullscreen/getFullscreenItem';
 import getRotateItem from '../controls/rotate/getRotateItem';
 import getZoomItem from '../controls/zoom/getZoomItem';
 import useAnnotationModes from '../controls/annotations/useAnnotationModes';
-import { ControlsBarItem, ResponsiveControlsBarV2 } from '../controls/controls-bar';
+import { ResponsiveControlsBarV2 } from '../controls/controls-bar';
 import { AnnotationMode } from '../../types';
 import { Props } from './ImageControls';
 
@@ -36,37 +36,29 @@ export default function ImageControlsV2({
     scale,
 }: Props): JSX.Element {
     const annotationModes = useAnnotationModes({ hasDrawing, hasHighlight, hasRegion });
-    const hasAnnotations = annotationModes.length > 0;
-
-    const items: Array<ControlsBarItem | false> = [
-        getZoomItem({ onZoomIn, onZoomOut, scale }, PRIORITY.zoom),
-        getRotateItem({ menuLabel: __('controls_rotate_image'), onRotateLeft }, PRIORITY.rotate),
-        getFullscreenItem({ onFullscreenToggle }, PRIORITY.fullscreen),
-        hasAnnotations && {
-            control: (
-                <AnnotationsControlsV2
-                    annotationMode={annotationMode}
-                    modes={annotationModes}
-                    onAnnotationModeClick={onAnnotationModeClick}
-                    onAnnotationModeEscape={onAnnotationModeEscape}
-                />
-            ),
-            id: 'annotations',
-        },
-    ];
 
     return (
         <ExperiencesProvider experiences={experiences}>
-            <ResponsiveControlsBarV2 items={items.filter((item): item is ControlsBarItem => !!item)} />
-            {hasAnnotations && (
-                <AnnotationsPaletteControlsV2
-                    annotationColor={annotationColor}
-                    annotationMode={annotationMode}
-                    modes={annotationModes}
-                    onAnnotationColorChange={onAnnotationColorChange}
-                    onAnnotationModeClick={onAnnotationModeClick}
-                />
-            )}
+            <ResponsiveControlsBarV2
+                items={[
+                    getZoomItem({ onZoomIn, onZoomOut, scale }, PRIORITY.zoom),
+                    getRotateItem({ menuLabel: __('controls_rotate_image'), onRotateLeft }, PRIORITY.rotate),
+                    getFullscreenItem({ onFullscreenToggle }, PRIORITY.fullscreen),
+                    getAnnotationsItem({
+                        annotationMode,
+                        modes: annotationModes,
+                        onAnnotationModeClick,
+                        onAnnotationModeEscape,
+                    }),
+                ]}
+            />
+            <AnnotationsPaletteControlsV2
+                annotationColor={annotationColor}
+                annotationMode={annotationMode}
+                modes={annotationModes}
+                onAnnotationColorChange={onAnnotationColorChange}
+                onAnnotationModeClick={onAnnotationModeClick}
+            />
         </ExperiencesProvider>
     );
 }

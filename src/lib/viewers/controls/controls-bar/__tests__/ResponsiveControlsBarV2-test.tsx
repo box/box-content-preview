@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import BlueprintProviders from '../../../../BlueprintProviders';
-import ResponsiveControlsBarV2 from '../ResponsiveControlsBarV2';
+import ResponsiveControlsBarV2, { Props } from '../ResponsiveControlsBarV2';
 import { ALWAYS_OVERFLOW, ControlsBarItem } from '../useControlsOverflow';
 
 describe('ResponsiveControlsBarV2', () => {
@@ -48,7 +48,7 @@ describe('ResponsiveControlsBarV2', () => {
         jest.restoreAllMocks();
     });
 
-    const getWrapper = (items: ControlsBarItem[]) =>
+    const getWrapper = (items: Props['items']) =>
         render(<ResponsiveControlsBarV2 items={items} />, {
             wrapper: ({ children }) => <BlueprintProviders container={container}>{children}</BlueprintProviders>,
         });
@@ -72,8 +72,16 @@ describe('ResponsiveControlsBarV2', () => {
         expect(getTrigger()).not.toBeInTheDocument();
     });
 
-    test('should render nothing without controls', () => {
-        getWrapper([]);
+    test('should skip the controls a bar leaves out', () => {
+        getWrapper([item('a'), false, null, undefined, item('b')]);
+
+        const slots = Array.from(screen.getByRole('toolbar').querySelectorAll('[data-overflow-id]'));
+
+        expect(slots.map(slot => slot.getAttribute('data-overflow-id'))).toEqual(['a', 'b']);
+    });
+
+    test.each<[Props['items']]>([[[]], [[false, undefined]]])('should render nothing without controls: %j', items => {
+        getWrapper(items);
 
         expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
     });
