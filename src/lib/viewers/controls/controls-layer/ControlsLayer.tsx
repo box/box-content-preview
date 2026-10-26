@@ -24,6 +24,7 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
     const [isShown, setIsShown] = React.useState(false);
     const hasFocusRef = React.useRef(false);
     const hasCursorRef = React.useRef(false);
+    const isEditingRef = React.useRef(false);
     const hideTimeoutRef = React.useRef<number>();
 
     // Visibility helpers
@@ -74,7 +75,7 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         hasCursorRef.current = false;
 
         const layerEl = event.currentTarget as HTMLElement;
-        if (document.activeElement && layerEl.contains(document.activeElement)) {
+        if (!isEditingRef.current && document.activeElement && layerEl.contains(document.activeElement)) {
             (document.activeElement as HTMLElement).blur();
         }
 
@@ -97,7 +98,13 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         helpersRef.current.reset();
         setIsForced(value);
     }, []);
-    const contextValue = React.useMemo(() => ({ setIsForced: setIsForcedWithReset }), [setIsForcedWithReset]);
+    const setIsEditing = React.useCallback((value: boolean): void => {
+        isEditingRef.current = value;
+    }, []);
+    const contextValue = React.useMemo(
+        () => ({ setIsEditing, setIsForced: setIsForcedWithReset }),
+        [setIsEditing, setIsForcedWithReset],
+    );
 
     return (
         <ControlsLayerContext.Provider value={contextValue}>

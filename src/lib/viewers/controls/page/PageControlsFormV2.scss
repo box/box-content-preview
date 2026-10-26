@@ -16,6 +16,13 @@
     --toolbar-input-padding-block: 0;
 }
 
+// The pdf.js viewer and annotations styles color every text input, and outrank the single class that
+// Toolbar.Input uses, which turned the typed page number dark on the dark bar
+.bp-PageControlsFormV2 .bp-PageControlsFormV2-input input[type='text'] {
+    color: var(--toolbar-input-color);
+    background-color: var(--toolbar-input-background);
+}
+
 // Keeps the "1 / 12" label from wrapping, which would grow the height of the whole bar
 .bp-PageControlsFormV2-button-label {
     white-space: nowrap;

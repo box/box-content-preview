@@ -1,10 +1,12 @@
 import React from 'react';
 import { Text, Toolbar, Tooltip } from '@box/blueprint-web';
+import ControlsLayerContext from '../controls-layer/ControlsLayerContext';
 import { decodeKeydown } from '../../../util';
 import { ENTER, ESCAPE, Props } from './PageControlsForm';
 import './PageControlsFormV2.scss';
 
 export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount }: Props): JSX.Element {
+    const { setIsEditing } = React.useContext(ControlsLayerContext);
     const [isInputShown, setIsInputShown] = React.useState(false);
     // A string because Toolbar.Input only supports text types, so a parsed number would show "NaN" once cleared
     const [inputValue, setInputValue] = React.useState(pageNumber.toString());
@@ -68,6 +70,13 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
     React.useEffect(() => {
         setInputValue(pageNumber.toString()); // Keep internal state in sync with prop as it changes
     }, [pageNumber]);
+
+    // Keeps the bar and the input up while typing, even once the cursor leaves the bar
+    React.useEffect(() => {
+        setIsEditing(isInputShown);
+
+        return (): void => setIsEditing(false);
+    }, [isInputShown, setIsEditing]);
 
     React.useLayoutEffect(() => {
         if (inputElRef.current && isInputShown) {

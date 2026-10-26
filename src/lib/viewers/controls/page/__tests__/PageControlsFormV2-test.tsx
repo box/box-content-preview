@@ -2,6 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
+import ControlsLayerContext from '../../controls-layer/ControlsLayerContext';
 import PageControlsFormV2 from '../PageControlsFormV2';
 import { ControlsBarV2 } from '../../controls-bar';
 import { ENTER, ESCAPE } from '../PageControlsForm';
@@ -53,6 +54,28 @@ describe('PageControlsFormV2', () => {
             expect(onPageSubmit).toHaveBeenCalledTimes(onPageSubmitCallCount);
             expect(screen.getByRole('button', { name: '1 / 3' })).toBeInTheDocument();
             expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+        });
+
+        test('should tell the controls layer it is editing while the input is shown', async () => {
+            const user = userEvent.setup();
+            const setIsEditing = jest.fn();
+
+            render(
+                <ControlsLayerContext.Provider value={{ setIsEditing, setIsForced: jest.fn() }}>
+                    <PageControlsFormV2 onPageSubmit={jest.fn()} pageCount={3} pageNumber={1} />
+                </ControlsLayerContext.Provider>,
+                { wrapper: Wrapper },
+            );
+
+            expect(setIsEditing).toHaveBeenLastCalledWith(false);
+
+            await user.click(screen.getByRole('button', { name: '1 / 3' }));
+
+            expect(setIsEditing).toHaveBeenLastCalledWith(true);
+
+            fireEvent.keyDown(getInput(), { key: ESCAPE });
+
+            expect(setIsEditing).toHaveBeenLastCalledWith(false);
         });
 
         test('should submit the typed page number', async () => {

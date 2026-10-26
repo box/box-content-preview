@@ -171,6 +171,57 @@ describe('ControlsLayer', () => {
         });
     });
 
+    describe('setIsEditing context', () => {
+        const EditingConsumer = ({ isEditing }: { isEditing: boolean }): JSX.Element => {
+            const { setIsEditing } = React.useContext(ControlsLayerContext);
+
+            React.useEffect(() => setIsEditing(isEditing), [isEditing, setIsEditing]);
+
+            return <input aria-label="Page" data-testid="inner-input" />;
+        };
+
+        test('should keep focus and the controls up through a mouse-leave while editing', async () => {
+            render(
+                <ControlsLayer>
+                    <EditingConsumer isEditing />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+            const input = screen.getByTestId('inner-input');
+
+            fireEvent.mouseEnter(element);
+            input.focus();
+            fireEvent.mouseLeave(element);
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
+
+            expect(input).toHaveFocus();
+            expect(element).toHaveClass(SHOW_CLASSNAME);
+        });
+
+        test('should blur on mouse-leave again once editing ends', async () => {
+            const { rerender } = render(
+                <ControlsLayer>
+                    <EditingConsumer isEditing />
+                </ControlsLayer>,
+            );
+            rerender(
+                <ControlsLayer>
+                    <EditingConsumer isEditing={false} />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+            const input = screen.getByTestId('inner-input');
+
+            fireEvent.mouseEnter(element);
+            input.focus();
+            fireEvent.mouseLeave(element);
+
+            expect(input).not.toHaveFocus();
+        });
+    });
+
     describe('unmount', () => {
         test('should destroy any existing hide timeout', () => {
             jest.spyOn(window, 'clearTimeout');
