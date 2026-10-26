@@ -3,6 +3,7 @@ import isFinite from 'lodash/isFinite';
 import { Text, Toolbar, Tooltip } from '@box/blueprint-web';
 import Minus from '@box/blueprint-web-assets/icons/Medium/Minus';
 import Plus from '@box/blueprint-web-assets/icons/Medium/Plus';
+import ControlsPillV2 from '../controls-bar/ControlsPillV2';
 import { MAX_SCALE, MIN_SCALE, Props } from './ZoomControls';
 
 export type ZoomState = {
@@ -35,9 +36,10 @@ export default function ZoomControlsV2({
     const { canZoomIn, canZoomOut, currentScale } = getZoomState({ maxScale, minScale, scale });
 
     return (
-        <>
+        <ControlsPillV2>
             <Tooltip content={__('zoom_out')}>
                 <Toolbar.Button
+                    className="bp-ControlsPillV2-button"
                     aria-label={__('zoom_out')}
                     data-resin-target={resinTargetZoomOut}
                     data-testid="bp-ZoomControls-out"
@@ -49,15 +51,16 @@ export default function ZoomControlsV2({
             </Tooltip>
             <Text
                 as="span"
-                color="textOnDarkDefault"
+                className="bp-ControlsPillV2-text bp-ZoomControlsV2-current"
                 data-testid="bp-ZoomControls-current"
                 title={__('zoom_current_scale')}
-                variant="bodyDefaultSemibold"
+                variant="bodyDefault"
             >
                 {`${Math.round(currentScale * 100)}%`}
             </Text>
             <Tooltip content={__('zoom_in')}>
                 <Toolbar.Button
+                    className="bp-ControlsPillV2-button"
                     aria-label={__('zoom_in')}
                     data-resin-target={resinTargetZoomIn}
                     data-testid="bp-ZoomControls-in"
@@ -67,6 +70,6 @@ export default function ZoomControlsV2({
                     <Toolbar.Icon icon={Plus} />
                 </Toolbar.Button>
             </Tooltip>
-        </>
+        </ControlsPillV2>
     );
 }

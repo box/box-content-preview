@@ -1,0 +1,45 @@
+// From the mocks: a 32px pill with 24px buttons and 16px icons, smaller than the rest of the bar
+.bp-ControlsPillV2 {
+    display: flex;
+    flex: none;
+    align-items: center;
+    padding: var(--bp-space-010);
+    border-radius: var(--bp-radius-10);
+    background: var(--bp-white-opacity-04);
+
+    // Two classes, so these win over the Toolbar item defaults set on the same element
+    .bp-ControlsPillV2-button,
+    .bp-ControlsPillV2-label {
+        --toolbar-item-min-height: var(--bp-size-060);
+        --toolbar-item-border-radius: var(--bp-radius-06);
+    }
+
+    .bp-ControlsPillV2-button {
+        --toolbar-item-min-width: var(--bp-size-060);
+        --toolbar-icon-width: var(--bp-size-040);
+        --toolbar-icon-height: var(--bp-size-040);
+
+        // Toolbar.Icon sizes its svg with attributes, which CSS overrides
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .bp-ControlsPillV2-label {
+        --toolbar-item-min-width: 0;
+        --toolbar-item-padding-inline: calc(var(--bp-space-010) + var(--bp-space-005));
+        --toolbar-item-text-indent: 0;
+    }
+
+    // Text has no on-dark color that matches the icons, so pill text takes the icon color, or the
+    // button's color inside a label so it follows the hover and pressed states
+    .bp-ControlsPillV2-text {
+        color: var(--bp-icon-cta-icon-on-dark);
+        white-space: nowrap;
+    }
+
+    .bp-ControlsPillV2-label .bp-ControlsPillV2-text {
+        color: inherit;
+    }
+}

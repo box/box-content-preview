@@ -99,6 +99,18 @@ describe('ZoomControlsV2', () => {
             expect(screen.getByTestId('bp-ZoomControls-current')).toHaveAttribute('title', __('zoom_current_scale'));
         });
 
+        test('should render the buttons and current scale inside a pill', () => {
+            getWrapper();
+
+            const pill = screen.getByTestId('bp-ControlsPill');
+
+            expect(pill).toContainElement(getZoomOut());
+            expect(pill).toContainElement(getZoomIn());
+            expect(pill).toContainElement(screen.getByTestId('bp-ZoomControls-current'));
+            expect(getZoomOut()).toHaveClass('bp-ControlsPillV2-button');
+            expect(getZoomIn()).toHaveClass('bp-ControlsPillV2-button');
+        });
+
         test('should default the scale to 100%', () => {
             getWrapper();
 

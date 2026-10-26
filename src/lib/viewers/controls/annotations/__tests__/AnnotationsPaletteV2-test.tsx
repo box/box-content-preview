@@ -74,6 +74,14 @@ describe('AnnotationsPaletteV2', () => {
             expect(toolbar).toContainElement(screen.getByTestId('bp-annotations-controls'));
         });
 
+        test('should render the small toolbar size', () => {
+            renderPalette();
+
+            const toolbar = within(screen.getByTestId('bp-AnnotationsPaletteV2')).getByRole('toolbar');
+
+            expect(toolbar).toHaveClass('bp-ControlsBarV2--small');
+        });
+
         test('should render the mode buttons with their tracking targets', () => {
             renderPalette();
 

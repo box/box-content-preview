@@ -105,6 +105,7 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
                 <Tooltip content={__('enter_page_num')}>
                     <Toolbar.Button
                         ref={buttonElRef}
+                        className="bp-ControlsPillV2-label"
                         data-resin-target="pageNumberOpen"
                         data-testid="bp-PageControlsForm-button"
                         disabled={pageCount <= 1}
@@ -114,7 +115,9 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
                             className="bp-PageControlsFormV2-button-label"
                             data-testid="bp-PageControlsForm-button-label"
                         >
-                            <Text as="span" color="textOnDarkDefault">{`${pageNumber} / ${pageCount}`}</Text>
+                            <Text as="span" className="bp-ControlsPillV2-text" variant="bodyDefaultSemibold">
+                                {`${pageNumber} / ${pageCount}`}
+                            </Text>
                         </span>
                     </Toolbar.Button>
                 </Tooltip>

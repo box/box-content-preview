@@ -10,6 +10,12 @@
     width: var(--bp-size-140);
 }
 
+// Fits the input container to the 24px pill buttons, so the page pill keeps its height while editing
+.bp-PageControlsFormV2 .bp-PageControlsFormV2-input > * {
+    --toolbar-input-height: var(--bp-size-060);
+    --toolbar-input-padding-block: 0;
+}
+
 // Keeps the "1 / 12" label from wrapping, which would grow the height of the whole bar
 .bp-PageControlsFormV2-button-label {
     white-space: nowrap;

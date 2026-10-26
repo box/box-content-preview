@@ -109,6 +109,20 @@ describe('PageControlsV2', () => {
             expect(screen.getByRole('button', { name: '1 / 3' })).toBeInTheDocument();
         });
 
+        test('should render the buttons and page number inside a pill', () => {
+            getWrapper();
+
+            const pill = screen.getByTestId('bp-ControlsPill');
+            const pageNumberButton = screen.getByRole('button', { name: '1 / 3' });
+
+            expect(pill).toContainElement(getPreviousPageButton());
+            expect(pill).toContainElement(pageNumberButton);
+            expect(pill).toContainElement(getNextPageButton());
+            expect(getPreviousPageButton()).toHaveClass('bp-ControlsPillV2-button');
+            expect(getNextPageButton()).toHaveClass('bp-ControlsPillV2-button');
+            expect(pageNumberButton).toHaveClass('bp-ControlsPillV2-label');
+        });
+
         test('should keep the resin targets and test ids of the legacy page controls', () => {
             getWrapper();
 
