@@ -1,18 +1,17 @@
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-import { DropdownMenu, IconButton } from '@box/blueprint-web';
-import Checkmark from '@box/blueprint-web-assets/icons/Medium/Checkmark';
-import Download from '@box/blueprint-web-assets/icons/Medium/Download';
-import Ellipsis from '@box/blueprint-web-assets/icons/Medium/Ellipsis';
-import Expand from '@box/blueprint-web-assets/icons/Medium/Expand';
-import Trash from '@box/blueprint-web-assets/icons/Medium/Trash';
-import XMark from '@box/blueprint-web-assets/icons/Medium/XMark';
+import { DropdownMenu, EllipsizableText, Focusable, IconButton, Tooltip } from '@box/blueprint-web';
+import { Checkmark, Download, Ellipsis, Expand, Trash, XMark } from '@box/blueprint-web-assets/icons/Medium';
 
 import BlueprintProviders from './BlueprintProviders';
 import { CLASS_BOX_PREVIEW_VERSION_BANNER, CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED } from './constants';
+import { replacePlaceholders } from './util';
 
 import './ComparisonBanner.scss';
+
+// The badge is a fixed-size circle, so larger version numbers are shown as "999+"
+export const MAX_BADGE_VERSION = 999;
 
 export type ComparisonBannerFile = {
     created_by?: { name?: string };
@@ -58,6 +57,38 @@ export function getComparisonBannerAuthor(file: ComparisonBannerFile = {}): stri
     return file.modified_by?.name || file.created_by?.name || '';
 }
 
+function VersionBadge({
+    fullLabel,
+    isTruncated,
+    label,
+}: {
+    fullLabel: string;
+    isTruncated: boolean;
+    label: string;
+}): JSX.Element {
+    const badge = (
+        <span
+            // When truncated, the tooltip supplies the full number
+            aria-label={isTruncated ? undefined : fullLabel}
+            className={
+                isTruncated ? 'bp-version-banner-badge bp-version-banner-badge--truncated' : 'bp-version-banner-badge'
+            }
+            role={isTruncated ? undefined : 'img'}
+        >
+            {label}
+        </span>
+    );
+
+    // Tooltip triggers must be focusable so keyboard users can open the full version number
+    return isTruncated ? (
+        <Tooltip content={fullLabel}>
+            <Focusable>{badge}</Focusable>
+        </Tooltip>
+    ) : (
+        badge
+    );
+}
+
 export default function ComparisonBanner({
     file = {},
     isComparedPreview = false,
@@ -72,6 +103,9 @@ export default function ComparisonBanner({
     const versionNumber = file.version_number != null && file.version_number !== '' ? String(file.version_number) : '';
     const timestamp = formatComparisonTimestamp(file.modified_at, locale);
     const author = getComparisonBannerAuthor(file);
+    const isBadgeTruncated = Number(versionNumber) > MAX_BADGE_VERSION;
+    const badgeLabel = isBadgeTruncated ? `${MAX_BADGE_VERSION}+` : versionNumber;
+    const badgeFullLabel = replacePlaceholders(__('comparison_banner_version'), [versionNumber]);
     // When "Open Full Preview" is the only action, the close button covers it, so skip the menu
     const showMenu = !!(onMakeCurrent || onDownload || onDelete);
     const showClose = !!onOpenFullPreview;
@@ -81,35 +115,55 @@ export default function ComparisonBanner({
     }
 
     return (
-        <div
-            className={
-                isComparedPreview
-                    ? `${CLASS_BOX_PREVIEW_VERSION_BANNER} ${CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED}`
-                    : CLASS_BOX_PREVIEW_VERSION_BANNER
-            }
-        >
+        <BlueprintProviders container={menuContainer}>
             <div
-                aria-label={isComparedPreview ? __('comparison_banner_previous') : __('comparison_banner_current')}
-                className="bp-version-banner-details"
-                role="status"
+                className={
+                    isComparedPreview
+                        ? `${CLASS_BOX_PREVIEW_VERSION_BANNER} ${CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED}`
+                        : CLASS_BOX_PREVIEW_VERSION_BANNER
+                }
             >
-                {versionNumber && <span className="bp-version-banner-badge">{versionNumber}</span>}
-                {(timestamp || author) && (
-                    <div className="bp-version-banner-info">
-                        {timestamp && <div className="bp-version-banner-time">{timestamp}</div>}
-                        {author && <div className="bp-version-banner-author">{author}</div>}
-                    </div>
-                )}
-            </div>
-            {isComparedPreview && (onMakeCurrent || onDownload || onOpenFullPreview || onDelete) && (
                 <div
-                    className="bp-version-banner-actions"
-                    onKeyDown={(event: React.KeyboardEvent): void => {
-                        event.stopPropagation(); // Prevents global key handling
-                    }}
-                    role="presentation"
+                    aria-label={isComparedPreview ? __('comparison_banner_previous') : __('comparison_banner_current')}
+                    className="bp-version-banner-details"
+                    role="status"
                 >
-                    <BlueprintProviders container={menuContainer}>
+                    {versionNumber && (
+                        <VersionBadge fullLabel={badgeFullLabel} isTruncated={isBadgeTruncated} label={badgeLabel} />
+                    )}
+                    {(timestamp || author) && (
+                        <div className="bp-version-banner-info">
+                            {timestamp && (
+                                <EllipsizableText
+                                    as="div"
+                                    className="bp-version-banner-time"
+                                    lineClamp={1}
+                                    variant="bodyDefaultSemibold"
+                                >
+                                    {timestamp}
+                                </EllipsizableText>
+                            )}
+                            {author && (
+                                <EllipsizableText
+                                    as="div"
+                                    className="bp-version-banner-author"
+                                    lineClamp={1}
+                                    variant="caption"
+                                >
+                                    {author}
+                                </EllipsizableText>
+                            )}
+                        </div>
+                    )}
+                </div>
+                {isComparedPreview && (onMakeCurrent || onDownload || onOpenFullPreview || onDelete) && (
+                    <div
+                        className="bp-version-banner-actions"
+                        onKeyDown={(event: React.KeyboardEvent): void => {
+                            event.stopPropagation(); // Prevents global key handling
+                        }}
+                        role="presentation"
+                    >
                         {showMenu && (
                             <DropdownMenu.Root>
                                 <DropdownMenu.Trigger asChild>
@@ -180,10 +234,10 @@ export default function ComparisonBanner({
                                 variant={isOnDark ? 'on-dark' : 'default'}
                             />
                         )}
-                    </BlueprintProviders>
-                </div>
-            )}
-        </div>
+                    </div>
+                )}
+            </div>
+        </BlueprintProviders>
     );
 }
 

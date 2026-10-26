@@ -9,6 +9,20 @@ import ComparisonBanner, {
 } from '../ComparisonBanner';
 
 describe('lib/ComparisonBanner', () => {
+    const originalResizeObserver = global.ResizeObserver;
+
+    beforeAll(() => {
+        global.ResizeObserver = jest.fn(() => ({
+            disconnect: jest.fn(),
+            observe: jest.fn(),
+            unobserve: jest.fn(),
+        })) as unknown as typeof ResizeObserver;
+    });
+
+    afterAll(() => {
+        global.ResizeObserver = originalResizeObserver;
+    });
+
     describe('formatComparisonTimestamp()', () => {
         test('should return an empty string when the timestamp is missing', () => {
             expect(formatComparisonTimestamp()).toBe('');
@@ -62,6 +76,62 @@ describe('lib/ComparisonBanner', () => {
             expect(bannerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('12');
             expect(bannerEl.querySelector('.bp-version-banner-time')).toHaveTextContent(/Aug/);
             expect(bannerEl.querySelector('.bp-version-banner-author')).toHaveTextContent('Emily Huang');
+        });
+
+        test('should label the badge with the full version number', () => {
+            render(<ComparisonBanner file={file} locale="en-US" />);
+
+            const badgeEl = screen.getByRole('img', { name: 'Version 12' });
+
+            expect(badgeEl).toHaveTextContent('12');
+            expect(badgeEl).not.toHaveAttribute('title');
+            expect(badgeEl).not.toHaveClass('bp-version-banner-badge--truncated');
+        });
+
+        test('should show version numbers up to 999 as-is', () => {
+            render(<ComparisonBanner file={{ ...file, version_number: 999 }} locale="en-US" />);
+
+            const badgeEl = screen.getByRole('img', { name: 'Version 999' });
+
+            expect(badgeEl).toHaveTextContent(/^999$/);
+            expect(badgeEl).not.toHaveClass('bp-version-banner-badge--truncated');
+        });
+
+        test('should truncate version numbers above 999 and keep the full number accessible', async () => {
+            const user = userEvent.setup();
+            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+
+            const badgeEl = screen.getByText('999+');
+
+            expect(badgeEl).toHaveClass('bp-version-banner-badge--truncated');
+            expect(badgeEl).not.toHaveAttribute('title');
+            // The tooltip supplies the full number, so the badge has no label that would repeat it
+            expect(badgeEl).not.toHaveAttribute('aria-label');
+            expect(badgeEl).not.toHaveAttribute('role');
+
+            await user.hover(badgeEl);
+
+            expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
+            expect(badgeEl).toHaveAttribute('aria-describedby', screen.getByRole('tooltip').id);
+        });
+
+        test('should show the full version number in a tooltip when the truncated badge is focused', async () => {
+            const user = userEvent.setup();
+            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+
+            await user.tab();
+
+            expect(screen.getByText('999+')).toHaveFocus();
+            expect(await screen.findByRole('tooltip')).toHaveTextContent('Version 1234');
+        });
+
+        test('should keep the badge out of the tab order when it is not truncated', async () => {
+            const user = userEvent.setup();
+            render(<ComparisonBanner file={{ ...file, version_number: '999' }} locale="en-US" />);
+
+            await user.tab();
+
+            expect(screen.getByRole('img', { name: 'Version 999' })).not.toHaveFocus();
         });
 
         test('should not render the actions menu on the current pane', () => {
