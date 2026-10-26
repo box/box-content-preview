@@ -70,11 +70,15 @@ class Video360Viewer extends DashViewer {
     }
 
     /**
-     * The canvas shows the picture, and the video element is sized by Video360.scss to place its captions.
+     * The canvas shows the picture, so the container fills the viewer instead of fitting the video, which
+     * Video360.scss sizes to place its captions. resize() clears the container size before calling this.
      *
      * @inheritdoc
      */
-    setVideoDimensions() {}
+    setVideoDimensions() {
+        this.mediaContainerEl.style.width = '100%';
+        this.mediaContainerEl.style.height = '100%';
+    }
 
     /** @inheritdoc */
     setup() {

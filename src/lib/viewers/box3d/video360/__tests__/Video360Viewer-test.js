@@ -110,6 +110,13 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             expect(viewer.mediaEl.style.height).toBe('');
         });
 
+        test('should keep mediaContainerEl full size after a resize', () => {
+            viewer.resize();
+
+            expect(viewer.mediaContainerEl.style.width).toBe('100%');
+            expect(viewer.mediaContainerEl.style.height).toBe('100%');
+        });
+
         test('should set "width" style of mediaContainerEl to "100%"', () => {
             expect(viewer.mediaContainerEl.style.width).toBe('100%');
         });
