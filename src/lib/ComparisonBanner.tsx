@@ -178,6 +178,8 @@ export default function ComparisonBanner({
                                 <DropdownMenu.Content align="end" container={menuContainer ?? undefined} side="bottom">
                                     {onMakeCurrent && (
                                         <DropdownMenu.Item
+                                            data-resin-feature="versionComparison"
+                                            data-resin-target="makeCurrentVersion"
                                             data-target-id="ComparisonBanner-makeCurrent"
                                             onSelect={onMakeCurrent}
                                         >
@@ -189,6 +191,8 @@ export default function ComparisonBanner({
                                     )}
                                     {onDownload && (
                                         <DropdownMenu.Item
+                                            data-resin-feature="versionComparison"
+                                            data-resin-target="downloadVersion"
                                             data-target-id="ComparisonBanner-download"
                                             onSelect={onDownload}
                                         >
@@ -198,6 +202,8 @@ export default function ComparisonBanner({
                                     )}
                                     {onOpenFullPreview && (
                                         <DropdownMenu.Item
+                                            data-resin-feature="versionComparison"
+                                            data-resin-target="openFullPreview"
                                             data-target-id="ComparisonBanner-openFullPreview"
                                             onSelect={onOpenFullPreview}
                                         >
@@ -212,6 +218,8 @@ export default function ComparisonBanner({
                                     )}
                                     {onDelete && (
                                         <DropdownMenu.Item
+                                            data-resin-feature="versionComparison"
+                                            data-resin-target="deleteVersion"
                                             data-target-id="ComparisonBanner-delete"
                                             onSelect={onDelete}
                                             variant="destructive"
@@ -227,6 +235,8 @@ export default function ComparisonBanner({
                         {showClose && (
                             <IconButton
                                 aria-label={__('comparison_banner_close')}
+                                data-resin-feature="versionComparison"
+                                data-resin-target="closeComparison"
                                 data-target-id="ComparisonBanner-close"
                                 icon={XMark}
                                 onClick={onOpenFullPreview}
