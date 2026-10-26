@@ -169,7 +169,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     emitFirstRenderMetric() {
-        if (this.firstRenderEmitted) {
+        if (this.isDestroyed() || this.firstRenderEmitted) {
             return;
         }
 

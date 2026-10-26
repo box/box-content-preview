@@ -1,3 +1,21 @@
+## 3.123.0 (2026-10-26)
+
+* fix(comparison): ellipsize banner text and keep a fixed-size badge (#1884) ([59519a0](https://github.com/box/box-content-preview/commit/59519a0)), closes [#1884](https://github.com/box/box-content-preview/issues/1884)
+* fix(doc): keep zoomed pages sharp with npm pdf.js (#1890) ([e0e7b1e](https://github.com/box/box-content-preview/commit/e0e7b1e)), closes [#1890](https://github.com/box/box-content-preview/issues/1890)
+* test(archive): add stable breadcrumb and table test IDs (#1886) ([b0675c4](https://github.com/box/box-content-preview/commit/b0675c4)), closes [#1886](https://github.com/box/box-content-preview/issues/1886)
+* feat(model3d): add the Blueprint controls bar for 3D models (#1881) ([c5078a2](https://github.com/box/box-content-preview/commit/c5078a2)), closes [#1881](https://github.com/box/box-content-preview/issues/1881)
+
+## 3.122.0 (2026-10-24)
+
+* chore(i18n): update translations (#1885) ([f35a114](https://github.com/box/box-content-preview/commit/f35a114)), closes [#1885](https://github.com/box/box-content-preview/issues/1885)
+* feat(video): add Blueprint annotations toggle and toolbar to video controls (#1887) ([c39e229](https://github.com/box/box-content-preview/commit/c39e229)), closes [#1887](https://github.com/box/box-content-preview/issues/1887)
+
+## 3.121.0 (2026-10-23)
+
+* fix(doc): Ship pdf.js viewer images with the npm and CDN builds (#1883) ([9bf2b67](https://github.com/box/box-content-preview/commit/9bf2b67)), closes [#1883](https://github.com/box/box-content-preview/issues/1883)
+* feat(archive): emit first render time (#1841) ([474af2d](https://github.com/box/box-content-preview/commit/474af2d)), closes [#1841](https://github.com/box/box-content-preview/issues/1841)
+* feat(controls): collapse the Blueprint document controls into a more options menu (#1853) ([3b6ef8f](https://github.com/box/box-content-preview/commit/3b6ef8f)), closes [#1853](https://github.com/box/box-content-preview/issues/1853)
+
 ## 3.120.0 (2026-10-22)
 
 * fix(build): Externalize react-intl in the npm lib (#1872) ([01e57d7](https://github.com/box/box-content-preview/commit/01e57d7)), closes [#1872](https://github.com/box/box-content-preview/issues/1872)

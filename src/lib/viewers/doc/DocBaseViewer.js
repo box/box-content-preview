@@ -87,6 +87,9 @@ const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
+// npm pdf.js draws its sharp detail canvas over zoomed pages only when maxCanvasPixels is positive
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25; // pdf.js desktop default
+const LEGACY_PDFJS_MAX_CANVAS_SIZE = -1; // Unlimited
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 const PDFJS_TEXT_LAYER_MODE = {
@@ -519,7 +522,7 @@ class DocBaseViewer extends BaseViewer {
 
         if (assets) {
             if (this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
-                this.prefetchAssets(EXIF_READER, CSS);
+                this.prefetchAssets(EXIF_READER, []);
             } else {
                 const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
                 this.prefetchAssets(ASSETS, CSS);
@@ -1221,12 +1224,21 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             eventBus: this.pdfEventBus,
             findController: this.pdfFindController,
-            imageResourcesPath: assetUrlCreator(IMAGES),
+            imageResourcesPath: this.featureEnabled('useNpmPdfjs')
+                ? assetUrlCreator('pdfjs-images/')
+                : assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
-            maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            maxCanvasPixels: this.getMaxCanvasPixels(),
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? enabledTextLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
+    }
+
+    getMaxCanvasPixels() {
+        if (this.isMobile) {
+            return MOBILE_MAX_CANVAS_SIZE;
+        }
+        return this.featureEnabled('useNpmPdfjs') ? NPM_PDFJS_MAX_CANVAS_SIZE : LEGACY_PDFJS_MAX_CANVAS_SIZE;
     }
 
     /**
@@ -1381,9 +1393,7 @@ class DocBaseViewer extends BaseViewer {
         // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
         // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
         this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/legacy/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(
-            /* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs'
-        );
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs');
         await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/legacy/web/pdf_viewer.css');
     }
 

@@ -771,7 +771,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     emitFirstRenderMetric() {
-        if (this.firstRenderEmitted) {
+        if (this.isDestroyed() || this.firstRenderEmitted) {
             return;
         }
 

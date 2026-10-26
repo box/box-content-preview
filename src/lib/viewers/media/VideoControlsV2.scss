@@ -57,6 +57,42 @@
     background-color: rgb(255 255 255 / 10%);
 }
 
+// The markup toggle exits the active mode, so it must stay clickable where the bar overlaps the video.
+// The root drops its stacking context and every other part of the controls isolates its own, keeping them
+// beneath the annotator's drawing and region layers (3). The toggle matches those layers and, coming later
+// in the DOM, paints over them.
+.bp-VideoControlsRoot:has(.bp-VideoControlsV2-annotationsToggle) {
+    z-index: auto;
+
+    .bp-VideoControlsV2 > :not(.bp-VideoControlsV2-bar),
+    .bp-VideoControlsV2-bar > :not(.bp-VideoControlsV2-group--right),
+    .bp-VideoControlsV2-group--right > :not(:has(.bp-VideoControlsV2-annotationsToggle)) {
+        isolation: isolate;
+    }
+
+    .bp-VideoControlsV2-group--right > :has(.bp-VideoControlsV2-annotationsToggle) {
+        position: relative;
+        z-index: 3;
+    }
+}
+
+// IconToggleButton has no on-dark variant, so its own custom properties take the tokens the dark
+// Toolbar uses for toggle items. [aria-pressed] outranks IconToggleButton's same-specificity defaults.
+.bp-VideoControlsV2-annotationsToggle[aria-pressed] {
+    --icon-toggle-button-off-color: var(--bp-text-text-on-dark);
+    --icon-toggle-button-off-background: var(--bp-surface-cta-surface-icon-on-dark);
+    --icon-toggle-button-off-background-hover: var(--bp-surface-cta-surface-icon-on-dark-hover);
+    --icon-toggle-button-off-background-pressed: var(--bp-surface-cta-surface-icon-on-dark-pressed);
+    --icon-toggle-button-off-icon-color: var(--bp-icon-cta-icon-on-dark);
+    --icon-toggle-button-on-background: var(--bp-light-blue-opacity-12);
+    --icon-toggle-button-on-background-hover: var(--bp-light-blue-opacity-16);
+    --icon-toggle-button-on-background-pressed: var(--bp-light-blue-opacity-20);
+    --icon-toggle-button-on-border: var(--bp-border-01) solid var(--bp-light-blue-opacity-20);
+    --icon-toggle-button-on-border-focus: var(--bp-border-01) solid var(--bp-light-blue-opacity-30);
+    --icon-toggle-button-on-icon-color: var(--bp-light-blue-100);
+    --icon-toggle-button-focus-outline: var(--bp-border-02) solid var(--bp-outline-focus-on-dark);
+}
+
 .bp-VideoControlsV2 .bp-AnnotationsControls {
     gap: 4px;
     padding-left: 0;
