@@ -20,6 +20,16 @@ describe('RotateAxisControlV2', () => {
                 'rotateAxisRight',
             );
         });
+
+        test('should keep the mirrored rotate right icon out of the accessible name', () => {
+            render(<RotateAxisControlV2 axis="x" onRotateOnAxisChange={jest.fn()} />);
+
+            const icon = screen.getByTestId('bp-rotate-axis-control-right').querySelector('svg');
+
+            expect(icon).toHaveClass('bp-RotateRight');
+            expect(icon).toHaveAttribute('role', 'presentation');
+            expect(screen.getByRole('button', { name: 'Rotate right around X axis' })).toBeInTheDocument();
+        });
     });
 
     describe('onRotateOnAxisChange()', () => {

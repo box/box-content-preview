@@ -1,6 +1,6 @@
 import React from 'react';
 import { DropdownMenu, Text, Toolbar, ToolbarButtonProps } from '@box/blueprint-web';
-import { Video } from '@box/blueprint-web-assets/icons/Medium';
+import { GaugeNeedle } from '@box/blueprint-web-assets/icons/Medium';
 import MenuTriggerTooltipV2 from '../tooltip/MenuTriggerTooltipV2';
 import { settingsRadioItemAction } from '../settings/SettingsRadioItem';
 import { stopEscapePropagation, stopKeyPropagation } from '../settings/stopMenuKeyPropagation';
@@ -19,7 +19,7 @@ function AnimationClipsToggle(props: ToolbarButtonProps, ref: React.Ref<HTMLButt
                 data-resin-target="animationClips"
                 {...props}
             >
-                <Toolbar.Icon icon={Video} />
+                <Toolbar.Icon icon={GaugeNeedle} />
             </Toolbar.Button>
         </MenuTriggerTooltipV2>
     );

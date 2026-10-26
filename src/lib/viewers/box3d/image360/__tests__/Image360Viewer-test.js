@@ -149,18 +149,26 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
     describe('onKeydown()', () => {
         beforeEach(() => {
             jest.spyOn(viewer, 'toggleFullscreen').mockImplementation();
+            jest.spyOn(viewer, 'getViewerOption').mockImplementation(() => true);
         });
 
         test.each`
-            enabled  | consumed
-            ${true}  | ${true}
-            ${false} | ${false}
-        `('should consume F as fullscreen: $consumed if the controls bar flag is $enabled', ({ consumed, enabled }) => {
-            viewer.options.features = { blueprintMigrationControlsBar: { enabled } };
+            enabled  | useReactControls | consumed
+            ${true}  | ${true}          | ${true}
+            ${false} | ${true}          | ${false}
+            ${true}  | ${false}         | ${false}
+        `(
+            'should consume F as fullscreen: $consumed if the controls bar flag is $enabled and React controls are $useReactControls',
+            ({ consumed, enabled, useReactControls }) => {
+                viewer.getViewerOption.mockImplementation(option =>
+                    option === 'useReactControls' ? useReactControls : undefined,
+                );
+                viewer.options.features = { blueprintMigrationControlsBar: { enabled } };
 
-            expect(viewer.onKeydown('f')).toBe(consumed);
-            expect(viewer.toggleFullscreen).toHaveBeenCalledTimes(consumed ? 1 : 0);
-        });
+                expect(viewer.onKeydown('f')).toBe(consumed);
+                expect(viewer.toggleFullscreen).toHaveBeenCalledTimes(consumed ? 1 : 0);
+            },
+        );
 
         test('should leave other keys, like the arrows for file navigation, to preview', () => {
             viewer.options.features = { blueprintMigrationControlsBar: { enabled: true } };

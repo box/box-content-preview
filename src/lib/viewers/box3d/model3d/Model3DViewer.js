@@ -3,6 +3,7 @@ import Box3DViewer from '../Box3DViewer';
 import ControlsRoot from '../../controls/controls-root';
 import Model3DControls from './Model3DControls';
 import Model3DControlsNew from './Model3DControlsNew';
+import Model3DControlsV2 from './Model3DControlsV2';
 import Model3DRenderer from './Model3DRenderer';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
@@ -19,6 +20,7 @@ import {
     RENDER_MODE_LIT,
 } from './model3DConstants';
 import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3DConstants';
+import { BLUEPRINT_MIGRATION_CONTROLS_BAR } from '../../../constants';
 import './Model3D.scss';
 
 const DEFAULT_AXIS_UP = '+Y';
@@ -504,8 +506,10 @@ class Model3DViewer extends Box3DViewer {
             return;
         }
 
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? Model3DControlsV2 : Model3DControlsNew;
+
         this.controls.render(
-            <Model3DControlsNew
+            <Controls
                 animationClips={this.animationClips}
                 cameraProjection={this.projection}
                 currentAnimationClipId={this.renderer.getAnimationClip()}
