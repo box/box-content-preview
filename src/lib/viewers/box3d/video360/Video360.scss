@@ -1,7 +1,28 @@
 @import '../../media/Dash';
 
 .bp-video-360 .bp-media-container {
+    isolation: isolate;
     display: flex;
+}
+
+// The canvas draws the picture. The video stays on top so the browser still draws its captions, with its
+// own picture moved out of its box, where the browser clips it. The box ends above the controls, so the
+// captions do too.
+.bp-video-360 .bp-media-container video {
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+    inset: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    height: calc(100% - 72px);
+    max-height: none;
+    object-fit: none;
+    object-position: -100000px 0;
+}
+
+.bp-video-360.bp-media--v2 .bp-media-container video {
+    height: calc(100% - var(--bp-space-250));
 }
 
 .bp-is-mobile .bp-video-360 .bp-media-container {
