@@ -1,6 +1,6 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
-import { Text, Toolbar, Tooltip, VisuallyHidden } from '@box/blueprint-web';
+import { Text, Toolbar, Tooltip } from '@box/blueprint-web';
 import Minus from '@box/blueprint-web-assets/icons/Medium/Minus';
 import Plus from '@box/blueprint-web-assets/icons/Medium/Plus';
 import ControlsPillV2 from '../controls-bar/ControlsPillV2';
@@ -35,8 +35,6 @@ export default function ZoomControlsV2({
     scale,
 }: Props): JSX.Element {
     const { canZoomIn, canZoomOut, currentScale } = getZoomState({ maxScale, minScale, scale });
-    const zoomLabel = `${Math.round(currentScale * 100)}%`;
-
     return (
         <ControlsPillV2>
             <Tooltip content={__('zoom_out')}>
@@ -59,11 +57,7 @@ export default function ZoomControlsV2({
                 title={__('zoom_current_scale')}
                 variant="bodyDefault"
             >
-                {/* Screen readers would read the fixed-width digits one by one */}
-                <span aria-hidden>
-                    <TabularDigits>{zoomLabel}</TabularDigits>
-                </span>
-                <VisuallyHidden>{zoomLabel}</VisuallyHidden>
+                <TabularDigits>{`${Math.round(currentScale * 100)}%`}</TabularDigits>
             </Text>
             <Tooltip content={__('zoom_in')}>
                 <Toolbar.Button

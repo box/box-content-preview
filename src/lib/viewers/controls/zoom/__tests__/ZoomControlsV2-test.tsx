@@ -130,9 +130,6 @@ describe('ZoomControlsV2', () => {
             const current = screen.getByTestId('bp-ZoomControls-current');
 
             expect(current.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)).toHaveLength(3);
-            expect(current.querySelector('[aria-hidden]')).toContainElement(
-                current.querySelector(`.${TABULAR_DIGIT_CLASS}`),
-            );
             expect(screen.getByText('125%')).toBeInTheDocument(); // The whole value, read once by screen readers
         });
 

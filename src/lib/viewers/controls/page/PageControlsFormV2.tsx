@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Toolbar, Tooltip, VisuallyHidden } from '@box/blueprint-web';
+import { Text, Toolbar, Tooltip } from '@box/blueprint-web';
 import ControlsLayerContext from '../controls-layer/ControlsLayerContext';
 import TabularDigits from '../../../TabularDigits';
 import { decodeKeydown } from '../../../util';
@@ -17,8 +17,6 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
     const buttonElRef = React.useRef<HTMLButtonElement>(null);
     const inputElRef = React.useRef<HTMLInputElement>(null);
     const isRetryRef = React.useRef(false);
-
-    const pageLabel = `${pageNumber} / ${pageCount}`;
 
     const setPage = (allowRetry = false): void => {
         const newPageNumber = Number(inputValue);
@@ -142,11 +140,7 @@ export default function PageControlsFormV2({ onPageSubmit, pageNumber, pageCount
                                 color="textOnDarkDefault"
                                 variant="bodyDefaultSemibold"
                             >
-                                {/* Screen readers would read the fixed-width digits one by one */}
-                                <span aria-hidden>
-                                    <TabularDigits>{pageLabel}</TabularDigits>
-                                </span>
-                                <VisuallyHidden>{pageLabel}</VisuallyHidden>
+                                <TabularDigits>{`${pageNumber} / ${pageCount}`}</TabularDigits>
                             </Text>
                         </span>
                     </Toolbar.Button>

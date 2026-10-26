@@ -204,9 +204,6 @@ describe('PageControlsFormV2', () => {
             const label = screen.getByTestId('bp-PageControlsForm-button-label');
 
             expect(label.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)).toHaveLength(4);
-            expect(label.querySelector('[aria-hidden]')).toContainElement(
-                label.querySelector(`.${TABULAR_DIGIT_CLASS}`),
-            );
             expect(screen.getByRole('button', { name: '10 / 12' })).toBeInTheDocument();
         });
 
