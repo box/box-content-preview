@@ -7,6 +7,7 @@ import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
+import { DocFindBarV2Root } from './DocFindBarV2';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import { isNpmBuild } from '../../isNpmBuild';
@@ -87,6 +88,9 @@ const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
+// npm pdf.js draws its sharp detail canvas over zoomed pages only when maxCanvasPixels is positive
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25; // pdf.js desktop default
+const LEGACY_PDFJS_MAX_CANVAS_SIZE = -1; // Unlimited
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 const PDFJS_TEXT_LAYER_MODE = {
@@ -1225,10 +1229,17 @@ class DocBaseViewer extends BaseViewer {
                 ? assetUrlCreator('pdfjs-images/')
                 : assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
-            maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            maxCanvasPixels: this.getMaxCanvasPixels(),
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? enabledTextLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
+    }
+
+    getMaxCanvasPixels() {
+        if (this.isMobile) {
+            return MOBILE_MAX_CANVAS_SIZE;
+        }
+        return this.featureEnabled('useNpmPdfjs') ? NPM_PDFJS_MAX_CANVAS_SIZE : LEGACY_PDFJS_MAX_CANVAS_SIZE;
     }
 
     /**
@@ -1245,7 +1256,8 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.findBar = new DocFindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
+        const FindBar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI) ? DocFindBarV2Root : DocFindBar;
+        this.findBar = new FindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
     }

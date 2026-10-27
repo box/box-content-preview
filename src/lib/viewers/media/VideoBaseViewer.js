@@ -124,7 +124,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
         // Shift up by half the control bar + half the spinner to visually center above the controls
         const spinnerMarginTop =
-            this.useReactControls() && !this.isVideoPlayerV2
+            this.useReactControls() && !this.isVideoControlsV2Enabled()
                 ? `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`
                 : undefined;
         if (this.isBlueprintMediaControlsEnabled()) {
@@ -147,6 +147,16 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     supportsVideoPlayerV2() {
         return true;
+    }
+
+    /**
+     * Whether to render the V2 React controls. Separate from the V2 layout so a viewer
+     * can keep its own stage and still use the V2 controls.
+     *
+     * @return {boolean} true when the V2 controls should render
+     */
+    isVideoControlsV2Enabled() {
+        return this.isVideoPlayerV2;
     }
 
     /**
@@ -503,9 +513,9 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadUIReact() {
         super.loadUIReact();
 
-        // For the V2 player, mount the controls on the wrapper (above the media container)
+        // For the V2 controls, mount on the wrapper (above the media container)
         // so their width is constrained by the viewport rather than the video
-        const controlsContainerEl = this.isVideoPlayerV2 ? this.wrapperEl : this.mediaContainerEl;
+        const controlsContainerEl = this.isVideoControlsV2Enabled() ? this.wrapperEl : this.mediaContainerEl;
 
         this.controls = new ControlsRoot({
             className: 'bp-VideoControlsRoot',
@@ -846,7 +856,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     handleNarrowVideoUI() {
         if (this.useReactControls()) {
-            const widthNumber = this.isVideoPlayerV2
+            const widthNumber = this.isVideoControlsV2Enabled()
                 ? this.wrapperEl.clientWidth
                 : parseInt(this.mediaEl.style.width, 10);
 

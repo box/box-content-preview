@@ -1,7 +1,8 @@
 import React from 'react';
 import { IconButton, Text } from '@box/blueprint-web';
-import { ArrowCurveForward, RotateLeft } from '@box/blueprint-web-assets/icons/Medium';
+import { RotateLeft } from '@box/blueprint-web-assets/icons/Medium';
 import { Axis, AxisChange } from './RotateAxisControl';
+import RotateRight from './RotateRight';
 import { replacePlaceholders } from '../../../util';
 import './RotateAxisControlV2.scss';
 
@@ -33,7 +34,7 @@ export default function RotateAxisControlV2({ axis, onRotateOnAxisChange }: Prop
                 aria-label={replacePlaceholders(__('box3d_settings_rotate_right'), [axisName])}
                 data-resin-target="rotateAxisRight"
                 data-testid="bp-rotate-axis-control-right"
-                icon={ArrowCurveForward}
+                icon={RotateRight}
                 onClick={handleClickRight}
             />
         </div>

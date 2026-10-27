@@ -33,7 +33,7 @@ export default function BreadcrumbsV2({ filename, fullPath, onClick, resin, view
     };
 
     return (
-        <div className="bp-BreadcrumbsV2">
+        <div className="bp-BreadcrumbsV2" data-testid="bp-archive-breadcrumbs">
             {view === VIEWS.VIEW_SEARCH ? (
                 <Text as="span" variant="bodyDefaultBold">
                     {__('search_results')}

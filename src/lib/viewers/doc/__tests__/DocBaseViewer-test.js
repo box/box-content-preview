@@ -18,6 +18,7 @@ import DocBaseViewer, {
 import DocControls from '../DocControls';
 import DocControlsV2 from '../DocControlsV2';
 import DocFindBar from '../DocFindBar';
+import { DocFindBarV2Root } from '../DocFindBarV2';
 import DocPreloader from '../DocPreloader';
 import GalleryController from '../../gallery/GalleryController';
 import { GALLERY_MAX_PAGES, GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
@@ -64,6 +65,7 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 
@@ -1331,6 +1333,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.initFind();
                 expect(docBase.findBar).toBeInstanceOf(DocFindBar);
             });
+
+            test('should use the Blueprint find bar when the supporting UI flag is on', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                docBase.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+
+                docBase.initFind();
+
+                expect(docBase.findBar).toBeInstanceOf(DocFindBarV2Root);
+                expect(docBase.findBar.findBarEl.parentNode).toBe(docBase.containerEl);
+            });
+
+            test('should keep the legacy find bar when only the controls bar flag is on', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                docBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+                docBase.initFind();
+
+                expect(docBase.findBar).toBeInstanceOf(DocFindBar);
+            });
+
+            test.each`
+                flag                                                     | FindBar
+                ${{}}                                                    | ${DocFindBar}
+                ${{ blueprintMigrationSupportingUi: { enabled: true } }} | ${DocFindBarV2Root}
+            `('should forward metric and close events from $FindBar.name', ({ flag, FindBar }) => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                docBase.options.features = flag;
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+                jest.spyOn(docBase, 'handleFindBarClose').mockImplementation();
+
+                docBase.initFind();
+                docBase.findBar.emit(VIEWER_EVENT.metric, { name: 'test' });
+                docBase.findBar.emit('close');
+
+                expect(docBase.findBar).toBeInstanceOf(FindBar);
+                expect(docBase.emitMetric).toBeCalledWith({ name: 'test' });
+                expect(docBase.handleFindBarClose).toBeCalled();
+            });
         });
 
         describe('find()', () => {
@@ -1984,6 +2024,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.pdfViewerClass).toBeCalledWith(
                         expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
                     );
+                });
+            });
+
+            test('should keep the mobile maxCanvasPixels on mobile when useNpmPdfjs is on', () => {
+                docBase.isMobile = true;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            test('should set a positive maxCanvasPixels on desktop when useNpmPdfjs is on so zoomed pages stay sharp', () => {
+                docBase.isMobile = false;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: NPM_PDFJS_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            test('should leave maxCanvasPixels unlimited on desktop when useNpmPdfjs is off', () => {
+                docBase.isMobile = false;
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ maxCanvasPixels: -1 }));
                 });
             });
 

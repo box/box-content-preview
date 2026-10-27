@@ -79,7 +79,8 @@ class Image360Viewer extends Box3DViewer {
      * @return {boolean} Consumed or not
      */
     onKeydown(key) {
-        return this.handleFullscreenKey(key);
+        // Without React controls the legacy Box3DControls bar renders, which has no fullscreen shortcut
+        return this.getViewerOption('useReactControls') ? this.handleFullscreenKey(key) : false;
     }
 
     renderUI() {
