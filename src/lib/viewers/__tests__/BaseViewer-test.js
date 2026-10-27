@@ -40,12 +40,10 @@ describe('lib/viewers/BaseViewer', () => {
             },
         });
         base.previewUI = {
-            notification: {
-                show: jest.fn(),
-                hide: jest.fn(),
-            },
+            hideNotification: jest.fn(),
             replaceHeader: jest.fn(),
             showLoadingIcon: jest.fn(),
+            showNotification: jest.fn(),
         };
     });
 
@@ -518,7 +516,12 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.getDownloadNotificationToShow.mockReturnValueOnce('dl3.boxcloud.com');
             jest.spyOn(stubs.api.reachability.constructor, 'setDownloadHostNotificationShown');
             base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith(
+                expect.stringContaining('dl3.boxcloud.com'),
+                null,
+                true,
+                'warning',
+            );
             expect(stubs.api.reachability.constructor.setDownloadHostNotificationShown).toBeCalled();
         });
 
@@ -1777,7 +1780,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith(__('notification_annotation_point_mode'));
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1792,7 +1795,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith(__('notification_annotation_draw_mode'));
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1806,7 +1809,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.hide).toBeCalled();
+            expect(base.previewUI.hideNotification).toBeCalled();
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1820,7 +1823,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.hide).toBeCalled();
+            expect(base.previewUI.hideNotification).toBeCalled();
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1831,7 +1834,7 @@ describe('lib/viewers/BaseViewer', () => {
                 data: 'message',
             };
             base.handleAnnotatorEvents(data);
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith('message', null, false, 'error');
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
