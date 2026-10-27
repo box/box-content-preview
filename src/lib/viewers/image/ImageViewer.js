@@ -3,8 +3,10 @@ import getProp from 'lodash/get';
 import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import ImageBaseViewer from './ImageBaseViewer';
 import ImageControls from './ImageControls';
+import ImageControlsV2 from './ImageControlsV2';
 import {
     ANNOTATOR_EVENT,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
@@ -240,6 +242,22 @@ class ImageViewer extends ImageBaseViewer {
         this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
     }
 
+    /**
+     * Handles keyboard events for the image
+     *
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    onKeydown(key) {
+        // This bare key belongs to the Blueprint controls bar, whose menu lists it; the older bar has no such shortcut
+        if (this.controls && (key === 'r' || key === 'R') && this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.rotateLeft();
+            return true;
+        }
+
+        return super.onKeydown(key);
+    }
+
     // Annotation overrides
     getInitialAnnotationMode() {
         return this.isDiscoverabilityEnabled() ? AnnotationMode.REGION : AnnotationMode.NONE;
@@ -440,9 +458,10 @@ class ImageViewer extends ImageBaseViewer {
 
         const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDraw = canAnnotate && this.options.showAnnotationsDrawingCreate;
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? ImageControlsV2 : ImageControls;
 
         this.controls.render(
-            <ImageControls
+            <Controls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}

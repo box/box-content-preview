@@ -5,6 +5,7 @@ import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
 import ImageBaseViewer from '../ImageBaseViewer';
 import MultiImageControls from '../MultiImageControls';
+import MultiImageControlsV2 from '../MultiImageControlsV2';
 import MultiImageViewer from '../MultiImageViewer';
 import fullscreen from '../../../Fullscreen';
 import { CLASS_MULTI_IMAGE_PAGE } from '../../../constants';
@@ -467,6 +468,17 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                     scale={1}
                 />,
             );
+        });
+
+        test.each`
+            enabled  | Controls
+            ${true}  | ${MultiImageControlsV2}
+            ${false} | ${MultiImageControls}
+        `('should render $Controls.name if the controls bar flag is $enabled', ({ Controls, enabled }) => {
+            multiImage.options.features = { blueprintMigrationControlsBar: { enabled } };
+            multiImage.loadUI();
+
+            expect(multiImage.controls.render).toBeCalledWith(expect.objectContaining({ type: Controls }));
         });
     });
 
