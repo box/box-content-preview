@@ -113,14 +113,19 @@ describe('ControlsBarV2', () => {
             expect(screen.getByRole('button', { name: 'Second' })).toHaveFocus();
         });
 
-        test.each(['f', 'r', 'Escape'])('should let the %s shortcut reach preview', async key => {
-            const user = userEvent.setup();
-            getWrapper();
+        test.each(['f', 'r', 'Escape', 'ArrowUp', 'ArrowDown'])(
+            'should let the %s shortcut reach preview',
+            async key => {
+                const user = userEvent.setup();
+                getWrapper();
 
-            screen.getByRole('button', { name: 'First' }).focus();
-            await user.keyboard(`{${key}}`);
+                const first = screen.getByRole('button', { name: 'First' });
+                first.focus();
+                await user.keyboard(`{${key}}`);
 
-            expect(onDocumentKeyDown).toHaveBeenCalledTimes(1);
-        });
+                expect(onDocumentKeyDown).toHaveBeenCalledTimes(1);
+                expect(first).toHaveFocus();
+            },
+        );
     });
 });
