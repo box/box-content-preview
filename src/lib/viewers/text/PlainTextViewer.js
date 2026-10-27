@@ -11,8 +11,10 @@ import {
 } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
+import { isNpmBuild } from '../../isNpmBuild';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 import { VIEWER_EVENT } from '../../events';
+import { PLAIN_TEXT_PRINT_STYLES } from './printStyles';
 import './PlainText.scss';
 
 // Inline web worker JS
@@ -93,7 +95,7 @@ class PlainTextViewer extends TextBaseViewer {
      */
     print() {
         if (!this.printReady) {
-            this.preparePrint(this.getCSS().concat('preview.css'));
+            this.preparePrint(this.getCSS());
 
             this.printPopup.show(__('print_loading'), __('print'), () => {
                 this.printPopup.hide();
@@ -155,6 +157,15 @@ class PlainTextViewer extends TextBaseViewer {
      */
     getCSS() {
         return CSS;
+    }
+
+    /**
+     * Returns the viewer styles that npm builds inject into the print iframe
+     *
+     * @return {string} CSS text
+     */
+    getPrintStyles() {
+        return PLAIN_TEXT_PRINT_STYLES;
     }
 
     /**
@@ -298,19 +309,28 @@ class PlainTextViewer extends TextBaseViewer {
     }
 
     /**
-     * Sets up the print iframe - uses a web worker to insert text content and
-     * styles into an iframe that can be printed.
+     * Writes the text element into a printable iframe and attaches its print styles.
      *
      * @private
-     * @param {string[]} stylesheets - Stylesheets needed for print
+     * @param {string[]} stylesheets - Third-party stylesheets needed for print, before the viewer's own styles
      * @return {void}
      */
     preparePrint(stylesheets) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.textEl.outerHTML);
+        const { head } = this.printframe.contentDocument;
         stylesheets.forEach(stylesheet => {
-            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator(stylesheet)));
+            head.appendChild(createStylesheet(assetUrlCreator(stylesheet)));
         });
+
+        // npm consumers bundle the viewer CSS themselves and host no preview.css to link to.
+        if (isNpmBuild()) {
+            const printStyleEl = document.createElement('style');
+            printStyleEl.textContent = this.getPrintStyles();
+            head.appendChild(printStyleEl);
+        } else {
+            head.appendChild(createStylesheet(assetUrlCreator('preview.css')));
+        }
 
         setTimeout(() => {
             if (this.printPopup instanceof PrintModalRoot) {

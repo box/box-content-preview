@@ -9,6 +9,7 @@ import TextBaseViewer from '../TextBaseViewer';
 import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
+import { PLAIN_TEXT_PRINT_STYLES } from '../printStyles';
 
 const sandbox = sinon.createSandbox();
 const stubs = {};
@@ -204,10 +205,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             text.print();
 
-            expect(text.preparePrint).toBeCalledWith([
-                `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
-                'preview.css',
-            ]);
+            expect(text.preparePrint).toBeCalledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`]);
             expect(text.printPopup.show).toBeCalled();
             expect(text.printPopup.disableButton).toBeCalled();
         });
@@ -399,6 +397,39 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         afterEach(() => {
             jest.clearAllTimers();
+            delete global.__BCP_NPM_BUILD__;
+        });
+
+        describe('print stylesheets', () => {
+            const baseURI = 'https://cdn.example.com/preview/1.0.0/en-US/';
+            const staticBaseURI = 'https://static.example.com/preview/';
+            const githubCss = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`;
+            let printDocument;
+
+            const getLinkHrefs = () => Array.from(printDocument.head.querySelectorAll('link')).map(link => link.href);
+
+            beforeEach(() => {
+                printDocument = document.implementation.createHTMLDocument('print');
+                jest.spyOn(util, 'openContentInsideIframe').mockReturnValue({ contentDocument: printDocument });
+                text.options.location = { baseURI, staticBaseURI };
+            });
+
+            test('should link preview.css from baseURI after the third-party stylesheets in the CDN build', () => {
+                text.preparePrint([githubCss]);
+
+                expect(getLinkHrefs()).toEqual([`${staticBaseURI}${githubCss}`, `${baseURI}preview.css`]);
+                expect(printDocument.head.querySelector('style')).toBeNull();
+            });
+
+            test('should inline the viewer print styles and request nothing under baseURI in the npm build', () => {
+                global.__BCP_NPM_BUILD__ = true;
+
+                text.preparePrint([githubCss]);
+
+                expect(getLinkHrefs()).toEqual([`${staticBaseURI}${githubCss}`]);
+                expect(printDocument.head.lastElementChild.tagName).toBe('STYLE');
+                expect(printDocument.head.lastElementChild.textContent).toBe(PLAIN_TEXT_PRINT_STYLES);
+            });
         });
 
         test('should setup the print iframe', () => {
