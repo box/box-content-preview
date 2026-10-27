@@ -113,6 +113,22 @@ describe('lib/viewers/doc/DocLoader', () => {
             expect(determinedRep.representation).toBe('ORIGINAL');
         });
 
+        test.each(['none', 'pending'])(
+            'should keep the ocr_pdf rep for a pdf file while it converts on demand (%s)',
+            state => {
+                file.extension = 'pdf';
+                file.representations.entries = [
+                    { representation: 'ocr_pdf', status: { state } },
+                    { representation: 'ORIGINAL', status: { state: 'success' } },
+                ];
+                viewer.REP = 'ocr_pdf';
+                viewer.EXT = ['pdf'];
+
+                const determinedRep = DocLoader.determineRepresentation(file, viewer);
+                expect(determinedRep.representation).toBe('ocr_pdf');
+            },
+        );
+
         test('should fall back from a failed ocr_pdf through pdf to the original rep for pdf files', () => {
             file.extension = 'pdf';
             file.representations.entries = [

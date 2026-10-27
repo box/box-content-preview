@@ -101,7 +101,19 @@ class DocLoader extends AssetLoader {
             status = RepStatus.getStatus(rep);
         }
 
-        if (file.extension === 'pdf' && rep.representation !== ORIGINAL_REP_NAME && status !== STATUS_SUCCESS) {
+        // The searchable 'ocr_pdf' rep is generated on demand: requesting its info url is what kicks
+        // off the conversion, and RepStatus polls none/pending until it is ready. Keep it while it is
+        // still converting so that polling can trigger and await the conversion, rather than falling
+        // straight through to the non-searchable original below. Once it has errored, the block above
+        // has already tried 'pdf', so we allow the original fallback as usual.
+        const isOcrPdfConverting = rep.representation === 'ocr_pdf' && status !== STATUS_ERROR;
+
+        if (
+            file.extension === 'pdf' &&
+            rep.representation !== ORIGINAL_REP_NAME &&
+            status !== STATUS_SUCCESS &&
+            !isOcrPdfConverting
+        ) {
             rep = getRepresentation(file, ORIGINAL_REP_NAME) || rep;
         }
 

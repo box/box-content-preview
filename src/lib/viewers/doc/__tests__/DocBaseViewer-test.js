@@ -1180,6 +1180,88 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('getRepFallback()', () => {
+            const makeFile = entries => ({ id: '0', extension: 'pdf', representations: { entries } });
+
+            test('should return undefined when the current representation is not ocr_pdf', () => {
+                docBase.options.representation = { representation: 'pdf' };
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'success' } }]);
+
+                expect(docBase.getRepFallback()).toBeUndefined();
+            });
+
+            test('should prefer a successful pdf rep when falling back from ocr_pdf', () => {
+                const pdfRep = { representation: 'pdf', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([pdfRep, { representation: 'ORIGINAL', status: { state: 'success' } }]);
+
+                expect(docBase.getRepFallback()).toBe(pdfRep);
+            });
+
+            test('should fall back to the original rep when the pdf rep is not ready', () => {
+                const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'none' } }, originalRep]);
+
+                expect(docBase.getRepFallback()).toBe(originalRep);
+            });
+
+            test('should fall back to the original rep when no pdf rep exists', () => {
+                const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }, originalRep]);
+
+                expect(docBase.getRepFallback()).toBe(originalRep);
+            });
+
+            test('should return undefined when no fallback representation is available', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
+
+                expect(docBase.getRepFallback()).toBeUndefined();
+            });
+        });
+
+        describe('handleAssetError()', () => {
+            test('should fall back to another representation and reload when ocr_pdf fails', () => {
+                const fallbackRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(new Error('conversion failed'));
+
+                expect(docBase.hasAttemptedRepFallback).toBe(true);
+                expect(docBase.options.representation).toBe(fallbackRep);
+                expect(loadStub).toBeCalled();
+                expect(triggerErrorStub).not.toBeCalled();
+            });
+
+            test('should only attempt the representation fallback once', () => {
+                docBase.hasAttemptedRepFallback = true;
+                const getRepFallbackStub = jest.spyOn(docBase, 'getRepFallback');
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(new Error('conversion failed'));
+
+                expect(getRepFallbackStub).not.toBeCalled();
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+
+            test('should trigger an error when no fallback representation is available', () => {
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(undefined);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(new Error('conversion failed'));
+
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+        });
+
         describe('initFind()', () => {
             beforeEach(() => {
                 docBase.pdfEventBus = {

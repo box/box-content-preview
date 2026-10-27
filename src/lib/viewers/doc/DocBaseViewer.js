@@ -10,6 +10,7 @@ import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
+import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import Thumbnail from '../../Thumbnail';
 
@@ -28,9 +29,11 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
+    ORIGINAL_REP_NAME,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
+    STATUS_SUCCESS,
 } from '../../constants';
 import {
     createAssetUrlCreator,
@@ -682,6 +685,51 @@ class DocBaseViewer extends BaseViewer {
         this.initPrint();
 
         super.handleAssetAndRepLoad();
+    }
+
+    /**
+     * Handles asset/representation load errors. The searchable 'ocr_pdf' rep is generated on demand and
+     * can legitimately fail to load (a conversion error, or a backend that does not support it for the
+     * file). Rather than hard-erroring, fall back once to a renderable rep so the document still opens -
+     * just without the OCR text layer - mirroring the one-shot retry pattern in handleDownloadError.
+     *
+     * @override
+     * @param {Error} err - Load error
+     * @return {void}
+     */
+    handleAssetError(err) {
+        const fallbackRepresentation = this.hasAttemptedRepFallback ? undefined : this.getRepFallback();
+
+        if (fallbackRepresentation) {
+            this.hasAttemptedRepFallback = true;
+            this.options.representation = fallbackRepresentation;
+            this.load();
+            return;
+        }
+
+        super.handleAssetError(err);
+    }
+
+    /**
+     * Picks the representation to fall back to when the on-demand 'ocr_pdf' rep fails to load. Prefers the
+     * optimized 'pdf' rep when it is ready, otherwise the synthesized original so the file still renders.
+     * Returns undefined when no fallback applies (the current rep is not 'ocr_pdf', or none is available).
+     *
+     * @return {Object|undefined} The fallback representation, or undefined
+     */
+    getRepFallback() {
+        const { file, representation } = this.options;
+
+        if (!representation || representation.representation !== 'ocr_pdf') {
+            return undefined;
+        }
+
+        const pdfRep = getRepresentation(file, 'pdf');
+        if (pdfRep && RepStatus.getStatus(pdfRep) === STATUS_SUCCESS) {
+            return pdfRep;
+        }
+
+        return getRepresentation(file, ORIGINAL_REP_NAME) || undefined;
     }
 
     handleFindBarClose() {
