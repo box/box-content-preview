@@ -1,3 +1,17 @@
+## 3.124.0 (2026-10-27)
+
+* feat(comparison): add resin tags to the banner menu and close button (#1893) ([8250d4b](https://github.com/box/box-content-preview/commit/8250d4b)), closes [#1893](https://github.com/box/box-content-preview/issues/1893)
+* feat(find): render document find bar with Blueprint for supporting UI (#1855) ([123cf43](https://github.com/box/box-content-preview/commit/123cf43)), closes [#1855](https://github.com/box/box-content-preview/issues/1855)
+* feat(image): add Blueprint controls bars for images and multi-page images (#1878) ([491a56a](https://github.com/box/box-content-preview/commit/491a56a)), closes [#1878](https://github.com/box/box-content-preview/issues/1878)
+* feat(video360): use Blueprint V2 media controls with VR toggle and native captions (#1894) ([91739ff](https://github.com/box/box-content-preview/commit/91739ff)), closes [#1894](https://github.com/box/box-content-preview/issues/1894)
+
+## 3.123.0 (2026-10-26)
+
+* fix(comparison): ellipsize banner text and keep a fixed-size badge (#1884) ([59519a0](https://github.com/box/box-content-preview/commit/59519a0)), closes [#1884](https://github.com/box/box-content-preview/issues/1884)
+* fix(doc): keep zoomed pages sharp with npm pdf.js (#1890) ([e0e7b1e](https://github.com/box/box-content-preview/commit/e0e7b1e)), closes [#1890](https://github.com/box/box-content-preview/issues/1890)
+* test(archive): add stable breadcrumb and table test IDs (#1886) ([b0675c4](https://github.com/box/box-content-preview/commit/b0675c4)), closes [#1886](https://github.com/box/box-content-preview/issues/1886)
+* feat(model3d): add the Blueprint controls bar for 3D models (#1881) ([c5078a2](https://github.com/box/box-content-preview/commit/c5078a2)), closes [#1881](https://github.com/box/box-content-preview/issues/1881)
+
 ## 3.122.0 (2026-10-24)
 
 * chore(i18n): update translations (#1885) ([f35a114](https://github.com/box/box-content-preview/commit/f35a114)), closes [#1885](https://github.com/box/box-content-preview/issues/1885)
