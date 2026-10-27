@@ -17,6 +17,10 @@
         padding: 20px 50px;
     }
 
+    .bp-container:has(.bp-version-banner) & {
+        padding-top: var(--bp-comparison-banner-height, 4.5rem);
+    }
+
     /* Override Box UI */
     ul {
         list-style: disc;
