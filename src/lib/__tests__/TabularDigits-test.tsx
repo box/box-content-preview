@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import TabularDigits, { renderTabularDigits, TABULAR_DIGIT_CLASS } from '../TabularDigits';
 
 const getDigits = (el: HTMLElement): string[] =>
@@ -28,6 +28,17 @@ describe('TabularDigits', () => {
 
         expect(container).toHaveTextContent('1:06');
         expect(container.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)[2]).toBe(ones);
+    });
+
+    test('should hide the boxed digits from screen readers and give them the whole text once', () => {
+        render(
+            <button type="button">
+                <TabularDigits>{'10 / 12'}</TabularDigits>
+            </button>,
+        );
+        const button = screen.getByRole('button', { name: '10 / 12' });
+
+        expect(button.querySelector('[aria-hidden]')).toContainElement(button.querySelector(`.${TABULAR_DIGIT_CLASS}`));
     });
 });
 

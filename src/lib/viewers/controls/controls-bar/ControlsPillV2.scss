@@ -1,0 +1,53 @@
+// From the mocks: a 32px pill with 24px buttons and 16px icons, smaller than the rest of the bar
+.bp-ControlsPillV2 {
+    // The space between the buttons and the text between them, the same in every pill
+    --controls-pill-text-spacing: calc(var(--bp-space-010) + var(--bp-space-005));
+
+    display: flex;
+    flex: none;
+    align-items: center;
+    padding: var(--bp-space-010);
+    border-radius: var(--bp-radius-10);
+    background: var(--bp-white-opacity-04);
+
+    // Two classes, so these win over the Toolbar item defaults set on the same element
+    .bp-ControlsPillV2-button,
+    .bp-ControlsPillV2-label {
+        --toolbar-item-min-height: var(--bp-size-060);
+        --toolbar-item-border-radius: var(--bp-radius-06);
+    }
+
+    .bp-ControlsPillV2-button {
+        --toolbar-item-min-width: var(--bp-size-060);
+        --toolbar-icon-width: var(--bp-size-040);
+        --toolbar-icon-height: var(--bp-size-040);
+
+        // Toolbar.Icon sizes its svg with attributes, which CSS overrides
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    // Toolbar items have a transparent border, which counts toward the spacing
+    .bp-ControlsPillV2-label {
+        --toolbar-item-min-width: 0;
+        --toolbar-item-padding-inline: calc(var(--controls-pill-text-spacing) - var(--bp-border-01));
+        --toolbar-item-text-indent: 0;
+    }
+
+    // Pill text uses Text's on-dark color, retinted to match the icons, or the button's color inside a label
+    // so it follows the hover and pressed states. Setting Text's color property directly would tie with its
+    // own color rule, leaving the winner to stylesheet load order.
+    .bp-ControlsPillV2-text {
+        --text-color-on-dark-default: var(--bp-icon-cta-icon-on-dark);
+
+        padding-inline: var(--controls-pill-text-spacing);
+        white-space: nowrap;
+    }
+
+    .bp-ControlsPillV2-label .bp-ControlsPillV2-text {
+        padding-inline: 0;
+        color: inherit;
+    }
+}

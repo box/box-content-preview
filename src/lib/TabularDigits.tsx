@@ -1,4 +1,5 @@
 import React from 'react';
+import { VisuallyHidden } from '@box/blueprint-web';
 import './TabularDigits.scss';
 
 // The Inter subset served to the app has no tabular figures, so `font-variant-numeric: tabular-nums`
@@ -67,5 +68,11 @@ export default function TabularDigits({ children }: Props): JSX.Element {
         }
     }, [children]);
 
-    return <span ref={elRef} />;
+    // Screen readers would read the boxed digits one by one, so they get the whole text from a hidden copy
+    return (
+        <>
+            <span ref={elRef} aria-hidden />
+            <VisuallyHidden>{children}</VisuallyHidden>
+        </>
+    );
 }

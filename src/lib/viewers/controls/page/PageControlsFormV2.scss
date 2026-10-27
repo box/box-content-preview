@@ -4,10 +4,27 @@
     align-items: center;
 }
 
-// Toolbar.Input grows from a zero basis, so it needs a sized parent to show the page number
+// Toolbar.Input grows from a zero basis, so it needs a sized parent to show the page number. Opening the input
+// sets this to the button's size, and the width here only applies before that is measured.
 .bp-PageControlsFormV2-input {
     display: flex;
+    flex: none;
     width: var(--bp-size-140);
+}
+
+// Fills the button's box, with less padding than Blueprint's default so the page number fits
+.bp-PageControlsFormV2 .bp-PageControlsFormV2-input > * {
+    --toolbar-input-height: 100%;
+    --toolbar-input-padding-block: 0;
+    --toolbar-input-padding-inline: var(--bp-space-010);
+}
+
+// The pdf.js viewer and annotations styles color every text input, and outrank the single class that
+// Toolbar.Input uses, which turned the typed page number dark on the dark bar
+.bp-PageControlsFormV2 .bp-PageControlsFormV2-input input[type='text'] {
+    color: var(--toolbar-input-color);
+    text-align: center;
+    background-color: var(--toolbar-input-background);
 }
 
 // Keeps the "1 / 12" label from wrapping, which would grow the height of the whole bar
