@@ -90,14 +90,14 @@ describe('ControlsBarV2', () => {
             onDocumentKeyDown.mockClear();
         });
 
-        test.each(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'])(
+        test.each(['{ArrowLeft}', '{ArrowRight}', '{Home}', '{End}', '{Enter}', '[Space]'])(
             'should keep %s from reaching preview while focus is in the bar',
-            async key => {
+            async keys => {
                 const user = userEvent.setup();
                 getWrapper();
 
                 screen.getByRole('button', { name: 'First' }).focus();
-                await user.keyboard(`{${key}}`);
+                await user.keyboard(keys);
 
                 expect(onDocumentKeyDown).not.toHaveBeenCalled();
             },
