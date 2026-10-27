@@ -171,6 +171,114 @@ describe('ControlsLayer', () => {
         });
     });
 
+    describe('setIsEditing context', () => {
+        const EditingConsumer = ({ isEditing }: { isEditing: boolean }): JSX.Element => {
+            const { setIsEditing } = React.useContext(ControlsLayerContext);
+
+            React.useEffect(() => setIsEditing(isEditing), [isEditing, setIsEditing]);
+
+            return <input aria-label="Page" data-testid="inner-input" />;
+        };
+
+        test('should keep focus and the controls up through a mouse-leave while editing', async () => {
+            render(
+                <ControlsLayer>
+                    <EditingConsumer isEditing />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+            const input = screen.getByTestId('inner-input');
+
+            fireEvent.mouseEnter(element);
+            input.focus();
+            fireEvent.mouseLeave(element);
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
+
+            expect(input).toHaveFocus();
+            expect(element).toHaveClass(SHOW_CLASSNAME);
+        });
+
+        test('should blur on mouse-leave again once editing ends', async () => {
+            const { rerender } = render(
+                <ControlsLayer>
+                    <EditingConsumer isEditing />
+                </ControlsLayer>,
+            );
+            rerender(
+                <ControlsLayer>
+                    <EditingConsumer isEditing={false} />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+            const input = screen.getByTestId('inner-input');
+
+            fireEvent.mouseEnter(element);
+            input.focus();
+            fireEvent.mouseLeave(element);
+
+            expect(input).not.toHaveFocus();
+        });
+
+        test('should hide once editing ends with the field removed while the cursor is outside', async () => {
+            const RemovableField = ({ isEditing }: { isEditing: boolean }): JSX.Element | null => {
+                const { setIsEditing } = React.useContext(ControlsLayerContext);
+
+                React.useEffect(() => setIsEditing(isEditing), [isEditing, setIsEditing]);
+
+                return isEditing ? <input aria-label="Page" data-testid="inner-input" /> : null;
+            };
+            const { rerender } = render(
+                <ControlsLayer>
+                    <RemovableField isEditing />
+                </ControlsLayer>,
+            );
+            const element = await getElement();
+
+            fireEvent.mouseEnter(element);
+            fireEvent.focus(screen.getByTestId('inner-input'));
+            fireEvent.mouseLeave(element);
+            rerender(
+                <ControlsLayer>
+                    <RemovableField isEditing={false} />
+                </ControlsLayer>,
+            );
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
+
+            expect(element).not.toHaveClass(SHOW_CLASSNAME);
+        });
+
+        test('should not hide after the controls unmount mid-edit', () => {
+            const EditingField = (): JSX.Element => {
+                const { setIsEditing } = React.useContext(ControlsLayerContext);
+
+                React.useEffect(() => {
+                    setIsEditing(true);
+
+                    return (): void => setIsEditing(false);
+                }, [setIsEditing]);
+
+                return <input aria-label="Page" />;
+            };
+            const onHide = jest.fn();
+            const { unmount } = render(
+                <ControlsLayer onHide={onHide}>
+                    <EditingField />
+                </ControlsLayer>,
+            );
+
+            unmount();
+            act(() => {
+                jest.advanceTimersByTime(HIDE_DELAY_MS);
+            });
+
+            expect(onHide).not.toHaveBeenCalled();
+        });
+    });
+
     describe('unmount', () => {
         test('should destroy any existing hide timeout', () => {
             jest.spyOn(window, 'clearTimeout');

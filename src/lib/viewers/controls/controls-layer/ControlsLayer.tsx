@@ -24,7 +24,9 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
     const [isShown, setIsShown] = React.useState(false);
     const hasFocusRef = React.useRef(false);
     const hasCursorRef = React.useRef(false);
+    const isEditingRef = React.useRef(false);
     const hideTimeoutRef = React.useRef<number>();
+    const layerElRef = React.useRef<HTMLDivElement>(null);
 
     // Visibility helpers
     const helpersRef = React.useRef({
@@ -74,7 +76,7 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         hasCursorRef.current = false;
 
         const layerEl = event.currentTarget as HTMLElement;
-        if (document.activeElement && layerEl.contains(document.activeElement)) {
+        if (!isEditingRef.current && document.activeElement && layerEl.contains(document.activeElement)) {
             (document.activeElement as HTMLElement).blur();
         }
 
@@ -97,11 +99,28 @@ export default function ControlsLayer({ children, onHide = noop, onMount = noop,
         helpersRef.current.reset();
         setIsForced(value);
     }, []);
-    const contextValue = React.useMemo(() => ({ setIsForced: setIsForcedWithReset }), [setIsForcedWithReset]);
+    const setIsEditing = React.useCallback((value: boolean): void => {
+        const wasEditing = isEditingRef.current;
+
+        isEditingRef.current = value;
+
+        // Ending an edit can remove the focused field without a blur, so check where focus is now and hide
+        // once neither focus nor the cursor is on the layer. The layer is already gone if the edit ended
+        // because the controls unmounted.
+        if (wasEditing && !value && layerElRef.current) {
+            hasFocusRef.current = !!layerElRef.current?.contains(document.activeElement);
+            helpersRef.current.hide();
+        }
+    }, []);
+    const contextValue = React.useMemo(
+        () => ({ setIsEditing, setIsForced: setIsForcedWithReset }),
+        [setIsEditing, setIsForcedWithReset],
+    );
 
     return (
         <ControlsLayerContext.Provider value={contextValue}>
             <div
+                ref={layerElRef}
                 className={`bp-ControlsLayer ${isShown || isForced ? SHOW_CLASSNAME : ''}`}
                 data-testid="bp-ControlsLayer"
                 onBlur={handleFocusOut}
