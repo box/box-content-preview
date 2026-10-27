@@ -1,3 +1,9 @@
+## 3.125.0 (2026-10-27)
+
+* fix(controls): read tabular digits as whole text for screen readers (#1897) ([dcf67cd](https://github.com/box/box-content-preview/commit/dcf67cd)), closes [#1897](https://github.com/box/box-content-preview/issues/1897)
+* feat(controls): put the Blueprint page and zoom controls on pills and match the bar spacing to the m ([f6cf497](https://github.com/box/box-content-preview/commit/f6cf497)), closes [#1892](https://github.com/box/box-content-preview/issues/1892)
+* feat(video): render the small-screen play and skip overlay with Blueprint buttons (#1888) ([9a622ab](https://github.com/box/box-content-preview/commit/9a622ab)), closes [#1888](https://github.com/box/box-content-preview/issues/1888)
+
 ## 3.124.0 (2026-10-27)
 
 * feat(comparison): add resin tags to the banner menu and close button (#1893) ([8250d4b](https://github.com/box/box-content-preview/commit/8250d4b)), closes [#1893](https://github.com/box/box-content-preview/issues/1893)
