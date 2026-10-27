@@ -1,5 +1,6 @@
 import React from 'react';
 import { Toolbar } from '@box/blueprint-web';
+import { stopToolbarKeyPropagation } from '../media/utils';
 import './ControlsBarV2.scss';
 
 export type Props = {
@@ -23,6 +24,7 @@ function ControlsBarV2(
             colorScheme="dark"
             data-testid="bp-ControlsBar"
             {...rest}
+            onKeyDown={stopToolbarKeyPropagation}
         >
             {children}
         </Toolbar.Root>

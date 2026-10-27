@@ -48,6 +48,34 @@ describe('AnnotationsPaletteControlsV2', () => {
         expect(onAnnotationColorChange).toHaveBeenCalledWith(AnnotationColor.WATERMELON_RED);
     });
 
+    test.each(['ArrowLeft', 'ArrowRight'])('should keep %s in the colors from reaching preview', async key => {
+        const onDocumentKeyDown = jest.fn();
+        const user = userEvent.setup();
+        getWrapper({ annotationMode: AnnotationMode.DRAWING });
+        document.addEventListener('keydown', onDocumentKeyDown);
+
+        screen.getByRole('button', { name: __('drawing_color_red') }).focus();
+        await user.keyboard(`{${key}}`);
+        document.removeEventListener('keydown', onDocumentKeyDown);
+
+        expect(onDocumentKeyDown).not.toHaveBeenCalled();
+    });
+
+    test.each(['ArrowUp', 'ArrowDown'])('should let %s in the single row of colors reach preview', async key => {
+        const onDocumentKeyDown = jest.fn();
+        const user = userEvent.setup();
+        getWrapper({ annotationMode: AnnotationMode.DRAWING });
+        document.addEventListener('keydown', onDocumentKeyDown);
+
+        const red = screen.getByRole('button', { name: __('drawing_color_red') });
+        red.focus();
+        await user.keyboard(`{${key}}`);
+        document.removeEventListener('keydown', onDocumentKeyDown);
+
+        expect(onDocumentKeyDown).toHaveBeenCalledTimes(1);
+        expect(red).toHaveFocus();
+    });
+
     test.each`
         annotationMode           | modes
         ${AnnotationMode.NONE}   | ${[AnnotationMode.REGION]}
