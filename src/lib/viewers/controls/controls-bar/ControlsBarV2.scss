@@ -1,0 +1,11 @@
+// The attribute raises these above the Toolbar.Root defaults set on the same element
+.bp-ControlsBarV2--large[data-color-scheme] {
+    // An 8px inset, less the border, around the 32px controls makes the 48px bar in the mocks
+    --toolbar-root-padding: calc(var(--bp-space-020) - var(--bp-border-01));
+    --toolbar-root-border-radius: var(--bp-radius-12);
+
+    // Separators get 8px on each side, the bar gap plus this margin
+    [role='separator'] {
+        margin-inline: var(--bp-space-010);
+    }
+}

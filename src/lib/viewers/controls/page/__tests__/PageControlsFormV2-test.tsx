@@ -2,6 +2,8 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
+import { TABULAR_DIGIT_CLASS } from '../../../../TabularDigits';
+import ControlsLayerContext from '../../controls-layer/ControlsLayerContext';
 import PageControlsFormV2 from '../PageControlsFormV2';
 import { ControlsBarV2 } from '../../controls-bar';
 import { ENTER, ESCAPE } from '../PageControlsForm';
@@ -53,6 +55,40 @@ describe('PageControlsFormV2', () => {
             expect(onPageSubmit).toHaveBeenCalledTimes(onPageSubmitCallCount);
             expect(screen.getByRole('button', { name: '1 / 3' })).toBeInTheDocument();
             expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+        });
+
+        test('should size the input to the button so the bar keeps its size', async () => {
+            const user = userEvent.setup();
+            getWrapper();
+
+            const button = screen.getByRole('button', { name: '1 / 3' });
+            jest.spyOn(button, 'getBoundingClientRect').mockReturnValue({ height: 24, width: 40 } as DOMRect);
+
+            await user.click(button);
+
+            expect(getInput().closest('.bp-PageControlsFormV2-input')).toHaveStyle({ height: '24px', width: '40px' });
+        });
+
+        test('should tell the controls layer it is editing while the input is shown', async () => {
+            const user = userEvent.setup();
+            const setIsEditing = jest.fn();
+
+            render(
+                <ControlsLayerContext.Provider value={{ setIsEditing, setIsForced: jest.fn() }}>
+                    <PageControlsFormV2 onPageSubmit={jest.fn()} pageCount={3} pageNumber={1} />
+                </ControlsLayerContext.Provider>,
+                { wrapper: Wrapper },
+            );
+
+            expect(setIsEditing).toHaveBeenLastCalledWith(false);
+
+            await user.click(screen.getByRole('button', { name: '1 / 3' }));
+
+            expect(setIsEditing).toHaveBeenLastCalledWith(true);
+
+            fireEvent.keyDown(getInput(), { key: ESCAPE });
+
+            expect(setIsEditing).toHaveBeenLastCalledWith(false);
         });
 
         test('should submit the typed page number', async () => {
@@ -160,6 +196,15 @@ describe('PageControlsFormV2', () => {
 
             expect(screen.getByRole('button', { name: '2 / 3' })).toBeInTheDocument();
             expect(screen.getByTestId('bp-PageControlsForm-button-label')).toHaveTextContent('2 / 3');
+        });
+
+        test('should give each page digit a fixed width so the next button does not shift', () => {
+            getWrapper({ pageCount: 12, pageNumber: 10 });
+
+            const label = screen.getByTestId('bp-PageControlsForm-button-label');
+
+            expect(label.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)).toHaveLength(4);
+            expect(screen.getByRole('button', { name: '10 / 12' })).toBeInTheDocument();
         });
 
         test('should render disabled button when pageCount is 1', () => {

@@ -24,7 +24,7 @@ export type ModeProps = {
 function AnnotationsPaletteV2({ children }: Props): JSX.Element {
     return (
         <div className="bp-AnnotationsPaletteV2" data-testid="bp-AnnotationsPaletteV2">
-            <ControlsBarV2>{children}</ControlsBarV2>
+            <ControlsBarV2 size="small">{children}</ControlsBarV2>
         </div>
     );
 }
