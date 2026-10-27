@@ -1,3 +1,8 @@
+## 3.126.0 (2026-10-27)
+
+* fix(controls): keep the bar's arrow keys from turning the page or opening the next file (#1896) ([28a6b22](https://github.com/box/box-content-preview/commit/28a6b22)), closes [#1896](https://github.com/box/box-content-preview/issues/1896)
+* fix(text): stop npm builds from loading preview.css when printing (#1898) ([1413579](https://github.com/box/box-content-preview/commit/1413579)), closes [#1898](https://github.com/box/box-content-preview/issues/1898)
+
 ## 3.125.0 (2026-10-27)
 
 * fix(controls): read tabular digits as whole text for screen readers (#1897) ([dcf67cd](https://github.com/box/box-content-preview/commit/dcf67cd)), closes [#1897](https://github.com/box/box-content-preview/issues/1897)
