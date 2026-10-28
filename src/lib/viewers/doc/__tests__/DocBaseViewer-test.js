@@ -1382,18 +1382,33 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('handleAssetError()', () => {
-            test('should fall back to another representation and reload when ocr_pdf fails', () => {
+            // RepStatus rejects with a PreviewError carrying the failed representation in details.
+            const ocrRepError = () => ({ details: { representation: { representation: 'ocr_pdf' } } });
+
+            test('should fall back to another representation and reload when the ocr_pdf rep fails', () => {
                 const fallbackRep = { representation: 'ORIGINAL', status: { state: 'success' } };
                 jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
                 const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
                 const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                docBase.handleAssetError(new Error('conversion failed'));
+                docBase.handleAssetError(ocrRepError());
 
                 expect(docBase.hasAttemptedRepFallback).toBe(true);
                 expect(docBase.options.representation).toBe(fallbackRep);
                 expect(loadStub).toBeCalled();
                 expect(triggerErrorStub).not.toBeCalled();
+            });
+
+            test('should not fall back for a non-representation error (asset/chunk failure)', () => {
+                const getRepFallbackStub = jest.spyOn(docBase, 'getRepFallback');
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(new Error('Loading chunk pdfjs-lib failed'));
+
+                expect(getRepFallbackStub).not.toBeCalled();
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
             });
 
             test('should only attempt the representation fallback once', () => {
@@ -1402,7 +1417,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
                 const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                docBase.handleAssetError(new Error('conversion failed'));
+                docBase.handleAssetError(ocrRepError());
 
                 expect(getRepFallbackStub).not.toBeCalled();
                 expect(loadStub).not.toBeCalled();
@@ -1414,10 +1429,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
                 const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                docBase.handleAssetError(new Error('conversion failed'));
+                docBase.handleAssetError(ocrRepError());
 
                 expect(loadStub).not.toBeCalled();
                 expect(triggerErrorStub).toBeCalled();
+            });
+        });
+
+        describe('handleDownloadError()', () => {
+            test('should route an ocr_pdf content failure through the rep fallback', () => {
+                const fallbackRep = { representation: 'pdf', status: { state: 'success' } };
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+
+                docBase.handleDownloadError(new Error('content failed'), 'https://dl.boxcloud.com/foo');
+
+                expect(docBase.hasAttemptedRepFallback).toBe(true);
+                expect(docBase.options.representation).toBe(fallbackRep);
+                expect(loadStub).toBeCalled();
+                expect(docBase.hasRetriedContentDownload).toBeFalsy();
+            });
+
+            test('should delegate to the base reachability retry when no rep fallback applies', () => {
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(undefined);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+
+                docBase.handleDownloadError(new Error('content failed'), 'https://dl.boxcloud.com/foo');
+
+                expect(docBase.hasAttemptedRepFallback).toBeFalsy();
+                expect(docBase.hasRetriedContentDownload).toBe(true);
+                expect(loadStub).toBeCalled();
             });
         });
 

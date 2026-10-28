@@ -51,6 +51,7 @@ import {
     getMidpoint,
     getPreloadImageRequestPromises,
     getPreloadImageRequestPromisesByBatch,
+    getProp,
 } from '../../util';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
@@ -712,23 +713,67 @@ class DocBaseViewer extends BaseViewer {
      * Handles asset/representation load errors. The searchable 'ocr_pdf' rep is generated on demand and
      * can legitimately fail to load (a conversion error, or a backend that does not support it for the
      * file). Rather than hard-erroring, fall back once to a renderable rep so the document still opens -
-     * just without the OCR text layer - mirroring the one-shot retry pattern in handleDownloadError.
+     * just without the OCR text layer.
+     *
+     * load() resolves a single Promise.all over the static assets, the npm pdf.js chunk import and the
+     * representation status, so only scope the fallback to a genuine 'ocr_pdf' representation failure -
+     * a failed asset/chunk import is unrelated to the rep and must not silently downgrade it. RepStatus
+     * rejections carry the failed representation in details.representation.
      *
      * @override
      * @param {Error} err - Load error
      * @return {void}
      */
     handleAssetError(err) {
-        const fallbackRepresentation = this.hasAttemptedRepFallback ? undefined : this.getRepFallback();
+        const isOcrRepError = getProp(err, 'details.representation.representation') === 'ocr_pdf';
 
-        if (fallbackRepresentation) {
-            this.hasAttemptedRepFallback = true;
-            this.options.representation = fallbackRepresentation;
-            this.load();
+        if (isOcrRepError && this.attemptRepFallback()) {
             return;
         }
 
         super.handleAssetError(err);
+    }
+
+    /**
+     * Handles content download errors. pdf.js can reject the 'ocr_pdf' content url even after its status
+     * reported success (e.g. the on-demand asset 404s), which lands here rather than in handleAssetError.
+     * Prefer the renderable fallback rep over retrying the same 'ocr_pdf' url; delegate to the base
+     * reachability retry when no fallback applies (e.g. the current rep is not 'ocr_pdf').
+     *
+     * @override
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - Download URL
+     * @return {void}
+     */
+    handleDownloadError(err, downloadURL) {
+        if (this.attemptRepFallback()) {
+            return;
+        }
+
+        super.handleDownloadError(err, downloadURL);
+    }
+
+    /**
+     * Switches to a renderable fallback representation when the on-demand 'ocr_pdf' rep fails to load,
+     * at most once per viewer, and kicks off a reload. getRepFallback only returns a representation when
+     * the current rep is 'ocr_pdf', so this is a no-op for any other representation.
+     *
+     * @return {boolean} Whether a fallback representation was applied (and a reload started)
+     */
+    attemptRepFallback() {
+        if (this.hasAttemptedRepFallback) {
+            return false;
+        }
+
+        const fallbackRepresentation = this.getRepFallback();
+        if (!fallbackRepresentation) {
+            return false;
+        }
+
+        this.hasAttemptedRepFallback = true;
+        this.options.representation = fallbackRepresentation;
+        this.load();
+        return true;
     }
 
     /**
