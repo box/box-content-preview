@@ -1,0 +1,9 @@
+// Blueprint pins the viewport to the window; Preview cannot assume it fills the viewport, so anchor it to the content.
+.bp-NotificationsV2Root .bp-NotificationsV2-viewport {
+    position: absolute;
+
+    // Restores Blueprint's toast padding, which the legacy `.bp li` reset removes.
+    > li {
+        padding: var(--notification-padding-vertical) var(--notification-padding-horizontal);
+    }
+}
