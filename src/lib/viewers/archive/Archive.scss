@@ -5,4 +5,9 @@
     width: 100%;
     height: 100%;
     background: $white;
+
+    // Leave room for the comparison banner so it doesn't cover the search bar
+    .bp-container:has(.bp-version-banner) & {
+        padding-top: var(--bp-comparison-banner-height, 4.5rem);
+    }
 }
