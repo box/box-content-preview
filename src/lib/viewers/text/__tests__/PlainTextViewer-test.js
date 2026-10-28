@@ -600,6 +600,18 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             onDownload();
             expect(text.emit).toHaveBeenCalledWith(VIEWER_EVENT.download);
         });
+
+        test('should replace an existing Blueprint notice when shown again after a download retry', () => {
+            text.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+            text.showTruncatedDownloadButton();
+            const firstNotice = text.truncatedNotice;
+
+            text.showTruncatedDownloadButton();
+
+            expect(firstNotice.destroy).toHaveBeenCalledTimes(1);
+            expect(text.truncatedNotice).not.toBe(firstNotice);
+            expect(TruncatedTextNoticeV2Root).toHaveBeenCalledTimes(2);
+        });
     });
 
     describe('download()', () => {

@@ -376,6 +376,9 @@ class PlainTextViewer extends TextBaseViewer {
      */
     showTruncatedDownloadButton() {
         if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            if (this.truncatedNotice) {
+                this.truncatedNotice.destroy();
+            }
             this.truncatedNotice = new TruncatedTextNoticeV2Root(this.textEl, () => this.download());
             return;
         }
