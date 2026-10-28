@@ -16,6 +16,9 @@
     font-family: Lato, Arial, sans-serif;
     font-size: 14px;
     font-weight: normal;
+
+    // Inter's proportional digits change width as the time ticks and shift the chevron.
+    font-variant-numeric: tabular-nums;
     line-height: 20px;
     color: $white;
     letter-spacing: 0.3px;
@@ -74,7 +77,7 @@
     font-size: 14px;
     font-weight: bold;
     line-height: 20px;
-    color: $bdl-gray-62;
+    color: $seventy-sixers;
     letter-spacing: 0.3px;
 }
 
@@ -95,7 +98,7 @@
 
     &:hover,
     &:focus {
-        background: $bdl-gray-05;
+        background: var(--bp-gray-05);
     }
 }
 

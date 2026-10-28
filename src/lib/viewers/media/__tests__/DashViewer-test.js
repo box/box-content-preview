@@ -2241,6 +2241,28 @@ describe('lib/viewers/media/DashViewer', () => {
             });
         });
 
+        test('should pass isBlueprintEnabled to VideoControlsV2 when the media Blueprint flag is on', () => {
+            dash.isVideoPlayerV2 = true;
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature => feature === 'blueprintMigrationMediaControls.enabled',
+            );
+            dash.renderUI();
+            expect(getProps(dash).isBlueprintEnabled).toBe(true);
+        });
+
+        test('should render VideoControlsV2 with subclass props when a subclass opts into the v2 controls', () => {
+            const onVrToggle = jest.fn();
+            jest.spyOn(dash, 'isVideoControlsV2Enabled').mockReturnValue(true);
+            jest.spyOn(dash, 'getVideoControlsV2Props').mockReturnValue({ isVrShown: true, onVrToggle });
+            dash.renderUI();
+
+            expect(getProps(dash)).toMatchObject({
+                isVrShown: true,
+                onPlayNextChange: dash.setPlayNext,
+                onVrToggle,
+            });
+        });
+
         test('should not enable annotations if video annotations are disabled', () => {
             dash.videoAnnotationsEnabled = false;
             dash.annotator = {};

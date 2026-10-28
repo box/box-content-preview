@@ -1,5 +1,6 @@
 @import '../../boxuiVariables';
 @import './MediaControls';
+@import '../controls/media/playOverlay';
 
 // Reset default styling that come from the “User Agent Stylesheet”
 @mixin bp-reset-default-styling-button {
@@ -324,5 +325,21 @@
             height: 48px;
             fill: $white;
         }
+    }
+
+    // The Blueprint IconButton draws its own disc and glyph, so the overlay only positions it.
+    .bp-video-preload-play-overlay--blueprint {
+        pointer-events: auto;
+        width: auto;
+        height: auto;
+        background: none;
+
+        svg {
+            fill: revert;
+        }
+    }
+
+    .bp-video-preload-play-overlay .bp-video-preload-play-button {
+        @include bp-PlayOverlayButton;
     }
 }

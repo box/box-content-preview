@@ -2,6 +2,7 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import WaveSurfer from 'wavesurfer.js';
+import BlueprintProviders from '../../../../BlueprintProviders';
 import WaveformView from '../WaveformView';
 import {
     WAVEFORM_BAR_GAP,
@@ -279,6 +280,30 @@ describe('WaveformView', () => {
 
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
         expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
+    });
+
+    test('should render the hover time as Blueprint text when isBlueprintEnabled is true', () => {
+        render(<WaveformView durationSec={8} isBlueprintEnabled peaks={[0.2, 0.8]} />, {
+            wrapper: BlueprintProviders,
+        });
+        const track = screen.getByTestId('bp-waveform-view').querySelector('.bp-WaveformView-track') as HTMLElement;
+        jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+            bottom: 140,
+            height: 140,
+            left: 0,
+            right: 200,
+            toJSON: () => ({}),
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+        });
+
+        fireEvent.mouseMove(track, { clientX: 50 });
+
+        expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-typography]')).toHaveTextContent(
+            '0:02.00',
+        );
     });
 
     test('should not apply hover fills from a touch pointer', () => {
@@ -2638,6 +2663,55 @@ describe('WaveformView', () => {
 
             expect(onPlayheadComment).toHaveBeenCalledTimes(1);
             expect(screen.getByTestId('bp-waveform-playhead-comment')).toBeInTheDocument();
+        });
+
+        test('should render Comment as a Blueprint toolbar on the playhead when isBlueprintEnabled is true', async () => {
+            const user = userEvent.setup();
+            const onPlayheadComment = jest.fn();
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isBlueprintEnabled
+                    isPlaying={false}
+                    onPlayheadComment={onPlayheadComment}
+                    peaks={[0.2, 0.8]}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            const toolbar = screen.getByRole('toolbar', { name: __('media_range_comment') });
+            expect(toolbar.closest('[data-testid="bp-waveform-playhead"]')).not.toBeNull();
+            expect(toolbar).toHaveAttribute('data-color-scheme', 'dark');
+            expect(screen.getByTestId('bp-waveform-playhead-comment-toolbar')).toHaveClass(
+                'bp-WaveformView-playheadComment',
+            );
+
+            const button = screen.getByTestId('bp-waveform-playhead-comment');
+            expect(button).toHaveAttribute('data-resin-target', 'waveformPlayheadComment');
+            expect(button).toHaveAttribute('data-target-id', 'Waveform-commentAtTime');
+            expect(button.querySelector('[data-typography]')).toHaveTextContent(__('media_range_comment'));
+
+            await user.click(button);
+            expect(onPlayheadComment).toHaveBeenCalledTimes(1);
+        });
+
+        test('should render the range Comment as a Blueprint toolbar when isBlueprintEnabled is true', () => {
+            render(
+                <WaveformView
+                    durationSec={8}
+                    interactive
+                    isBlueprintEnabled
+                    isPlaying={false}
+                    onRangeDragCreate={jest.fn()}
+                    peaks={[0.2, 0.8]}
+                    range={{ endMs: 4000, startMs: 2000 }}
+                />,
+                { wrapper: BlueprintProviders },
+            );
+
+            expect(screen.getByTestId('bp-waveform-range-comment-toolbar')).toBeInTheDocument();
+            expect(screen.getByRole('toolbar')).toContainElement(screen.getByTestId('bp-waveform-range-comment'));
         });
     });
 });

@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { execSync } = require('child_process');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('webpack');
+const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin, ProvidePlugin } = require('webpack');
 const license = require('./license');
 const pkg = require('../package.json');
 
@@ -33,8 +33,14 @@ const thirdPartyModel3d = path.resolve('src/third-party/model3d');
 const thirdPartySwf = path.resolve('src/third-party/swf');
 const exifAssets = path.resolve('src/lib/exif');
 const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
+const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
+const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
+const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
+const pdfjsImages = path.resolve('node_modules/pdfjs-dist/legacy/web/images');
 const outDir = path.resolve('dist/lib');
 
+// Strings resolve at runtime: en-US is bundled as the default, and hosts pass other
+// languages to Preview.show() as intl.messages (see build/buildLibI18n.js).
 const language = 'en-US';
 const langJson = require(`${path.resolve('src/i18n/json')}/${language}.json`);
 
@@ -68,6 +74,7 @@ module.exports = {
         'react-dom/client',
         'react/jsx-runtime',
         'box-annotations',
+        'react-intl',
         /^box-ui-elements(\/.*)?$/,
         /^@box\/blueprint-web(\/.*)?$/,
         /^@box\/blueprint-web-assets(\/.*)?$/,
@@ -82,7 +89,7 @@ module.exports = {
                     { loader: 'babel-loader' },
                     {
                         loader: path.resolve('build/i18n-loader.js'),
-                        options: { translations: langJson },
+                        options: { runtime: true, translations: langJson },
                     },
                 ],
                 include: [path.resolve('src/lib'), path.resolve('src/index.ts')],
@@ -113,7 +120,7 @@ module.exports = {
             {
                 test: /pdf\.worker\.min\.mjs$/,
                 type: 'asset/resource',
-                include: [path.resolve('node_modules/pdfjs-dist/build')],
+                include: [path.resolve('node_modules/pdfjs-dist/legacy/build')],
                 generator: {
                     filename: 'pdf.worker.min.mjs',
                 },
@@ -135,6 +142,7 @@ module.exports = {
         new BannerPlugin(license),
         new DefinePlugin({
             __BCP_NPM_BUILD__: JSON.stringify(true),
+            __BCP_DEFAULT_MESSAGES__: JSON.stringify(langJson),
             __LANGUAGE__: JSON.stringify(language),
             __NAME__: JSON.stringify(pkg.name),
             __VERSION__: JSON.stringify(pkg.version),
@@ -142,15 +150,19 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({ filename: '[name].css' }),
         new NormalModuleReplacementPlugin(/\/iconv-loader$/),
+        new ProvidePlugin({ __: [path.resolve('src/lib/translations'), 'translate'] }),
         // Copy static assets that the legacy code resolves at runtime via createAssetUrlCreator.
-        // These need to be served alongside the bundle for npm consumers. pdfjs is excluded —
-        // it's bundled from the pdfjs-dist npm package (useNpmPdfjs=true on the npm path).
+        // These need to be served alongside the bundle for npm consumers. The pdf.js script is bundled.
         new CopyAssetsPlugin(thirdPartyMedia, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartyText, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartyModel3d, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(thirdPartySwf, path.join(outDir, 'third-party')),
         new CopyAssetsPlugin(exifAssets, outDir),
         new CopyAssetsPlugin(pdfjsCmaps, outDir),
+        new CopyAssetsPlugin(pdfjsIccs, outDir),
+        new CopyAssetsPlugin(pdfjsStandardFonts, outDir),
+        new CopyAssetsPlugin(pdfjsWasm, outDir),
+        new CopyAssetsPlugin(`${pdfjsImages}/`, path.join(outDir, 'pdfjs-images')),
     ],
     resolve: {
         alias: {

@@ -1,4 +1,7 @@
 /* eslint-disable no-unused-expressions */
+import { act } from 'react';
+import { within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import noop from 'lodash/noop';
 import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls';
@@ -222,6 +225,41 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.setup();
 
             expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('');
+            expect(videoBase.bufferingSpinnerEl).toHaveClass('bp-media-buffering-spinner');
+            expect(videoBase.bufferingSpinnerEl).not.toHaveClass('bp-MediaLoadingIndicator');
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should render the Blueprint loading indicator as the buffering spinner when the flag is on', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+            videoBase.containerEl = containerEl;
+            act(() => videoBase.setup());
+
+            const { bufferingSpinnerEl } = videoBase;
+            const indicator = bufferingSpinnerEl.querySelector('.bp-MediaLoadingIndicator');
+            expect(bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+            expect(bufferingSpinnerEl).not.toHaveClass('bp-media-buffering-spinner');
+            expect(indicator.style.marginTop).toBe('');
+            expect(indicator.querySelector('[role="status"]')).toHaveAttribute('aria-label', 'Loading');
+
+            act(() => videoBase.destroy());
+            expect(videoBase.bufferingSpinnerRoot).toBeUndefined();
+            expect(bufferingSpinnerEl.childElementCount).toBe(0);
 
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
                 value: lowerLights,
@@ -248,6 +286,36 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('-100px');
 
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: lowerLights,
+            });
+        });
+
+        test('should shift the Blueprint loading indicator when useReactControls is true but videoPlayerV2 is disabled', () => {
+            const { lowerLights } = VideoBaseViewer.prototype;
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
+                value: jest.fn(),
+            });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            videoBase = new VideoBaseViewer({
+                file: {
+                    id: 1,
+                },
+                container: containerEl,
+            });
+            jest.spyOn(videoBase, 'getViewerOption').mockImplementation(option => option === 'useReactControls');
+            jest.spyOn(videoBase, 'featureEnabled').mockReturnValue(false);
+            jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+            videoBase.containerEl = containerEl;
+            act(() => videoBase.setup());
+
+            expect(videoBase.bufferingSpinnerEl.style.marginTop).toBe('');
+            expect(videoBase.bufferingSpinnerEl.querySelector('.bp-MediaLoadingIndicator').style.marginTop).toBe(
+                '-100px',
+            );
+
+            act(() => videoBase.destroy());
             Object.defineProperty(VideoBaseViewer.prototype, 'lowerLights', {
                 value: lowerLights,
             });
@@ -597,6 +665,63 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         test('should not throw if bufferingSpinnerEl is null', () => {
             videoBase.bufferingSpinnerEl = null;
             expect(() => videoBase.showBufferingSpinner()).not.toThrow();
+        });
+    });
+
+    describe('showLoadingIcon() / hideLoadingIcon()', () => {
+        const setPlaying = isPlaying => {
+            Object.defineProperty(videoBase.mediaEl, 'paused', { configurable: true, value: !isPlaying });
+            Object.defineProperty(videoBase.mediaEl, 'ended', { configurable: true, value: false });
+        };
+
+        beforeEach(() => {
+            videoBase.mediaEl = document.createElement('video');
+            videoBase.bufferingSpinnerEl = document.createElement('div');
+            videoBase.bufferingSpinnerEl.classList.add('bp-is-hidden');
+            jest.spyOn(videoBase, 'hidePlayButton').mockImplementation();
+        });
+
+        describe('with Blueprint media controls', () => {
+            beforeEach(() => {
+                jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+            });
+
+            test('should show the buffering indicator instead of the page crawler while playing', () => {
+                setPlaying(true);
+
+                videoBase.showLoadingIcon();
+
+                expect(videoBase.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
+                expect(videoBase.containerEl).not.toHaveClass('bp-is-buffering');
+                expect(videoBase.hidePlayButton).toHaveBeenCalled();
+            });
+
+            test('should not show the buffering indicator while paused', () => {
+                setPlaying(false);
+
+                videoBase.showLoadingIcon();
+
+                expect(videoBase.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+            });
+
+            test('should hide the buffering indicator', () => {
+                setPlaying(true);
+                videoBase.showLoadingIcon();
+
+                videoBase.hideLoadingIcon();
+
+                expect(videoBase.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+            });
+        });
+
+        test('should show the page crawler when Blueprint media controls are off', () => {
+            jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(false);
+            setPlaying(true);
+
+            videoBase.showLoadingIcon();
+
+            expect(videoBase.containerEl).toHaveClass('bp-is-buffering');
+            expect(videoBase.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
         });
     });
 
@@ -1093,6 +1218,83 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(true, 5);
             videoBaseViewer.seekBackwardButtonEl.click();
             expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(false, 5);
+        });
+
+        describe('with Blueprint media controls', () => {
+            beforeEach(() => {
+                jest.spyOn(videoBaseViewer, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+                document.body.appendChild(videoBaseViewer.mediaContainerEl);
+            });
+
+            afterEach(() => {
+                act(() => {
+                    videoBaseViewer.removePlayButtonWithSeekButtons();
+                });
+                videoBaseViewer.mediaContainerEl.remove();
+            });
+
+            const build = () =>
+                act(() => {
+                    videoBaseViewer.buildPlayButtonWithSeekButtons();
+                });
+
+            test('should render Blueprint play and skip buttons in a hidden container', () => {
+                build();
+
+                const { playContainerEl } = videoBaseViewer;
+                expect(playContainerEl.classList).toContain('bp-VideoPlaySeekOverlay');
+                expect(playContainerEl.classList).toContain('bp-is-hidden');
+                expect(playContainerEl.classList).not.toContain('bp-media-overlay-play-container');
+                expect(videoBaseViewer.playButtonEl).toBeUndefined();
+
+                const buttons = within(playContainerEl).getAllByRole('button', { hidden: true });
+                expect(buttons.map(button => button.getAttribute('aria-label'))).toEqual([
+                    'Skip backward',
+                    'Play',
+                    'Skip forward',
+                ]);
+            });
+
+            test('should play and skip from the Blueprint buttons', async () => {
+                const user = userEvent.setup();
+                build();
+                const { playContainerEl } = videoBaseViewer;
+                playContainerEl.classList.remove('bp-is-hidden');
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Play' }));
+                expect(videoBaseViewer.togglePlay).toHaveBeenCalled();
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Skip forward' }));
+                expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(true, 5);
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Skip backward' }));
+                expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(false, 5);
+            });
+
+            test('should move focus to the media container when the focused play button starts playback', async () => {
+                const user = userEvent.setup();
+                build();
+                const { mediaContainerEl, playContainerEl } = videoBaseViewer;
+                mediaContainerEl.setAttribute('tabindex', '-1');
+                playContainerEl.classList.remove('bp-is-hidden');
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Play' }));
+
+                expect(document.activeElement).toBe(mediaContainerEl);
+            });
+
+            test('should unmount the Blueprint buttons on remove', () => {
+                build();
+                const { playContainerEl } = videoBaseViewer;
+
+                act(() => {
+                    videoBaseViewer.removePlayButtonWithSeekButtons();
+                });
+
+                expect(videoBaseViewer.playContainerEl).toBeNull();
+                expect(videoBaseViewer.playSeekOverlayRoot).toBeUndefined();
+                expect(playContainerEl.childElementCount).toBe(0);
+            });
         });
     });
 
@@ -1595,6 +1797,24 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 );
             });
         });
+
+        test.each([true, false])(
+            'should pass isBlueprintEnabled=%s and the portal container to the preloader',
+            isBlueprintEnabled => {
+                jest.spyOn(videoBase, 'isBlueprintMediaControlsEnabled').mockReturnValue(isBlueprintEnabled);
+                jest.spyOn(VideoPreloader.prototype, 'showPreload').mockResolvedValue();
+
+                videoBase.showPreload();
+
+                return videoBase.fetchContentAsBlobUrl.mock.results[0].value.then(() => {
+                    expect(VideoPreloader.prototype.showPreload).toBeCalledWith(
+                        expect.any(String),
+                        videoBase.mediaContainerEl,
+                        expect.objectContaining({ isBlueprintEnabled, portalContainer: videoBase.containerEl }),
+                    );
+                });
+            },
+        );
 
         test('should size the shared media frame when early paint is enabled', () => {
             videoBase.isVideoPlayerV2 = true;

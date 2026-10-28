@@ -1,0 +1,20 @@
+.bp-TabularDigit {
+    display: inline-block;
+    width: 1ch;
+    text-align: center;
+}
+
+// Read by screen readers but not drawn, like Blueprint's VisuallyHidden. Not selectable, so copying the
+// label gets the visible digits once rather than the text twice.
+.bp-TabularDigits-text {
+    user-select: none;
+    position: absolute;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+    clip-path: inset(50%);
+}

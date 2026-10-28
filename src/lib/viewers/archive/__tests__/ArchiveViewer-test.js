@@ -1,9 +1,13 @@
 /* eslint-disable no-unused-expressions */
 import createReactClass from 'create-react-class';
 import Api from '../../../api';
+import * as ArchiveV2 from '../ArchiveV2';
 import ArchiveViewer from '../ArchiveViewer';
 import BaseViewer from '../../BaseViewer';
-import { VIEWER_EVENT } from '../../../events';
+import BoxArchive from '../BoxArchive';
+import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../../events';
+import PreviewError from '../../../PreviewError';
+import Timer from '../../../Timer';
 
 const stubs = {};
 let containerEl;
@@ -55,6 +59,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             archive.destroy();
         }
         archive = null;
+        delete global.__BCP_NPM_BUILD__;
     });
 
     describe('setup()', () => {
@@ -88,9 +93,33 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
             jest.spyOn(archive, 'appendAuthHeader').mockReturnValue(mockHeaders);
 
             return archive.load().then(() => {
+                expect(archive.loadAssets).toBeCalledWith(['archive.js'], ['archive.css']);
                 expect(archive.createContentUrlV2).toBeCalledWith('archiveUrl{+asset_path}');
                 expect(stubs.api.get).toBeCalledWith('contentUrl', { headers: mockHeaders });
             });
+        });
+
+        test('should skip archive.js and archive.css in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            let loadPromise;
+            jest.isolateModules(() => {
+                const { default: NpmArchiveViewer } = jest.requireActual('../ArchiveViewer');
+                const npmArchive = new NpmArchiveViewer(options);
+                npmArchive.containerEl = containerEl;
+                npmArchive.setup();
+                Object.defineProperty(BaseViewer.prototype, 'load', { value: jest.fn() });
+                jest.spyOn(npmArchive, 'loadAssets').mockResolvedValue(undefined);
+                jest.spyOn(npmArchive, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+                jest.spyOn(npmArchive, 'finishLoading').mockImplementation();
+
+                loadPromise = npmArchive.load().then(() => {
+                    expect(npmArchive.loadAssets).toBeCalledWith([], []);
+                    npmArchive.destroy();
+                });
+            });
+
+            return loadPromise;
         });
 
         test('should invoke startLoadTimer()', () => {
@@ -108,11 +137,205 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
     describe('finishLoading()', () => {
         test('should render BoxArchive component and emit load event', () => {
             jest.spyOn(archive, 'emit');
+            jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
 
             archive.finishLoading([]);
 
             expect(archive.loaded).toBe(true);
             expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
+            expect(archive.emitFirstRenderMetric).toHaveBeenCalledTimes(1);
+            expect(archive.emitFirstRenderMetric.mock.invocationCallOrder[0]).toBeLessThan(
+                archive.emit.mock.invocationCallOrder[0],
+            );
+        });
+
+        test('should emit first render time only once', () => {
+            jest.spyOn(Timer, 'stop').mockReturnValue({ elapsed: 250 });
+            jest.spyOn(archive, 'emitMetric').mockImplementation();
+
+            archive.finishLoading([]);
+            archive.finishRender();
+
+            expect(Timer.stop).toHaveBeenCalledWith(Timer.createTag(options.file.id, FIRST_RENDER_METRIC));
+            expect(archive.emitMetric).toHaveBeenCalledTimes(1);
+            expect(archive.emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 250);
+        });
+
+        test('should not emit first render if the constructor throws', () => {
+            window.BoxArchive = jest.fn(() => {
+                throw new Error('render failed');
+            });
+            jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
+
+            expect(() => archive.finishLoading([])).toThrow(PreviewError);
+            expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+        });
+
+        test('should not emit first render if already destroyed', () => {
+            jest.spyOn(archive, 'isDestroyed').mockReturnValue(true);
+            jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
+
+            archive.finishLoading([]);
+
+            expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+        });
+
+        describe('render commit', () => {
+            const originalResizeObserver = global.ResizeObserver;
+
+            beforeAll(() => {
+                global.ResizeObserver = jest.fn(() => ({
+                    disconnect: jest.fn(),
+                    observe: jest.fn(),
+                    unobserve: jest.fn(),
+                }));
+            });
+
+            afterAll(() => {
+                global.ResizeObserver = originalResizeObserver;
+            });
+
+            test.each([false, true])('should commit the archive DOM before first render with v2=%s', async enabled => {
+                window.BoxArchive = BoxArchive;
+                archive.options.file.name = 'test.zip';
+                archive.options.features = { blueprintMigrationArchive: { enabled } };
+                jest.spyOn(BoxArchive.prototype, 'importV2').mockResolvedValue(ArchiveV2);
+                jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation(() => {
+                    expect(archive.archiveEl.querySelector('[data-testid="bp-archive-explorer"]')).toBeInTheDocument();
+                });
+
+                await archive.finishLoading([]);
+
+                expect(archive.emitFirstRenderMetric).toHaveBeenCalledTimes(1);
+            });
+        });
+
+        describe('archive v2', () => {
+            let resolveReady;
+            let rejectReady;
+            let archiveOptions;
+
+            beforeEach(() => {
+                archiveOptions = undefined;
+                window.BoxArchive = jest.fn(function BoxArchiveStub(el, name, data, opts) {
+                    archiveOptions = opts;
+                    this.destroy = jest.fn();
+                    this.ready = new Promise((resolve, reject) => {
+                        resolveReady = resolve;
+                        rejectReady = reject;
+                    });
+                });
+                archive.options.file.name = 'test.zip';
+                jest.spyOn(archive, 'emit');
+                jest.spyOn(archive, 'emitFirstRenderMetric').mockImplementation();
+            });
+
+            const enableV2 = () => {
+                archive.options.features = { blueprintMigrationArchive: { enabled: true } };
+            };
+
+            test('should hold the load event until the v2 module has rendered', async () => {
+                enableV2();
+
+                const pending = archive.finishLoading([]);
+
+                expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+                expect(archive.loaded).toBeFalsy();
+
+                resolveReady();
+                await pending;
+
+                expect(archive.loaded).toBe(true);
+                expect(archive.emit).toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).toHaveBeenCalledTimes(1);
+                expect(archive.emitFirstRenderMetric.mock.invocationCallOrder[0]).toBeLessThan(
+                    archive.emit.mock.invocationCallOrder[0],
+                );
+            });
+
+            test('should throw a load-viewer error if the v2 module fails to load', async () => {
+                enableV2();
+
+                const pending = archive.finishLoading([]);
+                rejectReady(new Error('chunk failed'));
+
+                await expect(pending).rejects.toBeInstanceOf(PreviewError);
+                await expect(pending).rejects.toMatchObject({ code: ERROR_CODE.LOAD_VIEWER });
+                expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+            });
+
+            test('should not emit load if destroyed while the v2 module is loading', async () => {
+                enableV2();
+
+                const pending = archive.finishLoading([]);
+                jest.spyOn(archive, 'isDestroyed').mockReturnValue(true);
+                resolveReady();
+                await pending;
+
+                expect(archive.emit).not.toBeCalledWith(VIEWER_EVENT.load);
+                expect(archive.emitFirstRenderMetric).not.toHaveBeenCalled();
+            });
+
+            test('should enable archive v2 when the archive flag is on', () => {
+                enableV2();
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(true);
+            });
+
+            test('should pass the viewer resin instance to BoxArchive', () => {
+                archive.options.resin = { recordAction: jest.fn() };
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.resin).toBe(archive.options.resin);
+            });
+
+            test('should not enable archive v2 when only another wave flag is on', () => {
+                archive.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+
+            test('should not enable archive v2 when no flag is on', () => {
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+
+            test('should not enable archive v2 when the shared Blueprint gate is off', () => {
+                enableV2();
+                jest.spyOn(archive, 'isBlueprintEnabled').mockReturnValue(false);
+
+                archive.finishLoading([]);
+
+                expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+            });
+        });
+
+        test('should mount the bundled BoxArchive in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            jest.isolateModules(() => {
+                const { default: NpmArchiveViewer } = jest.requireActual('../ArchiveViewer');
+                const npmArchive = new NpmArchiveViewer(options);
+                npmArchive.containerEl = containerEl;
+                npmArchive.setup();
+                npmArchive.options.file.name = 'test.zip';
+                jest.spyOn(npmArchive, 'emit');
+
+                npmArchive.finishLoading([]);
+
+                expect(npmArchive.archiveComponent).toBeTruthy();
+                expect(npmArchive.loaded).toBe(true);
+                expect(npmArchive.emit).toBeCalledWith(VIEWER_EVENT.load);
+                npmArchive.destroy();
+            });
         });
     });
 });

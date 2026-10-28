@@ -1,23 +1,30 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+import { flushSync } from 'react-dom';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
+import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
+import { DocFindBarV2Root } from './DocFindBarV2';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
+import { isNpmBuild } from '../../isNpmBuild';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
+import ThumbnailsSidebarV2 from '../../ThumbnailsSidebarV2';
 import Thumbnail from '../../Thumbnail';
 
 import { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
 import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -85,6 +92,9 @@ const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
+// npm pdf.js draws its sharp detail canvas over zoomed pages only when maxCanvasPixels is positive
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25; // pdf.js desktop default
+const LEGACY_PDFJS_MAX_CANVAS_SIZE = -1; // Unlimited
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 const PDFJS_TEXT_LAYER_MODE = {
@@ -251,9 +261,19 @@ class DocBaseViewer extends BaseViewer {
             getThumbnailsSidebar: () => this.thumbnailsSidebar,
             setPage: n => this.setPage(n),
             toggleThumbnails: () => this.toggleThumbnails(),
-            requestUiUpdate: () => this.renderUI(),
+            requestUiUpdate: () => {
+                // The v2 bar moves the gallery toggle between the bar and its overflow menu, so the bar must be
+                // committed before focusToggle looks the toggle up
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    flushSync(() => this.renderUI());
+                } else {
+                    this.renderUI();
+                }
+            },
             focusToggle: () => {
-                const toggle = this.containerEl.querySelector('.bp-GalleryToggle');
+                const toggle = this.containerEl.querySelector(
+                    '.bp-GalleryToggle, [data-bp-gallery-toggle], [data-overflow-ids~="gallery"]',
+                );
                 if (toggle && toggle.focus) {
                     toggle.focus();
                 }
@@ -506,8 +526,8 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            if (this.featureEnabled('useNpmPdfjs')) {
-                this.prefetchAssets(EXIF_READER, CSS);
+            if (this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
+                this.prefetchAssets(EXIF_READER, []);
             } else {
                 const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
                 this.prefetchAssets(ASSETS, CSS);
@@ -547,7 +567,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadViewerAssets({ isUseNpmPdfjsEnabled = false } = {}) {
-        if (isUseNpmPdfjsEnabled) {
+        if (isUseNpmPdfjsEnabled || this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
             this.loadAssets(EXIF_READER, []);
             // Kick off the dynamic imports so the pdfjs chunks land in cache
             // before per-file load() awaits them. Errors are swallowed; load()
@@ -1022,6 +1042,26 @@ class DocBaseViewer extends BaseViewer {
             case ']':
                 this.nextPage();
                 break;
+            case 'r':
+            case 'R':
+                // The rotate control is hidden while the gallery is open, so the key follows it.
+                // These bare keys belong to the v2 controls bar; the older bar has no such shortcuts.
+                if (
+                    this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) &&
+                    !this.galleryController?.isOpen &&
+                    this.featureEnabled('rotate.enabled')
+                ) {
+                    this.rotateLeft();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
+            case 'f':
+            case 'F':
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    this.toggleFullscreen();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
             default:
                 if (this.findBar) {
                     return this.findBar.onKeydown(event);
@@ -1110,7 +1150,8 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
-        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        const cMapUrl = useNpmPdfjs ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
             cMapUrl,
@@ -1118,10 +1159,17 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
-            isEvalSupported: false,
             rangeChunkSize,
             url: pdfUrl,
         };
+
+        if (useNpmPdfjs) {
+            pdfDocConfig.iccUrl = assetUrlCreator('iccs/');
+            pdfDocConfig.standardFontDataUrl = assetUrlCreator('standard_fonts/');
+            pdfDocConfig.wasmUrl = assetUrlCreator('wasm/');
+        } else {
+            pdfDocConfig.isEvalSupported = false;
+        }
 
         pdfDocConfig.httpHeaders = this.appendAuthHeader();
 
@@ -1233,12 +1281,21 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             eventBus: this.pdfEventBus,
             findController: this.pdfFindController,
-            imageResourcesPath: assetUrlCreator(IMAGES),
+            imageResourcesPath: this.featureEnabled('useNpmPdfjs')
+                ? assetUrlCreator('pdfjs-images/')
+                : assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
-            maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            maxCanvasPixels: this.getMaxCanvasPixels(),
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? enabledTextLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
+    }
+
+    getMaxCanvasPixels() {
+        if (this.isMobile) {
+            return MOBILE_MAX_CANVAS_SIZE;
+        }
+        return this.featureEnabled('useNpmPdfjs') ? NPM_PDFJS_MAX_CANVAS_SIZE : LEGACY_PDFJS_MAX_CANVAS_SIZE;
     }
 
     /**
@@ -1255,7 +1312,8 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.findBar = new DocFindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
+        const FindBar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI) ? DocFindBarV2Root : DocFindBar;
+        this.findBar = new FindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
     }
@@ -1392,9 +1450,9 @@ class DocBaseViewer extends BaseViewer {
     async loadPdfjsFromNpm() {
         // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
         // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
-        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
-        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/legacy/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs');
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/legacy/web/pdf_viewer.css');
     }
 
     /**
@@ -1572,9 +1630,10 @@ class DocBaseViewer extends BaseViewer {
         const canRotate = this.featureEnabled('rotate.enabled');
         const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
         const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isEnhancedGalleryEnabled;
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? DocControlsV2 : DocControls;
 
         this.controls.render(
-            <DocControls
+            <Controls
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
@@ -1714,7 +1773,10 @@ class DocBaseViewer extends BaseViewer {
         // if the preloader has initialized the thumbnails sidebar don't reinitialize it when the pdf loads
         // we only need one thumbnail sidebar for both the preloader and the pdfViewer
         if (!this.thumbnailsSidebar) {
-            this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
+            const Sidebar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)
+                ? ThumbnailsSidebarV2
+                : ThumbnailsSidebar;
+            this.thumbnailsSidebar = new Sidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
 
             this.thumbnailsSidebar.init({
                 currentPage: this.pdfViewer?.currentPageNumber,
@@ -2196,6 +2258,10 @@ class DocBaseViewer extends BaseViewer {
         const { pagesCount } = this.pdfViewer;
 
         this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
+
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.renderUI();
+        }
 
         let metricName;
         let eventName;

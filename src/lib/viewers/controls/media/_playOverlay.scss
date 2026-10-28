@@ -1,0 +1,7 @@
+// IconButton tops out at 40px; its own custom properties keep the 80px disc behind the play glyph.
+// Include under a parent selector so these win over IconButton's same-specificity defaults.
+@mixin bp-PlayOverlayButton {
+    --icon-button-radius: 50%;
+    --icon-button-size-large: 80px;
+    --icon-button-surface-on-dark: rgb(0 0 0 / 50%);
+}

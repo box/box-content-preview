@@ -12,6 +12,7 @@ import PreviewError from '../PreviewError';
 import PreviewPerf from '../PreviewPerf';
 import Timer from '../Timer';
 import loaders from '../loaders';
+import BaseViewer from '../viewers/BaseViewer';
 import {
     API_HOST,
     CLASS_NAVIGATION_VISIBILITY,
@@ -22,6 +23,7 @@ import {
     VIEWER_EVENT,
     ERROR_CODE,
     LOAD_METRIC,
+    FIRST_RENDER_METRIC,
     CACHE_STATUS,
     PREVIEW_METRIC,
     PREVIEW_PRELOAD_OUTCOME_EVENT,
@@ -137,6 +139,11 @@ describe('lib/Preview', () => {
             jest.isolateModules(() => {
                 // eslint-disable-next-line global-require
                 const NpmPreview = require('../Preview').default;
+                // eslint-disable-next-line global-require
+                const translations = require('../translations');
+                const setLanguage = jest.spyOn(translations, 'setLanguage');
+                const setMessages = jest.spyOn(translations, 'setMessages');
+                const messages = { 'bcp.media_autoplay': 'Automatische Wiedergabe' };
                 const npmInstance = new NpmPreview();
                 const load = jest.spyOn(npmInstance, 'load').mockImplementation();
 
@@ -149,6 +156,8 @@ describe('lib/Preview', () => {
                 expect(load).not.toHaveBeenCalled();
 
                 npmInstance.show('123', 'token', {
+                    features: { useNpmPdfjs: false },
+                    intl: { messages },
                     location: {
                         locale: 'de-DE',
                         staticBaseURI: 'https://cdn.example/preview/',
@@ -156,6 +165,8 @@ describe('lib/Preview', () => {
                     },
                 });
                 expect(npmInstance.location.locale).toBe('de-DE');
+                expect(setLanguage).toHaveBeenCalledWith('de-DE');
+                expect(setMessages).toHaveBeenCalledWith(messages);
                 expect(npmInstance.previewOptions.features.useNpmPdfjs).toBe(true);
                 expect(load).toHaveBeenCalledWith('123');
                 npmInstance.destroy();
@@ -1283,6 +1294,28 @@ describe('lib/Preview', () => {
             });
         });
 
+        test.each`
+            description                    | errorData                          | message
+            ${'a generic forbidden error'} | ${{}}                              | ${'notification_cannot_download'}
+            ${'an access policy error'}    | ${{ code: 'forbidden_by_policy' }} | ${'notification_cannot_download_due_to_policy'}
+        `(
+            'should show the matching notification when the original download URL request fails with $description',
+            async ({ errorData, message }) => {
+                file.canDownload.mockReturnValue(true);
+                file.shouldDownloadWM.mockReturnValue(false);
+                util.appendQueryParams.mockReturnValue('someurl');
+                stubs.api.get.mockRejectedValue({ response: { status: 403, data: errorData } });
+
+                preview.download();
+                await new Promise(resolve => {
+                    setTimeout(resolve);
+                });
+
+                expect(preview.ui.showNotification).toHaveBeenCalledWith(__(message));
+                expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
+            },
+        );
+
         test('should emit the download attempted metric', () => {
             file.canDownload.mockReturnValue(true);
             file.shouldDownloadWM.mockReturnValue(false);
@@ -1469,6 +1502,60 @@ describe('lib/Preview', () => {
             expect(timer.start).toBeDefined();
         });
 
+        describe('first render timing', () => {
+            beforeEach(() => {
+                Timer.reset(Timer.createTag(stubs.file.id, FIRST_RENDER_METRIC));
+            });
+
+            afterEach(() => {
+                Timer.reset(Timer.createTag(stubs.file.id, FIRST_RENDER_METRIC));
+            });
+
+            test('should emit first render time again when reopening a cached file', () => {
+                const emitMetric = jest.fn();
+                const now = jest.spyOn(global.performance, 'now').mockReturnValue(100);
+                stubs.getCachedFile.mockReturnValue(stubs.file);
+
+                preview.load(stubs.file.id);
+                preview.viewer = new BaseViewer({ file: preview.file });
+                preview.viewer.on(VIEWER_EVENT.metric, emitMetric);
+                now.mockReturnValue(150);
+                preview.viewer.emitFirstRenderMetric();
+                preview.viewer.emitFirstRenderMetric();
+
+                expect(emitMetric).toHaveBeenCalledTimes(1);
+                expect(emitMetric).toHaveBeenLastCalledWith({ event: LOAD_METRIC.firstRenderTime, data: 50 });
+
+                preview.destroy();
+                now.mockReturnValue(300);
+                preview.load(stubs.file.id);
+                preview.viewer = new BaseViewer({ file: preview.file });
+                preview.viewer.on(VIEWER_EVENT.metric, emitMetric);
+                now.mockReturnValue(325);
+                preview.viewer.emitFirstRenderMetric();
+                preview.viewer.emitFirstRenderMetric();
+
+                expect(emitMetric).toHaveBeenCalledTimes(2);
+                expect(emitMetric).toHaveBeenLastCalledWith({ event: LOAD_METRIC.firstRenderTime, data: 25 });
+            });
+
+            test('should measure first render from reopening after a close before rendering', () => {
+                const now = jest.spyOn(global.performance, 'now').mockReturnValue(100);
+
+                preview.load(stubs.file.id);
+                preview.destroy();
+
+                now.mockReturnValue(300);
+                preview.load(stubs.file.id);
+                preview.viewer = new BaseViewer({ file: preview.file });
+                const emitMetric = jest.spyOn(preview.viewer, 'emitMetric');
+                now.mockReturnValue(325);
+                preview.viewer.emitFirstRenderMetric();
+
+                expect(emitMetric).toHaveBeenCalledWith(LOAD_METRIC.firstRenderTime, 25);
+            });
+        });
+
         test('should get the tokens when file id is available', () => {
             preview.previewOptions.token = 'token';
 
@@ -1637,7 +1724,13 @@ describe('lib/Preview', () => {
 
                 expect(render).toHaveBeenCalledWith(currentFileVersion, {
                     isComparedPreview: false,
+                    isOnDark: false,
                     locale: 'en-US',
+                    menuContainer: containerEl,
+                    onDelete: undefined,
+                    onDownload: undefined,
+                    onMakeCurrent: undefined,
+                    onOpenFullPreview: undefined,
                 });
             });
 
@@ -1649,7 +1742,13 @@ describe('lib/Preview', () => {
 
                 expect(render).toHaveBeenCalledWith(previousFileVersion, {
                     isComparedPreview: true,
+                    isOnDark: false,
                     locale: 'en-US',
+                    menuContainer: containerEl,
+                    onDelete: undefined,
+                    onDownload: undefined,
+                    onMakeCurrent: undefined,
+                    onOpenFullPreview: undefined,
                 });
             });
 
@@ -1664,6 +1763,34 @@ describe('lib/Preview', () => {
                 expect(render).toHaveBeenCalledTimes(2);
             });
 
+            test.each`
+                name      | isAudioPlayerV2 | isOnDark
+                ${'MP4'}  | ${undefined}    | ${true}
+                ${'Dash'} | ${undefined}    | ${true}
+                ${'MP3'}  | ${true}         | ${true}
+                ${'MP3'}  | ${false}        | ${false}
+                ${'Text'} | ${undefined}    | ${false}
+            `(
+                'should pass isOnDark=$isOnDark for the $name viewer (audio v2: $isAudioPlayerV2)',
+                ({ name, isAudioPlayerV2, isOnDark }) => {
+                    preview.options.isComparing = true;
+                    preview.viewer = { options: { viewer: { NAME: name } }, isAudioPlayerV2 };
+
+                    preview.updateComparisonBanner();
+
+                    expect(render).toHaveBeenCalledWith(currentFileVersion, expect.objectContaining({ isOnDark }));
+                },
+            );
+
+            test('should not pass isOnDark before a viewer exists', () => {
+                preview.options.isComparing = true;
+                preview.viewer = undefined;
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(currentFileVersion, expect.objectContaining({ isOnDark: false }));
+            });
+
             test('should still mount when version info is missing (banner renders null)', () => {
                 preview.options.isComparing = true;
                 preview.options.comparisonBanner = {};
@@ -1673,8 +1800,98 @@ describe('lib/Preview', () => {
                 expect(preview.comparisonBannerRoot).toBeDefined();
                 expect(render).toHaveBeenCalledWith(undefined, {
                     isComparedPreview: false,
+                    isOnDark: false,
                     locale: 'en-US',
+                    menuContainer: containerEl,
+                    onDelete: undefined,
+                    onDownload: undefined,
+                    onMakeCurrent: undefined,
+                    onOpenFullPreview: undefined,
                 });
+            });
+
+            test('should not download from Preview when the banner has no download handler', () => {
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onDownload: undefined }),
+                );
+            });
+
+            test('should pass the host open-full-preview handler on the compared pane', () => {
+                const onOpenFullPreview = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+                preview.options.comparisonBanner = { ...preview.options.comparisonBanner, onOpenFullPreview };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onOpenFullPreview }),
+                );
+            });
+
+            test('should pass version actions from comparisonBanner on the compared pane', () => {
+                const onDelete = jest.fn();
+                const onDownload = jest.fn();
+                const onMakeCurrent = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+                preview.options.comparisonBanner = {
+                    ...preview.options.comparisonBanner,
+                    onDelete,
+                    onDownload,
+                    onMakeCurrent,
+                };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onDelete, onDownload, onMakeCurrent }),
+                );
+            });
+
+            test('should not pass version actions on the current pane', () => {
+                const onDelete = jest.fn();
+                const onDownload = jest.fn();
+                const onMakeCurrent = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.comparisonBanner = {
+                    ...preview.options.comparisonBanner,
+                    onDelete,
+                    onDownload,
+                    onMakeCurrent,
+                };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    currentFileVersion,
+                    expect.objectContaining({
+                        onDelete: undefined,
+                        onDownload: undefined,
+                        onMakeCurrent: undefined,
+                    }),
+                );
+            });
+
+            test('should not pass the host open-full-preview handler on the current pane', () => {
+                const onOpenFullPreview = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.comparisonBanner = { ...preview.options.comparisonBanner, onOpenFullPreview };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    currentFileVersion,
+                    expect.objectContaining({ onOpenFullPreview: undefined }),
+                );
             });
         });
 
@@ -1692,7 +1909,10 @@ describe('lib/Preview', () => {
 
                 expect(preview.options.isComparing).toBe(true);
                 expect(preview.options.isComparedPreview).toBe(true);
-                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ isComparedPreview: true }));
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ isComparedPreview: true }),
+                );
             });
 
             test('should not clear isComparedPreview when only isComparing is passed', () => {
@@ -1703,7 +1923,10 @@ describe('lib/Preview', () => {
 
                 expect(preview.options.isComparedPreview).toBe(true);
                 expect(preview.options.isComparing).toBe(true);
-                expect(render).toHaveBeenCalledWith(previousFileVersion, expect.objectContaining({ isComparedPreview: true }));
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ isComparedPreview: true }),
+                );
             });
 
             test('should remove the banner when comparison ends', () => {
@@ -2588,6 +2811,17 @@ describe('lib/Preview', () => {
 
             expect(existingViewer.destroy).toHaveBeenCalled();
             expect(preview.viewer).toBe(stubs.viewer);
+        });
+
+        test('should refresh the comparison banner after the viewer is set up', () => {
+            const updateComparisonBanner = jest.spyOn(preview, 'updateComparisonBanner').mockImplementation();
+
+            preview.loadViewer();
+
+            expect(updateComparisonBanner).toHaveBeenCalledTimes(1);
+            expect(stubs.viewer.setup.mock.invocationCallOrder[0]).toBeLessThan(
+                updateComparisonBanner.mock.invocationCallOrder[0],
+            );
         });
 
         test('should trigger error if file is not downloadable', () => {

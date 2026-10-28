@@ -1482,6 +1482,7 @@ class MP3Viewer extends MediaBaseViewer {
                     playNext={this.isPlayNextEnabled()}
                     shuttleDirection={this.shuttleDirection}
                     shuttleRate={this.shuttleRate}
+                    isBlueprintEnabled={this.isBlueprintMediaControlsEnabled()}
                 />,
             );
             return;

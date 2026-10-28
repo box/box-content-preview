@@ -523,7 +523,7 @@ class ImageBaseViewer extends BaseViewer {
             return true;
         }
 
-        return false;
+        return this.handleFullscreenKey(key);
     }
 
     /**

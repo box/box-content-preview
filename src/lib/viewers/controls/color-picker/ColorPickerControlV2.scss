@@ -1,0 +1,12 @@
+.bp-ColorPickerControlV2 {
+    display: flex;
+}
+
+// Blueprint draws each swatch on a white disc with a light border, made for light menus. On the dark
+// palette the disc shows as a white ring, so the swatch keeps only its color and the dark hover surface.
+.bp-ColorPickerControlV2 .bp-ColorPickerControlV2-swatch {
+    --select-menu-grid-option-circle-background-color: transparent;
+    --select-menu-grid-option-circle-background-color-hover: var(--bp-surface-cta-surface-icon-on-dark-hover);
+    --select-menu-grid-option-circle-border: var(--bp-border-01) solid transparent;
+    --select-menu-grid-option-circle-box-shadow-focus-active: 0 0 0 var(--bp-border-01) var(--bp-gray-100), 0 0 0 var(--bp-border-03) var(--bp-border-input-border-focus);
+}

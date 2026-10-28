@@ -123,6 +123,17 @@
     }
 }
 
+.bp-WaveformRange-comment--blueprint {
+    // Positioning wrapper only; the Blueprint toolbar draws the surface.
+    cursor: default;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+    box-shadow: none;
+}
+
 .bp-WaveformRange-comment--withClear {
     cursor: default;
     gap: 4px;

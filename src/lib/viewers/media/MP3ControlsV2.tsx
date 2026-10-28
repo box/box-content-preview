@@ -1,12 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import isFinite from 'lodash/isFinite';
+import { IconButton, Tooltip } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
 import MediaSettings, { Props as MediaSettingsProps } from '../controls/media/MediaSettings';
+import MediaSettingsV2 from '../controls/media/MediaSettingsV2';
+import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
 import PlayPauseToggle, { Props as PlayControlsProps } from '../controls/media/PlayPauseToggle';
 import { Props as TimeControlsProps } from '../controls/media/TimeControls';
 import TimestampControl from '../controls/media/TimestampControl';
 import { CommentMarker } from '../controls/media/markers';
 import { CommentRangeDraft } from '../controls/media/types';
+import { stopActivationKeyPropagation } from '../controls/media/utils';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { WAVEFORM_ZOOM_BUTTON_STEP, WAVEFORM_ZOOM_DISMISS_MS, WAVEFORM_ZOOM_MIN } from './waveform/constants';
@@ -87,6 +92,7 @@ export default function MP3ControlsV2({
     rate,
     shuttleDirection = null,
     shuttleRate = 0,
+    isBlueprintEnabled = false,
     volume,
 }: Props): JSX.Element {
     const durationValue = typeof durationTime === 'number' && isFinite(durationTime) ? durationTime : 0;
@@ -247,6 +253,7 @@ export default function MP3ControlsV2({
                         currentTime={currentTime}
                         durationSec={waveformDurationSec}
                         interactive={isWaveformInteractive}
+                        isBlueprintEnabled={isBlueprintEnabled}
                         isPlaying={isPlaying}
                         mediaEl={mediaEl}
                         onPlayheadComment={isWaveformInteractive && !shuttleDirection ? onPlayheadComment : undefined}
@@ -275,14 +282,19 @@ export default function MP3ControlsV2({
                     />
                 </div>
                 {showShuttle && shuttleDirection && (
-                    <WaveformShuttleIndicator direction={shuttleDirection} rate={shuttleRate} />
+                    <WaveformShuttleIndicator
+                        direction={shuttleDirection}
+                        isBlueprintEnabled={isBlueprintEnabled}
+                        rate={shuttleRate}
+                    />
                 )}
                 {(showGeneratingWaveformIndicator || hasZoomControl) && (
                     <div className="bp-MP3ControlsV2-waveformZoom">
                         {showGeneratingWaveformIndicator ? (
-                            <WaveformGeneratingIndicator />
+                            <WaveformGeneratingIndicator isBlueprintEnabled={isBlueprintEnabled} />
                         ) : (
                             <WaveformZoomControl
+                                isBlueprintEnabled={isBlueprintEnabled}
                                 isRevealed={isZoomRevealed}
                                 maxZoom={maxZoom}
                                 onZoomChange={handleWaveformZoom}
@@ -291,7 +303,24 @@ export default function MP3ControlsV2({
                         )}
                     </div>
                 )}
-                {showPlayOverlay && (
+                {showPlayOverlay && isBlueprintEnabled && (
+                    <Tooltip content={__('media_play')}>
+                        <IconButton
+                            aria-label={__('media_play')}
+                            className="bp-MP3ControlsV2-playOverlayButton"
+                            data-resin-target="playOverlay"
+                            data-target-id="MP3ControlsV2-play"
+                            data-testid="bp-MP3ControlsV2-play-overlay"
+                            icon={PlayOverlayIcon}
+                            onClick={handlePlayOverlayClick}
+                            onKeyDown={stopActivationKeyPropagation}
+                            onMouseDown={event => event.preventDefault()}
+                            size="large"
+                            variant="on-dark"
+                        />
+                    </Tooltip>
+                )}
+                {showPlayOverlay && !isBlueprintEnabled && (
                     <button
                         className="bp-MP3ControlsV2-playOverlay"
                         // Static SVG from the icons module, same asset video uses for the overlay.
@@ -306,16 +335,28 @@ export default function MP3ControlsV2({
                         type="button"
                     />
                 )}
-                {isWaitingToPlay && (
+                {isWaitingToPlay && isBlueprintEnabled && (
+                    <MediaLoadingIndicator data-testid="bp-MP3ControlsV2-loading" />
+                )}
+                {isWaitingToPlay && !isBlueprintEnabled && (
                     <div className="bp-media-buffering-spinner" data-testid="bp-MP3ControlsV2-loading" />
                 )}
             </div>
             {hasMediaMetadata && (
                 <div className="bp-MP3ControlsV2-bar" data-testid="bp-MP3ControlsV2-bar">
                     <div className="bp-MP3ControlsV2-group">
-                        <PlayPauseToggle hasSkipButtons={false} isPlaying={isPlaying} onPlayPause={onPlayPause} />
+                        <PlayPauseToggle
+                            hasSkipButtons={false}
+                            isPlaying={isPlaying}
+                            onPlayPause={onPlayPause}
+                            isBlueprintEnabled={isBlueprintEnabled}
+                        />
                         <div className="bp-MP3ControlsV2-divider" />
-                        <TimestampControl currentTime={currentTime} durationTime={durationValue} />
+                        <TimestampControl
+                            currentTime={currentTime}
+                            durationTime={durationValue}
+                            isBlueprintEnabled={isBlueprintEnabled}
+                        />
                     </div>
 
                     <div className="bp-MP3ControlsV2-group">
@@ -323,17 +364,29 @@ export default function MP3ControlsV2({
                             keyboardVolumeStep={keyboardVolumeStep}
                             onMuteChange={onMuteChange}
                             onVolumeChange={onVolumeChange}
+                            isBlueprintEnabled={isBlueprintEnabled}
                             volume={volume}
                         />
-                        <MediaSettings
-                            autoplay={autoplay}
-                            className="bp-MP3Controls-settings"
-                            onAutoplayChange={onAutoplayChange}
-                            onPlayNextChange={onPlayNextChange}
-                            onRateChange={onRateChange}
-                            playNext={playNext}
-                            rate={rate}
-                        />
+                        {isBlueprintEnabled ? (
+                            <MediaSettingsV2
+                                autoplay={autoplay}
+                                onAutoplayChange={onAutoplayChange}
+                                onPlayNextChange={onPlayNextChange}
+                                onRateChange={onRateChange}
+                                playNext={playNext}
+                                rate={rate}
+                            />
+                        ) : (
+                            <MediaSettings
+                                autoplay={autoplay}
+                                className="bp-MP3Controls-settings"
+                                onAutoplayChange={onAutoplayChange}
+                                onPlayNextChange={onPlayNextChange}
+                                onRateChange={onRateChange}
+                                playNext={playNext}
+                                rate={rate}
+                            />
+                        )}
                     </div>
                 </div>
             )}

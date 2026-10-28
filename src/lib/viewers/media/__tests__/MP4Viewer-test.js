@@ -203,6 +203,41 @@ describe('lib/viewers/media/MP4Viewer', () => {
             expect(getProps(mp4)).not.toHaveProperty('onPlayNextChange');
             expect(getProps(mp4)).not.toHaveProperty('playNext');
         });
+
+        test('should wire the settings menu handlers into the controls', () => {
+            mp4.renderUI();
+
+            expect(getProps(mp4)).toMatchObject({
+                autoplay: false,
+                onAutoplayChange: mp4.setAutoplay,
+                onRateChange: mp4.setRate,
+                rate: 1,
+            });
+        });
+
+        test.each`
+            videoAnnotationsEnabled | annotator | expected
+            ${true}                 | ${{}}     | ${true}
+            ${true}                 | ${null}   | ${false}
+            ${false}                | ${{}}     | ${false}
+        `(
+            'should set videoAnnotationsEnabled to $expected when the flag is $videoAnnotationsEnabled and annotator is $annotator',
+            ({ videoAnnotationsEnabled, annotator, expected }) => {
+                mp4.videoAnnotationsEnabled = videoAnnotationsEnabled;
+                mp4.annotator = annotator;
+
+                mp4.renderUI();
+
+                expect(getProps(mp4).videoAnnotationsEnabled).toBe(expected);
+            },
+        );
+
+        test('should pass isBlueprintEnabled to VideoControlsV2 when the media Blueprint flag is on', () => {
+            mp4.isVideoPlayerV2 = true;
+            mp4.featureEnabled.mockImplementation(feature => feature === 'blueprintMigrationMediaControls.enabled');
+            mp4.renderUI();
+            expect(getProps(mp4).isBlueprintEnabled).toBe(true);
+        });
     });
 
     describe('calculateVideoDimensions()', () => {

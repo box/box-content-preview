@@ -5,6 +5,7 @@ import throttle from 'lodash/throttle';
 /* eslint-enable import/first */
 import Api from './api';
 import Browser from './Browser';
+import { isNpmBuild } from './isNpmBuild';
 import Logger from './Logger';
 import loaderList from './loaders';
 import Cache from './Cache';
@@ -15,6 +16,7 @@ import PreviewPerf from './PreviewPerf';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import Timer from './Timer';
+import { setLanguage, setMessages } from './translations';
 import {
     getProp,
     decodeKeydown,
@@ -95,9 +97,8 @@ const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
 
 // document.currentScript is this file only while it evaluates.
-const IS_NPM_BUILD = typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__;
 let PREVIEW_LOCATION = {};
-if (!IS_NPM_BUILD) {
+if (!isNpmBuild()) {
     try {
         PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
     } catch (e) {
@@ -257,8 +258,8 @@ class Preview extends EventEmitter {
         // But it cannot be a random object.
         if (token === null || typeof token !== 'object') {
             // npm consumers have no CDN-served pdfjs at runtime; force the bundled npm pdfjs path.
-            const finalOptions = IS_NPM_BUILD
-                ? { ...options, features: { useNpmPdfjs: true, ...(options.features || {}) } }
+            const finalOptions = isNpmBuild()
+                ? { ...options, features: { ...(options.features || {}), useNpmPdfjs: true } }
                 : options;
             this.previewOptions = { ...finalOptions, token };
         } else {
@@ -935,7 +936,9 @@ class Preview extends EventEmitter {
         // Start the preview load and render timers when the user starts to perceive preview's load
         Timer.start(Timer.createTag(this.file.id, LOAD_METRIC.previewLoadTime));
         Timer.start(Timer.createTag(this.file.id, RENDER_METRIC));
-        Timer.start(Timer.createTag(this.file.id, FIRST_RENDER_METRIC));
+        const firstRenderTag = Timer.createTag(this.file.id, FIRST_RENDER_METRIC);
+        Timer.reset(firstRenderTag);
+        Timer.start(firstRenderTag);
 
         // If file version ID is specified, increment retry count if it matches current file version ID
         if (fileVersionId) {
@@ -1082,11 +1085,30 @@ class Preview extends EventEmitter {
             this.comparisonBannerRoot = new ComparisonBannerRoot(this.container);
         }
 
-        const { currentFileVersion, previousFileVersion } = comparisonBanner || {};
+        const {
+            currentFileVersion,
+            previousFileVersion,
+            onDelete,
+            onDownload: onDownloadVersion,
+            onMakeCurrent,
+            onOpenFullPreview,
+        } = comparisonBanner || {};
+
+        // Videos always lower the lights; MP3 is dark only on the v2 player.
+        const viewerName = getProp(this.viewer, 'options.viewer.NAME', '');
+        const isOnDark =
+            VIDEO_VIEWER_NAMES.indexOf(viewerName) > -1 ||
+            (viewerName === 'MP3' && !!getProp(this.viewer, 'isAudioPlayerV2'));
 
         this.comparisonBannerRoot.render(isComparedPreview ? previousFileVersion : currentFileVersion, {
             isComparedPreview,
+            isOnDark,
             locale: getProp(this.location, 'locale'),
+            menuContainer: this.container,
+            onDelete: isComparedPreview ? onDelete : undefined,
+            onDownload: isComparedPreview ? onDownloadVersion : undefined,
+            onMakeCurrent: isComparedPreview ? onMakeCurrent : undefined,
+            onOpenFullPreview: isComparedPreview ? onOpenFullPreview : undefined,
         });
     }
 
@@ -1258,6 +1280,11 @@ class Preview extends EventEmitter {
         // preview.js <script> tag for findScriptLocation to read.
         if (options.location) {
             this.location = { ...this.location, ...options.location };
+        }
+
+        if (isNpmBuild()) {
+            setLanguage(this.location.locale);
+            setMessages(options.intl && options.intl.messages);
         }
 
         this.options.pdfjs = options.pdfjs || {};
@@ -1576,6 +1603,9 @@ class Preview extends EventEmitter {
 
         // Setup the viewer DOM
         this.viewer.setup();
+
+        // The banner renders before the viewer exists, so refresh it once the viewer's stage is known
+        this.updateComparisonBanner();
 
         // Load the representation into the viewer
         this.viewer.load();
@@ -2485,7 +2515,7 @@ class Preview extends EventEmitter {
     };
 }
 
-if (!IS_NPM_BUILD) {
+if (!isNpmBuild()) {
     global.Box = global.Box || {};
     global.Box.Preview = Preview;
 }

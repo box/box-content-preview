@@ -22,6 +22,7 @@ import {
 import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
     CLASS_ANNOTATIONS_CREATE_DRAWING,
     CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     CLASS_ANNOTATIONS_CREATE_REGION,
@@ -63,7 +64,7 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
-const ANNOTATION_BUTTONS = {
+const getAnnotationButtons = () => ({
     point: {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
         title: __('annotation_point_toggle'),
@@ -72,7 +73,7 @@ const ANNOTATION_BUTTONS = {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
         title: __('annotation_draw_toggle'),
     },
-};
+});
 
 class BaseViewer extends EventEmitter {
     /** @property {Api} - Api instance used for XHR calls */
@@ -610,8 +611,31 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     toggleFullscreen(isFullscreen, fullscreenToggleEl) {
-        this.fullscreenToggleEl = fullscreenToggleEl;
+        // The keyboard shortcut has no button to return focus to, so keep the last toggle unless it has
+        // since unmounted, as when it collapses into or out of the overflow menu
+        if (fullscreenToggleEl) {
+            this.fullscreenToggleEl = fullscreenToggleEl;
+        } else if (this.fullscreenToggleEl && !this.fullscreenToggleEl.isConnected) {
+            this.fullscreenToggleEl = null;
+        }
         fullscreen.toggle(this.containerEl);
+    }
+
+    /**
+     * Toggles fullscreen on F for viewers that opt in from onKeydown. The key belongs to the Blueprint
+     * controls bar, so the older bar keeps no such shortcut.
+     *
+     * @protected
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    handleFullscreenKey(key) {
+        if ((key === 'f' || key === 'F') && this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.toggleFullscreen();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -747,7 +771,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     emitFirstRenderMetric() {
-        if (this.firstRenderEmitted) {
+        if (this.isDestroyed() || this.firstRenderEmitted) {
             return;
         }
 
@@ -1078,14 +1102,18 @@ class BaseViewer extends EventEmitter {
         }
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
+        const features = options && options.features;
 
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
-            features: options && options.features,
+            // Annotations moves its popups to the Blueprint toolbar together with the controls bar
+            features: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)
+                ? { ...features, blueprintMigrationControlsBar: true }
+                : features,
             initialColor: this.annotationModule.getColor(),
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
-            modeButtons: ANNOTATION_BUTTONS,
+            modeButtons: getAnnotationButtons(),
             onCopyLink: options && options.onCopyLink,
         });
 
