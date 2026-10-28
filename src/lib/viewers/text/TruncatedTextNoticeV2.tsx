@@ -16,6 +16,7 @@ export default function TruncatedTextNoticeV2({ onDownload }: Props): JSX.Elemen
             </InlineNotice>
             <Button
                 className="bp-TruncatedTextNoticeV2-download"
+                data-resin-target="downloadTruncatedFile"
                 data-target-id="TruncatedTextNotice-download"
                 onClick={onDownload}
                 variant="primary"
@@ -34,6 +35,7 @@ export class TruncatedTextNoticeV2Root {
     constructor(containerEl: HTMLElement, onDownload: () => void) {
         this.hostEl = document.createElement('div');
         this.hostEl.className = 'bp-TruncatedTextNoticeV2';
+        this.hostEl.setAttribute('data-resin-feature', 'truncatedText');
         containerEl.appendChild(this.hostEl);
         this.root = createRoot(this.hostEl);
         flushSync(() => {

@@ -49,9 +49,11 @@ describe('TruncatedTextNoticeV2Root', () => {
         expect(onDownload).toHaveBeenCalledTimes(1);
     });
 
-    test('should tag the download button for analytics and print hiding', () => {
+    test('should tag the notice and download button for analytics and print hiding', () => {
         const button = screen.getByRole('button', { name: __('download_file') });
 
+        expect(notice.hostEl).toHaveAttribute('data-resin-feature', 'truncatedText');
+        expect(button).toHaveAttribute('data-resin-target', 'downloadTruncatedFile');
         expect(button).toHaveAttribute('data-target-id', 'TruncatedTextNotice-download');
         expect(button).toHaveClass('bp-TruncatedTextNoticeV2-download');
     });
