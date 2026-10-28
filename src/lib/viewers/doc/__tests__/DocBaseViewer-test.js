@@ -1181,7 +1181,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         describe('getRepFallback()', () => {
-            const makeFile = entries => ({ id: '0', extension: 'pdf', representations: { entries } });
+            const makeFile = (entries, extension = 'pdf') => ({ id: '0', extension, representations: { entries } });
 
             test('should return undefined when the current representation is not ocr_pdf', () => {
                 docBase.options.representation = { representation: 'pdf' };
@@ -1217,6 +1217,43 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should return undefined when no fallback representation is available', () => {
                 docBase.options.representation = { representation: 'ocr_pdf' };
                 docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
+
+                expect(docBase.getRepFallback()).toBeUndefined();
+            });
+
+            test('should wait for a converting pdf rep rather than the unrenderable original for non-pdf files', () => {
+                const pdfRep = { representation: 'pdf', status: { state: 'none' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [pdfRep, { representation: 'ORIGINAL', status: { state: 'success' } }],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBe(pdfRep);
+            });
+
+            test('should return undefined for non-pdf files when the pdf rep has errored', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [
+                        { representation: 'pdf', status: { state: 'error' } },
+                        { representation: 'ORIGINAL', status: { state: 'success' } },
+                    ],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBeUndefined();
+            });
+
+            test('should return undefined for non-pdf files when no pdf rep exists', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [
+                        { representation: 'ocr_pdf', status: { state: 'none' } },
+                        { representation: 'ORIGINAL', status: { state: 'success' } },
+                    ],
+                    'docx',
+                );
 
                 expect(docBase.getRepFallback()).toBeUndefined();
             });

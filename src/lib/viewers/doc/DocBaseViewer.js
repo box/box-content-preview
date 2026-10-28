@@ -33,6 +33,7 @@ import {
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
+    STATUS_ERROR,
     STATUS_SUCCESS,
 } from '../../constants';
 import {
@@ -729,7 +730,14 @@ class DocBaseViewer extends BaseViewer {
             return pdfRep;
         }
 
-        return getRepresentation(file, ORIGINAL_REP_NAME) || undefined;
+        // pdf.js can only render the original bytes directly when the file itself is a PDF. For other
+        // document types the original is e.g. a raw .docx, so keep awaiting the on-demand 'pdf' conversion
+        // (unless it has already errored) rather than handing an unrenderable original to pdf.js.
+        if (['pdf', 'lcdpdf'].includes(file.extension)) {
+            return getRepresentation(file, ORIGINAL_REP_NAME) || undefined;
+        }
+
+        return pdfRep && RepStatus.getStatus(pdfRep) !== STATUS_ERROR ? pdfRep : undefined;
     }
 
     handleFindBarClose() {
