@@ -19,7 +19,7 @@ import {
     EVENT_TOGGLE_VR,
     EVENT_WEBGL_CONTEXT_RESTORED,
 } from '../box3DConstants';
-import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
+import { BLUEPRINT_MIGRATION_SUPPORTING_UI, SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
 
 const sandbox = sinon.createSandbox();
 
@@ -122,10 +122,11 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
         test('should create a Blueprint context notification with the supporting UI flag', () => {
             Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
-            jest.spyOn(box3d, 'featureEnabled').mockReturnValue(true);
+            const featureEnabledSpy = jest.spyOn(box3d, 'featureEnabled').mockReturnValue(true);
 
             act(() => box3d.setup());
 
+            expect(featureEnabledSpy).toBeCalledWith(BLUEPRINT_MIGRATION_SUPPORTING_UI);
             expect(box3d.contextNotification).toBeInstanceOf(NotificationsV2Root);
             expect(box3d.wrapperEl).toContainElement(box3d.contextNotification.hostEl);
             act(() => box3d.contextNotification.destroy());

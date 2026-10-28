@@ -4,9 +4,9 @@ import { Notification, useNotification } from '@box/blueprint-web';
 import BlueprintProviders from './BlueprintProviders';
 import './NotificationsV2.scss';
 
-export type NotificationVariant = 'error' | 'info' | 'success' | 'warning';
-
 type NotificationApi = Pick<ReturnType<typeof useNotification>, 'addNotification' | 'removeAllNotifications'>;
+
+export type NotificationVariant = Parameters<NotificationApi['addNotification']>[0]['variant'];
 
 type BridgeProps = {
     onReady: (api: NotificationApi) => void;

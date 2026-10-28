@@ -1,4 +1,5 @@
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { NotificationsV2Root } from '../NotificationsV2';
 
 describe('NotificationsV2Root', () => {
@@ -6,6 +7,22 @@ describe('NotificationsV2Root', () => {
     let notifications: NotificationsV2Root;
 
     const show = (...args: Parameters<NotificationsV2Root['show']>): void => act(() => notifications.show(...args));
+
+    // Radix swipe handling uses pointer capture, which jsdom lacks.
+    beforeAll(() => {
+        HTMLElement.prototype.hasPointerCapture = jest.fn(() => false);
+        HTMLElement.prototype.releasePointerCapture = jest.fn();
+        HTMLElement.prototype.setPointerCapture = jest.fn();
+    });
+
+    afterAll(() => {
+        // @ts-expect-error jsdom does not implement pointer capture
+        delete HTMLElement.prototype.hasPointerCapture;
+        // @ts-expect-error jsdom does not implement pointer capture
+        delete HTMLElement.prototype.releasePointerCapture;
+        // @ts-expect-error jsdom does not implement pointer capture
+        delete HTMLElement.prototype.setPointerCapture;
+    });
 
     beforeEach(() => {
         containerEl = document.createElement('div');
@@ -64,22 +81,23 @@ describe('NotificationsV2Root', () => {
         expect(screen.queryByText('message')).not.toBeInTheDocument();
     });
 
-    // fireEvent: Radix swipe handling needs pointer capture, which jsdom lacks.
-    test('should keep a persisted notification until it is dismissed', () => {
+    test('should keep a persisted notification until it is dismissed', async () => {
         jest.useFakeTimers();
+        const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
         show('message', null, true);
 
         act(() => jest.advanceTimersByTime(60000));
         expect(screen.getByText('message')).toBeInTheDocument();
 
-        fireEvent.click(screen.getByRole('button', { name: __('notification_button_default_label') }));
+        await user.click(screen.getByRole('button', { name: __('notification_button_default_label') }));
         expect(screen.queryByText('message')).not.toBeInTheDocument();
     });
 
-    test('should dismiss the notification from its action button', () => {
+    test('should dismiss the notification from its action button', async () => {
+        const user = userEvent.setup();
         show('message', 'Okay', true);
 
-        fireEvent.click(screen.getByRole('button', { name: 'Okay' }));
+        await user.click(screen.getByRole('button', { name: 'Okay' }));
 
         expect(screen.queryByText('message')).not.toBeInTheDocument();
     });
