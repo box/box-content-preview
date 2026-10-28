@@ -1,3 +1,9 @@
+## 3.127.0 (2026-10-28)
+
+* fix(controls): match Blueprint sizing in media settings and time format menus (#1904) ([b5fd09d](https://github.com/box/box-content-preview/commit/b5fd09d)), closes [#1904](https://github.com/box/box-content-preview/issues/1904)
+* fix(controls): match the page pill's height to the zoom pill (#1899) ([9c69fc3](https://github.com/box/box-content-preview/commit/9c69fc3)), closes [#1899](https://github.com/box/box-content-preview/issues/1899)
+* feat(notifications): show Preview notifications with Blueprint toasts (#1902) ([e135ab1](https://github.com/box/box-content-preview/commit/e135ab1)), closes [#1902](https://github.com/box/box-content-preview/issues/1902)
+
 ## 3.126.0 (2026-10-27)
 
 * fix(controls): keep the bar's arrow keys from turning the page or opening the next file (#1896) ([28a6b22](https://github.com/box/box-content-preview/commit/28a6b22)), closes [#1896](https://github.com/box/box-content-preview/issues/1896)

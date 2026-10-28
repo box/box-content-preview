@@ -266,6 +266,7 @@ export default function TimestampControl({
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content
                         align="center"
+                        className="bp-TimestampControl-menu"
                         container={portalContainer}
                         data-testid="bp-TimestampControl-flyout"
                         onKeyDown={handleMenuKeyDown}

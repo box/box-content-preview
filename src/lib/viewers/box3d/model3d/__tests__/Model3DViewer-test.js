@@ -917,6 +917,45 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         });
     });
 
+    describe('onKeydown()', () => {
+        beforeEach(() => {
+            jest.spyOn(model3d, 'toggleFullscreen').mockImplementation();
+            jest.spyOn(model3d, 'getViewerOption').mockImplementation(() => true);
+        });
+
+        test.each`
+            enabled  | useReactControls | consumed
+            ${true}  | ${true}          | ${true}
+            ${false} | ${true}          | ${false}
+            ${true}  | ${false}         | ${false}
+        `(
+            'should consume F as fullscreen: $consumed if the controls bar flag is $enabled and React controls are $useReactControls',
+            ({ consumed, enabled, useReactControls }) => {
+                model3d.getViewerOption.mockImplementation(option =>
+                    option === 'useReactControls' ? useReactControls : undefined,
+                );
+                model3d.options.features = { blueprintMigrationControlsBar: { enabled } };
+
+                expect(model3d.onKeydown('f')).toBe(consumed);
+                expect(model3d.toggleFullscreen).toHaveBeenCalledTimes(consumed ? 1 : 0);
+            },
+        );
+
+        test('should toggle fullscreen on F with caps lock on', () => {
+            model3d.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(model3d.onKeydown('F')).toBe(true);
+            expect(model3d.toggleFullscreen).toBeCalledTimes(1);
+        });
+
+        test('should leave other keys, like the arrows for file navigation, to preview', () => {
+            model3d.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(model3d.onKeydown('ArrowRight')).toBe(false);
+            expect(model3d.toggleFullscreen).not.toBeCalled();
+        });
+    });
+
     describe('renderUI()', () => {
         const getProps = instance => instance.controls.render.mock.calls[0][0].props;
 
