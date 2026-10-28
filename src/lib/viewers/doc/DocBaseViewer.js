@@ -779,15 +779,15 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Picks the representation to fall back to when the on-demand 'ocr_pdf' rep fails to load. Prefers the
      * optimized 'pdf' rep when it is ready, otherwise the synthesized original so the file still renders.
-     * Returns undefined when no fallback applies (the current rep is not 'ocr_pdf', or none is available).
+     * Returns null when no fallback applies (the current rep is not 'ocr_pdf', or none is available).
      *
-     * @return {Object|undefined} The fallback representation, or undefined
+     * @return {Object|null} The fallback representation, or null
      */
     getRepFallback() {
         const { file, representation } = this.options;
 
         if (!representation || representation.representation !== 'ocr_pdf') {
-            return undefined;
+            return null;
         }
 
         const pdfRep = getRepresentation(file, 'pdf');
@@ -798,11 +798,11 @@ class DocBaseViewer extends BaseViewer {
         // pdf.js can only render the original bytes directly when the file itself is a PDF. For other
         // document types the original is e.g. a raw .docx, so keep awaiting the on-demand 'pdf' conversion
         // (unless it has already errored) rather than handing an unrenderable original to pdf.js.
-        if (['pdf', 'lcdpdf'].includes(file.extension)) {
-            return getRepresentation(file, ORIGINAL_REP_NAME) || undefined;
+        if (file.extension === 'pdf') {
+            return getRepresentation(file, ORIGINAL_REP_NAME);
         }
 
-        return pdfRep && RepStatus.getStatus(pdfRep) !== STATUS_ERROR ? pdfRep : undefined;
+        return pdfRep && RepStatus.getStatus(pdfRep) !== STATUS_ERROR ? pdfRep : null;
     }
 
     handleFindBarClose() {
