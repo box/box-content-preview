@@ -948,6 +948,13 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             expect(model3d.toggleFullscreen).toBeCalledTimes(1);
         });
 
+        test('should leave Alt+F to the browser', () => {
+            model3d.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(model3d.onKeydown('f', { altKey: true })).toBe(false);
+            expect(model3d.toggleFullscreen).not.toBeCalled();
+        });
+
         test('should leave other keys, like the arrows for file navigation, to preview', () => {
             model3d.options.features = { blueprintMigrationControlsBar: { enabled: true } };
 

@@ -215,6 +215,15 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             expect(textBase.onKeydown('f')).toBe(false);
             expect(textBase.toggleFullscreen).not.toBeCalled();
         });
+
+        test('should leave Alt+F to the browser', () => {
+            textBase.controls = {};
+            textBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(textBase, 'toggleFullscreen').mockImplementation();
+
+            expect(textBase.onKeydown('f', { altKey: true })).toBe(false);
+            expect(textBase.toggleFullscreen).not.toBeCalled();
+        });
     });
 
     describe('bindDOMListeners()', () => {

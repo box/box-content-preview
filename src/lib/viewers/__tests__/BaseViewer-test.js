@@ -588,6 +588,13 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.handleFullscreenKey('r')).toBe(false);
             expect(base.toggleFullscreen).not.toBeCalled();
         });
+
+        test('should leave Alt+F to the browser', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey('f', { altKey: true })).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
     });
 
     describe('handleFullscreenEnter()', () => {

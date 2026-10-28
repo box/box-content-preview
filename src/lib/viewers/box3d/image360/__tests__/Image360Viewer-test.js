@@ -170,6 +170,13 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
             },
         );
 
+        test('should leave Alt+F to the browser', () => {
+            viewer.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(viewer.onKeydown('f', { altKey: true })).toBe(false);
+            expect(viewer.toggleFullscreen).not.toBeCalled();
+        });
+
         test('should leave other keys, like the arrows for file navigation, to preview', () => {
             viewer.options.features = { blueprintMigrationControlsBar: { enabled: true } };
 

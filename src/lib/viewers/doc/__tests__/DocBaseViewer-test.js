@@ -1786,6 +1786,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.toggleFullscreen).toBeCalledTimes(2);
             });
 
+            test('should leave Alt+R and Alt+F to the browser', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                    feature => feature === 'rotate.enabled' || feature === BLUEPRINT_MIGRATION_CONTROLS_BAR,
+                );
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+
+                expect(docBase.onKeydown('r', { altKey: true })).toBe(false);
+                expect(docBase.onKeydown('f', { altKey: true })).toBe(false);
+                expect(stubs.rotateLeft).not.toBeCalled();
+                expect(stubs.toggleFullscreen).not.toBeCalled();
+            });
+
             test('should ignore R and F when the v2 controls bar is off', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
                 stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();

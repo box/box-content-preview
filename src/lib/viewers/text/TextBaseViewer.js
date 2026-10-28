@@ -284,10 +284,11 @@ class TextBaseViewer extends BaseViewer {
      * Handles keyboard events for media
      *
      * @param {string} key - keydown key
+     * @param {KeyboardEvent} [event] - keydown event
      * @return {boolean} consumed or not
      * @protected
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         // Return false when media controls are not ready or are focused
         if (!this.controls) {
             return false;
@@ -302,7 +303,7 @@ class TextBaseViewer extends BaseViewer {
             return true;
         }
 
-        return this.handleFullscreenKey(key);
+        return this.handleFullscreenKey(key, event);
     }
 
     /**

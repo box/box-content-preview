@@ -506,9 +506,10 @@ class ImageBaseViewer extends BaseViewer {
      *
      * @private
      * @param {string} key - Keydown key
+     * @param {KeyboardEvent} [event] - Keydown event
      * @return {boolean} Consumed or not
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         // Return false when media controls are not ready or are focused
         if (!this.controls) {
             return false;
@@ -523,7 +524,7 @@ class ImageBaseViewer extends BaseViewer {
             return true;
         }
 
-        return this.handleFullscreenKey(key);
+        return this.handleFullscreenKey(key, event);
     }
 
     /**
