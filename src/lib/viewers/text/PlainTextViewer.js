@@ -2,6 +2,7 @@ import Browser from '../../Browser';
 import Popup from '../../Popup';
 import TextBaseViewer from './TextBaseViewer';
 import { PrintModalRoot } from '../../PrintModal';
+import { TruncatedTextNoticeV2Root } from './TruncatedTextNoticeV2';
 import {
     BLUEPRINT_MIGRATION_SUPPORTING_UI,
     BROWSERS,
@@ -43,6 +44,11 @@ class PlainTextViewer extends TextBaseViewer {
             if (downloadBtnEl) {
                 downloadBtnEl.removeEventListener('click', this.download.bind(this));
             }
+        }
+
+        if (this.truncatedNotice) {
+            this.truncatedNotice.destroy();
+            this.truncatedNotice = null;
         }
 
         if (this.printPopup) {
@@ -369,6 +375,11 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {void}
      */
     showTruncatedDownloadButton() {
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            this.truncatedNotice = new TruncatedTextNoticeV2Root(this.textEl, () => this.download());
+            return;
+        }
+
         const truncatedEl = document.createElement('div');
         truncatedEl.classList.add('bp-text-truncated');
 
