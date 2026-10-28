@@ -69,9 +69,12 @@ describe('AnnotationsPaletteV2', () => {
         test('should render the modes in a toolbar of its own', () => {
             renderPalette();
 
-            const toolbar = within(screen.getByTestId('bp-AnnotationsPaletteV2')).getByRole('toolbar');
+            const toolbar = within(screen.getByTestId('bp-AnnotationsPaletteV2')).getByRole('toolbar', {
+                name: 'Comment and markup tools',
+            });
 
             expect(toolbar).toContainElement(screen.getByTestId('bp-annotations-controls'));
+            expect(screen.queryByRole('toolbar', { name: 'Preview controls' })).not.toBeInTheDocument();
         });
 
         test('should render the small toolbar size', () => {
