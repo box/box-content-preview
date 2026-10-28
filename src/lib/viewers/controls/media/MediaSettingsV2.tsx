@@ -2,7 +2,7 @@ import React from 'react';
 import noop from 'lodash/noop';
 import { DropdownMenu, Text } from '@box/blueprint-web';
 import { ChevronLeft, ChevronRight } from '@box/blueprint-web-assets/icons/Medium';
-import { bpIconIconOnLightSecondary, Size5 } from '@box/blueprint-web-assets/tokens/tokens';
+import { bpIconIconOnLightSecondary, Size3 } from '@box/blueprint-web-assets/tokens/tokens';
 import { settingsRadioItemAction } from '../settings/SettingsRadioItem';
 import SettingsToggleV2 from '../settings/SettingsToggleV2';
 import { stopEscapePropagation, stopKeyPropagation } from '../settings/stopMenuKeyPropagation';
@@ -213,6 +213,7 @@ export default function MediaSettingsV2({
                 {activeSubMenu ? (
                     <>
                         <DropdownMenu.Item
+                            className="bp-MediaSettingsV2-back"
                             data-resin-target="settingsBack"
                             data-target-id="MediaSettingsV2-back"
                             data-testid="bp-media-settings-back"
@@ -222,7 +223,11 @@ export default function MediaSettingsV2({
                             }}
                         >
                             <DropdownMenu.Item.StartElement icon={ChevronLeft} />
-                            <DropdownMenu.Item.MainContent label={activeSubMenu.label} />
+                            <DropdownMenu.Item.MainContent>
+                                <Text as="span" variant="bodySmallSemibold">
+                                    {activeSubMenu.label}
+                                </Text>
+                            </DropdownMenu.Item.MainContent>
                         </DropdownMenu.Item>
                         <DropdownMenu.Separator />
                         <DropdownMenu.RadioGroup onValueChange={handleValueChange} value={activeSubMenu.value}>
@@ -283,18 +288,20 @@ export default function MediaSettingsV2({
                                 }}
                             >
                                 <DropdownMenu.Item.MainContent label={label} />
-                                <DropdownMenu.Item.EndElement className="bp-MediaSettingsV2-value">
-                                    <Text as="span" color="textOnLightSecondary">
-                                        {valueLabel}
-                                    </Text>
-                                    {!isDisabled && (
-                                        <ChevronRight
-                                            aria-hidden
-                                            color={bpIconIconOnLightSecondary}
-                                            height={Size5}
-                                            width={Size5}
-                                        />
-                                    )}
+                                <DropdownMenu.Item.EndElement>
+                                    <span className="bp-MediaSettingsV2-value">
+                                        <Text as="span" color="textOnLightSecondary" variant="bodySmall">
+                                            {valueLabel}
+                                        </Text>
+                                        {!isDisabled && (
+                                            <ChevronRight
+                                                aria-hidden
+                                                color={bpIconIconOnLightSecondary}
+                                                height={Size3}
+                                                width={Size3}
+                                            />
+                                        )}
+                                    </span>
                                 </DropdownMenu.Item.EndElement>
                             </DropdownMenu.Item>
                         ))}
