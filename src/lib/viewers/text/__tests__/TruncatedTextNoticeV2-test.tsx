@@ -29,6 +29,20 @@ describe('TruncatedTextNoticeV2Root', () => {
         expect(screen.getByRole('img', { name: __('notice_info') })).toBeInTheDocument();
     });
 
+    test('should commit the notice before the constructor returns so a print snapshot includes it', () => {
+        const reactGlobal = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };
+        const isActEnvironment = reactGlobal.IS_REACT_ACT_ENVIRONMENT;
+        reactGlobal.IS_REACT_ACT_ENVIRONMENT = false;
+        const syncNotice = new TruncatedTextNoticeV2Root(document.createElement('div'), jest.fn());
+
+        try {
+            expect(syncNotice.hostEl).toHaveTextContent(__('text_truncated'));
+        } finally {
+            syncNotice.destroy();
+            reactGlobal.IS_REACT_ACT_ENVIRONMENT = isActEnvironment;
+        }
+    });
+
     test('should call the download handler when the download button is clicked', async () => {
         await userEvent.click(screen.getByRole('button', { name: __('download_file') }));
 

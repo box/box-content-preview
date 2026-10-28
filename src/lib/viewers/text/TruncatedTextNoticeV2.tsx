@@ -1,4 +1,5 @@
 import React from 'react';
+import { flushSync } from 'react-dom';
 import { createRoot, Root } from 'react-dom/client';
 import { Button, InlineNotice } from '@box/blueprint-web';
 import BlueprintProviders from '../../BlueprintProviders';
@@ -35,11 +36,13 @@ export class TruncatedTextNoticeV2Root {
         this.hostEl.className = 'bp-TruncatedTextNoticeV2';
         containerEl.appendChild(this.hostEl);
         this.root = createRoot(this.hostEl);
-        this.root.render(
-            <BlueprintProviders>
-                <TruncatedTextNoticeV2 onDownload={onDownload} />
-            </BlueprintProviders>,
-        );
+        flushSync(() => {
+            this.root.render(
+                <BlueprintProviders>
+                    <TruncatedTextNoticeV2 onDownload={onDownload} />
+                </BlueprintProviders>,
+            );
+        });
     }
 
     destroy(): void {
