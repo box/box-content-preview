@@ -637,7 +637,7 @@ class Preview extends EventEmitter {
         const downloadErrorDueToPolicyMsg = __('notification_cannot_download_due_to_policy');
 
         if (!canDownload(this.file, this.options)) {
-            this.ui.showNotification(downloadErrorMsg);
+            this.ui.showNotification(downloadErrorMsg, null, false, 'error');
             return;
         }
 
@@ -649,7 +649,7 @@ class Preview extends EventEmitter {
         if (shouldDownloadWM(this.file, this.options)) {
             const contentUrlTemplate = getProp(this.viewer.getRepresentation(), 'content.url_template');
             if (!contentUrlTemplate) {
-                this.ui.showNotification(downloadErrorMsg);
+                this.ui.showNotification(downloadErrorMsg, null, false, 'error');
                 return;
             }
 
@@ -677,7 +677,7 @@ class Preview extends EventEmitter {
                     const code = getProp(error, 'response.data.code');
                     const msg =
                         code === ERROR_CODE_403_FORBIDDEN_BY_POLICY ? downloadErrorDueToPolicyMsg : downloadErrorMsg;
-                    this.ui.showNotification(msg);
+                    this.ui.showNotification(msg, null, false, 'error');
                 });
 
             // Otherwise, get the content download URL of the original file and download
@@ -693,7 +693,7 @@ class Preview extends EventEmitter {
                     const code = getProp(error, 'response.data.code');
                     const msg =
                         code === ERROR_CODE_403_FORBIDDEN_BY_POLICY ? downloadErrorDueToPolicyMsg : downloadErrorMsg;
-                    this.ui.showNotification(msg);
+                    this.ui.showNotification(msg, null, false, 'error');
                 });
         }
 
@@ -1028,7 +1028,7 @@ class Preview extends EventEmitter {
         );
 
         // Set up the notification
-        this.ui.setupNotification();
+        this.ui.setupNotification(this.options.features);
 
         this.updateComparisonBanner();
 
