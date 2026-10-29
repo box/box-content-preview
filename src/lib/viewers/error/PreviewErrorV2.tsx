@@ -1,5 +1,5 @@
 import React from 'react';
-import { EmptyState, Link, Text } from '@box/blueprint-web';
+import { Button, EmptyState, Link, Text } from '@box/blueprint-web';
 import { getFileCategoryByExtension, itemIconTable } from '@box/item-icon';
 
 export type Props = {
@@ -15,27 +15,26 @@ export default function PreviewErrorV2({ extension, linkText, linkUrl, message, 
     const illustration = itemIconTable[fileCategory] || itemIconTable.default;
     const hasLink = !!linkText && !!linkUrl;
 
+    // EmptyState.PrimaryAction forces the secondary variant, so the actions use Button directly
     return (
         <EmptyState
-            body={
-                <Text as="p" className="bp-PreviewErrorV2-message">
-                    {message}
-                </Text>
-            }
+            body={<Text as="p">{message}</Text>}
+            className="bp-PreviewErrorV2-emptyState"
             illustration={illustration}
         >
             {hasLink && (
-                <EmptyState.PrimaryAction
+                <Button
                     clickOnSpace={false}
                     render={<Link href={linkUrl} rel="noopener noreferrer" target="_blank" unstyled />}
+                    variant="primary"
                 >
                     {linkText}
-                </EmptyState.PrimaryAction>
+                </Button>
             )}
             {!hasLink && onDownload && (
-                <EmptyState.PrimaryAction data-testid="preview-error-download-btn" onClick={onDownload}>
+                <Button data-testid="preview-error-download-btn" onClick={onDownload} variant="primary">
                     {__('download')}
-                </EmptyState.PrimaryAction>
+                </Button>
             )}
         </EmptyState>
     );
