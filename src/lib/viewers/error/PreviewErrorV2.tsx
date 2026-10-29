@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, EmptyState, Link, Text } from '@box/blueprint-web';
+import { EmptyState, Link, Text } from '@box/blueprint-web';
 import { getFileCategoryByExtension, itemIconTable } from '@box/item-icon';
 
 export type Props = {
@@ -15,7 +15,6 @@ export default function PreviewErrorV2({ extension, linkText, linkUrl, message, 
     const illustration = itemIconTable[fileCategory] || itemIconTable.default;
     const hasLink = !!linkText && !!linkUrl;
 
-    // EmptyState.PrimaryAction forces the secondary variant, so the actions use Button directly
     return (
         <EmptyState
             body={<Text as="p">{message}</Text>}
@@ -23,18 +22,17 @@ export default function PreviewErrorV2({ extension, linkText, linkUrl, message, 
             illustration={illustration}
         >
             {hasLink && (
-                <Button
+                <EmptyState.PrimaryAction
                     clickOnSpace={false}
                     render={<Link href={linkUrl} rel="noopener noreferrer" target="_blank" unstyled />}
-                    variant="primary"
                 >
                     {linkText}
-                </Button>
+                </EmptyState.PrimaryAction>
             )}
             {!hasLink && onDownload && (
-                <Button data-testid="preview-error-download-btn" onClick={onDownload} variant="primary">
+                <EmptyState.PrimaryAction data-testid="preview-error-download-btn" onClick={onDownload}>
                     {__('download')}
-                </Button>
+                </EmptyState.PrimaryAction>
             )}
         </EmptyState>
     );
