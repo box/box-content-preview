@@ -12,9 +12,11 @@
     width: var(--bp-size-140);
 }
 
-// Fills the button's box, with less padding than Blueprint's default so the page number fits
+// Fills the button's box, with less padding than Blueprint's default so the page number fits. Toolbar.Input
+// always renders its hidden error icon and reserves end padding for it, which this input never shows.
 .bp-PageControlsFormV2 .bp-PageControlsFormV2-input > * {
     --toolbar-input-height: 100%;
+    --toolbar-input-icon-end-pad: var(--bp-space-010);
     --toolbar-input-padding-block: 0;
     --toolbar-input-padding-inline: var(--bp-space-010);
 }
