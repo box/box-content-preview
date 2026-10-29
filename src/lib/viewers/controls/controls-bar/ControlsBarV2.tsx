@@ -4,13 +4,14 @@ import { stopToolbarKeyPropagation } from '../media/utils';
 import './ControlsBarV2.scss';
 
 export type Props = {
+    'aria-label'?: string;
     children?: React.ReactNode;
     // The Context Toolbar sizes from the mocks: large for the main bars, small for the annotations palette
     size?: 'large' | 'small';
 };
 
 function ControlsBarV2(
-    { children, size = 'large', ...rest }: Props,
+    { 'aria-label': ariaLabel = __('controls_toolbar'), children, size = 'large', ...rest }: Props,
     ref: React.Ref<HTMLDivElement>,
 ): JSX.Element | null {
     if (!children) {
@@ -20,6 +21,7 @@ function ControlsBarV2(
     return (
         <Toolbar.Root
             ref={ref}
+            aria-label={ariaLabel}
             className={`bp-ControlsBarV2 bp-ControlsBarV2--${size}`}
             colorScheme="dark"
             data-testid="bp-ControlsBar"
