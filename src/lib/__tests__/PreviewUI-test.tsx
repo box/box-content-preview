@@ -4,9 +4,11 @@ import * as constants from '../constants';
 import LoadingIcon from '../LoadingIcon';
 import PreviewUI from '../PreviewUI';
 import { CollectionNavigationRoot } from '../CollectionNavigation';
+import { LoadingIconV2Root } from '../LoadingIconV2';
 import { NotificationsV2Root } from '../NotificationsV2';
 
 jest.mock('../LoadingIcon');
+jest.mock('../LoadingIconV2');
 
 describe('lib/PreviewUI', () => {
     const supportingUiFeatures = { blueprintMigrationSupportingUi: { enabled: true } };
@@ -314,6 +316,34 @@ describe('lib/PreviewUI', () => {
                 containerEl: resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON),
             });
             expect(jest.mocked(LoadingIcon).mock.instances[0].render).toBeCalledWith('pdf');
+            expect(LoadingIconV2Root).not.toHaveBeenCalled();
+        });
+
+        test('should render the V2 loading icon when the supporting UI flag is on', () => {
+            const resultEl = setup({ features: supportingUiFeatures });
+
+            ui.showLoadingIcon('pdf');
+
+            expect(LoadingIconV2Root).toHaveBeenCalledWith({
+                containerEl: resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON),
+            });
+            expect(jest.mocked(LoadingIconV2Root).mock.instances[0].render).toHaveBeenCalledWith('pdf');
+            expect(LoadingIcon).not.toHaveBeenCalled();
+        });
+
+        test('should switch to the V2 loading icon when setup runs again with the supporting UI flag on', () => {
+            setup();
+            ui.showLoadingIcon('pdf');
+
+            const resultEl = setup({ features: supportingUiFeatures });
+            ui.showLoadingIcon('mp4');
+
+            expect(jest.mocked(LoadingIcon).mock.instances[0].destroy).toHaveBeenCalled();
+            expect(LoadingIconV2Root).toHaveBeenCalledTimes(1);
+            expect(LoadingIconV2Root).toHaveBeenCalledWith({
+                containerEl: resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON),
+            });
+            expect(jest.mocked(LoadingIconV2Root).mock.instances[0].render).toHaveBeenCalledWith('mp4');
         });
     });
 
