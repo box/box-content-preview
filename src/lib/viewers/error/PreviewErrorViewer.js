@@ -36,6 +36,7 @@ class PreviewErrorViewer extends BaseViewer {
         if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
             this.infoEl = this.createViewer(document.createElement('div'));
             this.infoEl.className = 'bp-PreviewErrorV2';
+            this.infoEl.setAttribute('data-resin-feature', 'previewError');
             this.errorRoot = createRoot(this.infoEl);
             return;
         }

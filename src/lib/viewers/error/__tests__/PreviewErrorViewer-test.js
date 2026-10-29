@@ -187,6 +187,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             act(() => error.load(new PreviewError('some_code', 'error!')));
 
             expect(error.infoEl).toHaveClass('bp-PreviewErrorV2');
+            expect(error.infoEl).toHaveAttribute('data-resin-feature', 'previewError');
             expect(error.iconEl).toBeUndefined();
             expect(error.messageEl).toBeUndefined();
             expect(within(error.infoEl).getByText('error!')).toBeInTheDocument();

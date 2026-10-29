@@ -24,13 +24,18 @@ export default function PreviewErrorV2({ extension, linkText, linkUrl, message, 
             {hasLink && (
                 <EmptyState.PrimaryAction
                     clickOnSpace={false}
+                    data-resin-target="errorLink"
                     render={<Link href={linkUrl} rel="noopener noreferrer" target="_blank" unstyled />}
                 >
                     {linkText}
                 </EmptyState.PrimaryAction>
             )}
             {!hasLink && onDownload && (
-                <EmptyState.PrimaryAction data-testid="preview-error-download-btn" onClick={onDownload}>
+                <EmptyState.PrimaryAction
+                    data-resin-target="download"
+                    data-testid="preview-error-download-btn"
+                    onClick={onDownload}
+                >
                     {__('download')}
                 </EmptyState.PrimaryAction>
             )}

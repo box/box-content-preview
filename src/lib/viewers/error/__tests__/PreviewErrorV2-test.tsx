@@ -47,6 +47,7 @@ describe('lib/viewers/error/PreviewErrorV2', () => {
         await user.click(screen.getByRole('button', { name: 'Download' }));
 
         expect(onDownload).toHaveBeenCalledTimes(1);
+        expect(screen.getByRole('button', { name: 'Download' })).toHaveAttribute('data-resin-target', 'download');
     });
 
     test('should render the link as a button styled anchor that opens in a new tab', () => {
@@ -56,6 +57,7 @@ describe('lib/viewers/error/PreviewErrorV2', () => {
         expect(link).toHaveAttribute('href', 'https://example.com/notes');
         expect(link).toHaveAttribute('target', '_blank');
         expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+        expect(link).toHaveAttribute('data-resin-target', 'errorLink');
     });
 
     test('should prefer the link over the download button when both are provided', () => {
