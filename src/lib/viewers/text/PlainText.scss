@@ -43,6 +43,15 @@
     }
 }
 
+.bp .bp-TruncatedTextNoticeV2 {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bp-space-030);
+    align-items: center;
+    padding: var(--bp-space-030) 0 75px; // Bottom padding keeps the controls bar off the button
+    white-space: normal;
+}
+
 @media print {
     .bp-text-plain {
         position: static;
@@ -52,7 +61,8 @@
         word-wrap: break-word;
     }
 
-    .bp-text-truncated .bp-btn-download {
+    .bp-text-truncated .bp-btn-download,
+    .bp-TruncatedTextNoticeV2-download {
         display: none;
     }
 }
