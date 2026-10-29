@@ -52,6 +52,9 @@ $seventy-sixers: #767676 !default;
 $approx-mischka-grey: #a3adb9 !default;
 $d-eight: #d8d8d8 !default;
 
+// Height of .bp-version-banner; viewers pad their content by this so the banner doesn't cover it
+$comparison-banner-height: var(--bp-size-180) !default;
+
 // Breakpoints
 // Mirrors Blueprint's breakpoint-medium token, since custom properties can't be read in @media conditions.
 $bp-breakpoint-medium: 767px !default;
