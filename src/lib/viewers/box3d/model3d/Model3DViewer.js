@@ -501,6 +501,17 @@ class Model3DViewer extends Box3DViewer {
         }
     }
 
+    /**
+     * Handles keyboard events
+     *
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    onKeydown(key) {
+        // Without React controls the legacy Model3DControls bar renders, which has no fullscreen shortcut
+        return this.getViewerOption('useReactControls') ? this.handleFullscreenKey(key) : false;
+    }
+
     renderUI() {
         if (!this.controls || !this.renderer) {
             return;

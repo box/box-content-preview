@@ -570,10 +570,11 @@ class BaseViewer extends EventEmitter {
         const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
         const downloadHostToNotify = this.api.reachability.constructor.getDownloadNotificationToShow(contentTemplate);
         if (downloadHostToNotify) {
-            this.previewUI.notification.show(
+            this.previewUI.showNotification(
                 replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
                 null,
                 true,
+                'warning',
             );
 
             this.api.reachability.constructor.setDownloadHostNotificationShown(downloadHostToNotify);
@@ -1089,7 +1090,7 @@ class BaseViewer extends EventEmitter {
 
         if (!global.BoxAnnotations) {
             const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS, __('annotations_load_error'), { silent: true });
-            this.previewUI.notification.show(error.displayMessage);
+            this.previewUI.showNotification(error.displayMessage, null, false, 'error');
             this.triggerError(error);
             return;
         }
@@ -1398,22 +1399,22 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.previewUI.notification.show(__('notification_annotation_point_mode'));
+                    this.previewUI.showNotification(__('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.previewUI.notification.show(__('notification_annotation_draw_mode'));
+                    this.previewUI.showNotification(__('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.previewUI.notification.hide();
+                this.previewUI.hideNotification();
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.previewUI.notification.show(data.data);
+                this.previewUI.showNotification(data.data, null, false, 'error');
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {

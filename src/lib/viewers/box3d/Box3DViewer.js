@@ -3,6 +3,8 @@ import Box3DControls from './Box3DControls';
 import Box3DRenderer from './Box3DRenderer';
 import Browser from '../../Browser';
 import Notification from '../../Notification';
+import { NotificationsV2Root } from '../../NotificationsV2';
+import { BLUEPRINT_MIGRATION_SUPPORTING_UI } from '../../constants';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -34,7 +36,7 @@ class Box3DViewer extends BaseViewer {
     /** @property {HTMLElement} - Parent element for nesting the 3D scene and notifications in */
     wrapperEl;
 
-    /** @property {Notification} - Used to notify users of WebGL context issues */
+    /** @property {Notification|NotificationsV2Root} - Used to notify users of WebGL context issues */
     contextNotification;
 
     /** @property {boolean} - Used to show the VR button in the controls */
@@ -74,7 +76,9 @@ class Box3DViewer extends BaseViewer {
 
         this.wrapperEl = this.createViewer(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
-        this.contextNotification = new Notification(this.wrapperEl);
+        this.contextNotification = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)
+            ? new NotificationsV2Root(this.wrapperEl)
+            : new Notification(this.wrapperEl);
 
         this.loadTimeout = LOAD_TIMEOUT;
     }
@@ -162,6 +166,11 @@ class Box3DViewer extends BaseViewer {
         this.detachEventHandlers();
         this.destroySubModules();
 
+        if (this.contextNotification instanceof NotificationsV2Root) {
+            this.contextNotification.destroy();
+            this.contextNotification = null;
+        }
+
         this.destroyed = true;
     }
 
@@ -239,7 +248,7 @@ class Box3DViewer extends BaseViewer {
      * @return {void}
      */
     handleContextLost() {
-        this.contextNotification.show('WebGL Context Lost');
+        this.contextNotification.show(__('notification_webgl_context_lost'), null, false, 'warning');
         this.destroySubModules();
     }
 
@@ -250,7 +259,7 @@ class Box3DViewer extends BaseViewer {
      */
     handleContextRestored() {
         this.detachEventHandlers();
-        this.contextNotification.show('WebGL Context Restored');
+        this.contextNotification.show(__('notification_webgl_context_restored'), null, false, 'success');
         this.previewUI.showLoadingIndicator();
         this.postLoad();
     }

@@ -45,7 +45,8 @@ export const PLAIN_TEXT_PRINT_STYLES = `
         word-wrap: break-word;
     }
 
-    .bp-text-truncated .bp-btn-download {
+    .bp-text-truncated .bp-btn-download,
+    .bp-TruncatedTextNoticeV2-download {
         display: none;
     }
 }

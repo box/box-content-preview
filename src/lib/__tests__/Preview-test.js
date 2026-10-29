@@ -1269,6 +1269,9 @@ describe('lib/Preview', () => {
                 .then(() => {
                     expect(preview.ui.showNotification).toHaveBeenCalledWith(
                         __('notification_cannot_download_due_to_policy'),
+                        null,
+                        false,
+                        'error',
                     );
                     expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
                 });
@@ -1311,7 +1314,7 @@ describe('lib/Preview', () => {
                     setTimeout(resolve);
                 });
 
-                expect(preview.ui.showNotification).toHaveBeenCalledWith(__(message));
+                expect(preview.ui.showNotification).toHaveBeenCalledWith(__(message), null, false, 'error');
                 expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
             },
         );

@@ -1,10 +1,27 @@
 // Keeps the menu from resizing as it switches between the main list and a submenu.
 .bp-MediaSettingsV2 {
     min-width: 240px;
+
+    // Blueprint sizes the checked indicator at 20px with no prop to change it.
+    [role='menuitemcheckbox'] svg,
+    [role='menuitemradio'] svg {
+        width: var(--bp-size-040);
+        height: var(--bp-size-040);
+    }
+
+    // Radix highlights an item on pointer hover, so the highlight state is cleared too; the keyboard focus border stays.
+    .bp-MediaSettingsV2-back {
+        &:hover,
+        &:active,
+        &[data-highlighted] {
+            background-color: transparent;
+        }
+    }
 }
 
+// Blueprint's end element drops its className, so the gap lives on an inner wrapper.
 .bp-MediaSettingsV2-value {
     display: flex;
-    gap: 4px;
+    gap: var(--bp-space-020);
     align-items: center;
 }

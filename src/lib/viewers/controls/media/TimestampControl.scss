@@ -57,6 +57,12 @@
     fill: rgb(255 255 255 / 80%);
 }
 
+// Blueprint sizes the checked indicator at 20px with no prop to change it.
+.bp-TimestampControl-menu [role='menuitemradio'] svg {
+    width: var(--bp-size-040);
+    height: var(--bp-size-040);
+}
+
 .bp-TimestampControl-flyout {
     position: absolute;
     z-index: 1;

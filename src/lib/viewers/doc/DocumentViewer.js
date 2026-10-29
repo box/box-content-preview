@@ -68,7 +68,7 @@ class DocumentViewer extends DocBaseViewer {
         const isOfficeOnlineExtension = OFFICE_ONLINE_EXTENSIONS.includes(extension);
 
         if (isOfficeOnlineExtension && Browser.isIE()) {
-            this.options.ui.showNotification(__('error_internet_explorer_office_online'), null, true);
+            this.options.ui.showNotification(__('error_internet_explorer_office_online'), null, true, 'warning');
         }
     }
 

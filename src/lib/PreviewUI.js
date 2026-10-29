@@ -2,6 +2,7 @@ import LoadingIcon from './LoadingIcon';
 import Notification from './Notification';
 import shellTemplate from './shell.html';
 import { CollectionNavigationRoot } from './CollectionNavigation';
+import { NotificationsV2Root } from './NotificationsV2';
 import { isFeatureEnabled } from './featureChecking';
 import {
     BLUEPRINT_MIGRATION_SUPPORTING_UI,
@@ -73,6 +74,11 @@ class PreviewUI {
         if (this.collectionNavigation) {
             this.collectionNavigation.destroy();
             this.collectionNavigation = null;
+        }
+
+        if (this.notification instanceof NotificationsV2Root) {
+            this.notification.destroy();
+            this.notification = null;
         }
 
         if (this.container) {
@@ -285,10 +291,17 @@ class PreviewUI {
      * Setup notification
      *
      * @public
+     * @param {Object} [features] - Preview feature flags
      * @return {void}
      */
-    setupNotification() {
-        this.notification = new Notification(this.contentContainer);
+    setupNotification(features) {
+        if (this.notification instanceof NotificationsV2Root) {
+            this.notification.destroy();
+        }
+
+        this.notification = isFeatureEnabled(features, BLUEPRINT_MIGRATION_SUPPORTING_UI)
+            ? new NotificationsV2Root(this.contentContainer)
+            : new Notification(this.contentContainer);
     }
 
     /**
@@ -296,16 +309,17 @@ class PreviewUI {
      *
      * @public
      * @param {string} message - Notification message
-     * @param {string} [buttonText] - Optional text to show in button
+     * @param {string|null} [buttonText] - Optional text to show in button
      * @param {boolean} [persist] - Optional boolean to persist the notification
+     * @param {string} [variant] - Blueprint notification variant: error, info, success, or warning
      * @return {void}
      */
-    showNotification(message, buttonText, persist) {
+    showNotification(message, buttonText, persist, variant) {
         if (!this.notification) {
             return;
         }
 
-        this.notification.show(message, buttonText, persist);
+        this.notification.show(message, buttonText, persist, variant);
     }
 
     /**

@@ -197,6 +197,24 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textBase.controls = {};
             expect(textBase.onKeydown('blah')).toBe(false);
         });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s with the Blueprint controls bar', key => {
+            textBase.controls = {};
+            textBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(textBase, 'toggleFullscreen').mockImplementation();
+
+            expect(textBase.onKeydown(key)).toBe(true);
+            expect(textBase.toggleFullscreen).toBeCalledWith();
+        });
+
+        test('should not toggle fullscreen on f with the older controls bar', () => {
+            textBase.controls = {};
+            textBase.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+            jest.spyOn(textBase, 'toggleFullscreen').mockImplementation();
+
+            expect(textBase.onKeydown('f')).toBe(false);
+            expect(textBase.toggleFullscreen).not.toBeCalled();
+        });
     });
 
     describe('bindDOMListeners()', () => {

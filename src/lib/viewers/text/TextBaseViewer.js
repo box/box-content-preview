@@ -302,7 +302,7 @@ class TextBaseViewer extends BaseViewer {
             return true;
         }
 
-        return false;
+        return this.handleFullscreenKey(key);
     }
 
     /**
