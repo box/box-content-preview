@@ -1,4 +1,4 @@
-import { act } from '@testing-library/react';
+import { act, within } from '@testing-library/react';
 import * as file from '../../../file';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
@@ -64,26 +64,10 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
                 act(() => error.load(new PreviewError('some_code')));
 
-                expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: iconExtension, isBlueprintEnabled: false });
+                expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: iconExtension });
                 expect(error.iconEl).toHaveTextContent('error icon');
             },
         );
-
-        test('should pass isBlueprintEnabled true to ErrorIcon when the supporting UI flag is on', () => {
-            error.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
-
-            act(() => error.load(new PreviewError('some_code')));
-
-            expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: undefined, isBlueprintEnabled: true });
-        });
-
-        test('should pass isBlueprintEnabled false to ErrorIcon when only another Blueprint wave is on', () => {
-            error.options.features = { blueprintMigrationArchive: { enabled: true } };
-
-            act(() => error.load(new PreviewError('some_code')));
-
-            expect(ErrorIcon.mock.lastCall[0]).toEqual({ extension: undefined, isBlueprintEnabled: false });
-        });
 
         test('should render into the same icon element when load is called twice', () => {
             const { iconRoot } = error;
@@ -180,6 +164,96 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 error: 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"',
             });
         });
+    });
+
+    describe('with the supporting UI flag on', () => {
+        const setupBlueprint = (options = {}) => {
+            act(() => error.destroy());
+            error = new PreviewErrorViewer({
+                file: { id: '1' },
+                container: containerEl,
+                features: { blueprintMigrationSupportingUi: { enabled: true } },
+                ...options,
+            });
+            error.containerEl = containerEl;
+            error.setup();
+        };
+
+        beforeEach(() => {
+            setupBlueprint();
+        });
+
+        test('should render the Blueprint error screen instead of the legacy elements', () => {
+            act(() => error.load(new PreviewError('some_code', 'error!')));
+
+            expect(error.infoEl).toHaveClass('bp-PreviewErrorV2');
+            expect(error.iconEl).toBeUndefined();
+            expect(error.messageEl).toBeUndefined();
+            expect(within(error.infoEl).getByText('error!')).toBeInTheDocument();
+            expect(ErrorIcon).not.toHaveBeenCalled();
+        });
+
+        test('should render a link button when the error has linkText and linkUrl', () => {
+            jest.spyOn(file, 'canDownload').mockReturnValue(true);
+            const err = new PreviewError('some_code', 'error!', { linkText: 'Open', linkUrl: 'https://example.com' });
+
+            act(() => error.load(err));
+
+            const link = within(error.infoEl).getByRole('link', { name: 'Open' });
+            expect(link).toHaveAttribute('href', 'https://example.com');
+            expect(link).toHaveAttribute('target', '_blank');
+            expect(within(error.infoEl).queryByRole('button', { name: 'Download' })).not.toBeInTheDocument();
+        });
+
+        test('should render a download button that emits download when the file can be downloaded', () => {
+            jest.spyOn(file, 'canDownload').mockReturnValue(true);
+            jest.spyOn(error, 'emit');
+
+            act(() => error.load(new PreviewError('some_code', 'error!')));
+            act(() => within(error.infoEl).getByRole('button', { name: 'Download' }).click());
+
+            expect(error.emit).toBeCalledWith(VIEWER_EVENT.download);
+        });
+
+        test('should not render a download button when the file cannot be downloaded', () => {
+            jest.spyOn(file, 'canDownload').mockReturnValue(false);
+
+            act(() => error.load(new PreviewError('some_code', 'error!')));
+
+            expect(within(error.infoEl).queryByRole('button')).not.toBeInTheDocument();
+        });
+
+        test('should broadcast the log message', () => {
+            jest.spyOn(error, 'emit');
+
+            act(() => error.load(new PreviewError('some_code', 'reason', {}, 'this is bad')));
+
+            expect(error.emit).toBeCalledWith(VIEWER_EVENT.load, { error: 'this is bad' });
+        });
+
+        test('should unmount the error screen on destroy', () => {
+            act(() => error.load(new PreviewError('some_code', 'error!')));
+
+            act(() => error.destroy());
+
+            expect(error.infoEl).toBeEmptyDOMElement();
+        });
+    });
+
+    test('should keep the legacy error screen when only another Blueprint wave is on', () => {
+        act(() => error.destroy());
+        error = new PreviewErrorViewer({
+            file: { id: '1' },
+            container: containerEl,
+            features: { blueprintMigrationArchive: { enabled: true } },
+        });
+        error.containerEl = containerEl;
+        error.setup();
+
+        act(() => error.load(new PreviewError('some_code', 'error!')));
+
+        expect(error.infoEl).toHaveClass('bp-error');
+        expect(ErrorIcon).toHaveBeenCalled();
     });
 
     describe('addLinkButton()', () => {

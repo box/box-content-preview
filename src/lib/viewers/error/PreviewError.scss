@@ -26,3 +26,15 @@
         }
     }
 }
+
+.bp-PreviewErrorV2 {
+    width: 100%;
+    padding: 0 var(--bp-space-050);
+}
+
+.bp-theme-dark,
+.bp-dark {
+    .bp-PreviewErrorV2 .bp-PreviewErrorV2-message {
+        color: var(--bp-text-text-on-dark);
+    }
+}

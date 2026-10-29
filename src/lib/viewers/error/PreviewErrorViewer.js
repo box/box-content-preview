@@ -1,8 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import BaseViewer from '../BaseViewer';
+import BlueprintProviders from '../../BlueprintProviders';
 import ErrorIcon from './ErrorIcon';
 import PreviewError from '../../PreviewError';
+import PreviewErrorV2 from './PreviewErrorV2';
 import { BLUEPRINT_MIGRATION_SUPPORTING_UI } from '../../constants';
 import { canDownload } from '../../file';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
@@ -30,6 +32,13 @@ class PreviewErrorViewer extends BaseViewer {
 
         // Call super() first to set up common layout
         super.setup();
+
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            this.infoEl = this.createViewer(document.createElement('div'));
+            this.infoEl.className = 'bp-PreviewErrorV2';
+            this.errorRoot = createRoot(this.infoEl);
+            return;
+        }
 
         this.infoEl = this.createViewer(document.createElement('div'));
         this.infoEl.className = 'bp-error';
@@ -66,6 +75,10 @@ class PreviewErrorViewer extends BaseViewer {
             this.iconRoot.unmount();
         }
 
+        if (this.errorRoot) {
+            this.errorRoot.unmount();
+        }
+
         super.destroy();
     }
 
@@ -85,23 +98,33 @@ class PreviewErrorViewer extends BaseViewer {
         const { displayMessage, details, message } = error;
         const { file } = this.options;
         const { extension: iconExtension } = file || {};
+        const hasLink = !!(details && details.linkText && details.linkUrl);
 
-        // Display the default or file-specific error icon
-        this.iconRoot.render(
-            <ErrorIcon
-                extension={iconExtension}
-                isBlueprintEnabled={this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)}
-            />,
-        );
+        if (this.errorRoot) {
+            this.errorRoot.render(
+                <BlueprintProviders>
+                    <PreviewErrorV2
+                        extension={iconExtension}
+                        linkText={hasLink ? details.linkText : undefined}
+                        linkUrl={hasLink ? details.linkUrl : undefined}
+                        message={displayMessage}
+                        onDownload={!hasLink && canDownload(file, this.options) ? this.download : undefined}
+                    />
+                </BlueprintProviders>,
+            );
+        } else {
+            // Display the default or file-specific error icon
+            this.iconRoot.render(<ErrorIcon extension={iconExtension} />);
 
-        // Display user-friendly error message
-        this.messageEl.textContent = displayMessage;
+            // Display user-friendly error message
+            this.messageEl.textContent = displayMessage;
 
-        // Add optional link or download button
-        if (details && details.linkText && details.linkUrl) {
-            this.addLinkButton(details.linkText, details.linkUrl);
-        } else if (canDownload(file, this.options)) {
-            this.addDownloadButton();
+            // Add optional link or download button
+            if (hasLink) {
+                this.addLinkButton(details.linkText, details.linkUrl);
+            } else if (canDownload(file, this.options)) {
+                this.addDownloadButton();
+            }
         }
 
         this.loaded = true;
