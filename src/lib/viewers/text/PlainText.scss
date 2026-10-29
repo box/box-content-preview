@@ -18,7 +18,7 @@
     }
 
     .bp-container:has(.bp-version-banner) & {
-        padding-top: var(--bp-comparison-banner-height, 4.5rem);
+        padding-top: $comparison-banner-height;
     }
 
     /* Override Box UI */
