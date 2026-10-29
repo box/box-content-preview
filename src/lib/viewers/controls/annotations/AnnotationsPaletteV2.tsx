@@ -62,12 +62,12 @@ function Mode({ value }: ModeProps): JSX.Element {
             testId: 'bp-AnnotationsControls-drawBtn',
         },
         [AnnotationMode.HIGHLIGHT]: {
-            label: __('highlight_text'),
+            label: __('annotation_highlight_text'),
             resinTarget: 'highlightText',
             testId: 'bp-AnnotationsControls-highlightBtn',
         },
         [AnnotationMode.REGION]: {
-            label: __('region_comment'),
+            label: __('annotation_region_comment'),
             resinTarget: 'highlightRegion',
             testId: 'bp-AnnotationsControls-regionBtn',
         },

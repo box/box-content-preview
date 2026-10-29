@@ -88,11 +88,11 @@ describe('AnnotationsPaletteV2', () => {
         test('should render the mode buttons with their tracking targets', () => {
             renderPalette();
 
-            expect(screen.getByRole('radio', { name: __('region_comment') })).toHaveAttribute(
+            expect(screen.getByRole('radio', { name: 'Comment on region' })).toHaveAttribute(
                 'data-resin-target',
                 'highlightRegion',
             );
-            expect(screen.getByRole('radio', { name: __('highlight_text') })).toHaveAttribute(
+            expect(screen.getByRole('radio', { name: 'Highlight and comment' })).toHaveAttribute(
                 'data-resin-target',
                 'highlightText',
             );

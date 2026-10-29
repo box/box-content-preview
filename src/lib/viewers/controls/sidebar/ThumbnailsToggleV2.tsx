@@ -11,6 +11,8 @@ export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggl
         return null;
     }
 
+    const label = isThumbnailsOpen ? __('thumbnails_toggle_hide') : __('thumbnails_toggle_show');
+
     return (
         <div className="bp-ThumbnailsToggleV2">
             <Toolbar.ToggleGroup
@@ -18,10 +20,10 @@ export default function ThumbnailsToggleV2({ isThumbnailsOpen, onThumbnailsToggl
                 type="multiple"
                 value={isThumbnailsOpen ? ['thumbnails'] : []}
             >
-                <ToggleTooltipV2 content={__('toggle_thumbnails')}>
+                <ToggleTooltipV2 content={label}>
                     <Toolbar.ToggleItem
                         aria-expanded={isThumbnailsOpen}
-                        aria-label={__('toggle_thumbnails')}
+                        aria-label={label}
                         data-resin-target="thumbnails"
                         icon={isThumbnailsOpen ? NavFilled : Nav}
                         value="thumbnails"
