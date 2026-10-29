@@ -1,3 +1,8 @@
+## 3.128.0 (2026-10-29)
+
+* feat(controls): toggle fullscreen on F in text, markdown, CSV and 3D viewers (#1900) ([c7824f1](https://github.com/box/box-content-preview/commit/c7824f1)), closes [#1900](https://github.com/box/box-content-preview/issues/1900)
+* feat(text): render the truncated-file notice with Blueprint (#1903) ([6fab8e3](https://github.com/box/box-content-preview/commit/6fab8e3)), closes [#1903](https://github.com/box/box-content-preview/issues/1903)
+
 ## 3.127.0 (2026-10-28)
 
 * fix(controls): match Blueprint sizing in media settings and time format menus (#1904) ([b5fd09d](https://github.com/box/box-content-preview/commit/b5fd09d)), closes [#1904](https://github.com/box/box-content-preview/issues/1904)
