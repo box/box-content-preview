@@ -2,9 +2,14 @@ import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 
 import { bpBoxBlue100 } from '@box/blueprint-web-assets/tokens/tokens';
-import { FILE_CATEGORY_COLORS } from '@box/item-icon';
+import { FILE_CATEGORY_COLORS, ItemIcon } from '@box/item-icon';
 
 import { LoadingIconV2, LoadingIconV2Root } from '../LoadingIconV2';
+
+jest.mock('@box/item-icon', () => {
+    const actual = jest.requireActual('@box/item-icon');
+    return { ...actual, ItemIcon: jest.fn(actual.ItemIcon) };
+});
 
 describe('LoadingIconV2', () => {
     const getRingColor = (): string | undefined =>
@@ -33,14 +38,26 @@ describe('LoadingIconV2', () => {
         expect(screen.getByRole('progressbar')).toHaveClass('bp-LoadingIconV2--dark');
     });
 
-    test('should render the file type icon hidden from assistive technology', () => {
-        render(<LoadingIconV2 extension="pdf" />);
+    test.each`
+        extension    | iconType
+        ${'pdf'}     | ${'pdf'}
+        ${'MP4'}     | ${'video'}
+        ${'unknown'} | ${'default'}
+    `(
+        'should render the $iconType icon hidden from assistive technology for extension $extension',
+        ({ extension, iconType }) => {
+            render(<LoadingIconV2 extension={extension} />);
 
-        expect(screen.getByRole('progressbar').querySelector('svg.bp-LoadingIconV2-icon')).toHaveAttribute(
-            'aria-hidden',
-            'true',
-        );
-    });
+            expect(ItemIcon).toHaveBeenCalledWith(
+                { ariaHidden: true, className: 'bp-LoadingIconV2-icon', iconType },
+                {},
+            );
+            expect(screen.getByRole('progressbar').querySelector('svg.bp-LoadingIconV2-icon')).toHaveAttribute(
+                'aria-hidden',
+                'true',
+            );
+        },
+    );
 });
 
 describe('LoadingIconV2Root', () => {
