@@ -704,7 +704,7 @@ export default function GalleryGrid({
             aria-colcount={isAriaGridEnabled ? columnCount : undefined}
             aria-label={__('page_gallery')}
             aria-rowcount={isAriaGridEnabled ? getRowCount(pageCount, columnCount) : undefined}
-            className="bp-gallery-grid"
+            className={`bp-gallery-grid${isBlueprintEnabled ? ' bp-GalleryGridV2' : ''}`}
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
             onScroll={handleScroll}
