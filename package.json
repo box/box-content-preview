@@ -29,13 +29,8 @@
         },
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
@@ -165,7 +160,7 @@
         "build:lib:verify": "node build/verifyLibBundle.js",
         "build:lib:js": "BABEL_ENV=production NODE_ENV=production yarn webpack --config build/webpack.config.lib.js",
         "build:lib:types": "cp build/lib-types/index.d.ts dist/lib/index.d.ts",
-        "build:prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=8192 ./node_modules/webpack/bin/webpack.js --progress --config build/webpack.config.js",
+        "build:prod": "BABEL_ENV=production NODE_ENV=production node build/buildLocaleAssets.js",
         "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
         "cy:open": "yarn cy:wait; yarn cypress open",
         "cy:run": "yarn cy:wait; yarn cypress run --spec test/integration/**/*.test.js",
