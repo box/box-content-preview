@@ -168,6 +168,7 @@ module.exports = {
         alias: {
             'box-annotations-messages': path.resolve(`node_modules/box-annotations/i18n/${language}`),
             'box-elements-messages': path.resolve(`node_modules/box-ui-elements/i18n/${language}`),
+            'box-readable-time-messages': path.resolve(`node_modules/@box/readable-time/dist/i18n/${language}.js`),
         },
         extensions: ['.tsx', '.ts', '.js'],
         modules: [src, 'node_modules'],

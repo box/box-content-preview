@@ -13,6 +13,7 @@ module.exports = {
         '\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/build/jest/fileMock.js',
         '@box/react-virtualized/dist/es': '@box/react-virtualized/dist/commonjs',
         'box-elements-messages': '<rootDir>/build/jest/i18nMock.js',
+        'box-readable-time-messages': '@box/readable-time/i18n/en-US.js',
         'react-intl': '<rootDir>/build/jest/react-intl-mock.js',
         '^@box/blueprint-web-assets/(.*)$': '<rootDir>/node_modules/@box/blueprint-web-assets/dist/$1',
         THREE: '<rootDir>/src/third-party/model3d/1.12.0/three.min.js',
