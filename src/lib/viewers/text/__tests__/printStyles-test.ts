@@ -7,8 +7,9 @@ import postcss, { AtRule } from 'postcss';
 import * as sass from 'sass';
 import { MARKDOWN_PRINT_STYLES, PLAIN_TEXT_PRINT_STYLES } from '../printStyles';
 
-// The print iframe holds only the text element, so rules scoped under preview's wrappers never match there
-const NEEDS_PREVIEW_ANCESTOR = /^\.bp(-content)?[\s.]/;
+// The print iframe holds only the text element, so rules scoped under preview's wrappers (including the
+// comparison-banner offset on .bp-container:has(.bp-version-banner)) never match there
+const NEEDS_PREVIEW_ANCESTOR = /^\.bp(-content|-container)?[\s.:]/;
 
 const getRuleSignatures = (css: string): string[] => {
     const signatures: string[] = [];

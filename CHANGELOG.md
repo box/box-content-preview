@@ -1,3 +1,12 @@
+## 3.129.0 (2026-10-30)
+
+* fix(comparison): pad plain text and archive below the version banner (#1901) ([53ef8b6](https://github.com/box/box-content-preview/commit/53ef8b6)), closes [#1901](https://github.com/box/box-content-preview/issues/1901)
+* fix(controls): leave Alt+F and Alt+R to the browser (#1906) ([04e8392](https://github.com/box/box-content-preview/commit/04e8392)), closes [#1906](https://github.com/box/box-content-preview/issues/1906)
+* fix(controls): name the controls bar toolbars and fix tooltip wording (#1907) ([3a63650](https://github.com/box/box-content-preview/commit/3a63650)), closes [#1907](https://github.com/box/box-content-preview/issues/1907)
+* fix(controls): stop the page number input from cutting off the page number (#1905) ([f66925f](https://github.com/box/box-content-preview/commit/f66925f)), closes [#1905](https://github.com/box/box-content-preview/issues/1905)
+* feat(error): render the error screen with Blueprint EmptyState (#1909) ([e7e0259](https://github.com/box/box-content-preview/commit/e7e0259)), closes [#1909](https://github.com/box/box-content-preview/issues/1909)
+* chore(i18n): update translations (#1908) ([d6fb9cb](https://github.com/box/box-content-preview/commit/d6fb9cb)), closes [#1908](https://github.com/box/box-content-preview/issues/1908)
+
 ## 3.128.0 (2026-10-29)
 
 * feat(controls): toggle fullscreen on F in text, markdown, CSV and 3D viewers (#1900) ([c7824f1](https://github.com/box/box-content-preview/commit/c7824f1)), closes [#1900](https://github.com/box/box-content-preview/issues/1900)

@@ -628,9 +628,15 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @param {string} key - Keydown key
+     * @param {KeyboardEvent} [event] - Keydown event
      * @return {boolean} Consumed or not
      */
-    handleFullscreenKey(key) {
+    handleFullscreenKey(key, event) {
+        // Decoded keys drop Alt, and Alt+F opens the browser menu on Windows
+        if (event?.altKey) {
+            return false;
+        }
+
         if ((key === 'f' || key === 'F') && this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
             this.toggleFullscreen();
             return true;
