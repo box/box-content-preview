@@ -535,6 +535,14 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.rotateLeft).not.toBeCalled();
         });
 
+        test('should leave Alt+R to the browser', () => {
+            image.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            image.loadUI();
+
+            expect(image.onKeydown('r', { altKey: true })).toBe(false);
+            expect(image.rotateLeft).not.toBeCalled();
+        });
+
         test('should not rotate on r before the controls are ready', () => {
             image.options.features = { blueprintMigrationControlsBar: { enabled: true } };
 
