@@ -1,6 +1,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
+import readableTimeMessages from 'box-readable-time-messages'; // eslint-disable-line
+import readableTimeMessageDefinitions from '@box/readable-time/lib/messages.js';
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
@@ -15,6 +17,10 @@ import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
+const readableTimeDefaults = Object.fromEntries(
+    Object.values(readableTimeMessageDefinitions).map(({ id, defaultMessage }) => [id, defaultMessage]),
+);
+const archiveV2Messages = { ...elementsMessages, ...readableTimeDefaults, ...readableTimeMessages };
 const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
 const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
@@ -224,7 +230,7 @@ class ArchiveExplorer extends React.Component {
         const BreadcrumbsComponent = v2 ? v2.BreadcrumbsV2 : Breadcrumbs;
 
         return (
-            <Internationalize language={language} messages={elementsMessages}>
+            <Internationalize language={language} messages={v2 ? archiveV2Messages : elementsMessages}>
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
                     <SearchBarComponent onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <BreadcrumbsComponent
