@@ -1,5 +1,21 @@
 .bp-ArchiveTableV2 {
     height: 100%;
+
+    th:first-child {
+        --list-item-header-column-padding: var(--bp-space-020) var(--bp-space-030) var(--bp-space-020) var(--bp-space-050);
+    }
+
+    th:last-child {
+        --list-item-header-column-padding: var(--bp-space-020) var(--bp-space-050) var(--bp-space-020) var(--bp-space-030);
+    }
+
+    td:first-child {
+        --list-item-cell-padding: var(--bp-space-020) var(--bp-space-030) var(--bp-space-020) var(--bp-space-050);
+    }
+
+    td:last-child {
+        --list-item-cell-padding: var(--bp-space-020) var(--bp-space-050) var(--bp-space-020) var(--bp-space-030);
+    }
 }
 
 .bp-ArchiveTableV2-name {
