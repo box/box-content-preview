@@ -436,7 +436,7 @@ describe('GalleryGrid', () => {
                 expect(event.defaultPrevented).toBe(true);
 
                 act(() => rafCallback!(0));
-                expect(onScaleChange).toHaveBeenCalledWith(1.2);
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
 
                 const pinchTile = screen.getByLabelText('Page 5');
                 document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
@@ -451,6 +451,19 @@ describe('GalleryGrid', () => {
                 expect(document.elementFromPoint).toHaveBeenCalledWith(300, 200);
                 expect(grid.scrollLeft).toBe(60);
                 expect(grid.scrollTop).toBe(80);
+            });
+
+            test('should step a ctrl+wheel mouse notch by 10%', () => {
+                const onScaleChange = jest.fn();
+                getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -100 }));
+                });
+                act(() => rafCallback!(0));
+
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
             });
 
             test('should clear the pinch focal point when the scale change is rejected', () => {
