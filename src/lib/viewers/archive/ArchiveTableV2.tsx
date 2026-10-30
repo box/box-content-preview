@@ -1,7 +1,17 @@
 import React from 'react';
 import classNames from 'classnames';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Cell, Column, DataTableWrapper, Row, Table, TableBody, TableHeader, Text } from '@box/blueprint-web';
+import {
+    Cell,
+    Column,
+    DataTableWrapper,
+    EllipsizableText,
+    Row,
+    Table,
+    TableBody,
+    TableHeader,
+    Text,
+} from '@box/blueprint-web';
 import { getFileCategoryByExtension, ItemIcon } from '@box/item-icon';
 import { ReadableTime } from '@box/readable-time';
 import { EMPTY_VALUE, TABLE_COLUMNS } from './constants';
@@ -142,7 +152,9 @@ export default function ArchiveTableV2({
                                             ariaHidden
                                             iconType={isFolder ? 'folder-plain' : getFileCategoryByExtension(extension)}
                                         />
-                                        <Text as="span">{item.name}</Text>
+                                        <EllipsizableText as="span" lineClamp={1}>
+                                            {item.name}
+                                        </EllipsizableText>
                                     </span>
                                 </Cell>
                                 <Cell>
