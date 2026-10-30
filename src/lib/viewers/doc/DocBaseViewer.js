@@ -992,6 +992,7 @@ class DocBaseViewer extends BaseViewer {
                 // These bare keys belong to the v2 controls bar; the older bar has no such shortcuts.
                 if (
                     this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) &&
+                    !event?.altKey &&
                     !this.galleryController?.isOpen &&
                     this.featureEnabled('rotate.enabled')
                 ) {
@@ -1001,8 +1002,7 @@ class DocBaseViewer extends BaseViewer {
                 return this.findBar ? this.findBar.onKeydown(event) : false;
             case 'f':
             case 'F':
-                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
-                    this.toggleFullscreen();
+                if (this.handleFullscreenKey(key, event)) {
                     break;
                 }
                 return this.findBar ? this.findBar.onKeydown(event) : false;
