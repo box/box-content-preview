@@ -204,7 +204,7 @@ describe('TimeControlsV2', () => {
             end: () => end,
         });
 
-        test('should render buffered and unplayed colors in track gradient', () => {
+        test('should render played, buffered, and unplayed colors in track gradient', () => {
             render(
                 <TimeControlsV2
                     {...defaultProps}
@@ -214,6 +214,7 @@ describe('TimeControlsV2', () => {
                 />,
             );
             const trackProp = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
+            expect(trackProp).toMatch(/^linear-gradient\(to right, #ffffff /);
             expect(trackProp).toContain('rgb(127, 127, 127)');
             expect(trackProp).toContain('rgb(85, 85, 85)');
             expect(trackProp).toContain('50%');
