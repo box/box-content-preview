@@ -185,6 +185,16 @@ describe('lib/RepStatus', () => {
                 expect(Timer.get(tag)).toBeDefined();
             });
         });
+
+        test('should reject the status promise when the info request fails instead of hanging', () => {
+            jest.spyOn(repStatus.api, 'get').mockRejectedValue(new Error('Not Found'));
+            jest.spyOn(repStatus, 'reject').mockImplementation();
+
+            return repStatus.updateStatus().then(() => {
+                expect(repStatus.reject).toBeCalled();
+                expect(repStatus.handleResponse).not.toBeCalled();
+            });
+        });
     });
 
     describe('handleResponse()', () => {
