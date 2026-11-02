@@ -212,7 +212,7 @@ describe('ImageControlsV2', () => {
                     screen.getByRole('button', { name: __('annotation_tools') }),
                 ]);
                 expect(within(mainBar).queryByRole('separator')).not.toBeInTheDocument();
-                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toBeInTheDocument();
+                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toHaveClass('bp-AnnotationsPaletteV2--centered');
             });
 
             test('should keep the full bar on wider viewports', () => {
@@ -223,6 +223,9 @@ describe('ImageControlsV2', () => {
 
                 expect(mainBar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
                 expect(mainBar).toContainElement(screen.getByRole('button', { name: __('rotate_left') }));
+                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).not.toHaveClass(
+                    'bp-AnnotationsPaletteV2--centered',
+                );
             });
 
             test('should keep the full bar on narrow viewports when the host has not turned it on', () => {

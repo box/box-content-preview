@@ -90,6 +90,7 @@ export default function ImageControlsV2({
                 <AnnotationsPaletteControlsV2
                     annotationColor={annotationColor}
                     annotationMode={annotationMode}
+                    isCentered={isAnnotationsOnly}
                     modes={annotationModes}
                     onAnnotationColorChange={onAnnotationColorChange}
                     onAnnotationModeClick={onAnnotationModeClick}

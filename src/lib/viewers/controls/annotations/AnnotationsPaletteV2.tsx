@@ -9,6 +9,7 @@ import './AnnotationsPaletteV2.scss';
 
 export type Props = {
     children: React.ReactNode;
+    isCentered?: boolean;
 };
 
 export type ModesProps = {
@@ -21,9 +22,12 @@ export type ModeProps = {
     value: ActiveAnnotationMode;
 };
 
-function AnnotationsPaletteV2({ children }: Props): JSX.Element {
+function AnnotationsPaletteV2({ children, isCentered = false }: Props): JSX.Element {
     return (
-        <div className="bp-AnnotationsPaletteV2" data-testid="bp-AnnotationsPaletteV2">
+        <div
+            className={`bp-AnnotationsPaletteV2${isCentered ? ' bp-AnnotationsPaletteV2--centered' : ''}`}
+            data-testid="bp-AnnotationsPaletteV2"
+        >
             <ControlsBarV2 aria-label={__('annotation_tools_toolbar')} size="small">
                 {children}
             </ControlsBarV2>

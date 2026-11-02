@@ -199,6 +199,7 @@ export default function DocControlsV2({
                 <AnnotationsPaletteControlsV2
                     annotationColor={annotationColor}
                     annotationMode={annotationMode}
+                    isCentered={isAnnotationsOnly}
                     modes={annotationModes}
                     onAnnotationColorChange={onAnnotationColorChange}
                     onAnnotationModeClick={onAnnotationModeClick}
