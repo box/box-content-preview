@@ -2564,7 +2564,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
 
-                test('should skip operations check for non-.numbers files', async () => {
+                test('should skip operations check for .pdf files', async () => {
                     docBase.options.file.extension = 'pdf';
 
                     const mockDoc = {
@@ -2605,10 +2605,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
-                    });
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.handleDownloadError).not.toHaveBeenCalled();
                 });
 
                 test('should handle operations check error properly', async () => {
@@ -2632,9 +2636,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
-                    });
+                    await docBase.initViewer('url');
+
+                    expect(stubs.handleDownloadError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_content_download' }),
+                        'url',
+                    );
                 });
 
                 test('should use correct error code for too many operations', async () => {
@@ -2656,18 +2663,41 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     });
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
-                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                code: 'error_viewer_too_many_operations',
-                                message:
-                                    'The file is too complex to display in your browser. Please download it to view.',
-                            }),
-                            'url',
-                        );
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            code: 'error_viewer_too_many_operations',
+                            displayMessage:
+                                'The file is too complex to display in your browser. Please download it to view.',
+                            message: 'Too many drawing operations',
+                        }),
+                    );
+                });
+
+                test('should fall back to another representation before showing the too many operations error', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(400000) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
                     });
+                    jest.spyOn(console, 'error').mockImplementation();
+                    stubs.attemptRepFallback = jest.spyOn(docBase, 'attemptRepFallback').mockReturnValue(true);
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                    await docBase.initViewer('url');
+
+                    expect(stubs.attemptRepFallback).toHaveBeenCalled();
+                    expect(stubs.triggerError).not.toHaveBeenCalled();
                 });
 
                 test('should check operations count for .xlsx files', async () => {
@@ -2716,10 +2746,60 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.handleDownloadError).not.toHaveBeenCalled();
+                });
+
+                test('should render .dwg files at the operations limit', async () => {
+                    docBase.options.file.extension = 'dwg';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320000) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
                     });
+
+                    await docBase.initViewer('url');
+
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should show the too complex error for .dwg files over the operations limit', async () => {
+                    docBase.options.file.extension = 'dwg';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320001) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+                    jest.spyOn(console, 'error').mockImplementation();
+                    stubs.load = jest.spyOn(docBase, 'load').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.load).not.toHaveBeenCalled();
+                    expect(docBase.pdfViewer.setDocument).not.toHaveBeenCalledWith(mockDoc);
                 });
 
                 test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['pdf']])(
