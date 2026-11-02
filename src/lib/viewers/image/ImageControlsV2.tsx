@@ -4,12 +4,18 @@ import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2
 import AnnotationsPaletteControlsV2 from '../controls/annotations/AnnotationsPaletteControlsV2';
 import ExperiencesProvider from '../controls/experiences';
 import useAnnotationModes from '../controls/annotations/useAnnotationModes';
+import useAnnotationsOnlyControls from '../controls/annotations/useAnnotationsOnlyControls';
 import { ControlsBarItem, ResponsiveControlsBarV2 } from '../controls/controls-bar';
 import { FullscreenMenuItemV2, FullscreenToggleV2 } from '../controls/fullscreen';
 import { RotateControlV2, RotateMenuItemV2 } from '../controls/rotate';
 import { ZoomControlsV2, ZoomMenuItemsV2 } from '../controls/zoom';
 import { AnnotationMode } from '../../types';
-import { Props } from './ImageControls';
+import { Props as ImageControlsProps } from './ImageControls';
+
+export type Props = ImageControlsProps & {
+    // The host's annotations-only controls are on and the user picked an annotation mode
+    hasAnnotationsOnlyControls?: boolean;
+};
 
 // The same collapse order as documents: rotate, then fullscreen, then zoom. The markup trigger has no menu
 // form and never collapses.
@@ -23,6 +29,7 @@ export default function ImageControlsV2({
     annotationColor,
     annotationMode = AnnotationMode.NONE,
     experiences,
+    hasAnnotationsOnlyControls,
     hasDrawing,
     hasHighlight,
     hasRegion,
@@ -37,6 +44,7 @@ export default function ImageControlsV2({
 }: Props): JSX.Element {
     const annotationModes = useAnnotationModes({ hasDrawing, hasHighlight, hasRegion });
     const hasAnnotations = annotationModes.length > 0;
+    const isAnnotationsOnly = useAnnotationsOnlyControls(hasAnnotationsOnlyControls) && hasAnnotations;
     const zoomProps = { onZoomIn, onZoomOut, scale };
 
     const items: Array<ControlsBarItem | false> = [
@@ -62,6 +70,7 @@ export default function ImageControlsV2({
             control: (
                 <AnnotationsControlsV2
                     annotationMode={annotationMode}
+                    hasSeparator={!isAnnotationsOnly}
                     modes={annotationModes}
                     onAnnotationModeClick={onAnnotationModeClick}
                     onAnnotationModeEscape={onAnnotationModeEscape}
@@ -70,10 +79,13 @@ export default function ImageControlsV2({
             id: 'annotations',
         },
     ];
+    const barItems = items.filter(
+        (item): item is ControlsBarItem => !!item && (!isAnnotationsOnly || item.id === 'annotations'),
+    );
 
     return (
         <ExperiencesProvider experiences={experiences}>
-            <ResponsiveControlsBarV2 items={items.filter((item): item is ControlsBarItem => !!item)} />
+            <ResponsiveControlsBarV2 items={barItems} />
             {hasAnnotations && (
                 <AnnotationsPaletteControlsV2
                     annotationColor={annotationColor}

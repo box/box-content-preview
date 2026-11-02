@@ -1,11 +1,11 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../BlueprintProviders';
 import fullscreen from '../../../Fullscreen';
-import ImageControlsV2 from '../ImageControlsV2';
+import ImageControlsV2, { Props } from '../ImageControlsV2';
+import { ANNOTATIONS_ONLY_MEDIA_QUERY } from '../../controls/annotations/useAnnotationsOnlyControls';
 import { AnnotationMode } from '../../../types';
-import { Props } from '../ImageControls';
 import { mockResizeObserver, triggerResize } from '../../controls/__mocks__/resizeObserver';
 
 describe('ImageControlsV2', () => {
@@ -177,6 +177,69 @@ describe('ImageControlsV2', () => {
 
             expect(screen.queryByRole('button', { name: __('annotation_tools') })).not.toBeInTheDocument();
             expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+        });
+
+        describe('annotations-only controls', () => {
+            const originalMatchMedia = window.matchMedia;
+            const annotationsOnlyProps = {
+                ...annotationProps,
+                annotationMode: AnnotationMode.REGION,
+                hasAnnotationsOnlyControls: true,
+            };
+            let isNarrowViewport: boolean;
+
+            beforeEach(() => {
+                isNarrowViewport = true;
+                window.matchMedia = jest.fn().mockImplementation((query: string) => ({
+                    addEventListener: jest.fn(),
+                    matches: query === ANNOTATIONS_ONLY_MEDIA_QUERY && isNarrowViewport,
+                    media: query,
+                    removeEventListener: jest.fn(),
+                }));
+            });
+
+            afterEach(() => {
+                window.matchMedia = originalMatchMedia;
+            });
+
+            test('should show only the exit button and the markup toggle on narrow viewports', () => {
+                getWrapper(annotationsOnlyProps);
+
+                const [mainBar] = screen.getAllByRole('toolbar');
+
+                expect(within(mainBar).getAllByRole('button')).toEqual([
+                    screen.getByRole('button', { name: __('exit_annotations') }),
+                    screen.getByRole('button', { name: __('annotation_tools') }),
+                ]);
+                expect(within(mainBar).queryByRole('separator')).not.toBeInTheDocument();
+                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toBeInTheDocument();
+            });
+
+            test('should keep the full bar on wider viewports', () => {
+                isNarrowViewport = false;
+                getWrapper(annotationsOnlyProps);
+
+                const [mainBar] = screen.getAllByRole('toolbar');
+
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('rotate_left') }));
+            });
+
+            test('should keep the full bar on narrow viewports when the host has not turned it on', () => {
+                getWrapper({ ...annotationsOnlyProps, hasAnnotationsOnlyControls: false });
+
+                const [mainBar] = screen.getAllByRole('toolbar');
+
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('rotate_left') }));
+            });
+
+            test('should keep the full bar in fullscreen, where there are no annotation controls', () => {
+                jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
+                getWrapper(annotationsOnlyProps);
+
+                expect(screen.getByRole('button', { name: __('zoom_in') })).toBeInTheDocument();
+            });
         });
     });
 });

@@ -3246,6 +3246,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(getProps(docBase)).toMatchObject({
                     annotationColor: '#0061d5',
                     annotationMode: 'none',
+                    hasAnnotationsOnlyControls: false,
                     hasHighlight: true,
                     hasRegion: true,
                     maxScale: 10,
@@ -3264,6 +3265,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pageNumber: docBase.pdfViewer.currentPageNumber,
                     scale: 0.9,
                 });
+            });
+
+            test('should pass the annotations-only controls state to the controls', () => {
+                jest.spyOn(docBase, 'hasAnnotationsOnlyControls').mockReturnValue(true);
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).hasAnnotationsOnlyControls).toBe(true);
             });
 
             test.each`
