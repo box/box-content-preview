@@ -1,3 +1,11 @@
+## 3.131.0 (2026-11-02)
+
+* feat(doc): surface ocr_pdf searchable PDF representation (#1822) ([e79d237](https://github.com/box/box-content-preview/commit/e79d237)), closes [#1822](https://github.com/box/box-content-preview/issues/1822)
+* feat(gallery): style gallery tiles with Blueprint tokens behind supporting UI flag (#1916) ([1cc3555](https://github.com/box/box-content-preview/commit/1cc3555)), closes [#1916](https://github.com/box/box-content-preview/issues/1916)
+* chore(deps): bump fast-uri from 3.1.7 to 3.1.9 (#1913) ([578d43c](https://github.com/box/box-content-preview/commit/578d43c)), closes [#1913](https://github.com/box/box-content-preview/issues/1913)
+* chore(deps): bump serialize-javascript from 7.1.0 to 7.1.4 (#1923) ([15ccd60](https://github.com/box/box-content-preview/commit/15ccd60)), closes [#1923](https://github.com/box/box-content-preview/issues/1923)
+* chore(i18n): update translations (#1926) ([7859016](https://github.com/box/box-content-preview/commit/7859016)), closes [#1926](https://github.com/box/box-content-preview/issues/1926)
+
 ## 3.130.0 (2026-10-31)
 
 * fix(archive): align v2 table edges with the search bar (#1917) ([3ad7131](https://github.com/box/box-content-preview/commit/3ad7131)), closes [#1917](https://github.com/box/box-content-preview/issues/1917)
