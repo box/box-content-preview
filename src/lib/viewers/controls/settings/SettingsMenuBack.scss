@@ -48,6 +48,9 @@
         user-select: none;
         padding: 6px 14px;
         font-family: Lato, Arial, sans-serif;
+
+        @include bp-host-inter-font;
+
         font-size: 14px;
         font-weight: bold;
         line-height: 20px;

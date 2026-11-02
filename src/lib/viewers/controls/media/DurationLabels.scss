@@ -9,6 +9,9 @@
 
     .bp-DurationLabels-label {
         font-family: Lato, Arial, sans-serif;
+
+        @include bp-host-inter-font;
+
         font-size: 14px;
         font-weight: normal;
         font-style: normal;

@@ -40,6 +40,9 @@
     // Pad bottom so controls dont overlap
     padding-bottom: 75px;
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+    @include bp-host-inter-font;
+
     text-align: center;
 
     p {
