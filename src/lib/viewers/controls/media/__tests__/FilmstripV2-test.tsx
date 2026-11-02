@@ -86,6 +86,13 @@ describe('FilmstripV2', () => {
         test('should show crawler when image has not loaded', () => {
             render(<FilmstripV2 imageUrl="https://example.com/filmstrip.jpg" />);
             expect(screen.getByTestId('bp-FilmstripV2-crawler')).toBeInTheDocument();
+            expect(screen.queryByRole('status')).not.toBeInTheDocument();
+        });
+
+        test('should show the Blueprint loading indicator when isBlueprintEnabled is true', () => {
+            render(<FilmstripV2 imageUrl="https://example.com/filmstrip.jpg" isBlueprintEnabled />);
+            expect(screen.queryByTestId('bp-FilmstripV2-crawler')).not.toBeInTheDocument();
+            expect(screen.getByRole('status', { name: __('media_loading') })).toBeInTheDocument();
         });
 
         test('should hide crawler after image loads', () => {

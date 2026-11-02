@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Text } from '@box/blueprint-web';
+import { LoadingIndicator, Text } from '@box/blueprint-web';
 import formatTimecode from '../../media/formatTimecode';
 import { formatTime } from './DurationLabels';
 import './FilmstripV2.scss';
@@ -90,13 +90,18 @@ export default function FilmstripV2({
                         }}
                     />
                 )}
-                {isLoading && (
-                    <div className="bp-crawler" data-testid="bp-FilmstripV2-crawler">
-                        <div />
-                        <div />
-                        <div />
-                    </div>
-                )}
+                {isLoading &&
+                    (isBlueprintEnabled ? (
+                        <div className="bp-FilmstripV2-loading">
+                            <LoadingIndicator aria-label={__('media_loading')} variant="dark" />
+                        </div>
+                    ) : (
+                        <div className="bp-crawler" data-testid="bp-FilmstripV2-crawler">
+                            <div />
+                            <div />
+                            <div />
+                        </div>
+                    ))}
             </div>
             <div className="bp-FilmstripV2-time" data-testid="bp-FilmstripV2-time">
                 {isBlueprintEnabled ? (

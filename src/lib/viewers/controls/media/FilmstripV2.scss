@@ -38,6 +38,15 @@
     z-index: 1;
 }
 
+.bp-FilmstripV2-loading {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .bp-FilmstripV2-time {
     margin-top: 8px;
     font-size: 13px;
