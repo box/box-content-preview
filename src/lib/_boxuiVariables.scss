@@ -58,18 +58,3 @@ $comparison-banner-height: var(--bp-size-180) !default;
 // Breakpoints
 // Mirrors Blueprint's breakpoint-medium token, since custom properties can't be read in @media conditions.
 $bp-breakpoint-medium: 767px !default;
-
-// Same stack Blueprint uses when body has is-inter-font. The host adds that class; Preview does not load the font.
-@mixin bp-host-inter-font {
-    body.is-inter-font & {
-        font-family:
-            'Inter Variable',
-            -apple-system,
-            BlinkMacSystemFont,
-            'San Francisco',
-            'Segoe UI',
-            Roboto,
-            'Helvetica Neue',
-            sans-serif;
-    }
-}

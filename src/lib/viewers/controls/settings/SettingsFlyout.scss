@@ -41,9 +41,6 @@
         border: 0;
         border-radius: 16px;
         font-family: Lato, Arial, sans-serif;
-
-        @include bp-host-inter-font;
-
         font-size: 16px;
         line-height: 24px;
         color: $black;

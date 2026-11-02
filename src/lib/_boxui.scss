@@ -18,9 +18,6 @@
 .bp button,
 .bp-header button {
     font-family: Lato, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-
-    // .bp button is more specific than Blueprint's Inter rule for toolbar buttons, so the host class has to win here.
-    @include bp-host-inter-font;
 }
 
 .bp li,

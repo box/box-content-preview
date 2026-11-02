@@ -98,9 +98,6 @@
     border: 0;
     border-radius: 46px;
     font-family: Lato, Arial, sans-serif;
-
-    @include bp-host-inter-font;
-
     font-size: 14px;
     font-weight: normal;
     line-height: 22px;
@@ -211,9 +208,6 @@
     border: 1px solid rgb(255 255 255 / 18%);
     border-radius: 8px;
     font-family: Lato, Arial, sans-serif;
-
-    @include bp-host-inter-font;
-
     font-size: 14px;
     font-weight: normal;
     line-height: 20px;
