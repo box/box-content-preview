@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    BlueprintConfigurationOptions,
-    BlueprintProvider,
-    TooltipProvider,
-    useNoopTreatment,
-} from '@box/blueprint-web';
-import useHostInterFont from './useHostInterFont';
+import { BlueprintConfigurationOptions, BlueprintProvider, TooltipProvider, useNoopTreatment } from '@box/blueprint-web';
 
 export type Props = {
     children: React.ReactNode;
@@ -18,15 +12,12 @@ export type Props = {
 export const PortalContainerContext = React.createContext<HTMLElement | null | undefined>(undefined);
 
 // Preview has no Split client, so Blueprint's treatment-driven configuration resolves to its defaults.
-// Typography is the exception: it follows the host's is-inter-font class, including changes after mount.
+// Typography is the exception. These providers wrap the flag-on UI, and that UI uses Inter.
+// Legacy controls render outside this provider and keep Lato.
 export default function BlueprintProviders({ children, container }: Props): JSX.Element {
-    const isInterFont = useHostInterFont();
-
     return (
         <BlueprintProvider
-            configurationOverrides={
-                isInterFont ? { typography: BlueprintConfigurationOptions.typography.inter } : undefined
-            }
+            configurationOverrides={{ typography: BlueprintConfigurationOptions.typography.inter }}
             useTreatment={useNoopTreatment}
         >
             <PortalContainerContext.Provider value={container}>
