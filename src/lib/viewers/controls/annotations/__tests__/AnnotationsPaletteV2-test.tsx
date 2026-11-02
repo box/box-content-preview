@@ -69,9 +69,12 @@ describe('AnnotationsPaletteV2', () => {
         test('should render the modes in a toolbar of its own', () => {
             renderPalette();
 
-            const toolbar = within(screen.getByTestId('bp-AnnotationsPaletteV2')).getByRole('toolbar');
+            const toolbar = within(screen.getByTestId('bp-AnnotationsPaletteV2')).getByRole('toolbar', {
+                name: 'Comment and markup tools',
+            });
 
             expect(toolbar).toContainElement(screen.getByTestId('bp-annotations-controls'));
+            expect(screen.queryByRole('toolbar', { name: 'Preview controls' })).not.toBeInTheDocument();
         });
 
         test('should render the small toolbar size', () => {
@@ -85,11 +88,11 @@ describe('AnnotationsPaletteV2', () => {
         test('should render the mode buttons with their tracking targets', () => {
             renderPalette();
 
-            expect(screen.getByRole('radio', { name: __('region_comment') })).toHaveAttribute(
+            expect(screen.getByRole('radio', { name: 'Comment on region' })).toHaveAttribute(
                 'data-resin-target',
                 'highlightRegion',
             );
-            expect(screen.getByRole('radio', { name: __('highlight_text') })).toHaveAttribute(
+            expect(screen.getByRole('radio', { name: 'Highlight and comment' })).toHaveAttribute(
                 'data-resin-target',
                 'highlightText',
             );

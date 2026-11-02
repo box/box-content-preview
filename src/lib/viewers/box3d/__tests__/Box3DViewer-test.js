@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-expressions */
+import { act } from '@testing-library/react';
 import Api from '../../../api';
+import Notification from '../../../Notification';
+import { NotificationsV2Root } from '../../../NotificationsV2';
 import Box3DViewer from '../Box3DViewer';
 import Box3DControls from '../Box3DControls';
 import Box3DRenderer from '../Box3DRenderer';
@@ -16,7 +19,7 @@ import {
     EVENT_TOGGLE_VR,
     EVENT_WEBGL_CONTEXT_RESTORED,
 } from '../box3DConstants';
-import { SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
+import { BLUEPRINT_MIGRATION_SUPPORTING_UI, SELECTOR_BOX_PREVIEW_CONTENT } from '../../../constants';
 
 const sandbox = sinon.createSandbox();
 
@@ -109,6 +112,24 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
             expect(box3d.controls).toBeInstanceOf(Box3DControls);
             expect(box3d.renderer).toBeInstanceOf(Box3DRenderer);
+        });
+    });
+
+    describe('setup()', () => {
+        test('should create the legacy context notification without the supporting UI flag', () => {
+            expect(box3d.contextNotification).toBeInstanceOf(Notification);
+        });
+
+        test('should create a Blueprint context notification with the supporting UI flag', () => {
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: jest.fn() });
+            const featureEnabledSpy = jest.spyOn(box3d, 'featureEnabled').mockReturnValue(true);
+
+            act(() => box3d.setup());
+
+            expect(featureEnabledSpy).toBeCalledWith(BLUEPRINT_MIGRATION_SUPPORTING_UI);
+            expect(box3d.contextNotification).toBeInstanceOf(NotificationsV2Root);
+            expect(box3d.wrapperEl).toContainElement(box3d.contextNotification.hostEl);
+            act(() => box3d.contextNotification.destroy());
         });
     });
 
@@ -309,6 +330,28 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     describe('destroy()', () => {
+        test('should destroy a Blueprint context notification', () => {
+            let contextNotification;
+            act(() => {
+                contextNotification = new NotificationsV2Root(box3d.wrapperEl);
+            });
+            box3d.contextNotification = contextNotification;
+            jest.spyOn(contextNotification, 'destroy');
+
+            act(() => box3d.destroy());
+
+            expect(contextNotification.destroy).toBeCalled();
+            expect(box3d.contextNotification).toBeNull();
+        });
+
+        test('should leave a legacy context notification as is', () => {
+            const { contextNotification } = box3d;
+
+            box3d.destroy();
+
+            expect(box3d.contextNotification).toBe(contextNotification);
+        });
+
         test('should detach event handlers', () => {
             jest.spyOn(box3d, 'detachEventHandlers');
 
@@ -576,6 +619,18 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     describe('handleContextLost()', () => {
+        test('should show a warning notification', () => {
+            jest.spyOn(box3d, 'destroySubModules').mockImplementation();
+            jest.spyOn(box3d.contextNotification, 'show');
+            box3d.handleContextLost();
+            expect(box3d.contextNotification.show).toBeCalledWith(
+                __('notification_webgl_context_lost'),
+                null,
+                false,
+                'warning',
+            );
+        });
+
         test('should call destroySubModules', () => {
             const destroySubModules = jest.spyOn(box3d, 'destroySubModules').mockImplementation();
             box3d.handleContextLost();
@@ -584,6 +639,18 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     describe('handleContextRestored()', () => {
+        test('should show a success notification', () => {
+            box3d.postLoad = jest.fn();
+            jest.spyOn(box3d.contextNotification, 'show');
+            box3d.handleContextRestored();
+            expect(box3d.contextNotification.show).toBeCalledWith(
+                __('notification_webgl_context_restored'),
+                null,
+                false,
+                'success',
+            );
+        });
+
         test('should call detachEventHandlers', () => {
             const detachHandlers = jest.spyOn(box3d, 'detachEventHandlers');
             box3d.handleContextRestored();

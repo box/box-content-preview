@@ -18,6 +18,15 @@ export const stopActivationKeyPropagation = (event: React.KeyboardEvent): void =
     }
 };
 
+const MENU_TRIGGER_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Enter', 'Space']);
+
+// Menu triggers also open on the vertical arrows, which the viewer maps to volume and comment seeking.
+export const stopMenuTriggerKeyPropagation = (event: React.KeyboardEvent): void => {
+    if (MENU_TRIGGER_KEYS.has(decodeKeydown(event))) {
+        event.stopPropagation();
+    }
+};
+
 const TOOLBAR_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'End', 'Enter', 'Home', 'Space']);
 
 // Toolbars move focus with the arrow, Home and End keys, which the viewer maps to seeking.

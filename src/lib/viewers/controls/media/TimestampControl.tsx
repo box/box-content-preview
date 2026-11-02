@@ -13,6 +13,7 @@ import { DEFAULT_FPS } from '../../media/videoFps';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 import { decodeKeydown } from '../../../util';
 import { formatTime } from './DurationLabels';
+import { stopMenuTriggerKeyPropagation } from './utils';
 import './TimestampControl.scss';
 
 export enum TimeFormat {
@@ -42,15 +43,6 @@ export function formatLabel(time: number, format: TimeFormat, fps: number): stri
             return formatTime(time);
     }
 }
-
-// The viewer maps Space, Enter and the arrow keys to playback, seek and volume shortcuts.
-const stopMenuTriggerKeyPropagation = (event: React.KeyboardEvent): void => {
-    const key = decodeKeydown(event);
-
-    if (key === 'Enter' || key === 'Space' || key === 'ArrowDown' || key === 'ArrowUp') {
-        event.stopPropagation();
-    }
-};
 
 const FORMAT_OPTIONS = [
     { label: () => __('media_time_format_standard'), value: TimeFormat.STANDARD },
@@ -266,6 +258,7 @@ export default function TimestampControl({
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content
                         align="center"
+                        className="bp-TimestampControl-menu"
                         container={portalContainer}
                         data-testid="bp-TimestampControl-flyout"
                         onKeyDown={handleMenuKeyDown}

@@ -19,6 +19,26 @@ describe('ControlsBarV2', () => {
             expect(toolbar).toContainElement(screen.getByRole('button', { name: 'Hello' }));
         });
 
+        test('should name the toolbar for screen readers', () => {
+            render(
+                <ControlsBarV2>
+                    <button type="button">Hello</button>
+                </ControlsBarV2>,
+            );
+
+            expect(screen.getByRole('toolbar', { name: 'Preview controls' })).toBeInTheDocument();
+        });
+
+        test('should use the name it is given', () => {
+            render(
+                <ControlsBarV2 aria-label="Drawing tools">
+                    <button type="button">Hello</button>
+                </ControlsBarV2>,
+            );
+
+            expect(screen.getByRole('toolbar', { name: 'Drawing tools' })).toBeInTheDocument();
+        });
+
         test('should render the dark toolbar', () => {
             render(
                 <ControlsBarV2>

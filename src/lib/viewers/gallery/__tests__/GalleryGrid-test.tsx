@@ -104,6 +104,7 @@ describe('GalleryGrid', () => {
             getWrapper();
             const badge = screen.getByLabelText('Page 3').querySelector('.bp-gallery-tile-badge');
             expect(badge).toHaveTextContent('3');
+            expect(badge).not.toHaveClass('bp-gallery-tile-badge--blueprint');
             expect(badge?.querySelector('[data-typography]')).not.toBeInTheDocument();
         });
 
@@ -112,6 +113,7 @@ describe('GalleryGrid', () => {
             screen.getAllByRole('option').forEach((tile, index) => {
                 const badge = tile.querySelector('.bp-gallery-tile-badge');
                 expect(badge).toHaveAttribute('aria-hidden', 'true');
+                expect(badge).toHaveClass('bp-gallery-tile-badge--blueprint');
                 expect(badge?.querySelector('[data-typography]')).toHaveTextContent(String(index + 1));
             });
         });

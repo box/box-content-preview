@@ -246,16 +246,22 @@ class ImageViewer extends ImageBaseViewer {
      * Handles keyboard events for the image
      *
      * @param {string} key - Keydown key
+     * @param {KeyboardEvent} [event] - Keydown event
      * @return {boolean} Consumed or not
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         // This bare key belongs to the Blueprint controls bar, whose menu lists it; the older bar has no such shortcut
-        if (this.controls && (key === 'r' || key === 'R') && this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+        if (
+            this.controls &&
+            (key === 'r' || key === 'R') &&
+            !event?.altKey &&
+            this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)
+        ) {
             this.rotateLeft();
             return true;
         }
 
-        return super.onKeydown(key);
+        return super.onKeydown(key, event);
     }
 
     // Annotation overrides

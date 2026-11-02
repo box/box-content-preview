@@ -1,3 +1,5 @@
+@import './boxuiVariables';
+
 $comparison-compared-stage: var(--bp-gray-10);
 
 .bp-version-banner {
@@ -9,7 +11,7 @@ $comparison-compared-stage: var(--bp-gray-10);
     display: flex;
     gap: var(--bp-space-030);
     align-items: center;
-    height: var(--bp-comparison-banner-height, 4.5rem);
+    height: $comparison-banner-height;
     padding: var(--bp-space-040);
     background: linear-gradient(180deg, var(--bp-gray-05) 19.61%, var(--bp-white-opacity-00) 100%);
 }

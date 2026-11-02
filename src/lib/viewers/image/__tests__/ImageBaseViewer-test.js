@@ -454,6 +454,15 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.onKeydown('f')).toBe(false);
             expect(imageBase.toggleFullscreen).not.toBeCalled();
         });
+
+        test('should leave Alt+F to the browser', () => {
+            imageBase.loadUI();
+            imageBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(imageBase, 'toggleFullscreen').mockImplementation();
+
+            expect(imageBase.onKeydown('f', { altKey: true })).toBe(false);
+            expect(imageBase.toggleFullscreen).not.toBeCalled();
+        });
     });
 
     describe('bindDOMListeners()', () => {

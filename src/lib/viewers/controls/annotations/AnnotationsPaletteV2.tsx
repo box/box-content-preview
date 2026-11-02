@@ -24,7 +24,9 @@ export type ModeProps = {
 function AnnotationsPaletteV2({ children }: Props): JSX.Element {
     return (
         <div className="bp-AnnotationsPaletteV2" data-testid="bp-AnnotationsPaletteV2">
-            <ControlsBarV2 size="small">{children}</ControlsBarV2>
+            <ControlsBarV2 aria-label={__('annotation_tools_toolbar')} size="small">
+                {children}
+            </ControlsBarV2>
         </div>
     );
 }
@@ -60,12 +62,12 @@ function Mode({ value }: ModeProps): JSX.Element {
             testId: 'bp-AnnotationsControls-drawBtn',
         },
         [AnnotationMode.HIGHLIGHT]: {
-            label: __('highlight_text'),
+            label: __('annotation_highlight_text'),
             resinTarget: 'highlightText',
             testId: 'bp-AnnotationsControls-highlightBtn',
         },
         [AnnotationMode.REGION]: {
-            label: __('region_comment'),
+            label: __('annotation_region_comment'),
             resinTarget: 'highlightRegion',
             testId: 'bp-AnnotationsControls-regionBtn',
         },
