@@ -632,7 +632,15 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                 )}
                 {activeHandle && (
                     <div ref={tooltipRef} className="bp-WaveformRange-tooltip" data-testid="bp-waveform-range-tooltip">
-                        <div className="bp-WaveformRange-tooltipTime">{formatTime(tooltipMs / 1000)}</div>
+                        <div className="bp-WaveformRange-tooltipTime">
+                            {isBlueprintEnabled ? (
+                                <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                                    {formatTime(tooltipMs / 1000)}
+                                </Text>
+                            ) : (
+                                formatTime(tooltipMs / 1000)
+                            )}
+                        </div>
                     </div>
                 )}
                 {commentButton}
