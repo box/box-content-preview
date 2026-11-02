@@ -95,7 +95,10 @@ const GalleryTile = React.memo(function GalleryTile({
             style={tileStyle}
             tabIndex={isFocused ? 0 : -1}
         >
-            <span aria-hidden="true" className="bp-gallery-tile-badge">
+            <span
+                aria-hidden="true"
+                className={`bp-gallery-tile-badge${isBlueprintEnabled ? ' bp-gallery-tile-badge--blueprint' : ''}`}
+            >
                 {isBlueprintEnabled ? (
                     <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
                         {pageNum}

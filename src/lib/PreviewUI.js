@@ -2,6 +2,7 @@ import LoadingIcon from './LoadingIcon';
 import Notification from './Notification';
 import shellTemplate from './shell.html';
 import { CollectionNavigationRoot } from './CollectionNavigation';
+import { LoadingIconV2Root } from './LoadingIconV2';
 import { NotificationsV2Root } from './NotificationsV2';
 import { isFeatureEnabled } from './featureChecking';
 import {
@@ -49,7 +50,10 @@ class PreviewUI {
     /** @property {Function} - Keydown handler */
     keydownHandler;
 
-    /** @property {LoadingIcon} - Loading icon instance */
+    /** @property {boolean} - Whether the Blueprint migration supporting UI flag is on */
+    isSupportingUiEnabled;
+
+    /** @property {LoadingIcon|LoadingIconV2Root} - Loading icon instance */
     loadingIcon;
 
     /** @property {HTMLElement} - Preview container element which houses the sidebar and content */
@@ -130,7 +134,9 @@ class PreviewUI {
         this.previewContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW);
         this.contentContainer = this.container.querySelector(SELECTOR_BOX_PREVIEW_CONTENT);
 
-        if (isFeatureEnabled(options.features, BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+        this.isSupportingUiEnabled = isFeatureEnabled(options.features, BLUEPRINT_MIGRATION_SUPPORTING_UI);
+
+        if (this.isSupportingUiEnabled) {
             this.setupCollectionNavigation();
         }
 
@@ -370,7 +376,8 @@ class PreviewUI {
         const iconEl = this.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
 
         if (iconEl) {
-            this.loadingIcon = this.loadingIcon || new LoadingIcon({ containerEl: iconEl });
+            const LoadingIconClass = this.isSupportingUiEnabled ? LoadingIconV2Root : LoadingIcon;
+            this.loadingIcon = this.loadingIcon || new LoadingIconClass({ containerEl: iconEl });
             this.loadingIcon.render(extension);
         }
     }

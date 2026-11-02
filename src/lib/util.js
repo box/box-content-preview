@@ -1,5 +1,4 @@
 import Uri from 'jsuri';
-import { decode } from 'box-ui-elements/es/utils/keys';
 import DownloadReachability from './DownloadReachability';
 import Location from './Location';
 import PreviewError from './PreviewError';
@@ -426,14 +425,56 @@ export function loadScripts(urls, disableAMD = false) {
 }
 
 /**
- * Function to decode key down events into keys
+ * Function to decode key down events into keys, such as Shift+I, Control+I or Space.
+ * Works for both React synthetic and native events. Only one modifier is kept, in the order
+ * Control, Shift, Meta, and Alt is ignored. Returns an empty string for a modifier on its own.
  *
  * @public
  * @param {KeyboardEvent<Element>} event - Keydown event
  * @return {string} Decoded keydown key
  */
 export function decodeKeydown(event) {
-    return decode(event);
+    let modifier = '';
+
+    // keyIdentifier is the older spec still sent by some Safari versions
+    let key = event.key || event.keyIdentifier || '';
+
+    if (event.ctrlKey) {
+        modifier = 'Control';
+    } else if (event.shiftKey) {
+        modifier = 'Shift';
+    } else if (event.metaKey) {
+        modifier = 'Meta';
+    }
+
+    if (key === modifier) {
+        key = '';
+    }
+
+    // keyIdentifier reports characters as UTF8 code points, such as U+0041
+    if (key.indexOf('U+') === 0) {
+        key = key === 'U+001B' ? 'Escape' : String.fromCharCode(Number(key.replace('U+', '0x')));
+    }
+
+    if (!key) {
+        return '';
+    }
+
+    if (key === ' ') {
+        key = 'Space';
+    }
+
+    // Legacy Edge reports Esc
+    if (key === 'Esc') {
+        key = 'Escape';
+    }
+
+    // keyIdentifier does not prefix arrow keys with Arrow
+    if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
+        key = `Arrow${key}`;
+    }
+
+    return modifier ? `${modifier}+${key}` : key;
 }
 
 /**

@@ -96,12 +96,15 @@
     height: 26px;
     padding: 0 4px;
     border-radius: 12px 0;
-    font-size: 13px;
-    line-height: 1;
-    color: $white;
     opacity: 0;
     background: $seventy-sixers;
     transition: opacity 0.15s;
+
+    &:not(.bp-gallery-tile-badge--blueprint) {
+        font-size: 13px;
+        line-height: 1;
+        color: $white;
+    }
 }
 
 .bp-gallery-tile-placeholder {

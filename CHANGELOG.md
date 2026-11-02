@@ -1,3 +1,16 @@
+## 3.130.0 (2026-10-31)
+
+* fix(archive): align v2 table edges with the search bar (#1917) ([3ad7131](https://github.com/box/box-content-preview/commit/3ad7131)), closes [#1917](https://github.com/box/box-content-preview/issues/1917)
+* fix(archive): ellipsize long v2 item names (#1918) ([d5fe420](https://github.com/box/box-content-preview/commit/d5fe420)), closes [#1918](https://github.com/box/box-content-preview/issues/1918)
+* fix(archive): keep v2 breadcrumbs inside the viewer (#1919) ([cc46b47](https://github.com/box/box-content-preview/commit/cc46b47)), closes [#1919](https://github.com/box/box-content-preview/issues/1919)
+* fix(controls): keep arrow keys on the media settings button from reaching viewer shortcuts (#1921) ([7193acc](https://github.com/box/box-content-preview/commit/7193acc)), closes [#1921](https://github.com/box/box-content-preview/issues/1921)
+* fix(controls): use the default focus outline on the media icon toggles (#1922) ([5bf0348](https://github.com/box/box-content-preview/commit/5bf0348)), closes [#1922](https://github.com/box/box-content-preview/issues/1922)
+* fix(gallery): keep legacy badge font rules off the Blueprint badge (#1911) ([4f9e3de](https://github.com/box/box-content-preview/commit/4f9e3de)), closes [#1911](https://github.com/box/box-content-preview/issues/1911)
+* refactor(controls): take v2 color picker and scrubber colors from Blueprint (#1915) ([dd067b4](https://github.com/box/box-content-preview/commit/dd067b4)), closes [#1915](https://github.com/box/box-content-preview/issues/1915)
+* refactor(util): decode keydown events without box-ui-elements (#1910) ([3639545](https://github.com/box/box-content-preview/commit/3639545)), closes [#1910](https://github.com/box/box-content-preview/issues/1910)
+* feat(preview): render loading icon in bcp behind supporting UI flag (#1912) ([a1fb8e1](https://github.com/box/box-content-preview/commit/a1fb8e1)), closes [#1912](https://github.com/box/box-content-preview/issues/1912)
+* chore(i18n): update translations (#1914) ([504f77c](https://github.com/box/box-content-preview/commit/504f77c)), closes [#1914](https://github.com/box/box-content-preview/issues/1914)
+
 ## 3.129.0 (2026-10-30)
 
 * fix(comparison): pad plain text and archive below the version banner (#1901) ([53ef8b6](https://github.com/box/box-content-preview/commit/53ef8b6)), closes [#1901](https://github.com/box/box-content-preview/issues/1901)
