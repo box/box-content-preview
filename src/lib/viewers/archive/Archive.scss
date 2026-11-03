@@ -7,7 +7,7 @@
     background: $white;
 
     &.bp-archive--blueprint {
-        background: var(--bp-surface-surface);
+        background: var(--bp-gray-white);
     }
 
     .bp-container:has(.bp-version-banner) & {
