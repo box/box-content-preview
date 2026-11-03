@@ -1,3 +1,8 @@
+## 3.132.0 (2026-11-03)
+
+* chore(deps): bump follow-redirects from 1.16.1 to 1.16.2 (#1924) ([e486d66](https://github.com/box/box-content-preview/commit/e486d66)), closes [#1924](https://github.com/box/box-content-preview/issues/1924)
+* chore(deps): bump systeminformation from 5.33.1 to 5.33.19 (#1925) ([76a4397](https://github.com/box/box-content-preview/commit/76a4397)), closes [#1925](https://github.com/box/box-content-preview/issues/1925)
+
 ## 3.131.0 (2026-11-02)
 
 * feat(doc): surface ocr_pdf searchable PDF representation (#1822) ([e79d237](https://github.com/box/box-content-preview/commit/e79d237)), closes [#1822](https://github.com/box/box-content-preview/issues/1822)
