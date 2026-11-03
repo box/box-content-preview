@@ -13,7 +13,7 @@ import ControlsRoot from '../../controls/controls-root';
 import DocBaseViewer, {
     DISCOVERABILITY_STATES,
     PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER,
-    countPdfOperations,
+    checkPdfOperationLimit,
 } from '../DocBaseViewer';
 import DocControls from '../DocControls';
 import DocControlsV2 from '../DocControlsV2';
@@ -2564,28 +2564,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
 
-                test('should skip operations check for non-.numbers files', async () => {
-                    docBase.options.file.extension = 'pdf';
-
-                    const mockDoc = {
-                        numPages: 2,
-                        getPage: jest.fn(),
-                    };
-
-                    stubs.getDocument.mockReturnValue({
-                        destroy: jest.fn(),
-                        promise: Promise.resolve(mockDoc),
-                    });
-
-                    await docBase.initViewer('url');
-
-                    // Should not call getPage for operations counting
-                    expect(mockDoc.getPage).not.toHaveBeenCalled();
-                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
-                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
-                });
-
-                test('should throw error when .numbers file has too many operations', async () => {
+                test('should show the too many operations error when a .numbers file exceeds the limit', async () => {
                     docBase.options.file.extension = 'numbers';
 
                     const mockDoc = {
@@ -2605,13 +2584,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
-                    });
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.handleDownloadError).not.toHaveBeenCalled();
                 });
 
-                test('should handle operations check error properly', async () => {
+                test('should report a content download error when a page fails during the operations check', async () => {
                     docBase.options.file.extension = 'numbers';
 
                     const mockDoc = {
@@ -2632,9 +2615,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
-                    });
+                    await docBase.initViewer('url');
+
+                    expect(stubs.handleDownloadError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_content_download' }),
+                        'url',
+                    );
                 });
 
                 test('should use correct error code for too many operations', async () => {
@@ -2656,18 +2642,41 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     });
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
-                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                code: 'error_viewer_too_many_operations',
-                                message:
-                                    'The file is too complex to display in your browser. Please download it to view.',
-                            }),
-                            'url',
-                        );
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            code: 'error_viewer_too_many_operations',
+                            displayMessage:
+                                'The file is too complex to display in your browser. Please download it to view.',
+                            message: 'Too many drawing operations',
+                        }),
+                    );
+                });
+
+                test('should fall back to another representation before showing the too many operations error', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(400000) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
                     });
+                    jest.spyOn(console, 'error').mockImplementation();
+                    stubs.attemptRepFallback = jest.spyOn(docBase, 'attemptRepFallback').mockReturnValue(true);
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                    await docBase.initViewer('url');
+
+                    expect(stubs.attemptRepFallback).toHaveBeenCalled();
+                    expect(stubs.triggerError).not.toHaveBeenCalled();
                 });
 
                 test('should check operations count for .xlsx files', async () => {
@@ -2696,7 +2705,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
 
-                test('should throw error when .xlsx file has too many operations', async () => {
+                test('should show the too many operations error when a .xlsx file exceeds the limit', async () => {
                     docBase.options.file.extension = 'xlsx';
 
                     const mockDoc = {
@@ -2716,10 +2725,60 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.handleDownloadError).not.toHaveBeenCalled();
+                });
+
+                test('should render .dwg files at the operations limit', async () => {
+                    docBase.options.file.extension = 'dwg';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320000) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
                     });
+
+                    await docBase.initViewer('url');
+
+                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should show the too many operations error for .dwg files over the operations limit', async () => {
+                    docBase.options.file.extension = 'dwg';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320001) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+                    jest.spyOn(console, 'error').mockImplementation();
+                    stubs.load = jest.spyOn(docBase, 'load').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.load).not.toHaveBeenCalled();
+                    expect(docBase.pdfViewer.setDocument).not.toHaveBeenCalledWith(mockDoc);
                 });
 
                 test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['pdf']])(
@@ -3246,6 +3305,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(getProps(docBase)).toMatchObject({
                     annotationColor: '#0061d5',
                     annotationMode: 'none',
+                    hasAnnotationsOnlyControls: false,
                     hasHighlight: true,
                     hasRegion: true,
                     maxScale: 10,
@@ -3264,6 +3324,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pageNumber: docBase.pdfViewer.currentPageNumber,
                     scale: 0.9,
                 });
+            });
+
+            test('should pass the annotations-only controls state to the controls', () => {
+                jest.spyOn(docBase, 'hasAnnotationsOnlyControls').mockReturnValue(true);
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).hasAnnotationsOnlyControls).toBe(true);
             });
 
             test.each`
@@ -4355,7 +4423,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 event = {
                     ctrlKey: true,
-                    deltaY: -50,
+                    deltaY: -10,
                     clientX: 400,
                     clientY: 300,
                     preventDefault: jest.fn(),
@@ -4383,27 +4451,46 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should zoom in with cursor anchoring when above initial scale', () => {
                 docBase.pdfViewer.currentScale = 1;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // trackpad pinch in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
-                expect(docBase.updateScale).toBeCalledWith(1.5);
+                expect(docBase.updateScale).toBeCalledWith(1.1);
             });
 
             test('should zoom out with cursor anchoring', () => {
                 docBase.pdfViewer.currentScale = 0.5;
 
-                event.deltaY = 100; // zoom out
+                event.deltaY = 10; // trackpad pinch out
 
                 docBase.trackpadPinchToZoomHandler(event);
 
-                expect(docBase.updateScale).toBeCalledWith(0.1);
+                expect(docBase.updateScale).toBeCalledWith(0.4);
                 expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+            });
+
+            test('should step a mouse-wheel notch by 10%', () => {
+                docBase.pdfViewer.currentScale = 1;
+                event.deltaY = -100;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(1.1);
+            });
+
+            test('should step a line-mode mouse wheel by 10%', () => {
+                docBase.pdfViewer.currentScale = 1;
+                event.deltaY = 3;
+                event.deltaMode = 1;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(0.9);
             });
 
             test('should not exceed MAX_SCALE', () => {
                 docBase.pdfViewer.currentScale = 5.0;
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4412,7 +4499,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not go below MIN_SCALE', () => {
                 docBase.pdfViewer.currentScale = 0.1;
-                event.deltaY = 50; // zoom out
+                event.deltaY = 10; // zoom out
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4422,7 +4509,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should use page-relative anchoring when a page element is found', () => {
                 docBase.pdfViewer.currentScale = 1.5;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4434,7 +4521,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 document.elementFromPoint.mockReturnValue(null);
                 docBase.pdfViewer.currentScale = 1.5;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -4446,7 +4533,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.file = { id: '0', extension: 'pdf' };
                 docBase.isTrackpadPinching = false;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
                 docBase.trackpadPinchToZoomHandler(event);
 
                 expect(docBase.options.resin.recordAction).toBeCalledWith({
@@ -4464,7 +4551,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.isTrackpadPinching = false;
                 docBase.pdfViewer.currentScale = 2;
 
-                event.deltaY = 50; // zoom out
+                event.deltaY = 10; // zoom out
                 docBase.trackpadPinchToZoomHandler(event);
 
                 expect(docBase.options.resin.recordAction).toBeCalledWith({
@@ -5979,65 +6066,99 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
-        describe('countPdfOperations', () => {
-            test('should count operations from multiple pages', async () => {
+        describe('checkPdfOperationLimit', () => {
+            const makeDoc = (numPages, operationsPerPage) => ({
+                numPages,
+                getPage: jest.fn().mockResolvedValue({
+                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(operationsPerPage) }),
+                }),
+            });
+
+            test('should add operations across pages before comparing with the limit', async () => {
                 const mockDoc = {
                     numPages: 3,
-                    getPage: jest.fn(),
+                    getPage: jest
+                        .fn()
+                        .mockResolvedValueOnce({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
+                        })
+                        .mockResolvedValueOnce({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200) }),
+                        })
+                        .mockResolvedValueOnce({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(300) }),
+                        }),
                 };
 
-                const mockPage1 = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
-                };
-                const mockPage2 = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200) }),
-                };
-                const mockPage3 = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(300) }),
-                };
-
-                mockDoc.getPage
-                    .mockReturnValueOnce(Promise.resolve(mockPage1))
-                    .mockReturnValueOnce(Promise.resolve(mockPage2))
-                    .mockReturnValueOnce(Promise.resolve(mockPage3));
-
-                const result = await countPdfOperations(mockDoc, 3);
-                expect(result).toBe(600);
+                expect(await checkPdfOperationLimit(mockDoc, 3, 500)).toBe(true);
                 expect(mockDoc.getPage).toHaveBeenCalledTimes(3);
             });
 
-            test('should limit to maxPages parameter', async () => {
-                const mockDoc = {
-                    numPages: 10,
-                    getPage: jest.fn(),
-                };
+            test('should check only maxPages pages', async () => {
+                const mockDoc = makeDoc(10, 100);
 
-                const mockPage = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
-                };
-
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-
-                const result = await countPdfOperations(mockDoc, 2);
-                expect(result).toBe(200);
+                expect(await checkPdfOperationLimit(mockDoc, 2, 200)).toBe(false);
                 expect(mockDoc.getPage).toHaveBeenCalledTimes(2);
             });
 
-            test('should use default maxPages when not specified', async () => {
-                const mockDoc = {
-                    numPages: 10,
-                    getPage: jest.fn(),
-                };
+            test.each`
+                operationsPerPage | expected
+                ${64000}          | ${false}
+                ${64001}          | ${true}
+            `(
+                'should return $expected for $operationsPerPage operations on each of the first 5 pages by default',
+                async ({ operationsPerPage, expected }) => {
+                    const mockDoc = makeDoc(10, operationsPerPage);
 
-                const mockPage = {
+                    expect(await checkPdfOperationLimit(mockDoc)).toBe(expected);
+                    expect(mockDoc.getPage).toHaveBeenCalledTimes(5);
+                },
+            );
+
+            test('should stop requesting pages once the count exceeds the operation limit', async () => {
+                const mockDoc = makeDoc(5, 400);
+
+                expect(await checkPdfOperationLimit(mockDoc, 5, 500)).toBe(true);
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(2);
+            });
+
+            test('should keep counting while the count equals the operation limit', async () => {
+                const mockDoc = makeDoc(3, 250);
+
+                expect(await checkPdfOperationLimit(mockDoc, 3, 500)).toBe(true);
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(3);
+            });
+
+            test('should stop requesting pages after a page fails', async () => {
+                const mockDoc = makeDoc(3, 100);
+                mockDoc.getPage.mockResolvedValueOnce({
                     getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
-                };
+                });
+                mockDoc.getPage.mockRejectedValueOnce(new Error('Page error'));
 
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                await expect(checkPdfOperationLimit(mockDoc, 3, 500)).rejects.toThrow('Page error');
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(2);
+            });
 
-                const result = await countPdfOperations(mockDoc);
-                expect(result).toBe(500); // 5 pages * 100 operations each
-                expect(mockDoc.getPage).toHaveBeenCalledTimes(5);
+            test('should request pages one at a time', async () => {
+                let resolveFirstPage;
+                const mockDoc = makeDoc(2, 100);
+                mockDoc.getPage.mockReturnValueOnce(
+                    new Promise(resolve => {
+                        resolveFirstPage = resolve;
+                    }),
+                );
+
+                const resultPromise = checkPdfOperationLimit(mockDoc, 2, 500);
+                await Promise.resolve();
+                await Promise.resolve();
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(1);
+                expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+
+                resolveFirstPage({ getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }) });
+
+                expect(await resultPromise).toBe(false);
+                expect(mockDoc.getPage).toHaveBeenNthCalledWith(2, 2);
             });
         });
     });

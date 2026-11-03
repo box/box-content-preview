@@ -39,7 +39,7 @@ import {
 } from '../constants';
 import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS, FIRST_RENDER_METRIC } from '../events';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationMode } from '../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../AnnotationControlsFSM';
 import AnnotationModule from '../AnnotationModule';
 import PreviewError from '../PreviewError';
 import { isBlueprintEnabled, isFeatureEnabled } from '../featureChecking';
@@ -56,6 +56,8 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.HIGHLIGHT]: CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
+
+const ANNOTATIONS_ONLY_STATES = [AnnotationState.DRAWING, AnnotationState.HIGHLIGHT, AnnotationState.REGION];
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -1135,6 +1137,20 @@ class BaseViewer extends EventEmitter {
 
     getInitialAnnotationMode() {
         return AnnotationMode.NONE;
+    }
+
+    /**
+     * Whether the host's annotations-only controls apply. Only a mode the user picked counts: the temporary
+     * discoverability modes don't, so an image that opens ready for regions keeps its full controls.
+     *
+     * @protected
+     * @return {boolean}
+     */
+    hasAnnotationsOnlyControls() {
+        return (
+            !!this.options.enableAnnotationsOnlyControls &&
+            ANNOTATIONS_ONLY_STATES.includes(this.annotationControlsFSM.getState())
+        );
     }
 
     /**
