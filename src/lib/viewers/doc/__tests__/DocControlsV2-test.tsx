@@ -1,13 +1,13 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../BlueprintProviders';
-import DocControlsV2 from '../DocControlsV2';
+import DocControlsV2, { Props } from '../DocControlsV2';
 import fullscreen from '../../../Fullscreen';
+import { ANNOTATIONS_ONLY_MEDIA_QUERY } from '../../controls/annotations/useAnnotationsOnlyControls';
 import { AnnotationColor } from '../../../AnnotationModule';
 import { AnnotationMode } from '../../../types';
 import { replacePlaceholders } from '../../../util';
-import { Props } from '../DocControls';
 
 describe('DocControlsV2', () => {
     const originalMatchMedia = window.matchMedia;
@@ -39,7 +39,7 @@ describe('DocControlsV2', () => {
         global.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver;
         window.matchMedia = jest.fn().mockImplementation((query: string) => ({
             addEventListener: jest.fn(),
-            matches: isLargeViewport,
+            matches: query === ANNOTATIONS_ONLY_MEDIA_QUERY ? !isLargeViewport : isLargeViewport,
             media: query,
             removeEventListener: jest.fn(),
         }));
@@ -439,6 +439,60 @@ describe('DocControlsV2', () => {
 
             expect(screen.queryByRole('button', { name: __('annotation_tools') })).not.toBeInTheDocument();
             expect(screen.queryByTestId('bp-AnnotationsPaletteV2')).not.toBeInTheDocument();
+        });
+
+        describe('annotations-only controls', () => {
+            const annotationsOnlyProps = {
+                ...annotationProps,
+                annotationMode: AnnotationMode.REGION,
+                hasAnnotationsOnlyControls: true,
+                onFindBarToggle: jest.fn(),
+                onRotateLeft: jest.fn(),
+            };
+
+            test('should show only the exit button and the markup toggle on narrow viewports', () => {
+                isLargeViewport = false;
+                getWrapper(annotationsOnlyProps);
+
+                const [mainBar] = screen.getAllByRole('toolbar');
+
+                expect(within(mainBar).getAllByRole('button')).toEqual([
+                    screen.getByRole('button', { name: __('exit_annotations') }),
+                    screen.getByRole('button', { name: __('annotation_tools') }),
+                ]);
+                expect(within(mainBar).queryByRole('separator')).not.toBeInTheDocument();
+                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).toHaveClass('bp-AnnotationsPaletteV2--centered');
+            });
+
+            test('should keep the full bar on wider viewports', () => {
+                getWrapper(annotationsOnlyProps);
+
+                const [mainBar] = screen.getAllByRole('toolbar');
+
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('previous_page') }));
+                expect(within(mainBar).getByRole('separator')).toBeInTheDocument();
+                expect(screen.getByTestId('bp-AnnotationsPaletteV2')).not.toHaveClass(
+                    'bp-AnnotationsPaletteV2--centered',
+                );
+            });
+
+            test('should keep the full bar on narrow viewports when the host has not turned it on', () => {
+                isLargeViewport = false;
+                getWrapper({ ...annotationsOnlyProps, hasAnnotationsOnlyControls: false });
+
+                const [mainBar] = screen.getAllByRole('toolbar');
+
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('zoom_in') }));
+                expect(mainBar).toContainElement(screen.getByRole('button', { name: __('previous_page') }));
+            });
+
+            test('should keep the full bar while the gallery is open', () => {
+                isLargeViewport = false;
+                getWrapper({ ...annotationsOnlyProps, hasGalleryZoom: true, isGalleryOpen: true });
+
+                expect(screen.getByRole('button', { name: __('zoom_in') })).toBeInTheDocument();
+            });
         });
     });
 });

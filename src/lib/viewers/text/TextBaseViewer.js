@@ -10,12 +10,12 @@ import {
     PERMISSION_DOWNLOAD,
 } from '../../constants';
 import { checkPermission } from '../../file';
+import { getWheelZoomScaleDelta } from '../../wheelZoom';
 
 const ZOOM_DEFAULT = 1.0;
 const ZOOM_MAX = 10;
 const ZOOM_MIN = 0.1;
 const ZOOM_STEP = 0.1;
-const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 class TextBaseViewer extends BaseViewer {
     /**
@@ -87,8 +87,8 @@ class TextBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
-     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     * Handles ctrl+wheel zoom. Trackpad pinch fires many small deltas. A mouse
+     * notch steps by the same amount as the +/- buttons.
      * Anchors zoom on the cursor position so content under the cursor stays in place.
      *
      * @protected
@@ -120,7 +120,7 @@ class TextBaseViewer extends BaseViewer {
 
         event.preventDefault();
 
-        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const scaleDelta = getWheelZoomScaleDelta(event);
         const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, this.scale + scaleDelta));
 
         if (newScale === this.scale) {

@@ -9,6 +9,7 @@ import { AnnotationMode } from '../../../types';
 export type Props = {
     annotationColor?: string;
     annotationMode: AnnotationMode;
+    isCentered?: boolean;
     modes: ActiveAnnotationMode[];
     onAnnotationColorChange: (color: string) => void;
     onAnnotationModeClick?: ({ mode }: { mode: AnnotationMode }) => void;
@@ -18,6 +19,7 @@ export type Props = {
 export default function AnnotationsPaletteControlsV2({
     annotationColor,
     annotationMode,
+    isCentered,
     modes,
     onAnnotationColorChange,
     onAnnotationModeClick,
@@ -27,7 +29,7 @@ export default function AnnotationsPaletteControlsV2({
     }
 
     return (
-        <AnnotationsPaletteV2>
+        <AnnotationsPaletteV2 isCentered={isCentered}>
             <AnnotationsPaletteV2.Modes annotationMode={annotationMode} onAnnotationModeClick={onAnnotationModeClick}>
                 {modes.map(mode => (
                     <AnnotationsPaletteV2.Mode key={mode} value={mode} />

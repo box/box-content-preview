@@ -8,6 +8,7 @@ import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2
 import AnnotationsPaletteControlsV2 from '../controls/annotations/AnnotationsPaletteControlsV2';
 import ExperiencesProvider from '../controls/experiences';
 import useAnnotationModes from '../controls/annotations/useAnnotationModes';
+import useAnnotationsOnlyControls from '../controls/annotations/useAnnotationsOnlyControls';
 import {
     ALWAYS_OVERFLOW,
     ControlsBarItem,
@@ -23,7 +24,12 @@ import { ThumbnailsToggleV2 } from '../controls/sidebar';
 import { useFullscreen, useMediaQuery } from '../controls/hooks';
 import { ZoomControlsV2, ZoomMenuItemsV2 } from '../controls/zoom';
 import { AnnotationMode } from '../../types';
-import { Props } from './DocControls';
+import { Props as DocControlsProps } from './DocControls';
+
+export type Props = DocControlsProps & {
+    // The host's annotations-only controls are on and the user picked an annotation mode
+    hasAnnotationsOnlyControls?: boolean;
+};
 
 // The thumbnails sidebar only opens at this width (box-ui-elements $size-large-min)
 const THUMBNAILS_MEDIA_QUERY = '(min-width: 768px)';
@@ -45,6 +51,7 @@ export default function DocControlsV2({
     annotationColor,
     annotationMode = AnnotationMode.NONE,
     experiences,
+    hasAnnotationsOnlyControls,
     hasDrawing,
     hasGalleryZoom = false,
     hasHighlight,
@@ -73,6 +80,7 @@ export default function DocControlsV2({
     const canShowThumbnails = useMediaQuery(THUMBNAILS_MEDIA_QUERY);
     const annotationModes = useAnnotationModes({ hasDrawing, hasHighlight, hasRegion });
     const hasAnnotations = !isGalleryOpen && annotationModes.length > 0;
+    const isAnnotationsOnly = useAnnotationsOnlyControls(hasAnnotationsOnlyControls) && hasAnnotations;
 
     const zoomProps = {
         maxScale,
@@ -171,6 +179,7 @@ export default function DocControlsV2({
             control: (
                 <AnnotationsControlsV2
                     annotationMode={annotationMode}
+                    hasSeparator={!isAnnotationsOnly}
                     modes={annotationModes}
                     onAnnotationModeClick={onAnnotationModeClick}
                     onAnnotationModeEscape={onAnnotationModeEscape}
@@ -179,14 +188,18 @@ export default function DocControlsV2({
             id: 'annotations',
         },
     ];
+    const barItems = items.filter(
+        (item): item is ControlsBarItem => !!item && (!isAnnotationsOnly || item.id === 'annotations'),
+    );
 
     return (
         <ExperiencesProvider experiences={experiences}>
-            <ResponsiveControlsBarV2 items={items.filter((item): item is ControlsBarItem => !!item)} />
+            <ResponsiveControlsBarV2 items={barItems} />
             {hasAnnotations && (
                 <AnnotationsPaletteControlsV2
                     annotationColor={annotationColor}
                     annotationMode={annotationMode}
+                    isCentered={isAnnotationsOnly}
                     modes={annotationModes}
                     onAnnotationColorChange={onAnnotationColorChange}
                     onAnnotationModeClick={onAnnotationModeClick}
