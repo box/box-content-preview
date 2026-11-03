@@ -9,6 +9,8 @@ import Popup from '../../../Popup';
 import { linkify, Remarkable } from '../../../../third-party/text/2.65.0/remarkable.min.js';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
+import * as util from '../../../util';
+import { MARKDOWN_PRINT_STYLES } from '../printStyles';
 
 jest.mock('../../controls/controls-root');
 
@@ -80,10 +82,52 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             expect(markdown.preparePrint).toBeCalledWith([
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
                 `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.min.css`,
-                'preview.css',
             ]);
             expect(markdown.printPopup.show).toBeCalledWith('Preparing to print...', 'Print', expect.any(Function));
             expect(markdown.printPopup.disableButton).toBeCalled();
+        });
+
+        describe('print stylesheets', () => {
+            const baseURI = 'https://cdn.example.com/preview/1.0.0/en-US/';
+            const staticBaseURI = 'https://static.example.com/preview/';
+            let printDocument;
+
+            const getLinkHrefs = () => Array.from(printDocument.head.querySelectorAll('link')).map(link => link.href);
+
+            beforeEach(() => {
+                printDocument = document.implementation.createHTMLDocument('print');
+                jest.spyOn(util, 'openContentInsideIframe').mockReturnValue({ contentDocument: printDocument });
+                markdown.options.location = { baseURI, staticBaseURI };
+                markdown.printReady = false;
+                markdown.printPopup = { destroy: jest.fn(), disableButton: jest.fn(), show: jest.fn() };
+            });
+
+            afterEach(() => {
+                delete global.__BCP_NPM_BUILD__;
+            });
+
+            test('should link the Markdown stylesheets and preview.css from baseURI in the CDN build', () => {
+                markdown.print();
+
+                expect(getLinkHrefs()).toEqual([
+                    `${staticBaseURI}third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
+                    `${staticBaseURI}third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.min.css`,
+                    `${baseURI}preview.css`,
+                ]);
+            });
+
+            test('should inline the Markdown print styles and request nothing under baseURI in the npm build', () => {
+                global.__BCP_NPM_BUILD__ = true;
+
+                markdown.print();
+
+                expect(getLinkHrefs()).toEqual([
+                    `${staticBaseURI}third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
+                    `${staticBaseURI}third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.min.css`,
+                ]);
+                expect(printDocument.head.lastElementChild.tagName).toBe('STYLE');
+                expect(printDocument.head.lastElementChild.textContent).toBe(MARKDOWN_PRINT_STYLES);
+            });
         });
 
         test('should hide print popup and print iframe when print button is clicked', () => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Toolbar, Tooltip } from '@box/blueprint-web';
 import ChevronDown from '@box/blueprint-web-assets/icons/Medium/ChevronDown';
 import ChevronUp from '@box/blueprint-web-assets/icons/Medium/ChevronUp';
+import ControlsPillV2 from '../controls-bar/ControlsPillV2';
 import PageControlsFormV2 from './PageControlsFormV2';
 import { Props } from './PageControls';
 
@@ -16,9 +17,10 @@ export default function PageControlsV2({
     }
 
     return (
-        <>
+        <ControlsPillV2>
             <Tooltip content={__('previous_page')}>
                 <Toolbar.Button
+                    className="bp-ControlsPillV2-button"
                     aria-label={__('previous_page')}
                     data-resin-target="pagePrevious"
                     data-testid="bp-PageControls-previous"
@@ -31,6 +33,7 @@ export default function PageControlsV2({
             <PageControlsFormV2 onPageSubmit={onPageSubmit} pageCount={pageCount} pageNumber={pageNumber} />
             <Tooltip content={__('next_page')}>
                 <Toolbar.Button
+                    className="bp-ControlsPillV2-button"
                     aria-label={__('next_page')}
                     data-resin-target="pageNext"
                     data-testid="bp-PageControls-next"
@@ -40,6 +43,6 @@ export default function PageControlsV2({
                     <Toolbar.Icon icon={ChevronDown} />
                 </Toolbar.Button>
             </Tooltip>
-        </>
+        </ControlsPillV2>
     );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
-import { white } from 'box-ui-elements/es/styles/variables';
+import { GrayWhite } from '@box/blueprint-web-assets/tokens/tokens';
 import FilmstripV2 from './FilmstripV2';
 import { buildClusters, CommentMarker, MarkerCluster, MarkerTick, useDismissableMarkerSelection } from './markers';
 import SliderControl from '../slider';
@@ -147,7 +147,7 @@ export default function TimeControlsV2({
                     onUpdate={onTimeChange}
                     step={fps ? 1 / fps : 5}
                     title={__('media_time_slider')}
-                    track={`linear-gradient(to right, ${white} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} 100%)`}
+                    track={`linear-gradient(to right, ${GrayWhite} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} 100%)`}
                     value={currentValue}
                 />
                 {durationValue > 0 &&

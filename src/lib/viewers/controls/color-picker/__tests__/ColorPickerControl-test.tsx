@@ -9,7 +9,7 @@ describe('ColorPickerControl', () => {
 
     const getWrapper = (props = {}, setIsForced = jest.fn()) =>
         render(
-            <ControlsLayerContext.Provider value={{ setIsForced }}>
+            <ControlsLayerContext.Provider value={{ setIsEditing: jest.fn(), setIsForced }}>
                 <ColorPickerControl colors={[defaultColor]} onColorSelect={jest.fn()} {...props} />
             </ControlsLayerContext.Provider>,
         );

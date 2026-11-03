@@ -73,12 +73,48 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             expect(viewer.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
         });
 
+        test('should scope the v2 control styles without the v2 layout when using the v2 controls', () => {
+            viewer.destroy();
+            jest.spyOn(viewer, 'featureEnabled').mockImplementation(feature => feature === 'videoPlayerV2.enabled');
+            jest.spyOn(viewer, 'useReactControls').mockReturnValue(true);
+            jest.spyOn(viewer, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+            viewer.isSetup = false;
+            viewer.setup();
+            expect(viewer.isVideoPlayerV2).toBe(false);
+            expect(viewer.mediaStageEl).toBeUndefined();
+            expect(viewer.wrapperEl).toHaveClass('bp-media--v2');
+            expect(viewer.mediaContainerEl).not.toHaveClass('bp-media-container--v2');
+        });
+
         test('should create .destroyed property of false', () => {
             expect(viewer.destroyed).toBe(false);
         });
 
-        test('should set "display" style of mediaEl to "none"', () => {
-            expect(viewer.mediaEl.style.display).toBe('none');
+        test('should keep mediaEl displayed so the browser draws its captions over the canvas', () => {
+            expect(viewer.mediaEl.style.display).toBe('');
+        });
+
+        test('should keep mediaEl out of remote playback and picture-in-picture', () => {
+            expect(viewer.mediaEl.hasAttribute('disableremoteplayback')).toBe(true);
+            expect(viewer.mediaEl.hasAttribute('disablepictureinpicture')).toBe(true);
+        });
+
+        test('should leave sizing mediaEl to the stylesheet', () => {
+            viewer.videoWidth = 1920;
+            viewer.videoHeight = 960;
+            viewer.aspect = 2;
+
+            viewer.setVideoDimensions();
+
+            expect(viewer.mediaEl.style.width).toBe('');
+            expect(viewer.mediaEl.style.height).toBe('');
+        });
+
+        test('should keep mediaContainerEl full size after a resize', () => {
+            viewer.resize();
+
+            expect(viewer.mediaContainerEl.style.width).toBe('100%');
+            expect(viewer.mediaContainerEl.style.height).toBe('100%');
         });
 
         test('should set "width" style of mediaContainerEl to "100%"', () => {
@@ -335,6 +371,51 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
 
             expect(addStub).toBeCalledWith('touchstart', expect.any(Function));
         });
+
+        test('should keep the React controls and skip the imperative 360 controls when using the v2 controls', () => {
+            const reactControls = { destroy: jest.fn(), render: jest.fn() };
+            const addStub = jest.spyOn(viewer.renderer.getBox3D().canvas, 'addEventListener').mockImplementation();
+            jest.spyOn(viewer, 'isVideoControlsV2Enabled').mockReturnValue(true);
+            viewer.controls = reactControls;
+            viewer.hasTouch = true;
+            viewer.createControls();
+
+            expect(viewer.video360Controls).toBeUndefined();
+            expect(viewer.controls).toBe(reactControls);
+            expect(addStub).not.toBeCalled();
+        });
+    });
+
+    describe('isVideoControlsV2Enabled()', () => {
+        test.each`
+            useReactControls | isV2FlagOn | isBlueprintOn | expected
+            ${true}          | ${true}    | ${true}       | ${true}
+            ${true}          | ${true}    | ${false}      | ${false}
+            ${true}          | ${false}   | ${true}       | ${false}
+            ${false}         | ${true}    | ${true}       | ${false}
+        `(
+            'should return $expected when useReactControls is $useReactControls, the v2 flag is $isV2FlagOn and the Blueprint flag is $isBlueprintOn',
+            ({ useReactControls, isV2FlagOn, isBlueprintOn, expected }) => {
+                jest.spyOn(viewer, 'useReactControls').mockReturnValue(useReactControls);
+                jest.spyOn(viewer, 'featureEnabled').mockImplementation(
+                    feature => feature === 'videoPlayerV2.enabled' && isV2FlagOn,
+                );
+                jest.spyOn(viewer, 'isBlueprintMediaControlsEnabled').mockReturnValue(isBlueprintOn);
+
+                expect(viewer.isVideoControlsV2Enabled()).toBe(expected);
+            },
+        );
+    });
+
+    describe('getVideoControlsV2Props()', () => {
+        test('should pass the VR toggle state and handler to the v2 controls', () => {
+            viewer.isVrShown = true;
+
+            expect(viewer.getVideoControlsV2Props()).toEqual({
+                isVrShown: true,
+                onVrToggle: viewer.handleToggleVr,
+            });
+        });
     });
 
     describe('destroyControls()', () => {
@@ -477,6 +558,21 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             expect(box3d.createTexture2d).toBeCalledWith(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
         });
 
+        test('should show the video again once Box3D has loaded and hidden it, so its captions draw', async () => {
+            box3d.createTexture2d.mockReturnValue({
+                id: '12345',
+                load: callback => {
+                    viewer.mediaEl.style.display = 'none';
+                    callback();
+                },
+            });
+
+            await viewer.create360Environment();
+
+            expect(viewer.mediaEl.style.display).toBe('');
+            expect(skybox.enable).toBeCalled();
+        });
+
         describe.skip('load texture asset', () => {
             test('should resolve the Promise returned after successfully loading .textureAsset', done => {
                 createPromise.then(done);
@@ -587,6 +683,24 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             expect(viewer.video360Controls.showVrButton).toBeCalled();
 
             viewer.video360Controls = null;
+        });
+
+        test('should show the VR toggle in the v2 controls', () => {
+            jest.spyOn(viewer, 'isVideoControlsV2Enabled').mockReturnValue(true);
+            jest.spyOn(viewer, 'renderUI').mockImplementation();
+            viewer.handleShowVrButton();
+
+            expect(viewer.isVrShown).toBe(true);
+            expect(viewer.renderUI).toBeCalled();
+        });
+
+        test('should not re-render when neither controls can show the VR toggle', () => {
+            jest.spyOn(viewer, 'isVideoControlsV2Enabled').mockReturnValue(false);
+            jest.spyOn(viewer, 'renderUI').mockImplementation();
+            viewer.handleShowVrButton();
+
+            expect(viewer.isVrShown).toBe(false);
+            expect(viewer.renderUI).not.toBeCalled();
         });
     });
 

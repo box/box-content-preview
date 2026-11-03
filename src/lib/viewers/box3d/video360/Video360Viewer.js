@@ -33,6 +33,9 @@ class Video360Viewer extends DashViewer {
     /** @property {Box3D.Components.SkyboxRenderer} - The component for rendering the video as 360 degree (on a skybox) */
     skybox;
 
+    /** @property {boolean} - Whether the React controls show the VR toggle */
+    isVrShown = false;
+
     /** @inheritdoc */
     constructor(options) {
         super(options);
@@ -50,6 +53,34 @@ class Video360Viewer extends DashViewer {
     }
 
     /** @inheritdoc */
+    isVideoControlsV2Enabled() {
+        return (
+            this.useReactControls() &&
+            this.featureEnabled('videoPlayerV2.enabled') &&
+            this.isBlueprintMediaControlsEnabled()
+        );
+    }
+
+    /** @inheritdoc */
+    getVideoControlsV2Props() {
+        return {
+            isVrShown: this.isVrShown,
+            onVrToggle: this.handleToggleVr,
+        };
+    }
+
+    /**
+     * The canvas shows the picture, so the container fills the viewer instead of fitting the video, which
+     * Video360.scss sizes to place its captions. resize() clears the container size before calling this.
+     *
+     * @inheritdoc
+     */
+    setVideoDimensions() {
+        this.mediaContainerEl.style.width = '100%';
+        this.mediaContainerEl.style.height = '100%';
+    }
+
+    /** @inheritdoc */
     setup() {
         if (this.isSetup) {
             return;
@@ -60,18 +91,26 @@ class Video360Viewer extends DashViewer {
 
         this.destroyed = false;
 
-        // Hide video element
-        this.mediaEl.style.display = 'none';
         // Instead of keeping aspect ratio of video, we want full sized canvas to render to
         this.mediaContainerEl.style.width = '100%';
         this.mediaContainerEl.style.height = '100%';
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
+
+        // The video is visible for its captions, but its own picture is flat; keep it out of casting and
+        // picture-in-picture.
+        this.mediaEl.setAttribute('disableremoteplayback', '');
+        this.mediaEl.setAttribute('disablepictureinpicture', '');
+
+        if (this.isVideoControlsV2Enabled()) {
+            // Scopes the V2 control styles without the padded V2 container or stage
+            this.wrapperEl.classList.add('bp-media--v2');
+        }
     }
 
     /** @inheritdoc */
     destroy() {
         // Tear down 360 controls before super.destroy(), which destroys this.controls
-        // (DashViewer's React ControlsRoot when createControls() has not run yet).
+        // (DashViewer's React ControlsRoot when the imperative 360 controls never replaced it).
         if (this.video360Controls) {
             this.destroyControls();
             this.video360Controls = null;
@@ -145,6 +184,11 @@ class Video360Viewer extends DashViewer {
      * @return {void}
      */
     createControls() {
+        // The V2 React controls render the VR toggle and show themselves on pointer movement.
+        if (this.isVideoControlsV2Enabled()) {
+            return;
+        }
+
         this.video360Controls = new Video360Controls(this.mediaContainerEl);
         // Overwrite this.controls so DashViewer.renderUI() skips React controls.
         this.controls = this.video360Controls;
@@ -230,6 +274,8 @@ class Video360Viewer extends DashViewer {
 
         return new Promise(resolve => {
             this.textureAsset.load(() => {
+                // Box3D hides the video it reads frames from; show it again so the browser draws its captions
+                this.mediaEl.style.display = '';
                 this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
                 this.skybox.enable();
                 this.renderer.getBox3D().on('mouseDown', this.onCanvasMouseDown);
@@ -266,6 +312,9 @@ class Video360Viewer extends DashViewer {
     handleShowVrButton() {
         if (this.video360Controls) {
             this.video360Controls.showVrButton();
+        } else if (this.isVideoControlsV2Enabled()) {
+            this.isVrShown = true;
+            this.renderUI();
         }
     }
 

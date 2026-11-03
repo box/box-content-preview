@@ -5,23 +5,56 @@ import './TabularDigits.scss';
 // has no effect. Wrapping each digit in a 1ch box keeps changing numbers, and whatever follows them,
 // from shifting as they update.
 export const TABULAR_DIGIT_CLASS = 'bp-TabularDigit';
+export const TABULAR_DIGITS_BOXES_CLASS = 'bp-TabularDigits-boxes';
+export const TABULAR_DIGITS_TEXT_CLASS = 'bp-TabularDigits-text';
 
 const isDigit = (char: string): boolean => char >= '0' && char <= '9';
 
 const isDigitNode = (node: ChildNode): boolean => node.nodeType === Node.ELEMENT_NODE;
 
+// Screen readers would read the boxed digits one by one, so the boxes are hidden from them and a visually
+// hidden copy gives them the whole text
+const getParts = (el: HTMLElement): { boxesEl: HTMLElement; textEl: HTMLElement } => {
+    const boxesEl = el.firstElementChild as HTMLElement | null;
+    const textEl = el.lastElementChild as HTMLElement | null;
+
+    if (
+        el.childNodes.length === 2 &&
+        boxesEl?.classList.contains(TABULAR_DIGITS_BOXES_CLASS) &&
+        textEl?.classList.contains(TABULAR_DIGITS_TEXT_CLASS)
+    ) {
+        return { boxesEl, textEl };
+    }
+
+    const newBoxesEl = document.createElement('span');
+    newBoxesEl.className = TABULAR_DIGITS_BOXES_CLASS;
+    newBoxesEl.setAttribute('aria-hidden', 'true');
+
+    const newTextEl = document.createElement('span');
+    newTextEl.className = TABULAR_DIGITS_TEXT_CLASS;
+
+    el.replaceChildren(newBoxesEl, newTextEl);
+
+    return { boxesEl: newBoxesEl, textEl: newTextEl };
+};
+
 /**
- * Writes `text` into `el` with each digit in a fixed-width box. For labels updated outside React,
- * e.g. on animation frames. Unchanged characters are left in place, so a ticking clock only touches
- * the digits that changed.
+ * Writes `text` into `el` with each digit in a fixed-width box, plus a visually hidden copy of `text` for
+ * screen readers. For labels updated outside React, e.g. on animation frames. This replaces the children
+ * of `el`, so `el` must not hold other content. Unchanged characters are left in place, so a ticking clock
+ * only touches the digits that changed.
  */
 export function renderTabularDigits(el: HTMLElement, text: string): void {
-    if (el.textContent === text) {
+    const { boxesEl, textEl } = getParts(el);
+
+    if (textEl.textContent === text) {
         return;
     }
 
+    textEl.textContent = text;
+
     const chars = Array.from(text);
-    const nodes = el.childNodes;
+    const nodes = boxesEl.childNodes;
     const canPatch =
         nodes.length === chars.length && chars.every((char, index) => isDigit(char) === isDigitNode(nodes[index]));
 
@@ -47,7 +80,7 @@ export function renderTabularDigits(el: HTMLElement, text: string): void {
         }
     });
 
-    el.replaceChildren(fragment);
+    boxesEl.replaceChildren(fragment);
 }
 
 export type Props = {

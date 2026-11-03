@@ -302,6 +302,36 @@ describe('MediaSettingsV2', () => {
         });
     });
 
+    test.each(['{ArrowDown}', '{Enter}', ' '])(
+        'should open the menu on %s from the trigger without the key reaching the viewer keydown handler',
+        async key => {
+            const user = userEvent.setup();
+            const documentKeydown = jest.fn();
+            getWrapper();
+
+            getToggle().focus();
+            document.addEventListener('keydown', documentKeydown);
+            await user.keyboard(key);
+            document.removeEventListener('keydown', documentKeydown);
+
+            expect(within(container).getByRole('menu')).toBeInTheDocument();
+            expect(documentKeydown).not.toHaveBeenCalled();
+        },
+    );
+
+    test('should keep ArrowUp on the trigger from reaching the viewer keydown handler', async () => {
+        const user = userEvent.setup();
+        const documentKeydown = jest.fn();
+        getWrapper();
+
+        getToggle().focus();
+        document.addEventListener('keydown', documentKeydown);
+        await user.keyboard('{ArrowUp}');
+        document.removeEventListener('keydown', documentKeydown);
+
+        expect(documentKeydown).not.toHaveBeenCalled();
+    });
+
     test.each(['{ArrowDown}', '{ArrowLeft}', '{ArrowRight}', ' '])(
         'should keep %s in the menu from reaching the viewer keydown handler',
         async key => {

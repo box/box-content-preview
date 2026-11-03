@@ -7,12 +7,14 @@ import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
+import { DocFindBarV2Root } from './DocFindBarV2';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import { isNpmBuild } from '../../isNpmBuild';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
+import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
 import ThumbnailsSidebarV2 from '../../ThumbnailsSidebarV2';
 import Thumbnail from '../../Thumbnail';
@@ -34,9 +36,12 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
+    ORIGINAL_REP_NAME,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
+    STATUS_ERROR,
+    STATUS_SUCCESS,
 } from '../../constants';
 import {
     createAssetUrlCreator,
@@ -46,6 +51,7 @@ import {
     getMidpoint,
     getPreloadImageRequestPromises,
     getPreloadImageRequestPromisesByBatch,
+    getProp,
 } from '../../util';
 import { getWheelZoomScaleDelta } from '../../wheelZoom';
 import { checkPermission, getRepresentation } from '../../file';
@@ -703,6 +709,102 @@ class DocBaseViewer extends BaseViewer {
         super.handleAssetAndRepLoad();
     }
 
+    /**
+     * Handles asset/representation load errors. The searchable 'ocr_pdf' rep is generated on demand and
+     * can legitimately fail to load (a conversion error, or a backend that does not support it for the
+     * file). Rather than hard-erroring, fall back once to a renderable rep so the document still opens -
+     * just without the OCR text layer.
+     *
+     * load() resolves a single Promise.all over the static assets, the npm pdf.js chunk import and the
+     * representation status, so only scope the fallback to a genuine 'ocr_pdf' representation failure -
+     * a failed asset/chunk import is unrelated to the rep and must not silently downgrade it. RepStatus
+     * rejections carry the failed representation in details.representation.
+     *
+     * @override
+     * @param {Error} err - Load error
+     * @return {void}
+     */
+    handleAssetError(err) {
+        const isOcrRepError = getProp(err, 'details.representation.representation') === 'ocr_pdf';
+
+        if (isOcrRepError && this.attemptRepFallback()) {
+            return;
+        }
+
+        super.handleAssetError(err);
+    }
+
+    /**
+     * Handles content download errors. pdf.js can reject the 'ocr_pdf' content url even after its status
+     * reported success (e.g. the on-demand asset 404s), which lands here rather than in handleAssetError.
+     * Prefer the renderable fallback rep over retrying the same 'ocr_pdf' url; delegate to the base
+     * reachability retry when no fallback applies (e.g. the current rep is not 'ocr_pdf').
+     *
+     * @override
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - Download URL
+     * @return {void}
+     */
+    handleDownloadError(err, downloadURL) {
+        if (this.attemptRepFallback()) {
+            return;
+        }
+
+        super.handleDownloadError(err, downloadURL);
+    }
+
+    /**
+     * Switches to a renderable fallback representation when the on-demand 'ocr_pdf' rep fails to load,
+     * at most once per viewer, and kicks off a reload. getRepFallback only returns a representation when
+     * the current rep is 'ocr_pdf', so this is a no-op for any other representation.
+     *
+     * @return {boolean} Whether a fallback representation was applied (and a reload started)
+     */
+    attemptRepFallback() {
+        if (this.hasAttemptedRepFallback) {
+            return false;
+        }
+
+        const fallbackRepresentation = this.getRepFallback();
+        if (!fallbackRepresentation) {
+            return false;
+        }
+
+        this.hasAttemptedRepFallback = true;
+        this.options.representation = fallbackRepresentation;
+        this.load();
+        return true;
+    }
+
+    /**
+     * Picks the representation to fall back to when the on-demand 'ocr_pdf' rep fails to load. Prefers the
+     * optimized 'pdf' rep when it is ready, otherwise the synthesized original so the file still renders.
+     * Returns null when no fallback applies (the current rep is not 'ocr_pdf', or none is available).
+     *
+     * @return {Object|null} The fallback representation, or null
+     */
+    getRepFallback() {
+        const { file, representation } = this.options;
+
+        if (!representation || representation.representation !== 'ocr_pdf') {
+            return null;
+        }
+
+        const pdfRep = getRepresentation(file, 'pdf');
+        if (pdfRep && RepStatus.getStatus(pdfRep) === STATUS_SUCCESS) {
+            return pdfRep;
+        }
+
+        // pdf.js can only render the original bytes directly when the file itself is a PDF. For other
+        // document types the original is e.g. a raw .docx, so keep awaiting the on-demand 'pdf' conversion
+        // (unless it has already errored) rather than handing an unrenderable original to pdf.js.
+        if (file.extension === 'pdf') {
+            return getRepresentation(file, ORIGINAL_REP_NAME);
+        }
+
+        return pdfRep && RepStatus.getStatus(pdfRep) !== STATUS_ERROR ? pdfRep : null;
+    }
+
     handleFindBarClose() {
         if (this.findBarToggleEl && this.findBarToggleEl.focus) {
             this.findBarToggleEl.focus();
@@ -991,6 +1093,7 @@ class DocBaseViewer extends BaseViewer {
                 // These bare keys belong to the v2 controls bar; the older bar has no such shortcuts.
                 if (
                     this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) &&
+                    !event?.altKey &&
                     !this.galleryController?.isOpen &&
                     this.featureEnabled('rotate.enabled')
                 ) {
@@ -1000,8 +1103,7 @@ class DocBaseViewer extends BaseViewer {
                 return this.findBar ? this.findBar.onKeydown(event) : false;
             case 'f':
             case 'F':
-                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
-                    this.toggleFullscreen();
+                if (this.handleFullscreenKey(key, event)) {
                     break;
                 }
                 return this.findBar ? this.findBar.onKeydown(event) : false;
@@ -1255,7 +1357,8 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.findBar = new DocFindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
+        const FindBar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI) ? DocFindBarV2Root : DocFindBar;
+        this.findBar = new FindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
     }

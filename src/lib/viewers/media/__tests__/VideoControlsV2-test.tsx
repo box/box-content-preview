@@ -86,6 +86,34 @@ describe('VideoControlsV2', () => {
             expect(screen.getByRole('button', { name: /fullscreen/i })).toBeInTheDocument();
         });
 
+        test('should not render the VR toggle without a handler', () => {
+            render(<VideoControlsV2 {...defaultProps} isBlueprintEnabled isVrShown />, { wrapper: BlueprintProviders });
+            expect(screen.queryByRole('button', { name: 'Toggle VR display' })).not.toBeInTheDocument();
+        });
+
+        test('should not render the VR toggle when isBlueprintEnabled is false', () => {
+            render(<VideoControlsV2 {...defaultProps} isVrShown onVrToggle={jest.fn()} />);
+            expect(screen.queryByRole('button', { name: 'Toggle VR display' })).not.toBeInTheDocument();
+        });
+
+        test('should render a Blueprint VR toggle once it is shown and respond to clicks', async () => {
+            const user = userEvent.setup();
+            const onVrToggle = jest.fn();
+            const { rerender } = render(
+                <VideoControlsV2 {...defaultProps} isBlueprintEnabled onVrToggle={onVrToggle} />,
+                { wrapper: BlueprintProviders },
+            );
+            expect(screen.queryByRole('button', { name: 'Toggle VR display' })).not.toBeInTheDocument();
+
+            rerender(<VideoControlsV2 {...defaultProps} isBlueprintEnabled isVrShown onVrToggle={onVrToggle} />);
+
+            const vrToggle = screen.getByRole('button', { name: 'Toggle VR display' });
+            expect(vrToggle).toHaveAttribute('data-target-id', 'VrToggleControlV2-toggle');
+
+            await user.click(vrToggle);
+            expect(onVrToggle).toHaveBeenCalled();
+        });
+
         test('should render Blueprint play and skip buttons when isBlueprintEnabled is true', async () => {
             const user = userEvent.setup();
             const onPlayPause = jest.fn();

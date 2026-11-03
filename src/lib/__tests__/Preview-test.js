@@ -1269,6 +1269,9 @@ describe('lib/Preview', () => {
                 .then(() => {
                     expect(preview.ui.showNotification).toHaveBeenCalledWith(
                         __('notification_cannot_download_due_to_policy'),
+                        null,
+                        false,
+                        'error',
                     );
                     expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
                 });
@@ -1311,7 +1314,7 @@ describe('lib/Preview', () => {
                     setTimeout(resolve);
                 });
 
-                expect(preview.ui.showNotification).toHaveBeenCalledWith(__(message));
+                expect(preview.ui.showNotification).toHaveBeenCalledWith(__(message), null, false, 'error');
                 expect(stubs.downloadReachability.downloadWithReachabilityCheck).not.toHaveBeenCalled();
             },
         );
@@ -3949,7 +3952,7 @@ describe('lib/Preview', () => {
             stubs.getHeaders = jest.spyOn(util, 'getHeaders');
             stubs.headers = {
                 'X-Rep-Hints':
-                    '[3d][pdf][text][mp3][json][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]',
+                    '[3d][ocr_pdf][pdf][text][mp3][json][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]',
             };
 
             preview.options.sharedLink = 'link';

@@ -132,6 +132,17 @@ describe('TimestampControl', () => {
             expect(screen.queryByTestId('bp-TimestampControl-button')).not.toBeInTheDocument();
         });
 
+        test('should give screen readers the whole static times rather than the boxed digits', () => {
+            getBlueprintWrapper({ canChangeTimeFormat: false });
+
+            const timestamp = screen.getByTestId('bp-TimestampControl-static');
+            const digit = timestamp.querySelector('.bp-TabularDigit');
+
+            expect(digit?.closest('[aria-hidden="true"]')).toBeInTheDocument();
+            expect(screen.getByText('1:05').closest('[aria-hidden="true"]')).toBeNull();
+            expect(screen.getByText('2:00').closest('[aria-hidden="true"]')).toBeNull();
+        });
+
         test('should open a Blueprint menu with the current format checked', async () => {
             const user = userEvent.setup();
             getBlueprintWrapper();

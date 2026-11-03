@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import { act } from 'react';
+import { within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import noop from 'lodash/noop';
 import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls';
@@ -1216,6 +1218,83 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(true, 5);
             videoBaseViewer.seekBackwardButtonEl.click();
             expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(false, 5);
+        });
+
+        describe('with Blueprint media controls', () => {
+            beforeEach(() => {
+                jest.spyOn(videoBaseViewer, 'isBlueprintMediaControlsEnabled').mockReturnValue(true);
+                document.body.appendChild(videoBaseViewer.mediaContainerEl);
+            });
+
+            afterEach(() => {
+                act(() => {
+                    videoBaseViewer.removePlayButtonWithSeekButtons();
+                });
+                videoBaseViewer.mediaContainerEl.remove();
+            });
+
+            const build = () =>
+                act(() => {
+                    videoBaseViewer.buildPlayButtonWithSeekButtons();
+                });
+
+            test('should render Blueprint play and skip buttons in a hidden container', () => {
+                build();
+
+                const { playContainerEl } = videoBaseViewer;
+                expect(playContainerEl.classList).toContain('bp-VideoPlaySeekOverlay');
+                expect(playContainerEl.classList).toContain('bp-is-hidden');
+                expect(playContainerEl.classList).not.toContain('bp-media-overlay-play-container');
+                expect(videoBaseViewer.playButtonEl).toBeUndefined();
+
+                const buttons = within(playContainerEl).getAllByRole('button', { hidden: true });
+                expect(buttons.map(button => button.getAttribute('aria-label'))).toEqual([
+                    'Skip backward',
+                    'Play',
+                    'Skip forward',
+                ]);
+            });
+
+            test('should play and skip from the Blueprint buttons', async () => {
+                const user = userEvent.setup();
+                build();
+                const { playContainerEl } = videoBaseViewer;
+                playContainerEl.classList.remove('bp-is-hidden');
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Play' }));
+                expect(videoBaseViewer.togglePlay).toHaveBeenCalled();
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Skip forward' }));
+                expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(true, 5);
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Skip backward' }));
+                expect(videoBaseViewer.movePlayback).toHaveBeenCalledWith(false, 5);
+            });
+
+            test('should move focus to the media container when the focused play button starts playback', async () => {
+                const user = userEvent.setup();
+                build();
+                const { mediaContainerEl, playContainerEl } = videoBaseViewer;
+                mediaContainerEl.setAttribute('tabindex', '-1');
+                playContainerEl.classList.remove('bp-is-hidden');
+
+                await user.click(within(playContainerEl).getByRole('button', { name: 'Play' }));
+
+                expect(document.activeElement).toBe(mediaContainerEl);
+            });
+
+            test('should unmount the Blueprint buttons on remove', () => {
+                build();
+                const { playContainerEl } = videoBaseViewer;
+
+                act(() => {
+                    videoBaseViewer.removePlayButtonWithSeekButtons();
+                });
+
+                expect(videoBaseViewer.playContainerEl).toBeNull();
+                expect(videoBaseViewer.playSeekOverlayRoot).toBeUndefined();
+                expect(playContainerEl.childElementCount).toBe(0);
+            });
         });
     });
 

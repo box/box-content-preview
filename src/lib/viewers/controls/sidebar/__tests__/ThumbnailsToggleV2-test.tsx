@@ -21,7 +21,7 @@ describe('ThumbnailsToggleV2', () => {
         </BlueprintProviders>
     );
     const getWrapper = (props = {}) => render(<ThumbnailsToggleV2 {...props} />, { wrapper });
-    const getButton = () => screen.getByRole('button', { name: __('toggle_thumbnails') });
+    const getButton = () => screen.getByRole('button', { name: /thumbnails/ });
 
     describe('event handlers', () => {
         test.each([true, false])(
@@ -86,12 +86,29 @@ describe('ThumbnailsToggleV2', () => {
             expect(screen.queryByTestId('Nav')).not.toBeInTheDocument();
         });
 
-        test('should show the label as a tooltip on focus', async () => {
-            getWrapper({ onThumbnailsToggle: jest.fn() });
+        test.each`
+            isThumbnailsOpen | label
+            ${true}          | ${'Hide thumbnails'}
+            ${false}         | ${'Show thumbnails'}
+        `(
+            'should label the toggle $label when isThumbnailsOpen is $isThumbnailsOpen',
+            ({ isThumbnailsOpen, label }) => {
+                getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
+
+                expect(screen.getByRole('button', { name: label })).toBe(getButton());
+            },
+        );
+
+        test.each`
+            isThumbnailsOpen | label
+            ${true}          | ${'Hide thumbnails'}
+            ${false}         | ${'Show thumbnails'}
+        `('should show $label as a tooltip on focus', async ({ isThumbnailsOpen, label }) => {
+            getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
 
             await userEvent.tab();
 
-            expect(await screen.findByRole('tooltip')).toHaveTextContent(__('toggle_thumbnails'));
+            expect(await screen.findByRole('tooltip')).toHaveTextContent(label);
         });
     });
 });

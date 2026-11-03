@@ -196,6 +196,34 @@ describe('VideoFullscreenButton', () => {
             document.body.removeChild(parent);
         });
 
+        test('should watch the button and position against a parent that appears after mount', () => {
+            mediaEl.getBoundingClientRect = jest.fn(() =>
+                rect({ top: 100, right: 800, bottom: 500, left: 200, width: 600, height: 400 }),
+            );
+
+            const { parent } = renderWithPositionedParent();
+            const button = screen.getByRole('button', { name: /fullscreen/i });
+            const observerInstance = mockResizeObserver.mock.results[0].value;
+            expect(observerInstance.observe).toHaveBeenCalledWith(button);
+
+            const laterParent = document.createElement('div');
+            laterParent.getBoundingClientRect = jest.fn(() =>
+                rect({ top: 0, right: 1000, bottom: 700, left: 0, width: 1000, height: 700 }),
+            );
+            Object.defineProperty(button, 'offsetParent', { configurable: true, get: () => laterParent });
+
+            act(() => {
+                observerCallback();
+            });
+
+            expect(observerInstance.unobserve).toHaveBeenCalledWith(parent);
+            expect(observerInstance.observe).toHaveBeenCalledWith(laterParent);
+            // top: 100 - 0 + 24, right: 1000 - 800 + 24
+            expect(button).toHaveStyle({ top: '124px', right: '224px' });
+
+            document.body.removeChild(parent);
+        });
+
         test('should disconnect observer on unmount', () => {
             const { unmount } = renderComponent();
             const observerInstance = mockResizeObserver.mock.results[0].value;
@@ -254,6 +282,38 @@ describe('VideoFullscreenButton', () => {
 
             await userEvent.click(button);
             expect(onToggle).toHaveBeenCalledWith(true, expect.any(Object));
+        });
+
+        test('should not show the tooltip when the viewer refocuses the button after a click', () => {
+            renderComponent({ isBlueprintEnabled: true });
+            const button = screen.getByRole('button', { name: /fullscreen/i });
+            jest.spyOn(button, 'matches').mockImplementation(selector => selector !== ':focus-visible');
+
+            act(() => {
+                button.focus();
+            });
+
+            expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+        });
+
+        test('should show the tooltip on keyboard focus', async () => {
+            renderComponent({ isBlueprintEnabled: true });
+            const button = screen.getByRole('button', { name: /fullscreen/i });
+            jest.spyOn(button, 'matches').mockImplementation(selector => selector === ':focus-visible');
+
+            act(() => {
+                button.focus();
+            });
+
+            expect(await screen.findByRole('tooltip')).toHaveTextContent('Enter fullscreen');
+        });
+
+        test('should show the tooltip on hover', async () => {
+            renderComponent({ isBlueprintEnabled: true });
+
+            await userEvent.hover(screen.getByRole('button', { name: /fullscreen/i }));
+
+            expect(await screen.findByRole('tooltip')).toHaveTextContent('Enter fullscreen');
         });
     });
 });

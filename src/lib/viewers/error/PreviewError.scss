@@ -26,3 +26,16 @@
         }
     }
 }
+
+.bp-PreviewErrorV2 {
+    width: 100%;
+    padding: 0 var(--bp-space-050);
+}
+
+// EmptyState replaces the body's className, so target the message through the root
+.bp-theme-dark,
+.bp-dark {
+    .bp-PreviewErrorV2 .bp-PreviewErrorV2-emptyState > p {
+        color: var(--bp-text-text-on-dark);
+    }
+}

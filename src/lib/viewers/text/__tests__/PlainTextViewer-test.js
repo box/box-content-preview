@@ -6,9 +6,11 @@ import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
 import { PrintModalRoot } from '../../../PrintModal';
 import TextBaseViewer from '../TextBaseViewer';
+import { TruncatedTextNoticeV2Root } from '../TruncatedTextNoticeV2';
 import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION, SELECTOR_BOX_PREVIEW } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
+import { PLAIN_TEXT_PRINT_STYLES } from '../printStyles';
 
 const sandbox = sinon.createSandbox();
 const stubs = {};
@@ -19,6 +21,8 @@ let rootEl;
 jest.mock('react-dom/client', () => ({
     createRoot: jest.fn(),
 }));
+
+jest.mock('../TruncatedTextNoticeV2');
 
 describe('lib/viewers/text/PlainTextViewer', () => {
     const setupFunc = BaseViewer.prototype.setup;
@@ -110,6 +114,17 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         test('should call super.destroy()', () => {
             Object.defineProperty(TextBaseViewer.prototype, 'destroy', { value: jest.fn() });
             text.destroy();
+        });
+
+        test('should destroy the Blueprint truncated notice', () => {
+            text.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+            text.showTruncatedDownloadButton();
+            const { truncatedNotice } = text;
+
+            text.destroy();
+
+            expect(truncatedNotice.destroy).toHaveBeenCalled();
+            expect(text.truncatedNotice).toBeNull();
         });
 
         test('should destroy the print popup', () => {
@@ -204,10 +219,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             text.print();
 
-            expect(text.preparePrint).toBeCalledWith([
-                `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
-                'preview.css',
-            ]);
+            expect(text.preparePrint).toBeCalledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`]);
             expect(text.printPopup.show).toBeCalled();
             expect(text.printPopup.disableButton).toBeCalled();
         });
@@ -399,6 +411,39 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
         afterEach(() => {
             jest.clearAllTimers();
+            delete global.__BCP_NPM_BUILD__;
+        });
+
+        describe('print stylesheets', () => {
+            const baseURI = 'https://cdn.example.com/preview/1.0.0/en-US/';
+            const staticBaseURI = 'https://static.example.com/preview/';
+            const githubCss = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`;
+            let printDocument;
+
+            const getLinkHrefs = () => Array.from(printDocument.head.querySelectorAll('link')).map(link => link.href);
+
+            beforeEach(() => {
+                printDocument = document.implementation.createHTMLDocument('print');
+                jest.spyOn(util, 'openContentInsideIframe').mockReturnValue({ contentDocument: printDocument });
+                text.options.location = { baseURI, staticBaseURI };
+            });
+
+            test('should link preview.css from baseURI after the third-party stylesheets in the CDN build', () => {
+                text.preparePrint([githubCss]);
+
+                expect(getLinkHrefs()).toEqual([`${staticBaseURI}${githubCss}`, `${baseURI}preview.css`]);
+                expect(printDocument.head.querySelector('style')).toBeNull();
+            });
+
+            test('should inline the viewer print styles and request nothing under baseURI in the npm build', () => {
+                global.__BCP_NPM_BUILD__ = true;
+
+                text.preparePrint([githubCss]);
+
+                expect(getLinkHrefs()).toEqual([`${staticBaseURI}${githubCss}`]);
+                expect(printDocument.head.lastElementChild.tagName).toBe('STYLE');
+                expect(printDocument.head.lastElementChild.textContent).toBe(PLAIN_TEXT_PRINT_STYLES);
+            });
         });
 
         test('should setup the print iframe', () => {
@@ -538,6 +583,34 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             downloadBtnEl.click();
             expect(bindDownload).toBeCalled();
+            expect(TruncatedTextNoticeV2Root).not.toHaveBeenCalled();
+        });
+
+        test('should render the Blueprint notice in place of the legacy banner when the supporting UI flag is on', () => {
+            jest.spyOn(text, 'emit');
+            text.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+
+            text.showTruncatedDownloadButton();
+
+            expect(TruncatedTextNoticeV2Root).toHaveBeenCalledWith(text.textEl, expect.any(Function));
+            expect(text.truncatedNotice).toBeInstanceOf(TruncatedTextNoticeV2Root);
+            expect(text.textEl.querySelector('.bp-text-truncated')).toBeNull();
+
+            const [, onDownload] = TruncatedTextNoticeV2Root.mock.calls[0];
+            onDownload();
+            expect(text.emit).toHaveBeenCalledWith(VIEWER_EVENT.download);
+        });
+
+        test('should replace an existing Blueprint notice when shown again after a download retry', () => {
+            text.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+            text.showTruncatedDownloadButton();
+            const firstNotice = text.truncatedNotice;
+
+            text.showTruncatedDownloadButton();
+
+            expect(firstNotice.destroy).toHaveBeenCalledTimes(1);
+            expect(text.truncatedNotice).not.toBe(firstNotice);
+            expect(TruncatedTextNoticeV2Root).toHaveBeenCalledTimes(2);
         });
     });
 

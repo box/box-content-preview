@@ -93,22 +93,33 @@ class RepStatus extends EventEmitter {
         Timer.start(tag);
 
         const options = this.headers ? { headers: this.headers } : {};
-        return this.api.get(this.infoUrl, options).then(info => {
-            clearTimeout(this.statusTimeout);
+        return this.api.get(this.infoUrl, options).then(
+            info => {
+                clearTimeout(this.statusTimeout);
 
-            if (info.metadata) {
-                this.representation.metadata = info.metadata;
-            }
+                if (info.metadata) {
+                    this.representation.metadata = info.metadata;
+                }
 
-            const status = typeof info.status === 'object' ? info.status.state : info.temp_status.state;
-            if (typeof this.representation.status === 'object') {
-                this.representation.status.state = status;
-            } else {
-                this.representation.temp_status.state = status;
-            }
+                const status = typeof info.status === 'object' ? info.status.state : info.temp_status.state;
+                if (typeof this.representation.status === 'object') {
+                    this.representation.status.state = status;
+                } else {
+                    this.representation.temp_status.state = status;
+                }
 
-            this.handleResponse();
-        });
+                this.handleResponse();
+            },
+            // Reject instead of hanging if the info request itself fails (e.g. the representation
+            // endpoint returns a 4xx/5xx), so the viewer can surface an error rather than spin forever.
+            () => {
+                clearTimeout(this.statusTimeout);
+                const error = new PreviewError(ERROR_CODE.CONVERSION_GENERIC, __('error_refresh'), {
+                    representation: this.representation,
+                });
+                this.reject(error);
+            },
+        );
     }
 
     /**

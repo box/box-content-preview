@@ -11,6 +11,7 @@ import SubtitlesToggle, { Props as SubtitlesToggleProps } from '../controls/medi
 import TimeControlsV2, { Props as TimeControlsProps } from '../controls/media/TimeControlsV2';
 import VolumeControls, { Props as VolumeControlsProps } from '../controls/media/VolumeControls';
 import VideoFullscreenButton from '../controls/media/VideoFullscreenButton';
+import VrToggleControlV2 from '../controls/box3d/VrToggleControlV2';
 import { ANNOTATION_COLORS } from '../../AnnotationModule';
 import { SUBTITLES_OFF } from '../../constants';
 import { AnnotationMode } from '../../types/annotations';
@@ -46,7 +47,9 @@ export type Props = DurationLabelsProps &
         onAnnotationModeEscape: () => void;
         onAnnotationColorChange: (color: string) => void;
         onPlayPause: (isPlaying: boolean) => void;
+        onVrToggle?: () => void;
         isBlueprintEnabled?: boolean;
+        isVrShown?: boolean;
         videoAnnotationsEnabled?: boolean;
     };
 
@@ -93,12 +96,14 @@ export default function VideoControlsV2({
     onSubtitlesToggle,
     onTimeChange,
     onVolumeChange,
+    onVrToggle,
     playNext,
     quality,
     rate,
     subtitle,
     subtitles = [],
     isBlueprintEnabled = false,
+    isVrShown = false,
     videoAnnotationsEnabled = false,
     volume,
 }: Props): JSX.Element {
@@ -277,6 +282,15 @@ export default function VideoControlsV2({
                                 rate={rate}
                                 subtitle={subtitle}
                                 subtitles={subtitles}
+                            />
+                        )}
+                        {onVrToggle && isBlueprintEnabled && (
+                            <VrToggleControlV2
+                                buttonType="icon"
+                                isVrShown={isVrShown}
+                                onVrToggle={onVrToggle}
+                                size="large"
+                                variant="on-dark"
                             />
                         )}
                         {hasAnnotationsV2 && (

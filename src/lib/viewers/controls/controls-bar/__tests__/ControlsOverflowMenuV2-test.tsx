@@ -36,7 +36,7 @@ describe('ControlsOverflowMenuV2', () => {
 
     const getWrapper = () =>
         render(
-            <ControlsLayerContext.Provider value={{ setIsForced }}>
+            <ControlsLayerContext.Provider value={{ setIsEditing: jest.fn(), setIsForced }}>
                 <div data-resin-component="toolbar" data-resin-fileextension="pdf" data-resin-fileid="123">
                     <Toolbar.Root aria-label="Controls">
                         <ControlsOverflowMenuV2

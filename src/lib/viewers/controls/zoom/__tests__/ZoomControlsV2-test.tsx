@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
+import { TABULAR_DIGIT_CLASS } from '../../../../TabularDigits';
 import ControlsBarV2 from '../../controls-bar/ControlsBarV2';
 import ZoomControlsV2 from '../ZoomControlsV2';
 
@@ -99,10 +100,37 @@ describe('ZoomControlsV2', () => {
             expect(screen.getByTestId('bp-ZoomControls-current')).toHaveAttribute('title', __('zoom_current_scale'));
         });
 
+        test('should render the buttons and current scale inside a pill', () => {
+            getWrapper();
+
+            const pill = screen.getByTestId('bp-ControlsPill');
+
+            expect(pill).toContainElement(getZoomOut());
+            expect(pill).toContainElement(getZoomIn());
+            expect(pill).toContainElement(screen.getByTestId('bp-ZoomControls-current'));
+            expect(getZoomOut()).toHaveClass('bp-ControlsPillV2-button');
+            expect(getZoomIn()).toHaveClass('bp-ControlsPillV2-button');
+        });
+
         test('should default the scale to 100%', () => {
             getWrapper();
 
-            expect(screen.getByText('100%')).toBeInTheDocument();
+            expect(screen.getByTestId('bp-ZoomControls-current')).toHaveTextContent('100%');
+        });
+
+        test('should render the scale in the on-dark text color', () => {
+            getWrapper();
+
+            expect(screen.getByTestId('bp-ZoomControls-current').className).toMatch(/textOnDarkDefault/);
+        });
+
+        test('should give each zoom digit a fixed width so the zoom in button does not shift', () => {
+            getWrapper({ scale: 1.25 });
+
+            const current = screen.getByTestId('bp-ZoomControls-current');
+
+            expect(current.querySelectorAll(`.${TABULAR_DIGIT_CLASS}`)).toHaveLength(3);
+            expect(screen.getByText('125%')).toBeInTheDocument(); // The whole value, read once by screen readers
         });
 
         test('should default the resin targets', () => {

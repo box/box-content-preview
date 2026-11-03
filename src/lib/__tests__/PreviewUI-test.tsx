@@ -4,8 +4,11 @@ import * as constants from '../constants';
 import LoadingIcon from '../LoadingIcon';
 import PreviewUI from '../PreviewUI';
 import { CollectionNavigationRoot } from '../CollectionNavigation';
+import { LoadingIconV2Root } from '../LoadingIconV2';
+import { NotificationsV2Root } from '../NotificationsV2';
 
 jest.mock('../LoadingIcon');
+jest.mock('../LoadingIconV2');
 
 describe('lib/PreviewUI', () => {
     const supportingUiFeatures = { blueprintMigrationSupportingUi: { enabled: true } };
@@ -313,6 +316,34 @@ describe('lib/PreviewUI', () => {
                 containerEl: resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON),
             });
             expect(jest.mocked(LoadingIcon).mock.instances[0].render).toBeCalledWith('pdf');
+            expect(LoadingIconV2Root).not.toHaveBeenCalled();
+        });
+
+        test('should render the V2 loading icon when the supporting UI flag is on', () => {
+            const resultEl = setup({ features: supportingUiFeatures });
+
+            ui.showLoadingIcon('pdf');
+
+            expect(LoadingIconV2Root).toHaveBeenCalledWith({
+                containerEl: resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON),
+            });
+            expect(jest.mocked(LoadingIconV2Root).mock.instances[0].render).toHaveBeenCalledWith('pdf');
+            expect(LoadingIcon).not.toHaveBeenCalled();
+        });
+
+        test('should switch to the V2 loading icon when setup runs again with the supporting UI flag on', () => {
+            setup();
+            ui.showLoadingIcon('pdf');
+
+            const resultEl = setup({ features: supportingUiFeatures });
+            ui.showLoadingIcon('mp4');
+
+            expect(jest.mocked(LoadingIcon).mock.instances[0].destroy).toHaveBeenCalled();
+            expect(LoadingIconV2Root).toHaveBeenCalledTimes(1);
+            expect(LoadingIconV2Root).toHaveBeenCalledWith({
+                containerEl: resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON),
+            });
+            expect(jest.mocked(LoadingIconV2Root).mock.instances[0].render).toHaveBeenCalledWith('mp4');
         });
     });
 
@@ -328,6 +359,46 @@ describe('lib/PreviewUI', () => {
 
             ui.hideNotification();
             expect(notification).toHaveClass(constants.CLASS_HIDDEN);
+        });
+
+        test('should show Blueprint notifications with the supporting UI flag', () => {
+            setup({ features: supportingUiFeatures });
+            act(() => ui.setupNotification(supportingUiFeatures));
+
+            expect(ui.notification).toBeInstanceOf(NotificationsV2Root);
+
+            act(() => ui.showNotification('message', null, false, 'error'));
+            expect(within(ui.contentContainer).getByText('message')).toBeInTheDocument();
+            expect(within(ui.contentContainer).getByLabelText(__('notification_icon_error'))).toBeInTheDocument();
+
+            act(() => ui.hideNotification());
+            expect(within(ui.contentContainer).queryByText('message')).not.toBeInTheDocument();
+        });
+
+        test('should destroy the previous notification when set up again and on cleanup', () => {
+            setup({ features: supportingUiFeatures });
+            act(() => ui.setupNotification(supportingUiFeatures));
+            const first = ui.notification as NotificationsV2Root;
+            jest.spyOn(first, 'destroy');
+
+            act(() => ui.setupNotification(supportingUiFeatures));
+            expect(first.destroy).toBeCalled();
+
+            const second = ui.notification as NotificationsV2Root;
+            jest.spyOn(second, 'destroy');
+            act(() => ui.cleanup());
+            expect(second.destroy).toBeCalled();
+            expect(ui.notification).toBeNull();
+        });
+
+        test('should leave the legacy notification as is on cleanup', () => {
+            setup();
+            ui.setupNotification();
+            const { notification } = ui;
+
+            ui.cleanup();
+
+            expect(ui.notification).toBe(notification);
         });
 
         test('should ignore show and hide before the notification is set up', () => {

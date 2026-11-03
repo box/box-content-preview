@@ -131,7 +131,12 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
                 doc.load();
 
-                expect(showNotification).toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+                expect(showNotification).toBeCalledWith(
+                    __('error_internet_explorer_office_online'),
+                    null,
+                    true,
+                    'warning',
+                );
             },
         );
 
@@ -145,7 +150,12 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
                 doc.load();
 
-                expect(showNotification).not.toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+                expect(showNotification).not.toBeCalledWith(
+                    __('error_internet_explorer_office_online'),
+                    null,
+                    true,
+                    'warning',
+                );
             },
         );
 
@@ -156,7 +166,12 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
             doc.load();
 
-            expect(showNotification).not.toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+            expect(showNotification).not.toBeCalledWith(
+                __('error_internet_explorer_office_online'),
+                null,
+                true,
+                'warning',
+            );
         });
 
         test('should not show notification if file is not excel extension and is internet explorer', () => {
@@ -167,7 +182,12 @@ describe('lib/viewers/doc/DocumentViewer', () => {
 
             doc.load();
 
-            expect(showNotification).not.toBeCalledWith(__('error_internet_explorer_office_online'), null, true);
+            expect(showNotification).not.toBeCalledWith(
+                __('error_internet_explorer_office_online'),
+                null,
+                true,
+                'warning',
+            );
         });
     });
 

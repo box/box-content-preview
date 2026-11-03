@@ -34,7 +34,7 @@ describe('AnnotationsPaletteAnchorV2', () => {
 
         const result = render(
             <PortalContainerContext.Provider value={containerEl}>
-                <ControlsLayerContext.Provider value={{ setIsForced }}>
+                <ControlsLayerContext.Provider value={{ setIsEditing: jest.fn(), setIsForced }}>
                     <AnnotationsPaletteAnchorV2 anchorRef={anchorRef}>
                         <div data-testid="palette" />
                     </AnnotationsPaletteAnchorV2>

@@ -109,7 +109,7 @@ describe('DocControlsV2', () => {
                 onThumbnailsToggle: jest.fn(),
             });
 
-            expect(screen.queryByRole('button', { name: __('toggle_thumbnails') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('thumbnails_toggle_show') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('toggle_findbar') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('previous_page') })).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: __('rotate_left') })).not.toBeInTheDocument();
@@ -126,7 +126,7 @@ describe('DocControlsV2', () => {
             getWrapper({ onThumbnailsToggle: jest.fn() });
 
             expect(screen.getByRole('toolbar')).toContainElement(
-                screen.getByRole('button', { name: __('toggle_thumbnails') }),
+                screen.getByRole('button', { name: __('thumbnails_toggle_show') }),
             );
         });
 
@@ -134,14 +134,14 @@ describe('DocControlsV2', () => {
             isLargeViewport = false;
             getWrapper({ onThumbnailsToggle: jest.fn() });
 
-            expect(screen.queryByRole('button', { name: __('toggle_thumbnails') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('thumbnails_toggle_show') })).not.toBeInTheDocument();
         });
 
         test('should not render the thumbnails toggle in fullscreen', () => {
             jest.spyOn(fullscreen, 'isFullscreen').mockReturnValue(true);
             getWrapper({ onThumbnailsToggle: jest.fn() });
 
-            expect(screen.queryByRole('button', { name: __('toggle_thumbnails') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('thumbnails_toggle_show') })).not.toBeInTheDocument();
         });
     });
 
