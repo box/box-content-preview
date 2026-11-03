@@ -5,11 +5,11 @@ import PreviewError from '../../PreviewError';
 import { BROWSERS, CLASS_INVISIBLE } from '../../constants';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { openContentInsideIframe } from '../../util';
+import { getWheelZoomScaleDelta } from '../../wheelZoom';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
-const MIN_PINCH_SCALE_DELTA = 0.01;
 const WHEEL_ZOOM_MAX_SCALE = 100;
 const WHEEL_ZOOM_MIN_SCALE = 0.1;
 
@@ -351,8 +351,8 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
-     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     * Handles ctrl+wheel zoom. Trackpad pinch fires many small deltas. A mouse
+     * notch changes the width by 10%.
      *
      * @protected
      * @param {WheelEvent} event - wheel event object
@@ -403,7 +403,7 @@ class ImageBaseViewer extends BaseViewer {
         const minWidth = this.initialWidth || baseWidth * WHEEL_ZOOM_MIN_SCALE;
         const maxWidth = baseWidth * WHEEL_ZOOM_MAX_SCALE;
 
-        const delta = -event.deltaY * MIN_PINCH_SCALE_DELTA;
+        const delta = getWheelZoomScaleDelta(event);
         const newWidth = Math.min(maxWidth, Math.max(minWidth, currentWidth * (1 + delta)));
         const ratio = newWidth / currentWidth;
 
