@@ -300,7 +300,7 @@ export default function VideoControlsV2({
                                     ref={annotationsToggleRef}
                                     annotationMode={annotationMode}
                                     buttonType="icon"
-                                    className="bp-VideoControlsV2-annotationsToggle"
+                                    className="bp-VideoControlsV2-annotationsToggle bp-IconToggleOnDark"
                                     isExpanded={isPaletteOpen}
                                     modes={annotationModes}
                                     onAnnotationModeClick={onAnnotationModeClick}
