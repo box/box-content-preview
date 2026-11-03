@@ -471,6 +471,7 @@ class ImageViewer extends ImageBaseViewer {
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
+                hasAnnotationsOnlyControls={this.hasAnnotationsOnlyControls()}
                 hasDrawing={canDraw}
                 hasHighlight={false}
                 hasRegion={canAnnotate}

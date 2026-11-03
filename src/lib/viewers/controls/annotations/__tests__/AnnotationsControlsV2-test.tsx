@@ -25,6 +25,15 @@ describe('AnnotationsControlsV2', () => {
         expect(toolbar).toContainElement(screen.getByRole('button', { name: __('annotation_tools') }));
     });
 
+    test('should leave out the separator when hasSeparator is false', () => {
+        getWrapper({ hasSeparator: false });
+
+        expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+        expect(screen.getByRole('toolbar').firstElementChild).toContainElement(
+            screen.getByRole('button', { name: __('exit_annotations') }),
+        );
+    });
+
     test('should start the first mode from the markup toggle', async () => {
         const onAnnotationModeClick = jest.fn();
         getWrapper({ onAnnotationModeClick });

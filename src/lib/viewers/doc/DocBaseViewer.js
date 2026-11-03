@@ -120,16 +120,26 @@ const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 const MAX_OPERATIONS = 320000; // Block PDFs with more than 320,000 drawing operations
 const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
 const MAX_OPERATIONS_ERROR_MESSAGE = 'Too many drawing operations';
+const EXTENSIONS_WITH_OPERATION_LIMIT = ['dwg', 'numbers', 'xlsx'];
 
-export function countPdfOperations(doc, maxPages = MAX_OPERATION_PAGES) {
-    const numPages = Math.min(doc.numPages, maxPages);
-    const opPromises = [];
-    for (let i = 1; i <= numPages; i += 1) {
-        opPromises.push(doc.getPage(i).then(page => page.getOperatorList().then(opList => opList.fnArray.length)));
-    }
-    return Promise.all(opPromises).then(opCounts => {
-        return opCounts.reduce((sum, count) => sum + count, 0);
-    });
+/** Resolves true when the first maxPages pages exceed operationLimit drawing operations. */
+export function checkPdfOperationLimit(doc, maxPages = MAX_OPERATION_PAGES, operationLimit = MAX_OPERATIONS) {
+    const pageNumbers = Array.from({ length: Math.min(doc.numPages, maxPages) }, (_, index) => index + 1);
+
+    return pageNumbers
+        .reduce(
+            (totalPromise, pageNumber) =>
+                totalPromise.then(total =>
+                    total > operationLimit
+                        ? total
+                        : doc
+                              .getPage(pageNumber)
+                              .then(page => page.getOperatorList())
+                              .then(({ fnArray }) => total + fnArray.length),
+                ),
+            Promise.resolve(0),
+        )
+        .then(total => total > operationLimit);
 }
 
 class DocBaseViewer extends BaseViewer {
@@ -754,9 +764,9 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Switches to a renderable fallback representation when the on-demand 'ocr_pdf' rep fails to load,
-     * at most once per viewer, and kicks off a reload. getRepFallback only returns a representation when
-     * the current rep is 'ocr_pdf', so this is a no-op for any other representation.
+     * Switches to a renderable fallback representation, at most once per viewer, and kicks off a reload.
+     * getRepFallback only returns a representation when the current rep is 'ocr_pdf', so this is a no-op
+     * for any other representation.
      *
      * @return {boolean} Whether a fallback representation was applied (and a reload started)
      */
@@ -777,8 +787,8 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Picks the representation to fall back to when the on-demand 'ocr_pdf' rep fails to load. Prefers the
-     * optimized 'pdf' rep when it is ready, otherwise the synthesized original so the file still renders.
+     * Picks the representation to fall back to from the on-demand 'ocr_pdf' rep, preferring the optimized
+     * 'pdf' rep when it is ready.
      * Returns null when no fallback applies (the current rep is not 'ocr_pdf', or none is available).
      *
      * @return {Object|null} The fallback representation, or null
@@ -1231,10 +1241,9 @@ class DocBaseViewer extends BaseViewer {
                     return null;
                 }
 
-                // Only check operations for .numbers and .xlsx files
-                if (file.extension === 'numbers' || file.extension === 'xlsx') {
-                    return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
-                        if (opCount > MAX_OPERATIONS) {
+                if (EXTENSIONS_WITH_OPERATION_LIMIT.includes(file.extension)) {
+                    return checkPdfOperationLimit(doc).then(hasTooManyOperations => {
+                        if (hasTooManyOperations) {
                             throw new Error(MAX_OPERATIONS_ERROR_MESSAGE);
                         }
                         return doc;
@@ -1266,16 +1275,25 @@ class DocBaseViewer extends BaseViewer {
 
                 // pdf.js gives us the status code in their error message
                 const { status, message } = err;
-                const isTooManyOps = message === MAX_OPERATIONS_ERROR_MESSAGE;
+
+                if (message === MAX_OPERATIONS_ERROR_MESSAGE) {
+                    if (this.attemptRepFallback()) {
+                        return;
+                    }
+
+                    this.triggerError(
+                        new PreviewError(
+                            ERROR_CODE.VIEWER_TOO_MANY_OPERATIONS,
+                            __('error_too_many_operations'),
+                            {},
+                            message,
+                        ),
+                    );
+                    return;
+                }
 
                 let error;
-                if (isTooManyOps) {
-                    error = new PreviewError(
-                        ERROR_CODE.VIEWER_TOO_MANY_OPERATIONS,
-                        __('error_too_many_operations'),
-                        message,
-                    );
-                } else if (status === 202) {
+                if (status === 202) {
                     error = new PreviewError(
                         ERROR_CODE.DELETED_REPS,
                         __('error_refresh'),
@@ -1682,6 +1700,7 @@ class DocBaseViewer extends BaseViewer {
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
+                hasAnnotationsOnlyControls={this.hasAnnotationsOnlyControls()}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
                 hasGalleryZoom={this.galleryController.isEnhancedGalleryEnabled}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}

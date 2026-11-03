@@ -4,10 +4,16 @@ import AnnotationsExitButtonV2 from './AnnotationsExitButtonV2';
 import AnnotationsToggleV2, { ToolbarProps } from './AnnotationsToggleV2';
 import { AnnotationMode } from '../../../types';
 
-export type Props = Omit<ToolbarProps, 'buttonType'>;
+export type Props = Omit<ToolbarProps, 'buttonType'> & {
+    hasSeparator?: boolean;
+};
 
 // The markup controls at the end of a Blueprint controls bar
-export default function AnnotationsControlsV2({ onAnnotationModeClick, ...rest }: Props): JSX.Element {
+export default function AnnotationsControlsV2({
+    hasSeparator = true,
+    onAnnotationModeClick,
+    ...rest
+}: Props): JSX.Element {
     const toggleRef = React.useRef<HTMLButtonElement | null>(null);
 
     const handleExit = (): void => {
@@ -17,7 +23,7 @@ export default function AnnotationsControlsV2({ onAnnotationModeClick, ...rest }
 
     return (
         <>
-            <Toolbar.Separator />
+            {hasSeparator && <Toolbar.Separator />}
             <AnnotationsExitButtonV2 onClick={handleExit} />
             <AnnotationsToggleV2 ref={toggleRef} onAnnotationModeClick={onAnnotationModeClick} {...rest} />
         </>
