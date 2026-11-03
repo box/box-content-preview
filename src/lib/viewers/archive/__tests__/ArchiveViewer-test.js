@@ -66,6 +66,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
         test('should set up the container and DOM structure', () => {
             expect(archive.archiveEl.parentNode).toBe(archive.containerEl);
             expect(archive.archiveEl).toHaveClass('bp-archive');
+            expect(archive.archiveEl).not.toHaveClass('bp-archive--blueprint');
         });
     });
 
@@ -284,6 +285,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 archive.finishLoading([]);
 
                 expect(archiveOptions.isArchiveV2Enabled).toBe(true);
+                expect(archive.archiveEl).toHaveClass('bp-archive--blueprint');
             });
 
             test('should pass the viewer resin instance to BoxArchive', () => {
@@ -300,12 +302,14 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 archive.finishLoading([]);
 
                 expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+                expect(archive.archiveEl).not.toHaveClass('bp-archive--blueprint');
             });
 
             test('should not enable archive v2 when no flag is on', () => {
                 archive.finishLoading([]);
 
                 expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+                expect(archive.archiveEl).not.toHaveClass('bp-archive--blueprint');
             });
 
             test('should not enable archive v2 when the shared Blueprint gate is off', () => {
@@ -315,6 +319,7 @@ describe('lib/viewers/archive/ArchiveViewer', () => {
                 archive.finishLoading([]);
 
                 expect(archiveOptions.isArchiveV2Enabled).toBe(false);
+                expect(archive.archiveEl).not.toHaveClass('bp-archive--blueprint');
             });
         });
 

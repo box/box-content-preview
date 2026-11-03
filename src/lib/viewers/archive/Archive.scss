@@ -6,6 +6,10 @@
     height: 100%;
     background: $white;
 
+    &.bp-archive--blueprint {
+        background: var(--bp-surface-surface);
+    }
+
     .bp-container:has(.bp-version-banner) & {
         padding-top: $comparison-banner-height;
     }
