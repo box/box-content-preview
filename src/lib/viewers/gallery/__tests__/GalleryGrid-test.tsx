@@ -48,6 +48,16 @@ describe('GalleryGrid', () => {
             expect(grid).toHaveAttribute('aria-label', 'Page gallery');
         });
 
+        test('should not apply the Blueprint styles when isBlueprintEnabled is false', () => {
+            getWrapper();
+            expect(screen.getByRole('listbox')).not.toHaveClass('bp-GalleryGridV2');
+        });
+
+        test('should apply the Blueprint styles when isBlueprintEnabled is true', () => {
+            render(<GalleryGrid {...defaultProps} isBlueprintEnabled />, { wrapper: BlueprintProviders });
+            expect(screen.getByRole('listbox')).toHaveClass('bp-gallery-grid', 'bp-GalleryGridV2');
+        });
+
         test('should render an option for each page', () => {
             getWrapper();
             const options = screen.getAllByRole('option');
@@ -438,7 +448,7 @@ describe('GalleryGrid', () => {
                 expect(event.defaultPrevented).toBe(true);
 
                 act(() => rafCallback!(0));
-                expect(onScaleChange).toHaveBeenCalledWith(1.2);
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
 
                 const pinchTile = screen.getByLabelText('Page 5');
                 document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
@@ -453,6 +463,19 @@ describe('GalleryGrid', () => {
                 expect(document.elementFromPoint).toHaveBeenCalledWith(300, 200);
                 expect(grid.scrollLeft).toBe(60);
                 expect(grid.scrollTop).toBe(80);
+            });
+
+            test('should step a ctrl+wheel mouse notch by 10%', () => {
+                const onScaleChange = jest.fn();
+                getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -100 }));
+                });
+                act(() => rafCallback!(0));
+
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
             });
 
             test('should clear the pinch focal point when the scale change is rejected', () => {

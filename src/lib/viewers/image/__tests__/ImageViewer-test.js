@@ -456,6 +456,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls.render).toBeCalledWith(
                 <ImageControls
                     annotationMode="none"
+                    hasAnnotationsOnlyControls={false}
                     hasDrawing={false}
                     hasHighlight={false}
                     hasRegion={false}
@@ -469,6 +470,14 @@ describe('lib/viewers/image/ImageViewer', () => {
                     scale={1}
                 />,
             );
+        });
+
+        test('should pass the annotations-only controls state to the controls', () => {
+            jest.spyOn(image, 'hasAnnotationsOnlyControls').mockReturnValue(true);
+
+            image.loadUI();
+
+            expect(image.controls.render.mock.calls[0][0].props.hasAnnotationsOnlyControls).toBe(true);
         });
 
         test.each`

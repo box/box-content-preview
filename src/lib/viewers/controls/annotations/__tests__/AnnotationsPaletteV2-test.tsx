@@ -11,16 +11,18 @@ describe('AnnotationsPaletteV2', () => {
     const renderPalette = ({
         annotationMode = AnnotationMode.REGION,
         extra = null,
+        isCentered,
         modes = allModes,
         onAnnotationModeClick = jest.fn(),
     }: {
         annotationMode?: AnnotationMode;
         extra?: React.ReactNode;
+        isCentered?: boolean;
         modes?: ActiveAnnotationMode[];
         onAnnotationModeClick?: jest.Mock;
     } = {}) =>
         render(
-            <AnnotationsPaletteV2>
+            <AnnotationsPaletteV2 isCentered={isCentered}>
                 <AnnotationsPaletteV2.Modes
                     annotationMode={annotationMode}
                     onAnnotationModeClick={onAnnotationModeClick}
@@ -33,6 +35,25 @@ describe('AnnotationsPaletteV2', () => {
             </AnnotationsPaletteV2>,
             { wrapper: BlueprintProviders },
         );
+
+    describe('render', () => {
+        test.each`
+            isCentered   | hasCenteredClass
+            ${true}      | ${true}
+            ${false}     | ${false}
+            ${undefined} | ${false}
+        `(
+            'should set the centered class to $hasCenteredClass when isCentered is $isCentered',
+            ({ hasCenteredClass, isCentered }) => {
+                renderPalette({ isCentered });
+
+                const palette = screen.getByTestId('bp-AnnotationsPaletteV2');
+
+                expect(palette).toHaveClass('bp-AnnotationsPaletteV2');
+                expect(palette.classList.contains('bp-AnnotationsPaletteV2--centered')).toBe(hasCenteredClass);
+            },
+        );
+    });
 
     describe('event handlers', () => {
         test.each`

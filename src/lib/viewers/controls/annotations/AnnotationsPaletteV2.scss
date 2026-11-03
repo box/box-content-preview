@@ -7,4 +7,11 @@
     bottom: 100%;
     width: max-content;
     padding-bottom: var(--bp-space-020);
+
+    // The annotations-only bar is narrower than the palette, so it opens centered over the bar instead
+    &.bp-AnnotationsPaletteV2--centered {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }

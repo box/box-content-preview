@@ -11,6 +11,7 @@ import intl from '../../i18n';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
+import { AnnotationState } from '../../AnnotationControlsFSM';
 import { AnnotationMode } from '../../types';
 import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
@@ -2174,6 +2175,29 @@ describe('lib/viewers/BaseViewer', () => {
     describe('getInitialAnnotationMode()', () => {
         test('should return none as initial mode', () => {
             expect(base.getInitialAnnotationMode()).toBe(AnnotationMode.NONE);
+        });
+    });
+
+    describe('hasAnnotationsOnlyControls()', () => {
+        test.each`
+            state                             | expected
+            ${AnnotationState.DRAWING}        | ${true}
+            ${AnnotationState.HIGHLIGHT}      | ${true}
+            ${AnnotationState.REGION}         | ${true}
+            ${AnnotationState.HIGHLIGHT_TEMP} | ${false}
+            ${AnnotationState.REGION_TEMP}    | ${false}
+            ${AnnotationState.NONE}           | ${false}
+        `('should return $expected in the $state state when the host turns it on', ({ expected, state }) => {
+            base.options.enableAnnotationsOnlyControls = true;
+            jest.spyOn(base.annotationControlsFSM, 'getState').mockReturnValue(state);
+
+            expect(base.hasAnnotationsOnlyControls()).toBe(expected);
+        });
+
+        test('should return false when the host does not turn it on', () => {
+            jest.spyOn(base.annotationControlsFSM, 'getState').mockReturnValue(AnnotationState.REGION);
+
+            expect(base.hasAnnotationsOnlyControls()).toBe(false);
         });
     });
 });
