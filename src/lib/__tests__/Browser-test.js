@@ -171,10 +171,34 @@ describe('lib/Browser', () => {
     });
 
     describe('canPlayDash()', () => {
+        afterEach(() => {
+            delete global.ManagedMediaSource;
+        });
+
         test('should return false if there is no global Media Source', () => {
             global.MediaSource = undefined;
             const canPlay = Browser.canPlayDash();
             expect(canPlay).toBe(false);
+        });
+
+        test('should use ManagedMediaSource.isTypeSupported when MediaSource is unavailable', () => {
+            global.MediaSource = undefined;
+            global.ManagedMediaSource = {
+                isTypeSupported: jest.fn().mockReturnValue(true),
+            };
+            expect(Browser.canPlayDash()).toBe(true);
+            expect(global.ManagedMediaSource.isTypeSupported).toBeCalled();
+        });
+
+        test('should prefer ManagedMediaSource when both are available', () => {
+            global.MediaSource = {
+                isTypeSupported: jest.fn().mockReturnValue(false),
+            };
+            global.ManagedMediaSource = {
+                isTypeSupported: jest.fn().mockReturnValue(true),
+            };
+            expect(Browser.canPlayDash()).toBe(true);
+            expect(global.MediaSource.isTypeSupported).not.toBeCalled();
         });
 
         test('should invoke "isTypeSupported" on the media source if there is a Media Source, and can check type', () => {
@@ -194,8 +218,18 @@ describe('lib/Browser', () => {
     });
 
     describe('hasMSE()', () => {
+        afterEach(() => {
+            delete global.ManagedMediaSource;
+        });
+
         test('should return true if there is Media Source Extensions support', () => {
             global.MediaSource = {};
+            expect(Browser.hasMSE()).toBe(true);
+        });
+
+        test('should return true if there is only ManagedMediaSource support', () => {
+            global.MediaSource = undefined;
+            global.ManagedMediaSource = {};
             expect(Browser.hasMSE()).toBe(true);
         });
 
