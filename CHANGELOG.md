@@ -1,3 +1,29 @@
+## 3.132.0 (2026-11-03)
+
+* chore(deps): bump follow-redirects from 1.16.1 to 1.16.2 (#1924) ([e486d66](https://github.com/box/box-content-preview/commit/e486d66)), closes [#1924](https://github.com/box/box-content-preview/issues/1924)
+* chore(deps): bump systeminformation from 5.33.1 to 5.33.19 (#1925) ([76a4397](https://github.com/box/box-content-preview/commit/76a4397)), closes [#1925](https://github.com/box/box-content-preview/issues/1925)
+
+## 3.131.0 (2026-11-02)
+
+* feat(doc): surface ocr_pdf searchable PDF representation (#1822) ([e79d237](https://github.com/box/box-content-preview/commit/e79d237)), closes [#1822](https://github.com/box/box-content-preview/issues/1822)
+* feat(gallery): style gallery tiles with Blueprint tokens behind supporting UI flag (#1916) ([1cc3555](https://github.com/box/box-content-preview/commit/1cc3555)), closes [#1916](https://github.com/box/box-content-preview/issues/1916)
+* chore(deps): bump fast-uri from 3.1.7 to 3.1.9 (#1913) ([578d43c](https://github.com/box/box-content-preview/commit/578d43c)), closes [#1913](https://github.com/box/box-content-preview/issues/1913)
+* chore(deps): bump serialize-javascript from 7.1.0 to 7.1.4 (#1923) ([15ccd60](https://github.com/box/box-content-preview/commit/15ccd60)), closes [#1923](https://github.com/box/box-content-preview/issues/1923)
+* chore(i18n): update translations (#1926) ([7859016](https://github.com/box/box-content-preview/commit/7859016)), closes [#1926](https://github.com/box/box-content-preview/issues/1926)
+
+## 3.130.0 (2026-10-31)
+
+* fix(archive): align v2 table edges with the search bar (#1917) ([3ad7131](https://github.com/box/box-content-preview/commit/3ad7131)), closes [#1917](https://github.com/box/box-content-preview/issues/1917)
+* fix(archive): ellipsize long v2 item names (#1918) ([d5fe420](https://github.com/box/box-content-preview/commit/d5fe420)), closes [#1918](https://github.com/box/box-content-preview/issues/1918)
+* fix(archive): keep v2 breadcrumbs inside the viewer (#1919) ([cc46b47](https://github.com/box/box-content-preview/commit/cc46b47)), closes [#1919](https://github.com/box/box-content-preview/issues/1919)
+* fix(controls): keep arrow keys on the media settings button from reaching viewer shortcuts (#1921) ([7193acc](https://github.com/box/box-content-preview/commit/7193acc)), closes [#1921](https://github.com/box/box-content-preview/issues/1921)
+* fix(controls): use the default focus outline on the media icon toggles (#1922) ([5bf0348](https://github.com/box/box-content-preview/commit/5bf0348)), closes [#1922](https://github.com/box/box-content-preview/issues/1922)
+* fix(gallery): keep legacy badge font rules off the Blueprint badge (#1911) ([4f9e3de](https://github.com/box/box-content-preview/commit/4f9e3de)), closes [#1911](https://github.com/box/box-content-preview/issues/1911)
+* refactor(controls): take v2 color picker and scrubber colors from Blueprint (#1915) ([dd067b4](https://github.com/box/box-content-preview/commit/dd067b4)), closes [#1915](https://github.com/box/box-content-preview/issues/1915)
+* refactor(util): decode keydown events without box-ui-elements (#1910) ([3639545](https://github.com/box/box-content-preview/commit/3639545)), closes [#1910](https://github.com/box/box-content-preview/issues/1910)
+* feat(preview): render loading icon in bcp behind supporting UI flag (#1912) ([a1fb8e1](https://github.com/box/box-content-preview/commit/a1fb8e1)), closes [#1912](https://github.com/box/box-content-preview/issues/1912)
+* chore(i18n): update translations (#1914) ([504f77c](https://github.com/box/box-content-preview/commit/504f77c)), closes [#1914](https://github.com/box/box-content-preview/issues/1914)
+
 ## 3.129.0 (2026-10-30)
 
 * fix(comparison): pad plain text and archive below the version banner (#1901) ([53ef8b6](https://github.com/box/box-content-preview/commit/53ef8b6)), closes [#1901](https://github.com/box/box-content-preview/issues/1901)

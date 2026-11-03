@@ -1302,6 +1302,166 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('getRepFallback()', () => {
+            const makeFile = (entries, extension = 'pdf') => ({ id: '0', extension, representations: { entries } });
+
+            test('should return null when the current representation is not ocr_pdf', () => {
+                docBase.options.representation = { representation: 'pdf' };
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'success' } }]);
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+
+            test('should prefer a successful pdf rep when falling back from ocr_pdf', () => {
+                const pdfRep = { representation: 'pdf', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([pdfRep, { representation: 'ORIGINAL', status: { state: 'success' } }]);
+
+                expect(docBase.getRepFallback()).toBe(pdfRep);
+            });
+
+            test('should fall back to the original rep when the pdf rep is not ready', () => {
+                const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'none' } }, originalRep]);
+
+                expect(docBase.getRepFallback()).toBe(originalRep);
+            });
+
+            test('should fall back to the original rep when no pdf rep exists', () => {
+                const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }, originalRep]);
+
+                expect(docBase.getRepFallback()).toBe(originalRep);
+            });
+
+            test('should return null when no fallback representation is available', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+
+            test('should wait for a converting pdf rep rather than the unrenderable original for non-pdf files', () => {
+                const pdfRep = { representation: 'pdf', status: { state: 'none' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [pdfRep, { representation: 'ORIGINAL', status: { state: 'success' } }],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBe(pdfRep);
+            });
+
+            test('should return null for non-pdf files when the pdf rep has errored', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [
+                        { representation: 'pdf', status: { state: 'error' } },
+                        { representation: 'ORIGINAL', status: { state: 'success' } },
+                    ],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+
+            test('should return null for non-pdf files when no pdf rep exists', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [
+                        { representation: 'ocr_pdf', status: { state: 'none' } },
+                        { representation: 'ORIGINAL', status: { state: 'success' } },
+                    ],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+        });
+
+        describe('handleAssetError()', () => {
+            // RepStatus rejects with a PreviewError carrying the failed representation in details.
+            const ocrRepError = () => ({ details: { representation: { representation: 'ocr_pdf' } } });
+
+            test('should fall back to another representation and reload when the ocr_pdf rep fails', () => {
+                const fallbackRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(ocrRepError());
+
+                expect(docBase.hasAttemptedRepFallback).toBe(true);
+                expect(docBase.options.representation).toBe(fallbackRep);
+                expect(loadStub).toBeCalled();
+                expect(triggerErrorStub).not.toBeCalled();
+            });
+
+            test('should not fall back for a non-representation error (asset/chunk failure)', () => {
+                const getRepFallbackStub = jest.spyOn(docBase, 'getRepFallback');
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(new Error('Loading chunk pdfjs-lib failed'));
+
+                expect(getRepFallbackStub).not.toBeCalled();
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+
+            test('should only attempt the representation fallback once', () => {
+                docBase.hasAttemptedRepFallback = true;
+                const getRepFallbackStub = jest.spyOn(docBase, 'getRepFallback');
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(ocrRepError());
+
+                expect(getRepFallbackStub).not.toBeCalled();
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+
+            test('should trigger an error when no fallback representation is available', () => {
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(null);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(ocrRepError());
+
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+        });
+
+        describe('handleDownloadError()', () => {
+            test('should route an ocr_pdf content failure through the rep fallback', () => {
+                const fallbackRep = { representation: 'pdf', status: { state: 'success' } };
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+
+                docBase.handleDownloadError(new Error('content failed'), 'https://dl.boxcloud.com/foo');
+
+                expect(docBase.hasAttemptedRepFallback).toBe(true);
+                expect(docBase.options.representation).toBe(fallbackRep);
+                expect(loadStub).toBeCalled();
+                expect(docBase.hasRetriedContentDownload).toBeFalsy();
+            });
+
+            test('should delegate to the base reachability retry when no rep fallback applies', () => {
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(null);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+
+                docBase.handleDownloadError(new Error('content failed'), 'https://dl.boxcloud.com/foo');
+
+                expect(docBase.hasAttemptedRepFallback).toBeFalsy();
+                expect(docBase.hasRetriedContentDownload).toBe(true);
+                expect(loadStub).toBeCalled();
+            });
+        });
+
         describe('initFind()', () => {
             beforeEach(() => {
                 docBase.pdfEventBus = {

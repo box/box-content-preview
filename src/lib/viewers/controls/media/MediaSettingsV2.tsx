@@ -12,7 +12,7 @@ import { getLabel as getQualityLabel, QUALITIES, Quality } from './MediaSettings
 import { getLabel as getRateLabel, RATES } from './MediaSettingsMenuRate';
 import { getDisplayLanguage } from './MediaSettingsMenuSubtitles';
 import { Props as MediaSettingsProps } from './MediaSettings';
-import { stopActivationKeyPropagation } from './utils';
+import { stopMenuTriggerKeyPropagation } from './utils';
 import { Menu } from '../settings';
 import { PortalContainerContext } from '../../../BlueprintProviders';
 import { SUBTITLES_OFF } from '../../../constants';
@@ -195,7 +195,7 @@ export default function MediaSettingsV2({
                     buttonType="icon"
                     data-target-id="MediaSettingsV2-toggle"
                     label={__('media_settings')}
-                    onKeyDown={stopActivationKeyPropagation}
+                    onKeyDown={stopMenuTriggerKeyPropagation}
                     size="large"
                     variant="on-dark"
                 />

@@ -48,6 +48,16 @@ describe('GalleryGrid', () => {
             expect(grid).toHaveAttribute('aria-label', 'Page gallery');
         });
 
+        test('should not apply the Blueprint styles when isBlueprintEnabled is false', () => {
+            getWrapper();
+            expect(screen.getByRole('listbox')).not.toHaveClass('bp-GalleryGridV2');
+        });
+
+        test('should apply the Blueprint styles when isBlueprintEnabled is true', () => {
+            render(<GalleryGrid {...defaultProps} isBlueprintEnabled />, { wrapper: BlueprintProviders });
+            expect(screen.getByRole('listbox')).toHaveClass('bp-gallery-grid', 'bp-GalleryGridV2');
+        });
+
         test('should render an option for each page', () => {
             getWrapper();
             const options = screen.getAllByRole('option');
@@ -104,6 +114,7 @@ describe('GalleryGrid', () => {
             getWrapper();
             const badge = screen.getByLabelText('Page 3').querySelector('.bp-gallery-tile-badge');
             expect(badge).toHaveTextContent('3');
+            expect(badge).not.toHaveClass('bp-gallery-tile-badge--blueprint');
             expect(badge?.querySelector('[data-typography]')).not.toBeInTheDocument();
         });
 
@@ -112,6 +123,7 @@ describe('GalleryGrid', () => {
             screen.getAllByRole('option').forEach((tile, index) => {
                 const badge = tile.querySelector('.bp-gallery-tile-badge');
                 expect(badge).toHaveAttribute('aria-hidden', 'true');
+                expect(badge).toHaveClass('bp-gallery-tile-badge--blueprint');
                 expect(badge?.querySelector('[data-typography]')).toHaveTextContent(String(index + 1));
             });
         });
