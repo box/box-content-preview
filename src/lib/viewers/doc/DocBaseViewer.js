@@ -1682,6 +1682,7 @@ class DocBaseViewer extends BaseViewer {
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
+                hasAnnotationsOnlyControls={this.hasAnnotationsOnlyControls()}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
                 hasGalleryZoom={this.galleryController.isEnhancedGalleryEnabled}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
