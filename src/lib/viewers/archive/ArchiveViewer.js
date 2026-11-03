@@ -79,10 +79,8 @@ class ArchiveViewer extends BaseViewer {
         try {
             /* global BoxArchive */
             const ArchiveComponent = npmBoxArchive || BoxArchive;
-            const isArchiveV2Enabled = this.isBlueprintEnabled() && this.featureEnabled(BLUEPRINT_MIGRATION_ARCHIVE);
-            this.archiveEl.classList.toggle('bp-archive--blueprint', isArchiveV2Enabled);
             this.archiveComponent = new ArchiveComponent(this.archiveEl, this.options.file.name, data, {
-                isArchiveV2Enabled,
+                isArchiveV2Enabled: this.isBlueprintEnabled() && this.featureEnabled(BLUEPRINT_MIGRATION_ARCHIVE),
                 resin: this.options.resin,
             });
         } catch (error) {
