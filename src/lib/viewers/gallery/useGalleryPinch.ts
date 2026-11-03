@@ -1,7 +1,7 @@
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 import { getDistance, getMidpoint } from '../../util';
+import { getWheelZoomScaleDelta } from '../../wheelZoom';
 
-const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 const WHEEL_SESSION_GAP_MS = 200;
 
 export type PinchDirection = 'zoomIn' | 'zoomOut';
@@ -80,7 +80,7 @@ export default function useGalleryPinch({
             lastWheelAtRef.current = now;
 
             const baseScale = pendingRef.current?.scale ?? scaleRef.current;
-            scheduleZoom(baseScale - event.deltaY * WHEEL_ZOOM_SCALE_FACTOR, event.clientX, event.clientY);
+            scheduleZoom(baseScale + getWheelZoomScaleDelta(event), event.clientX, event.clientY);
         };
 
         const getTouchDistance = (touches: TouchList): number =>
