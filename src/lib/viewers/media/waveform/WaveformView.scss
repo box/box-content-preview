@@ -199,13 +199,13 @@
             0 0 8px 1px var(--bp-light-blue-opacity-30),
             0 0 20px 2px var(--bp-light-blue-opacity-08);
     }
+}
 
-    .bp-WaveformView-hoverTime {
-        border-color: var(--bp-border-tooltip-border);
-        border-radius: var(--bp-radius-04);
-        color: var(--bp-text-text-on-dark);
-        background: var(--bp-surface-tooltip-surface);
-    }
+.bp-WaveformView-hoverTime--blueprint {
+    border-color: var(--bp-border-tooltip-border);
+    border-radius: var(--bp-radius-04);
+    color: var(--bp-text-text-on-dark);
+    background: var(--bp-surface-tooltip-surface);
 }
 
 .bp-WaveformView--inert {
