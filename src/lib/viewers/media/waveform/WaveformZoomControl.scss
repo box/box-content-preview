@@ -64,11 +64,14 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     order: -3;
     width: $bp-WaveformZoom-multiplier-width;
     height: $bp-WaveformZoom-multiplier-width;
+    white-space: nowrap;
+}
+
+.bp-WaveformZoomControl:not(.bp-WaveformZoomControl--blueprint) .bp-WaveformZoomControl-multiplier {
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
     color: $white;
-    white-space: nowrap;
 }
 
 .bp-WaveformZoomControl-divider {
@@ -160,6 +163,28 @@ $bp-WaveformZoom-open-multiplier-width: $bp-WaveformZoom-multiplier-inset-x + $b
     position: relative;
     z-index: 1;
     flex: 0 0 auto;
+}
+
+.bp-WaveformZoomControl--blueprint {
+    background: var(--bp-white-opacity-12);
+    box-shadow: 0 2px 12px var(--bp-black-opacity-08);
+
+    // Hover target for the scale Tooltip.
+    .bp-WaveformZoomControl-multiplier {
+        pointer-events: auto;
+    }
+
+    .bp-WaveformZoomControl-divider {
+        background: var(--bp-white-opacity-30);
+    }
+
+    .bp-WaveformZoomControl-slider .bp-SliderControl-track {
+        background: var(--bp-white-opacity-30);
+
+        &::after {
+            background: var(--bp-white-opacity-90);
+        }
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
