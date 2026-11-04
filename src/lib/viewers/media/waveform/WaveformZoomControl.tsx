@@ -104,6 +104,7 @@ export default function WaveformZoomControl({
             ref={zoomControlElRef}
             aria-label={__('media_zoom')}
             className={classNames('bp-WaveformZoomControl', {
+                'bp-WaveformZoomControl--blueprint': isBlueprintEnabled,
                 'bp-has-multiplier': zoomMultiplier,
                 'bp-is-open': isOpen,
             })}
@@ -134,15 +135,13 @@ export default function WaveformZoomControl({
             {zoomMultiplier && (
                 <>
                     {isBlueprintEnabled ? (
-                        <div
-                            className="bp-WaveformZoomControl-multiplier"
-                            data-testid="bp-waveform-zoom-multiplier"
-                            title={__('zoom_current_scale')}
-                        >
-                            <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
-                                {zoomMultiplier}
-                            </Text>
-                        </div>
+                        <Tooltip content={__('zoom_current_scale')}>
+                            <div className="bp-WaveformZoomControl-multiplier" data-testid="bp-waveform-zoom-multiplier">
+                                <Text as="span" color="textOnDarkDefault" variant="bodyDefaultSemibold">
+                                    {zoomMultiplier}
+                                </Text>
+                            </div>
+                        </Tooltip>
                     ) : (
                         <span
                             className="bp-WaveformZoomControl-multiplier"

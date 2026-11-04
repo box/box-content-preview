@@ -2060,7 +2060,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
                 stubs.getDocument = jest.fn(() => ({
                     destroy: jest.fn(),
-                    promise: Promise.resolve(),
+                    promise: Promise.resolve({ getPage: jest.fn() }),
                 }));
                 stubs.getViewerOption = jest.spyOn(docBase, 'getViewerOption').mockImplementation();
                 stubs.pdfEventBus = {
@@ -2100,6 +2100,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     })),
                     PDFViewer: stubs.pdfViewerClass,
                 };
+            });
+
+            test('should limit marked content nesting before attaching the PDF document', async () => {
+                const getPage = jest.fn();
+                const pdfDocument = { getPage };
+                let isNestingLimitedWhenAttached = false;
+                stubs.getDocument.mockReturnValue({ destroy: jest.fn(), promise: Promise.resolve(pdfDocument) });
+                stubs.pdfViewer.setDocument.mockImplementation(doc => {
+                    isNestingLimitedWhenAttached = doc.getPage !== getPage;
+                });
+
+                await docBase.initViewer('');
+
+                expect(stubs.pdfViewer.setDocument).toBeCalledWith(pdfDocument);
+                expect(isNestingLimitedWhenAttached).toBe(true);
             });
 
             test('should not attach a PDF document after the viewer is destroyed', async () => {
@@ -2442,6 +2457,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should resolve the loading task and set the document/viewer', () => {
                 const doc = {
+                    getPage: jest.fn(),
                     url: 'url',
                 };
                 stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
@@ -2459,6 +2475,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should invoke startLoadTimer()', () => {
                 const doc = {
+                    getPage: jest.fn(),
                     url: 'url',
                 };
                 stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
@@ -2508,6 +2525,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should adjust the layout if thumbnails should be toggled', () => {
                 const doc = {
+                    getPage: jest.fn(),
                     url: 'url',
                 };
                 stubs.getViewerOption.mockReturnValue(100);
@@ -2541,16 +2559,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 test('should check operations count for .numbers files', async () => {
                     docBase.options.file.extension = 'numbers';
 
-                    const mockDoc = {
-                        numPages: 2,
-                        getPage: jest.fn(),
-                    };
-
                     const mockPage = {
                         getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
                     };
+                    const getPage = jest.fn().mockResolvedValue(mockPage);
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage,
+                    };
 
-                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
                     stubs.getDocument.mockReturnValue({
                         destroy: jest.fn(),
                         promise: Promise.resolve(mockDoc),
@@ -2558,8 +2575,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     await docBase.initViewer('url');
 
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
+                    expect(getPage).toHaveBeenCalledWith(1);
+                    expect(getPage).toHaveBeenCalledWith(2);
                     expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
@@ -2682,16 +2699,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 test('should check operations count for .xlsx files', async () => {
                     docBase.options.file.extension = 'xlsx';
 
-                    const mockDoc = {
-                        numPages: 2,
-                        getPage: jest.fn(),
-                    };
-
                     const mockPage = {
                         getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
                     };
+                    const getPage = jest.fn().mockResolvedValue(mockPage);
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage,
+                    };
 
-                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
                     stubs.getDocument.mockReturnValue({
                         destroy: jest.fn(),
                         promise: Promise.resolve(mockDoc),
@@ -2699,8 +2715,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     await docBase.initViewer('url');
 
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
+                    expect(getPage).toHaveBeenCalledWith(1);
+                    expect(getPage).toHaveBeenCalledWith(2);
                     expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
@@ -2738,11 +2754,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 test('should render .dwg files at the operations limit', async () => {
                     docBase.options.file.extension = 'dwg';
 
+                    const getPage = jest.fn().mockResolvedValue({
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320000) }),
+                    });
                     const mockDoc = {
                         numPages: 1,
-                        getPage: jest.fn().mockResolvedValue({
-                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320000) }),
-                        }),
+                        getPage,
                     };
                     stubs.getDocument.mockReturnValue({
                         destroy: jest.fn(),
@@ -2751,7 +2768,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     await docBase.initViewer('url');
 
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+                    expect(getPage).toHaveBeenCalledWith(1);
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
 
@@ -2786,9 +2803,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     async extension => {
                         docBase.options.file.extension = extension;
 
+                        const getPage = jest.fn();
                         const mockDoc = {
                             numPages: 1,
-                            getPage: jest.fn(),
+                            getPage,
                         };
 
                         stubs.getDocument.mockReturnValue({
@@ -2798,7 +2816,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                         await docBase.initViewer('url');
 
-                        expect(mockDoc.getPage).not.toHaveBeenCalled();
+                        expect(getPage).not.toHaveBeenCalled();
                         expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
                         expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                     },
@@ -2897,6 +2915,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
                 const doc = {
+                    getPage: jest.fn(),
                     numPages: 1,
                 };
                 stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });

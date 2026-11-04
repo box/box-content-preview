@@ -5,13 +5,13 @@ import userEvent from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import ThumbnailsToggleV2 from '../ThumbnailsToggleV2';
 
-jest.mock('@box/blueprint-web-assets/icons/Medium/Nav', () => ({
+jest.mock('@box/blueprint-web-assets/icons/Medium/SidebarChevronLeft', () => ({
     __esModule: true,
-    default: () => <svg data-testid="Nav" />,
+    default: () => <svg data-testid="SidebarChevronLeft" />,
 }));
-jest.mock('@box/blueprint-web-assets/icons/MediumFilled/Nav', () => ({
+jest.mock('@box/blueprint-web-assets/icons/Medium/SidebarChevronRight', () => ({
     __esModule: true,
-    default: () => <svg data-testid="NavFilled" />,
+    default: () => <svg data-testid="SidebarChevronRight" />,
 }));
 
 describe('ThumbnailsToggleV2', () => {
@@ -43,11 +43,11 @@ describe('ThumbnailsToggleV2', () => {
             getWrapper({ onThumbnailsToggle: jest.fn() });
 
             expect(getButton()).toHaveAttribute('data-resin-target', 'thumbnails');
-            expect(screen.getByTestId('Nav')).toBeInTheDocument();
-            expect(screen.queryByTestId('NavFilled')).not.toBeInTheDocument();
+            expect(screen.getByTestId('SidebarChevronRight')).toBeInTheDocument();
+            expect(screen.queryByTestId('SidebarChevronLeft')).not.toBeInTheDocument();
         });
 
-        test('should wrap the toggle in an element that controls its visibility', () => {
+        test('should wrap the button in an element that controls its visibility', () => {
             getWrapper({ onThumbnailsToggle: jest.fn() });
 
             expect(getButton().closest('.bp-ThumbnailsToggleV2')).toBeInTheDocument();
@@ -63,27 +63,14 @@ describe('ThumbnailsToggleV2', () => {
             getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
 
             expect(getButton()).toHaveAttribute('aria-expanded', isThumbnailsOpen.toString());
+            expect(getButton()).not.toHaveAttribute('aria-pressed');
         });
 
-        test.each`
-            isThumbnailsOpen | pressed    | state
-            ${true}          | ${'true'}  | ${'on'}
-            ${false}         | ${'false'} | ${'off'}
-        `(
-            'should set the selected state to $state when isThumbnailsOpen is $isThumbnailsOpen',
-            ({ isThumbnailsOpen, pressed, state }) => {
-                getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
-
-                expect(getButton()).toHaveAttribute('aria-pressed', pressed);
-                expect(getButton()).toHaveAttribute('data-state', state);
-            },
-        );
-
-        test('should render the filled icon when isThumbnailsOpen is true', () => {
+        test('should render the left chevron when the sidebar is open', () => {
             getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: true });
 
-            expect(screen.getByTestId('NavFilled')).toBeInTheDocument();
-            expect(screen.queryByTestId('Nav')).not.toBeInTheDocument();
+            expect(screen.getByTestId('SidebarChevronLeft')).toBeInTheDocument();
+            expect(screen.queryByTestId('SidebarChevronRight')).not.toBeInTheDocument();
         });
 
         test.each`
@@ -91,7 +78,7 @@ describe('ThumbnailsToggleV2', () => {
             ${true}          | ${'Hide thumbnails'}
             ${false}         | ${'Show thumbnails'}
         `(
-            'should label the toggle $label when isThumbnailsOpen is $isThumbnailsOpen',
+            'should label the button $label when isThumbnailsOpen is $isThumbnailsOpen',
             ({ isThumbnailsOpen, label }) => {
                 getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
 
