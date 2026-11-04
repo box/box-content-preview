@@ -5,6 +5,7 @@ import readableTimeMessages from 'box-readable-time-messages'; // eslint-disable
 import readableTimeMessageDefinitions from '@box/readable-time/lib/messages.js';
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
+import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import itemNameCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/itemNameCellRenderer';
 import readableTimeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/readableTimeCellRenderer';
 import sizeCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/sizeCellRenderer';
@@ -13,7 +14,7 @@ import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
-import fuzzySearch from './fuzzySearch';
+import fuzzySearchV2 from './fuzzySearch';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
@@ -164,7 +165,9 @@ class ArchiveExplorer extends React.Component {
      */
     getSearchResult = (itemCollection, searchQuery) => {
         const trimmedQuery = searchQuery.trim();
-        return itemCollection.filter(item => fuzzySearch(trimmedQuery, item.name, 0));
+        const { v2 } = this.props;
+        const search = v2 ? fuzzySearchV2 : fuzzySearch;
+        return itemCollection.filter(item => search(trimmedQuery, item.name, 0));
     };
 
     /**

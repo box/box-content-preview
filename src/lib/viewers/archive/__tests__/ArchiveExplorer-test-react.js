@@ -1,8 +1,10 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import * as fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import ArchiveExplorer from '../ArchiveExplorer';
 import * as v2 from '../ArchiveV2';
+import * as fuzzySearchV2 from '../fuzzySearch';
 
 describe('lib/viewers/archive/ArchiveExplorer', () => {
     const originalOffsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
@@ -100,6 +102,19 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                     <ArchiveExplorer filename={filename} itemCollection={data} v2={v2} {...props} />
                 </v2.BlueprintProviders>,
             );
+
+        test('should search with the local fuzzySearch', async () => {
+            const user = userEvent.setup();
+            const search = jest.spyOn(fuzzySearch, 'default');
+            const searchV2 = jest.spyOn(fuzzySearchV2, 'default');
+            renderV2();
+
+            await user.type(screen.getByRole('searchbox'), 'pdflevel');
+
+            expect(searchV2).toHaveBeenCalledWith('pdflevel', 'pdf-level-1.pdf', 0);
+            expect(search).not.toHaveBeenCalled();
+            expect(screen.getByText('pdf-level-1.pdf')).toBeInTheDocument();
+        });
 
         test('should render the v2 table and navigate into a folder from search results', async () => {
             const user = userEvent.setup();
@@ -257,6 +272,18 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             expect(screen.getByRole('gridcell', { name: 'pdf-level-1.pdf' })).toBeInTheDocument();
             expect(screen.queryByRole('gridcell', { name: 'csv-level-1.csv' })).not.toBeInTheDocument();
+        });
+
+        test('should search with the box-ui-elements fuzzySearch without v2', async () => {
+            const user = userEvent.setup();
+            const search = jest.spyOn(fuzzySearch, 'default');
+            const searchV2 = jest.spyOn(fuzzySearchV2, 'default');
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            await user.type(screen.getByRole('searchbox'), 'pdflevel');
+
+            expect(search).toHaveBeenCalledWith('pdflevel', 'pdf-level-1.pdf', 0);
+            expect(searchV2).not.toHaveBeenCalled();
         });
     });
 
