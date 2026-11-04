@@ -99,3 +99,9 @@ $bp-ThumbnailsSidebarV2-page-width: 150px;
         outline-color: var(--bp-outline-focus-on-dark);
     }
 }
+
+// Beats the legacy $fours/$black rule on .bp .bp-thumbnails-container--dark. Flag-off rails keep that rule.
+.bp .bp-ThumbnailsSidebarV2.bp-thumbnails-container--dark {
+    border-right-color: var(--bp-gray-100);
+    background-color: var(--bp-gray-80);
+}
