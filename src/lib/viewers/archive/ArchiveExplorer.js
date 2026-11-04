@@ -20,7 +20,7 @@ const language = __LANGUAGE__; // eslint-disable-line
 const readableTimeDefaults = Object.fromEntries(
     Object.values(readableTimeMessageDefinitions).map(({ id, defaultMessage }) => [id, defaultMessage]),
 );
-const archiveV2Messages = { ...elementsMessages, ...readableTimeDefaults, ...readableTimeMessages };
+const archiveV2Messages = { ...readableTimeDefaults, ...readableTimeMessages };
 const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
 const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
