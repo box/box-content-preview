@@ -1,15 +1,17 @@
 import React from 'react';
 import isFinite from 'lodash/isFinite';
 import noop from 'lodash/noop';
-import { GrayWhite } from '@box/blueprint-web-assets/tokens/tokens';
+import { Gray65, Gray80, GrayWhite } from '@box/blueprint-web-assets/tokens/tokens';
 import FilmstripV2 from './FilmstripV2';
 import { buildClusters, CommentMarker, MarkerCluster, MarkerTick, useDismissableMarkerSelection } from './markers';
 import SliderControl from '../slider';
 import { percent } from './utils';
 import './TimeControlsV2.scss';
 
-const TRACK_COLOR_BUFFERED = 'rgb(127, 127, 127)';
-const TRACK_COLOR_UNPLAYED = 'rgb(85, 85, 85)';
+const TRACK_COLORS = {
+    blueprint: { buffered: Gray65, unplayed: Gray80 },
+    legacy: { buffered: 'rgb(127, 127, 127)', unplayed: 'rgb(85, 85, 85)' },
+};
 
 export type Props = {
     aspectRatio?: number;
@@ -58,6 +60,8 @@ export default function TimeControlsV2({
     const currentPercentage = percent(currentValue, durationValue);
     const bufferedAmount = bufferedRange && bufferedRange.length ? bufferedRange.end(bufferedRange.length - 1) : 0;
     const bufferedPercentage = percent(bufferedAmount, durationValue);
+    const { buffered: bufferedColor, unplayed: unplayedColor } =
+        TRACK_COLORS[isBlueprintEnabled ? 'blueprint' : 'legacy'];
 
     React.useLayoutEffect(() => {
         const el = scrubberRef.current;
@@ -115,7 +119,11 @@ export default function TimeControlsV2({
     };
 
     return (
-        <div ref={containerRef} className="bp-TimeControlsV2" data-testid="bp-time-controls-v2">
+        <div
+            ref={containerRef}
+            className={`bp-TimeControlsV2${isBlueprintEnabled ? ' bp-TimeControlsV2--blueprint' : ''}`}
+            data-testid="bp-time-controls-v2"
+        >
             {!!filmstripInterval && (
                 <FilmstripV2
                     aspectRatio={aspectRatio}
@@ -147,7 +155,7 @@ export default function TimeControlsV2({
                     onUpdate={onTimeChange}
                     step={fps ? 1 / fps : 5}
                     title={__('media_time_slider')}
-                    track={`linear-gradient(to right, ${GrayWhite} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} calc(${currentPercentage}% + 2.5px), ${TRACK_COLOR_BUFFERED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} ${bufferedPercentage}%, ${TRACK_COLOR_UNPLAYED} 100%)`}
+                    track={`linear-gradient(to right, ${GrayWhite} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${bufferedColor} calc(${currentPercentage}% + 2.5px), ${bufferedColor} ${bufferedPercentage}%, ${unplayedColor} ${bufferedPercentage}%, ${unplayedColor} 100%)`}
                     value={currentValue}
                 />
                 {durationValue > 0 &&
