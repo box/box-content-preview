@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import * as reactIntl from 'react-intl';
+import * as Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import ArchiveExplorer from '../ArchiveExplorer';
 import * as v2 from '../ArchiveV2';
 
@@ -77,6 +79,15 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(screen.getByRole('searchbox')).toBeInTheDocument();
             expect(screen.getByLabelText('Breadcrumb')).toBeInTheDocument();
         });
+
+        test('should keep the box-ui-elements Internationalize wrapper without v2', () => {
+            const internationalize = jest.spyOn(Internationalize, 'default');
+
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            expect(internationalize).toHaveBeenCalled();
+            expect(internationalize.mock.calls[0][0]).toMatchObject({ language: 'en-US' });
+        });
     });
 
     describe('archive v2', () => {
@@ -100,6 +111,17 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                     <ArchiveExplorer filename={filename} itemCollection={data} v2={v2} {...props} />
                 </v2.BlueprintProviders>,
             );
+
+        test('should provide intl with react-intl IntlProvider instead of Internationalize', () => {
+            const internationalize = jest.spyOn(Internationalize, 'default');
+            const intlProvider = jest.spyOn(reactIntl, 'IntlProvider');
+
+            renderV2();
+
+            expect(internationalize).not.toHaveBeenCalled();
+            expect(intlProvider).toHaveBeenCalled();
+            expect(intlProvider.mock.calls[0][0]).toMatchObject({ locale: 'en-US' });
+        });
 
         test('should render the v2 table and navigate into a folder from search results', async () => {
             const user = userEvent.setup();
