@@ -592,6 +592,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
             <div
                 ref={rootRef}
                 className={classNames('bp-WaveformRange', {
+                    'bp-WaveformRange--blueprint': isBlueprintEnabled,
                     'bp-WaveformRange--highlight': highlight,
                     'bp-WaveformRange--persist': keepHighlight,
                     'bp-WaveformRange--swiping': collapsed && isSwiping,

@@ -603,6 +603,11 @@ describe('WaveformRangeSelection', () => {
                 { wrapper: BlueprintProviders },
             );
 
+        test('should add the Blueprint modifier class', () => {
+            renderBlueprint();
+            expect(screen.getByTestId('bp-waveform-range')).toHaveClass('bp-WaveformRange--blueprint');
+        });
+
         test('should render the drag tooltip time as Blueprint text', () => {
             renderBlueprint();
 

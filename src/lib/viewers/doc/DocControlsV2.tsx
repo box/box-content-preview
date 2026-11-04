@@ -2,8 +2,9 @@ import React from 'react';
 import noop from 'lodash/noop';
 import { DropdownMenu } from '@box/blueprint-web';
 import GridView from '@box/blueprint-web-assets/icons/Medium/GridView';
-import Nav from '@box/blueprint-web-assets/icons/Medium/Nav';
 import Search from '@box/blueprint-web-assets/icons/Medium/Search';
+import SidebarChevronLeft from '@box/blueprint-web-assets/icons/Medium/SidebarChevronLeft';
+import SidebarChevronRight from '@box/blueprint-web-assets/icons/Medium/SidebarChevronRight';
 import AnnotationsControlsV2 from '../controls/annotations/AnnotationsControlsV2';
 import AnnotationsPaletteControlsV2 from '../controls/annotations/AnnotationsPaletteControlsV2';
 import ExperiencesProvider from '../controls/experiences';
@@ -107,7 +108,7 @@ export default function DocControlsV2({
                     <>
                         <ControlsMenuItemV2
                             data-resin-target="thumbnails"
-                            icon={Nav}
+                            icon={isThumbnailsOpen ? SidebarChevronLeft : SidebarChevronRight}
                             label={isThumbnailsOpen ? __('controls_hide_thumbnails') : __('controls_show_thumbnails')}
                             onSelect={(): void => onThumbnailsToggle()}
                         />
