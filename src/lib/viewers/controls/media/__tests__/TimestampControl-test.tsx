@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import BlueprintProviders from '../../../../BlueprintProviders';
 import TimestampControl from '../TimestampControl';
@@ -72,6 +72,11 @@ describe('TimestampControl', () => {
             await user.click(getButton());
             expect(screen.getByTestId('IconChevronUpMedium24')).toHaveClass('bp-TimestampControl-chevron');
         });
+
+        test('should not add the Blueprint modifier class', () => {
+            getWrapper();
+            expect(screen.getByTestId('bp-TimestampControl')).not.toHaveClass('bp-TimestampControl--blueprint');
+        });
     });
 
     describe('when isBlueprintEnabled is true', () => {
@@ -107,6 +112,32 @@ describe('TimestampControl', () => {
                 'rgba(255, 255, 255, 0.8)',
             );
             expect(screen.queryByTestId('IconChevronDownMedium24')).not.toBeInTheDocument();
+        });
+
+        test.each`
+            canChangeTimeFormat
+            ${true}
+            ${false}
+        `(
+            'should add the Blueprint modifier class when canChangeTimeFormat is $canChangeTimeFormat',
+            ({ canChangeTimeFormat }) => {
+                getBlueprintWrapper({ canChangeTimeFormat });
+                expect(screen.getByTestId('bp-TimestampControl')).toHaveClass('bp-TimestampControl--blueprint');
+            },
+        );
+
+        test('should render the trigger as a Blueprint button that marks keyboard focus', async () => {
+            const user = userEvent.setup();
+            getBlueprintWrapper();
+
+            expect(getButton()).toHaveAttribute('data-button-wrapper');
+            expect(getButton()).toHaveAttribute('type', 'button');
+            expect(getButton()).toHaveClass('bp-TimestampControl-trigger');
+            expect(getButton()).not.toHaveClass('bp-TimestampControl-button');
+
+            await user.tab();
+            expect(getButton()).toHaveFocus();
+            await waitFor(() => expect(getButton()).toHaveAttribute('data-focus-visible'));
         });
 
         test('should render each digit of the current time and duration in a fixed-width box', () => {

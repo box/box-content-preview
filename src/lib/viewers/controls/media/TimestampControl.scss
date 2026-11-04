@@ -57,6 +57,50 @@
     fill: rgb(255 255 255 / 80%);
 }
 
+// Matches the on-dark IconButton surfaces and focus ring of the neighboring controls.
+.bp-TimestampControl--blueprint {
+    .bp-TimestampControl-trigger,
+    .bp-TimestampControl-static {
+        user-select: none;
+        display: flex;
+        gap: var(--bp-space-010);
+        align-items: center;
+        height: var(--bp-size-080);
+        padding: 0 var(--bp-space-030);
+        font: inherit;
+        font-variant-numeric: tabular-nums;
+        color: var(--bp-text-text-on-dark);
+        letter-spacing: normal;
+        white-space: nowrap;
+    }
+
+    .bp-TimestampControl-trigger {
+        cursor: pointer;
+        border-radius: var(--bp-radius-10);
+        background: var(--bp-surface-cta-surface-icon-on-dark);
+
+        &:hover,
+        &[data-focus-visible] {
+            background: var(--bp-surface-cta-surface-icon-on-dark-hover);
+        }
+
+        &:active,
+        &[data-active] {
+            background: var(--bp-surface-cta-surface-icon-on-dark-pressed);
+        }
+
+        &[data-focus-visible] {
+            outline: var(--bp-border-02) solid var(--bp-outline-focus-on-light);
+        }
+    }
+
+    .bp-TimestampControl-chevron {
+        width: var(--bp-size-040);
+        height: var(--bp-size-040);
+        margin-left: 0;
+    }
+}
+
 // Blueprint sizes the checked indicator at 20px with no prop to change it.
 .bp-TimestampControl-menu [role='menuitemradio'] svg {
     width: var(--bp-size-040);
