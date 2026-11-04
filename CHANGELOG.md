@@ -1,3 +1,13 @@
+## 3.133.0 (2026-11-04)
+
+* fix(archive): Localize v2 modified dates (#1920) ([d92d030](https://github.com/box/box-content-preview/commit/d92d030)), closes [#1920](https://github.com/box/box-content-preview/issues/1920)
+* fix(archive): use the Blueprint white token for the stage (#1933) ([f7e7abc](https://github.com/box/box-content-preview/commit/f7e7abc)), closes [#1933](https://github.com/box/box-content-preview/issues/1933) [#fff](https://github.com/box/box-content-preview/issues/fff)
+* fix(controls): honor annotations-only controls in the Blueprint bar (#1927) ([a9d2fa3](https://github.com/box/box-content-preview/commit/a9d2fa3)), closes [#1927](https://github.com/box/box-content-preview/issues/1927)
+* fix(doc-viewer): apply drawing operations limit to dwg previews (#1928) ([49f4b06](https://github.com/box/box-content-preview/commit/49f4b06)), closes [#1928](https://github.com/box/box-content-preview/issues/1928)
+* fix(doc): use Blueprint tokens for the dark thumbnail rail (#1932) ([0a466ff](https://github.com/box/box-content-preview/commit/0a466ff)), closes [#1932](https://github.com/box/box-content-preview/issues/1932)
+* fix(media): render the waveform range tooltip with Blueprint Text (#1930) ([cd5e7da](https://github.com/box/box-content-preview/commit/cd5e7da)), closes [#1930](https://github.com/box/box-content-preview/issues/1930)
+* fix(preview): step ctrl+wheel zoom by 10% (#1889) ([54f8643](https://github.com/box/box-content-preview/commit/54f8643)), closes [#1889](https://github.com/box/box-content-preview/issues/1889)
+
 ## 3.132.0 (2026-11-03)
 
 * chore(deps): bump follow-redirects from 1.16.1 to 1.16.2 (#1924) ([e486d66](https://github.com/box/box-content-preview/commit/e486d66)), closes [#1924](https://github.com/box/box-content-preview/issues/1924)
