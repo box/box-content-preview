@@ -226,6 +226,33 @@ describe('TimeControlsV2', () => {
             expect(trackProp).toContain('rgb(127, 127, 127)');
             expect(trackProp).toContain('rgb(85, 85, 85)');
         });
+
+        test('should use Blueprint gray tokens for buffered and unplayed when isBlueprintEnabled', () => {
+            render(
+                <TimeControlsV2
+                    {...defaultProps}
+                    bufferedRange={createMockBufferedRange(30)}
+                    currentTime={10}
+                    durationTime={60}
+                    isBlueprintEnabled
+                />,
+            );
+            const trackProp = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
+            expect(trackProp).toMatch(/^linear-gradient\(to right, #ffffff /);
+            expect(trackProp).toContain('#6f6f6f calc(16.6');
+            expect(trackProp).toContain('#6f6f6f 50%, #4e4e4e 50%, #4e4e4e 100%');
+            expect(trackProp).not.toContain('rgb(');
+        });
+    });
+
+    describe('blueprint modifier', () => {
+        test('should add the Blueprint modifier class only when isBlueprintEnabled', () => {
+            const { rerender } = render(<TimeControlsV2 {...defaultProps} />);
+            expect(screen.getByTestId('bp-time-controls-v2')).not.toHaveClass('bp-TimeControlsV2--blueprint');
+
+            rerender(<TimeControlsV2 {...defaultProps} isBlueprintEnabled />);
+            expect(screen.getByTestId('bp-time-controls-v2')).toHaveClass('bp-TimeControlsV2--blueprint');
+        });
     });
 
     describe('track mask', () => {
