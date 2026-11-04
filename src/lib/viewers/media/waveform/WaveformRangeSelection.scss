@@ -217,6 +217,33 @@
     background: rgb(34 34 34 / 92%);
 }
 
+.bp-WaveformRange--blueprint {
+    .bp-WaveformRange-region {
+        border-color: var(--bp-white-opacity-50);
+        background: var(--bp-white-opacity-12);
+        box-shadow: 0 0 0 1px var(--bp-gray-100);
+    }
+
+    &.bp-WaveformRange--highlight .bp-WaveformRange-region,
+    &:has(.bp-WaveformRange-handle:hover) .bp-WaveformRange-region,
+    &:has(.bp-WaveformRange-handle--dragging) .bp-WaveformRange-region {
+        border-color: var(--bp-gray-white);
+    }
+
+    .bp-WaveformRange-handleGrip {
+        border-color: var(--bp-gray-100);
+        background: var(--bp-gray-white);
+        box-shadow: 0 1px 4px var(--bp-black-opacity-30);
+    }
+
+    .bp-WaveformRange-tooltipTime {
+        border-color: var(--bp-border-tooltip-border);
+        border-radius: var(--bp-radius-04);
+        color: var(--bp-text-text-on-dark);
+        background: var(--bp-surface-tooltip-surface);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .bp-WaveformRange-region,
     .bp-WaveformRange-handleGrip {

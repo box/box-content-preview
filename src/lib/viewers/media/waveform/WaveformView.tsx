@@ -1656,6 +1656,7 @@ function WaveformView({
         <div
             ref={bindOverlayPortalHost}
             className={classNames('bp-WaveformView', {
+                'bp-WaveformView--blueprint': isBlueprintEnabled,
                 'bp-WaveformView--inert': !interactive,
                 'bp-WaveformView--playheadDragging': isPlayheadDragging,
                 'bp-WaveformView--tape': isTape,
