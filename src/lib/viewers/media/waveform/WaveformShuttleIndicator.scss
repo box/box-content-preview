@@ -20,6 +20,12 @@
     box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
 }
 
+.bp-WaveformShuttle--blueprint {
+    color: var(--bp-text-text-on-dark);
+    background: var(--bp-white-opacity-12);
+    box-shadow: 0 2px 12px var(--bp-black-opacity-08);
+}
+
 .bp-WaveformShuttle-glyph {
     display: block;
     flex: 0 0 auto;
