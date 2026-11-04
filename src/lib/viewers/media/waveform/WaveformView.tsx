@@ -1643,10 +1643,15 @@ function WaveformView({
         );
     };
 
+    // The tape chip is portaled outside the root, so the modifier sits on the chip itself.
+    const hoverTimeClassName = classNames('bp-WaveformView-hoverTime', {
+        'bp-WaveformView-hoverTime--blueprint': isBlueprintEnabled,
+    });
+
     const scrubTimeChip =
         isTape && scrubPreviewTimeSec != null ? (
             <div className="bp-WaveformView-hover bp-WaveformView-hover--tape" data-testid="bp-waveform-hover">
-                <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
+                <div className={hoverTimeClassName} data-testid="bp-waveform-hover-time">
                     {renderHoverTime(scrubPreviewTimeSec)}
                 </div>
             </div>
@@ -1656,6 +1661,7 @@ function WaveformView({
         <div
             ref={bindOverlayPortalHost}
             className={classNames('bp-WaveformView', {
+                'bp-WaveformView--blueprint': isBlueprintEnabled,
                 'bp-WaveformView--inert': !interactive,
                 'bp-WaveformView--playheadDragging': isPlayheadDragging,
                 'bp-WaveformView--tape': isTape,
@@ -1780,7 +1786,7 @@ function WaveformView({
                 )}
                 {hoverLeft != null && hoverProgress != null && !isRangeDragging && (
                     <div className="bp-WaveformView-hover" data-testid="bp-waveform-hover" style={{ left: hoverLeft }}>
-                        <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
+                        <div className={hoverTimeClassName} data-testid="bp-waveform-hover-time">
                             {renderHoverTime(hoverProgress * durationSec)}
                         </div>
                     </div>

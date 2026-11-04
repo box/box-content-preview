@@ -27,6 +27,16 @@ describe('WaveformShuttleIndicator', () => {
         expect(screen.queryByTestId('IconShuttleForward')).not.toBeInTheDocument();
     });
 
+    test('should add the Blueprint modifier class only when isBlueprintEnabled is true', () => {
+        const { rerender } = render(<WaveformShuttleIndicator direction="forward" rate={2} />, {
+            wrapper: BlueprintProviders,
+        });
+        expect(screen.getByTestId('bp-waveform-shuttle')).not.toHaveClass('bp-WaveformShuttle--blueprint');
+
+        rerender(<WaveformShuttleIndicator direction="forward" isBlueprintEnabled rate={2} />);
+        expect(screen.getByTestId('bp-waveform-shuttle')).toHaveClass('bp-WaveformShuttle--blueprint');
+    });
+
     test.each`
         direction    | path
         ${'forward'} | ${'M12 6.4'}
