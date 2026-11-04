@@ -68,6 +68,14 @@
     background: none;
 }
 
+.bp-TimeControlsV2--blueprint {
+    .bp-TimeControlsV2-slider .bp-SliderControl-thumb,
+    .bp-TimeControlsV2-marker:not(.bp-TimeControlsV2-marker--group),
+    .bp-TimeControlsV2-marker-tick {
+        background: var(--bp-gray-white);
+    }
+}
+
 .bp-TimeControlsV2-marker-tick {
     cursor: pointer;
     display: block;

@@ -184,6 +184,30 @@
     background: rgb(34 34 34 / 92%);
 }
 
+.bp-WaveformView--blueprint {
+    .bp-WaveformView-playhead {
+        background: linear-gradient(var(--bp-light-blue-100), var(--bp-box-blue-100));
+        box-shadow:
+            0 0 0 1px var(--bp-gray-100),
+            0 0 10px 0 var(--bp-light-blue-opacity-30);
+    }
+
+    .bp-WaveformView-playhead--draggable:hover,
+    &.bp-WaveformView--playheadDragging .bp-WaveformView-playhead--draggable {
+        box-shadow:
+            0 0 0 1px var(--bp-gray-100),
+            0 0 8px 1px var(--bp-light-blue-opacity-30),
+            0 0 20px 2px var(--bp-light-blue-opacity-08);
+    }
+}
+
+.bp-WaveformView-hoverTime--blueprint {
+    border-color: var(--bp-border-tooltip-border);
+    border-radius: var(--bp-radius-04);
+    color: var(--bp-text-text-on-dark);
+    background: var(--bp-surface-tooltip-surface);
+}
+
 .bp-WaveformView--inert {
     pointer-events: none;
 
