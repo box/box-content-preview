@@ -9,3 +9,9 @@
     height: 100%;
     text-align: left; // override embed widget styles
 }
+
+// The v2 table is height: 100% after the search bar and breadcrumbs, so without this it can't shrink to the space
+// left in the column and runs past the viewer. Scoped to v2 to leave the v1 layout alone.
+.bp-ArchiveExplorer-table:has(.bp-ArchiveTableV2) {
+    min-height: 0;
+}

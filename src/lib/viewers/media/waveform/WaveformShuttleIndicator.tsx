@@ -25,7 +25,10 @@ export default function WaveformShuttleIndicator({ direction, isBlueprintEnabled
     return (
         <div
             aria-label={label}
-            className={classNames('bp-WaveformShuttle', { 'bp-is-reverse': isReverse })}
+            className={classNames('bp-WaveformShuttle', {
+                'bp-WaveformShuttle--blueprint': isBlueprintEnabled,
+                'bp-is-reverse': isReverse,
+            })}
             data-testid="bp-waveform-shuttle"
             role="status"
         >
