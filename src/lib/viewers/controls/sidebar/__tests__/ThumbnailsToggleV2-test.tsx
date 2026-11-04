@@ -63,21 +63,8 @@ describe('ThumbnailsToggleV2', () => {
             getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
 
             expect(getButton()).toHaveAttribute('aria-expanded', isThumbnailsOpen.toString());
+            expect(getButton()).not.toHaveAttribute('aria-pressed');
         });
-
-        test.each`
-            isThumbnailsOpen | pressed    | state
-            ${true}          | ${'true'}  | ${'on'}
-            ${false}         | ${'false'} | ${'off'}
-        `(
-            'should set the selected state to $state when isThumbnailsOpen is $isThumbnailsOpen',
-            ({ isThumbnailsOpen, pressed, state }) => {
-                getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen });
-
-                expect(getButton()).toHaveAttribute('aria-pressed', pressed);
-                expect(getButton()).toHaveAttribute('data-state', state);
-            },
-        );
 
         test('should render the left chevron when the sidebar is open', () => {
             getWrapper({ onThumbnailsToggle: jest.fn(), isThumbnailsOpen: true });
