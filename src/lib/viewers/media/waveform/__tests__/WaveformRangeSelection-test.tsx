@@ -383,6 +383,7 @@ describe('WaveformRangeSelection', () => {
         expect(onDragChange).toHaveBeenCalledWith(true);
         expect(onRangeChange).not.toHaveBeenCalled();
         expect(screen.getByTestId('bp-waveform-range-tooltip')).toHaveTextContent('0:02.00');
+        expect(screen.getByTestId('bp-waveform-range-tooltip').querySelector('[data-typography]')).toBeNull();
 
         dispatchPointer(window, 'pointermove', 100);
         expect(onRangeChange).not.toHaveBeenCalled();
@@ -601,6 +602,21 @@ describe('WaveformRangeSelection', () => {
                 />,
                 { wrapper: BlueprintProviders },
             );
+
+        test('should add the Blueprint modifier class', () => {
+            renderBlueprint();
+            expect(screen.getByTestId('bp-waveform-range')).toHaveClass('bp-WaveformRange--blueprint');
+        });
+
+        test('should render the drag tooltip time as Blueprint text', () => {
+            renderBlueprint();
+
+            dispatchPointer(screen.getByTestId('bp-waveform-range-handle-end'), 'pointerdown', 100);
+
+            expect(screen.getByTestId('bp-waveform-range-tooltip').querySelector('[data-typography]')).toHaveTextContent(
+                '0:04.00',
+            );
+        });
 
         test('should render Comment and clear as one Blueprint toolbar above the range', async () => {
             const user = userEvent.setup();

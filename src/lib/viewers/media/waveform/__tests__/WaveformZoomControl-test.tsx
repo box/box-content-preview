@@ -105,8 +105,28 @@ describe('WaveformZoomControl', () => {
 
         rerender(<WaveformZoomControl isBlueprintEnabled maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />);
         const multiplier = screen.getByTestId('bp-waveform-zoom-multiplier');
-        expect(multiplier).toHaveAttribute('title', __('zoom_current_scale'));
+        expect(multiplier).not.toHaveAttribute('title');
         expect(multiplier.querySelector('[data-typography]')).toHaveTextContent('2x');
+    });
+
+    test('should show the current scale in a Blueprint Tooltip when isBlueprintEnabled is true', async () => {
+        const user = userEvent.setup();
+        render(<WaveformZoomControl isBlueprintEnabled maxZoom={4} onZoomChange={jest.fn()} zoomLevel={2.5} />, {
+            wrapper: BlueprintProviders,
+        });
+
+        await user.hover(screen.getByTestId('bp-waveform-zoom-multiplier'));
+        expect(await screen.findByRole('tooltip')).toHaveTextContent(__('zoom_current_scale'));
+    });
+
+    test('should add the Blueprint modifier class only when isBlueprintEnabled is true', () => {
+        const { rerender } = render(<WaveformZoomControl maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1} />, {
+            wrapper: BlueprintProviders,
+        });
+        expect(screen.getByTestId('bp-waveform-zoom')).not.toHaveClass('bp-WaveformZoomControl--blueprint');
+
+        rerender(<WaveformZoomControl isBlueprintEnabled maxZoom={4} onZoomChange={jest.fn()} zoomLevel={1} />);
+        expect(screen.getByTestId('bp-waveform-zoom')).toHaveClass('bp-WaveformZoomControl--blueprint');
     });
 
     test('should render Blueprint icon buttons only when isBlueprintEnabled is true', async () => {
