@@ -1,9 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { IntlProvider } from 'react-intl';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
 import readableTimeMessages from 'box-readable-time-messages'; // eslint-disable-line
 import readableTimeMessageDefinitions from '@box/readable-time/lib/messages.js';
-import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import itemNameCellRenderer from 'box-ui-elements/es/features/virtualized-table-renderers/itemNameCellRenderer';
@@ -230,7 +230,7 @@ class ArchiveExplorer extends React.Component {
         const BreadcrumbsComponent = v2 ? v2.BreadcrumbsV2 : Breadcrumbs;
 
         return (
-            <Internationalize language={language} messages={v2 ? archiveV2Messages : elementsMessages}>
+            <IntlProvider locale={language} messages={v2 ? archiveV2Messages : elementsMessages}>
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
                     <SearchBarComponent onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <BreadcrumbsComponent
@@ -298,7 +298,7 @@ class ArchiveExplorer extends React.Component {
                         )}
                     </div>
                 </div>
-            </Internationalize>
+            </IntlProvider>
         );
     }
 }
