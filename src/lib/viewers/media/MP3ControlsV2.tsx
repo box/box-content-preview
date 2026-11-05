@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import classNames from 'classnames';
 import isFinite from 'lodash/isFinite';
 import { IconButton, Tooltip } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
@@ -343,7 +344,10 @@ export default function MP3ControlsV2({
                 )}
             </div>
             {hasMediaMetadata && (
-                <div className="bp-MP3ControlsV2-bar" data-testid="bp-MP3ControlsV2-bar">
+                <div
+                    className={classNames('bp-MP3ControlsV2-bar', { 'bp-MP3ControlsV2-bar--blueprint': isBlueprintEnabled })}
+                    data-testid="bp-MP3ControlsV2-bar"
+                >
                     <div className="bp-MP3ControlsV2-group">
                         <PlayPauseToggle
                             hasSkipButtons={false}

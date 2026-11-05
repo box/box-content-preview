@@ -12,8 +12,7 @@
 
     // Over video, the skip buttons need their own disc to stay legible.
     button {
-        --icon-button-radius: 50%;
-        --icon-button-surface-on-dark: rgb(0 0 0 / 50%);
+        @include bp-OverlayDiscSurface;
     }
 
     .bp-VideoPlaySeekOverlay-play {

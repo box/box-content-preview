@@ -299,6 +299,7 @@ describe('MP3ControlsV2', () => {
             expect(screen.queryByTitle(__('media_skip_forward'))).not.toBeInTheDocument();
             expect(screen.queryByTitle(__('media_skip_backward'))).not.toBeInTheDocument();
             expect(screen.queryByTestId('bp-DurationLabels')).not.toBeInTheDocument();
+            expect(screen.getByTestId('bp-MP3ControlsV2-bar')).not.toHaveClass('bp-MP3ControlsV2-bar--blueprint');
         });
 
         test('should render the timestamp as Blueprint text when isBlueprintEnabled is true', async () => {
@@ -307,6 +308,7 @@ describe('MP3ControlsV2', () => {
             const timestamp = await screen.findByTestId('bp-TimestampControl-static');
             expect(timestamp).toHaveTextContent('0:12/3:32');
             expect(timestamp.querySelectorAll('[data-typography]')).toHaveLength(3);
+            expect(screen.getByTestId('bp-MP3ControlsV2-bar')).toHaveClass('bp-MP3ControlsV2-bar--blueprint');
         });
 
         test('should render a placeholder waveform until peaks load', async () => {
