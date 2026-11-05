@@ -1,3 +1,13 @@
+## 3.134.0 (2026-11-05)
+
+* refactor(archive): use only readable-time messages on the v2 archive (#1944) ([dc768f8](https://github.com/box/box-content-preview/commit/dc768f8)), closes [#1944](https://github.com/box/box-content-preview/issues/1944)
+* refactor(archive): use react-intl IntlProvider on the v2 archive (#1942) ([690c4f2](https://github.com/box/box-content-preview/commit/690c4f2)), closes [#1942](https://github.com/box/box-content-preview/issues/1942)
+* fix(archive): let the v2 table shrink within the viewer (#1939) ([cf2b0ac](https://github.com/box/box-content-preview/commit/cf2b0ac)), closes [#1939](https://github.com/box/box-content-preview/issues/1939)
+* fix(controls): use a SidebarChevron button for show and hide thumbnails (#1934) ([bccab94](https://github.com/box/box-content-preview/commit/bccab94)), closes [#1934](https://github.com/box/box-content-preview/issues/1934)
+* fix(doc-viewer): limit marked content nesting in the text layer (#1936) ([36754aa](https://github.com/box/box-content-preview/commit/36754aa)), closes [#1936](https://github.com/box/box-content-preview/issues/1936)
+* fix(media): use Blueprint tokens for the video scrubber (#1938) ([a3a2086](https://github.com/box/box-content-preview/commit/a3a2086)), closes [#1938](https://github.com/box/box-content-preview/issues/1938)
+* fix(media): use Blueprint tokens for waveform visuals (#1937) ([4aba63b](https://github.com/box/box-content-preview/commit/4aba63b)), closes [#1937](https://github.com/box/box-content-preview/issues/1937)
+
 ## 3.133.0 (2026-11-04)
 
 * fix(archive): Localize v2 modified dates (#1920) ([d92d030](https://github.com/box/box-content-preview/commit/d92d030)), closes [#1920](https://github.com/box/box-content-preview/issues/1920)
