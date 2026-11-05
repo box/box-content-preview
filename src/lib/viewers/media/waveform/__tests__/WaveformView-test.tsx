@@ -282,6 +282,16 @@ describe('WaveformView', () => {
         expect(screen.getByTestId('bp-waveform-hover')).toHaveStyle({ left: '25%' });
     });
 
+    test('should add the Blueprint modifier class only when isBlueprintEnabled is true', () => {
+        const { rerender } = render(<WaveformView durationSec={8} peaks={[0.2, 0.8]} />, {
+            wrapper: BlueprintProviders,
+        });
+        expect(screen.getByTestId('bp-waveform-view')).not.toHaveClass('bp-WaveformView--blueprint');
+
+        rerender(<WaveformView durationSec={8} isBlueprintEnabled peaks={[0.2, 0.8]} />);
+        expect(screen.getByTestId('bp-waveform-view')).toHaveClass('bp-WaveformView--blueprint');
+    });
+
     test('should render the hover time as Blueprint text when isBlueprintEnabled is true', () => {
         render(<WaveformView durationSec={8} isBlueprintEnabled peaks={[0.2, 0.8]} />, {
             wrapper: BlueprintProviders,
@@ -304,6 +314,7 @@ describe('WaveformView', () => {
         expect(screen.getByTestId('bp-waveform-hover-time').querySelector('[data-typography]')).toHaveTextContent(
             '0:02.00',
         );
+        expect(screen.getByTestId('bp-waveform-hover-time')).toHaveClass('bp-WaveformView-hoverTime--blueprint');
     });
 
     test('should not apply hover fills from a touch pointer', () => {
@@ -1993,6 +2004,32 @@ describe('WaveformView', () => {
         const chip = screen.getByTestId('bp-waveform-hover');
         expect(chip).toHaveClass('bp-WaveformView-hover--tape');
         expect(screen.getByTestId('bp-waveform-hover-time')).toHaveTextContent('0:02.00');
+        expect(screen.getByTestId('bp-waveform-hover-time')).not.toHaveClass('bp-WaveformView-hoverTime--blueprint');
+    });
+
+    test('should style the portaled tape scrub chip with Blueprint when isBlueprintEnabled is true', () => {
+        mockGetWrapper.mockReturnValue({ clientWidth: 200, style: {} });
+        mockSetScroll.mockImplementation((scrollLeftPx: number) => {
+            mockGetScroll.mockReturnValue(scrollLeftPx);
+        });
+
+        render(
+            <WaveformView
+                cameraMode="tape"
+                currentTime={0}
+                durationSec={8}
+                isBlueprintEnabled
+                peaks={new Array(800).fill(0.5)}
+            />,
+            { wrapper: BlueprintProviders },
+        );
+
+        mockGetScroll.mockReturnValue(50);
+        swipeTape();
+
+        const chipTime = screen.getByTestId('bp-waveform-hover-time');
+        expect(screen.getByTestId('bp-waveform-view')).not.toContainElement(chipTime);
+        expect(chipTime).toHaveClass('bp-WaveformView-hoverTime--blueprint');
     });
 
     test('should hide the point-comment timestamp border while a tape swipe is in progress', () => {
