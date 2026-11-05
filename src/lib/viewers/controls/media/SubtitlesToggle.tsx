@@ -34,7 +34,7 @@ export default function SubtitlesToggle({
             <ToggleTooltipV2 content={title}>
                 <IconToggleButton
                     aria-label={title}
-                    className="bp-SubtitlesToggleV2"
+                    className="bp-SubtitlesToggleV2 bp-IconToggleOnDark"
                     data-resin-target="subtitlesToggle"
                     data-target-id="SubtitlesToggle-toggle"
                     data-testid="bp-media-cc-button"

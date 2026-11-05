@@ -312,6 +312,7 @@ describe('VideoControlsV2', () => {
                 renderBlueprint();
                 expect(screen.getByTestId('bp-AnnotationsControls-toggleBtn')).toHaveClass(
                     'bp-VideoControlsV2-annotationsToggle',
+                    'bp-IconToggleOnDark',
                 );
             });
 
