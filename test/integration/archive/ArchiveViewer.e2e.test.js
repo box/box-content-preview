@@ -2,6 +2,8 @@
 describe('Archive Viewer', () => {
     const token = Cypress.env('ACCESS_TOKEN');
     const fileIdLarge = Cypress.env('FILE_ID_ARCHIVE_LARGE');
+    // Keeps the folder button clickable without auto-scroll
+    const SCROLL_OFFSET_PX = 10;
 
     beforeEach(() => {
         cy.visit('/');
@@ -14,22 +16,20 @@ describe('Archive Viewer', () => {
             cy.get('button').click();
         });
 
-        cy.get('.ReactVirtualized__Table__Grid').then($tables => {
-            const table = $tables[0];
-            table.scrollTo(0, 50);
+        cy.getByTitle('Collection Child').should('be.visible');
+        cy.get('.ReactVirtualized__Table__Grid').scrollTo(0, SCROLL_OFFSET_PX);
+        cy.get('.ReactVirtualized__Table__Grid').should($grid => {
+            expect($grid[0].scrollTop).to.equal(SCROLL_OFFSET_PX);
+        });
 
-            const tableTop = table.getBoundingClientRect().top;
-            cy.get('.ReactVirtualized__Table__row').then($rows => {
-                expect($rows[0].getBoundingClientRect().top).not.to.equal(tableTop);
-            });
+        cy.getByTitle('Collection Child').within(() => {
+            cy.get('button').click({ scrollBehavior: false });
+        });
 
-            cy.getByTitle('Collection Child').within(() => {
-                cy.get('button').click();
-            });
-
-            cy.get('.ReactVirtualized__Table__row').then($rows => {
-                expect($rows[0].getBoundingClientRect().top).to.equal(tableTop);
-            });
+        cy.getByTestId('bp-archive-breadcrumbs').should('contain', 'Collection Child');
+        cy.get('.ReactVirtualized__Table__Grid').should($grid => {
+            expect($grid[0].scrollHeight).to.be.greaterThan($grid[0].clientHeight);
+            expect($grid[0].scrollTop).to.equal(0);
         });
     });
 });
