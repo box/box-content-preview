@@ -1,7 +1,16 @@
+// The disc sits over arbitrary frames, so every state stays dark; IconButton's on-dark hover
+// and pressed surfaces are near-transparent white and vanish over light video.
+@mixin bp-OverlayDiscSurface {
+    --icon-button-radius: 50%;
+    --icon-button-surface-on-dark: var(--bp-black-opacity-50);
+    --icon-button-surface-on-dark-hover: var(--bp-black-opacity-60);
+    --icon-button-surface-on-dark-pressed: var(--bp-black-opacity-70);
+}
+
 // IconButton tops out at 40px; its own custom properties keep the 80px disc behind the play glyph.
 // Include under a parent selector so these win over IconButton's same-specificity defaults.
 @mixin bp-PlayOverlayButton {
-    --icon-button-radius: 50%;
+    @include bp-OverlayDiscSurface;
+
     --icon-button-size-large: 80px;
-    --icon-button-surface-on-dark: rgb(0 0 0 / 50%);
 }

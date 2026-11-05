@@ -1,6 +1,12 @@
+@import './playOverlay';
+
 .bp-VideoFullscreenButton-position {
     pointer-events: auto;
     position: absolute;
+
+    button {
+        @include bp-OverlayDiscSurface;
+    }
 }
 
 .bp-VideoFullscreenButton {
