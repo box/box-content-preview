@@ -158,7 +158,7 @@ export default function ArchiveTableV2({
                                     </span>
                                 </Cell>
                                 <Cell>
-                                    {/* ReadableTime needs an intl provider; ArchiveExplorer supplies one with Internationalize */}
+                                    {/* ReadableTime needs an intl provider; ArchiveExplorer supplies one with IntlProvider */}
                                     {item.modified_at ? (
                                         <ReadableTime
                                             alwaysShowTime
