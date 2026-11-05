@@ -43,6 +43,12 @@ describe('VideoControlsV2', () => {
         test('should render the V2 controls wrapper', () => {
             render(<VideoControlsV2 {...defaultProps} />);
             expect(screen.getByTestId('media-controls-wrapper-v2')).toBeInTheDocument();
+            expect(screen.getByTestId('media-controls-wrapper-v2')).not.toHaveClass('bp-VideoControlsV2--blueprint');
+        });
+
+        test('should add the Blueprint modifier class when isBlueprintEnabled is true', () => {
+            render(<VideoControlsV2 {...defaultProps} isBlueprintEnabled />, { wrapper: BlueprintProviders });
+            expect(screen.getByTestId('media-controls-wrapper-v2')).toHaveClass('bp-VideoControlsV2--blueprint');
         });
 
         test('should render play button and respond to clicks', async () => {

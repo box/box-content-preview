@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { DropdownMenu, Text } from '@box/blueprint-web';
+import { ButtonWrapper, DropdownMenu, Text } from '@box/blueprint-web';
 import { ChevronDown, ChevronUp } from '@box/blueprint-web-assets/icons/Medium';
 import { bpIconCtaIconOnDark } from '@box/blueprint-web-assets/tokens/tokens';
 import formatTimecode from '../../media/formatTimecode';
@@ -231,7 +231,7 @@ export default function TimestampControl({
 
     if (isBlueprintEnabled && !canChangeTimeFormat) {
         return (
-            <div className="bp-TimestampControl" data-testid="bp-TimestampControl">
+            <div className="bp-TimestampControl bp-TimestampControl--blueprint" data-testid="bp-TimestampControl">
                 <span className="bp-TimestampControl-static" data-testid="bp-TimestampControl-static">
                     {renderBlueprintTime()}
                 </span>
@@ -241,20 +241,23 @@ export default function TimestampControl({
 
     if (isBlueprintEnabled) {
         return (
-            <div ref={containerElRef} className="bp-TimestampControl" data-testid="bp-TimestampControl">
+            <div
+                ref={containerElRef}
+                className="bp-TimestampControl bp-TimestampControl--blueprint"
+                data-testid="bp-TimestampControl"
+            >
                 <DropdownMenu.Root modal={false} onOpenChange={setIsOpen} open={isOpen}>
                     <DropdownMenu.Trigger asChild>
-                        <button
+                        <ButtonWrapper
                             aria-label={__('media_time_format')}
-                            className={classNames('bp-TimestampControl-button', { 'bp-is-open': isOpen })}
+                            className="bp-TimestampControl-trigger"
                             data-resin-target="timeFormat"
                             data-testid="bp-TimestampControl-button"
                             onKeyDown={stopMenuTriggerKeyPropagation}
-                            type="button"
                         >
                             {renderBlueprintTime()}
                             {renderChevron()}
-                        </button>
+                        </ButtonWrapper>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content
                         align="center"
