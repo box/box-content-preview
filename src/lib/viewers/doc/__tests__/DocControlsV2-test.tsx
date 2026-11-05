@@ -9,6 +9,15 @@ import { AnnotationColor } from '../../../AnnotationModule';
 import { AnnotationMode } from '../../../types';
 import { replacePlaceholders } from '../../../util';
 
+jest.mock('@box/blueprint-web-assets/icons/Medium/SidebarChevronLeft', () => ({
+    __esModule: true,
+    default: () => <svg data-testid="SidebarChevronLeft" />,
+}));
+jest.mock('@box/blueprint-web-assets/icons/Medium/SidebarChevronRight', () => ({
+    __esModule: true,
+    default: () => <svg data-testid="SidebarChevronRight" />,
+}));
+
 describe('DocControlsV2', () => {
     const originalMatchMedia = window.matchMedia;
     let container: HTMLDivElement;
@@ -218,6 +227,7 @@ describe('DocControlsV2', () => {
             const [thumbnailsSeparator, zoomSeparator] = screen.getAllByRole('separator');
 
             expect(thumbnails.nextElementSibling).toBe(thumbnailsSeparator);
+            expect(thumbnails).toContainElement(screen.getByTestId('SidebarChevronRight'));
             expect(screen.getByRole('menuitem', { name: __('zoom_out') }).nextElementSibling).toBe(zoomSeparator);
             expect(menu).toHaveTextContent(replacePlaceholders(__('controls_zoom_scale'), ['45%']));
             expect(getMenuRows()).toEqual([
@@ -310,7 +320,9 @@ describe('DocControlsV2', () => {
 
             await user.click(getMoreOptions() as HTMLElement);
 
-            expect(screen.getByRole('menuitem', { name: __('controls_hide_thumbnails') })).toBeInTheDocument();
+            const thumbnails = screen.getByRole('menuitem', { name: __('controls_hide_thumbnails') });
+
+            expect(thumbnails).toContainElement(screen.getByTestId('SidebarChevronLeft'));
         });
     });
 

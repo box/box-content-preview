@@ -1,3 +1,23 @@
+## 3.134.0 (2026-11-05)
+
+* refactor(archive): use only readable-time messages on the v2 archive (#1944) ([dc768f8](https://github.com/box/box-content-preview/commit/dc768f8)), closes [#1944](https://github.com/box/box-content-preview/issues/1944)
+* refactor(archive): use react-intl IntlProvider on the v2 archive (#1942) ([690c4f2](https://github.com/box/box-content-preview/commit/690c4f2)), closes [#1942](https://github.com/box/box-content-preview/issues/1942)
+* fix(archive): let the v2 table shrink within the viewer (#1939) ([cf2b0ac](https://github.com/box/box-content-preview/commit/cf2b0ac)), closes [#1939](https://github.com/box/box-content-preview/issues/1939)
+* fix(controls): use a SidebarChevron button for show and hide thumbnails (#1934) ([bccab94](https://github.com/box/box-content-preview/commit/bccab94)), closes [#1934](https://github.com/box/box-content-preview/issues/1934)
+* fix(doc-viewer): limit marked content nesting in the text layer (#1936) ([36754aa](https://github.com/box/box-content-preview/commit/36754aa)), closes [#1936](https://github.com/box/box-content-preview/issues/1936)
+* fix(media): use Blueprint tokens for the video scrubber (#1938) ([a3a2086](https://github.com/box/box-content-preview/commit/a3a2086)), closes [#1938](https://github.com/box/box-content-preview/issues/1938)
+* fix(media): use Blueprint tokens for waveform visuals (#1937) ([4aba63b](https://github.com/box/box-content-preview/commit/4aba63b)), closes [#1937](https://github.com/box/box-content-preview/issues/1937)
+
+## 3.133.0 (2026-11-04)
+
+* fix(archive): Localize v2 modified dates (#1920) ([d92d030](https://github.com/box/box-content-preview/commit/d92d030)), closes [#1920](https://github.com/box/box-content-preview/issues/1920)
+* fix(archive): use the Blueprint white token for the stage (#1933) ([f7e7abc](https://github.com/box/box-content-preview/commit/f7e7abc)), closes [#1933](https://github.com/box/box-content-preview/issues/1933) [#fff](https://github.com/box/box-content-preview/issues/fff)
+* fix(controls): honor annotations-only controls in the Blueprint bar (#1927) ([a9d2fa3](https://github.com/box/box-content-preview/commit/a9d2fa3)), closes [#1927](https://github.com/box/box-content-preview/issues/1927)
+* fix(doc-viewer): apply drawing operations limit to dwg previews (#1928) ([49f4b06](https://github.com/box/box-content-preview/commit/49f4b06)), closes [#1928](https://github.com/box/box-content-preview/issues/1928)
+* fix(doc): use Blueprint tokens for the dark thumbnail rail (#1932) ([0a466ff](https://github.com/box/box-content-preview/commit/0a466ff)), closes [#1932](https://github.com/box/box-content-preview/issues/1932)
+* fix(media): render the waveform range tooltip with Blueprint Text (#1930) ([cd5e7da](https://github.com/box/box-content-preview/commit/cd5e7da)), closes [#1930](https://github.com/box/box-content-preview/issues/1930)
+* fix(preview): step ctrl+wheel zoom by 10% (#1889) ([54f8643](https://github.com/box/box-content-preview/commit/54f8643)), closes [#1889](https://github.com/box/box-content-preview/issues/1889)
+
 ## 3.132.0 (2026-11-03)
 
 * chore(deps): bump follow-redirects from 1.16.1 to 1.16.2 (#1924) ([e486d66](https://github.com/box/box-content-preview/commit/e486d66)), closes [#1924](https://github.com/box/box-content-preview/issues/1924)

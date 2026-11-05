@@ -1,6 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { IntlProvider } from 'react-intl';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
+import readableTimeMessages from 'box-readable-time-messages'; // eslint-disable-line
+import readableTimeMessageDefinitions from '@box/readable-time/lib/messages.js';
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
@@ -12,9 +15,14 @@ import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
+import fuzzySearchV2 from './fuzzySearch';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
+const readableTimeDefaults = Object.fromEntries(
+    Object.values(readableTimeMessageDefinitions).map(({ id, defaultMessage }) => [id, defaultMessage]),
+);
+const archiveV2Messages = { ...readableTimeDefaults, ...readableTimeMessages };
 const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
 const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
@@ -158,7 +166,9 @@ class ArchiveExplorer extends React.Component {
      */
     getSearchResult = (itemCollection, searchQuery) => {
         const trimmedQuery = searchQuery.trim();
-        return itemCollection.filter(item => fuzzySearch(trimmedQuery, item.name, 0));
+        const { v2 } = this.props;
+        const search = v2 ? fuzzySearchV2 : fuzzySearch;
+        return itemCollection.filter(item => search(trimmedQuery, item.name, 0));
     };
 
     /**
@@ -222,9 +232,13 @@ class ArchiveExplorer extends React.Component {
 
         const SearchBarComponent = v2 ? v2.SearchBarV2 : SearchBar;
         const BreadcrumbsComponent = v2 ? v2.BreadcrumbsV2 : Breadcrumbs;
+        const IntlComponent = v2 ? IntlProvider : Internationalize;
+        const intlProps = v2
+            ? { locale: language, messages: archiveV2Messages }
+            : { language, messages: elementsMessages };
 
         return (
-            <Internationalize language={language} messages={elementsMessages}>
+            <IntlComponent {...intlProps}>
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
                     <SearchBarComponent onSearch={this.handleSearch} searchQuery={searchQuery} />
                     <BreadcrumbsComponent
@@ -292,7 +306,7 @@ class ArchiveExplorer extends React.Component {
                         )}
                     </div>
                 </div>
-            </Internationalize>
+            </IntlComponent>
         );
     }
 }

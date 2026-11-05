@@ -1,8 +1,12 @@
 import React from 'react';
+import * as fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import * as reactIntl from 'react-intl';
+import * as Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import ArchiveExplorer from '../ArchiveExplorer';
 import * as v2 from '../ArchiveV2';
+import * as fuzzySearchV2 from '../fuzzySearch';
 
 describe('lib/viewers/archive/ArchiveExplorer', () => {
     const originalOffsetHeight = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight');
@@ -77,6 +81,15 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
             expect(screen.getByRole('searchbox')).toBeInTheDocument();
             expect(screen.getByLabelText('Breadcrumb')).toBeInTheDocument();
         });
+
+        test('should keep the box-ui-elements Internationalize wrapper without v2', () => {
+            const internationalize = jest.spyOn(Internationalize, 'default');
+
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            expect(internationalize).toHaveBeenCalled();
+            expect(internationalize.mock.calls[0][0]).toMatchObject({ language: 'en-US' });
+        });
     });
 
     describe('archive v2', () => {
@@ -100,6 +113,17 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
                     <ArchiveExplorer filename={filename} itemCollection={data} v2={v2} {...props} />
                 </v2.BlueprintProviders>,
             );
+
+        test('should provide intl with react-intl IntlProvider instead of Internationalize', () => {
+            const internationalize = jest.spyOn(Internationalize, 'default');
+            const intlProvider = jest.spyOn(reactIntl, 'IntlProvider');
+
+            renderV2();
+
+            expect(internationalize).not.toHaveBeenCalled();
+            expect(intlProvider).toHaveBeenCalled();
+            expect(intlProvider.mock.calls[0][0]).toMatchObject({ locale: 'en-US' });
+        });
 
         test('should render the v2 table and navigate into a folder from search results', async () => {
             const user = userEvent.setup();
@@ -137,6 +161,19 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             expect(screen.getByText('Search Results')).toBeInTheDocument();
             expect(screen.getByText('level-0.txt')).toBeInTheDocument();
+        });
+
+        test('should search with the local fuzzySearch', async () => {
+            const user = userEvent.setup();
+            const search = jest.spyOn(fuzzySearch, 'default');
+            const searchV2 = jest.spyOn(fuzzySearchV2, 'default');
+            renderV2();
+
+            await user.type(screen.getByRole('searchbox'), 'pdflevel');
+
+            expect(searchV2).toHaveBeenCalledWith('pdflevel', 'pdf-level-1.pdf', 0);
+            expect(search).not.toHaveBeenCalled();
+            expect(screen.getByText('pdf-level-1.pdf')).toBeInTheDocument();
         });
 
         test('should return from search results to the folder view when the search is cleared', async () => {
@@ -257,6 +294,18 @@ describe('lib/viewers/archive/ArchiveExplorer', () => {
 
             expect(screen.getByRole('gridcell', { name: 'pdf-level-1.pdf' })).toBeInTheDocument();
             expect(screen.queryByRole('gridcell', { name: 'csv-level-1.csv' })).not.toBeInTheDocument();
+        });
+
+        test('should search with the box-ui-elements fuzzySearch without v2', async () => {
+            const user = userEvent.setup();
+            const search = jest.spyOn(fuzzySearch, 'default');
+            const searchV2 = jest.spyOn(fuzzySearchV2, 'default');
+            render(<ArchiveExplorer filename={filename} itemCollection={data} />);
+
+            await user.type(screen.getByRole('searchbox'), 'pdflevel');
+
+            expect(search).toHaveBeenCalledWith('pdflevel', 'pdf-level-1.pdf', 0);
+            expect(searchV2).not.toHaveBeenCalled();
         });
     });
 
