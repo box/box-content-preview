@@ -1,3 +1,9 @@
+## 3.135.0 (2026-11-05)
+
+* test(archive): stabilize the folder scroll reset e2e check (#1946) ([8a7bf26](https://github.com/box/box-content-preview/commit/8a7bf26)), closes [#1946](https://github.com/box/box-content-preview/issues/1946)
+* refactor(archive): port fuzzySearch for the v2 archive (#1943) ([16ebed9](https://github.com/box/box-content-preview/commit/16ebed9)), closes [#1943](https://github.com/box/box-content-preview/issues/1943)
+* chore(i18n): update translations (#1940) ([592a7d0](https://github.com/box/box-content-preview/commit/592a7d0)), closes [#1940](https://github.com/box/box-content-preview/issues/1940)
+
 ## 3.134.0 (2026-11-05)
 
 * refactor(archive): use only readable-time messages on the v2 archive (#1944) ([dc768f8](https://github.com/box/box-content-preview/commit/dc768f8)), closes [#1944](https://github.com/box/box-content-preview/issues/1944)
