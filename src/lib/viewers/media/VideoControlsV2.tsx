@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Toolbar } from '@box/blueprint-web';
 import { Props as DurationLabelsProps } from '../controls/media/DurationLabels';
 
@@ -171,7 +172,10 @@ export default function VideoControlsV2({
 
     return (
         <ExperiencesProvider experiences={experiences}>
-            <div className="bp-VideoControlsV2" data-testid="media-controls-wrapper-v2">
+            <div
+                className={classNames('bp-VideoControlsV2', { 'bp-VideoControlsV2--blueprint': isBlueprintEnabled })}
+                data-testid="media-controls-wrapper-v2"
+            >
                 <VideoFullscreenButton
                     mediaEl={mediaEl}
                     onFullscreenToggle={onFullscreenToggle}
@@ -300,7 +304,7 @@ export default function VideoControlsV2({
                                     ref={annotationsToggleRef}
                                     annotationMode={annotationMode}
                                     buttonType="icon"
-                                    className="bp-VideoControlsV2-annotationsToggle"
+                                    className="bp-VideoControlsV2-annotationsToggle bp-IconToggleOnDark"
                                     isExpanded={isPaletteOpen}
                                     modes={annotationModes}
                                     onAnnotationModeClick={onAnnotationModeClick}

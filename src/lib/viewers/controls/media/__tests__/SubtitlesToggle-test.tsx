@@ -84,7 +84,7 @@ describe('SubtitlesToggle', () => {
             getBlueprintWrapper();
             const toggle = await getToggle();
 
-            expect(toggle).toHaveClass('bp-SubtitlesToggleV2');
+            expect(toggle).toHaveClass('bp-SubtitlesToggleV2', 'bp-IconToggleOnDark');
             expect(toggle).toHaveAttribute('data-resin-target', 'subtitlesToggle');
             expect(toggle).toHaveAttribute('data-target-id', 'SubtitlesToggle-toggle');
             expect(toggle.querySelector('svg')).toBeInTheDocument();
