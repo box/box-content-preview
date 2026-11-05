@@ -12,6 +12,9 @@ let name;
 let gl;
 let supportsWebGL;
 
+// Checks ManagedMediaSource first to match Shaka. iPhone Safari exposes only ManagedMediaSource.
+const getMediaSource = () => global.ManagedMediaSource || global.MediaSource;
+
 class Browser {
     /**
      * Override the current user agent.
@@ -154,7 +157,7 @@ class Browser {
      * @return {boolean} True if dash is usable
      */
     static canPlayDash() {
-        const mse = global.MediaSource;
+        const mse = getMediaSource();
         let canPlayDash = false;
         if (mse) {
             if (typeof mse.isTypeSupported === 'function') {
@@ -173,7 +176,7 @@ class Browser {
      * @return {boolean} True if MediaSource extensions are enabled
      */
     static hasMSE() {
-        return !!global.MediaSource;
+        return !!getMediaSource();
     }
 
     /**
