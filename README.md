@@ -1,9 +1,8 @@
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)](http://opensource.box.com/badges/)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/box/box-content-preview&style=flat)](https://mergify.io)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
 [![version](https://img.shields.io/badge/version-v3.136.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
-[![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
+[![npm version](https://img.shields.io/npm/v/box-content-preview.svg?style=flat-square)](https://www.npmjs.com/package/box-content-preview)
 
 # [Box Content Preview](https://developer.box.com/docs/box-content-preview)
 
@@ -20,19 +19,15 @@ Effective September 1, 2023, Box is discontinuing support for Internet Explorer 
 
 We encourage all users to update their applications to utilize modern browsers for optimal performance, security, and compatibility with the latest features in Preview SDK.
 
-## Current Version
+## Installation
 
-- Version: v3.136.0
-- Locale: en-US
+`yarn add box-content-preview` or `npm install box-content-preview`
 
-https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.css
+To prevent library duplication, Preview requires its peer dependencies to be installed by your application: `react`, `react-dom`, `react-intl`, `axios`, `box-annotations`, `box-ui-elements`, `@box/blueprint-web`, `@box/blueprint-web-assets`, and `@box/react-virtualized`. See `peerDependencies` in [package.json](package.json) for the supported versions.
 
-## Supported Locales
+The package includes TypeScript declarations.
 
-To use a different locale, replace `en-US` in the URLs above with any of the following supported locales.
-
-`en-AU`, `en-CA`, `en-GB`, `en-US`, `bn-IN`, `da-DK`, `de-DE`, `es-419`, `es-ES`, `fi-FI`, `fr-CA`, `fr-FR`, `hi-IN`,`it-IT`, `ja-JP`, `ko-KR`, `nb-NO`, `nl-NL`, `pl-PL`, `pt-BR`, `ru-RU`, `sv-SE`, `tr-TR`, `zh-CN`, `zh-TW`
+Preview is also published to Box's CDN as a prebuilt script. See [Using the CDN build](#using-the-cdn-build).
 
 ## Supported File Types
 
@@ -40,9 +35,83 @@ Box Content Preview supports 100+ file types, including most document and image 
 
 ## Usage
 
-### Including Preview as a library
+### Using the npm package (recommended)
 
-You can self-host the Box Content Preview library or reference the versions available on Box's CDN.
+The npm package is an ES module. Your bundler must handle CSS imports, for example webpack 5 or Vite.
+
+```js
+import { Preview } from 'box-content-preview';
+import 'box-content-preview/styles.css';
+
+const staticBaseURI = 'https://YOUR_SITE.com/box-content-preview/';
+
+const preview = new Preview();
+preview.show(fileId, accessToken, {
+  container: '.preview-container',
+  location: { locale: 'en-US', staticBaseURI },
+  pdfjs: { workerSrc: `${staticBaseURI}pdf.worker.min.mjs` },
+});
+```
+
+The npm package requires `location`, because there is no `preview.js` script URL to read it from.
+
+| Option                 | Description                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| location.locale        | Required. Locale of the preview, such as `en-US`. See [Localization](#localization) for loading UI strings in other locales |
+| location.staticBaseURI | URL where the package's static assets are served, ending in `/`. See [Serving static assets](#serving-static-assets)        |
+| pdfjs.workerSrc        | URL of the pdf.js worker script. The package ships it as `pdf.worker.min.mjs` alongside the other static assets             |
+
+#### Serving static assets
+
+Some viewers load files at runtime instead of bundling them: media players, syntax highlighting, CSV parsing, 3D models, EXIF parsing, and pdf.js character maps, fonts, color profiles, decoders, and images. These files ship in `node_modules/box-content-preview/dist/lib`.
+
+Serve that directory from your site without changing its structure, and set `location.staticBaseURI` to its URL. For example, copy it into your public folder as part of your build:
+
+```sh
+cp -R node_modules/box-content-preview/dist/lib public/box-content-preview
+```
+
+Copy the folder again whenever you upgrade, since asset paths are versioned to match the package.
+
+### Localization
+
+Preview supports these locales:
+
+`en-AU`, `en-CA`, `en-GB`, `en-US`, `bn-IN`, `da-DK`, `de-DE`, `es-419`, `es-ES`, `fi-FI`, `fr-CA`, `fr-FR`, `hi-IN`, `it-IT`, `ja-JP`, `ko-KR`, `nb-NO`, `nl-NL`, `pl-PL`, `pt-BR`, `ru-RU`, `sv-SE`, `tr-TR`, `zh-CN`, `zh-TW`
+
+The npm package bundles en-US strings only. For other locales, pass that locale's messages to `show()` as `intl.messages`:
+
+```js
+import { Preview } from 'box-content-preview';
+import messages from 'box-content-preview/i18n/ja-JP';
+
+new Preview().show(fileId, token, {
+  intl: { messages },
+  location: { locale: 'ja-JP', staticBaseURI },
+});
+```
+
+To choose the locale at runtime, map each supported locale to a static import. Some bundlers can't resolve a template-literal import such as ``import(`box-content-preview/i18n/${locale}`)`` through the package's `exports` map.
+
+```js
+const loaders = {
+  'de-DE': () => import('box-content-preview/i18n/de-DE'),
+  'ja-JP': () => import('box-content-preview/i18n/ja-JP'),
+};
+
+const { default: messages } = await loaders[locale]();
+```
+
+Message keys are prefixed with `bcp.`, so you can also merge `box-content-preview/i18n/<locale>` into an existing react-intl language bundle and pass the merged messages. Missing keys fall back to en-US.
+
+The CDN build has one bundle per locale instead. Replace `en-US` in the CDN URLs with the locale you need.
+
+### Using the CDN build
+
+Box also hosts prebuilt, localized bundles of each release on its CDN. They load Preview as the `Box.Preview` global and resolve their own static assets, so the `location` and `pdfjs` options are not needed.
+
+- https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.js
+- https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.css
 
 ```html
 <!doctype html>
@@ -70,9 +139,9 @@ You can self-host the Box Content Preview library or reference the versions avai
 </html>
 ```
 
-### Self-hosting
+#### Self-hosting the CDN build
 
-To self-host the Box Content Preview library, follow these steps:
+To host the CDN build on your own servers, follow these steps:
 
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
 
@@ -80,42 +149,15 @@ To self-host the Box Content Preview library, follow these steps:
 - Download a specific version as a zip from https://github.com/box/box-content-preview/releases
 
 2. Install dependencies and build the library with `yarn install && yarn build:i18n && yarn build:prod`
-3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure and `third-party` needs to be in the same folder as `2.4.0`. For example, if you self-host using a `box-assets` directory, these URLs must be accessible:
+3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure, and `third-party` needs to be in the same folder as the version folder. For example, if you self-host using a `box-assets` directory, these URLs must be accessible:
 
-- https://cdn.YOUR_SITE.com/box-assets/2.4.0/en-US/preview.js
+- https://cdn.YOUR_SITE.com/box-assets/VERSION/en-US/preview.js
 - https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
 - https://cdn.YOUR_SITE.com/box-assets/third-party/model3d/1.12.0/three.min.js
 
-### Localizing the npm package
+### Using Preview in React
 
-The npm package bundles en-US strings only. For other locales, pass that locale's messages to `show()` as `intl.messages`:
-
-```js
-import { Preview } from 'box-content-preview';
-import messages from 'box-content-preview/i18n/ja-JP';
-
-new Preview().show(fileId, token, {
-  intl: { messages },
-  location: { locale: 'ja-JP', staticBaseURI, version },
-});
-```
-
-To choose the locale at runtime, map each supported locale to a static import. Some bundlers can't resolve a template-literal import such as ``import(`box-content-preview/i18n/${locale}`)`` through the package's `exports` map.
-
-```js
-const loaders = {
-  'de-DE': () => import('box-content-preview/i18n/de-DE'),
-  'ja-JP': () => import('box-content-preview/i18n/ja-JP'),
-};
-
-const { default: messages } = await loaders[locale]();
-```
-
-Message keys are prefixed with `bcp.`, so you can also merge `box-content-preview/i18n/<locale>` into an existing react-intl language bundle and pass the merged messages. Missing keys fall back to en-US.
-
-### Importing Preview as a React Component
-
-Preview can also be used as a React Component with the Box Element framework. The source code for the Content Preview Element wrapper is located at https://github.com/box/box-ui-elements/tree/master/src/components/ContentPreview. Please reference https://github.com/box/box-content-preview-demo for a minimal React application using this wrapper.
+The [Content Preview UI Element](https://github.com/box/box-ui-elements/tree/master/src/elements/content-preview) in box-ui-elements wraps this library as a React component. By default it loads the CDN build for the language you pass in. See https://github.com/box/box-content-preview-demo for a minimal React application using this wrapper.
 
 ## CORS (Cross-Origin Resource Sharing)
 
@@ -130,16 +172,16 @@ View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/rmZd
 ## Initialization
 
 ```javascript
-var preview = new Box.Preview();
+const preview = new Preview();
 preview.show(fileId, accessToken, { options });
 ```
 
-Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token.
+Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token. With the CDN build, use `new Box.Preview()` instead.
 
 ## Parameters & Options
 
 ```javascript
-var preview = new Box.Preview();
+const preview = new Preview();
 preview.show(fileId, accessToken, {
     container: '.preview-container',
     sharedLink: 'https://app.box.com/v/foo',
@@ -178,6 +220,9 @@ preview.show(fileId, accessToken, {
 | viewers.Document.disableFontFace viewers.Presentation.disableFontFace | false         | By default, fonts are converted to OpenType fonts and loaded via font face rules. If disabled, fonts will be rendered using a built-in font renderer that constructs the glyphs with primitive path commands. **Use this option at your own risk**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | responseInterceptor                                                   |               | Function to intercept responses. For an example see https://codepen.io/box-platform/pen/jLdxEv                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | requestInterceptor                                                    |               | Function to intercept requests. For an example see https://codepen.io/box-platform/pen/jLdxEv                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| location                                                              |               | npm package only, required. Locale and static asset URL. See [Using the npm package](#using-the-npm-package-recommended)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| intl                                                                  |               | npm package only. UI strings for a non-English locale. See [Localization](#localization)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| pdfjs                                                                 |               | npm package only. `workerSrc` sets the URL of the pdf.js worker script                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 | File Option   | Default   | Description                                                                                                                                                                                    |
 | ------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -308,8 +353,8 @@ The name of a viewer can be one of the following `Document`, `Presentation`, `MP
 The preview object exposes `addListener` and `removeListener` for binding to events. Event listeners should be bound before `show()` is called, otherwise events can be missed.
 
 ```javascript
-var preview = new Box.Preview();
-var listener = (value) => {
+const preview = new Preview();
+const listener = (value) => {
     // Do something with value
 };
 
