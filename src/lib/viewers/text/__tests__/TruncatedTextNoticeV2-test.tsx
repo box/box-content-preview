@@ -29,6 +29,13 @@ describe('TruncatedTextNoticeV2Root', () => {
         expect(screen.getByRole('img', { name: __('notice_info') })).toBeInTheDocument();
     });
 
+    test('should stack the download button based on the viewer width rather than the window width', () => {
+        expect(notice.hostEl.querySelector('[data-container-query-layout]')).toHaveAttribute(
+            'data-container-query-layout',
+            'true',
+        );
+    });
+
     test('should commit the notice before the constructor returns so a print snapshot includes it', () => {
         const reactGlobal = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };
         const isActEnvironment = reactGlobal.IS_REACT_ACT_ENVIRONMENT;

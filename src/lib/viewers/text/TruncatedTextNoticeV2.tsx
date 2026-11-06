@@ -1,7 +1,8 @@
 import React from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot, Root } from 'react-dom/client';
-import { Button, InlineNotice } from '@box/blueprint-web';
+import { ActionableInlineNotice } from '@box/blueprint-web';
+import InformationCircle from '@box/blueprint-web-assets/icons/Medium/InformationCircle';
 import BlueprintProviders from '../../BlueprintProviders';
 
 type Props = {
@@ -10,20 +11,21 @@ type Props = {
 
 export default function TruncatedTextNoticeV2({ onDownload }: Props): JSX.Element {
     return (
-        <>
-            <InlineNotice variant="info" variantIconAriaLabel={__('notice_info')}>
-                {__('text_truncated')}
-            </InlineNotice>
-            <Button
+        <ActionableInlineNotice
+            enableContainerQueryLayout
+            icon={InformationCircle}
+            iconAriaLabel={__('notice_info')}
+            text={__('text_truncated')}
+        >
+            <ActionableInlineNotice.PrimaryAction
                 className="bp-TruncatedTextNoticeV2-download"
                 data-resin-target="downloadTruncatedFile"
                 data-target-id="TruncatedTextNotice-download"
                 onClick={onDownload}
-                variant="primary"
             >
                 {__('download_file')}
-            </Button>
-        </>
+            </ActionableInlineNotice.PrimaryAction>
+        </ActionableInlineNotice>
     );
 }
 
