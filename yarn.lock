@@ -100,7 +100,7 @@
     eslint-visitor-keys "^2.1.0"
     semver "^6.3.1"
 
-"@babel/generator@^7.29.13", "@babel/generator@^7.29.7", "@babel/generator@^7.29.8", "@babel/generator@^7.7.2":
+"@babel/generator@^7.29.13", "@babel/generator@^7.7.2":
   version "7.29.13"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.29.13.tgz#89bd5d368cde7437920ab3f2e67ef24f0ecfe620"
   integrity sha512-T5FRo+RzVHvGjWOuF1Ljc44b+NXAOazodHkGUHp4I3zCkQ4/sNVJm56h1S278LMR0bY5xBhztGziSbli8zObIw==
@@ -230,7 +230,7 @@
     "@babel/traverse" "^7.29.7"
     "@babel/types" "^7.29.7"
 
-"@babel/helper-string-parser@^7.29.11", "@babel/helper-string-parser@^7.29.7":
+"@babel/helper-string-parser@^7.29.11":
   version "7.29.13"
   resolved "https://registry.yarnpkg.com/@babel/helper-string-parser/-/helper-string-parser-7.29.13.tgz#00a43cc19b8f84e9e3f17f32813e69ae9bfceba8"
   integrity sha512-fWegr+WsEsiMVW4KUNdIIzzMTZSzNiqhy0//6+2MRi2d5NFNsL/AYwBQW8eBnRbTBVRnDVzjaJEUqKaCWjMMdQ==
@@ -254,7 +254,7 @@
     "@babel/traverse" "^7.29.7"
     "@babel/types" "^7.29.7"
 
-"@babel/helpers@^7.29.13", "@babel/helpers@^7.29.7":
+"@babel/helpers@^7.29.13":
   version "7.29.13"
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.29.13.tgz#0f72c9bb2bef0c35f7ef41442358c873487071c5"
   integrity sha512-laoRpD/kO/iA4CDlgJbixHekg7oPvWALK0PQyK3Ob2I2njZRvVAD77RfWCIImtqWCq6KijoBoZK7bp/HlTWASQ==
@@ -262,7 +262,7 @@
     "@babel/template" "^7.29.7"
     "@babel/types" "^7.29.11"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.23.9", "@babel/parser@^7.29.13", "@babel/parser@^7.29.7", "@babel/parser@^7.29.8":
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.23.9", "@babel/parser@^7.29.13", "@babel/parser@^7.29.7":
   version "7.29.13"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.29.13.tgz#dbba85be72b94635123d594035fd087fe7e42bb3"
   integrity sha512-fJM50YYjlTiBhgdkGmC1tBpv+FMAyo4annf2X6Aks+0yRlaiVkYW/3f07xAfVVkYIoZ9fFZp+mEThUFnuybhkQ==
@@ -1043,7 +1043,7 @@
     "@babel/types" "^7.29.11"
     debug "^4.3.1"
 
-"@babel/types@^7.0.0", "@babel/types@^7.20.7", "@babel/types@^7.22.5", "@babel/types@^7.29.11", "@babel/types@^7.29.7", "@babel/types@^7.29.8", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
+"@babel/types@^7.0.0", "@babel/types@^7.20.7", "@babel/types@^7.22.5", "@babel/types@^7.29.11", "@babel/types@^7.29.7", "@babel/types@^7.3.3", "@babel/types@^7.4.4":
   version "7.29.11"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.29.11.tgz#774cffe8cac2ca494f1334e4052002c96bf628fc"
   integrity sha512-WCsemW40Cpc6gouC1SrY6PBaZ+oLRlEVY9XBvZBI7il/HyUrb2nJ505wE1MHEFyDZNnrWDEuy4jL50WVHfTTSQ==

@@ -1,3 +1,11 @@
+## 3.136.0 (2026-11-06)
+
+* chore(deps): upgrade husky, eslint-plugin-cypress, and classnames (#1948) ([4945fc1](https://github.com/box/box-content-preview/commit/4945fc1)), closes [#1948](https://github.com/box/box-content-preview/issues/1948)
+* fix(controls): match media toggles to the Light Blue/65 selected treatment (#1935) ([a9d0f14](https://github.com/box/box-content-preview/commit/a9d0f14)), closes [#1935](https://github.com/box/box-content-preview/issues/1935)
+* fix(media): keep overlay button discs dark in every state over light video (#1945) ([a950ee4](https://github.com/box/box-content-preview/commit/a950ee4)), closes [#1945](https://github.com/box/box-content-preview/issues/1945)
+* fix(media): use Blueprint tokens for the timestamp button and control bar (#1941) ([8a354b3](https://github.com/box/box-content-preview/commit/8a354b3)), closes [#1941](https://github.com/box/box-content-preview/issues/1941)
+* fix(media): use DASH on iPhone via ManagedMediaSource (#1947) ([9af2ffb](https://github.com/box/box-content-preview/commit/9af2ffb)), closes [#1947](https://github.com/box/box-content-preview/issues/1947)
+
 ## 3.135.0 (2026-11-05)
 
 * test(archive): stabilize the folder scroll reset e2e check (#1946) ([8a7bf26](https://github.com/box/box-content-preview/commit/8a7bf26)), closes [#1946](https://github.com/box/box-content-preview/issues/1946)
