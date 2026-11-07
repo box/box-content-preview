@@ -1,7 +1,7 @@
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)](http://opensource.box.com/badges/)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/box/box-content-preview&style=flat)](https://mergify.io)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![version](https://img.shields.io/badge/version-v3.136.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v3.137.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-content-preview.svg?style=flat-square)](https://www.npmjs.com/package/box-content-preview)
 
 # [Box Content Preview](https://developer.box.com/docs/box-content-preview)
@@ -111,8 +111,8 @@ The CDN build has one bundle per locale instead. Replace `en-US` in the CDN URLs
 
 Box also hosts prebuilt, localized bundles of each release on its CDN. They load Preview as the `Box.Preview` global and resolve their own static assets, so the `location` and `pdfjs` options are not needed.
 
-- https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.js
-- https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.css
+- https://cdn01.boxcdn.net/platform/preview/3.137.0/en-US/preview.js
+- https://cdn01.boxcdn.net/platform/preview/3.137.0/en-US/preview.css
 
 ```html
 <!doctype html>
@@ -122,10 +122,10 @@ Box also hosts prebuilt, localized bundles of each release on its CDN. They load
     <title>Box Content Preview Demo</title>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.js"></script>
+    <script src="https://cdn01.boxcdn.net/platform/preview/3.137.0/en-US/preview.js"></script>
     <link
       rel="stylesheet"
-      href="https://cdn01.boxcdn.net/platform/preview/3.136.0/en-US/preview.css"
+      href="https://cdn01.boxcdn.net/platform/preview/3.137.0/en-US/preview.css"
     />
   </head>
   <body>
@@ -146,7 +146,7 @@ To host the CDN build on your own servers, follow these steps:
 
 1. Either fork the repo and check out the version you want to host or download the specific version as a zip:
 
-- Check out a specific version with `git checkout v3.136.0`
+- Check out a specific version with `git checkout v3.137.0`
 - Download a specific version as a zip from https://github.com/box/box-content-preview/releases
 
 2. Install dependencies and build the library with `yarn install && yarn build:i18n && yarn build:prod`

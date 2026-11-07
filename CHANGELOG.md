@@ -1,3 +1,8 @@
+## 3.137.0 (2026-11-07)
+
+* docs(readme): recommend the npm package and document its setup (#1950) ([82d312a](https://github.com/box/box-content-preview/commit/82d312a)), closes [#1950](https://github.com/box/box-content-preview/issues/1950)
+* refactor(text): use ActionableInlineNotice for the truncated text notice (#1949) ([23c2f02](https://github.com/box/box-content-preview/commit/23c2f02)), closes [#1949](https://github.com/box/box-content-preview/issues/1949)
+
 ## 3.136.0 (2026-11-06)
 
 * chore(deps): upgrade husky, eslint-plugin-cypress, and classnames (#1948) ([4945fc1](https://github.com/box/box-content-preview/commit/4945fc1)), closes [#1948](https://github.com/box/box-content-preview/issues/1948)
