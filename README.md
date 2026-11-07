@@ -174,7 +174,7 @@ View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/rmZd
 
 ```javascript
 const preview = new Preview();
-preview.show(fileId, accessToken, { options });
+preview.show(fileId, accessToken, options);
 ```
 
 Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token. With the npm package, `options` must also include `location`, as shown in [Using the npm package](#using-the-npm-package-recommended). With the CDN build, use `new Box.Preview()` instead.
