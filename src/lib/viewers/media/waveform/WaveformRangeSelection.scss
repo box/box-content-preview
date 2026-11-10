@@ -132,6 +132,10 @@
     background: none;
     backdrop-filter: none;
     box-shadow: none;
+
+    .bp-WaveformRange-commentButton {
+        padding-inline: calc(var(--bp-space-010) + var(--bp-space-005)) var(--bp-space-020);
+    }
 }
 
 .bp-WaveformRange-comment--withClear {
