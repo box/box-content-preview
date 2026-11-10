@@ -89,8 +89,7 @@
     cursor: grab;
     transition:
         border-radius 150ms,
-        box-shadow 150ms,
-        width 150ms;
+        box-shadow 150ms;
 
     &::before {
         content: '';
