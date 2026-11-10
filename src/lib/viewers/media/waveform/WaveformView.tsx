@@ -1722,6 +1722,7 @@ function WaveformView({
                         >
                             <Toolbar.Root aria-label={__('media_range_comment')} colorScheme="dark">
                                 <Toolbar.Button
+                                    className="bp-WaveformRange-commentButton"
                                     data-resin-target="waveformPlayheadComment"
                                     data-target-id="Waveform-commentAtTime"
                                     data-testid="bp-waveform-playhead-comment"

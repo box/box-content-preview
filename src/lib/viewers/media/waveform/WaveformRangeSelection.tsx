@@ -479,6 +479,7 @@ const WaveformRangeSelection = forwardRef<WaveformRangeSelectionHandle, Waveform
                     <Toolbar.Root aria-label={__('media_range_comment')} colorScheme="dark">
                         {showCommentButton && onDragCreate && (
                             <Toolbar.Button
+                                className="bp-WaveformRange-commentButton"
                                 data-resin-target="waveformRangeComment"
                                 data-target-id="Waveform-commentOnRange"
                                 data-testid="bp-waveform-range-comment"
