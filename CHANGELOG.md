@@ -1,3 +1,7 @@
+## 3.138.0 (2026-11-11)
+
+* fix(audio): polish waveform comment button and playhead hover (#1951) ([2f878f9](https://github.com/box/box-content-preview/commit/2f878f9)), closes [#1951](https://github.com/box/box-content-preview/issues/1951)
+
 ## 3.137.0 (2026-11-07)
 
 * docs(readme): recommend the npm package and document its setup (#1950) ([82d312a](https://github.com/box/box-content-preview/commit/82d312a)), closes [#1950](https://github.com/box/box-content-preview/issues/1950)
