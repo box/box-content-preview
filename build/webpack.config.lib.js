@@ -5,6 +5,7 @@ const { execSync } = require('child_process');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin, ProvidePlugin } = require('webpack');
 const license = require('./license');
+const pdfjsPatchRule = require('./pdfjs/pdfjsPatchRule');
 const pkg = require('../package.json');
 
 // Like RsyncPlugin, but without --delete. Multiple instances can target the same
@@ -104,6 +105,7 @@ module.exports = {
                     path.resolve('node_modules/pdfjs-dist'),
                 ],
             },
+            pdfjsPatchRule,
             {
                 test: /\.(svg|html)$/,
                 type: 'asset/source',

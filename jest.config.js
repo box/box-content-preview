@@ -19,7 +19,7 @@ module.exports = {
         THREE: '<rootDir>/src/third-party/model3d/1.12.0/three.min.js',
     },
     restoreMocks: true,
-    roots: ['src'],
+    roots: ['src', 'build'],
     setupFiles: [
         '<rootDir>/src/lib/types/jest-global.d.ts',
         '<rootDir>/build/jest/envGlobals.js',

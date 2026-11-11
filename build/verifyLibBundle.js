@@ -32,6 +32,12 @@ if (match) {
     process.exit(1);
 }
 
+if (!bundle.includes('function bcpSnapRectClip(')) {
+    console.error('verifyLibBundle: dist/lib/index.js bundles pdf.js without the clip snapping patch.');
+    console.error('Check that build/pdfjs/pdfjsPatchRule.js matches the pdf.js file that src imports.');
+    process.exit(1);
+}
+
 // Resolves the package by its own name (Node self-reference goes through the exports
 // map exactly like a consumer would). A CJS context matches the "default" condition;
 // without it, jest, Vitest in CJS mode, and require.resolve all fail with

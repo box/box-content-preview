@@ -2,6 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { BannerPlugin, DefinePlugin, NormalModuleReplacementPlugin } = require('webpack');
 const license = require('./license');
+const pdfjsPatchRule = require('./pdfjs/pdfjsPatchRule');
 const pkg = require('../package.json');
 
 const isLinked = process.env.IS_LINKED === '1';
@@ -67,6 +68,7 @@ module.exports = language => {
                         fullySpecified: false,
                     },
                 },
+                pdfjsPatchRule,
                 {
                     test: /\.(svg|html)$/,
                     type: 'asset/source',
