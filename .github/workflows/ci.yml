@@ -1,0 +1,100 @@
+name: CI
+
+on:
+    pull_request:
+        branches:
+            - master
+    push:
+        branches:
+            - master
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+    NODE_OPTIONS: --openssl-legacy-provider
+
+jobs:
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: yarn
+            - run: yarn install --frozen-lockfile
+            - name: Commitlint
+              if: github.event_name == 'pull_request'
+              run: yarn commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+            - run: yarn build:i18n
+            - run: yarn lint
+
+    unit-tests:
+        name: Unit Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: yarn
+            - run: yarn install --frozen-lockfile
+            - run: yarn build:i18n
+            - run: yarn test:ci
+
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: yarn
+            - run: yarn install --frozen-lockfile
+            - run: yarn clean && yarn build:i18n && yarn build:ci
+            - run: yarn build:lib
+
+    e2e-tests:
+        name: E2E Tests
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: yarn
+            - uses: actions/cache@v4
+              with:
+                  path: ~/.cache/Cypress
+                  key: cypress-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+            - run: yarn install --frozen-lockfile
+            - run: yarn test:e2e
+            - uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: cypress-screenshots
+                  path: test/screenshots
+                  if-no-files-found: ignore
+
+    # Single required check for branch protection and Mergify, so jobs can be added or renamed without touching either.
+    ci-status:
+        name: CI Status
+        if: always()
+        needs: [lint, unit-tests, build, e2e-tests]
+        runs-on: ubuntu-latest
+        steps:
+            - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+              run: exit 1
