@@ -1065,7 +1065,9 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * @private
+     * Renders or refreshes the comparison banner.
+     *
+     * @public
      * @return {void}
      */
     updateComparisonBanner() {
