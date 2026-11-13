@@ -50,7 +50,6 @@ jobs:
                   cache: yarn
             - run: yarn install --frozen-lockfile
             - run: yarn build:i18n
-            - run: yarn build:ci
             - run: yarn test:ci
 
     build:
