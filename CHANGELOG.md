@@ -1,3 +1,7 @@
+## 3.139.0 (2026-11-14)
+
+* ci: add GitHub Actions workflow (#1953) ([68666e3](https://github.com/box/box-content-preview/commit/68666e3)), closes [#1953](https://github.com/box/box-content-preview/issues/1953)
+
 ## 3.138.0 (2026-11-11)
 
 * fix(audio): polish waveform comment button and playhead hover (#1951) ([2f878f9](https://github.com/box/box-content-preview/commit/2f878f9)), closes [#1951](https://github.com/box/box-content-preview/issues/1951)
