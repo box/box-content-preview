@@ -28,7 +28,10 @@ const libWebpackConfig = require('./webpack.config.lib');
 // Sass and css-loader inline imported stylesheets, and the lib production build does not
 // emit mini-css-extract path comments, so dist/lib/index.css will not contain
 // node_modules/@box/blueprint-web even when those styles were compiled in.
-const BLUEPRINT_STYLE_IMPORT = /@(?:import|use|forward)\s+(?:url\(\s*)?['"]~?(@box\/blueprint-web(?:-assets)?)(?:\/[^'"]*)?['"]/;
+const LIB_ENTRY = path.resolve(__dirname, '../src/index.ts');
+const SRC_ROOT = path.resolve(__dirname, '../src');
+const SCRIPT_EXTENSIONS = ['.tsx', '.ts', '.js', '.jsx'];
+const STYLE_EXTENSIONS = ['.scss', '.css', '.sass'];
 
 // Guards against webpack emitting its chunk-loading runtime into the lib bundle.
 // The runtime contains a literal `import("./" + chunkId)` expression, which downstream
@@ -224,29 +227,145 @@ function isInsideBlueprintPackage(filePath) {
     });
 }
 
-function stylesheetFilesUnder(dirPath, found = []) {
-    if (!fs.existsSync(dirPath) || !fs.statSync(dirPath).isDirectory()) {
-        return found;
-    }
+function stripComments(source) {
+    return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^\S\n])\/\/.*$/gm, '$1');
+}
 
-    fs.readdirSync(dirPath, { withFileTypes: true }).forEach(entry => {
-        if (entry.name === 'node_modules') {
-            return;
+function blueprintPackageFromRequest(request) {
+    return BLUEPRINT_PACKAGES.find(
+        packageName => request === packageName || request.startsWith(`${packageName}/`),
+    );
+}
+
+// Any quoted specifier on the directive counts. `@import "local", "@box/blueprint-web/styles"`
+// would otherwise hide the Blueprint path in the second specifier. Comments are removed
+// first because Sass ignores `// @use "..."`.
+function blueprintStylePackage(source) {
+    const stripped = stripComments(source);
+    let found = null;
+
+    [...stripped.matchAll(/@(?:import|use|forward)\b([^;]*);/g)].some(directive => {
+        const hit = [...directive[1].matchAll(/['"]~?([^'"]+)['"]/g)].find(specifier =>
+            blueprintPackageFromRequest(specifier[1]),
+        );
+
+        if (hit) {
+            found = blueprintPackageFromRequest(hit[1]);
         }
 
-        const entryPath = path.join(dirPath, entry.name);
-
-        if (entry.isDirectory()) {
-            stylesheetFilesUnder(entryPath, found);
-            return;
-        }
-
-        if (entry.isFile() && /\.s?css$/.test(entry.name)) {
-            found.push(entryPath);
-        }
+        return Boolean(hit);
     });
 
     return found;
+}
+
+function existingFile(candidate) {
+    return fs.existsSync(candidate) && fs.statSync(candidate).isFile() ? candidate : null;
+}
+
+function resolveWithExtensions(basePath, extensions) {
+    const exact = existingFile(basePath);
+
+    if (exact) {
+        return exact;
+    }
+
+    const parsed = path.parse(basePath);
+    const partialBase = path.join(parsed.dir, `_${parsed.base}`);
+    const candidates = [];
+
+    extensions.forEach(extension => {
+        candidates.push(`${basePath}${extension}`);
+        candidates.push(`${partialBase}${extension}`);
+    });
+    candidates.push(path.join(basePath, 'index.scss'), path.join(basePath, '_index.scss'));
+    SCRIPT_EXTENSIONS.forEach(extension => {
+        candidates.push(path.join(basePath, `index${extension}`));
+    });
+
+    return candidates.map(existingFile).find(Boolean) || null;
+}
+
+function resolveRequest(specifier, fromFile) {
+    if (specifier.startsWith('.')) {
+        return resolveWithExtensions(path.resolve(path.dirname(fromFile), specifier), [
+            ...SCRIPT_EXTENSIONS,
+            ...STYLE_EXTENSIONS,
+        ]);
+    }
+
+    const bareBases = [
+        path.resolve(path.dirname(fromFile), specifier),
+        path.resolve(SRC_ROOT, specifier),
+        path.resolve(__dirname, '../node_modules', specifier),
+    ];
+
+    return (
+        bareBases
+            .map(basePath => resolveWithExtensions(basePath, [...SCRIPT_EXTENSIONS, ...STYLE_EXTENSIONS]))
+            .find(Boolean) || null
+    );
+}
+
+function requestsIn(source) {
+    const stripped = stripComments(source);
+    const requests = [];
+
+    [...stripped.matchAll(/(?:import|export)\s+(?:[^'";]*?\sfrom\s+)?['"]([^'"]+)['"]/g)].forEach(found => {
+        requests.push(found[1]);
+    });
+    [...stripped.matchAll(/@(?:import|use|forward)\b([^;]*);/g)].forEach(directive => {
+        [...directive[1].matchAll(/['"]~?([^'"]+)['"]/g)].forEach(specifier => {
+            requests.push(specifier[1]);
+        });
+    });
+
+    return requests;
+}
+
+function isInsideRoot(filePath, root) {
+    const resolvedRoot = path.resolve(root);
+    return filePath === resolvedRoot || filePath.startsWith(`${resolvedRoot}${path.sep}`);
+}
+
+// Include paths are not compilation inputs. Only stylesheets reachable from the lib entry
+// are compiled, so an unimported file under src/lib must not fail the build.
+function reachableStylesheets(includePaths) {
+    const roots = [SRC_ROOT, ...includePaths.map(includePath => path.resolve(includePath))];
+    const seen = new Set();
+    const styles = new Set();
+    const queue = [LIB_ENTRY];
+
+    while (queue.length > 0) {
+        const filePath = queue.pop();
+
+        if (filePath && !seen.has(filePath)) {
+            seen.add(filePath);
+
+            requestsIn(fs.readFileSync(filePath, 'utf8')).forEach(specifier => {
+                const resolved = resolveRequest(specifier, filePath);
+
+                if (!resolved || seen.has(resolved)) {
+                    return;
+                }
+
+                if (STYLE_EXTENSIONS.some(extension => resolved.endsWith(extension))) {
+                    if (includePaths.some(includePath => isInsideRoot(resolved, includePath))) {
+                        styles.add(resolved);
+                    }
+
+                    queue.push(resolved);
+                    return;
+                }
+
+                if (roots.some(root => isInsideRoot(resolved, root))) {
+                    queue.push(resolved);
+                }
+            });
+        }
+    }
+
+    return [...styles];
 }
 
 function assertBlueprintStylesStayExternal() {
@@ -260,19 +379,17 @@ function assertBlueprintStylesStayExternal() {
         process.exit(1);
     }
 
-    includePaths.forEach(includePath => {
-        stylesheetFilesUnder(includePath).forEach(stylesheetPath => {
-            const styleImport = fs.readFileSync(stylesheetPath, 'utf8').match(BLUEPRINT_STYLE_IMPORT);
+    reachableStylesheets(includePaths).forEach(stylesheetPath => {
+        const stylePackage = blueprintStylePackage(fs.readFileSync(stylesheetPath, 'utf8'));
 
-            if (styleImport) {
-                const relativePath = path.relative(path.resolve(__dirname, '..'), stylesheetPath);
-                console.error(
-                    `verifyLibBundle: ${relativePath} imports ${styleImport[1]}. Sass and css-loader would inline that stylesheet into dist/lib/index.css.`,
-                );
-                console.error('Keep Blueprint styles external. The host already provides them.');
-                process.exit(1);
-            }
-        });
+        if (stylePackage) {
+            const relativePath = path.relative(path.resolve(__dirname, '..'), stylesheetPath);
+            console.error(
+                `verifyLibBundle: ${relativePath} imports ${stylePackage}. Sass and css-loader would inline that stylesheet into dist/lib/index.css.`,
+            );
+            console.error('Keep Blueprint styles external. The host already provides them.');
+            process.exit(1);
+        }
     });
 }
 
