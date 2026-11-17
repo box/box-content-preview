@@ -29,18 +29,13 @@
         },
         "./package.json": "./package.json"
     },
-    "files": [
-        "dist/lib"
-    ],
-    "sideEffects": [
-        "*.css",
-        "*.scss"
-    ],
+    "files": ["dist/lib"],
+    "sideEffects": ["*.css", "*.scss"],
     "publishConfig": {
         "access": "public"
     },
     "dependencies": {
-        "pdfjs-dist": "6.4.299",
+        "pdfjs-dist": "npm:@box/pdfjs-dist@6.4.299-box.3",
         "wavesurfer.js": "7.12.11"
     },
     "peerDependencies": {
