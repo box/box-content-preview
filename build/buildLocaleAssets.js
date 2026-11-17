@@ -13,8 +13,8 @@ const cdnSharedAssets = require('./cdnSharedAssets');
 // has its own heap. Five Blueprint compilations at once can exhaust the agent.
 const maxActive = 2;
 
-// #1828 raised the single multi-compiler process to 8 GB because locales
-// shared that heap. Each locale is now its own process, so start back at 4 GB.
+// The single multi-compiler process needed 8 GB because every locale shared
+// that heap. Each locale is now its own process, so start back at 4 GB.
 const heapMb = 4096;
 
 const children = new Set();
