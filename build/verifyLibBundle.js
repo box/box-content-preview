@@ -1,6 +1,28 @@
 /* eslint-disable no-console */
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
+
+// Gzipped size budgets for dist/lib/index.js and dist/lib/index.css.
+// Runtime metrics start after this chunk loads, so they cannot see the npm
+// bundle grow — including when @box/blueprint-web or @box/blueprint-web-assets
+// gets inlined instead of staying external.
+//
+// Baseline on master 3.139.0, measured with zlib.gzipSync (default compression):
+//   index.js  — 747,837 bytes (730.3 KiB)
+//   index.css — 46,437 bytes (45.3 KiB)
+//
+// Each budget is 5% above that baseline, rounded up to the next KiB (1024 bytes):
+//   index.js  — 785,408 bytes (767 KiB), 37,571 bytes of headroom
+//   index.css — 49,152 bytes (48 KiB), 2,715 bytes of headroom
+//
+// Raise the constant in the same change that pushes a file past this headroom.
+const LIB_GZIP_BUDGET_BYTES = {
+    'index.js': 785408,
+    'index.css': 49152,
+};
+
+const BLUEPRINT_PACKAGES = ['@box/blueprint-web', '@box/blueprint-web-assets'];
 
 // Guards against webpack emitting its chunk-loading runtime into the lib bundle.
 // The runtime contains a literal `import("./" + chunkId)` expression, which downstream
@@ -155,4 +177,102 @@ function containsNonEmptyFile(dirPath) {
     }
 });
 
-console.log('verifyLibBundle: OK, library bundle is self-contained and package exports resolve to verified assets');
+function formatByteCount(bytes, signed = false) {
+    const sign = signed && bytes > 0 ? '+' : '';
+    return `${sign}${bytes} bytes (${sign}${(bytes / 1024).toFixed(1)} KiB)`;
+}
+
+function externalImportPattern(packageName) {
+    const escaped = packageName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(
+        `^import\\s+(?:["']${escaped}(?:/[^"']*)?["']|.+\\sfrom\\s+["']${escaped}(?:/[^"']*)?["']);?\\s*$`,
+        'm',
+    );
+}
+
+function inlinedBlueprintPackages(source) {
+    return new Set(
+        [...source.matchAll(/node_modules\/(@box\/blueprint-web(?:-assets)?)\//g)].map(found => found[1]),
+    );
+}
+
+function assertBlueprintStaysExternal(jsSource, cssSource) {
+    const missing = BLUEPRINT_PACKAGES.filter(packageName => !externalImportPattern(packageName).test(jsSource));
+
+    if (missing.length > 0) {
+        console.error(
+            `verifyLibBundle: dist/lib/index.js is missing an external import of ${missing.join(' and ')}.`,
+        );
+        console.error(
+            'Blueprint packages must be imported from @box/blueprint-web and @box/blueprint-web-assets, not bundled into the lib.',
+        );
+        process.exit(1);
+    }
+
+    [
+        ['dist/lib/index.js', jsSource],
+        ['dist/lib/index.css', cssSource],
+    ].forEach(([label, source]) => {
+        const inlined = [...inlinedBlueprintPackages(source)];
+
+        if (inlined.length > 0) {
+            console.error(`verifyLibBundle: ${label} contains inlined ${inlined.join(' and ')} source.`);
+            console.error(
+                'Keep these packages in externals in build/webpack.config.lib.js so the bundle imports them instead of inlining their source.',
+            );
+            process.exit(1);
+        }
+    });
+}
+
+function reportGzipBudgets() {
+    const failures = [];
+
+    Object.entries(LIB_GZIP_BUDGET_BYTES).forEach(([filename, budget]) => {
+        const filePath = path.resolve(__dirname, '../dist/lib', filename);
+
+        if (!fs.existsSync(filePath)) {
+            console.error(`verifyLibBundle: ${filePath} not found. Run yarn build:lib:js first.`);
+            process.exit(1);
+        }
+
+        const size = zlib.gzipSync(fs.readFileSync(filePath)).length;
+        const delta = size - budget;
+
+        console.log(
+            `verifyLibBundle: dist/lib/${filename} gzipped ${formatByteCount(size)}, budget ${formatByteCount(
+                budget,
+            )}, delta ${formatByteCount(delta, true)}`,
+        );
+
+        if (size > budget) {
+            failures.push(`dist/lib/${filename}`);
+        }
+    });
+
+    if (failures.length > 0) {
+        const summary =
+            failures.length === 1
+                ? `gzipped ${failures[0]} exceeds its budget`
+                : `gzipped ${failures.join(' and ')} exceed their budgets`;
+
+        console.error(
+            `verifyLibBundle: ${summary}. Raise LIB_GZIP_BUDGET_BYTES in the same change that grows the bundle.`,
+        );
+        process.exit(1);
+    }
+}
+
+const cssPath = path.resolve(__dirname, '../dist/lib/index.css');
+
+if (!fs.existsSync(cssPath)) {
+    console.error(`verifyLibBundle: ${cssPath} not found. Run yarn build:lib:js first.`);
+    process.exit(1);
+}
+
+assertBlueprintStaysExternal(bundle, fs.readFileSync(cssPath, 'utf8'));
+reportGzipBudgets();
+
+console.log(
+    'verifyLibBundle: OK, library bundle is self-contained, within its gzip budget, and package exports resolve to verified assets',
+);
