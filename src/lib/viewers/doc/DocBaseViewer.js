@@ -72,6 +72,7 @@ import Timer from '../../Timer';
 import { getFeatureConfig, isFeatureEnabled } from '../../featureChecking';
 
 const DOC_FIRST_PAGES_ENABLED = 'docFirstPages.enabled';
+const ENABLE_PDFJS_FORK = 'enablePdfjsFork';
 
 export const DISCOVERABILITY_STATES = [
     AnnotationState.HIGHLIGHT_TEMP,
@@ -1493,6 +1494,7 @@ class DocBaseViewer extends BaseViewer {
             const consumerWorkerSrc = this.options.pdfjs && this.options.pdfjs.workerSrc;
             // eslint-disable-next-line global-require
             this.pdfjsLib.GlobalWorkerOptions.workerSrc = consumerWorkerSrc || require('./pdfjsNpmWorker').default();
+            this.pdfjsLib.setBoxChangesEnabled(this.featureEnabled(ENABLE_PDFJS_FORK));
             return;
         }
 
@@ -1504,6 +1506,8 @@ class DocBaseViewer extends BaseViewer {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
+        // Vendored upstream pdf.js has no setter, so enablePdfjsFork has no effect there
+        this.pdfjsLib.setBoxChangesEnabled?.(this.featureEnabled(ENABLE_PDFJS_FORK));
     }
 
     /**
