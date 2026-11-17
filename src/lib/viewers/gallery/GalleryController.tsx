@@ -4,8 +4,10 @@
 
 import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
+import BlueprintProviders from '../../BlueprintProviders';
 import Thumbnail from '../../Thumbnail';
-import { FeatureConfig, isFeatureEnabled } from '../../featureChecking';
+import { BLUEPRINT_MIGRATION_SUPPORTING_UI } from '../../constants';
+import { FeatureConfig, isBlueprintEnabled, isFeatureEnabled } from '../../featureChecking';
 import {
     GALLERY_MAX_PAGES,
     GALLERY_MAX_SCALE,
@@ -379,11 +381,12 @@ export default class GalleryController {
         }
 
         const pdfViewer = this.getPdfViewer();
-        this.galleryRoot.render(
+        const grid = (
             <GalleryGrid
                 currentPage={pdfViewer.currentPageNumber}
                 getPageRatio={this.getPageRatio}
                 isAriaGridEnabled={this.isEnhancedGalleryEnabled}
+                isBlueprintEnabled={isFeatureEnabled(this.features, BLUEPRINT_MIGRATION_SUPPORTING_UI)}
                 isPinchZoomEnabled={
                     this.isEnhancedGalleryEnabled && isFeatureEnabled(this.features, 'pinchToZoom.enabled')
                 }
@@ -396,7 +399,15 @@ export default class GalleryController {
                 pageCount={pdfViewer.pagesCount}
                 scale={this.galleryScale}
                 thumbnail={this.galleryThumbnail}
-            />,
+            />
+        );
+
+        this.galleryRoot.render(
+            isBlueprintEnabled(this.features) ? (
+                <BlueprintProviders container={this.containerEl}>{grid}</BlueprintProviders>
+            ) : (
+                grid
+            ),
         );
     }
 }

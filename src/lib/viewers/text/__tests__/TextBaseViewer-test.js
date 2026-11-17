@@ -4,6 +4,7 @@ import BaseViewer from '../../BaseViewer';
 import ControlsRoot from '../../controls/controls-root';
 import TextBaseViewer from '../TextBaseViewer';
 import TextControls from '../TextControls';
+import TextControlsV2 from '../TextControlsV2';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 jest.mock('../../controls/controls-root');
@@ -159,6 +160,18 @@ describe('lib/viewers/text/TextBaseViewer', () => {
                 />,
             );
         });
+
+        test.each`
+            features                                                 | Controls
+            ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${TextControlsV2}
+            ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${TextControls}
+            ${{}}                                                    | ${TextControls}
+        `('should render $Controls.name for features $features', ({ features, Controls }) => {
+            textBase.options.features = features;
+            textBase.loadUI();
+
+            expect(textBase.controls.render.mock.calls[0][0].type).toBe(Controls);
+        });
     });
 
     describe('onKeydown()', () => {
@@ -183,6 +196,33 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         test('should return false for other keypresses', () => {
             textBase.controls = {};
             expect(textBase.onKeydown('blah')).toBe(false);
+        });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s with the Blueprint controls bar', key => {
+            textBase.controls = {};
+            textBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(textBase, 'toggleFullscreen').mockImplementation();
+
+            expect(textBase.onKeydown(key)).toBe(true);
+            expect(textBase.toggleFullscreen).toBeCalledWith();
+        });
+
+        test('should not toggle fullscreen on f with the older controls bar', () => {
+            textBase.controls = {};
+            textBase.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+            jest.spyOn(textBase, 'toggleFullscreen').mockImplementation();
+
+            expect(textBase.onKeydown('f')).toBe(false);
+            expect(textBase.toggleFullscreen).not.toBeCalled();
+        });
+
+        test('should leave Alt+F to the browser', () => {
+            textBase.controls = {};
+            textBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(textBase, 'toggleFullscreen').mockImplementation();
+
+            expect(textBase.onKeydown('f', { altKey: true })).toBe(false);
+            expect(textBase.toggleFullscreen).not.toBeCalled();
         });
     });
 
@@ -267,6 +307,19 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             expect(textEl.style.fontSize).toBe(`${Math.round(textBase.scale * 100)}%`);
             expect(textBase.emit).toBeCalledWith('zoom', expect.objectContaining({ zoom: textBase.scale }));
             expect(textBase.renderUI).toBeCalled();
+        });
+
+        test('should step a mouse-wheel notch by 10%', () => {
+            const event = new WheelEvent('wheel', {
+                deltaY: -100,
+                ctrlKey: true,
+                clientX: 400,
+                clientY: 300,
+            });
+
+            textBase.wheelZoomHandler(event);
+
+            expect(textBase.scale).toBeCloseTo(1.1);
         });
 
         test('should zoom out on positive deltaY', () => {

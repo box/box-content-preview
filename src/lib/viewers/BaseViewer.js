@@ -22,6 +22,7 @@ import {
 import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
     CLASS_ANNOTATIONS_CREATE_DRAWING,
     CLASS_ANNOTATIONS_CREATE_HIGHLIGHT,
     CLASS_ANNOTATIONS_CREATE_REGION,
@@ -38,7 +39,7 @@ import {
 } from '../constants';
 import { EXCLUDED_EXTENSIONS } from '../extensions';
 import { VIEWER_EVENT, ERROR_CODE, LOAD_METRIC, DOWNLOAD_REACHABILITY_METRICS, FIRST_RENDER_METRIC } from '../events';
-import AnnotationControlsFSM, { AnnotationInput, AnnotationMode } from '../AnnotationControlsFSM';
+import AnnotationControlsFSM, { AnnotationInput, AnnotationMode, AnnotationState } from '../AnnotationControlsFSM';
 import AnnotationModule from '../AnnotationModule';
 import PreviewError from '../PreviewError';
 import { isBlueprintEnabled, isFeatureEnabled } from '../featureChecking';
@@ -56,6 +57,8 @@ const ANNOTATION_CLASSES = {
     [AnnotationMode.REGION]: CLASS_ANNOTATIONS_CREATE_REGION,
 };
 
+const ANNOTATIONS_ONLY_STATES = [AnnotationState.DRAWING, AnnotationState.HIGHLIGHT, AnnotationState.REGION];
+
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
 
@@ -63,7 +66,7 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
-const ANNOTATION_BUTTONS = {
+const getAnnotationButtons = () => ({
     point: {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
         title: __('annotation_point_toggle'),
@@ -72,7 +75,7 @@ const ANNOTATION_BUTTONS = {
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
         title: __('annotation_draw_toggle'),
     },
-};
+});
 
 class BaseViewer extends EventEmitter {
     /** @property {Api} - Api instance used for XHR calls */
@@ -569,10 +572,11 @@ class BaseViewer extends EventEmitter {
         const contentTemplate = getProp(this.options, 'representation.content.url_template', '');
         const downloadHostToNotify = this.api.reachability.constructor.getDownloadNotificationToShow(contentTemplate);
         if (downloadHostToNotify) {
-            this.previewUI.notification.show(
+            this.previewUI.showNotification(
                 replacePlaceholders(__('notification_degraded_preview'), [downloadHostToNotify]),
                 null,
                 true,
+                'warning',
             );
 
             this.api.reachability.constructor.setDownloadHostNotificationShown(downloadHostToNotify);
@@ -610,8 +614,37 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     toggleFullscreen(isFullscreen, fullscreenToggleEl) {
-        this.fullscreenToggleEl = fullscreenToggleEl;
+        // The keyboard shortcut has no button to return focus to, so keep the last toggle unless it has
+        // since unmounted, as when it collapses into or out of the overflow menu
+        if (fullscreenToggleEl) {
+            this.fullscreenToggleEl = fullscreenToggleEl;
+        } else if (this.fullscreenToggleEl && !this.fullscreenToggleEl.isConnected) {
+            this.fullscreenToggleEl = null;
+        }
         fullscreen.toggle(this.containerEl);
+    }
+
+    /**
+     * Toggles fullscreen on F for viewers that opt in from onKeydown. The key belongs to the Blueprint
+     * controls bar, so the older bar keeps no such shortcut.
+     *
+     * @protected
+     * @param {string} key - Keydown key
+     * @param {KeyboardEvent} [event] - Keydown event
+     * @return {boolean} Consumed or not
+     */
+    handleFullscreenKey(key, event) {
+        // Decoded keys drop Alt, and Alt+F opens the browser menu on Windows
+        if (event?.altKey) {
+            return false;
+        }
+
+        if ((key === 'f' || key === 'F') && this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.toggleFullscreen();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -747,7 +780,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     emitFirstRenderMetric() {
-        if (this.firstRenderEmitted) {
+        if (this.isDestroyed() || this.firstRenderEmitted) {
             return;
         }
 
@@ -1065,7 +1098,7 @@ class BaseViewer extends EventEmitter {
 
         if (!global.BoxAnnotations) {
             const error = new PreviewError(ERROR_CODE.LOAD_ANNOTATIONS, __('annotations_load_error'), { silent: true });
-            this.previewUI.notification.show(error.displayMessage);
+            this.previewUI.showNotification(error.displayMessage, null, false, 'error');
             this.triggerError(error);
             return;
         }
@@ -1078,14 +1111,18 @@ class BaseViewer extends EventEmitter {
         }
 
         const options = boxAnnotations.getOptions && boxAnnotations.getOptions();
+        const features = options && options.features;
 
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
-            features: options && options.features,
+            // Annotations moves its popups to the Blueprint toolbar together with the controls bar
+            features: this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)
+                ? { ...features, blueprintMigrationControlsBar: true }
+                : features,
             initialColor: this.annotationModule.getColor(),
             initialMode: this.getInitialAnnotationMode(),
             intl: (options && options.intl) || intlUtil.createAnnotatorIntl(),
-            modeButtons: ANNOTATION_BUTTONS,
+            modeButtons: getAnnotationButtons(),
             onCopyLink: options && options.onCopyLink,
         });
 
@@ -1100,6 +1137,20 @@ class BaseViewer extends EventEmitter {
 
     getInitialAnnotationMode() {
         return AnnotationMode.NONE;
+    }
+
+    /**
+     * Whether the host's annotations-only controls apply. Only a mode the user picked counts: the temporary
+     * discoverability modes don't, so an image that opens ready for regions keeps its full controls.
+     *
+     * @protected
+     * @return {boolean}
+     */
+    hasAnnotationsOnlyControls() {
+        return (
+            !!this.options.enableAnnotationsOnlyControls &&
+            ANNOTATIONS_ONLY_STATES.includes(this.annotationControlsFSM.getState())
+        );
     }
 
     /**
@@ -1370,22 +1421,22 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.previewUI.notification.show(__('notification_annotation_point_mode'));
+                    this.previewUI.showNotification(__('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.previewUI.notification.show(__('notification_annotation_draw_mode'));
+                    this.previewUI.showNotification(__('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.previewUI.notification.hide();
+                this.previewUI.hideNotification();
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.previewUI.notification.show(data.data);
+                this.previewUI.showNotification(data.data, null, false, 'error');
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {

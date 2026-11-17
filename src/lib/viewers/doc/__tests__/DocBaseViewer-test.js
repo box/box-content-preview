@@ -13,13 +13,15 @@ import ControlsRoot from '../../controls/controls-root';
 import DocBaseViewer, {
     DISCOVERABILITY_STATES,
     PAGED_URL_TEMPLATE_PAGE_NUMBER_HOLDER,
-    countPdfOperations,
+    checkPdfOperationLimit,
 } from '../DocBaseViewer';
 import DocControls from '../DocControls';
 import DocControlsV2 from '../DocControlsV2';
 import DocFindBar from '../DocFindBar';
+import { DocFindBarV2Root } from '../DocFindBarV2';
 import DocPreloader from '../DocPreloader';
-import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
+import GalleryController from '../../gallery/GalleryController';
+import { GALLERY_MAX_PAGES, GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../../gallery/constants';
 import DocFirstPreloader from '../DocFirstPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
@@ -36,10 +38,12 @@ import {
     CLASS_BOX_PREVIEW_THUMBNAILS_OPEN,
     SELECTOR_BOX_PREVIEW,
     STATUS_NONE,
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons';
 import {
+    ERROR_CODE,
     LOAD_METRIC,
     RENDER_EVENT,
     REPORT_ACI,
@@ -50,8 +54,9 @@ import {
 import Timer from '../../../Timer';
 import Thumbnail from '../../../Thumbnail';
 import PageTracker from '../../../PageTracker';
-import { EXIF, EXIF_READER, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
+import { CMAP, EXIF, EXIF_READER, IMAGES, JS, CSS, JS_NO_EXIF, PRELOAD_JS } from '../docAssets';
 import ThumbnailsSidebar from '../../../ThumbnailsSidebar';
+import ThumbnailsSidebarV2 from '../../../ThumbnailsSidebarV2';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -60,6 +65,7 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 
@@ -176,6 +182,81 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setup();
 
             expect(docBase.thumbnailsSidebarEl).toBeUndefined();
+        });
+
+        test.each`
+            toggleType            | markToggle
+            ${'v1'}               | ${toggle => toggle.classList.add('bp-GalleryToggle')}
+            ${'v2'}               | ${toggle => toggle.setAttribute('data-bp-gallery-toggle', '')}
+            ${'v2 overflow menu'} | ${toggle => toggle.setAttribute('data-overflow-ids', 'find gallery')}
+        `('should focus the $toggleType gallery toggle when the gallery controller returns focus', ({ markToggle }) => {
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+
+            const toggle = document.createElement('button');
+            markToggle(toggle);
+            docBase.containerEl.appendChild(toggle);
+
+            docBase.galleryController.focusToggle();
+
+            expect(document.activeElement).toBe(toggle);
+        });
+
+        test.each`
+            features                                                 | isSync
+            ${{ blueprintMigrationControlsBar: { enabled: true } }}  | ${true}
+            ${{ blueprintMigrationControlsBar: { enabled: false } }} | ${false}
+        `('should commit the controls synchronously for the gallery only with the v2 bar', ({ features, isSync }) => {
+            // The module object, not a namespace copy, so the spy sees the viewer's calls
+            const ReactDOM = require('react-dom');
+            jest.spyOn(ReactDOM, 'flushSync');
+            docBase = new DocBaseViewer({
+                cache: {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {},
+                },
+                container: containerEl,
+                features,
+                representation: {
+                    content: {
+                        url_template: 'foo',
+                    },
+                },
+                file: {
+                    id: '0',
+                    extension: 'ppt',
+                },
+            });
+            docBase.containerEl = containerEl;
+            docBase.rootEl = rootEl;
+            docBase.setup();
+            jest.spyOn(docBase, 'renderUI').mockImplementation();
+
+            docBase.galleryController.requestUiUpdate();
+
+            expect(docBase.renderUI).toHaveBeenCalledTimes(1);
+            expect(ReactDOM.flushSync).toHaveBeenCalledTimes(isSync ? 1 : 0);
         });
 
         test('should default the thumbnails open if thumbnails toggle state is open', () => {
@@ -488,6 +569,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.isDocFirstPrefetchEnabled = true;
                 docBase.prefetch({ assets: true, preload: true, content: false });
                 expect(docBase.prefetchAssets).toHaveBeenCalledWith(JS, CSS);
+            });
+
+            test('npm build prefetches exif only and skips vendored pdf.js scripts and stylesheets', () => {
+                global.__BCP_NPM_BUILD__ = true;
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+
+                try {
+                    docBase.prefetch({ assets: true, preload: false, content: false });
+                    expect(docBase.prefetchAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                    expect(docBase.prefetchAssets).not.toHaveBeenCalledWith(PRELOAD_JS, [], true);
+                } finally {
+                    delete global.__BCP_NPM_BUILD__;
+                }
+            });
+
+            test('useNpmPdfjs prefetches exif only and skips vendored pdf.js scripts and stylesheets', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+                jest.spyOn(docBase, 'prefetchAssets').mockImplementation();
+
+                docBase.prefetch({ assets: true, preload: false, content: false });
+
+                expect(docBase.prefetchAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                expect(docBase.prefetchAssets).not.toHaveBeenCalledWith(PRELOAD_JS, [], true);
             });
 
             test('should not prefetch doc first pages if assets is true and ff is on and preload is true and is watermarked', () => {
@@ -1156,6 +1260,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(testDocBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);
                 expect(loadPdfjsFromNpmStub).toHaveBeenCalledTimes(1);
             });
+
+            test('npm build skips the vendored worker even when the caller omits isUseNpmPdfjsEnabled', () => {
+                global.__BCP_NPM_BUILD__ = true;
+                const loadPdfjsFromNpmStub = jest.spyOn(testDocBase, 'loadPdfjsFromNpm').mockResolvedValue(undefined);
+
+                try {
+                    testDocBase.loadViewerAssets();
+
+                    expect(testDocBase.loadAssets).toHaveBeenCalledTimes(1);
+                    expect(testDocBase.loadAssets).toHaveBeenCalledWith(EXIF_READER, []);
+                    expect(testDocBase.loadAssets).not.toHaveBeenCalledWith(PRELOAD_JS, []);
+                    expect(loadPdfjsFromNpmStub).toHaveBeenCalledTimes(1);
+                } finally {
+                    delete global.__BCP_NPM_BUILD__;
+                }
+            });
         });
 
         describe('handleAssetAndRepLoad', () => {
@@ -1179,6 +1299,166 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(initPrintStub).toBeCalled();
                 expect(initFindStub).toBeCalled();
                 expect(loadBoxAnnotations).toBeCalled();
+            });
+        });
+
+        describe('getRepFallback()', () => {
+            const makeFile = (entries, extension = 'pdf') => ({ id: '0', extension, representations: { entries } });
+
+            test('should return null when the current representation is not ocr_pdf', () => {
+                docBase.options.representation = { representation: 'pdf' };
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'success' } }]);
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+
+            test('should prefer a successful pdf rep when falling back from ocr_pdf', () => {
+                const pdfRep = { representation: 'pdf', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([pdfRep, { representation: 'ORIGINAL', status: { state: 'success' } }]);
+
+                expect(docBase.getRepFallback()).toBe(pdfRep);
+            });
+
+            test('should fall back to the original rep when the pdf rep is not ready', () => {
+                const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'none' } }, originalRep]);
+
+                expect(docBase.getRepFallback()).toBe(originalRep);
+            });
+
+            test('should fall back to the original rep when no pdf rep exists', () => {
+                const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }, originalRep]);
+
+                expect(docBase.getRepFallback()).toBe(originalRep);
+            });
+
+            test('should return null when no fallback representation is available', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+
+            test('should wait for a converting pdf rep rather than the unrenderable original for non-pdf files', () => {
+                const pdfRep = { representation: 'pdf', status: { state: 'none' } };
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [pdfRep, { representation: 'ORIGINAL', status: { state: 'success' } }],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBe(pdfRep);
+            });
+
+            test('should return null for non-pdf files when the pdf rep has errored', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [
+                        { representation: 'pdf', status: { state: 'error' } },
+                        { representation: 'ORIGINAL', status: { state: 'success' } },
+                    ],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+
+            test('should return null for non-pdf files when no pdf rep exists', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile(
+                    [
+                        { representation: 'ocr_pdf', status: { state: 'none' } },
+                        { representation: 'ORIGINAL', status: { state: 'success' } },
+                    ],
+                    'docx',
+                );
+
+                expect(docBase.getRepFallback()).toBeNull();
+            });
+        });
+
+        describe('handleAssetError()', () => {
+            // RepStatus rejects with a PreviewError carrying the failed representation in details.
+            const ocrRepError = () => ({ details: { representation: { representation: 'ocr_pdf' } } });
+
+            test('should fall back to another representation and reload when the ocr_pdf rep fails', () => {
+                const fallbackRep = { representation: 'ORIGINAL', status: { state: 'success' } };
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(ocrRepError());
+
+                expect(docBase.hasAttemptedRepFallback).toBe(true);
+                expect(docBase.options.representation).toBe(fallbackRep);
+                expect(loadStub).toBeCalled();
+                expect(triggerErrorStub).not.toBeCalled();
+            });
+
+            test('should not fall back for a non-representation error (asset/chunk failure)', () => {
+                const getRepFallbackStub = jest.spyOn(docBase, 'getRepFallback');
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(new Error('Loading chunk pdfjs-lib failed'));
+
+                expect(getRepFallbackStub).not.toBeCalled();
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+
+            test('should only attempt the representation fallback once', () => {
+                docBase.hasAttemptedRepFallback = true;
+                const getRepFallbackStub = jest.spyOn(docBase, 'getRepFallback');
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(ocrRepError());
+
+                expect(getRepFallbackStub).not.toBeCalled();
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+
+            test('should trigger an error when no fallback representation is available', () => {
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(null);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+                const triggerErrorStub = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                docBase.handleAssetError(ocrRepError());
+
+                expect(loadStub).not.toBeCalled();
+                expect(triggerErrorStub).toBeCalled();
+            });
+        });
+
+        describe('handleDownloadError()', () => {
+            test('should route an ocr_pdf content failure through the rep fallback', () => {
+                const fallbackRep = { representation: 'pdf', status: { state: 'success' } };
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(fallbackRep);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+
+                docBase.handleDownloadError(new Error('content failed'), 'https://dl.boxcloud.com/foo');
+
+                expect(docBase.hasAttemptedRepFallback).toBe(true);
+                expect(docBase.options.representation).toBe(fallbackRep);
+                expect(loadStub).toBeCalled();
+                expect(docBase.hasRetriedContentDownload).toBeFalsy();
+            });
+
+            test('should delegate to the base reachability retry when no rep fallback applies', () => {
+                jest.spyOn(docBase, 'getRepFallback').mockReturnValue(null);
+                const loadStub = jest.spyOn(docBase, 'load').mockImplementation();
+
+                docBase.handleDownloadError(new Error('content failed'), 'https://dl.boxcloud.com/foo');
+
+                expect(docBase.hasAttemptedRepFallback).toBeFalsy();
+                expect(docBase.hasRetriedContentDownload).toBe(true);
+                expect(loadStub).toBeCalled();
             });
         });
 
@@ -1212,6 +1492,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.checkPermission.mockReturnValueOnce(true);
                 docBase.initFind();
                 expect(docBase.findBar).toBeInstanceOf(DocFindBar);
+            });
+
+            test('should use the Blueprint find bar when the supporting UI flag is on', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                docBase.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+
+                docBase.initFind();
+
+                expect(docBase.findBar).toBeInstanceOf(DocFindBarV2Root);
+                expect(docBase.findBar.findBarEl.parentNode).toBe(docBase.containerEl);
+            });
+
+            test('should keep the legacy find bar when only the controls bar flag is on', () => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                docBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+                docBase.initFind();
+
+                expect(docBase.findBar).toBeInstanceOf(DocFindBar);
+            });
+
+            test.each`
+                flag                                                     | FindBar
+                ${{}}                                                    | ${DocFindBar}
+                ${{ blueprintMigrationSupportingUi: { enabled: true } }} | ${DocFindBarV2Root}
+            `('should forward metric and close events from $FindBar.name', ({ flag, FindBar }) => {
+                stubs.checkPermission.mockReturnValueOnce(true);
+                docBase.options.features = flag;
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+                jest.spyOn(docBase, 'handleFindBarClose').mockImplementation();
+
+                docBase.initFind();
+                docBase.findBar.emit(VIEWER_EVENT.metric, { name: 'test' });
+                docBase.findBar.emit('close');
+
+                expect(docBase.findBar).toBeInstanceOf(FindBar);
+                expect(docBase.emitMetric).toBeCalledWith({ name: 'test' });
+                expect(docBase.handleFindBarClose).toBeCalled();
             });
         });
 
@@ -1595,6 +1913,78 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(arrowLeft).toBe(false);
             });
 
+            test('should rotate on R when the v2 controls bar and rotate are enabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                    feature => feature === 'rotate.enabled' || feature === BLUEPRINT_MIGRATION_CONTROLS_BAR,
+                );
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+
+                expect(docBase.onKeydown('r')).toBe(true);
+                expect(docBase.onKeydown('R')).toBe(true);
+
+                expect(stubs.rotateLeft).toBeCalledTimes(2);
+            });
+
+            test('should not rotate on R when rotate is disabled or a modifier is held', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+
+                expect(docBase.onKeydown('r')).toBe(false);
+                expect(docBase.onKeydown('Shift+R')).toBe(false);
+                expect(stubs.rotateLeft).not.toBeCalled();
+            });
+
+            test('should toggle fullscreen on F when the v2 controls bar is enabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                    feature => feature === BLUEPRINT_MIGRATION_CONTROLS_BAR,
+                );
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+
+                expect(docBase.onKeydown('f')).toBe(true);
+                expect(docBase.onKeydown('F')).toBe(true);
+
+                expect(stubs.toggleFullscreen).toBeCalledTimes(2);
+            });
+
+            test('should leave Alt+R and Alt+F to the browser', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                    feature => feature === 'rotate.enabled' || feature === BLUEPRINT_MIGRATION_CONTROLS_BAR,
+                );
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+
+                expect(docBase.onKeydown('r', { altKey: true })).toBe(false);
+                expect(docBase.onKeydown('f', { altKey: true })).toBe(false);
+                expect(stubs.rotateLeft).not.toBeCalled();
+                expect(stubs.toggleFullscreen).not.toBeCalled();
+            });
+
+            test('should ignore R and F when the v2 controls bar is off', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                stubs.rotateLeft = jest.spyOn(docBase, 'rotateLeft').mockImplementation();
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+
+                expect(docBase.onKeydown('r')).toBe(false);
+                expect(docBase.onKeydown('f')).toBe(false);
+                expect(stubs.rotateLeft).not.toBeCalled();
+                expect(stubs.toggleFullscreen).not.toBeCalled();
+            });
+
+            test('should leave Cmd or Ctrl F for the find bar', () => {
+                stubs.toggleFullscreen = jest.spyOn(docBase, 'toggleFullscreen').mockImplementation();
+                const onKeydownStub = jest.fn();
+                docBase.findBar = {
+                    onKeydown: onKeydownStub,
+                    destroy: jest.fn(),
+                    removeListener: jest.fn(),
+                };
+
+                docBase.onKeydown('Meta+F', {});
+
+                expect(onKeydownStub).toBeCalledTimes(1);
+                expect(stubs.toggleFullscreen).not.toBeCalled();
+            });
+
             describe('while the gallery is open', () => {
                 beforeEach(() => {
                     docBase.galleryController = {
@@ -1670,7 +2060,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
                 stubs.getDocument = jest.fn(() => ({
                     destroy: jest.fn(),
-                    promise: Promise.resolve(),
+                    promise: Promise.resolve({ getPage: jest.fn() }),
                 }));
                 stubs.getViewerOption = jest.spyOn(docBase, 'getViewerOption').mockImplementation();
                 stubs.pdfEventBus = {
@@ -1710,6 +2100,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     })),
                     PDFViewer: stubs.pdfViewerClass,
                 };
+            });
+
+            test('should limit marked content nesting before attaching the PDF document', async () => {
+                const getPage = jest.fn();
+                const pdfDocument = { getPage };
+                let isNestingLimitedWhenAttached = false;
+                stubs.getDocument.mockReturnValue({ destroy: jest.fn(), promise: Promise.resolve(pdfDocument) });
+                stubs.pdfViewer.setDocument.mockImplementation(doc => {
+                    isNestingLimitedWhenAttached = doc.getPage !== getPage;
+                });
+
+                await docBase.initViewer('');
+
+                expect(stubs.pdfViewer.setDocument).toBeCalledWith(pdfDocument);
+                expect(isNestingLimitedWhenAttached).toBe(true);
             });
 
             test('should not attach a PDF document after the viewer is destroyed', async () => {
@@ -1807,6 +2212,37 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.pdfViewerClass).toBeCalledWith(
                         expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
                     );
+                });
+            });
+
+            test('should keep the mobile maxCanvasPixels on mobile when useNpmPdfjs is on', () => {
+                docBase.isMobile = true;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: MOBILE_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            test('should set a positive maxCanvasPixels on desktop when useNpmPdfjs is on so zoomed pages stay sharp', () => {
+                docBase.isMobile = false;
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(
+                        expect.objectContaining({ maxCanvasPixels: NPM_PDFJS_MAX_CANVAS_SIZE }),
+                    );
+                });
+            });
+
+            test('should leave maxCanvasPixels unlimited on desktop when useNpmPdfjs is off', () => {
+                docBase.isMobile = false;
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                return docBase.initViewer('').then(() => {
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ maxCanvasPixels: -1 }));
                 });
             });
 
@@ -2021,6 +2457,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should resolve the loading task and set the document/viewer', () => {
                 const doc = {
+                    getPage: jest.fn(),
                     url: 'url',
                 };
                 stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
@@ -2038,6 +2475,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should invoke startLoadTimer()', () => {
                 const doc = {
+                    getPage: jest.fn(),
                     url: 'url',
                 };
                 stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
@@ -2048,25 +2486,46 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.startLoadTimer).toBeCalled();
             });
 
-            test('should handle any download error', () => {
-                const doc = {
-                    url: 'url',
-                };
-
+            test('should handle any download error', async () => {
                 stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                 stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
-                stubs.getDocument.mockReturnValue({ promise: Promise.reject(doc) });
+                stubs.getDocument.mockReturnValue({ promise: Promise.reject(new Error('network')) });
                 docBase.options.location = {
                     locale: 'en-US',
                 };
 
-                return docBase.initViewer('url').catch(() => {
-                    expect(stubs.handleDownloadError).toBeCalled();
+                await docBase.initViewer('url');
+
+                expect(stubs.handleDownloadError).toBeCalledWith(
+                    expect.objectContaining({ code: ERROR_CODE.CONTENT_DOWNLOAD }),
+                    'url',
+                );
+            });
+
+            test('should raise a deleted representations error when PDF.js reports a 202 status', async () => {
+                jest.spyOn(console, 'error').mockImplementation();
+                stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                stubs.getDocument.mockReturnValue({
+                    promise: Promise.reject(Object.assign(new Error('pending'), { status: 202 })),
                 });
+                docBase.options.location = {
+                    locale: 'en-US',
+                };
+
+                await docBase.initViewer('url');
+
+                expect(stubs.handleDownloadError).toBeCalledWith(
+                    expect.objectContaining({
+                        code: ERROR_CODE.DELETED_REPS,
+                        details: { isRepDeleted: true },
+                    }),
+                    'url',
+                );
             });
 
             test('should adjust the layout if thumbnails should be toggled', () => {
                 const doc = {
+                    getPage: jest.fn(),
                     url: 'url',
                 };
                 stubs.getViewerOption.mockReturnValue(100);
@@ -2100,35 +2559,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 test('should check operations count for .numbers files', async () => {
                     docBase.options.file.extension = 'numbers';
 
-                    const mockDoc = {
-                        numPages: 2,
-                        getPage: jest.fn(),
-                    };
-
                     const mockPage = {
                         getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
                     };
-
-                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-                    stubs.getDocument.mockReturnValue({
-                        destroy: jest.fn(),
-                        promise: Promise.resolve(mockDoc),
-                    });
-
-                    await docBase.initViewer('url');
-
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
-                    expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
-                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
-                });
-
-                test('should skip operations check for non-.numbers files', async () => {
-                    docBase.options.file.extension = 'pdf';
-
+                    const getPage = jest.fn().mockResolvedValue(mockPage);
                     const mockDoc = {
                         numPages: 2,
-                        getPage: jest.fn(),
+                        getPage,
                     };
 
                     stubs.getDocument.mockReturnValue({
@@ -2138,13 +2575,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     await docBase.initViewer('url');
 
-                    // Should not call getPage for operations counting
-                    expect(mockDoc.getPage).not.toHaveBeenCalled();
+                    expect(getPage).toHaveBeenCalledWith(1);
+                    expect(getPage).toHaveBeenCalledWith(2);
                     expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
 
-                test('should throw error when .numbers file has too many operations', async () => {
+                test('should show the too many operations error when a .numbers file exceeds the limit', async () => {
                     docBase.options.file.extension = 'numbers';
 
                     const mockDoc = {
@@ -2164,13 +2601,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
-                    });
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.handleDownloadError).not.toHaveBeenCalled();
                 });
 
-                test('should handle operations check error properly', async () => {
+                test('should report a content download error when a page fails during the operations check', async () => {
                     docBase.options.file.extension = 'numbers';
 
                     const mockDoc = {
@@ -2191,9 +2632,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
-                    });
+                    await docBase.initViewer('url');
+
+                    expect(stubs.handleDownloadError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_content_download' }),
+                        'url',
+                    );
                 });
 
                 test('should use correct error code for too many operations', async () => {
@@ -2215,33 +2659,55 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     });
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
-                    stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalledWith(
-                            expect.objectContaining({
-                                code: 'error_viewer_too_many_operations',
-                                message:
-                                    'The file is too complex to display in your browser. Please download it to view.',
-                            }),
-                            'url',
-                        );
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({
+                            code: 'error_viewer_too_many_operations',
+                            displayMessage:
+                                'The file is too complex to display in your browser. Please download it to view.',
+                            message: 'Too many drawing operations',
+                        }),
+                    );
+                });
+
+                test('should fall back to another representation before showing the too many operations error', async () => {
+                    docBase.options.file.extension = 'xlsx';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(400000) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
                     });
+                    jest.spyOn(console, 'error').mockImplementation();
+                    stubs.attemptRepFallback = jest.spyOn(docBase, 'attemptRepFallback').mockReturnValue(true);
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                    await docBase.initViewer('url');
+
+                    expect(stubs.attemptRepFallback).toHaveBeenCalled();
+                    expect(stubs.triggerError).not.toHaveBeenCalled();
                 });
 
                 test('should check operations count for .xlsx files', async () => {
                     docBase.options.file.extension = 'xlsx';
 
-                    const mockDoc = {
-                        numPages: 2,
-                        getPage: jest.fn(),
-                    };
-
                     const mockPage = {
                         getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100000) }),
                     };
+                    const getPage = jest.fn().mockResolvedValue(mockPage);
+                    const mockDoc = {
+                        numPages: 2,
+                        getPage,
+                    };
 
-                    mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
                     stubs.getDocument.mockReturnValue({
                         destroy: jest.fn(),
                         promise: Promise.resolve(mockDoc),
@@ -2249,13 +2715,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     await docBase.initViewer('url');
 
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(1);
-                    expect(mockDoc.getPage).toHaveBeenCalledWith(2);
+                    expect(getPage).toHaveBeenCalledWith(1);
+                    expect(getPage).toHaveBeenCalledWith(2);
                     expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
                     expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                 });
 
-                test('should throw error when .xlsx file has too many operations', async () => {
+                test('should show the too many operations error when a .xlsx file exceeds the limit', async () => {
                     docBase.options.file.extension = 'xlsx';
 
                     const mockDoc = {
@@ -2275,10 +2741,61 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                     stubs.consoleError = jest.spyOn(console, 'error').mockImplementation();
                     stubs.handleDownloadError = jest.spyOn(docBase, 'handleDownloadError').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
 
-                    await docBase.initViewer('url').catch(() => {
-                        expect(stubs.handleDownloadError).toHaveBeenCalled();
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.handleDownloadError).not.toHaveBeenCalled();
+                });
+
+                test('should render .dwg files at the operations limit', async () => {
+                    docBase.options.file.extension = 'dwg';
+
+                    const getPage = jest.fn().mockResolvedValue({
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320000) }),
                     });
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage,
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+
+                    await docBase.initViewer('url');
+
+                    expect(getPage).toHaveBeenCalledWith(1);
+                    expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
+                });
+
+                test('should show the too many operations error for .dwg files over the operations limit', async () => {
+                    docBase.options.file.extension = 'dwg';
+
+                    const mockDoc = {
+                        numPages: 1,
+                        getPage: jest.fn().mockResolvedValue({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320001) }),
+                        }),
+                    };
+                    stubs.getDocument.mockReturnValue({
+                        destroy: jest.fn(),
+                        promise: Promise.resolve(mockDoc),
+                    });
+                    jest.spyOn(console, 'error').mockImplementation();
+                    stubs.load = jest.spyOn(docBase, 'load').mockImplementation();
+                    stubs.triggerError = jest.spyOn(docBase, 'triggerError').mockImplementation();
+
+                    await docBase.initViewer('url');
+
+                    expect(stubs.triggerError).toHaveBeenCalledWith(
+                        expect.objectContaining({ code: 'error_viewer_too_many_operations' }),
+                    );
+                    expect(stubs.load).not.toHaveBeenCalled();
+                    expect(docBase.pdfViewer.setDocument).not.toHaveBeenCalledWith(mockDoc);
                 });
 
                 test.each([['doc'], ['docx'], ['ppt'], ['pptx'], ['xls'], ['pdf']])(
@@ -2286,9 +2803,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     async extension => {
                         docBase.options.file.extension = extension;
 
+                        const getPage = jest.fn();
                         const mockDoc = {
                             numPages: 1,
-                            getPage: jest.fn(),
+                            getPage,
                         };
 
                         stubs.getDocument.mockReturnValue({
@@ -2298,17 +2816,106 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                         await docBase.initViewer('url');
 
-                        expect(mockDoc.getPage).not.toHaveBeenCalled();
+                        expect(getPage).not.toHaveBeenCalled();
                         expect(docBase.pdfLinkService.setDocument).toHaveBeenCalledWith(mockDoc, 'url');
                         expect(docBase.pdfViewer.setDocument).toHaveBeenCalledWith(mockDoc);
                     },
                 );
             });
 
+            test('should point the npm pdf.js path at v6 assets and images and omit isEvalSupported', () => {
+                stubs.urlCreator.mockRestore();
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+                docBase.options.location = {
+                    locale: 'en-US',
+                    staticBaseURI: 'https://cdn.example/preview/',
+                };
+
+                docBase.initViewer('url');
+
+                const config = stubs.getDocument.mock.calls[0][0];
+                expect(config.cMapUrl).toBe('https://cdn.example/preview/cmaps/');
+                expect(config.iccUrl).toBe('https://cdn.example/preview/iccs/');
+                expect(config.wasmUrl).toBe('https://cdn.example/preview/wasm/');
+                expect(config.standardFontDataUrl).toBe('https://cdn.example/preview/standard_fonts/');
+                expect(config).not.toHaveProperty('isEvalSupported');
+                expect(stubs.pdfViewerClass).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        imageResourcesPath: 'https://cdn.example/preview/pdfjs-images/',
+                    }),
+                );
+            });
+
+            test('should keep isEvalSupported false and skip v6 asset urls when useNpmPdfjs is off', () => {
+                stubs.urlCreator.mockRestore();
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.options.location = {
+                    locale: 'en-US',
+                    staticBaseURI: 'https://cdn.example/preview/',
+                };
+
+                docBase.initViewer('url');
+
+                const config = stubs.getDocument.mock.calls[0][0];
+                expect(config.isEvalSupported).toBe(false);
+                expect(config.cMapUrl).toBe(`https://cdn.example/preview/${CMAP}`);
+                expect(config).not.toHaveProperty('iccUrl');
+                expect(config).not.toHaveProperty('wasmUrl');
+                expect(config).not.toHaveProperty('standardFontDataUrl');
+                expect(stubs.pdfViewerClass).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        imageResourcesPath: `https://cdn.example/preview/${IMAGES}`,
+                    }),
+                );
+            });
+
+            test('npm build resolves every pdf.js asset url under staticBaseURI', () => {
+                global.__BCP_NPM_BUILD__ = true;
+                stubs.urlCreator.mockRestore();
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+                const staticBaseURI = 'https://static.example/preview/';
+                docBase.options.location = {
+                    locale: 'en-US',
+                    baseURI: 'https://cdn.example/preview/3.119.0/en-US/',
+                    staticBaseURI,
+                };
+                const prefetched = jest.spyOn(util, 'prefetchAssets').mockImplementation();
+
+                try {
+                    docBase.initViewer('url');
+                    docBase.prefetch({ assets: true, preload: false, content: false });
+
+                    const config = stubs.getDocument.mock.calls[0][0];
+                    const viewerOptions = stubs.pdfViewerClass.mock.calls[0][0];
+                    const exifUrls = prefetched.mock.calls.map(call => call[0]).find(urls => urls.length);
+
+                    expect(config.cMapUrl).toBe(`${staticBaseURI}cmaps/`);
+                    expect(config.iccUrl).toBe(`${staticBaseURI}iccs/`);
+                    expect(config.wasmUrl).toBe(`${staticBaseURI}wasm/`);
+                    expect(config.standardFontDataUrl).toBe(`${staticBaseURI}standard_fonts/`);
+                    expect(viewerOptions.imageResourcesPath).toBe(`${staticBaseURI}pdfjs-images/`);
+                    expect(exifUrls).toEqual([`${staticBaseURI}exif/exif-reader.min.js`]);
+                    [
+                        config.cMapUrl,
+                        config.iccUrl,
+                        config.wasmUrl,
+                        config.standardFontDataUrl,
+                        viewerOptions.imageResourcesPath,
+                        ...exifUrls,
+                    ].forEach(url => {
+                        expect(url.startsWith(staticBaseURI)).toBe(true);
+                        expect(url.includes('third-party/doc/')).toBe(false);
+                    });
+                } finally {
+                    delete global.__BCP_NPM_BUILD__;
+                }
+            });
+
             test('should pass httpHeaders to pdf.js', () => {
                 const mockHeaders = { Authorization: 'Bearer token123' };
                 jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue(mockHeaders);
                 const doc = {
+                    getPage: jest.fn(),
                     numPages: 1,
                 };
                 stubs.getDocument.mockReturnValue({ promise: Promise.resolve(doc) });
@@ -2679,14 +3286,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 ${{ blueprintMigrationControlsBar: { enabled: true } }} | ${true}
                 ${{ blueprintMigrationArchive: { enabled: true } }}     | ${true}
                 ${{}}                                                   | ${false}
-            `('should set isBlueprintEnabled to $isBlueprintEnabled for features $features', ({ features, isBlueprintEnabled }) => {
-                jest.spyOn(docBase, 'renderUI').mockImplementation();
-                docBase.options.features = features;
+            `(
+                'should set isBlueprintEnabled to $isBlueprintEnabled for features $features',
+                ({ features, isBlueprintEnabled }) => {
+                    jest.spyOn(docBase, 'renderUI').mockImplementation();
+                    docBase.options.features = features;
 
-                docBase.loadUI();
+                    docBase.loadUI();
 
-                expect(docBase.controls.isBlueprintEnabled).toBe(isBlueprintEnabled);
-            });
+                    expect(docBase.controls.isBlueprintEnabled).toBe(isBlueprintEnabled);
+                },
+            );
         });
 
         describe('renderUI()', () => {
@@ -2714,6 +3324,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(getProps(docBase)).toMatchObject({
                     annotationColor: '#0061d5',
                     annotationMode: 'none',
+                    hasAnnotationsOnlyControls: false,
                     hasHighlight: true,
                     hasRegion: true,
                     maxScale: 10,
@@ -2732,6 +3343,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pageNumber: docBase.pdfViewer.currentPageNumber,
                     scale: 0.9,
                 });
+            });
+
+            test('should pass the annotations-only controls state to the controls', () => {
+                jest.spyOn(docBase, 'hasAnnotationsOnlyControls').mockReturnValue(true);
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).hasAnnotationsOnlyControls).toBe(true);
             });
 
             test.each`
@@ -2832,6 +3451,33 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(getProps(docBase)).toMatchObject({
                     onGalleryToggle: isMobile ? undefined : docBase.galleryController.toggle,
                 });
+            });
+
+            test.each`
+                description                     | features                               | pagesCount
+                ${'the flag is omitted'}        | ${undefined}                           | ${4}
+                ${'the flag is disabled'}       | ${{ galleryView: { enabled: false } }} | ${4}
+                ${'the document has 1 page'}    | ${{ galleryView: { enabled: true } }}  | ${1}
+                ${'the page limit is exceeded'} | ${{ galleryView: { enabled: true } }}  | ${GALLERY_MAX_PAGES + 1}
+            `('should hide the gallery toggle when $description', ({ features, pagesCount }) => {
+                docBase.galleryController = new GalleryController({ containerEl: docBase.containerEl, features });
+                docBase.pdfViewer.pagesCount = pagesCount;
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).onGalleryToggle).toBeUndefined();
+            });
+
+            test('should show the gallery toggle when the flag is enabled and the page count is in range', () => {
+                docBase.galleryController = new GalleryController({
+                    containerEl: docBase.containerEl,
+                    features: { galleryView: { enabled: true } },
+                });
+                docBase.pdfViewer.pagesCount = GALLERY_MAX_PAGES;
+
+                docBase.renderUI();
+
+                expect(getProps(docBase).onGalleryToggle).toBe(docBase.galleryController.toggle);
             });
 
             test('should hide annotation create controls when in bounding box mode', () => {
@@ -3393,6 +4039,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pagechangingHandler(docBase.event);
                 expect(stubs.handleViewerPageChange).toBeCalled();
             });
+
+            test('should select the new page in the thumbnails sidebar', () => {
+                docBase.thumbnailsSidebar = { setCurrentPage: jest.fn(), destroy: jest.fn() };
+
+                docBase.pagechangingHandler({ pageNumber: 2 });
+
+                expect(docBase.thumbnailsSidebar.setCurrentPage).toBeCalledWith(2);
+            });
+        });
+
+        describe('onThumbnailSelectHandler()', () => {
+            test('should navigate to the selected page and emit the navigate metric', () => {
+                jest.spyOn(docBase, 'setPage').mockImplementation();
+                jest.spyOn(docBase, 'emitMetric').mockImplementation();
+
+                docBase.onThumbnailSelectHandler(3);
+
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE, data: 3 });
+            });
         });
 
         describe('handleDocElKeydown()', () => {
@@ -3776,7 +4442,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 event = {
                     ctrlKey: true,
-                    deltaY: -50,
+                    deltaY: -10,
                     clientX: 400,
                     clientY: 300,
                     preventDefault: jest.fn(),
@@ -3804,27 +4470,46 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should zoom in with cursor anchoring when above initial scale', () => {
                 docBase.pdfViewer.currentScale = 1;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // trackpad pinch in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
-                expect(docBase.updateScale).toBeCalledWith(1.5);
+                expect(docBase.updateScale).toBeCalledWith(1.1);
             });
 
             test('should zoom out with cursor anchoring', () => {
                 docBase.pdfViewer.currentScale = 0.5;
 
-                event.deltaY = 100; // zoom out
+                event.deltaY = 10; // trackpad pinch out
 
                 docBase.trackpadPinchToZoomHandler(event);
 
-                expect(docBase.updateScale).toBeCalledWith(0.1);
+                expect(docBase.updateScale).toBeCalledWith(0.4);
                 expect(document.elementFromPoint).toBeCalledWith(event.clientX, event.clientY);
+            });
+
+            test('should step a mouse-wheel notch by 10%', () => {
+                docBase.pdfViewer.currentScale = 1;
+                event.deltaY = -100;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(1.1);
+            });
+
+            test('should step a line-mode mouse wheel by 10%', () => {
+                docBase.pdfViewer.currentScale = 1;
+                event.deltaY = 3;
+                event.deltaMode = 1;
+
+                docBase.trackpadPinchToZoomHandler(event);
+
+                expect(docBase.updateScale).toBeCalledWith(0.9);
             });
 
             test('should not exceed MAX_SCALE', () => {
                 docBase.pdfViewer.currentScale = 5.0;
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -3833,7 +4518,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should not go below MIN_SCALE', () => {
                 docBase.pdfViewer.currentScale = 0.1;
-                event.deltaY = 50; // zoom out
+                event.deltaY = 10; // zoom out
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -3843,7 +4528,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should use page-relative anchoring when a page element is found', () => {
                 docBase.pdfViewer.currentScale = 1.5;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -3855,7 +4540,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 document.elementFromPoint.mockReturnValue(null);
                 docBase.pdfViewer.currentScale = 1.5;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
 
                 docBase.trackpadPinchToZoomHandler(event);
 
@@ -3867,7 +4552,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.options.file = { id: '0', extension: 'pdf' };
                 docBase.isTrackpadPinching = false;
 
-                event.deltaY = -50; // zoom in
+                event.deltaY = -10; // zoom in
                 docBase.trackpadPinchToZoomHandler(event);
 
                 expect(docBase.options.resin.recordAction).toBeCalledWith({
@@ -3885,7 +4570,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.isTrackpadPinching = false;
                 docBase.pdfViewer.currentScale = 2;
 
-                event.deltaY = 50; // zoom out
+                event.deltaY = 10; // zoom out
                 docBase.trackpadPinchToZoomHandler(event);
 
                 expect(docBase.options.resin.recordAction).toBeCalledWith({
@@ -3976,6 +4661,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'resize').mockImplementation();
                 jest.spyOn(docBase, 'emitMetric').mockImplementation();
                 jest.spyOn(docBase, 'emit').mockImplementation();
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
 
                 stubs.toggleSidebar = jest.fn();
                 stubs.isSidebarOpen = jest.fn();
@@ -3997,6 +4683,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.toggleThumbnails();
                 jest.advanceTimersByTime(300);
 
+                expect(docBase.resize).not.toBeCalled();
+                expect(docBase.renderUI).not.toBeCalled();
+            });
+
+            test('should not re-render the controls if the controls bar flag is off', () => {
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+
+                docBase.toggleThumbnails();
+
+                expect(stubs.toggleSidebar).toBeCalled();
+                expect(docBase.renderUI).not.toBeCalled();
+            });
+
+            test('should re-render the controls with the new open state right away if the controls bar flag is on', () => {
+                docBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+                stubs.toggleSidebar.mockImplementation(() => {
+                    thumbnailsSidebar.isOpen = true;
+                });
+                let isOpenWhenRendered;
+                docBase.renderUI.mockImplementation(() => {
+                    isOpenWhenRendered = thumbnailsSidebar.isOpen;
+                });
+
+                docBase.toggleThumbnails();
+
+                expect(docBase.renderUI).toBeCalledTimes(1);
+                expect(isOpenWhenRendered).toBe(true);
                 expect(docBase.resize).not.toBeCalled();
             });
 
@@ -4027,6 +4743,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.resize).toBeCalled();
                 expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.CLOSE, data: 10 });
                 expect(docBase.emit).toBeCalledWith('thumbnailsClose');
+            });
+
+            test.each([true, false])('should cache the sidebar open state (%s) after toggling', isOpen => {
+                jest.spyOn(docBase, 'cacheThumbnailsToggledState').mockImplementation();
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                docBase.pdfViewer = { pagesCount: 10 };
+                stubs.toggleSidebar.mockImplementation(() => {
+                    thumbnailsSidebar.isOpen = isOpen;
+                });
+
+                docBase.toggleThumbnails();
+
+                expect(docBase.cacheThumbnailsToggledState).toBeCalledWith(isOpen);
             });
         });
 
@@ -4888,6 +5617,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 };
                 expect(init).toHaveBeenCalledWith(params);
             });
+
+            test('should keep the legacy ThumbnailsSidebar when the supporting UI flag is off', () => {
+                jest.spyOn(ThumbnailsSidebar.prototype, 'init').mockImplementation();
+                docBaseObj.initThumbnails();
+                expect(docBaseObj.thumbnailsSidebar).toBeInstanceOf(ThumbnailsSidebar);
+                expect(docBaseObj.thumbnailsSidebar).not.toBeInstanceOf(ThumbnailsSidebarV2);
+            });
+
+            test('should create the Blueprint ThumbnailsSidebarV2 when the supporting UI flag is on', () => {
+                jest.spyOn(ThumbnailsSidebar.prototype, 'init').mockImplementation();
+                docBaseObj.options.features = { blueprintMigrationSupportingUi: { enabled: true } };
+                docBaseObj.initThumbnails();
+                expect(docBaseObj.thumbnailsSidebar).toBeInstanceOf(ThumbnailsSidebarV2);
+                expect(docBaseObj.thumbnailsSidebar.anchorEl).toBe(docBaseObj.thumbnailsSidebarEl);
+                expect(docBaseObj.thumbnailsSidebar.init).toHaveBeenCalledWith({
+                    currentPage: docBaseObj.pdfViewer.currentPageNumber,
+                    isOpen: true,
+                    onSelect: docBaseObj.onThumbnailSelectHandler,
+                });
+            });
         });
         describe('prefetchPreloaderImages()', () => {
             let mockFile;
@@ -5336,65 +6085,99 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
-        describe('countPdfOperations', () => {
-            test('should count operations from multiple pages', async () => {
+        describe('checkPdfOperationLimit', () => {
+            const makeDoc = (numPages, operationsPerPage) => ({
+                numPages,
+                getPage: jest.fn().mockResolvedValue({
+                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(operationsPerPage) }),
+                }),
+            });
+
+            test('should add operations across pages before comparing with the limit', async () => {
                 const mockDoc = {
                     numPages: 3,
-                    getPage: jest.fn(),
+                    getPage: jest
+                        .fn()
+                        .mockResolvedValueOnce({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
+                        })
+                        .mockResolvedValueOnce({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200) }),
+                        })
+                        .mockResolvedValueOnce({
+                            getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(300) }),
+                        }),
                 };
 
-                const mockPage1 = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
-                };
-                const mockPage2 = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(200) }),
-                };
-                const mockPage3 = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(300) }),
-                };
-
-                mockDoc.getPage
-                    .mockReturnValueOnce(Promise.resolve(mockPage1))
-                    .mockReturnValueOnce(Promise.resolve(mockPage2))
-                    .mockReturnValueOnce(Promise.resolve(mockPage3));
-
-                const result = await countPdfOperations(mockDoc, 3);
-                expect(result).toBe(600);
+                expect(await checkPdfOperationLimit(mockDoc, 3, 500)).toBe(true);
                 expect(mockDoc.getPage).toHaveBeenCalledTimes(3);
             });
 
-            test('should limit to maxPages parameter', async () => {
-                const mockDoc = {
-                    numPages: 10,
-                    getPage: jest.fn(),
-                };
+            test('should check only maxPages pages', async () => {
+                const mockDoc = makeDoc(10, 100);
 
-                const mockPage = {
-                    getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
-                };
-
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
-
-                const result = await countPdfOperations(mockDoc, 2);
-                expect(result).toBe(200);
+                expect(await checkPdfOperationLimit(mockDoc, 2, 200)).toBe(false);
                 expect(mockDoc.getPage).toHaveBeenCalledTimes(2);
             });
 
-            test('should use default maxPages when not specified', async () => {
-                const mockDoc = {
-                    numPages: 10,
-                    getPage: jest.fn(),
-                };
+            test.each`
+                operationsPerPage | expected
+                ${64000}          | ${false}
+                ${64001}          | ${true}
+            `(
+                'should return $expected for $operationsPerPage operations on each of the first 5 pages by default',
+                async ({ operationsPerPage, expected }) => {
+                    const mockDoc = makeDoc(10, operationsPerPage);
 
-                const mockPage = {
+                    expect(await checkPdfOperationLimit(mockDoc)).toBe(expected);
+                    expect(mockDoc.getPage).toHaveBeenCalledTimes(5);
+                },
+            );
+
+            test('should stop requesting pages once the count exceeds the operation limit', async () => {
+                const mockDoc = makeDoc(5, 400);
+
+                expect(await checkPdfOperationLimit(mockDoc, 5, 500)).toBe(true);
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(2);
+            });
+
+            test('should keep counting while the count equals the operation limit', async () => {
+                const mockDoc = makeDoc(3, 250);
+
+                expect(await checkPdfOperationLimit(mockDoc, 3, 500)).toBe(true);
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(3);
+            });
+
+            test('should stop requesting pages after a page fails', async () => {
+                const mockDoc = makeDoc(3, 100);
+                mockDoc.getPage.mockResolvedValueOnce({
                     getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }),
-                };
+                });
+                mockDoc.getPage.mockRejectedValueOnce(new Error('Page error'));
 
-                mockDoc.getPage.mockReturnValue(Promise.resolve(mockPage));
+                await expect(checkPdfOperationLimit(mockDoc, 3, 500)).rejects.toThrow('Page error');
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(2);
+            });
 
-                const result = await countPdfOperations(mockDoc);
-                expect(result).toBe(500); // 5 pages * 100 operations each
-                expect(mockDoc.getPage).toHaveBeenCalledTimes(5);
+            test('should request pages one at a time', async () => {
+                let resolveFirstPage;
+                const mockDoc = makeDoc(2, 100);
+                mockDoc.getPage.mockReturnValueOnce(
+                    new Promise(resolve => {
+                        resolveFirstPage = resolve;
+                    }),
+                );
+
+                const resultPromise = checkPdfOperationLimit(mockDoc, 2, 500);
+                await Promise.resolve();
+                await Promise.resolve();
+                expect(mockDoc.getPage).toHaveBeenCalledTimes(1);
+                expect(mockDoc.getPage).toHaveBeenCalledWith(1);
+
+                resolveFirstPage({ getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(100) }) });
+
+                expect(await resultPromise).toBe(false);
+                expect(mockDoc.getPage).toHaveBeenNthCalledWith(2, 2);
             });
         });
     });

@@ -1,10 +1,18 @@
+import { isNpmBuild } from '../../isNpmBuild';
 import PreviewError from '../../PreviewError';
 import TextBaseViewer from './TextBaseViewer';
 import { ERROR_CODE, VIEWER_EVENT } from '../../events';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import './CSV.scss';
 
-const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
+const PAPAPARSE_JS = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`;
+
+const npmBoxCSV =
+    typeof __BCP_NPM_BUILD__ !== 'undefined' && __BCP_NPM_BUILD__ ? require('./BoxCSV').default : null;
+
+function viewerScripts() {
+    return isNpmBuild() ? [PAPAPARSE_JS] : [PAPAPARSE_JS, 'csv.js'];
+}
 const PAPAPARSE_ERROR_TYPES = {
     DELIMITER: 'Delimiter',
     FIELD_MISMATCH: 'FieldMismatch',
@@ -58,7 +66,7 @@ class CSVViewer extends TextBaseViewer {
         const { representation } = this.options;
         const template = representation.content.url_template;
 
-        return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
+        return Promise.all([this.loadAssets(viewerScripts()), this.getRepStatus().getPromise()])
             .then(() => {
                 this.startLoadTimer();
                 const parseCSV = url => {
@@ -130,7 +138,7 @@ class CSVViewer extends TextBaseViewer {
      */
     prefetch({ assets = true, content = true }) {
         if (assets) {
-            this.prefetchAssets(JS);
+            this.prefetchAssets(viewerScripts());
         }
 
         const { representation } = this.options;
@@ -163,7 +171,11 @@ class CSVViewer extends TextBaseViewer {
      */
     finishLoading() {
         /* global BoxCSV */
-        this.csvComponent = new BoxCSV(this.csvEl, this.data);
+        this.mountCSV(npmBoxCSV || BoxCSV);
+    }
+
+    mountCSV(BoxCSVComponent) {
+        this.csvComponent = new BoxCSVComponent(this.csvEl, this.data);
         this.csvComponent.renderCSV();
 
         this.loadUI();

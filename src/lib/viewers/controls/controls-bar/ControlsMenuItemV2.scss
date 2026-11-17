@@ -1,0 +1,8 @@
+.bp-ControlsMenuItemV2.bp-ControlsMenuItemV2 {
+    // The label sits 8px from the icon. The shortcut adds the rest of its 16px below.
+    gap: var(--bp-space-020);
+}
+
+.bp-ControlsMenuItemV2.bp-ControlsMenuItemV2 > :nth-child(3) {
+    margin-inline-start: var(--bp-space-020);
+}

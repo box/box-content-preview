@@ -4,6 +4,7 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import ControlsRoot from '../../controls/controls-root';
 import ImageControls from '../ImageControls';
+import ImageControlsV2 from '../ImageControlsV2';
 import ImageViewer from '../ImageViewer';
 import {
     ANNOTATOR_EVENT,
@@ -455,6 +456,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls.render).toBeCalledWith(
                 <ImageControls
                     annotationMode="none"
+                    hasAnnotationsOnlyControls={false}
                     hasDrawing={false}
                     hasHighlight={false}
                     hasRegion={false}
@@ -468,6 +470,14 @@ describe('lib/viewers/image/ImageViewer', () => {
                     scale={1}
                 />,
             );
+        });
+
+        test('should pass the annotations-only controls state to the controls', () => {
+            jest.spyOn(image, 'hasAnnotationsOnlyControls').mockReturnValue(true);
+
+            image.loadUI();
+
+            expect(image.controls.render.mock.calls[0][0].props.hasAnnotationsOnlyControls).toBe(true);
         });
 
         test.each`
@@ -499,6 +509,63 @@ describe('lib/viewers/image/ImageViewer', () => {
                 );
             },
         );
+
+        test.each`
+            enabled  | Controls
+            ${true}  | ${ImageControlsV2}
+            ${false} | ${ImageControls}
+        `('should render $Controls.name if the controls bar flag is $enabled', ({ Controls, enabled }) => {
+            image.options.features = { blueprintMigrationControlsBar: { enabled } };
+            image.loadUI();
+
+            expect(image.controls.render).toBeCalledWith(expect.objectContaining({ type: Controls }));
+        });
+    });
+
+    describe('onKeydown()', () => {
+        beforeEach(() => {
+            image.annotationModule = { getColor: jest.fn() };
+            jest.spyOn(image, 'rotateLeft').mockImplementation();
+        });
+
+        test.each(['r', 'R'])('should rotate left on %s with the Blueprint controls bar', key => {
+            image.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            image.loadUI();
+
+            expect(image.onKeydown(key)).toBe(true);
+            expect(image.rotateLeft).toBeCalled();
+        });
+
+        test('should not rotate on r with the older controls bar', () => {
+            image.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+            image.loadUI();
+
+            expect(image.onKeydown('r')).toBe(false);
+            expect(image.rotateLeft).not.toBeCalled();
+        });
+
+        test('should leave Alt+R to the browser', () => {
+            image.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            image.loadUI();
+
+            expect(image.onKeydown('r', { altKey: true })).toBe(false);
+            expect(image.rotateLeft).not.toBeCalled();
+        });
+
+        test('should not rotate on r before the controls are ready', () => {
+            image.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(image.onKeydown('r')).toBe(false);
+            expect(image.rotateLeft).not.toBeCalled();
+        });
+
+        test('should still zoom with the image base shortcuts', () => {
+            image.loadUI();
+            jest.spyOn(image, 'zoomIn').mockImplementation();
+
+            expect(image.onKeydown('Shift++')).toBe(true);
+            expect(image.zoomIn).toBeCalled();
+        });
     });
 
     describe('isRotated()', () => {
@@ -850,6 +917,17 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.emitFirstRenderMetric();
 
+            expect(image.emitMetric).not.toHaveBeenCalled();
+        });
+
+        test('should not stop the timer if the viewer is destroyed', () => {
+            jest.spyOn(image, 'emitMetric').mockImplementation();
+            jest.spyOn(Timer, 'stop');
+            image.destroyed = true;
+
+            image.emitFirstRenderMetric();
+
+            expect(Timer.stop).not.toHaveBeenCalled();
             expect(image.emitMetric).not.toHaveBeenCalled();
         });
     });

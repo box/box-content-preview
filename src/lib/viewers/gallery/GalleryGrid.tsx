@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
+import { Text } from '@box/blueprint-web';
 import { decodeKeydown, replacePlaceholders } from '../../util';
 import HighResThumbnailStore, { HighResRenderTask } from './HighResThumbnailStore';
 import {
@@ -39,6 +40,7 @@ export type Props = {
     getPageRatio?: (pageNum: number) => number | null;
     /** When true, use ARIA grid roles and 2D arrow navigation instead of listbox/option. */
     isAriaGridEnabled?: boolean;
+    isBlueprintEnabled?: boolean;
     isPinchZoomEnabled?: boolean;
     isTouchZoomEnabled?: boolean;
     onFocusChange?: (pageNum: number) => void;
@@ -52,6 +54,7 @@ export type Props = {
 
 interface TileProps {
     pageNum: number;
+    isBlueprintEnabled: boolean;
     isFocused: boolean;
     ariaColIndex?: number;
     imageSrc?: string;
@@ -63,6 +66,7 @@ interface TileProps {
 
 const GalleryTile = React.memo(function GalleryTile({
     pageNum,
+    isBlueprintEnabled,
     isFocused,
     ariaColIndex,
     imageSrc,
@@ -91,8 +95,17 @@ const GalleryTile = React.memo(function GalleryTile({
             style={tileStyle}
             tabIndex={isFocused ? 0 : -1}
         >
-            <span aria-hidden="true" className="bp-gallery-tile-badge">
-                {pageNum}
+            <span
+                aria-hidden="true"
+                className={`bp-gallery-tile-badge${isBlueprintEnabled ? ' bp-gallery-tile-badge--blueprint' : ''}`}
+            >
+                {isBlueprintEnabled ? (
+                    <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                        {pageNum}
+                    </Text>
+                ) : (
+                    pageNum
+                )}
             </span>
             {imageSrc ? (
                 <img alt="" src={imageSrc} style={contentStyle} />
@@ -108,6 +121,7 @@ export default function GalleryGrid({
     currentPage,
     getPageRatio,
     isAriaGridEnabled = false,
+    isBlueprintEnabled = false,
     isPinchZoomEnabled = false,
     isTouchZoomEnabled = false,
     onClose,
@@ -652,6 +666,7 @@ export default function GalleryGrid({
                 key={i}
                 ariaColIndex={isAriaGridEnabled ? getColumnIndex(i, columnCount) : undefined}
                 imageSrc={highResImages[i] || loadedImages[i]}
+                isBlueprintEnabled={isBlueprintEnabled}
                 isFocused={i === focusedPage}
                 onClick={handleTileClick}
                 onFocus={handleTileFocus}
@@ -692,7 +707,7 @@ export default function GalleryGrid({
             aria-colcount={isAriaGridEnabled ? columnCount : undefined}
             aria-label={__('page_gallery')}
             aria-rowcount={isAriaGridEnabled ? getRowCount(pageCount, columnCount) : undefined}
-            className="bp-gallery-grid"
+            className={`bp-gallery-grid${isBlueprintEnabled ? ' bp-GalleryGridV2' : ''}`}
             onFocus={handleGridFocus}
             onKeyDown={handleGridKeyDown}
             onScroll={handleScroll}

@@ -2,7 +2,8 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Location from '../../Location';
 import Popup from '../../Popup';
-import { CLASS_HIDDEN } from '../../constants';
+import { BLUEPRINT_MIGRATION_SUPPORTING_UI, CLASS_HIDDEN } from '../../constants';
+import { PrintModalRoot } from '../../PrintModal';
 import { getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { VIEWER_EVENT } from '../../events';
@@ -111,6 +112,8 @@ class OfficeViewer extends BaseViewer {
         if (this.printDialogTimeout || !this.printPopup.isVisible()) {
             clearTimeout(this.printDialogTimeout);
             this.browserPrint();
+        } else if (this.printPopup instanceof PrintModalRoot) {
+            this.printPopup.showReady(__('print_ready'));
         } else {
             // Update popup UI to reflect that print is ready
             this.printPopup.enableButton();
@@ -131,6 +134,11 @@ class OfficeViewer extends BaseViewer {
      * @return {void}
      */
     initPrint() {
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            this.printPopup = new PrintModalRoot(this.rootEl);
+            return;
+        }
+
         this.printPopup = new Popup(this.rootEl);
 
         const printCheckmark = document.createElement('div');

@@ -2,14 +2,20 @@ import React from 'react';
 import BaseViewer from '../BaseViewer';
 import ControlsRoot from '../controls';
 import TextControls from './TextControls';
-import { CLASS_IS_PRINTABLE, CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
+import TextControlsV2 from './TextControlsV2';
+import {
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    CLASS_IS_PRINTABLE,
+    CLASS_IS_SELECTABLE,
+    PERMISSION_DOWNLOAD,
+} from '../../constants';
 import { checkPermission } from '../../file';
+import { getWheelZoomScaleDelta } from '../../wheelZoom';
 
 const ZOOM_DEFAULT = 1.0;
 const ZOOM_MAX = 10;
 const ZOOM_MIN = 0.1;
 const ZOOM_STEP = 0.1;
-const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 class TextBaseViewer extends BaseViewer {
     /**
@@ -81,8 +87,8 @@ class TextBaseViewer extends BaseViewer {
     }
 
     /**
-     * Handles trackpad pinch-to-zoom via wheel events with ctrlKey.
-     * On Mac trackpads, pinch gestures fire wheel events with ctrlKey set to true.
+     * Handles ctrl+wheel zoom. Trackpad pinch fires many small deltas. A mouse
+     * notch steps by the same amount as the +/- buttons.
      * Anchors zoom on the cursor position so content under the cursor stays in place.
      *
      * @protected
@@ -114,7 +120,7 @@ class TextBaseViewer extends BaseViewer {
 
         event.preventDefault();
 
-        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const scaleDelta = getWheelZoomScaleDelta(event);
         const newScale = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, this.scale + scaleDelta));
 
         if (newScale === this.scale) {
@@ -260,8 +266,10 @@ class TextBaseViewer extends BaseViewer {
             return;
         }
 
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? TextControlsV2 : TextControls;
+
         this.controls.render(
-            <TextControls
+            <Controls
                 maxScale={ZOOM_MAX}
                 minScale={ZOOM_MIN}
                 onFullscreenToggle={this.toggleFullscreen}
@@ -276,10 +284,11 @@ class TextBaseViewer extends BaseViewer {
      * Handles keyboard events for media
      *
      * @param {string} key - keydown key
+     * @param {KeyboardEvent} [event] - keydown event
      * @return {boolean} consumed or not
      * @protected
      */
-    onKeydown(key) {
+    onKeydown(key, event) {
         // Return false when media controls are not ready or are focused
         if (!this.controls) {
             return false;
@@ -294,7 +303,7 @@ class TextBaseViewer extends BaseViewer {
             return true;
         }
 
-        return false;
+        return this.handleFullscreenKey(key, event);
     }
 
     /**

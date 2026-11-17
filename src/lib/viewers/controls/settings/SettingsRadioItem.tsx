@@ -14,15 +14,16 @@ export type Props<V extends Value> = {
 };
 export type Ref = HTMLDivElement;
 
+export const settingsRadioItemAction = {
+    action: 'programmatic',
+    component: 'toolbar',
+    target: 'settingsRadioItem',
+} as const;
+
 function SettingsRadioItem<V extends Value>(props: Props<V>, ref: React.Ref<Ref>): JSX.Element {
     const { className, isSelected, label, onChange, value } = props;
     const displayedValue = label || value.toString();
     const recordAction = window.Box?.Preview?.resin?.recordAction;
-    const settingsRadioItemAction = {
-        action: 'programmatic',
-        component: 'toolbar',
-        target: 'settingsRadioItem',
-    } as const;
 
     const handleClick = (): void => {
         recordAction?.(settingsRadioItemAction);

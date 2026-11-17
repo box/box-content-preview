@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { IconButton, Tooltip } from '@box/blueprint-web';
 import classNames from 'classnames';
+import { Volume0, Volume1, Volume2, VolumeX } from '@box/blueprint-web-assets/icons/Medium';
 import IconVolumeMed24 from '../icons/IconVolumeMed24';
 import IconVolumeLow24 from '../icons/IconVolumeLow24';
 import IconVolumeMuted24 from '../icons/IconVolumeMuted24';
+import { stopActivationKeyPropagation } from './utils';
 import MediaToggle from './MediaToggle';
 import useAttention from '../hooks/useAttention';
 import './VolumeControls.scss';
@@ -12,16 +15,32 @@ import VolumeSliderControl from '../slider/VolumeSliderControl';
 /** Keyboard volume keeps the flyout open longer than the 200ms max-width transition. */
 export const VOLUME_FLYOUT_DISMISS_MS = 1000;
 
+export type VolumeIcon = React.FunctionComponent<React.PropsWithChildren<React.SVGProps<SVGSVGElement>>>;
+
 export type Props = {
     /** Bump counter from keyboard volume. 0 means no keyboard reveal; each increment re-opens the flyout. */
     keyboardVolumeStep?: number;
     onMuteChange: (isMuted: boolean) => void;
     onVolumeChange: (volume: number) => void;
+    isBlueprintEnabled?: boolean;
     volume?: number;
 };
 
-export function getIcon(volume: number): (props: React.SVGProps<SVGSVGElement>) => JSX.Element {
-    let Icon = IconVolumeMuted24;
+export function getIcon(volume: number, isBlueprintEnabled = false): VolumeIcon {
+    if (isBlueprintEnabled) {
+        if (volume >= 0.66) {
+            return Volume2;
+        }
+        if (volume >= 0.33) {
+            return Volume1;
+        }
+        if (volume >= 0.01) {
+            return Volume0;
+        }
+        return VolumeX;
+    }
+
+    let Icon: VolumeIcon = IconVolumeMuted24;
 
     if (volume >= 0.66) {
         Icon = IconVolumeMax24;
@@ -38,6 +57,7 @@ export default function VolumeControls({
     keyboardVolumeStep = 0,
     onMuteChange,
     onVolumeChange,
+    isBlueprintEnabled = false,
     volume = 1,
 }: Props): JSX.Element {
     const [isActive, handlers, resetAttention] = useAttention();
@@ -47,7 +67,7 @@ export default function VolumeControls({
     const volumeControlElRef = useRef<HTMLDivElement>(null); // root; outside pointerdown unpins the flyout
     const revealTimerRef = useRef(0);
     const isMuted = !volume;
-    const Icon = isMuted ? IconVolumeMuted24 : getIcon(volume);
+    const Icon = getIcon(volume, isBlueprintEnabled);
     const title = isMuted ? __('media_unmute') : __('media_mute');
     const value = Math.round(volume * 100);
     const isOpen = isActive || isRevealed || isPinned;
@@ -113,7 +133,7 @@ export default function VolumeControls({
     return (
         <div
             ref={volumeControlElRef}
-            className="bp-VolumeControls"
+            className={classNames('bp-VolumeControls', { 'bp-VolumeControls--blueprint': isBlueprintEnabled })}
             data-testid="bp-volume-controls"
             onBlur={event => {
                 handlers.onBlur(event);
@@ -129,15 +149,31 @@ export default function VolumeControls({
             onMouseOut={handlers.onMouseOut}
             onMouseOver={handlers.onMouseOver}
         >
-            <MediaToggle
-                className="bp-VolumeControls-toggle"
-                data-resin-target="volumeToggle"
-                onClick={handleToggleClick}
-                onPointerDown={handleTogglePointerDown}
-                title={title}
-            >
-                <Icon />
-            </MediaToggle>
+            {isBlueprintEnabled ? (
+                <Tooltip content={title} side="left">
+                    <IconButton
+                        aria-label={title}
+                        data-resin-target="volumeToggle"
+                        data-target-id="VolumeControls-volumeToggle"
+                        icon={Icon}
+                        onClick={handleToggleClick}
+                        onKeyDown={stopActivationKeyPropagation}
+                        onPointerDown={handleTogglePointerDown}
+                        size="large"
+                        variant="on-dark"
+                    />
+                </Tooltip>
+            ) : (
+                <MediaToggle
+                    className="bp-VolumeControls-toggle"
+                    data-resin-target="volumeToggle"
+                    onClick={handleToggleClick}
+                    onPointerDown={handleTogglePointerDown}
+                    title={title}
+                >
+                    <Icon />
+                </MediaToggle>
+            )}
             <div aria-hidden={!isOpen} className={classNames('bp-VolumeControls-flyout', { 'bp-is-open': isOpen })}>
                 <VolumeSliderControl
                     aria-hidden={!isOpen}

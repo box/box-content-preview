@@ -1,0 +1,74 @@
+.bp-DocFindBarV2 {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    right: 17px; // Clears the document scrollbar
+    display: flex;
+    gap: var(--bp-space-020);
+    align-items: center;
+    padding: var(--bp-space-020) var(--bp-space-030) var(--bp-space-020) var(--bp-space-020);
+    border-radius: var(--bp-radius-15);
+    background: var(--bp-surface-surface);
+    box-shadow:
+        inset 0 0 0 var(--bp-border-01) var(--bp-border-divider-border),
+        0 var(--bp-space-005) var(--bp-space-020) var(--bp-black-opacity-08);
+}
+
+.bp-DocFindBarV2-field {
+    cursor: text;
+    display: flex;
+    gap: var(--bp-space-020);
+    align-items: center;
+    box-sizing: border-box;
+    width: 303px; // Fixed so the count never resizes the bar
+    height: var(--bp-size-100);
+    padding: 0 var(--bp-space-030);
+    border: var(--bp-border-01) solid var(--bp-border-search-border);
+    border-radius: var(--bp-radius-10);
+    background: var(--bp-surface-search-surface);
+
+    &--filled {
+        border-color: transparent;
+        background: var(--bp-surface-search-surface-complete);
+    }
+
+    &:focus-within {
+        border-color: transparent;
+        background: var(--bp-surface-search-surface-active);
+        outline: var(--bp-border-02) solid var(--bp-border-search-input-border-focus);
+    }
+}
+
+.bp-DocFindBarV2-searchIcon {
+    flex: none;
+    width: var(--bp-size-040);
+    height: var(--bp-size-040);
+}
+
+.bp-DocFindBarV2-input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    background: transparent;
+    outline: 0;
+
+    &::placeholder {
+        color: var(--bp-text-text-on-light-secondary);
+    }
+}
+
+.bp-DocFindBarV2-count {
+    flex: none;
+    white-space: nowrap;
+}
+
+.bp-DocFindBarV2-actions {
+    display: flex;
+    gap: var(--bp-space-010);
+    align-items: center;
+}

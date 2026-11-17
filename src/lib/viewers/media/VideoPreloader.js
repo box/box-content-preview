@@ -1,5 +1,9 @@
 import EventEmitter from 'events';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { IconButton, Tooltip } from '@box/blueprint-web';
 import Api from '../../api';
+import BlueprintProviders from '../../BlueprintProviders';
 import {
     CLASS_BOX_PREVIEW_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD,
@@ -16,6 +20,9 @@ import {
 } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons';
 import { handleRepresentationBlobFetch } from '../../util';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
+import PlayOverlayIcon from '../controls/media/PlayOverlayIcon';
+import { stopActivationKeyPropagation } from '../controls/media/utils';
 import fitFrameToViewport from './fitFrameToViewport';
 
 class VideoPreloader extends EventEmitter {
@@ -51,6 +58,12 @@ class VideoPreloader extends EventEmitter {
 
     /** @property {Promise|null} - In-flight showPreload promise (single-flight) */
     showPreloadPromise = null;
+
+    /** @property {Root|undefined} - React root for the Blueprint play overlay */
+    playOverlayRoot;
+
+    /** @property {Root|undefined} - React root for the Blueprint loading indicator */
+    loadingRoot;
 
     /**
      * [constructor]
@@ -107,6 +120,8 @@ class VideoPreloader extends EventEmitter {
      * @param {Object} [options] - Optional options
      * @param {Object} [options.viewport] - { width, height } to use for sizing (same as video viewport to avoid jump)
      * @param {Function} [options.onImageClick] - Called when user clicks the preload image
+     * @param {boolean} [options.isBlueprintEnabled] - Renders the play overlay as a Blueprint IconButton
+     * @param {HTMLElement} [options.portalContainer] - Container for Blueprint portaled content (tooltips)
      * @return {Promise} Promise to show preload
      */
     showPreload(preloadUrlWithAuth, containerEl, options = {}) {
@@ -136,13 +151,17 @@ class VideoPreloader extends EventEmitter {
 
                 this.srcUrl = URL.createObjectURL(imgBlob);
 
+                const { isBlueprintEnabled } = this.preloadOptions;
+                const playOverlayClassName = isBlueprintEnabled
+                    ? `${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY} ${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}--blueprint`
+                    : CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY;
                 const wrapperEl = document.createElement('div');
                 wrapperEl.className = this.wrapperClassName;
                 wrapperEl.innerHTML = `
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                     <div class="${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}">
                         <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
-                        <div class="${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}">${ICON_PLAY_LARGE}</div>
+                        <div class="${playOverlayClassName}">${isBlueprintEnabled ? '' : ICON_PLAY_LARGE}</div>
                     </div>
                 </div>
             `.trim();
@@ -162,6 +181,9 @@ class VideoPreloader extends EventEmitter {
                 this.placeholderEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER}`);
                 this.preloadEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
                 this.imageEl = this.preloadEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+                if (isBlueprintEnabled) {
+                    this.renderBlueprintPlayOverlay();
+                }
                 this.bindDOMListeners();
 
                 // If image is already loaded (cached), show it immediately
@@ -178,6 +200,52 @@ class VideoPreloader extends EventEmitter {
             });
 
         return this.showPreloadPromise;
+    }
+
+    /**
+     * Renders the Blueprint play button into the thumbnail's play overlay. Clicks bubble to
+     * the wrapper's image click handler, so the button and the thumbnail start playback the same way.
+     *
+     * @private
+     * @return {void}
+     */
+    renderBlueprintPlayOverlay() {
+        const overlayEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
+        if (!overlayEl) {
+            return;
+        }
+
+        this.playOverlayRoot = createRoot(overlayEl);
+        this.playOverlayRoot.render(
+            <BlueprintProviders container={this.preloadOptions.portalContainer}>
+                <Tooltip content={__('media_play')}>
+                    <IconButton
+                        aria-label={__('media_play')}
+                        className="bp-video-preload-play-button"
+                        data-resin-target="playOverlay"
+                        data-target-id="VideoPreloader-play"
+                        data-testid="bp-video-preload-play-button"
+                        icon={PlayOverlayIcon}
+                        onKeyDown={stopActivationKeyPropagation}
+                        size="large"
+                        variant="on-dark"
+                    />
+                </Tooltip>
+            </BlueprintProviders>,
+        );
+    }
+
+    /**
+     * Unmounts the Blueprint play overlay, if any.
+     *
+     * @private
+     * @return {void}
+     */
+    unmountBlueprintPlayOverlay() {
+        if (this.playOverlayRoot) {
+            this.playOverlayRoot.unmount();
+            this.playOverlayRoot = undefined;
+        }
     }
 
     /**
@@ -256,6 +324,10 @@ class VideoPreloader extends EventEmitter {
 
         const playOverlay = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
         if (playOverlay) {
+            // Hiding the focused play button would drop focus to body, where Space no longer reaches the player.
+            if (playOverlay.contains(document.activeElement)) {
+                this.containerEl?.focus();
+            }
             playOverlay.classList.add(CLASS_HIDDEN);
         }
 
@@ -265,7 +337,12 @@ class VideoPreloader extends EventEmitter {
         }
         this.wrapperEl.style.cursor = '';
 
-        if (this.placeholderEl) {
+        if (this.placeholderEl && this.preloadOptions?.isBlueprintEnabled) {
+            if (!this.loadingRoot) {
+                this.loadingRoot = createRoot(this.placeholderEl.appendChild(document.createElement('div')));
+                this.loadingRoot.render(<MediaLoadingIndicator />);
+            }
+        } else if (this.placeholderEl) {
             const spinner = document.createElement('div');
             spinner.className = 'bp-media-buffering-spinner';
             this.placeholderEl.appendChild(spinner);
@@ -294,6 +371,12 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     cleanupPreload = () => {
+        this.unmountBlueprintPlayOverlay();
+        if (this.loadingRoot) {
+            this.loadingRoot.unmount();
+            this.loadingRoot = undefined;
+        }
+
         if (this.wrapperEl) {
             if (this.wrapperEl.parentNode) {
                 this.wrapperEl.parentNode.removeChild(this.wrapperEl);

@@ -1,8 +1,10 @@
 import React from 'react';
 import MarkdownControls from './MarkdownControls';
+import MarkdownControlsV2 from './MarkdownControlsV2';
 import PlainTextViewer from './PlainTextViewer';
-import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
+import { BLUEPRINT_MIGRATION_CONTROLS_BAR, CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { VIEWER_EVENT } from '../../events';
+import { MARKDOWN_PRINT_STYLES } from './printStyles';
 import './Markdown.scss';
 
 const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
@@ -46,6 +48,13 @@ class MarkdownViewer extends PlainTextViewer {
     }
 
     /**
+     * @inheritdoc
+     */
+    getPrintStyles() {
+        return MARKDOWN_PRINT_STYLES;
+    }
+
+    /**
      * Prints text using an an iframe. Adds Github Markdown CSS to print styles.
      *
      * @override
@@ -53,7 +62,7 @@ class MarkdownViewer extends PlainTextViewer {
      */
     print() {
         if (!this.printReady) {
-            this.preparePrint(this.getCSS().concat('preview.css'));
+            this.preparePrint(this.getCSS());
 
             this.printPopup.show(__('print_loading'), __('print'), () => {
                 this.printPopup.hide();
@@ -95,7 +104,9 @@ class MarkdownViewer extends PlainTextViewer {
             return;
         }
 
-        this.controls.render(<MarkdownControls onFullscreenToggle={this.toggleFullscreen} />);
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? MarkdownControlsV2 : MarkdownControls;
+
+        this.controls.render(<Controls onFullscreenToggle={this.toggleFullscreen} />);
     }
 
     /**

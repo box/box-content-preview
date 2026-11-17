@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { Text } from '@box/blueprint-web';
 import formatTimecode from '../../media/formatTimecode';
 import { formatTime } from './DurationLabels';
 import './FilmstripV2.scss';
@@ -15,6 +16,7 @@ export type Props = {
     fps?: number;
     imageUrl?: string;
     interval?: number;
+    isBlueprintEnabled?: boolean;
     isShown?: boolean;
     position?: number;
     positionMax?: number;
@@ -26,6 +28,7 @@ export default function FilmstripV2({
     fps,
     imageUrl = '',
     interval = 1,
+    isBlueprintEnabled = false,
     isShown,
     position = 0,
     positionMax = 0,
@@ -43,6 +46,7 @@ export default function FilmstripV2({
     const frameBackgroundLeft = -(frameNumber % FILMSTRIP_FRAMES_PER_ROW) * sourceFrameWidth; // Frame position in its row
     const frameBackgroundTop = -(frameRow * FILMSTRIP_SOURCE_FRAME_HEIGHT); // Row position in its filmstrip
 
+    const timeLabel = fps ? formatTimecode(time, fps) : formatTime(time);
     const displayWidth = Math.floor(sourceFrameWidth * FILMSTRIP_DISPLAY_SCALE) || FILMSTRIP_DISPLAY_WIDTH;
     const cardWidth = displayWidth + 24;
     const filmstripLeft = Math.min(Math.max(0, position - cardWidth / 2), positionMax - cardWidth);
@@ -95,7 +99,13 @@ export default function FilmstripV2({
                 )}
             </div>
             <div className="bp-FilmstripV2-time" data-testid="bp-FilmstripV2-time">
-                {fps ? formatTimecode(time, fps) : formatTime(time)}
+                {isBlueprintEnabled ? (
+                    <Text as="span" variant="bodySmall">
+                        {timeLabel}
+                    </Text>
+                ) : (
+                    timeLabel
+                )}
             </div>
         </div>
     );

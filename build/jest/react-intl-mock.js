@@ -29,3 +29,5 @@ export const injectIntl = Component => {
 
 // eslint-disable-next-line react/prop-types
 export const IntlProvider = ({ children }) => <div>{children}</div>;
+
+export const useIntl = () => intlMock;

@@ -18,6 +18,6 @@ before_install:
 jobs:
     include:
         - name: 'Build & Test'
-          script: commitlint-travis && yarn lint && npm-run-all clean build:i18n build:ci test:ci
+          script: commitlint-travis && yarn lint && npm-run-all clean build:i18n build:ci test:ci && yarn build:lib
         - name: 'E2E Tests'
           script: yarn test:e2e

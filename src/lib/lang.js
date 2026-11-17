@@ -1,4 +1,4 @@
-const languageMap = {
+const createLanguageMap = () => ({
     af: __('afrikaans'),
     afr: __('afrikaans'),
     alb: __('albanian'),
@@ -150,7 +150,7 @@ const languageMap = {
     uzb: __('uzbek'),
     vi: __('vietnamese'),
     vie: __('vietnamese'),
-};
+});
 
 /**
  * Returns a localized language name, given an ISO-639-1/2/3/5 code:
@@ -160,5 +160,5 @@ const languageMap = {
  * @return {string} Returns the localized name of language represented by iso639Code
  */
 export default function getLanguageName(iso639Code) {
-    return languageMap[iso639Code.toLowerCase()];
+    return createLanguageMap()[iso639Code.toLowerCase()];
 }

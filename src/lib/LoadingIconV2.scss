@@ -1,0 +1,87 @@
+@import 'boxuiVariables';
+
+@keyframes bp-LoadingIconV2-spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes bp-LoadingIconV2-pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(0.95);
+    }
+}
+
+// Fades the colored ring into a tail by layering the theme color over it, quadrant by quadrant
+@mixin bp-LoadingIconV2-theme($color) {
+    .bp-LoadingIconV2-ring::before {
+        background:
+            linear-gradient(0deg, rgba($color, 1) 50%, rgba($color, 0.9) 100%) 0 0 no-repeat,
+            linear-gradient(90deg, rgba($color, 0.9) 0%, rgba($color, 0.6) 100%) 100% 0 no-repeat,
+            linear-gradient(180deg, rgba($color, 0.6) 0%, rgba($color, 0.3) 100%) 100% 100% no-repeat,
+            linear-gradient(360deg, rgba($color, 0.3) 0%, rgba($color, 0) 100%) 0 100% no-repeat;
+        background-size: 50% 50%;
+    }
+
+    .bp-LoadingIconV2-content {
+        background-color: $color;
+    }
+}
+
+.bp-LoadingIconV2 {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+
+    &.bp-LoadingIconV2--dark {
+        @include bp-LoadingIconV2-theme($black);
+    }
+
+    &.bp-LoadingIconV2--light {
+        @include bp-LoadingIconV2-theme($white);
+    }
+}
+
+.bp-LoadingIconV2-ring,
+.bp-LoadingIconV2-content {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.bp-LoadingIconV2-ring {
+    inset: 0;
+    background-color: var(--bp-loading-icon-ring-color);
+    animation: bp-LoadingIconV2-spin 1s infinite linear;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: calc(-1 * var(--bp-border-01));
+        border-radius: 50%;
+    }
+}
+
+.bp-LoadingIconV2-content {
+    inset: var(--bp-border-03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bp-LoadingIconV2-icon {
+    width: 50%;
+    height: 50%;
+    animation: bp-LoadingIconV2-pulse 500ms ease-in-out infinite alternate both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bp-LoadingIconV2-ring,
+    .bp-LoadingIconV2-icon {
+        animation: none;
+    }
+}

@@ -5,6 +5,7 @@ module.exports = {
         __NAME__: 'name',
         __VERSION__: 'version',
         __LANGUAGE__: 'en-US',
+        __BCP_DEFAULT_MESSAGES__: {},
     },
     moduleFileExtensions: ['js', 'jsx', 'json', 'ts', 'tsx'],
     moduleNameMapper: {
@@ -12,6 +13,7 @@ module.exports = {
         '\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/build/jest/fileMock.js',
         '@box/react-virtualized/dist/es': '@box/react-virtualized/dist/commonjs',
         'box-elements-messages': '<rootDir>/build/jest/i18nMock.js',
+        'box-readable-time-messages': '@box/readable-time/i18n/en-US',
         'react-intl': '<rootDir>/build/jest/react-intl-mock.js',
         '^@box/blueprint-web-assets/(.*)$': '<rootDir>/node_modules/@box/blueprint-web-assets/dist/$1',
         THREE: '<rootDir>/src/third-party/model3d/1.12.0/three.min.js',
@@ -33,6 +35,6 @@ module.exports = {
         '^.+\\.(svg|html)$': '<rootDir>/build/jest/stringLoader.js',
     },
     transformIgnorePatterns: [
-        'node_modules/(?!(box-ui-elements|react-virtualized|@box/blueprint-web|@box/blueprint-web-assets)/)',
+        'node_modules/(?!(box-ui-elements|react-virtualized|@tanstack|@box/blueprint-web|@box/blueprint-web-assets|@box/item-icon|@box/readable-time|@box/types|@ariakit)/)',
     ],
 };

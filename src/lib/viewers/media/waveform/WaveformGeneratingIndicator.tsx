@@ -1,7 +1,12 @@
 import React from 'react';
+import { LoadingIndicator, Text } from '@box/blueprint-web';
 import './WaveformGeneratingIndicator.scss';
 
-export default function WaveformGeneratingIndicator(): JSX.Element {
+type Props = {
+    isBlueprintEnabled?: boolean;
+};
+
+export default function WaveformGeneratingIndicator({ isBlueprintEnabled = false }: Props): JSX.Element {
     const label = __('media_generating_waveform');
 
     return (
@@ -11,12 +16,27 @@ export default function WaveformGeneratingIndicator(): JSX.Element {
             data-testid="bp-waveform-generating"
             role="status"
         >
-            <span aria-hidden="true" className="bp-WaveformGeneratingIndicator-bars">
-                <span className="bp-WaveformGeneratingIndicator-bar" />
-                <span className="bp-WaveformGeneratingIndicator-bar" />
-                <span className="bp-WaveformGeneratingIndicator-bar" />
-            </span>
-            <span className="bp-WaveformGeneratingIndicator-label">{label}</span>
+            {isBlueprintEnabled ? (
+                <div
+                    aria-hidden="true"
+                    className="bp-WaveformGeneratingIndicator-bars bp-WaveformGeneratingIndicator-bars--blueprint"
+                >
+                    <LoadingIndicator aria-label={label} variant="light" />
+                </div>
+            ) : (
+                <span aria-hidden="true" className="bp-WaveformGeneratingIndicator-bars">
+                    <span className="bp-WaveformGeneratingIndicator-bar" />
+                    <span className="bp-WaveformGeneratingIndicator-bar" />
+                    <span className="bp-WaveformGeneratingIndicator-bar" />
+                </span>
+            )}
+            {isBlueprintEnabled ? (
+                <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                    {label}
+                </Text>
+            ) : (
+                <span className="bp-WaveformGeneratingIndicator-label">{label}</span>
+            )}
         </div>
     );
 }

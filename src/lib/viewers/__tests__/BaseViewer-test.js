@@ -11,6 +11,7 @@ import intl from '../../i18n';
 import PreviewError from '../../PreviewError';
 import RepStatus from '../../RepStatus';
 import Timer from '../../Timer';
+import { AnnotationState } from '../../AnnotationControlsFSM';
 import { AnnotationMode } from '../../types';
 import { ERROR_CODE, FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../events';
 import { EXCLUDED_EXTENSIONS } from '../../extensions';
@@ -40,12 +41,10 @@ describe('lib/viewers/BaseViewer', () => {
             },
         });
         base.previewUI = {
-            notification: {
-                show: jest.fn(),
-                hide: jest.fn(),
-            },
+            hideNotification: jest.fn(),
             replaceHeader: jest.fn(),
             showLoadingIcon: jest.fn(),
+            showNotification: jest.fn(),
         };
     });
 
@@ -518,7 +517,12 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.getDownloadNotificationToShow.mockReturnValueOnce('dl3.boxcloud.com');
             jest.spyOn(stubs.api.reachability.constructor, 'setDownloadHostNotificationShown');
             base.viewerLoadHandler({ scale: 1.5 });
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith(
+                expect.stringContaining('dl3.boxcloud.com'),
+                null,
+                true,
+                'warning',
+            );
             expect(stubs.api.reachability.constructor.setDownloadHostNotificationShown).toBeCalled();
         });
 
@@ -539,6 +543,58 @@ describe('lib/viewers/BaseViewer', () => {
             jest.spyOn(fullscreen, 'toggle');
             base.toggleFullscreen();
             expect(fullscreen.toggle).toBeCalledWith(base.containerEl);
+        });
+
+        test('should keep the last fullscreen toggle when the keyboard shortcut passes none', () => {
+            const toggle = document.body.appendChild(document.createElement('button'));
+            base.fullscreenToggleEl = toggle;
+
+            base.toggleFullscreen();
+
+            expect(base.fullscreenToggleEl).toBe(toggle);
+            toggle.remove();
+        });
+
+        test('should drop the last fullscreen toggle if it has unmounted when the keyboard shortcut passes none', () => {
+            base.fullscreenToggleEl = document.createElement('button');
+
+            base.toggleFullscreen();
+
+            expect(base.fullscreenToggleEl).toBeNull();
+        });
+    });
+
+    describe('handleFullscreenKey()', () => {
+        beforeEach(() => {
+            jest.spyOn(base, 'toggleFullscreen').mockImplementation();
+        });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s if the controls bar flag is on', key => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey(key)).toBe(true);
+            expect(base.toggleFullscreen).toBeCalled();
+        });
+
+        test('should leave F to the host if the controls bar flag is off', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+
+            expect(base.handleFullscreenKey('f')).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
+
+        test('should leave other keys alone', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey('r')).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
+        });
+
+        test('should leave Alt+F to the browser', () => {
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+
+            expect(base.handleFullscreenKey('f', { altKey: true })).toBe(false);
+            expect(base.toggleFullscreen).not.toBeCalled();
         });
     });
 
@@ -1309,6 +1365,47 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining({ onCopyLink }));
         });
 
+        test.each`
+            enabled  | expected
+            ${true}  | ${{ blueprintMigrationControlsBar: true, enabledFeature: true }}
+            ${false} | ${{ enabledFeature: true }}
+        `(
+            'should only add blueprintMigrationControlsBar to the annotator features if the controls bar flag is $enabled',
+            ({ enabled, expected }) => {
+                jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+                jest.spyOn(base, 'createAnnotatorOptions');
+
+                base.options.features = { blueprintMigrationControlsBar: { enabled } };
+                base.options.boxAnnotations = {
+                    determineAnnotator: jest.fn().mockReturnValue(conf),
+                    getOptions: jest
+                        .fn()
+                        .mockReturnValue({ ...annotationsOptions, features: { enabledFeature: true } }),
+                };
+
+                base.createAnnotator();
+
+                expect(base.createAnnotatorOptions).toBeCalledWith(expect.objectContaining({ features: expected }));
+            },
+        );
+
+        test('should add blueprintMigrationControlsBar even if boxAnnotations has no features', () => {
+            jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
+            jest.spyOn(base, 'createAnnotatorOptions');
+
+            base.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            base.options.boxAnnotations = {
+                determineAnnotator: jest.fn().mockReturnValue(conf),
+                getOptions: jest.fn().mockReturnValue(undefined),
+            };
+
+            base.createAnnotator();
+
+            expect(base.createAnnotatorOptions).toBeCalledWith(
+                expect.objectContaining({ features: { blueprintMigrationControlsBar: true } }),
+            );
+        });
+
         test('should use default intl lib if annotator options not present ', () => {
             jest.spyOn(base, 'areAnnotationsEnabled').mockReturnValue(true);
             jest.spyOn(base, 'createAnnotatorOptions');
@@ -1691,7 +1788,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith(__('notification_annotation_point_mode'));
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1706,7 +1803,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith(__('notification_annotation_draw_mode'));
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1720,7 +1817,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.hide).toBeCalled();
+            expect(base.previewUI.hideNotification).toBeCalled();
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1734,7 +1831,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).toBeCalled();
-            expect(base.previewUI.notification.hide).toBeCalled();
+            expect(base.previewUI.hideNotification).toBeCalled();
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1745,7 +1842,7 @@ describe('lib/viewers/BaseViewer', () => {
                 data: 'message',
             };
             base.handleAnnotatorEvents(data);
-            expect(base.previewUI.notification.show).toBeCalled();
+            expect(base.previewUI.showNotification).toBeCalledWith('message', null, false, 'error');
             expect(base.emit).toBeCalledWith(data.event, data.data);
             expect(base.emit).toBeCalledWith('annotatorevent', data);
         });
@@ -1944,6 +2041,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emitMetric).not.toHaveBeenCalled();
             expect(base.firstRenderEmitted).toBe(false);
         });
+
+        test('should not stop the timer if the viewer is destroyed', () => {
+            jest.spyOn(Timer, 'stop');
+            base.destroyed = true;
+
+            base.emitFirstRenderMetric();
+
+            expect(Timer.stop).not.toHaveBeenCalled();
+            expect(base.emitMetric).not.toHaveBeenCalled();
+        });
     });
 
     describe('canHandleAnnotationControls()', () => {
@@ -2068,6 +2175,29 @@ describe('lib/viewers/BaseViewer', () => {
     describe('getInitialAnnotationMode()', () => {
         test('should return none as initial mode', () => {
             expect(base.getInitialAnnotationMode()).toBe(AnnotationMode.NONE);
+        });
+    });
+
+    describe('hasAnnotationsOnlyControls()', () => {
+        test.each`
+            state                             | expected
+            ${AnnotationState.DRAWING}        | ${true}
+            ${AnnotationState.HIGHLIGHT}      | ${true}
+            ${AnnotationState.REGION}         | ${true}
+            ${AnnotationState.HIGHLIGHT_TEMP} | ${false}
+            ${AnnotationState.REGION_TEMP}    | ${false}
+            ${AnnotationState.NONE}           | ${false}
+        `('should return $expected in the $state state when the host turns it on', ({ expected, state }) => {
+            base.options.enableAnnotationsOnlyControls = true;
+            jest.spyOn(base.annotationControlsFSM, 'getState').mockReturnValue(state);
+
+            expect(base.hasAnnotationsOnlyControls()).toBe(expected);
+        });
+
+        test('should return false when the host does not turn it on', () => {
+            jest.spyOn(base.annotationControlsFSM, 'getState').mockReturnValue(AnnotationState.REGION);
+
+            expect(base.hasAnnotationsOnlyControls()).toBe(false);
         });
     });
 });

@@ -6,6 +6,10 @@ export type Props = {
     rate: string;
 };
 
+export const RATES = ['0.5', '1.0', '1.25', '1.5', '2.0'];
+
+export const getLabel = (rate?: string): string => (rate === '1.0' || !rate ? __('media_speed_normal') : rate);
+
 export default function MediaSettingsMenuRate({ rate, onRateChange }: Props): JSX.Element {
     const { setActiveMenu } = React.useContext(Settings.Context);
 
@@ -17,16 +21,15 @@ export default function MediaSettingsMenuRate({ rate, onRateChange }: Props): JS
     return (
         <Settings.Menu name={Menu.RATE}>
             <Settings.MenuBack label={__('media_speed')} />
-            <Settings.RadioItem isSelected={rate === '0.5'} onChange={handleChange} value="0.5" />
-            <Settings.RadioItem
-                isSelected={rate === '1.0'}
-                label={__('media_speed_normal')}
-                onChange={handleChange}
-                value="1.0"
-            />
-            <Settings.RadioItem isSelected={rate === '1.25'} onChange={handleChange} value="1.25" />
-            <Settings.RadioItem isSelected={rate === '1.5'} onChange={handleChange} value="1.5" />
-            <Settings.RadioItem isSelected={rate === '2.0'} onChange={handleChange} value="2.0" />
+            {RATES.map(value => (
+                <Settings.RadioItem
+                    key={value}
+                    isSelected={rate === value}
+                    label={getLabel(value)}
+                    onChange={handleChange}
+                    value={value}
+                />
+            ))}
         </Settings.Menu>
     );
 }

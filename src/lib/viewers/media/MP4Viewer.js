@@ -151,6 +151,7 @@ class MP4Viewer extends VideoBaseViewer {
                     {...sharedProps}
                     onPlayNextChange={this.setPlayNext}
                     playNext={this.isPlayNextEnabled()}
+                    isBlueprintEnabled={this.isBlueprintMediaControlsEnabled()}
                 />,
             );
             return;
