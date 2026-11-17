@@ -228,7 +228,8 @@ function isInsideBlueprintPackage(filePath) {
 }
 
 function stripComments(source) {
-    return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^\S\n])\/\/.*$/gm, '$1');
+    // Sass allows `red;// comment` with no space. Leave `://` in urls alone.
+    return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\n])\/\/.*$/gm, '$1');
 }
 
 function blueprintPackageFromRequest(request) {
@@ -263,60 +264,88 @@ function existingFile(candidate) {
     return fs.existsSync(candidate) && fs.statSync(candidate).isFile() ? candidate : null;
 }
 
-function resolveWithExtensions(basePath, extensions) {
-    const exact = existingFile(basePath);
-
-    if (exact) {
-        return exact;
-    }
-
-    const parsed = path.parse(basePath);
-    const partialBase = path.join(parsed.dir, `_${parsed.base}`);
-    const candidates = [];
-
-    extensions.forEach(extension => {
-        candidates.push(`${basePath}${extension}`);
-        candidates.push(`${partialBase}${extension}`);
-    });
-    candidates.push(path.join(basePath, 'index.scss'), path.join(basePath, '_index.scss'));
-    SCRIPT_EXTENSIONS.forEach(extension => {
-        candidates.push(path.join(basePath, `index${extension}`));
-    });
-
-    return candidates.map(existingFile).find(Boolean) || null;
-}
-
-function resolveRequest(specifier, fromFile) {
+function requestBases(specifier, fromFile) {
     if (specifier.startsWith('.')) {
-        return resolveWithExtensions(path.resolve(path.dirname(fromFile), specifier), [
-            ...SCRIPT_EXTENSIONS,
-            ...STYLE_EXTENSIONS,
-        ]);
+        return [path.resolve(path.dirname(fromFile), specifier)];
     }
 
-    const bareBases = [
+    return [
         path.resolve(path.dirname(fromFile), specifier),
         path.resolve(SRC_ROOT, specifier),
         path.resolve(__dirname, '../node_modules', specifier),
     ];
-
-    return (
-        bareBases
-            .map(basePath => resolveWithExtensions(basePath, [...SCRIPT_EXTENSIONS, ...STYLE_EXTENSIONS]))
-            .find(Boolean) || null
-    );
 }
 
-function requestsIn(source) {
+function firstExisting(candidates) {
+    return candidates.map(existingFile).find(Boolean) || null;
+}
+
+// `@import 'common.scss'` loads `_common.scss`. Appending another extension looks for
+// `_common.scss.scss` and drops the real partial.
+function styleCandidates(basePath) {
+    const parsed = path.parse(basePath);
+
+    if (STYLE_EXTENSIONS.includes(parsed.ext)) {
+        return [basePath, path.join(parsed.dir, `_${parsed.name}${parsed.ext}`)];
+    }
+
+    const partialBase = path.join(parsed.dir, `_${parsed.base}`);
+    const candidates = [];
+
+    STYLE_EXTENSIONS.forEach(extension => {
+        candidates.push(`${basePath}${extension}`, `${partialBase}${extension}`);
+    });
+    candidates.push(
+        path.join(basePath, 'index.scss'),
+        path.join(basePath, '_index.scss'),
+        path.join(basePath, 'index.css'),
+        path.join(basePath, '_index.css'),
+    );
+
+    return candidates;
+}
+
+function scriptCandidates(basePath) {
+    const parsed = path.parse(basePath);
+    const candidates = [basePath];
+
+    SCRIPT_EXTENSIONS.forEach(extension => {
+        candidates.push(`${basePath}${extension}`, path.join(basePath, `index${extension}`));
+    });
+
+    if (STYLE_EXTENSIONS.includes(parsed.ext)) {
+        candidates.push(basePath);
+    }
+
+    return candidates;
+}
+
+function resolveRequest(specifier, fromFile, kind) {
+    const bases = requestBases(specifier, fromFile);
+
+    if (kind === 'style') {
+        return firstExisting(bases.flatMap(styleCandidates));
+    }
+
+    return firstExisting(bases.flatMap(scriptCandidates));
+}
+
+function requestsIn(filePath, source) {
     const stripped = stripComments(source);
     const requests = [];
+    const styleFile = STYLE_EXTENSIONS.some(extension => filePath.endsWith(extension));
 
-    [...stripped.matchAll(/(?:import|export)\s+(?:[^'";]*?\sfrom\s+)?['"]([^'"]+)['"]/g)].forEach(found => {
-        requests.push(found[1]);
-    });
+    if (!styleFile) {
+        [...stripped.matchAll(/(?:import|export)\s+(?:[^'";]*?\sfrom\s+)?['"]([^'"]+)['"]/g)].forEach(found => {
+            const specifier = found[1];
+            const kind = STYLE_EXTENSIONS.some(extension => specifier.endsWith(extension)) ? 'style' : 'script';
+            requests.push({ specifier, kind });
+        });
+    }
+
     [...stripped.matchAll(/@(?:import|use|forward)\b([^;]*);/g)].forEach(directive => {
         [...directive[1].matchAll(/['"]~?([^'"]+)['"]/g)].forEach(specifier => {
-            requests.push(specifier[1]);
+            requests.push({ specifier: specifier[1], kind: 'style' });
         });
     });
 
@@ -342,19 +371,26 @@ function reachableStylesheets(includePaths) {
         if (filePath && !seen.has(filePath)) {
             seen.add(filePath);
 
-            requestsIn(fs.readFileSync(filePath, 'utf8')).forEach(specifier => {
-                const resolved = resolveRequest(specifier, filePath);
+            const styleFile = STYLE_EXTENSIONS.some(extension => filePath.endsWith(extension));
 
-                if (!resolved || seen.has(resolved)) {
+            requestsIn(filePath, fs.readFileSync(filePath, 'utf8')).forEach(({ specifier, kind }) => {
+                const resolved = resolveRequest(specifier, filePath, kind);
+
+                if (!resolved || seen.has(resolved) || isInsideBlueprintPackage(resolved)) {
                     return;
                 }
 
                 if (STYLE_EXTENSIONS.some(extension => resolved.endsWith(extension))) {
-                    if (includePaths.some(includePath => isInsideRoot(resolved, includePath))) {
+                    // Webpack only starts compiling a stylesheet inside an include path.
+                    // Sass then inlines every file that stylesheet imports, including files
+                    // outside those paths.
+                    const compiled = styleFile || includePaths.some(includePath => isInsideRoot(resolved, includePath));
+
+                    if (compiled) {
                         styles.add(resolved);
+                        queue.push(resolved);
                     }
 
-                    queue.push(resolved);
                     return;
                 }
 
