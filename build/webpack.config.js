@@ -35,18 +35,15 @@ const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
 const pdfjsImages = path.resolve('node_modules/pdfjs-dist/legacy/web/images');
 const staticFolder = path.resolve('dist');
 
-// BUILD_LOCALE selects one production locale so a caller can compile that
-// locale in its own Node process. Not LANGUAGE: that is the gettext locale
-// variable, and CI images set it to values like en_US.UTF-8.
+// BUILD_LOCALE selects one locale so a caller can compile that locale in its
+// own Node process, including a dev server run that checks another language.
+// Not LANGUAGE: that is the gettext locale variable, and CI images set it to
+// values like en_US.UTF-8. Dev and CI stay on en-US unless BUILD_LOCALE is set.
 function resolveLanguages() {
-    if (!isProd) {
-        return ['en-US']; // Only 1 language needed for dev
-    }
-
     const requested = process.env.BUILD_LOCALE;
 
     if (!requested) {
-        return locales;
+        return isProd ? locales : ['en-US'];
     }
 
     if (!locales.includes(requested)) {
