@@ -1,6 +1,7 @@
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import BlueprintProviders from '../../../BlueprintProviders';
 import { GALLERY_THUMB_MAX_WIDTH, GALLERY_THUMB_WIDTH_TIERS } from '../constants';
 import GalleryGrid from '../GalleryGrid';
 
@@ -45,6 +46,16 @@ describe('GalleryGrid', () => {
             const grid = screen.getByRole('listbox');
             expect(grid).toHaveClass('bp-gallery-grid');
             expect(grid).toHaveAttribute('aria-label', 'Page gallery');
+        });
+
+        test('should not apply the Blueprint styles when isBlueprintEnabled is false', () => {
+            getWrapper();
+            expect(screen.getByRole('listbox')).not.toHaveClass('bp-GalleryGridV2');
+        });
+
+        test('should apply the Blueprint styles when isBlueprintEnabled is true', () => {
+            render(<GalleryGrid {...defaultProps} isBlueprintEnabled />, { wrapper: BlueprintProviders });
+            expect(screen.getByRole('listbox')).toHaveClass('bp-gallery-grid', 'bp-GalleryGridV2');
         });
 
         test('should render an option for each page', () => {
@@ -96,6 +107,24 @@ describe('GalleryGrid', () => {
                 const badge = tile.querySelector('.bp-gallery-tile-badge');
                 expect(badge).toBeInTheDocument();
                 expect(badge).toHaveAttribute('aria-hidden', 'true');
+            });
+        });
+
+        test('should render the badge page number as plain text when isBlueprintEnabled is false', () => {
+            getWrapper();
+            const badge = screen.getByLabelText('Page 3').querySelector('.bp-gallery-tile-badge');
+            expect(badge).toHaveTextContent('3');
+            expect(badge).not.toHaveClass('bp-gallery-tile-badge--blueprint');
+            expect(badge?.querySelector('[data-typography]')).not.toBeInTheDocument();
+        });
+
+        test('should render the badge page number as Blueprint text when isBlueprintEnabled is true', () => {
+            render(<GalleryGrid {...defaultProps} isBlueprintEnabled />, { wrapper: BlueprintProviders });
+            screen.getAllByRole('option').forEach((tile, index) => {
+                const badge = tile.querySelector('.bp-gallery-tile-badge');
+                expect(badge).toHaveAttribute('aria-hidden', 'true');
+                expect(badge).toHaveClass('bp-gallery-tile-badge--blueprint');
+                expect(badge?.querySelector('[data-typography]')).toHaveTextContent(String(index + 1));
             });
         });
 
@@ -419,7 +448,7 @@ describe('GalleryGrid', () => {
                 expect(event.defaultPrevented).toBe(true);
 
                 act(() => rafCallback!(0));
-                expect(onScaleChange).toHaveBeenCalledWith(1.2);
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
 
                 const pinchTile = screen.getByLabelText('Page 5');
                 document.elementFromPoint = jest.fn().mockReturnValue(pinchTile);
@@ -434,6 +463,19 @@ describe('GalleryGrid', () => {
                 expect(document.elementFromPoint).toHaveBeenCalledWith(300, 200);
                 expect(grid.scrollLeft).toBe(60);
                 expect(grid.scrollTop).toBe(80);
+            });
+
+            test('should step a ctrl+wheel mouse notch by 10%', () => {
+                const onScaleChange = jest.fn();
+                getWrapper({ isPinchZoomEnabled: true, onScaleChange });
+                const grid = screen.getByRole('listbox');
+
+                act(() => {
+                    grid.dispatchEvent(wheelEvent({ ctrlKey: true, deltaY: -100 }));
+                });
+                act(() => rafCallback!(0));
+
+                expect(onScaleChange).toHaveBeenCalledWith(1.1);
             });
 
             test('should clear the pinch focal point when the scale change is rejected', () => {

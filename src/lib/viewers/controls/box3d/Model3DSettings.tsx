@@ -31,12 +31,12 @@ export type Props = Pick<SettingsProps, 'onClose' | 'onOpen'> & {
     showWireframes: boolean;
 };
 
-const cameraProjectionOptions = [
+export const getCameraProjectionOptions = (): Array<{ label: string; value: CameraProjection }> => [
     { label: __('box3d_camera_projection_perspective'), value: CameraProjection.PERSPECTIVE },
     { label: __('box3d_camera_projection_orthographic'), value: CameraProjection.ORTHOGRAPHIC },
 ];
 
-const renderModeOptions = [
+export const getRenderModeOptions = (): Array<{ label: string; value: RenderMode }> => [
     { label: __('box3d_render_mode_lit'), value: RenderMode.LIT },
     { label: __('box3d_render_mode_unlit'), value: RenderMode.UNLIT },
     { label: __('box3d_render_mode_normals'), value: RenderMode.NORMALS },
@@ -64,7 +64,7 @@ export default function Model3DSettings({
             <Settings.Menu className="bp-Model3DSettings-menu" name={Menu.MAIN}>
                 <Settings.Dropdown<RenderMode>
                     label={__('box3d_settings_render_label')}
-                    listItems={renderModeOptions}
+                    listItems={getRenderModeOptions()}
                     onSelect={onRenderModeChange}
                     value={renderMode}
                 />
@@ -85,7 +85,7 @@ export default function Model3DSettings({
                 />
                 <Settings.Dropdown<CameraProjection>
                     label={__('box3d_settings_projection_label')}
-                    listItems={cameraProjectionOptions}
+                    listItems={getCameraProjectionOptions()}
                     onSelect={onCameraProjectionChange}
                     value={cameraProjection}
                 />

@@ -1,17 +1,23 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+import { flushSync } from 'react-dom';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import ControlsRoot from '../controls/controls-root';
 import DocControls from './DocControls';
 import DocControlsV2 from './DocControlsV2';
 import DocFindBar from './DocFindBar';
+import { DocFindBarV2Root } from './DocFindBarV2';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
+import { isNpmBuild } from '../../isNpmBuild';
+import limitMarkedContentNesting from './limitMarkedContentNesting';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
+import RepStatus from '../../RepStatus';
 import ThumbnailsSidebar from '../../ThumbnailsSidebar';
+import ThumbnailsSidebarV2 from '../../ThumbnailsSidebarV2';
 import Thumbnail from '../../Thumbnail';
 
 import { AnnotationInput, AnnotationMode, AnnotationState } from '../../AnnotationControlsFSM';
@@ -19,6 +25,7 @@ import {
     ANNOTATOR_VIEW_MODES,
     ANNOTATOR_EVENT,
     BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
     CLASS_ANNOTATIONS_DOCUMENT_FTUX_CURSOR_SEEN,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE_ACTIVE,
     CLASS_BOX_PREVIEW_THUMBNAILS_CLOSE,
@@ -30,9 +37,12 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
+    ORIGINAL_REP_NAME,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
+    STATUS_ERROR,
+    STATUS_SUCCESS,
 } from '../../constants';
 import {
     createAssetUrlCreator,
@@ -42,7 +52,9 @@ import {
     getMidpoint,
     getPreloadImageRequestPromises,
     getPreloadImageRequestPromisesByBatch,
+    getProp,
 } from '../../util';
+import { getWheelZoomScaleDelta } from '../../wheelZoom';
 import { checkPermission, getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { CMAP, CSS, EXIF, IMAGES, JS, PRELOAD_JS, EXIF_READER, WORKER, JS_NO_EXIF } from './docAssets';
@@ -83,6 +95,9 @@ const METRICS_WHITELIST = [
     USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE,
     USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN,
 ];
+// npm pdf.js draws its sharp detail canvas over zoomed pages only when maxCanvasPixels is positive
+const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25; // pdf.js desktop default
+const LEGACY_PDFJS_MAX_CANVAS_SIZE = -1; // Unlimited
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
 const PDFJS_TEXT_LAYER_MODE = {
@@ -93,7 +108,6 @@ const PDFJS_TEXT_LAYER_MODE = {
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
 const WHEEL_ZOOM_MAX_SCALE = 5.0;
-const WHEEL_ZOOM_SCALE_FACTOR = 0.01;
 
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const RANGE_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -107,16 +121,26 @@ const THUMBNAILS_SIDEBAR_TOGGLED_MAP_KEY = 'doc-thumbnails-toggled-map';
 const MAX_OPERATIONS = 320000; // Block PDFs with more than 320,000 drawing operations
 const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
 const MAX_OPERATIONS_ERROR_MESSAGE = 'Too many drawing operations';
+const EXTENSIONS_WITH_OPERATION_LIMIT = ['dwg', 'numbers', 'xlsx'];
 
-export function countPdfOperations(doc, maxPages = MAX_OPERATION_PAGES) {
-    const numPages = Math.min(doc.numPages, maxPages);
-    const opPromises = [];
-    for (let i = 1; i <= numPages; i += 1) {
-        opPromises.push(doc.getPage(i).then(page => page.getOperatorList().then(opList => opList.fnArray.length)));
-    }
-    return Promise.all(opPromises).then(opCounts => {
-        return opCounts.reduce((sum, count) => sum + count, 0);
-    });
+/** Resolves true when the first maxPages pages exceed operationLimit drawing operations. */
+export function checkPdfOperationLimit(doc, maxPages = MAX_OPERATION_PAGES, operationLimit = MAX_OPERATIONS) {
+    const pageNumbers = Array.from({ length: Math.min(doc.numPages, maxPages) }, (_, index) => index + 1);
+
+    return pageNumbers
+        .reduce(
+            (totalPromise, pageNumber) =>
+                totalPromise.then(total =>
+                    total > operationLimit
+                        ? total
+                        : doc
+                              .getPage(pageNumber)
+                              .then(page => page.getOperatorList())
+                              .then(({ fnArray }) => total + fnArray.length),
+                ),
+            Promise.resolve(0),
+        )
+        .then(total => total > operationLimit);
 }
 
 class DocBaseViewer extends BaseViewer {
@@ -249,9 +273,19 @@ class DocBaseViewer extends BaseViewer {
             getThumbnailsSidebar: () => this.thumbnailsSidebar,
             setPage: n => this.setPage(n),
             toggleThumbnails: () => this.toggleThumbnails(),
-            requestUiUpdate: () => this.renderUI(),
+            requestUiUpdate: () => {
+                // The v2 bar moves the gallery toggle between the bar and its overflow menu, so the bar must be
+                // committed before focusToggle looks the toggle up
+                if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+                    flushSync(() => this.renderUI());
+                } else {
+                    this.renderUI();
+                }
+            },
             focusToggle: () => {
-                const toggle = this.containerEl.querySelector('.bp-GalleryToggle');
+                const toggle = this.containerEl.querySelector(
+                    '.bp-GalleryToggle, [data-bp-gallery-toggle], [data-overflow-ids~="gallery"]',
+                );
                 if (toggle && toggle.focus) {
                     toggle.focus();
                 }
@@ -504,8 +538,8 @@ class DocBaseViewer extends BaseViewer {
         const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
-            if (this.featureEnabled('useNpmPdfjs')) {
-                this.prefetchAssets(EXIF_READER, CSS);
+            if (this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
+                this.prefetchAssets(EXIF_READER, []);
             } else {
                 const ASSETS = this.featureEnabled(DOC_FIRST_PAGES_ENABLED) ? [...JS_NO_EXIF, ...EXIF_READER] : JS;
                 this.prefetchAssets(ASSETS, CSS);
@@ -545,7 +579,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadViewerAssets({ isUseNpmPdfjsEnabled = false } = {}) {
-        if (isUseNpmPdfjsEnabled) {
+        if (isUseNpmPdfjsEnabled || this.featureEnabled('useNpmPdfjs') || isNpmBuild()) {
             this.loadAssets(EXIF_READER, []);
             // Kick off the dynamic imports so the pdfjs chunks land in cache
             // before per-file load() awaits them. Errors are swallowed; load()
@@ -684,6 +718,102 @@ class DocBaseViewer extends BaseViewer {
         this.initPrint();
 
         super.handleAssetAndRepLoad();
+    }
+
+    /**
+     * Handles asset/representation load errors. The searchable 'ocr_pdf' rep is generated on demand and
+     * can legitimately fail to load (a conversion error, or a backend that does not support it for the
+     * file). Rather than hard-erroring, fall back once to a renderable rep so the document still opens -
+     * just without the OCR text layer.
+     *
+     * load() resolves a single Promise.all over the static assets, the npm pdf.js chunk import and the
+     * representation status, so only scope the fallback to a genuine 'ocr_pdf' representation failure -
+     * a failed asset/chunk import is unrelated to the rep and must not silently downgrade it. RepStatus
+     * rejections carry the failed representation in details.representation.
+     *
+     * @override
+     * @param {Error} err - Load error
+     * @return {void}
+     */
+    handleAssetError(err) {
+        const isOcrRepError = getProp(err, 'details.representation.representation') === 'ocr_pdf';
+
+        if (isOcrRepError && this.attemptRepFallback()) {
+            return;
+        }
+
+        super.handleAssetError(err);
+    }
+
+    /**
+     * Handles content download errors. pdf.js can reject the 'ocr_pdf' content url even after its status
+     * reported success (e.g. the on-demand asset 404s), which lands here rather than in handleAssetError.
+     * Prefer the renderable fallback rep over retrying the same 'ocr_pdf' url; delegate to the base
+     * reachability retry when no fallback applies (e.g. the current rep is not 'ocr_pdf').
+     *
+     * @override
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - Download URL
+     * @return {void}
+     */
+    handleDownloadError(err, downloadURL) {
+        if (this.attemptRepFallback()) {
+            return;
+        }
+
+        super.handleDownloadError(err, downloadURL);
+    }
+
+    /**
+     * Switches to a renderable fallback representation, at most once per viewer, and kicks off a reload.
+     * getRepFallback only returns a representation when the current rep is 'ocr_pdf', so this is a no-op
+     * for any other representation.
+     *
+     * @return {boolean} Whether a fallback representation was applied (and a reload started)
+     */
+    attemptRepFallback() {
+        if (this.hasAttemptedRepFallback) {
+            return false;
+        }
+
+        const fallbackRepresentation = this.getRepFallback();
+        if (!fallbackRepresentation) {
+            return false;
+        }
+
+        this.hasAttemptedRepFallback = true;
+        this.options.representation = fallbackRepresentation;
+        this.load();
+        return true;
+    }
+
+    /**
+     * Picks the representation to fall back to from the on-demand 'ocr_pdf' rep, preferring the optimized
+     * 'pdf' rep when it is ready.
+     * Returns null when no fallback applies (the current rep is not 'ocr_pdf', or none is available).
+     *
+     * @return {Object|null} The fallback representation, or null
+     */
+    getRepFallback() {
+        const { file, representation } = this.options;
+
+        if (!representation || representation.representation !== 'ocr_pdf') {
+            return null;
+        }
+
+        const pdfRep = getRepresentation(file, 'pdf');
+        if (pdfRep && RepStatus.getStatus(pdfRep) === STATUS_SUCCESS) {
+            return pdfRep;
+        }
+
+        // pdf.js can only render the original bytes directly when the file itself is a PDF. For other
+        // document types the original is e.g. a raw .docx, so keep awaiting the on-demand 'pdf' conversion
+        // (unless it has already errored) rather than handing an unrenderable original to pdf.js.
+        if (file.extension === 'pdf') {
+            return getRepresentation(file, ORIGINAL_REP_NAME);
+        }
+
+        return pdfRep && RepStatus.getStatus(pdfRep) !== STATUS_ERROR ? pdfRep : null;
     }
 
     handleFindBarClose() {
@@ -968,6 +1098,26 @@ class DocBaseViewer extends BaseViewer {
             case ']':
                 this.nextPage();
                 break;
+            case 'r':
+            case 'R':
+                // The rotate control is hidden while the gallery is open, so the key follows it.
+                // These bare keys belong to the v2 controls bar; the older bar has no such shortcuts.
+                if (
+                    this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) &&
+                    !event?.altKey &&
+                    !this.galleryController?.isOpen &&
+                    this.featureEnabled('rotate.enabled')
+                ) {
+                    this.rotateLeft();
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
+            case 'f':
+            case 'F':
+                if (this.handleFullscreenKey(key, event)) {
+                    break;
+                }
+                return this.findBar ? this.findBar.onKeydown(event) : false;
             default:
                 if (this.findBar) {
                     return this.findBar.onKeydown(event);
@@ -1056,7 +1206,8 @@ class DocBaseViewer extends BaseViewer {
         const disableStream = this.getViewerOption('disableStream') !== false;
 
         // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
-        const cMapUrl = this.featureEnabled('useNpmPdfjs') ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        const cMapUrl = useNpmPdfjs ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
         const pdfDocConfig = {
             cMapPacked: true,
             cMapUrl,
@@ -1064,10 +1215,17 @@ class DocBaseViewer extends BaseViewer {
             disableFontFace,
             disableRange,
             disableStream,
-            isEvalSupported: false,
             rangeChunkSize,
             url: pdfUrl,
         };
+
+        if (useNpmPdfjs) {
+            pdfDocConfig.iccUrl = assetUrlCreator('iccs/');
+            pdfDocConfig.standardFontDataUrl = assetUrlCreator('standard_fonts/');
+            pdfDocConfig.wasmUrl = assetUrlCreator('wasm/');
+        } else {
+            pdfDocConfig.isEvalSupported = false;
+        }
 
         pdfDocConfig.httpHeaders = this.appendAuthHeader();
 
@@ -1084,10 +1242,9 @@ class DocBaseViewer extends BaseViewer {
                     return null;
                 }
 
-                // Only check operations for .numbers and .xlsx files
-                if (file.extension === 'numbers' || file.extension === 'xlsx') {
-                    return countPdfOperations(doc, MAX_OPERATION_PAGES).then(opCount => {
-                        if (opCount > MAX_OPERATIONS) {
+                if (EXTENSIONS_WITH_OPERATION_LIMIT.includes(file.extension)) {
+                    return checkPdfOperationLimit(doc).then(hasTooManyOperations => {
+                        if (hasTooManyOperations) {
                             throw new Error(MAX_OPERATIONS_ERROR_MESSAGE);
                         }
                         return doc;
@@ -1100,6 +1257,7 @@ class DocBaseViewer extends BaseViewer {
                     return;
                 }
 
+                limitMarkedContentNesting(doc);
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
                 if (this.shouldThumbnailsBeToggled()) {
@@ -1119,16 +1277,25 @@ class DocBaseViewer extends BaseViewer {
 
                 // pdf.js gives us the status code in their error message
                 const { status, message } = err;
-                const isTooManyOps = message === MAX_OPERATIONS_ERROR_MESSAGE;
+
+                if (message === MAX_OPERATIONS_ERROR_MESSAGE) {
+                    if (this.attemptRepFallback()) {
+                        return;
+                    }
+
+                    this.triggerError(
+                        new PreviewError(
+                            ERROR_CODE.VIEWER_TOO_MANY_OPERATIONS,
+                            __('error_too_many_operations'),
+                            {},
+                            message,
+                        ),
+                    );
+                    return;
+                }
 
                 let error;
-                if (isTooManyOps) {
-                    error = new PreviewError(
-                        ERROR_CODE.VIEWER_TOO_MANY_OPERATIONS,
-                        __('error_too_many_operations'),
-                        message,
-                    );
-                } else if (status === 202) {
+                if (status === 202) {
                     error = new PreviewError(
                         ERROR_CODE.DELETED_REPS,
                         __('error_refresh'),
@@ -1179,12 +1346,21 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             eventBus: this.pdfEventBus,
             findController: this.pdfFindController,
-            imageResourcesPath: assetUrlCreator(IMAGES),
+            imageResourcesPath: this.featureEnabled('useNpmPdfjs')
+                ? assetUrlCreator('pdfjs-images/')
+                : assetUrlCreator(IMAGES),
             linkService: this.pdfLinkService,
-            maxCanvasPixels: this.isMobile ? MOBILE_MAX_CANVAS_SIZE : -1,
+            maxCanvasPixels: this.getMaxCanvasPixels(),
             renderInteractiveForms: false, // Enabling prevents unverified signatures from being displayed
             textLayerMode: hasTextLayer ? enabledTextLayerMode : PDFJS_TEXT_LAYER_MODE.DISABLE,
         });
+    }
+
+    getMaxCanvasPixels() {
+        if (this.isMobile) {
+            return MOBILE_MAX_CANVAS_SIZE;
+        }
+        return this.featureEnabled('useNpmPdfjs') ? NPM_PDFJS_MAX_CANVAS_SIZE : LEGACY_PDFJS_MAX_CANVAS_SIZE;
     }
 
     /**
@@ -1201,7 +1377,8 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        this.findBar = new DocFindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
+        const FindBar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI) ? DocFindBarV2Root : DocFindBar;
+        this.findBar = new FindBar(this.containerEl, this.pdfFindController, this.pdfEventBus);
         this.findBar.addListener(VIEWER_EVENT.metric, this.emitMetric);
         this.findBar.addListener('close', this.handleFindBarClose);
     }
@@ -1338,9 +1515,9 @@ class DocBaseViewer extends BaseViewer {
     async loadPdfjsFromNpm() {
         // pdf_viewer.mjs reads globalThis.pdfjsLib at evaluation time, which is set as a
         // side effect of evaluating pdf.min.mjs. Load pdf.min.mjs first, then pdf_viewer.mjs.
-        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/build/pdf.min.mjs');
-        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/web/pdf_viewer.mjs');
-        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/web/pdf_viewer.css');
+        this.pdfjsLib = await import(/* webpackChunkName: "pdfjs-lib" */ 'pdfjs-dist/legacy/build/pdf.min.mjs');
+        this.pdfjsViewer = await import(/* webpackChunkName: "pdfjs-viewer" */ 'pdfjs-dist/legacy/web/pdf_viewer.mjs');
+        await import(/* webpackChunkName: "pdfjs-viewer-css" */ 'pdfjs-dist/legacy/web/pdf_viewer.css');
     }
 
     /**
@@ -1525,6 +1702,7 @@ class DocBaseViewer extends BaseViewer {
                 annotationColor={this.annotationModule.getColor()}
                 annotationMode={this.annotationControlsFSM.getMode()}
                 experiences={this.experiences}
+                hasAnnotationsOnlyControls={this.hasAnnotationsOnlyControls()}
                 hasDrawing={canAnnotate && showAnnotationsDrawingCreate && isAnnotationsMode}
                 hasGalleryZoom={this.galleryController.isEnhancedGalleryEnabled}
                 hasHighlight={canAnnotate && canDownload && isAnnotationsMode}
@@ -1661,7 +1839,10 @@ class DocBaseViewer extends BaseViewer {
         // if the preloader has initialized the thumbnails sidebar don't reinitialize it when the pdf loads
         // we only need one thumbnail sidebar for both the preloader and the pdfViewer
         if (!this.thumbnailsSidebar) {
-            this.thumbnailsSidebar = new ThumbnailsSidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
+            const Sidebar = this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)
+                ? ThumbnailsSidebarV2
+                : ThumbnailsSidebar;
+            this.thumbnailsSidebar = new Sidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
 
             this.thumbnailsSidebar.init({
                 currentPage: this.pdfViewer?.currentPageNumber,
@@ -2002,7 +2183,7 @@ class DocBaseViewer extends BaseViewer {
         event.preventDefault();
 
         const { currentScale } = this.pdfViewer;
-        const scaleDelta = -event.deltaY * WHEEL_ZOOM_SCALE_FACTOR;
+        const scaleDelta = getWheelZoomScaleDelta(event);
         const newScale = Math.min(WHEEL_ZOOM_MAX_SCALE, Math.max(MIN_SCALE, currentScale + scaleDelta));
 
         if (newScale === currentScale) {
@@ -2143,6 +2324,10 @@ class DocBaseViewer extends BaseViewer {
         const { pagesCount } = this.pdfViewer;
 
         this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
+
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)) {
+            this.renderUI();
+        }
 
         let metricName;
         let eventName;

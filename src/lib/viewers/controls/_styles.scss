@@ -1,10 +1,9 @@
-@import '~box-ui-elements/es/styles/constants/colors';
-@import '~box-ui-elements/es/styles/deprecated';
+@import '../../boxuiVariables';
 
 $bp-controls-background: fade-out($black, 0.2);
 $bp-controls-opacity: 0.9;
 $bp-controls-outline:
-    inset 0 0 0 1px fade-out($bdl-gray-20, 0.5),
+    inset 0 0 0 1px color-mix(in srgb, var(--bp-gray-20) 50%, transparent),
     0 1px 2px fade-out($black, 0.9);
 $bp-controls-radius-inner: 54px;
 $bp-controls-radius-outer: 46px;

@@ -567,6 +567,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
             expect(getProps(mp3).onCommentRangeDragCreate).toBeUndefined();
         });
 
+        test('should pass isBlueprintEnabled when the media Blueprint flag is on', () => {
+            mp3.isAudioPlayerV2 = true;
+            mp3.MP3ControlsV2 = MP3ControlsV2;
+            jest.spyOn(mp3, 'featureEnabled').mockImplementation(
+                feature => feature === 'blueprintMigrationMediaControls.enabled',
+            );
+            mp3.renderUI();
+            expect(getProps(mp3).isBlueprintEnabled).toBe(true);
+        });
+
         test('should pass Comment controls when the file allows commenting', () => {
             mp3.isAudioPlayerV2 = true;
             mp3.MP3ControlsV2 = MP3ControlsV2;

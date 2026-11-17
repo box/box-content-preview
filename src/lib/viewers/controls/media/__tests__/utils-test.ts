@@ -1,4 +1,5 @@
-import { round, percent } from '../utils';
+import React from 'react';
+import { round, percent, stopActivationKeyPropagation, stopMenuTriggerKeyPropagation } from '../utils';
 
 describe('utils', () => {
     describe('round', () => {
@@ -30,6 +31,40 @@ describe('utils', () => {
 
         test('should return 0 for zero numerator', () => {
             expect(percent(0, 60)).toBe(0);
+        });
+    });
+
+    describe('stopActivationKeyPropagation', () => {
+        const createEvent = (key: string) =>
+            ({ key, stopPropagation: jest.fn() }) as unknown as React.KeyboardEvent & { stopPropagation: jest.Mock };
+
+        test.each(['Enter', ' '])('should stop propagation for %p', key => {
+            const event = createEvent(key);
+            stopActivationKeyPropagation(event);
+            expect(event.stopPropagation).toHaveBeenCalled();
+        });
+
+        test('should let other keys bubble', () => {
+            const event = createEvent('ArrowLeft');
+            stopActivationKeyPropagation(event);
+            expect(event.stopPropagation).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('stopMenuTriggerKeyPropagation', () => {
+        const createEvent = (key: string) =>
+            ({ key, stopPropagation: jest.fn() }) as unknown as React.KeyboardEvent & { stopPropagation: jest.Mock };
+
+        test.each(['ArrowDown', 'ArrowUp', 'Enter', ' '])('should stop propagation for %p', key => {
+            const event = createEvent(key);
+            stopMenuTriggerKeyPropagation(event);
+            expect(event.stopPropagation).toHaveBeenCalled();
+        });
+
+        test.each(['ArrowLeft', 'ArrowRight', 'm'])('should let %p bubble', key => {
+            const event = createEvent(key);
+            stopMenuTriggerKeyPropagation(event);
+            expect(event.stopPropagation).not.toHaveBeenCalled();
         });
     });
 });

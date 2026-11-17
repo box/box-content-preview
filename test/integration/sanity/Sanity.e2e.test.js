@@ -7,10 +7,11 @@ describe('Preview Sanity', () => {
         cy.visit('/');
     });
 
-    it('Should load a document preview', () => {
-        cy.showPreview(token, fileId);
+    it('Should load a document preview with the download button', () => {
+        cy.showPreview(token, fileId, { showDownload: true });
         cy.getPreviewPage(1);
         cy.contains('The Content Platform for Your Apps');
+        cy.getByTestId('download-preview').should('be.visible');
     });
 
     it('Should reload without server update', () => {

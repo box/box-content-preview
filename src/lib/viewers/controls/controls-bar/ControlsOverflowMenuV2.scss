@@ -1,0 +1,4 @@
+.bp-ControlsOverflowMenuV2 {
+    // The mocks keep the menu at least this wide, wider than its shortest rows.
+    --blueprint-web-dropdown-content-min-width: 184px;
+}

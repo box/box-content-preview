@@ -37,3 +37,17 @@
 .bp-VolumeControls-toggle {
     @include bp-MediaButton;
 }
+
+// The Blueprint mute button is wider than the legacy toggle, so the flyout spans the button and centers the slider.
+.bp-VolumeControls--blueprint {
+    .bp-VolumeControls-flyout {
+        right: 0;
+        left: 0;
+        max-width: none;
+    }
+
+    .bp-VolumeControls-slider {
+        margin-right: auto;
+        margin-left: auto;
+    }
+}

@@ -1,0 +1,12 @@
+.bp-SearchBarV2 {
+    display: flex;
+    flex: 0 0 70px;
+    align-items: center;
+    padding: 0 var(--bp-space-050);
+    border-bottom: var(--bp-border-01) solid var(--bp-border-divider-border);
+    background: var(--bp-surface-surface-secondary);
+
+    > * {
+        width: 100%;
+    }
+}

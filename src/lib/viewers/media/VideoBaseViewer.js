@@ -1,3 +1,5 @@
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import noop from 'lodash/noop';
 import throttle from 'lodash/throttle';
 import {
@@ -16,7 +18,10 @@ import fullscreen from '../../Fullscreen';
 import { VIEWER_EVENT } from '../../events';
 import { AnnotationInput, AnnotationState } from '../../AnnotationControlsFSM';
 import { ICON_PLAY_LARGE, ICON_FORWARD, ICON_BACKWARD } from '../../icons';
+import BlueprintProviders from '../../BlueprintProviders';
 import ControlsRoot from '../controls';
+import MediaLoadingIndicator from '../controls/media/MediaLoadingIndicator';
+import VideoPlaySeekOverlay from '../controls/media/VideoPlaySeekOverlay';
 import MediaBaseViewer from './MediaBaseViewer';
 import VideoPreloader from './VideoPreloader';
 import fitFrameToViewport from './fitFrameToViewport';
@@ -27,8 +32,9 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 const CLASS_PLAY_CONTAINER = 'bp-media-overlay-play-container';
 const CLASS_PLAY_CONTAINER_PLAY_BUTTON = 'bp-media-overlay-play-button';
 const CLASS_SEEK_BUTTON = 'bp-media-overlay-seek-button';
+const CLASS_PLAY_SEEK_OVERLAY = 'bp-VideoPlaySeekOverlay';
 const SMALL_VIDEO_WIDTH_THRESHOLD = 580;
-const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (defined in _mediaBase.scss)
+const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (_mediaBase.scss and MediaLoadingIndicator.scss)
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
 
 export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
@@ -115,11 +121,20 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         // Buffering spinner
         this.bufferingSpinnerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
-        this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
         this.bufferingSpinnerEl.classList.add(CLASS_HIDDEN);
-        if (this.useReactControls() && !this.isVideoPlayerV2) {
-            // Shift up by half the control bar + half the spinner to visually center above the controls
-            this.bufferingSpinnerEl.style.marginTop = `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`;
+        // Shift up by half the control bar + half the spinner to visually center above the controls
+        const spinnerMarginTop =
+            this.useReactControls() && !this.isVideoControlsV2Enabled()
+                ? `-${VIDEO_PLAYER_CONTROL_BAR_HEIGHT / 2 + SPINNER_HALF_SIZE}px`
+                : undefined;
+        if (this.isBlueprintMediaControlsEnabled()) {
+            this.bufferingSpinnerRoot = createRoot(this.bufferingSpinnerEl);
+            this.bufferingSpinnerRoot.render(<MediaLoadingIndicator style={{ marginTop: spinnerMarginTop }} />);
+        } else {
+            this.bufferingSpinnerEl.classList.add('bp-media-buffering-spinner');
+            if (spinnerMarginTop) {
+                this.bufferingSpinnerEl.style.marginTop = spinnerMarginTop;
+            }
         }
 
         this.lowerLights();
@@ -132,6 +147,16 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     supportsVideoPlayerV2() {
         return true;
+    }
+
+    /**
+     * Whether to render the V2 React controls. Separate from the V2 layout so a viewer
+     * can keep its own stage and still use the V2 controls.
+     *
+     * @return {boolean} true when the V2 controls should render
+     */
+    isVideoControlsV2Enabled() {
+        return this.isVideoPlayerV2;
     }
 
     /**
@@ -214,7 +239,9 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         const { url_template: template } = preloadRep.content;
         const options = {
+            isBlueprintEnabled: this.isBlueprintMediaControlsEnabled(),
             onImageClick: () => this.handlePlayRequest(),
+            portalContainer: this.containerEl,
         };
         if (this.isVideoPosterEarlyPaint) {
             // Resolve viewport at paint time so sidebar/layout changes after showPreload
@@ -288,6 +315,11 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     buildPlayButtonWithSeekButtons() {
+        if (this.isBlueprintMediaControlsEnabled()) {
+            this.buildBlueprintPlaySeekOverlay();
+            return;
+        }
+
         this.playContainerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.playContainerEl.classList.add(CLASS_PLAY_CONTAINER);
         this.playContainerEl.classList.add(CLASS_HIDDEN);
@@ -318,7 +350,40 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
     }
 
+    /**
+     * Renders the narrow-video play/seek cluster with Blueprint buttons. The container stays on
+     * playContainerEl so the shared show/hide and narrow-width logic treats both versions the same.
+     *
+     * @private
+     * @return {void}
+     */
+    buildBlueprintPlaySeekOverlay() {
+        this.playContainerEl = this.mediaContainerEl.appendChild(document.createElement('div'));
+        this.playContainerEl.classList.add(CLASS_PLAY_SEEK_OVERLAY);
+        this.playContainerEl.classList.add(CLASS_HIDDEN);
+
+        const handlePlay = () => {
+            // The cluster hides once playback starts; keep focus in the player so Space still reaches it.
+            if (this.playContainerEl?.contains(document.activeElement)) {
+                this.mediaContainerEl.focus();
+            }
+            this.handlePlayRequest();
+        };
+
+        this.playSeekOverlayRoot = createRoot(this.playContainerEl);
+        this.playSeekOverlayRoot.render(
+            <BlueprintProviders container={this.containerEl}>
+                <VideoPlaySeekOverlay movePlayback={this.movePlayback} onPlay={handlePlay} />
+            </BlueprintProviders>,
+        );
+    }
+
     removePlayButtonWithSeekButtons() {
+        if (this.playSeekOverlayRoot) {
+            this.playSeekOverlayRoot.unmount();
+            this.playSeekOverlayRoot = undefined;
+        }
+
         if (this.playContainerEl) {
             if (this.seekForwardButtonEl) {
                 this.seekForwardButtonEl.removeEventListener('click', () => this.movePlayback(true, 5));
@@ -375,6 +440,15 @@ class VideoBaseViewer extends MediaBaseViewer {
             this.seekBackwardButtonEl.removeEventListener('click', () => this.movePlayback(false, 5));
         }
 
+        if (this.playSeekOverlayRoot) {
+            this.playSeekOverlayRoot.unmount();
+            this.playSeekOverlayRoot = undefined;
+        }
+
+        if (this.bufferingSpinnerRoot) {
+            this.bufferingSpinnerRoot.unmount();
+            this.bufferingSpinnerRoot = undefined;
+        }
         this.bufferingSpinnerEl = null;
 
         super.destroy();
@@ -439,9 +513,9 @@ class VideoBaseViewer extends MediaBaseViewer {
     loadUIReact() {
         super.loadUIReact();
 
-        // For the V2 player, mount the controls on the wrapper (above the media container)
+        // For the V2 controls, mount on the wrapper (above the media container)
         // so their width is constrained by the viewport rather than the video
-        const controlsContainerEl = this.isVideoPlayerV2 ? this.wrapperEl : this.mediaContainerEl;
+        const controlsContainerEl = this.isVideoControlsV2Enabled() ? this.wrapperEl : this.mediaContainerEl;
 
         this.controls = new ControlsRoot({
             className: 'bp-VideoControlsRoot',
@@ -575,10 +649,34 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
-     * @inheritdoc
+     * Shows the player's buffering indicator in place of the page-level crawler when Blueprint media
+     * controls are on, so quality and track switches use the same loading state as buffering.
+     *
+     * @override
+     * @return {void}
      */
     showLoadingIcon() {
-        super.showLoadingIcon();
+        if (!this.isBlueprintMediaControlsEnabled()) {
+            super.showLoadingIcon();
+            return;
+        }
+
+        if (this.containerEl && this.mediaEl && !this.mediaEl.paused && !this.mediaEl.ended) {
+            this.showBufferingSpinner();
+            this.hidePlayButton();
+        }
+    }
+
+    /**
+     * @override
+     * @return {void}
+     */
+    hideLoadingIcon() {
+        super.hideLoadingIcon();
+
+        if (this.isBlueprintMediaControlsEnabled()) {
+            this.hideBufferingSpinner();
+        }
     }
 
     /**
@@ -758,7 +856,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     handleNarrowVideoUI() {
         if (this.useReactControls()) {
-            const widthNumber = this.isVideoPlayerV2
+            const widthNumber = this.isVideoControlsV2Enabled()
                 ? this.wrapperEl.clientWidth
                 : parseInt(this.mediaEl.style.width, 10);
 

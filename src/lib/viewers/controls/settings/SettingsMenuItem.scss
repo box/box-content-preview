@@ -58,7 +58,7 @@
 
         &:hover {
             border-radius: 8px;
-            background-color: $bdl-gray-05;
+            background-color: var(--bp-gray-05);
             backdrop-filter: none;
             box-shadow: none;
         }
@@ -77,6 +77,6 @@
         padding: 0 8px;
         font-size: 16px;
         line-height: 24px;
-        color: $bdl-gray-62;
+        color: $seventy-sixers;
     }
 }

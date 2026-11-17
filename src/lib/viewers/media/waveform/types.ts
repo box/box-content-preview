@@ -189,6 +189,7 @@ export type WaveformViewProps = {
     durationSec: number;
     height?: number;
     interactive?: boolean;
+    isBlueprintEnabled?: boolean;
     isPlaying?: boolean;
     mediaEl?: HTMLMediaElement | null;
     onPlayPause?: (isPlaying: boolean) => void;
@@ -214,6 +215,7 @@ export type WaveformViewProps = {
 };
 
 export type WaveformZoomControlProps = {
+    isBlueprintEnabled?: boolean;
     isRevealed?: boolean;
     maxZoom: number;
     onZoomChange: (zoomLevel: number) => void;

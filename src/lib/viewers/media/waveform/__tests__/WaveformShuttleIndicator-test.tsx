@@ -1,0 +1,53 @@
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import BlueprintProviders from '../../../../BlueprintProviders';
+import WaveformShuttleIndicator from '../WaveformShuttleIndicator';
+
+describe('WaveformShuttleIndicator', () => {
+    test.each`
+        direction    | isReverse
+        ${'forward'} | ${false}
+        ${'reverse'} | ${true}
+    `('should show the $direction shuttle rate', ({ direction, isReverse }) => {
+        render(<WaveformShuttleIndicator direction={direction} rate={2} />);
+
+        const indicator = screen.getByTestId('bp-waveform-shuttle');
+        expect(indicator).toHaveAttribute('role', 'status');
+        expect(indicator).toHaveTextContent('2x');
+        expect(indicator.classList.contains('bp-is-reverse')).toBe(isReverse);
+        expect(indicator.querySelector('[data-typography]')).not.toBeInTheDocument();
+    });
+
+    test('should render the rate as Blueprint text when isBlueprintEnabled is true', () => {
+        render(<WaveformShuttleIndicator direction="forward" isBlueprintEnabled rate={4} />, {
+            wrapper: BlueprintProviders,
+        });
+
+        expect(screen.getByTestId('bp-waveform-shuttle').querySelector('[data-typography]')).toHaveTextContent('4x');
+        expect(screen.queryByTestId('IconShuttleForward')).not.toBeInTheDocument();
+    });
+
+    test('should add the Blueprint modifier class only when isBlueprintEnabled is true', () => {
+        const { rerender } = render(<WaveformShuttleIndicator direction="forward" rate={2} />, {
+            wrapper: BlueprintProviders,
+        });
+        expect(screen.getByTestId('bp-waveform-shuttle')).not.toHaveClass('bp-WaveformShuttle--blueprint');
+
+        rerender(<WaveformShuttleIndicator direction="forward" isBlueprintEnabled rate={2} />);
+        expect(screen.getByTestId('bp-waveform-shuttle')).toHaveClass('bp-WaveformShuttle--blueprint');
+    });
+
+    test.each`
+        direction    | path
+        ${'forward'} | ${'M12 6.4'}
+        ${'reverse'} | ${'M19.28 5.04'}
+    `('should render the filled $direction icon when isBlueprintEnabled is true', ({ direction, path }) => {
+        render(<WaveformShuttleIndicator direction={direction} isBlueprintEnabled rate={2} />, {
+            wrapper: BlueprintProviders,
+        });
+
+        const icon = screen.getByTestId('bp-waveform-shuttle-icon');
+        expect(icon).toHaveAttribute('aria-hidden', 'true');
+        expect(icon.querySelector('path')?.getAttribute('d')).toMatch(new RegExp(`^${path}`));
+    });
+});

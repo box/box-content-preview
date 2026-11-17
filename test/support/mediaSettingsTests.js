@@ -42,15 +42,9 @@ export function runBaseMediaSettingsTests() {
             cy.getByTestId('bp-settings-flyout').contains('0.5').click();
 
             cy.getByTestId('bp-media-settings-speed').contains('0.5');
-        });
-    });
-}
-
-export function runPlayNextSettingsTests() {
-    describe('Play Next Menu', () => {
-        it('Should show Play next file defaulting to Disabled', () => {
-            cy.getByTestId('bp-media-settings-play-next').contains('Play next file');
-            cy.getByTestId('bp-media-settings-play-next').contains('Disabled');
+            cy.window().should(win => {
+                expect(win.preview.getCurrentViewer().mediaEl.playbackRate).to.equal(0.5);
+            });
         });
     });
 }
@@ -170,19 +164,6 @@ export function runSubtitlesTests() {
             cy.getByTitle('Settings').click();
 
             cy.getByTestId('bp-media-settings-subtitles').contains('English');
-        });
-    });
-}
-
-export function runAnnotationsTests() {
-    describe('Annotations', () => {
-        it('Should be able to click annotation buttons', () => {
-            cy.getByTestId('bp-AnnotationsControls-drawBtn').should('be.visible').click();
-
-            cy.getByTestId('bp-color-picker-control').should('be.visible');
-
-            cy.getByTestId('bp-AnnotationsControls-regionBtn').should('be.visible').click();
-            cy.getByTestId('bp-color-picker-control').should('not.exist');
         });
     });
 }

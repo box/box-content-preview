@@ -1,11 +1,21 @@
 import Browser from '../../Browser';
 import Popup from '../../Popup';
 import TextBaseViewer from './TextBaseViewer';
-import { BROWSERS, CLASS_HIDDEN, CLASS_IS_SCROLLABLE, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
+import { PrintModalRoot } from '../../PrintModal';
+import { TruncatedTextNoticeV2Root } from './TruncatedTextNoticeV2';
+import {
+    BLUEPRINT_MIGRATION_SUPPORTING_UI,
+    BROWSERS,
+    CLASS_HIDDEN,
+    CLASS_IS_SCROLLABLE,
+    TEXT_STATIC_ASSETS_VERSION,
+} from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
+import { isNpmBuild } from '../../isNpmBuild';
 import { openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 import { VIEWER_EVENT } from '../../events';
+import { PLAIN_TEXT_PRINT_STYLES } from './printStyles';
 import './PlainText.scss';
 
 // Inline web worker JS
@@ -34,6 +44,16 @@ class PlainTextViewer extends TextBaseViewer {
             if (downloadBtnEl) {
                 downloadBtnEl.removeEventListener('click', this.download.bind(this));
             }
+        }
+
+        if (this.truncatedNotice) {
+            this.truncatedNotice.destroy();
+            this.truncatedNotice = null;
+        }
+
+        if (this.printPopup) {
+            this.printPopup.destroy();
+            this.printPopup = null;
         }
 
         this.printIframe = null;
@@ -81,7 +101,7 @@ class PlainTextViewer extends TextBaseViewer {
      */
     print() {
         if (!this.printReady) {
-            this.preparePrint(this.getCSS().concat('preview.css'));
+            this.preparePrint(this.getCSS());
 
             this.printPopup.show(__('print_loading'), __('print'), () => {
                 this.printPopup.hide();
@@ -143,6 +163,15 @@ class PlainTextViewer extends TextBaseViewer {
      */
     getCSS() {
         return CSS;
+    }
+
+    /**
+     * Returns the viewer styles that npm builds inject into the print iframe
+     *
+     * @return {string} CSS text
+     */
+    getPrintStyles() {
+        return PLAIN_TEXT_PRINT_STYLES;
     }
 
     /**
@@ -259,6 +288,11 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {void}
      */
     initPrint() {
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            this.printPopup = new PrintModalRoot(this.rootEl);
+            return;
+        }
+
         this.printPopup = new Popup(this.rootEl);
 
         const printCheckmark = document.createElement('div');
@@ -281,22 +315,33 @@ class PlainTextViewer extends TextBaseViewer {
     }
 
     /**
-     * Sets up the print iframe - uses a web worker to insert text content and
-     * styles into an iframe that can be printed.
+     * Writes the text element into a printable iframe and attaches its print styles.
      *
      * @private
-     * @param {string[]} stylesheets - Stylesheets needed for print
+     * @param {string[]} stylesheets - Third-party stylesheets needed for print, before the viewer's own styles
      * @return {void}
      */
     preparePrint(stylesheets) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.textEl.outerHTML);
+        const { head } = this.printframe.contentDocument;
         stylesheets.forEach(stylesheet => {
-            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator(stylesheet)));
+            head.appendChild(createStylesheet(assetUrlCreator(stylesheet)));
         });
 
+        // npm consumers bundle the viewer CSS themselves and host no preview.css to link to.
+        if (isNpmBuild()) {
+            const printStyleEl = document.createElement('style');
+            printStyleEl.textContent = this.getPrintStyles();
+            head.appendChild(printStyleEl);
+        } else {
+            head.appendChild(createStylesheet(assetUrlCreator('preview.css')));
+        }
+
         setTimeout(() => {
-            if (this.printPopup) {
+            if (this.printPopup instanceof PrintModalRoot) {
+                this.printPopup.showReady(__('print_ready'));
+            } else if (this.printPopup) {
                 // Update popup UI to reflect that print is ready
                 this.printPopup.enableButton();
                 this.printPopup.messageEl.textContent = __('print_ready');
@@ -330,6 +375,14 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {void}
      */
     showTruncatedDownloadButton() {
+        if (this.featureEnabled(BLUEPRINT_MIGRATION_SUPPORTING_UI)) {
+            if (this.truncatedNotice) {
+                this.truncatedNotice.destroy();
+            }
+            this.truncatedNotice = new TruncatedTextNoticeV2Root(this.textEl, () => this.download());
+            return;
+        }
+
         const truncatedEl = document.createElement('div');
         truncatedEl.classList.add('bp-text-truncated');
 

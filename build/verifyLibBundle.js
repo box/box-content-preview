@@ -9,7 +9,7 @@ const path = require('path');
 // webpack.config.lib.js prevent it; this check keeps that from silently regressing.
 const bundlePath = path.resolve(__dirname, '../dist/lib/index.js');
 const packagePath = path.resolve(__dirname, '../package.json');
-const pdfjsWorkerPath = path.resolve(__dirname, '../node_modules/pdfjs-dist/build/pdf.worker.min.mjs');
+const pdfjsWorkerPath = path.resolve(__dirname, '../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs');
 const emittedWorkerPath = path.resolve(__dirname, '../dist/lib/pdf.worker.min.mjs');
 
 if (!fs.existsSync(bundlePath)) {
@@ -93,5 +93,66 @@ if (emittedWorkerCopies.length !== 1 || emittedWorkerCopies[0] !== path.basename
     console.error(`verifyLibBundle: expected one PDF worker asset, found ${emittedWorkerCopies.join(', ') || 'none'}.`);
     process.exit(1);
 }
+
+// Hosts merge these files into their language bundles (see build/buildLibI18n.js).
+// Bundlers import them without an extension; @box/frontend's buildLanguageBundles
+// resolves them with ".js" appended, so both specifiers must resolve.
+const i18nSourceDir = path.resolve(__dirname, '../src/i18n/json');
+const expectedLocales = fs
+    .readdirSync(i18nSourceDir)
+    .filter(filename => filename.endsWith('.json'))
+    .map(filename => path.basename(filename, '.json'));
+
+expectedLocales.forEach(locale => {
+    const localePath = path.resolve(__dirname, `../dist/lib/i18n/${locale}.js`);
+
+    [`box-content-preview/i18n/${locale}`, `box-content-preview/i18n/${locale}.js`].forEach(specifier => {
+        let resolvedPath;
+
+        try {
+            resolvedPath = require.resolve(specifier);
+        } catch (error) {
+            console.error(`verifyLibBundle: require.resolve("${specifier}") failed.`);
+            console.error(error.message);
+            process.exit(1);
+        }
+
+        if (resolvedPath !== localePath) {
+            console.error(`verifyLibBundle: ${specifier} resolved to ${resolvedPath}, expected ${localePath}.`);
+            process.exit(1);
+        }
+    });
+
+    if (!fs.readFileSync(localePath, 'utf8').includes('"bcp.')) {
+        console.error(`verifyLibBundle: ${localePath} has no "bcp."-prefixed messages.`);
+        process.exit(1);
+    }
+});
+
+function containsNonEmptyFile(dirPath) {
+    if (!fs.existsSync(dirPath) || !fs.statSync(dirPath).isDirectory()) {
+        return false;
+    }
+
+    return fs.readdirSync(dirPath).some(entry => {
+        const entryPath = path.join(dirPath, entry);
+        const stat = fs.statSync(entryPath);
+
+        if (stat.isDirectory()) {
+            return containsNonEmptyFile(entryPath);
+        }
+
+        return stat.isFile() && stat.size > 0;
+    });
+}
+
+['wasm', 'cmaps', 'iccs', 'standard_fonts', 'pdfjs-images', 'exif', 'third-party'].forEach(assetName => {
+    const assetDir = path.resolve(__dirname, '../dist/lib', assetName);
+
+    if (!containsNonEmptyFile(assetDir)) {
+        console.error(`verifyLibBundle: dist/lib/${assetName} is missing or empty.`);
+        process.exit(1);
+    }
+});
 
 console.log('verifyLibBundle: OK, library bundle is self-contained and package exports resolve to verified assets');

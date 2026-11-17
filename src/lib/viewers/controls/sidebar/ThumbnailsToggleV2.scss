@@ -1,0 +1,13 @@
+@import '../../../boxuiVariables';
+
+.bp-ThumbnailsToggleV2 {
+    display: none;
+
+    @media (width > $bp-breakpoint-medium) {
+        display: flex;
+    }
+
+    .bp-is-fullscreen & {
+        display: none;
+    }
+}

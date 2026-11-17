@@ -5,6 +5,7 @@ import Api from '../../../api';
 import BaseViewer from '../../BaseViewer';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
+import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
 let containerEl;
@@ -62,6 +63,7 @@ describe('lib/viewers/text/CSVViewer', () => {
         csv = null;
 
         jest.resetAllMocks();
+        delete global.__BCP_NPM_BUILD__;
     });
 
     describe('setup()', () => {
@@ -185,7 +187,19 @@ describe('lib/viewers/text/CSVViewer', () => {
         test('should prefetch assets if assets is true', () => {
             jest.spyOn(csv, 'prefetchAssets').mockImplementation();
             csv.prefetch({ assets: true, content: false });
-            expect(csv.prefetchAssets).toBeCalled();
+            expect(csv.prefetchAssets).toBeCalledWith([
+                `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`,
+                'csv.js',
+            ]);
+        });
+
+        test('should prefetch papaparse without csv.js in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+            jest.spyOn(csv, 'prefetchAssets').mockImplementation();
+            csv.prefetch({ assets: true, content: false });
+            expect(csv.prefetchAssets).toBeCalledWith([
+                `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`,
+            ]);
         });
 
         test('should prefetch content if content is true and representation is ready', () => {
@@ -263,6 +277,27 @@ describe('lib/viewers/text/CSVViewer', () => {
             expect(csv.loadUI).toBeCalled();
             expect(csv.loaded).toBe(true);
             expect(csv.emit).toBeCalledWith(VIEWER_EVENT.load);
+        });
+
+        test('should mount the bundled BoxCSV in the npm build', () => {
+            global.__BCP_NPM_BUILD__ = true;
+
+            jest.isolateModules(() => {
+                const { default: NpmCSVViewer } = jest.requireActual('../CSVViewer');
+                const npmCsv = new NpmCSVViewer(options);
+                npmCsv.containerEl = containerEl;
+                npmCsv.setup();
+                npmCsv.data = [['a', 'b']];
+                jest.spyOn(npmCsv, 'loadUI');
+                jest.spyOn(npmCsv, 'emit');
+
+                npmCsv.finishLoading();
+
+                expect(npmCsv.csvComponent).toBeTruthy();
+                expect(npmCsv.loaded).toBe(true);
+                expect(npmCsv.emit).toBeCalledWith(VIEWER_EVENT.load);
+                npmCsv.destroy();
+            });
         });
     });
 

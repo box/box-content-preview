@@ -1,3 +1,201 @@
+## 3.139.0 (2026-11-14)
+
+* ci: add GitHub Actions workflow (#1953) ([68666e3](https://github.com/box/box-content-preview/commit/68666e3)), closes [#1953](https://github.com/box/box-content-preview/issues/1953)
+
+## 3.138.0 (2026-11-11)
+
+* fix(audio): polish waveform comment button and playhead hover (#1951) ([2f878f9](https://github.com/box/box-content-preview/commit/2f878f9)), closes [#1951](https://github.com/box/box-content-preview/issues/1951)
+
+## 3.137.0 (2026-11-07)
+
+* docs(readme): recommend the npm package and document its setup (#1950) ([82d312a](https://github.com/box/box-content-preview/commit/82d312a)), closes [#1950](https://github.com/box/box-content-preview/issues/1950)
+* refactor(text): use ActionableInlineNotice for the truncated text notice (#1949) ([23c2f02](https://github.com/box/box-content-preview/commit/23c2f02)), closes [#1949](https://github.com/box/box-content-preview/issues/1949)
+
+## 3.136.0 (2026-11-06)
+
+* chore(deps): upgrade husky, eslint-plugin-cypress, and classnames (#1948) ([4945fc1](https://github.com/box/box-content-preview/commit/4945fc1)), closes [#1948](https://github.com/box/box-content-preview/issues/1948)
+* fix(controls): match media toggles to the Light Blue/65 selected treatment (#1935) ([a9d0f14](https://github.com/box/box-content-preview/commit/a9d0f14)), closes [#1935](https://github.com/box/box-content-preview/issues/1935)
+* fix(media): keep overlay button discs dark in every state over light video (#1945) ([a950ee4](https://github.com/box/box-content-preview/commit/a950ee4)), closes [#1945](https://github.com/box/box-content-preview/issues/1945)
+* fix(media): use Blueprint tokens for the timestamp button and control bar (#1941) ([8a354b3](https://github.com/box/box-content-preview/commit/8a354b3)), closes [#1941](https://github.com/box/box-content-preview/issues/1941)
+* fix(media): use DASH on iPhone via ManagedMediaSource (#1947) ([9af2ffb](https://github.com/box/box-content-preview/commit/9af2ffb)), closes [#1947](https://github.com/box/box-content-preview/issues/1947)
+
+## 3.135.0 (2026-11-05)
+
+* test(archive): stabilize the folder scroll reset e2e check (#1946) ([8a7bf26](https://github.com/box/box-content-preview/commit/8a7bf26)), closes [#1946](https://github.com/box/box-content-preview/issues/1946)
+* refactor(archive): port fuzzySearch for the v2 archive (#1943) ([16ebed9](https://github.com/box/box-content-preview/commit/16ebed9)), closes [#1943](https://github.com/box/box-content-preview/issues/1943)
+* chore(i18n): update translations (#1940) ([592a7d0](https://github.com/box/box-content-preview/commit/592a7d0)), closes [#1940](https://github.com/box/box-content-preview/issues/1940)
+
+## 3.134.0 (2026-11-05)
+
+* refactor(archive): use only readable-time messages on the v2 archive (#1944) ([dc768f8](https://github.com/box/box-content-preview/commit/dc768f8)), closes [#1944](https://github.com/box/box-content-preview/issues/1944)
+* refactor(archive): use react-intl IntlProvider on the v2 archive (#1942) ([690c4f2](https://github.com/box/box-content-preview/commit/690c4f2)), closes [#1942](https://github.com/box/box-content-preview/issues/1942)
+* fix(archive): let the v2 table shrink within the viewer (#1939) ([cf2b0ac](https://github.com/box/box-content-preview/commit/cf2b0ac)), closes [#1939](https://github.com/box/box-content-preview/issues/1939)
+* fix(controls): use a SidebarChevron button for show and hide thumbnails (#1934) ([bccab94](https://github.com/box/box-content-preview/commit/bccab94)), closes [#1934](https://github.com/box/box-content-preview/issues/1934)
+* fix(doc-viewer): limit marked content nesting in the text layer (#1936) ([36754aa](https://github.com/box/box-content-preview/commit/36754aa)), closes [#1936](https://github.com/box/box-content-preview/issues/1936)
+* fix(media): use Blueprint tokens for the video scrubber (#1938) ([a3a2086](https://github.com/box/box-content-preview/commit/a3a2086)), closes [#1938](https://github.com/box/box-content-preview/issues/1938)
+* fix(media): use Blueprint tokens for waveform visuals (#1937) ([4aba63b](https://github.com/box/box-content-preview/commit/4aba63b)), closes [#1937](https://github.com/box/box-content-preview/issues/1937)
+
+## 3.133.0 (2026-11-04)
+
+* fix(archive): Localize v2 modified dates (#1920) ([d92d030](https://github.com/box/box-content-preview/commit/d92d030)), closes [#1920](https://github.com/box/box-content-preview/issues/1920)
+* fix(archive): use the Blueprint white token for the stage (#1933) ([f7e7abc](https://github.com/box/box-content-preview/commit/f7e7abc)), closes [#1933](https://github.com/box/box-content-preview/issues/1933) [#fff](https://github.com/box/box-content-preview/issues/fff)
+* fix(controls): honor annotations-only controls in the Blueprint bar (#1927) ([a9d2fa3](https://github.com/box/box-content-preview/commit/a9d2fa3)), closes [#1927](https://github.com/box/box-content-preview/issues/1927)
+* fix(doc-viewer): apply drawing operations limit to dwg previews (#1928) ([49f4b06](https://github.com/box/box-content-preview/commit/49f4b06)), closes [#1928](https://github.com/box/box-content-preview/issues/1928)
+* fix(doc): use Blueprint tokens for the dark thumbnail rail (#1932) ([0a466ff](https://github.com/box/box-content-preview/commit/0a466ff)), closes [#1932](https://github.com/box/box-content-preview/issues/1932)
+* fix(media): render the waveform range tooltip with Blueprint Text (#1930) ([cd5e7da](https://github.com/box/box-content-preview/commit/cd5e7da)), closes [#1930](https://github.com/box/box-content-preview/issues/1930)
+* fix(preview): step ctrl+wheel zoom by 10% (#1889) ([54f8643](https://github.com/box/box-content-preview/commit/54f8643)), closes [#1889](https://github.com/box/box-content-preview/issues/1889)
+
+## 3.132.0 (2026-11-03)
+
+* chore(deps): bump follow-redirects from 1.16.1 to 1.16.2 (#1924) ([e486d66](https://github.com/box/box-content-preview/commit/e486d66)), closes [#1924](https://github.com/box/box-content-preview/issues/1924)
+* chore(deps): bump systeminformation from 5.33.1 to 5.33.19 (#1925) ([76a4397](https://github.com/box/box-content-preview/commit/76a4397)), closes [#1925](https://github.com/box/box-content-preview/issues/1925)
+
+## 3.131.0 (2026-11-02)
+
+* feat(doc): surface ocr_pdf searchable PDF representation (#1822) ([e79d237](https://github.com/box/box-content-preview/commit/e79d237)), closes [#1822](https://github.com/box/box-content-preview/issues/1822)
+* feat(gallery): style gallery tiles with Blueprint tokens behind supporting UI flag (#1916) ([1cc3555](https://github.com/box/box-content-preview/commit/1cc3555)), closes [#1916](https://github.com/box/box-content-preview/issues/1916)
+* chore(deps): bump fast-uri from 3.1.7 to 3.1.9 (#1913) ([578d43c](https://github.com/box/box-content-preview/commit/578d43c)), closes [#1913](https://github.com/box/box-content-preview/issues/1913)
+* chore(deps): bump serialize-javascript from 7.1.0 to 7.1.4 (#1923) ([15ccd60](https://github.com/box/box-content-preview/commit/15ccd60)), closes [#1923](https://github.com/box/box-content-preview/issues/1923)
+* chore(i18n): update translations (#1926) ([7859016](https://github.com/box/box-content-preview/commit/7859016)), closes [#1926](https://github.com/box/box-content-preview/issues/1926)
+
+## 3.130.0 (2026-10-31)
+
+* fix(archive): align v2 table edges with the search bar (#1917) ([3ad7131](https://github.com/box/box-content-preview/commit/3ad7131)), closes [#1917](https://github.com/box/box-content-preview/issues/1917)
+* fix(archive): ellipsize long v2 item names (#1918) ([d5fe420](https://github.com/box/box-content-preview/commit/d5fe420)), closes [#1918](https://github.com/box/box-content-preview/issues/1918)
+* fix(archive): keep v2 breadcrumbs inside the viewer (#1919) ([cc46b47](https://github.com/box/box-content-preview/commit/cc46b47)), closes [#1919](https://github.com/box/box-content-preview/issues/1919)
+* fix(controls): keep arrow keys on the media settings button from reaching viewer shortcuts (#1921) ([7193acc](https://github.com/box/box-content-preview/commit/7193acc)), closes [#1921](https://github.com/box/box-content-preview/issues/1921)
+* fix(controls): use the default focus outline on the media icon toggles (#1922) ([5bf0348](https://github.com/box/box-content-preview/commit/5bf0348)), closes [#1922](https://github.com/box/box-content-preview/issues/1922)
+* fix(gallery): keep legacy badge font rules off the Blueprint badge (#1911) ([4f9e3de](https://github.com/box/box-content-preview/commit/4f9e3de)), closes [#1911](https://github.com/box/box-content-preview/issues/1911)
+* refactor(controls): take v2 color picker and scrubber colors from Blueprint (#1915) ([dd067b4](https://github.com/box/box-content-preview/commit/dd067b4)), closes [#1915](https://github.com/box/box-content-preview/issues/1915)
+* refactor(util): decode keydown events without box-ui-elements (#1910) ([3639545](https://github.com/box/box-content-preview/commit/3639545)), closes [#1910](https://github.com/box/box-content-preview/issues/1910)
+* feat(preview): render loading icon in bcp behind supporting UI flag (#1912) ([a1fb8e1](https://github.com/box/box-content-preview/commit/a1fb8e1)), closes [#1912](https://github.com/box/box-content-preview/issues/1912)
+* chore(i18n): update translations (#1914) ([504f77c](https://github.com/box/box-content-preview/commit/504f77c)), closes [#1914](https://github.com/box/box-content-preview/issues/1914)
+
+## 3.129.0 (2026-10-30)
+
+* fix(comparison): pad plain text and archive below the version banner (#1901) ([53ef8b6](https://github.com/box/box-content-preview/commit/53ef8b6)), closes [#1901](https://github.com/box/box-content-preview/issues/1901)
+* fix(controls): leave Alt+F and Alt+R to the browser (#1906) ([04e8392](https://github.com/box/box-content-preview/commit/04e8392)), closes [#1906](https://github.com/box/box-content-preview/issues/1906)
+* fix(controls): name the controls bar toolbars and fix tooltip wording (#1907) ([3a63650](https://github.com/box/box-content-preview/commit/3a63650)), closes [#1907](https://github.com/box/box-content-preview/issues/1907)
+* fix(controls): stop the page number input from cutting off the page number (#1905) ([f66925f](https://github.com/box/box-content-preview/commit/f66925f)), closes [#1905](https://github.com/box/box-content-preview/issues/1905)
+* feat(error): render the error screen with Blueprint EmptyState (#1909) ([e7e0259](https://github.com/box/box-content-preview/commit/e7e0259)), closes [#1909](https://github.com/box/box-content-preview/issues/1909)
+* chore(i18n): update translations (#1908) ([d6fb9cb](https://github.com/box/box-content-preview/commit/d6fb9cb)), closes [#1908](https://github.com/box/box-content-preview/issues/1908)
+
+## 3.128.0 (2026-10-29)
+
+* feat(controls): toggle fullscreen on F in text, markdown, CSV and 3D viewers (#1900) ([c7824f1](https://github.com/box/box-content-preview/commit/c7824f1)), closes [#1900](https://github.com/box/box-content-preview/issues/1900)
+* feat(text): render the truncated-file notice with Blueprint (#1903) ([6fab8e3](https://github.com/box/box-content-preview/commit/6fab8e3)), closes [#1903](https://github.com/box/box-content-preview/issues/1903)
+
+## 3.127.0 (2026-10-28)
+
+* fix(controls): match Blueprint sizing in media settings and time format menus (#1904) ([b5fd09d](https://github.com/box/box-content-preview/commit/b5fd09d)), closes [#1904](https://github.com/box/box-content-preview/issues/1904)
+* fix(controls): match the page pill's height to the zoom pill (#1899) ([9c69fc3](https://github.com/box/box-content-preview/commit/9c69fc3)), closes [#1899](https://github.com/box/box-content-preview/issues/1899)
+* feat(notifications): show Preview notifications with Blueprint toasts (#1902) ([e135ab1](https://github.com/box/box-content-preview/commit/e135ab1)), closes [#1902](https://github.com/box/box-content-preview/issues/1902)
+
+## 3.126.0 (2026-10-27)
+
+* fix(controls): keep the bar's arrow keys from turning the page or opening the next file (#1896) ([28a6b22](https://github.com/box/box-content-preview/commit/28a6b22)), closes [#1896](https://github.com/box/box-content-preview/issues/1896)
+* fix(text): stop npm builds from loading preview.css when printing (#1898) ([1413579](https://github.com/box/box-content-preview/commit/1413579)), closes [#1898](https://github.com/box/box-content-preview/issues/1898)
+
+## 3.125.0 (2026-10-27)
+
+* fix(controls): read tabular digits as whole text for screen readers (#1897) ([dcf67cd](https://github.com/box/box-content-preview/commit/dcf67cd)), closes [#1897](https://github.com/box/box-content-preview/issues/1897)
+* feat(controls): put the Blueprint page and zoom controls on pills and match the bar spacing to the m ([f6cf497](https://github.com/box/box-content-preview/commit/f6cf497)), closes [#1892](https://github.com/box/box-content-preview/issues/1892)
+* feat(video): render the small-screen play and skip overlay with Blueprint buttons (#1888) ([9a622ab](https://github.com/box/box-content-preview/commit/9a622ab)), closes [#1888](https://github.com/box/box-content-preview/issues/1888)
+
+## 3.124.0 (2026-10-27)
+
+* feat(comparison): add resin tags to the banner menu and close button (#1893) ([8250d4b](https://github.com/box/box-content-preview/commit/8250d4b)), closes [#1893](https://github.com/box/box-content-preview/issues/1893)
+* feat(find): render document find bar with Blueprint for supporting UI (#1855) ([123cf43](https://github.com/box/box-content-preview/commit/123cf43)), closes [#1855](https://github.com/box/box-content-preview/issues/1855)
+* feat(image): add Blueprint controls bars for images and multi-page images (#1878) ([491a56a](https://github.com/box/box-content-preview/commit/491a56a)), closes [#1878](https://github.com/box/box-content-preview/issues/1878)
+* feat(video360): use Blueprint V2 media controls with VR toggle and native captions (#1894) ([91739ff](https://github.com/box/box-content-preview/commit/91739ff)), closes [#1894](https://github.com/box/box-content-preview/issues/1894)
+
+## 3.123.0 (2026-10-26)
+
+* fix(comparison): ellipsize banner text and keep a fixed-size badge (#1884) ([59519a0](https://github.com/box/box-content-preview/commit/59519a0)), closes [#1884](https://github.com/box/box-content-preview/issues/1884)
+* fix(doc): keep zoomed pages sharp with npm pdf.js (#1890) ([e0e7b1e](https://github.com/box/box-content-preview/commit/e0e7b1e)), closes [#1890](https://github.com/box/box-content-preview/issues/1890)
+* test(archive): add stable breadcrumb and table test IDs (#1886) ([b0675c4](https://github.com/box/box-content-preview/commit/b0675c4)), closes [#1886](https://github.com/box/box-content-preview/issues/1886)
+* feat(model3d): add the Blueprint controls bar for 3D models (#1881) ([c5078a2](https://github.com/box/box-content-preview/commit/c5078a2)), closes [#1881](https://github.com/box/box-content-preview/issues/1881)
+
+## 3.122.0 (2026-10-24)
+
+* chore(i18n): update translations (#1885) ([f35a114](https://github.com/box/box-content-preview/commit/f35a114)), closes [#1885](https://github.com/box/box-content-preview/issues/1885)
+* feat(video): add Blueprint annotations toggle and toolbar to video controls (#1887) ([c39e229](https://github.com/box/box-content-preview/commit/c39e229)), closes [#1887](https://github.com/box/box-content-preview/issues/1887)
+
+## 3.121.0 (2026-10-23)
+
+* fix(doc): Ship pdf.js viewer images with the npm and CDN builds (#1883) ([9bf2b67](https://github.com/box/box-content-preview/commit/9bf2b67)), closes [#1883](https://github.com/box/box-content-preview/issues/1883)
+* feat(archive): emit first render time (#1841) ([474af2d](https://github.com/box/box-content-preview/commit/474af2d)), closes [#1841](https://github.com/box/box-content-preview/issues/1841)
+* feat(controls): collapse the Blueprint document controls into a more options menu (#1853) ([3b6ef8f](https://github.com/box/box-content-preview/commit/3b6ef8f)), closes [#1853](https://github.com/box/box-content-preview/issues/1853)
+
+## 3.120.0 (2026-10-22)
+
+* fix(build): Externalize react-intl in the npm lib (#1872) ([01e57d7](https://github.com/box/box-content-preview/commit/01e57d7)), closes [#1872](https://github.com/box/box-content-preview/issues/1872)
+* feat(annotations): forward the controls bar flag to box-annotations (#1877) ([b24e0a5](https://github.com/box/box-content-preview/commit/b24e0a5)), closes [#1877](https://github.com/box/box-content-preview/issues/1877)
+* feat(gallery): render tile page numbers with Blueprint Text (#1871) ([a95ecf5](https://github.com/box/box-content-preview/commit/a95ecf5)), closes [#1871](https://github.com/box/box-content-preview/issues/1871)
+* feat(image360): add the Blueprint controls bar for 360 images (#1880) ([c9528b0](https://github.com/box/box-content-preview/commit/c9528b0)), closes [#1880](https://github.com/box/box-content-preview/issues/1880)
+* feat(media): render the subtitles toggle as a Blueprint icon toggle and darken the waveform comment ([4b159de](https://github.com/box/box-content-preview/commit/4b159de)), closes [#1874](https://github.com/box/box-content-preview/issues/1874)
+* chore(deps): bump launch-editor from 2.14.1 to 2.14.2 (#1870) ([d1f5f5e](https://github.com/box/box-content-preview/commit/d1f5f5e)), closes [#1870](https://github.com/box/box-content-preview/issues/1870)
+* chore(i18n): update translations (#1873) ([88fe053](https://github.com/box/box-content-preview/commit/88fe053)), closes [#1873](https://github.com/box/box-content-preview/issues/1873)
+* refactor(annotations): remove the unused annotations FTUX tooltip (#1882) ([53f1445](https://github.com/box/box-content-preview/commit/53f1445)), closes [#1882](https://github.com/box/box-content-preview/issues/1882)
+* refactor(annotations): source annotation palette from Blueprint tokens (#1879) ([e539686](https://github.com/box/box-content-preview/commit/e539686)), closes [#1879](https://github.com/box/box-content-preview/issues/1879)
+* refactor(styles): replace BUIE Sass imports with Blueprint tokens (#1875) ([e43876e](https://github.com/box/box-content-preview/commit/e43876e)), closes [#1875](https://github.com/box/box-content-preview/issues/1875)
+
+## 3.119.0 (2026-10-21)
+
+* feat(comparison): add a close button and divider to the compared pane banner (#1862) ([790fdb1](https://github.com/box/box-content-preview/commit/790fdb1)), closes [#1862](https://github.com/box/box-content-preview/issues/1862)
+
+## 3.118.0 (2026-10-21)
+
+* feat(controls): add the measuring hook, responsive bar and overflow menu for Blueprint controls (#18 ([0a15407](https://github.com/box/box-content-preview/commit/0a15407)), closes [#1868](https://github.com/box/box-content-preview/issues/1868)
+* feat(media): show the Blueprint loading indicator on a dark disc while audio and video load (#1857) ([6f4597c](https://github.com/box/box-content-preview/commit/6f4597c)), closes [#1857](https://github.com/box/box-content-preview/issues/1857)
+* feat(navigation): render collection arrows with Blueprint IconButton (#1852) ([83510be](https://github.com/box/box-content-preview/commit/83510be)), closes [#1852](https://github.com/box/box-content-preview/issues/1852)
+* feat(text): add Blueprint controls bars for text and markdown (#1861) ([9647be8](https://github.com/box/box-content-preview/commit/9647be8)), closes [#1861](https://github.com/box/box-content-preview/issues/1861)
+* feat(thumbnails): render the sidebar tiles with Blueprint (#1858) ([dd2d037](https://github.com/box/box-content-preview/commit/dd2d037)), closes [#1858](https://github.com/box/box-content-preview/issues/1858)
+* chore(deps): bump follow-redirects from 1.16.0 to 1.16.1 (#1865) ([045ba82](https://github.com/box/box-content-preview/commit/045ba82)), closes [#1865](https://github.com/box/box-content-preview/issues/1865)
+* chore(i18n): update translations (#1864) ([2908e82](https://github.com/box/box-content-preview/commit/2908e82)), closes [#1864](https://github.com/box/box-content-preview/issues/1864)
+* fix(comparison): keep the version banner off document pages and thumbnails, style the compared pane ([b802b97](https://github.com/box/box-content-preview/commit/b802b97)), closes [#1866](https://github.com/box/box-content-preview/issues/1866)
+
+## 3.117.0 (2026-10-20)
+
+* fix(i18n): localize npm library strings with host-provided messages (#1869) ([e397a41](https://github.com/box/box-content-preview/commit/e397a41)), closes [#1869](https://github.com/box/box-content-preview/issues/1869)
+* feat(controls): render the Blueprint controls bar with the dark color scheme (#1867) ([2aa0cbe](https://github.com/box/box-content-preview/commit/2aa0cbe)), closes [#1867](https://github.com/box/box-content-preview/issues/1867)
+* test(e2e): trim redundant e2e tests and backfill unit coverage (#1860) ([1f31ec7](https://github.com/box/box-content-preview/commit/1f31ec7)), closes [#1860](https://github.com/box/box-content-preview/issues/1860)
+
+## 3.116.0 (2026-10-20)
+
+* chore(i18n): update translations (#1863) ([8323ac0](https://github.com/box/box-content-preview/commit/8323ac0)), closes [#1863](https://github.com/box/box-content-preview/issues/1863)
+* feat(archive): add Blueprint v2 table (#1838) ([bff8613](https://github.com/box/box-content-preview/commit/bff8613)), closes [#1838](https://github.com/box/box-content-preview/issues/1838)
+* feat(error): render Blueprint file type icons on the error screen (#1854) ([e175dd4](https://github.com/box/box-content-preview/commit/e175dd4)), closes [#1854](https://github.com/box/box-content-preview/issues/1854)
+* feat(media): add the Blueprint settings menu with drill-in submenus to the audio and video controls ([31ed5e2](https://github.com/box/box-content-preview/commit/31ed5e2)), closes [#1856](https://github.com/box/box-content-preview/issues/1856)
+* feat(print): render print dialog with Blueprint modal for supporting UI (#1844) ([6dadb43](https://github.com/box/box-content-preview/commit/6dadb43)), closes [#1844](https://github.com/box/box-content-preview/issues/1844)
+* feat(video): render the filmstrip time with Blueprint text (#1848) ([bf14233](https://github.com/box/box-content-preview/commit/bf14233)), closes [#1848](https://github.com/box/box-content-preview/issues/1848)
+
+## 3.115.0 (2026-10-19)
+
+* feat(audio): migrate the waveform zoom, shuttle and range controls to Blueprint (#1845) ([ceb59b5](https://github.com/box/box-content-preview/commit/ceb59b5)), closes [#1845](https://github.com/box/box-content-preview/issues/1845)
+* feat(comparison): Add the compared-pane version actions menu (#1823) ([acc3889](https://github.com/box/box-content-preview/commit/acc3889)), closes [#1823](https://github.com/box/box-content-preview/issues/1823)
+* feat(controls): add Blueprint 3D settings and animation clips controls (#1839) ([07d429b](https://github.com/box/box-content-preview/commit/07d429b)), closes [#1839](https://github.com/box/box-content-preview/issues/1839)
+* feat(controls): add Blueprint fullscreen, find, thumbnails, gallery and rotate toggles (#1832) ([d221d65](https://github.com/box/box-content-preview/commit/d221d65)), closes [#1832](https://github.com/box/box-content-preview/issues/1832)
+* feat(deps): Peer Blueprint 18.3.0 and assets 5.12.2 (#1847) ([ccf8994](https://github.com/box/box-content-preview/commit/ccf8994)), closes [#1847](https://github.com/box/box-content-preview/issues/1847)
+* feat(media): migrate the timestamp control to Blueprint with fixed-width digits (#1846) ([086f428](https://github.com/box/box-content-preview/commit/086f428)), closes [#1846](https://github.com/box/box-content-preview/issues/1846)
+* feat(media): render the audio and video play overlay as a Blueprint icon button (#1849) ([a34b3de](https://github.com/box/box-content-preview/commit/a34b3de)), closes [#1849](https://github.com/box/box-content-preview/issues/1849)
+* ci(mergify): Queue translation PRs without the ready-to-merge label (#1851) ([340f359](https://github.com/box/box-content-preview/commit/340f359)), closes [#1851](https://github.com/box/box-content-preview/issues/1851)
+* chore(i18n): update translations (#1766) ([105c860](https://github.com/box/box-content-preview/commit/105c860)), closes [#1766](https://github.com/box/box-content-preview/issues/1766)
+
+## 3.114.0 (2026-10-16)
+
+* feat(audio): render waveform labels and generating indicator with Blueprint (#1842) ([606691a](https://github.com/box/box-content-preview/commit/606691a)), closes [#1842](https://github.com/box/box-content-preview/issues/1842)
+* feat(controls): add Blueprint page controls to the v2 document controls bar (#1831) ([c7bec88](https://github.com/box/box-content-preview/commit/c7bec88)), closes [#1831](https://github.com/box/box-content-preview/issues/1831)
+* feat(controls): add the Blueprint markup toggle, annotation palette and drawing colors to the v2 doc ([b8e8763](https://github.com/box/box-content-preview/commit/b8e8763)), closes [#1833](https://github.com/box/box-content-preview/issues/1833)
+* feat(controls): add the Blueprint zoom controls to the v2 document controls bar (#1830) ([1468211](https://github.com/box/box-content-preview/commit/1468211)), closes [#1830](https://github.com/box/box-content-preview/issues/1830)
+* feat(preview): Upgrade pdf.js to 6.4.299 and bundle npm viewers (#1825) ([341ebeb](https://github.com/box/box-content-preview/commit/341ebeb)), closes [#1825](https://github.com/box/box-content-preview/issues/1825)
+* ci(mergify): Check the merge against latest master in place (#1843) ([f8531a5](https://github.com/box/box-content-preview/commit/f8531a5)), closes [#1843](https://github.com/box/box-content-preview/issues/1843)
+
+## 3.113.0 (2026-10-15)
+
+* feat(archive): add Blueprint v2 search and breadcrumbs (#1829) ([d185964](https://github.com/box/box-content-preview/commit/d185964)), closes [#1829](https://github.com/box/box-content-preview/issues/1829)
+* feat(media): add Blueprint play/pause, skip, volume and fullscreen controls (#1836) ([c246419](https://github.com/box/box-content-preview/commit/c246419)), closes [#1836](https://github.com/box/box-content-preview/issues/1836)
+
 ## 3.112.0 (2026-10-14)
 
 * chore(build): Raise webpack heap limit to 8 GB (#1828) ([c731be0](https://github.com/box/box-content-preview/commit/c731be0)), closes [#1828](https://github.com/box/box-content-preview/issues/1828)

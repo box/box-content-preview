@@ -2,6 +2,8 @@ import classNames from 'classnames';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import WaveSurfer from 'wavesurfer.js';
+import { Text, Toolbar } from '@box/blueprint-web';
+import { Comment } from '@box/blueprint-web-assets/icons/Medium';
 import { getCurrentTimeMs } from '../../../util';
 import {
     getBufferedProgress,
@@ -28,6 +30,7 @@ import {
     WAVEFORM_ZOOM_MIN,
 } from './constants';
 import IconComment24 from '../../controls/icons/IconComment24';
+import { stopToolbarKeyPropagation } from '../../controls/media/utils';
 import { formatTime, morphPeaks, toChannels, WAVEFORM_PEAK_TRANSITION_MS } from './peaks';
 import {
     clampTimeMs,
@@ -265,6 +268,7 @@ function WaveformView({
     durationSec,
     height = WAVEFORM_HEIGHT,
     interactive = true,
+    isBlueprintEnabled = false,
     isPlaying = false,
     mediaEl,
     onPlayPause,
@@ -1627,11 +1631,28 @@ function WaveformView({
         onSeekRef.current?.(timeSec);
     };
 
+    const renderHoverTime = (timeSec: number): React.ReactNode => {
+        const label = formatTime(timeSec);
+
+        return isBlueprintEnabled ? (
+            <Text as="span" color="textOnDarkDefault" variant="bodyDefault">
+                {label}
+            </Text>
+        ) : (
+            label
+        );
+    };
+
+    // The tape chip is portaled outside the root, so the modifier sits on the chip itself.
+    const hoverTimeClassName = classNames('bp-WaveformView-hoverTime', {
+        'bp-WaveformView-hoverTime--blueprint': isBlueprintEnabled,
+    });
+
     const scrubTimeChip =
         isTape && scrubPreviewTimeSec != null ? (
             <div className="bp-WaveformView-hover bp-WaveformView-hover--tape" data-testid="bp-waveform-hover">
-                <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
-                    {formatTime(scrubPreviewTimeSec)}
+                <div className={hoverTimeClassName} data-testid="bp-waveform-hover-time">
+                    {renderHoverTime(scrubPreviewTimeSec)}
                 </div>
             </div>
         ) : null;
@@ -1640,6 +1661,7 @@ function WaveformView({
         <div
             ref={bindOverlayPortalHost}
             className={classNames('bp-WaveformView', {
+                'bp-WaveformView--blueprint': isBlueprintEnabled,
                 'bp-WaveformView--inert': !interactive,
                 'bp-WaveformView--playheadDragging': isPlayheadDragging,
                 'bp-WaveformView--tape': isTape,
@@ -1689,7 +1711,35 @@ function WaveformView({
                     onPointerMove={onPlayheadPointerMove}
                     onPointerUp={onPlayheadPointerUp}
                 >
-                    {showPlayheadComment && (
+                    {showPlayheadComment && isBlueprintEnabled && (
+                        <div
+                            className="bp-WaveformRange-comment bp-WaveformRange-comment--blueprint bp-WaveformView-playheadComment"
+                            data-testid="bp-waveform-playhead-comment-toolbar"
+                            role="presentation"
+                            onKeyDown={stopToolbarKeyPropagation}
+                            onPointerDown={event => event.stopPropagation()}
+                            onPointerUp={event => event.stopPropagation()}
+                        >
+                            <Toolbar.Root aria-label={__('media_range_comment')} colorScheme="dark">
+                                <Toolbar.Button
+                                    className="bp-WaveformRange-commentButton"
+                                    data-resin-target="waveformPlayheadComment"
+                                    data-target-id="Waveform-commentAtTime"
+                                    data-testid="bp-waveform-playhead-comment"
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        onPlayheadComment?.();
+                                    }}
+                                >
+                                    <Toolbar.Icon icon={Comment} />
+                                    <Text as="span" color="textOnDarkDefault">
+                                        {__('media_range_comment')}
+                                    </Text>
+                                </Toolbar.Button>
+                            </Toolbar.Root>
+                        </div>
+                    )}
+                    {showPlayheadComment && !isBlueprintEnabled && (
                         <button
                             className="bp-WaveformRange-comment bp-WaveformView-playheadComment"
                             data-resin-target="waveformPlayheadComment"
@@ -1715,6 +1765,7 @@ function WaveformView({
                         durationSec={durationSec}
                         getPlayheadSec={getPlayheadSec}
                         interactive={interactive && !isOverlayReadOnly}
+                        isBlueprintEnabled={isBlueprintEnabled}
                         isHighlighted={isRangeDragging || isRangeHovered}
                         isSwiping={isTape && scrubPreviewTimeSec != null}
                         keepHighlight
@@ -1736,8 +1787,8 @@ function WaveformView({
                 )}
                 {hoverLeft != null && hoverProgress != null && !isRangeDragging && (
                     <div className="bp-WaveformView-hover" data-testid="bp-waveform-hover" style={{ left: hoverLeft }}>
-                        <div className="bp-WaveformView-hoverTime" data-testid="bp-waveform-hover-time">
-                            {formatTime(hoverProgress * durationSec)}
+                        <div className={hoverTimeClassName} data-testid="bp-waveform-hover-time">
+                            {renderHoverTime(hoverProgress * durationSec)}
                         </div>
                     </div>
                 )}

@@ -1,3 +1,4 @@
+import BlueprintProviders from '../../../BlueprintProviders';
 import {
     GALLERY_MAX_PAGES,
     GALLERY_MAX_SCALE,
@@ -44,23 +45,27 @@ interface Harness {
 
 function makeController(
     overrides: {
-        sidebarOpen?: boolean;
-        sidebarPresent?: boolean;
-        pageCount?: number;
+        blueprintControlsBarEnabled?: boolean;
+        blueprintSupportingUiEnabled?: boolean;
         currentPage?: number;
+        enhancedGalleryEnabled?: boolean;
         flagOn?: boolean;
         hasTouch?: boolean;
-        enhancedGalleryEnabled?: boolean;
+        pageCount?: number;
+        sidebarOpen?: boolean;
+        sidebarPresent?: boolean;
     } = {},
 ): Harness {
     const {
-        sidebarOpen = false,
-        sidebarPresent = true,
-        pageCount = 10,
+        blueprintControlsBarEnabled = false,
+        blueprintSupportingUiEnabled = false,
         currentPage = 1,
+        enhancedGalleryEnabled = true,
         flagOn = true,
         hasTouch = false,
-        enhancedGalleryEnabled = true,
+        pageCount = 10,
+        sidebarOpen = false,
+        sidebarPresent = true,
     } = overrides;
 
     const containerEl = document.createElement('div');
@@ -84,6 +89,8 @@ function makeController(
     const opts: GalleryControllerOptions = {
         containerEl,
         features: {
+            blueprintMigrationControlsBar: { enabled: blueprintControlsBarEnabled },
+            blueprintMigrationSupportingUi: { enabled: blueprintSupportingUiEnabled },
             galleryView: { enabled: flagOn },
             galleryViewV2: { enabled: enhancedGalleryEnabled },
             pinchToZoom: { enabled: true },
@@ -302,6 +309,7 @@ describe('GalleryController', () => {
             expect(grid.props.currentPage).toBe(3);
             expect(grid.props.pageCount).toBe(25);
             expect(grid.props.isAriaGridEnabled).toBe(true);
+            expect(grid.props.isBlueprintEnabled).toBe(false);
             expect(grid.props.isPinchZoomEnabled).toBe(true);
             expect(grid.props.isTouchZoomEnabled).toBe(true);
             expect(grid.props.scale).toBe(1);
@@ -312,6 +320,25 @@ describe('GalleryController', () => {
             expect(typeof grid.props.onPinchStart).toBe('function');
             expect(typeof grid.props.onScaleChange).toBe('function');
             expect(typeof grid.props.getPageRatio).toBe('function');
+        });
+
+        test('should render the Blueprint badge inside BlueprintProviders when the supporting UI flag is on', () => {
+            const { containerEl, controller } = makeController({ blueprintSupportingUiEnabled: true });
+            controller.toggle();
+
+            const root = mockLastRoot.render.mock.calls[0][0];
+            expect(root.type).toBe(BlueprintProviders);
+            expect(root.props.container).toBe(containerEl);
+            expect(root.props.children.props.isBlueprintEnabled).toBe(true);
+        });
+
+        test('should provide Blueprint context without the Blueprint badge when only another migration flag is on', () => {
+            const { controller } = makeController({ blueprintControlsBarEnabled: true });
+            controller.toggle();
+
+            const root = mockLastRoot.render.mock.calls[0][0];
+            expect(root.type).toBe(BlueprintProviders);
+            expect(root.props.children.props.isBlueprintEnabled).toBe(false);
         });
 
         describe('getPageRatio prop', () => {

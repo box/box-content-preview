@@ -1,6 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { IntlProvider } from 'react-intl';
 import elementsMessages from 'box-elements-messages'; // eslint-disable-line
+import readableTimeMessages from 'box-readable-time-messages'; // eslint-disable-line
+import readableTimeMessageDefinitions from '@box/readable-time/lib/messages.js';
 import Internationalize from 'box-ui-elements/es/elements/common/Internationalize';
 import VirtualizedTable from 'box-ui-elements/es/features/virtualized-table/VirtualizedTable';
 import fuzzySearch from 'box-ui-elements/es/utils/fuzzySearch';
@@ -12,9 +15,14 @@ import { AutoSizer, Column, SortDirection } from '@box/react-virtualized';
 import Breadcrumbs from './Breadcrumbs';
 import SearchBar from './SearchBar';
 import { ROOT_FOLDER, TABLE_COLUMNS, VIEWS } from './constants';
+import fuzzySearchV2 from './fuzzySearch';
 import './ArchiveExplorer.scss';
 
 const language = __LANGUAGE__; // eslint-disable-line
+const readableTimeDefaults = Object.fromEntries(
+    Object.values(readableTimeMessageDefinitions).map(({ id, defaultMessage }) => [id, defaultMessage]),
+);
+const archiveV2Messages = { ...readableTimeDefaults, ...readableTimeMessages };
 const { KEY_NAME, KEY_MODIFIED_AT, KEY_SIZE } = TABLE_COLUMNS;
 const { VIEW_FOLDER, VIEW_SEARCH } = VIEWS;
 
@@ -31,6 +39,16 @@ class ArchiveExplorer extends React.Component {
                 item_collection: PropTypes.arrayOf(PropTypes.string),
             }),
         ).isRequired,
+        // Resin analytics instance for programmatic v2 events
+        resin: PropTypes.shape({
+            recordAction: PropTypes.func.isRequired,
+        }),
+        // Loaded archive v2 parts (see ArchiveV2.tsx); absent renders the v1 UI
+        v2: PropTypes.shape({
+            ArchiveTableV2: PropTypes.elementType.isRequired,
+            BreadcrumbsV2: PropTypes.elementType.isRequired,
+            SearchBarV2: PropTypes.elementType.isRequired,
+        }),
     };
 
     /**
@@ -148,7 +166,9 @@ class ArchiveExplorer extends React.Component {
      */
     getSearchResult = (itemCollection, searchQuery) => {
         const trimmedQuery = searchQuery.trim();
-        return itemCollection.filter(item => fuzzySearch(trimmedQuery, item.name, 0));
+        const { v2 } = this.props;
+        const search = v2 ? fuzzySearchV2 : fuzzySearch;
+        return itemCollection.filter(item => search(trimmedQuery, item.name, 0));
     };
 
     /**
@@ -202,7 +222,7 @@ class ArchiveExplorer extends React.Component {
      * @return {jsx} VirtualizedTable
      */
     render() {
-        const { filename, itemCollection } = this.props;
+        const { filename, itemCollection, resin, v2 } = this.props;
         const { fullPath, searchQuery, sortBy, sortDirection, view } = this.state;
         const itemList = this.sortItemList(
             view === VIEW_SEARCH
@@ -210,64 +230,83 @@ class ArchiveExplorer extends React.Component {
                 : this.getItemList(itemCollection, fullPath),
         );
 
+        const SearchBarComponent = v2 ? v2.SearchBarV2 : SearchBar;
+        const BreadcrumbsComponent = v2 ? v2.BreadcrumbsV2 : Breadcrumbs;
+        const IntlComponent = v2 ? IntlProvider : Internationalize;
+        const intlProps = v2
+            ? { locale: language, messages: archiveV2Messages }
+            : { language, messages: elementsMessages };
+
         return (
-            <Internationalize language={language} messages={elementsMessages}>
+            <IntlComponent {...intlProps}>
                 <div className="bp-ArchiveExplorer" data-resin-feature="archive" data-testid="bp-archive-explorer">
-                    <SearchBar onSearch={this.handleSearch} searchQuery={searchQuery} />
-                    <Breadcrumbs
+                    <SearchBarComponent onSearch={this.handleSearch} searchQuery={searchQuery} />
+                    <BreadcrumbsComponent
                         filename={filename}
                         fullPath={fullPath}
                         onClick={this.handleBreadcrumbClick}
+                        resin={resin}
                         view={view}
                     />
-                    <div className="bp-ArchiveExplorer-table">
-                        <AutoSizer>
-                            {({ height, width }) => (
-                                <VirtualizedTable
-                                    height={height}
-                                    rowData={itemList}
-                                    rowGetter={this.getRowData(itemList)}
-                                    scrollToIndex={0}
-                                    sort={this.handleSort}
-                                    sortBy={sortBy}
-                                    sortDirection={sortDirection}
-                                    width={width}
-                                >
-                                    {intl => [
-                                        <Column
-                                            key={KEY_NAME}
-                                            cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
-                                            dataKey={KEY_NAME}
-                                            flexGrow={3}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('filename')}
-                                            width={1}
-                                        />,
-                                        <Column
-                                            key={KEY_MODIFIED_AT}
-                                            cellRenderer={readableTimeCellRenderer}
-                                            dataKey={KEY_MODIFIED_AT}
-                                            flexGrow={2}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('last_modified_date')}
-                                            width={1}
-                                        />,
-                                        <Column
-                                            key={KEY_SIZE}
-                                            cellRenderer={sizeCellRenderer()}
-                                            dataKey={KEY_SIZE}
-                                            flexGrow={1}
-                                            headerRenderer={sortableColumnHeaderRenderer}
-                                            label={__('size')}
-                                            width={1}
-                                        />,
-                                    ]}
-                                </VirtualizedTable>
-                            )}
-                        </AutoSizer>
+                    <div className="bp-ArchiveExplorer-table" data-testid="bp-archive-table">
+                        {v2 ? (
+                            <v2.ArchiveTableV2
+                                items={itemList}
+                                onItemClick={item => this.handleItemClick({ fullPath: item.absolute_path })}
+                                onSort={this.handleSort}
+                                resin={resin}
+                                sortBy={sortBy}
+                                sortDirection={sortDirection}
+                            />
+                        ) : (
+                            <AutoSizer>
+                                {({ height, width }) => (
+                                    <VirtualizedTable
+                                        height={height}
+                                        rowData={itemList}
+                                        rowGetter={this.getRowData(itemList)}
+                                        scrollToIndex={0}
+                                        sort={this.handleSort}
+                                        sortBy={sortBy}
+                                        sortDirection={sortDirection}
+                                        width={width}
+                                    >
+                                        {intl => [
+                                            <Column
+                                                key={KEY_NAME}
+                                                cellRenderer={itemNameCellRenderer(intl, this.handleItemClick)}
+                                                dataKey={KEY_NAME}
+                                                flexGrow={3}
+                                                headerRenderer={sortableColumnHeaderRenderer}
+                                                label={__('filename')}
+                                                width={1}
+                                            />,
+                                            <Column
+                                                key={KEY_MODIFIED_AT}
+                                                cellRenderer={readableTimeCellRenderer}
+                                                dataKey={KEY_MODIFIED_AT}
+                                                flexGrow={2}
+                                                headerRenderer={sortableColumnHeaderRenderer}
+                                                label={__('last_modified_date')}
+                                                width={1}
+                                            />,
+                                            <Column
+                                                key={KEY_SIZE}
+                                                cellRenderer={sizeCellRenderer()}
+                                                dataKey={KEY_SIZE}
+                                                flexGrow={1}
+                                                headerRenderer={sortableColumnHeaderRenderer}
+                                                label={__('size')}
+                                                width={1}
+                                            />,
+                                        ]}
+                                    </VirtualizedTable>
+                                )}
+                            </AutoSizer>
+                        )}
                     </div>
                 </div>
-            </Internationalize>
+            </IntlComponent>
         );
     }
 }

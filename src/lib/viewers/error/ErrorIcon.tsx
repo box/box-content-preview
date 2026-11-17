@@ -1,25 +1,12 @@
 import React from 'react';
-import { createRoot, Root } from 'react-dom/client';
 import { getIcon } from 'box-ui-elements/es/components/preview';
 
-export type Options = {
-    containerEl: HTMLElement;
+export type Props = {
+    extension?: string;
 };
 
-export default class ErrorIcon {
-    root: Root;
+export default function ErrorIcon({ extension }: Props): JSX.Element {
+    const Icon = getIcon(extension);
 
-    constructor({ containerEl }: Options) {
-        this.root = createRoot(containerEl);
-    }
-
-    destroy(): void {
-        this.root.unmount();
-    }
-
-    render(extension?: string): void {
-        const Icon = getIcon(extension);
-
-        this.root.render(<Icon extension={extension} />);
-    }
+    return <Icon extension={extension} />;
 }

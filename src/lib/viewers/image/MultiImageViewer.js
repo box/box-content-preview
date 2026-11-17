@@ -1,7 +1,13 @@
 import React from 'react';
 import ImageBaseViewer from './ImageBaseViewer';
 import MultiImageControls from './MultiImageControls';
-import { CLASS_INVISIBLE, CLASS_MULTI_IMAGE_PAGE, CLASS_IS_SCROLLABLE } from '../../constants';
+import MultiImageControlsV2 from './MultiImageControlsV2';
+import {
+    BLUEPRINT_MIGRATION_CONTROLS_BAR,
+    CLASS_INVISIBLE,
+    CLASS_MULTI_IMAGE_PAGE,
+    CLASS_IS_SCROLLABLE,
+} from '../../constants';
 import { pageNumberFromScroll } from '../../util';
 import './MultiImage.scss';
 
@@ -289,8 +295,12 @@ class MultiImageViewer extends ImageBaseViewer {
             return;
         }
 
+        const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR)
+            ? MultiImageControlsV2
+            : MultiImageControls;
+
         this.controls.render(
-            <MultiImageControls
+            <Controls
                 onFullscreenToggle={this.toggleFullscreen}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}

@@ -293,6 +293,12 @@ describe('lib/util', () => {
             expect(assetUrlCreator('somename')).toEqual('base/somename');
             expect(assetUrlCreator('http://somename')).toEqual('http://somename');
             expect(assetUrlCreator('third-party/somename')).toEqual('static/third-party/somename');
+            expect(assetUrlCreator('cmaps/')).toEqual('static/cmaps/');
+            expect(assetUrlCreator('iccs/')).toEqual('static/iccs/');
+            expect(assetUrlCreator('wasm/')).toEqual('static/wasm/');
+            expect(assetUrlCreator('standard_fonts/')).toEqual('static/standard_fonts/');
+            expect(assetUrlCreator('pdfjs-images/')).toEqual('static/pdfjs-images/');
+            expect(assetUrlCreator('exif/exif-reader.min.js')).toEqual('static/exif/exif-reader.min.js');
         });
     });
 
@@ -479,6 +485,51 @@ describe('lib/util', () => {
                     key: 'U+0041',
                 }),
             ).toEqual('A');
+        });
+
+        test.each([
+            [{ key: 'Esc' }, 'Escape'],
+            [{ key: 'Escape' }, 'Escape'],
+            [{ key: 'ArrowLeft' }, 'ArrowLeft'],
+            [{ key: ' ', shiftKey: true }, 'Shift+Space'],
+            [{ key: 'Shift', shiftKey: true }, ''],
+            [{ key: 'Meta', metaKey: true }, ''],
+        ])('should decode %o as %p', (event, expected) => {
+            expect(util.decodeKeydown(event)).toEqual(expected);
+        });
+
+        test.each([
+            [{ keyIdentifier: 'Left' }, 'ArrowLeft'],
+            [{ keyIdentifier: 'U+0041' }, 'A'],
+            [{ keyIdentifier: 'U+001B' }, 'Escape'],
+            [{ keyIdentifier: 'U+0041', ctrlKey: true }, 'Control+A'],
+        ])('should fall back to keyIdentifier for %o', (event, expected) => {
+            expect(util.decodeKeydown(event)).toEqual(expected);
+        });
+
+        test('should prefer key over keyIdentifier', () => {
+            expect(util.decodeKeydown({ key: 'a', keyIdentifier: 'U+0042' })).toEqual('a');
+        });
+
+        test.each([
+            [{ key: 'F', ctrlKey: true, shiftKey: true }, 'Control+F'],
+            [{ key: 'F', ctrlKey: true, metaKey: true }, 'Control+F'],
+            [{ key: 'F', shiftKey: true, metaKey: true }, 'Shift+F'],
+        ])('should keep only the first of Control, Shift and Meta for %o', (event, expected) => {
+            expect(util.decodeKeydown(event)).toEqual(expected);
+        });
+
+        test.each([
+            [{ key: 'f', altKey: true }, 'f'],
+            [{ key: 'ArrowLeft', altKey: true }, 'ArrowLeft'],
+            [{ key: 'Alt', altKey: true }, 'Alt'],
+            [{ key: 'f', altKey: true, ctrlKey: true }, 'Control+f'],
+        ])('should ignore the Alt modifier for %o', (event, expected) => {
+            expect(util.decodeKeydown(event)).toEqual(expected);
+        });
+
+        test('should return empty when the event has neither key nor keyIdentifier', () => {
+            expect(util.decodeKeydown({})).toEqual('');
         });
     });
 

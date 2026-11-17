@@ -1,0 +1,8 @@
+// Controls with several parts, like page and zoom, are measured and collapse as one unit. They must not shrink,
+// so the bar keeps its height as the viewer narrows and the cached widths stay true.
+.bp-ResponsiveControlsBarV2-item {
+    display: flex;
+    flex: none;
+    gap: inherit;
+    align-items: center;
+}

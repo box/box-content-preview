@@ -22,6 +22,6 @@
     padding: 0;
     border: 1px solid $white;
     border-radius: 2px;
-    background: $bdl-gray-65;
+    background: var(--bp-gray-65);
     transition: transform 150ms;
 }

@@ -1,4 +1,3 @@
-@import '~box-ui-elements/es/styles/variables';
 @import '../styles';
 
 .bp-PageControlsForm {
@@ -7,11 +6,11 @@
         width: $bp-controls-size-default;
         height: $bp-controls-size-small;
         padding: $bp-controls-spacing;
-        border: 1px solid $bdl-gray;
+        border: 1px solid var(--bp-gray-100);
         border-radius: 0;
         font-size: 13px;
         -webkit-font-smoothing: antialiased;
-        color: $bdl-gray;
+        color: var(--bp-gray-100);
         text-align: center;
 
         /* stylelint-disable property-no-vendor-prefix */
@@ -28,7 +27,7 @@
         /* stylelint-enable property-no-vendor-prefix */
 
         &:focus {
-            border: 1px solid $bdl-box-blue;
+            border: 1px solid var(--bp-box-blue-100);
             outline: 0;
             box-shadow: none;
         }
@@ -44,7 +43,7 @@
     @include bp-ControlLabel;
 }
 
-@include breakpoint($medium-screen) {
+@media (max-width: $bp-breakpoint-medium) {
     .bp-PageControlsForm-input,
     .bp-PageControlsForm-button-label {
         min-width: $bp-controls-size-large;

@@ -1,14 +1,19 @@
 import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import VolumeControls, { VOLUME_FLYOUT_DISMISS_MS } from '../VolumeControls';
+import { Volume0, Volume1, Volume2, VolumeX } from '@box/blueprint-web-assets/icons/Medium';
+import BlueprintProviders from '../../../../BlueprintProviders';
+import VolumeControls, { getIcon, VOLUME_FLYOUT_DISMISS_MS } from '../VolumeControls';
 
 describe('VolumeControls', () => {
     const getWrapper = (props = {}) =>
-        render(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} {...props} />);
+        render(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} {...props} />, {
+            wrapper: BlueprintProviders,
+        });
 
     const getContainer = async () => screen.findByTestId('bp-volume-controls');
-    const getToggle = async () => screen.getByTitle(new RegExp(`^(${__('media_mute')}|${__('media_unmute')})$`));
+    const getToggle = async () =>
+        screen.getByRole('button', { name: new RegExp(`^(${__('media_mute')}|${__('media_unmute')})$`) });
 
     describe('event handlers', () => {
         test.each`
@@ -211,6 +216,99 @@ describe('VolumeControls', () => {
             await user.tab();
             expect(screen.getByRole('button', { name: 'next' })).toHaveFocus();
             expect(flyout).not.toHaveClass('bp-is-open');
+        });
+    });
+
+    describe('Blueprint', () => {
+        test.each`
+            volume  | icon
+            ${0}    | ${VolumeX}
+            ${0.0}  | ${VolumeX}
+            ${0.01} | ${Volume0}
+            ${0.25} | ${Volume0}
+            ${0.33} | ${Volume1}
+            ${0.51} | ${Volume1}
+            ${0.66} | ${Volume2}
+            ${1.0}  | ${Volume2}
+        `('should map volume $volume to the Blueprint volume icon', ({ icon, volume }) => {
+            expect(getIcon(volume, true)).toBe(icon);
+        });
+
+        test.each`
+            volume | isMuted
+            ${0}   | ${false}
+            ${0.5} | ${true}
+            ${1}   | ${true}
+        `('should toggle mute to $isMuted when volume is $volume', async ({ isMuted, volume }) => {
+            const onMuteChange = jest.fn();
+            getWrapper({ onMuteChange, isBlueprintEnabled: true, volume });
+
+            await userEvent.click(await getToggle());
+            expect(onMuteChange).toHaveBeenCalledWith(isMuted);
+        });
+
+        test('should open the slider on the first collapsed press and mute on the next', async () => {
+            const user = userEvent.setup();
+            const onMuteChange = jest.fn();
+            getWrapper({ onMuteChange, isBlueprintEnabled: true, volume: 1 });
+
+            const container = await getContainer();
+            const flyout = container.querySelector('.bp-VolumeControls-flyout');
+            const toggle = await getToggle();
+            expect(flyout).not.toHaveClass('bp-is-open');
+
+            await user.pointer({ keys: '[TouchA]', target: toggle });
+            expect(flyout).toHaveClass('bp-is-open');
+            expect(onMuteChange).not.toHaveBeenCalled();
+            expect(screen.getByRole('slider', { name: __('media_volume_slider') })).toBeInTheDocument();
+
+            await user.pointer({ keys: '[TouchA]', target: toggle });
+            expect(onMuteChange).toHaveBeenCalledWith(true);
+        });
+
+        test('should keep resin, labels, and the Preview slider on the Blueprint mute control', async () => {
+            getWrapper({ isBlueprintEnabled: true, volume: 1 });
+
+            const toggle = await getToggle();
+            expect(toggle).toHaveAttribute('data-resin-target', 'volumeToggle');
+            expect(toggle).toHaveAttribute('aria-label', __('media_mute'));
+            expect(toggle).not.toHaveAttribute('title');
+            expect(screen.queryByTestId('IconVolumeMax24')).not.toBeInTheDocument();
+            expect(screen.getByRole('slider', { hidden: true, name: __('media_volume_slider') })).toBeInTheDocument();
+        });
+
+        test('should add the Blueprint modifier only when isBlueprintEnabled is true', async () => {
+            const { rerender } = getWrapper({ isBlueprintEnabled: true });
+            expect(await getContainer()).toHaveClass('bp-VolumeControls--blueprint');
+
+            rerender(<VolumeControls onMuteChange={jest.fn()} onVolumeChange={jest.fn()} />);
+            expect(await getContainer()).not.toHaveClass('bp-VolumeControls--blueprint');
+        });
+
+        test('should show the Blueprint mute tooltip on hover', async () => {
+            getWrapper({ isBlueprintEnabled: true, volume: 1 });
+
+            await userEvent.hover(await getToggle());
+            expect(await screen.findByRole('tooltip', { name: __('media_mute') })).toBeInTheDocument();
+        });
+
+        test('should tab from the Blueprint mute button to the slider when the flyout is open', async () => {
+            const user = userEvent.setup();
+            const onVolumeChange = jest.fn();
+            getWrapper({ onVolumeChange, isBlueprintEnabled: true, volume: 0.5 });
+
+            const slider = screen.getByRole('slider', { hidden: true, name: __('media_volume_slider') });
+            expect(slider).toHaveAttribute('tabIndex', '-1');
+
+            await user.tab();
+            expect(await getToggle()).toHaveFocus();
+            expect(slider).toHaveAttribute('tabIndex', '0');
+
+            await user.tab();
+            expect(slider).toHaveFocus();
+
+            await user.keyboard('{ArrowUp}');
+            expect(onVolumeChange).toHaveBeenCalled();
         });
     });
 });

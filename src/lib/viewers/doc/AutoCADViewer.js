@@ -30,7 +30,7 @@ class AutoCADViewer extends DocumentViewer {
             .getXrefsMetadata(id, TEMPLATE_AUTOCAD, this.options)
             .then(({ [FIELD_HASXREFS]: hasxrefsValue }) => {
                 if (hasxrefsValue) {
-                    this.options.ui.showNotification(__('has_x_refs'), null, true);
+                    this.options.ui.showNotification(__('has_x_refs'), null, true, 'warning');
 
                     this.emitMetric({
                         name: MISSING_EXTERNAL_REFS,

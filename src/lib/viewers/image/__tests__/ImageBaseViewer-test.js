@@ -436,6 +436,33 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.zoomOut).not.toBeCalled();
             expect(consumed).toBe(false);
         });
+
+        test.each(['f', 'F'])('should toggle fullscreen on %s with the Blueprint controls bar', key => {
+            imageBase.loadUI();
+            imageBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(imageBase, 'toggleFullscreen').mockImplementation();
+
+            expect(imageBase.onKeydown(key)).toBe(true);
+            expect(imageBase.toggleFullscreen).toBeCalledWith();
+        });
+
+        test('should not toggle fullscreen on f with the older controls bar', () => {
+            imageBase.loadUI();
+            imageBase.options.features = { blueprintMigrationControlsBar: { enabled: false } };
+            jest.spyOn(imageBase, 'toggleFullscreen').mockImplementation();
+
+            expect(imageBase.onKeydown('f')).toBe(false);
+            expect(imageBase.toggleFullscreen).not.toBeCalled();
+        });
+
+        test('should leave Alt+F to the browser', () => {
+            imageBase.loadUI();
+            imageBase.options.features = { blueprintMigrationControlsBar: { enabled: true } };
+            jest.spyOn(imageBase, 'toggleFullscreen').mockImplementation();
+
+            expect(imageBase.onKeydown('f', { altKey: true })).toBe(false);
+            expect(imageBase.toggleFullscreen).not.toBeCalled();
+        });
     });
 
     describe('bindDOMListeners()', () => {
@@ -691,6 +718,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             // deltaY=-5, delta=0.05, newWidth = 100 * 1.05 = 105
             expect(imageBase.imageEl.style.width).toBe('105px');
             expect(imageBase.imageEl.style.height).toBe('');
+        });
+
+        test('should step a mouse-wheel notch by 10% of the current width', () => {
+            const event = { clientX: 0, clientY: 0, ctrlKey: true, deltaY: -100, preventDefault: jest.fn() };
+
+            imageBase.wheelZoomHandler(event);
+
+            expect(parseFloat(imageBase.imageEl.style.width)).toBeCloseTo(110);
         });
 
         test('should apply proportional zoom on pinch out', () => {
