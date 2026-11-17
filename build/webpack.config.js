@@ -35,18 +35,22 @@ const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
 const pdfjsImages = path.resolve('node_modules/pdfjs-dist/legacy/web/images');
 const staticFolder = path.resolve('dist');
 
-// LANGUAGE selects one locale so a caller can compile that locale in its own
-// Node process. Unset keeps the previous behavior: every production locale,
-// or en-US for dev and CI.
+// BUILD_LOCALE selects one production locale so a caller can compile that
+// locale in its own Node process. Not LANGUAGE: that is the gettext locale
+// variable, and CI images set it to values like en_US.UTF-8.
 function resolveLanguages() {
-    const requested = process.env.LANGUAGE;
+    if (!isProd) {
+        return ['en-US']; // Only 1 language needed for dev
+    }
+
+    const requested = process.env.BUILD_LOCALE;
 
     if (!requested) {
-        return isProd ? locales : ['en-US'];
+        return locales;
     }
 
     if (!locales.includes(requested)) {
-        throw new Error(`LANGUAGE=${requested} is not a known @box/languages locale`);
+        throw new Error(`BUILD_LOCALE=${requested} is not a known @box/languages locale`);
     }
 
     return [requested];
