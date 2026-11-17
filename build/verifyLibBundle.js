@@ -23,6 +23,12 @@ const LIB_GZIP_BUDGET_BYTES = {
 };
 
 const BLUEPRINT_PACKAGES = ['@box/blueprint-web', '@box/blueprint-web-assets'];
+const libWebpackConfig = require('./webpack.config.lib');
+
+// Sass and css-loader inline imported stylesheets, and the lib production build does not
+// emit mini-css-extract path comments, so dist/lib/index.css will not contain
+// node_modules/@box/blueprint-web even when those styles were compiled in.
+const BLUEPRINT_STYLE_IMPORT = /@(?:import|use|forward)\s+(?:url\(\s*)?['"]~?(@box\/blueprint-web(?:-assets)?)(?:\/[^'"]*)?['"]/;
 
 // Guards against webpack emitting its chunk-loading runtime into the lib bundle.
 // The runtime contains a literal `import("./" + chunkId)` expression, which downstream
@@ -196,7 +202,81 @@ function inlinedBlueprintPackages(source) {
     );
 }
 
-function assertBlueprintStaysExternal(jsSource, cssSource) {
+function libCssIncludePaths() {
+    const cssRule = libWebpackConfig.module.rules.find(
+        rule => rule.test && rule.test.test('preview.scss') && rule.include,
+    );
+
+    if (!cssRule) {
+        console.error('verifyLibBundle: build/webpack.config.lib.js has no CSS rule with an include list.');
+        process.exit(1);
+    }
+
+    return [].concat(cssRule.include);
+}
+
+function isInsideBlueprintPackage(filePath) {
+    const resolved = path.resolve(filePath);
+
+    return BLUEPRINT_PACKAGES.some(packageName => {
+        const packageDir = path.resolve(__dirname, '../node_modules', packageName);
+        return resolved === packageDir || resolved.startsWith(`${packageDir}${path.sep}`);
+    });
+}
+
+function stylesheetFilesUnder(dirPath, found = []) {
+    if (!fs.existsSync(dirPath) || !fs.statSync(dirPath).isDirectory()) {
+        return found;
+    }
+
+    fs.readdirSync(dirPath, { withFileTypes: true }).forEach(entry => {
+        if (entry.name === 'node_modules') {
+            return;
+        }
+
+        const entryPath = path.join(dirPath, entry.name);
+
+        if (entry.isDirectory()) {
+            stylesheetFilesUnder(entryPath, found);
+            return;
+        }
+
+        if (entry.isFile() && /\.s?css$/.test(entry.name)) {
+            found.push(entryPath);
+        }
+    });
+
+    return found;
+}
+
+function assertBlueprintStylesStayExternal() {
+    const includePaths = libCssIncludePaths();
+    const bundledPackage = includePaths.find(includePath => isInsideBlueprintPackage(includePath));
+
+    if (bundledPackage) {
+        console.error(
+            `verifyLibBundle: the lib CSS rule compiles ${bundledPackage}. Remove @box/blueprint-web and @box/blueprint-web-assets from that include list so the host supplies those styles.`,
+        );
+        process.exit(1);
+    }
+
+    includePaths.forEach(includePath => {
+        stylesheetFilesUnder(includePath).forEach(stylesheetPath => {
+            const styleImport = fs.readFileSync(stylesheetPath, 'utf8').match(BLUEPRINT_STYLE_IMPORT);
+
+            if (styleImport) {
+                const relativePath = path.relative(path.resolve(__dirname, '..'), stylesheetPath);
+                console.error(
+                    `verifyLibBundle: ${relativePath} imports ${styleImport[1]}. Sass and css-loader would inline that stylesheet into dist/lib/index.css.`,
+                );
+                console.error('Keep Blueprint styles external. The host already provides them.');
+                process.exit(1);
+            }
+        });
+    });
+}
+
+function assertBlueprintStaysExternal(jsSource) {
     const missing = BLUEPRINT_PACKAGES.filter(packageName => !externalImportPattern(packageName).test(jsSource));
 
     if (missing.length > 0) {
@@ -209,20 +289,17 @@ function assertBlueprintStaysExternal(jsSource, cssSource) {
         process.exit(1);
     }
 
-    [
-        ['dist/lib/index.js', jsSource],
-        ['dist/lib/index.css', cssSource],
-    ].forEach(([label, source]) => {
-        const inlined = [...inlinedBlueprintPackages(source)];
+    const inlined = [...inlinedBlueprintPackages(jsSource)];
 
-        if (inlined.length > 0) {
-            console.error(`verifyLibBundle: ${label} contains inlined ${inlined.join(' and ')} source.`);
-            console.error(
-                'Keep these packages in externals in build/webpack.config.lib.js so the bundle imports them instead of inlining their source.',
-            );
-            process.exit(1);
-        }
-    });
+    if (inlined.length > 0) {
+        console.error(`verifyLibBundle: dist/lib/index.js contains inlined ${inlined.join(' and ')} source.`);
+        console.error(
+            'Keep these packages in externals in build/webpack.config.lib.js so the bundle imports them instead of inlining their source.',
+        );
+        process.exit(1);
+    }
+
+    assertBlueprintStylesStayExternal();
 }
 
 function reportGzipBudgets() {
@@ -270,7 +347,7 @@ if (!fs.existsSync(cssPath)) {
     process.exit(1);
 }
 
-assertBlueprintStaysExternal(bundle, fs.readFileSync(cssPath, 'utf8'));
+assertBlueprintStaysExternal(bundle);
 reportGzipBudgets();
 
 console.log(
