@@ -3,6 +3,7 @@ const { execSync, spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const locales = require('@box/languages');
+const cdnSharedAssets = require('./cdnSharedAssets');
 
 // box-ui-elements queues every locale and runs 5 webpack processes at a time
 // (scripts/buildLocaleAssets.js). Five is a concurrency cap, not a locale
@@ -16,19 +17,11 @@ const maxActive = 2;
 // shared that heap. Each locale is now its own process, so start back at 4 GB.
 const heapMb = 4096;
 
-const dist = path.resolve('dist');
-const sharedCopies = [
-    [path.resolve('src/third-party'), dist],
-    [path.resolve('src/lib/exif'), dist],
-    [path.resolve('node_modules/pdfjs-dist/cmaps'), dist],
-];
-
 const children = new Set();
 
 function copySharedAssets() {
-    fs.mkdirSync(dist, { recursive: true });
-
-    sharedCopies.forEach(([source, destination]) => {
+    cdnSharedAssets.forEach(([source, destination]) => {
+        fs.mkdirSync(destination, { recursive: true });
         console.log(`Rsync ${source} -> ${destination}`);
         execSync(`rsync -avzq --delete --exclude=".*" "${source}" "${destination}"`, {
             stdio: 'inherit',
@@ -52,7 +45,7 @@ function buildLocale(locale) {
                     ...process.env,
                     BABEL_ENV: 'production',
                     NODE_ENV: 'production',
-                    LANGUAGE: locale,
+                    BUILD_LOCALE: locale,
                     SKIP_SHARED_ASSETS: '1',
                 },
                 stdio: 'inherit',
@@ -73,13 +66,13 @@ function buildLocale(locale) {
         };
 
         child.on('error', finish);
-        child.on('exit', code => {
+        child.on('exit', (code, signal) => {
             if (code === 0) {
                 finish();
                 return;
             }
 
-            finish(new Error(`Failed to build ${locale} (exit ${code})`));
+            finish(new Error(`Failed to build ${locale} (${signal || `exit ${code}`})`));
         });
     });
 }
@@ -104,8 +97,11 @@ async function runLocales() {
                 // eslint-disable-next-line no-await-in-loop
                 await buildLocale(locale);
             } catch (error) {
-                failure = error;
-                stopChildren();
+                // Siblings killed by stopChildren also reject; keep the first cause.
+                if (!failure) {
+                    failure = error;
+                    stopChildren();
+                }
             }
         }
     }

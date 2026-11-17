@@ -13,6 +13,7 @@ const { execSync } = require('child_process');
 const commonConfig = require('./webpack.common.config');
 const RsyncPlugin = require('./RsyncPlugin');
 const ApiRsyncPlugin = require('./ApiRsyncPlugin');
+const cdnSharedAssets = require('./cdnSharedAssets');
 const version = isProd ? require('../package.json').version : 'dev';
 
 let rsyncLocation = '';
@@ -26,14 +27,6 @@ if (fs.existsSync('build/rsync.json')) {
 }
 
 const lib = path.resolve('src/lib');
-const thirdParty = path.resolve('src/third-party');
-const exifAssets = path.resolve('src/lib/exif');
-const pdfjsCmaps = path.resolve('node_modules/pdfjs-dist/cmaps');
-const pdfjsIccs = path.resolve('node_modules/pdfjs-dist/iccs');
-const pdfjsStandardFonts = path.resolve('node_modules/pdfjs-dist/standard_fonts');
-const pdfjsWasm = path.resolve('node_modules/pdfjs-dist/wasm');
-const pdfjsImages = path.resolve('node_modules/pdfjs-dist/legacy/web/images');
-const staticFolder = path.resolve('dist');
 
 // BUILD_LOCALE selects one production locale so a caller can compile that
 // locale in its own Node process. Not LANGUAGE: that is the gettext locale
@@ -121,13 +114,9 @@ function updateConfig(conf, language, index) {
     };
 
     if (index === 0 && !skipSharedAssets) {
-        config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
-        config.plugins.push(new RsyncPlugin(exifAssets, staticFolder));
-        config.plugins.push(new RsyncPlugin(pdfjsCmaps, staticFolder));
-        config.plugins.push(new RsyncPlugin(pdfjsIccs, staticFolder));
-        config.plugins.push(new RsyncPlugin(pdfjsStandardFonts, staticFolder));
-        config.plugins.push(new RsyncPlugin(pdfjsWasm, staticFolder));
-        config.plugins.push(new RsyncPlugin(`${pdfjsImages}/`, path.join(staticFolder, 'pdfjs-images')));
+        cdnSharedAssets.forEach(([source, destination]) => {
+            config.plugins.push(new RsyncPlugin(source, destination));
+        });
     }
 
     if (isDev) {
