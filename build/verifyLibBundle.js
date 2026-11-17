@@ -227,9 +227,48 @@ function isInsideBlueprintPackage(filePath) {
     });
 }
 
+// Quote-aware so `$cdn: "//cdn.example.test"; @import "./bridge";` keeps the import.
+// A `//` comment may also sit against the previous token, as in `red;// comment`.
 function stripComments(source) {
-    // Sass allows `red;// comment` with no space. Leave `://` in urls alone.
-    return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\n])\/\/.*$/gm, '$1');
+    let result = '';
+    let quote = null;
+    let index = 0;
+
+    while (index < source.length) {
+        const char = source[index];
+        const next = source[index + 1];
+
+        if (quote) {
+            result += char;
+
+            if (char === '\\' && next) {
+                result += next;
+                index += 2;
+            } else {
+                if (char === quote) {
+                    quote = null;
+                }
+
+                index += 1;
+            }
+        } else if (char === '"' || char === "'") {
+            quote = char;
+            result += char;
+            index += 1;
+        } else if (char === '/' && next === '*') {
+            const end = source.indexOf('*/', index + 2);
+            index = end === -1 ? source.length : end + 2;
+            result += ' ';
+        } else if (char === '/' && next === '/') {
+            const end = source.indexOf('\n', index + 2);
+            index = end === -1 ? source.length : end;
+        } else {
+            result += char;
+            index += 1;
+        }
+    }
+
+    return result;
 }
 
 function blueprintPackageFromRequest(request) {
@@ -280,27 +319,38 @@ function firstExisting(candidates) {
     return candidates.map(existingFile).find(Boolean) || null;
 }
 
-// `@import 'common.scss'` loads `_common.scss`. Appending another extension looks for
-// `_common.scss.scss` and drops the real partial.
-function styleCandidates(basePath) {
+function withPartial(filePath) {
+    const parsed = path.parse(filePath);
+    return [filePath, path.join(parsed.dir, `_${parsed.name}${parsed.ext}`)];
+}
+
+// `@import 'common.scss'` loads `_common.scss`. `@import 'theme'` prefers
+// `_theme.import.scss` over `_theme.scss`. `@use` does not.
+function styleCandidates(basePath, directive) {
     const parsed = path.parse(basePath);
-
-    if (STYLE_EXTENSIONS.includes(parsed.ext)) {
-        return [basePath, path.join(parsed.dir, `_${parsed.name}${parsed.ext}`)];
-    }
-
-    const partialBase = path.join(parsed.dir, `_${parsed.base}`);
+    const hasStyleExtension = STYLE_EXTENSIONS.includes(parsed.ext);
+    const extensionless = hasStyleExtension ? path.join(parsed.dir, parsed.name) : basePath;
     const candidates = [];
 
-    STYLE_EXTENSIONS.forEach(extension => {
-        candidates.push(`${basePath}${extension}`, `${partialBase}${extension}`);
-    });
-    candidates.push(
-        path.join(basePath, 'index.scss'),
-        path.join(basePath, '_index.scss'),
-        path.join(basePath, 'index.css'),
-        path.join(basePath, '_index.css'),
-    );
+    if (directive === 'import') {
+        STYLE_EXTENSIONS.forEach(extension => {
+            candidates.push(...withPartial(`${extensionless}.import${extension}`));
+        });
+    }
+
+    if (hasStyleExtension) {
+        candidates.push(...withPartial(basePath));
+    } else {
+        STYLE_EXTENSIONS.forEach(extension => {
+            candidates.push(...withPartial(`${basePath}${extension}`));
+        });
+        candidates.push(
+            path.join(basePath, 'index.scss'),
+            path.join(basePath, '_index.scss'),
+            path.join(basePath, 'index.css'),
+            path.join(basePath, '_index.css'),
+        );
+    }
 
     return candidates;
 }
@@ -320,11 +370,11 @@ function scriptCandidates(basePath) {
     return candidates;
 }
 
-function resolveRequest(specifier, fromFile, kind) {
+function resolveRequest(specifier, fromFile, kind, directive) {
     const bases = requestBases(specifier, fromFile);
 
     if (kind === 'style') {
-        return firstExisting(bases.flatMap(styleCandidates));
+        return firstExisting(bases.flatMap(basePath => styleCandidates(basePath, directive)));
     }
 
     return firstExisting(bases.flatMap(scriptCandidates));
@@ -343,9 +393,9 @@ function requestsIn(filePath, source) {
         });
     }
 
-    [...stripped.matchAll(/@(?:import|use|forward)\b([^;]*);/g)].forEach(directive => {
-        [...directive[1].matchAll(/['"]~?([^'"]+)['"]/g)].forEach(specifier => {
-            requests.push({ specifier: specifier[1], kind: 'style' });
+    [...stripped.matchAll(/@(import|use|forward)\b([^;]*);/g)].forEach(directive => {
+        [...directive[2].matchAll(/['"]~?([^'"]+)['"]/g)].forEach(specifier => {
+            requests.push({ specifier: specifier[1], kind: 'style', directive: directive[1] });
         });
     });
 
@@ -373,8 +423,8 @@ function reachableStylesheets(includePaths) {
 
             const styleFile = STYLE_EXTENSIONS.some(extension => filePath.endsWith(extension));
 
-            requestsIn(filePath, fs.readFileSync(filePath, 'utf8')).forEach(({ specifier, kind }) => {
-                const resolved = resolveRequest(specifier, filePath, kind);
+            requestsIn(filePath, fs.readFileSync(filePath, 'utf8')).forEach(({ specifier, kind, directive }) => {
+                const resolved = resolveRequest(specifier, filePath, kind, directive);
 
                 if (!resolved || seen.has(resolved) || isInsideBlueprintPackage(resolved)) {
                     return;
