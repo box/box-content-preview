@@ -87,7 +87,7 @@ describe('lib/viewers/doc/DocLoader', () => {
         });
 
         test.each(['pending', 'none', 'viewable'])(
-            'should keep the ocr_pdf rep when its conversion is still in progress (%s)',
+            'should not block on the ocr_pdf rep and load the pdf rep while ocr_pdf is converting (%s)',
             state => {
                 file.representations.entries.unshift({
                     representation: 'ocr_pdf',
@@ -96,9 +96,29 @@ describe('lib/viewers/doc/DocLoader', () => {
                 viewer.REP = 'ocr_pdf';
 
                 const determinedRep = DocLoader.determineRepresentation(file, viewer);
-                expect(determinedRep.representation).toBe('ocr_pdf');
+                expect(determinedRep.representation).toBe('pdf');
             },
         );
+
+        test('should keep the ocr_pdf rep when it is not ready but no other rep is available', () => {
+            file.representations.entries = [{ representation: 'ocr_pdf', status: { state: 'pending' } }];
+            viewer.REP = 'ocr_pdf';
+
+            const determinedRep = DocLoader.determineRepresentation(file, viewer);
+            expect(determinedRep.representation).toBe('ocr_pdf');
+        });
+
+        test('should load a converting pdf rep rather than the original for non-pdf files', () => {
+            file.representations.entries = [
+                { representation: 'ocr_pdf', status: { state: 'pending' } },
+                { representation: 'pdf', status: { state: 'pending' } },
+                { representation: 'ORIGINAL', status: { state: 'success' } },
+            ];
+            viewer.REP = 'ocr_pdf';
+
+            const determinedRep = DocLoader.determineRepresentation(file, viewer);
+            expect(determinedRep.representation).toBe('pdf');
+        });
 
         test('should fall back to the original rep when a born-digital pdf only has a failed ocr_pdf rep', () => {
             file.extension = 'pdf';
@@ -114,7 +134,7 @@ describe('lib/viewers/doc/DocLoader', () => {
         });
 
         test.each(['none', 'pending'])(
-            'should keep the ocr_pdf rep for a pdf file while it converts on demand (%s)',
+            'should load the original rep for a pdf file while ocr_pdf converts on demand (%s)',
             state => {
                 file.extension = 'pdf';
                 file.representations.entries = [
@@ -125,9 +145,23 @@ describe('lib/viewers/doc/DocLoader', () => {
                 viewer.EXT = ['pdf'];
 
                 const determinedRep = DocLoader.determineRepresentation(file, viewer);
-                expect(determinedRep.representation).toBe('ocr_pdf');
+                expect(determinedRep.representation).toBe('ORIGINAL');
             },
         );
+
+        test('should load a successful pdf rep for a pdf file while ocr_pdf converts on demand', () => {
+            file.extension = 'pdf';
+            file.representations.entries = [
+                { representation: 'ocr_pdf', status: { state: 'pending' } },
+                { representation: 'pdf', status: { state: 'success' } },
+                { representation: 'ORIGINAL', status: { state: 'success' } },
+            ];
+            viewer.REP = 'ocr_pdf';
+            viewer.EXT = ['pdf'];
+
+            const determinedRep = DocLoader.determineRepresentation(file, viewer);
+            expect(determinedRep.representation).toBe('pdf');
+        });
 
         test('should fall back from a failed ocr_pdf through pdf to the original rep for pdf files', () => {
             file.extension = 'pdf';

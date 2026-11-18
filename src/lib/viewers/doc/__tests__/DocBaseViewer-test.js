@@ -1211,6 +1211,68 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('requestOcrPdfConversion()', () => {
+            const ocrPdfRep = state => ({
+                representation: 'ocr_pdf',
+                status: { state },
+                info: { url: 'https://api.box.com/ocr_pdf/info' },
+            });
+
+            let repStatus;
+
+            beforeEach(() => {
+                repStatus = { removeListener: jest.fn(), getPromise: jest.fn().mockResolvedValue() };
+                jest.spyOn(docBase, 'getRepStatus').mockReturnValue(repStatus);
+                docBase.options.representation = { representation: 'pdf' };
+            });
+
+            test.each(['none', 'pending'])('should poll the ocr_pdf rep in the background when it is %s', state => {
+                const rep = ocrPdfRep(state);
+                docBase.options.file = { id: '0', representations: { entries: [rep] } };
+
+                docBase.requestOcrPdfConversion();
+
+                expect(docBase.getRepStatus).toHaveBeenCalledWith(rep);
+                expect(repStatus.removeListener).toHaveBeenCalledWith('conversionpending', docBase.resetLoadTimeout);
+                expect(repStatus.getPromise).toHaveBeenCalled();
+            });
+
+            test.each(['success', 'error'])('should not poll the ocr_pdf rep when it is %s', state => {
+                docBase.options.file = { id: '0', representations: { entries: [ocrPdfRep(state)] } };
+
+                docBase.requestOcrPdfConversion();
+
+                expect(docBase.getRepStatus).not.toHaveBeenCalled();
+            });
+
+            test('should not poll when the current rep is already ocr_pdf', () => {
+                docBase.options.representation = ocrPdfRep('none');
+                docBase.options.file = { id: '0', representations: { entries: [docBase.options.representation] } };
+
+                docBase.requestOcrPdfConversion();
+
+                expect(docBase.getRepStatus).not.toHaveBeenCalled();
+            });
+
+            test('should not poll when the file has no ocr_pdf rep', () => {
+                docBase.options.file = { id: '0', representations: { entries: [] } };
+
+                docBase.requestOcrPdfConversion();
+
+                expect(docBase.getRepStatus).not.toHaveBeenCalled();
+            });
+
+            test('should swallow a failed ocr_pdf conversion', async () => {
+                const getPromise = Promise.reject(new Error('conversion failed'));
+                repStatus.getPromise.mockReturnValue(getPromise);
+                docBase.options.file = { id: '0', representations: { entries: [ocrPdfRep('none')] } };
+
+                docBase.requestOcrPdfConversion();
+
+                await expect(getPromise).rejects.toThrow();
+            });
+        });
+
         describe('loadViewerAssets()', () => {
             let testDocBase;
             beforeEach(() => {
@@ -1331,7 +1393,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should fall back to the original rep when no pdf rep exists', () => {
                 const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
                 docBase.options.representation = { representation: 'ocr_pdf' };
-                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }, originalRep]);
+                docBase.options.file = makeFile([
+                    { representation: 'ocr_pdf', status: { state: 'none' } },
+                    originalRep,
+                ]);
 
                 expect(docBase.getRepFallback()).toBe(originalRep);
             });
@@ -3832,6 +3897,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.getCachedPage = jest.spyOn(docBase, 'getCachedPage').mockImplementation();
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
                 stubs.setupPages = jest.spyOn(docBase, 'setupPageIds').mockImplementation();
+                stubs.requestOcrPdfConversion = jest.spyOn(docBase, 'requestOcrPdfConversion').mockImplementation();
+            });
+
+            test('should warm the ocr_pdf rep only once, after the document first loads', () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                };
+                docBase.loaded = false;
+
+                docBase.pagesinitHandler();
+                docBase.pagesinitHandler();
+
+                expect(stubs.requestOcrPdfConversion).toHaveBeenCalledTimes(1);
             });
 
             test('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
