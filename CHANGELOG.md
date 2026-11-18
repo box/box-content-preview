@@ -1,3 +1,10 @@
+## 3.140.0 (2026-11-18)
+
+* chore(build): Build one CDN locale when LANGUAGE is set (#1835) ([dd5d900](https://github.com/box/box-content-preview/commit/dd5d900)), closes [#1835](https://github.com/box/box-content-preview/issues/1835)
+* chore(i18n): update translations (#1956) ([483433d](https://github.com/box/box-content-preview/commit/483433d)), closes [#1956](https://github.com/box/box-content-preview/issues/1956)
+* build(lib): fail the npm bundle check when gzipped size exceeds the budget (#1957) ([4232707](https://github.com/box/box-content-preview/commit/4232707)), closes [#1957](https://github.com/box/box-content-preview/issues/1957)
+* fix(doc): use Box pdf.js fork, gated by enablePdfjsFork (#1958) ([6b137b8](https://github.com/box/box-content-preview/commit/6b137b8)), closes [#1958](https://github.com/box/box-content-preview/issues/1958)
+
 ## 3.139.0 (2026-11-14)
 
 * ci: add GitHub Actions workflow (#1953) ([68666e3](https://github.com/box/box-content-preview/commit/68666e3)), closes [#1953](https://github.com/box/box-content-preview/issues/1953)
