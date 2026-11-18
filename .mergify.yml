@@ -11,7 +11,7 @@ queue_rules:
           - -files~=^(?!src/i18n/)
           - '#approved-reviews-by>=1'
           - '#changes-requested-reviews-by=0'
-          - status-success=Travis CI - Pull Request
+          - check-success=CI Status
           - label!=do-not-merge
       merge_method: squash
 
@@ -22,7 +22,7 @@ queue_rules:
           - '#approved-reviews-by>=1'
           - '#changes-requested-reviews-by=0'
           - '#review-requested=0'
-          - status-success=Travis CI - Pull Request
+          - check-success=CI Status
           - label=ready-to-merge
           - label!=do-not-merge
           - title~=^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\([^)]+\))?:\s.+$
