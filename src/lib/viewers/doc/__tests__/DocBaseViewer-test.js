@@ -3104,8 +3104,23 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('asset');
             });
 
+            test.each([true, false])(
+                'should call setBoxChangesEnabled with %s from the enablePdfjsFork flag when the vendored pdf.js is the fork',
+                isForkEnabled => {
+                    window.pdfjsLib = { GlobalWorkerOptions: {}, setBoxChangesEnabled: jest.fn() };
+                    docBase.options = { file: {}, location: { staticBaseURI: 'test/', locale: 'en-US' } };
+                    jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                        flag => flag === 'enablePdfjsFork' && isForkEnabled,
+                    );
+
+                    docBase.setupPdfjs();
+
+                    expect(window.pdfjsLib.setBoxChangesEnabled).toBeCalledWith(isForkEnabled);
+                },
+            );
+
             test('should set workerSrc from consumer-supplied options.pdfjs.workerSrc when useNpmPdfjs flag is on', () => {
-                docBase.pdfjsLib = { GlobalWorkerOptions: {} };
+                docBase.pdfjsLib = { GlobalWorkerOptions: {}, setBoxChangesEnabled: jest.fn() };
                 docBase.options = { pdfjs: { workerSrc: 'consumer-worker-src' } };
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
 
@@ -3116,7 +3131,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             test('should fall back to the derived npm worker url when useNpmPdfjs flag is on but consumer omits workerSrc', () => {
                 jest.doMock('../pdfjsNpmWorker', () => ({ default: () => 'derived-worker-src' }));
-                docBase.pdfjsLib = { GlobalWorkerOptions: {} };
+                docBase.pdfjsLib = { GlobalWorkerOptions: {}, setBoxChangesEnabled: jest.fn() };
                 docBase.options = { pdfjs: {} };
                 jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
 
@@ -3125,6 +3140,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfjsLib.GlobalWorkerOptions.workerSrc).toBe('derived-worker-src');
                 jest.dontMock('../pdfjsNpmWorker');
             });
+
+            test.each([true, false])(
+                'should call setBoxChangesEnabled with %s from the enablePdfjsFork flag when useNpmPdfjs flag is on',
+                isForkEnabled => {
+                    docBase.pdfjsLib = { GlobalWorkerOptions: {}, setBoxChangesEnabled: jest.fn() };
+                    docBase.options = { pdfjs: { workerSrc: 'consumer-worker-src' } };
+                    jest.spyOn(docBase, 'featureEnabled').mockImplementation(
+                        flag => flag === 'useNpmPdfjs' || (flag === 'enablePdfjsFork' && isForkEnabled),
+                    );
+
+                    docBase.setupPdfjs();
+
+                    expect(docBase.pdfjsLib.setBoxChangesEnabled).toBeCalledWith(isForkEnabled);
+                },
+            );
         });
 
         describe('initPrint()', () => {
