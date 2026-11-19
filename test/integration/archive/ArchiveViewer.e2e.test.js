@@ -26,7 +26,7 @@ describe('Archive Viewer', () => {
             cy.get('button').click({ scrollBehavior: false });
         });
 
-        cy.getByTestId('bp-archive-breadcrumbs').should('contain', 'Collection Child');
+        cy.getByTestId('bp-archive-breadcrumbs').should('contain', 'Collection Child (CI block check)');
         cy.get('.ReactVirtualized__Table__Grid').should($grid => {
             expect($grid[0].scrollHeight).to.be.greaterThan($grid[0].clientHeight);
             expect($grid[0].scrollTop).to.equal(0);
