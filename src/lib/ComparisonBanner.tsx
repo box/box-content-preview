@@ -108,9 +108,9 @@ export default function ComparisonBanner({
     const isBadgeTruncated = Number(versionNumber) > MAX_BADGE_VERSION;
     const badgeLabel = isBadgeTruncated ? `${MAX_BADGE_VERSION}+` : versionNumber;
     const badgeFullLabel = replacePlaceholders(__('comparison_banner_version'), [versionNumber]);
-    // When "Open Full Preview" is the only action, the close button covers it, so skip the menu
-    const showMenu = !!(onMakeCurrent || onDownload || onDelete);
-    const showClose = !!(onCloseComparison || onOpenFullPreview);
+    // The menu and the close button are independent: onCloseComparison only controls the close button
+    const showMenu = !!(onMakeCurrent || onDownload || onOpenFullPreview || onDelete);
+    const showClose = !!onCloseComparison;
 
     if (!versionNumber && !timestamp && !author) {
         return null;
@@ -159,7 +159,7 @@ export default function ComparisonBanner({
                         </div>
                     )}
                 </div>
-                {isComparedPreview && (onMakeCurrent || onDownload || onOpenFullPreview || onDelete) && (
+                {isComparedPreview && (showMenu || showClose) && (
                     <div
                         className="bp-version-banner-actions"
                         onKeyDown={(event: React.KeyboardEvent): void => {
@@ -243,7 +243,7 @@ export default function ComparisonBanner({
                                 data-resin-target="closeComparison"
                                 data-target-id="ComparisonBanner-close"
                                 icon={XMark}
-                                onClick={onCloseComparison || onOpenFullPreview}
+                                onClick={onCloseComparison}
                                 size="small"
                                 variant={isOnDark ? 'on-dark' : 'default'}
                             />
