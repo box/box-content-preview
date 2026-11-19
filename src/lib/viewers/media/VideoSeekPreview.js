@@ -37,7 +37,10 @@ class VideoSeekPreview {
     /** @property {HTMLVideoElement} - Video element being previewed */
     mediaEl;
 
-    /** @property {Function|undefined} - Called each time the preview is shown */
+    /** @property {Function|undefined} - Called when the preview starts fading away */
+    onHide;
+
+    /** @property {Function|undefined} - Called when the preview starts covering the video */
     onShow;
 
     /**
@@ -45,11 +48,13 @@ class VideoSeekPreview {
      *
      * @param {Object} options
      * @param {HTMLVideoElement} options.mediaEl - Video element to cover while seeking
-     * @param {Function} [options.onShow] - Called each time the preview is shown
+     * @param {Function} [options.onHide] - Called when the preview starts fading away
+     * @param {Function} [options.onShow] - Called when the preview starts covering the video
      * @return {VideoSeekPreview} VideoSeekPreview instance
      */
-    constructor({ mediaEl, onShow }) {
+    constructor({ mediaEl, onHide, onShow }) {
         this.mediaEl = mediaEl;
+        this.onHide = onHide;
         this.onShow = onShow;
 
         this.el = document.createElement('div');
@@ -110,8 +115,14 @@ class VideoSeekPreview {
      * @return {void}
      */
     hide = () => {
+        const wasVisible = this.isVisible();
+
         this.cancelPendingHide();
         this.el.classList.remove(CLASS_IS_VISIBLE);
+
+        if (wasVisible && this.onHide) {
+            this.onHide();
+        }
     };
 
     /**
@@ -147,8 +158,9 @@ class VideoSeekPreview {
      */
     handleSeeking = () => {
         const time = this.mediaEl.currentTime;
+        const wasVisible = this.isVisible();
 
-        if (!this.isVisible() && this.isBuffered(time)) {
+        if (!wasVisible && this.isBuffered(time)) {
             return;
         }
 
@@ -162,7 +174,7 @@ class VideoSeekPreview {
         this.position();
         this.el.classList.add(CLASS_IS_VISIBLE);
 
-        if (this.onShow) {
+        if (!wasVisible && this.onShow) {
             this.onShow();
         }
     };

@@ -31,6 +31,7 @@ const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 const VIDEO_SEEK_PREVIEW_ENABLED = 'videoSeekPreview.enabled';
+const SEEK_PREVIEW_SPINNER_DELAY_MS = 1000;
 
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
@@ -53,6 +54,9 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {VideoSeekPreview|undefined} - Shows the filmstrip frame while a seek target downloads */
     seekPreview;
+
+    /** @property {number|undefined} - Pending timeout that adds the spinner to a slow seek preview */
+    seekPreviewSpinnerTimeoutId;
 
     /** @property {string} - ID of the selected audio track */
     selectedAudioTrack;
@@ -135,6 +139,8 @@ class DashViewer extends VideoBaseViewer {
         if (this.filmstripStatus) {
             this.filmstripStatus.destroy();
         }
+
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
 
         if (this.seekPreview) {
             this.seekPreview.destroy();
@@ -1027,9 +1033,44 @@ class DashViewer extends VideoBaseViewer {
 
         this.seekPreview = new VideoSeekPreview({
             mediaEl: this.mediaEl,
-            onShow: () => this.hideBufferingSpinner(),
+            onHide: () => this.handleSeekPreviewHide(),
+            onShow: () => this.handleSeekPreviewShow(),
         });
         this.seekPreview.setFilmstrip(filmstripUrl, filmstripInterval);
+    }
+
+    /**
+     * Replaces the spinner with the seek preview, bringing the spinner back on top if the
+     * segment is slow to arrive so the user can tell it is still loading.
+     *
+     * @private
+     * @return {void}
+     */
+    handleSeekPreviewShow() {
+        this.hideBufferingSpinner();
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
+        this.seekPreviewSpinnerTimeoutId = setTimeout(() => {
+            this.seekPreviewSpinnerTimeoutId = undefined;
+            super.showBufferingSpinner();
+        }, SEEK_PREVIEW_SPINNER_DELAY_MS);
+    }
+
+    /**
+     * 'waiting' may have fired while the preview suppressed the spinner, so restore it
+     * if the video still cannot play once the preview fades.
+     *
+     * @private
+     * @return {void}
+     */
+    handleSeekPreviewHide() {
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
+        this.seekPreviewSpinnerTimeoutId = undefined;
+
+        if (this.mediaEl && !this.mediaEl.paused && this.mediaEl.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+            this.showBufferingSpinner();
+        } else {
+            this.hideBufferingSpinner();
+        }
     }
 
     /**

@@ -15,6 +15,7 @@ function createTimeRanges(ranges) {
 describe('lib/viewers/media/VideoSeekPreview', () => {
     let containerEl;
     let mediaEl;
+    let onHide;
     let onShow;
     let preview;
 
@@ -42,8 +43,9 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
         document.body.appendChild(containerEl);
         setVideoState({ buffered: [[0, 10]] });
 
+        onHide = jest.fn();
         onShow = jest.fn();
-        preview = new VideoSeekPreview({ mediaEl, onShow });
+        preview = new VideoSeekPreview({ mediaEl, onHide, onShow });
     });
 
     afterEach(() => {
@@ -125,6 +127,25 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             expect(preview.isVisible()).toBe(true);
         });
 
+        test('should only call onShow when the preview first covers the video', () => {
+            loadFilmstrip();
+
+            seek(30);
+            seek(60);
+
+            expect(onShow).toHaveBeenCalledTimes(1);
+        });
+
+        test('should call onHide when a visible preview has no frame for the next seek target', () => {
+            loadFilmstrip({ naturalHeight: 90 });
+
+            seek(30);
+            seek(206);
+
+            expect(preview.isVisible()).toBe(false);
+            expect(onHide).toHaveBeenCalledTimes(1);
+        });
+
         test('should size the overlay to the video content box', () => {
             loadFilmstrip();
             Object.defineProperties(mediaEl, {
@@ -166,8 +187,27 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             mediaEl.dispatchEvent(new Event('seeked'));
 
             expect(preview.isVisible()).toBe(true);
+            expect(onHide).not.toHaveBeenCalled();
             presentFrame();
             expect(preview.isVisible()).toBe(false);
+            expect(onHide).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not call onHide again when the fallback fires after the frame callback', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+            let presentFrame;
+            mediaEl.requestVideoFrameCallback = jest.fn(callback => {
+                presentFrame = callback;
+                return 7;
+            });
+
+            seek(30);
+            mediaEl.dispatchEvent(new Event('seeked'));
+            presentFrame();
+            jest.advanceTimersByTime(250);
+
+            expect(onHide).toHaveBeenCalledTimes(1);
         });
 
         test('should fall back to a timeout when no frame callback fires', () => {

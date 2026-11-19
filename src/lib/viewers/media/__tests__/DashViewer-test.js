@@ -2547,6 +2547,67 @@ describe('lib/viewers/media/DashViewer', () => {
                 expect(dash.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
                 dash.seekPreview = undefined;
             });
+
+            describe('spinner over the seek preview', () => {
+                const setMediaState = ({ paused, readyState }) => {
+                    Object.defineProperty(dash.mediaEl, 'paused', { configurable: true, value: paused });
+                    Object.defineProperty(dash.mediaEl, 'readyState', { configurable: true, value: readyState });
+                };
+
+                beforeEach(() => {
+                    jest.useFakeTimers();
+                    dash.seekPreview = { isVisible: () => true };
+                });
+
+                afterEach(() => {
+                    dash.seekPreview = undefined;
+                    jest.useRealTimers();
+                });
+
+                test('should hide the spinner on show and bring it back if the segment is slow', () => {
+                    dash.bufferingSpinnerEl.classList.remove('bp-is-hidden');
+
+                    dash.handleSeekPreviewShow();
+                    expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+
+                    jest.advanceTimersByTime(999);
+                    expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+
+                    jest.advanceTimersByTime(1);
+                    expect(dash.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
+                });
+
+                test('should cancel the delayed spinner when the preview hides', () => {
+                    setMediaState({ paused: false, readyState: HTMLMediaElement.HAVE_ENOUGH_DATA });
+
+                    dash.handleSeekPreviewShow();
+                    dash.seekPreview = { isVisible: () => false };
+                    dash.handleSeekPreviewHide();
+                    jest.advanceTimersByTime(1000);
+
+                    expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+                });
+
+                test('should show the spinner on hide if the playing video still cannot play', () => {
+                    setMediaState({ paused: false, readyState: HTMLMediaElement.HAVE_CURRENT_DATA });
+                    dash.seekPreview = { isVisible: () => false };
+                    dash.bufferingSpinnerEl.classList.add('bp-is-hidden');
+
+                    dash.handleSeekPreviewHide();
+
+                    expect(dash.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
+                });
+
+                test('should hide the spinner on hide if the video is paused', () => {
+                    setMediaState({ paused: true, readyState: HTMLMediaElement.HAVE_CURRENT_DATA });
+                    dash.seekPreview = { isVisible: () => false };
+                    dash.bufferingSpinnerEl.classList.remove('bp-is-hidden');
+
+                    dash.handleSeekPreviewHide();
+
+                    expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+                });
+            });
         });
     });
 });
