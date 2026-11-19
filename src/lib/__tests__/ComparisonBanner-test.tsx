@@ -243,6 +243,34 @@ describe('lib/ComparisonBanner', () => {
             expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
         });
 
+        test('should close comparison from the close button without opening the compared version', async () => {
+            const onCloseComparison = jest.fn();
+            const onOpenFullPreview = jest.fn();
+            const user = userEvent.setup();
+
+            render(
+                <ComparisonBanner
+                    file={file}
+                    isComparedPreview
+                    locale="en-US"
+                    onCloseComparison={onCloseComparison}
+                    onDownload={jest.fn()}
+                    onOpenFullPreview={onOpenFullPreview}
+                />,
+            );
+
+            await user.click(screen.getByRole('button', { name: __('comparison_banner_close') }));
+
+            expect(onCloseComparison).toHaveBeenCalledTimes(1);
+            expect(onOpenFullPreview).not.toHaveBeenCalled();
+
+            await user.click(screen.getByRole('button', { name: __('comparison_banner_actions') }));
+            await user.click(screen.getByRole('menuitem', { name: __('comparison_banner_open_full_preview') }));
+
+            expect(onOpenFullPreview).toHaveBeenCalledTimes(1);
+            expect(onCloseComparison).toHaveBeenCalledTimes(1);
+        });
+
         test('should leave side-by-side comparison from the close button', async () => {
             const onOpenFullPreview = jest.fn();
             const user = userEvent.setup();
