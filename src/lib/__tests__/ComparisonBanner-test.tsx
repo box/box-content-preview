@@ -312,6 +312,14 @@ describe('lib/ComparisonBanner', () => {
             expect(container.querySelector('.bp-version-banner-divider')).toBeNull();
         });
 
+        test('should show the version info without any actions when no handlers are provided', () => {
+            const { container } = render(<ComparisonBanner file={file} isComparedPreview locale="en-US" />);
+
+            expect(container.querySelector('.bp-version-banner-details')).toBeInTheDocument();
+            expect(container.querySelector('.bp-version-banner-actions')).toBeNull();
+            expect(screen.queryByRole('button')).not.toBeInTheDocument();
+        });
+
         test('should show the actions menu when close comparison and open full preview are the only actions', async () => {
             const onCloseComparison = jest.fn();
             const onOpenFullPreview = jest.fn();
