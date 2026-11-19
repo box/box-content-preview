@@ -13,6 +13,25 @@
     }
 }
 
+.bp-Filmstrip--fade {
+    opacity: 0;
+    transition:
+        opacity 150ms ease-out,
+        visibility 0s 150ms;
+
+    &.bp-is-shown {
+        opacity: 1;
+        transition: opacity 150ms ease-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &,
+        &.bp-is-shown {
+            transition: none;
+        }
+    }
+}
+
 .bp-Filmstrip-frame {
     display: flex;
     align-items: center;

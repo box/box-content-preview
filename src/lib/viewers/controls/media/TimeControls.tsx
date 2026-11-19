@@ -64,6 +64,7 @@ export default function TimeControls({
             {!!filmstripInterval && (
                 <Filmstrip
                     aspectRatio={aspectRatio}
+                    hasFade={!!onScrub}
                     imageUrl={filmstripUrl}
                     interval={filmstripInterval}
                     isShown={isSliderHovered && !isScrubbing}

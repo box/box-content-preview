@@ -2533,7 +2533,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             test('should create the seek preview from the filmstrip when the feature is on', async () => {
                 jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                    feature => feature === 'videoSeekPreview.enabled',
+                    feature => feature === 'videoSeekImprovements.enabled',
                 );
 
                 dash.loadFilmStrip();
@@ -2546,7 +2546,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
             test('should remove the seek preview on destroy', async () => {
                 jest.spyOn(dash, 'featureEnabled').mockImplementation(
-                    feature => feature === 'videoSeekPreview.enabled',
+                    feature => feature === 'videoSeekImprovements.enabled',
                 );
                 dash.loadFilmStrip();
                 await flushPromises();

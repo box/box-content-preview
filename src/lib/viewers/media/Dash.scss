@@ -35,8 +35,8 @@
     opacity: 0;
     background-color: $black;
     transition:
-        opacity 300ms ease-out,
-        visibility 0s 300ms;
+        opacity 500ms ease-out,
+        visibility 0s 500ms;
 
     &.bp-is-visible {
         visibility: visible;

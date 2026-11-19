@@ -133,6 +133,7 @@ export default function TimeControlsV2({
                 <FilmstripV2
                     aspectRatio={aspectRatio}
                     fps={fps}
+                    hasFade={!!onScrub}
                     imageUrl={filmstripUrl}
                     interval={filmstripInterval}
                     isBlueprintEnabled={isBlueprintEnabled}

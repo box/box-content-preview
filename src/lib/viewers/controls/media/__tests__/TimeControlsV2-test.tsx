@@ -129,6 +129,14 @@ describe('TimeControlsV2', () => {
 
             expect(container.querySelector('.bp-FilmstripV2')).toHaveClass('bp-is-shown');
         });
+
+        test('should only fade the filmstrip popup when onScrub is passed', () => {
+            const { container, rerender } = render(<TimeControlsV2 {...defaultProps} filmstripInterval={1} />);
+            expect(container.querySelector('.bp-FilmstripV2')).not.toHaveClass('bp-FilmstripV2--fade');
+
+            rerender(<TimeControlsV2 {...defaultProps} filmstripInterval={1} onScrub={jest.fn()} />);
+            expect(container.querySelector('.bp-FilmstripV2')).toHaveClass('bp-FilmstripV2--fade');
+        });
     });
 
     describe('comment markers', () => {

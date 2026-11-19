@@ -30,7 +30,7 @@ const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
-const VIDEO_SEEK_PREVIEW_ENABLED = 'videoSeekPreview.enabled';
+const VIDEO_SEEK_IMPROVEMENTS_ENABLED = 'videoSeekImprovements.enabled';
 const SEEK_PREVIEW_SPINNER_DELAY_MS = 1000;
 
 class DashViewer extends VideoBaseViewer {
@@ -1024,7 +1024,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {boolean}
      */
     isSeekPreviewEnabled() {
-        return this.featureEnabled(VIDEO_SEEK_PREVIEW_ENABLED);
+        return this.featureEnabled(VIDEO_SEEK_IMPROVEMENTS_ENABLED);
     }
 
     /**
