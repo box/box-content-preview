@@ -12,6 +12,8 @@ export type Props = React.HTMLAttributes<Ref> & {
     max?: number;
     min?: number;
     onMove?: (value: number, position: number, width: number) => void;
+    onScrubEnd?: () => void;
+    onScrubStart?: () => void;
     onUpdate?: (value: number) => void;
     step?: number;
     title: string;
@@ -25,6 +27,8 @@ export default function SliderControl({
     max = 100,
     min = 0,
     onMove = noop,
+    onScrubEnd = noop,
+    onScrubStart = noop,
     onUpdate = noop,
     step = 1,
     title,
@@ -89,6 +93,7 @@ export default function SliderControl({
         if (button > 1 || ctrlKey || metaKey) return;
 
         recordScrub();
+        onScrubStart();
         onUpdate(getPositionValue(pageX));
         setIsScrubbing(true);
     };
@@ -102,12 +107,16 @@ export default function SliderControl({
 
     const handleTouchStart = ({ touches }: React.TouchEvent<Ref>): void => {
         recordScrub();
+        onScrubStart();
         onUpdate(getPositionValue(touches[0].pageX));
         setIsScrubbing(true);
     };
 
     React.useEffect(() => {
-        const handleDocumentMoveStop = (): void => setIsScrubbing(false);
+        const handleDocumentMoveStop = (): void => {
+            setIsScrubbing(false);
+            onScrubEnd();
+        };
         const handleDocumentMouseMove = (event: MouseEvent): void => {
             if (!isScrubbing || event.button > 1 || event.ctrlKey || event.metaKey) return;
 
@@ -134,7 +143,7 @@ export default function SliderControl({
             document.removeEventListener('touchend', handleDocumentMoveStop);
             document.removeEventListener('touchmove', handleDocumentTouchMove);
         };
-    }, [isScrubbing, getPositionValue, onUpdate]);
+    }, [isScrubbing, getPositionValue, onScrubEnd, onUpdate]);
 
     return (
         <div

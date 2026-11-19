@@ -225,6 +225,87 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
         });
     });
 
+    describe('showFrame()', () => {
+        test('should show the frame for a time without the video seeking', () => {
+            loadFilmstrip();
+            const context = preview.canvasEl.getContext('2d');
+            jest.spyOn(context, 'drawImage');
+
+            expect(preview.showFrame(30)).toBe(true);
+
+            expect(context.drawImage).toHaveBeenCalledWith(preview.imageEl, 15 * 160, 0, 160, 90, 0, 0, 160, 90);
+            expect(preview.isVisible()).toBe(true);
+            expect(onShow).toHaveBeenCalledTimes(1);
+        });
+
+        test('should return false and stay hidden when there is no frame', () => {
+            expect(preview.showFrame(30)).toBe(false);
+            expect(preview.isVisible()).toBe(false);
+        });
+    });
+
+    describe('scrubbing', () => {
+        const setSeeking = seeking => {
+            Object.defineProperty(mediaEl, 'seeking', { configurable: true, value: seeking });
+        };
+
+        test('should stay visible when an earlier seek finishes mid-drag', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+
+            seek(30);
+            preview.startScrub();
+            preview.showFrame(60);
+            mediaEl.dispatchEvent(new Event('seeked'));
+            jest.advanceTimersByTime(250);
+
+            expect(preview.isVisible()).toBe(true);
+        });
+
+        test('should cancel a pending hide when the drag starts', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+
+            seek(30);
+            mediaEl.dispatchEvent(new Event('seeked'));
+            preview.startScrub();
+            jest.advanceTimersByTime(250);
+
+            expect(preview.isVisible()).toBe(true);
+        });
+
+        test('should wait for the committed seek before hiding after the drag ends', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+            preview.startScrub();
+            preview.showFrame(60);
+
+            seek(60);
+            setSeeking(true);
+            preview.endScrub();
+            jest.advanceTimersByTime(250);
+            expect(preview.isVisible()).toBe(true);
+
+            mediaEl.dispatchEvent(new Event('seeked'));
+            jest.advanceTimersByTime(250);
+            expect(preview.isVisible()).toBe(false);
+        });
+
+        test('should hide after the drag ends when no seek is in flight', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+            preview.startScrub();
+            preview.showFrame(60);
+
+            setSeeking(false);
+            preview.endScrub();
+            jest.advanceTimersByTime(250);
+
+            expect(preview.isVisible()).toBe(false);
+            expect(onHide).toHaveBeenCalledTimes(1);
+        });
+    });
+
     describe('destroy()', () => {
         test('should remove the overlay and stop listening to the video', () => {
             loadFilmstrip();

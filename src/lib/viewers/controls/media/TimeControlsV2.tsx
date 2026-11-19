@@ -5,6 +5,7 @@ import { Gray65, Gray80, GrayWhite } from '@box/blueprint-web-assets/tokens/toke
 import FilmstripV2 from './FilmstripV2';
 import { buildClusters, CommentMarker, MarkerCluster, MarkerTick, useDismissableMarkerSelection } from './markers';
 import SliderControl from '../slider';
+import useScrubPreview, { ScrubPreviewProps } from './useScrubPreview';
 import { percent } from './utils';
 import './TimeControlsV2.scss';
 
@@ -13,7 +14,7 @@ const TRACK_COLORS = {
     legacy: { buffered: 'rgb(127, 127, 127)', unplayed: 'rgb(85, 85, 85)' },
 };
 
-export type Props = {
+export type Props = ScrubPreviewProps & {
     aspectRatio?: number;
     bufferedRange?: TimeRanges;
     commentMarkers?: CommentMarker[];
@@ -38,8 +39,12 @@ export default function TimeControlsV2({
     fps,
     isBlueprintEnabled = false,
     onCommentMarkerClick,
+    onScrub,
+    onScrubEnd,
+    onScrubStart,
     onTimeChange,
 }: Props): JSX.Element {
+    const { isScrubbing, sliderProps } = useScrubPreview({ onScrub, onScrubEnd, onScrubStart, onTimeChange });
     const [isSliderHovered, setIsSliderHovered] = React.useState(false);
     const [hoverPosition, setHoverPosition] = React.useState(0);
     const [hoverPositionMax, setHoverPositionMax] = React.useState(0);
@@ -131,7 +136,7 @@ export default function TimeControlsV2({
                     imageUrl={filmstripUrl}
                     interval={filmstripInterval}
                     isBlueprintEnabled={isBlueprintEnabled}
-                    isShown={isSliderHovered}
+                    isShown={isSliderHovered && !isScrubbing}
                     position={hoverPosition}
                     positionMax={hoverPositionMax}
                     time={hoverTime}
@@ -152,7 +157,7 @@ export default function TimeControlsV2({
                     onMouseOut={(): void => setIsSliderHovered(false)}
                     onMouseOver={(): void => setIsSliderHovered(true)}
                     onMove={handleMouseMove}
-                    onUpdate={onTimeChange}
+                    {...sliderProps}
                     step={fps ? 1 / fps : 5}
                     title={__('media_time_slider')}
                     track={`linear-gradient(to right, ${GrayWhite} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${bufferedColor} calc(${currentPercentage}% + 2.5px), ${bufferedColor} ${bufferedPercentage}%, ${unplayedColor} ${bufferedPercentage}%, ${unplayedColor} 100%)`}

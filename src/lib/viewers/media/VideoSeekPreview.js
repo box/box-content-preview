@@ -34,6 +34,9 @@ class VideoSeekPreview {
     /** @property {boolean} - Whether the filmstrip sprite has finished loading */
     isImageLoaded = false;
 
+    /** @property {boolean} - Keeps the preview up while the user drags the scrubber */
+    isScrubbing = false;
+
     /** @property {HTMLVideoElement} - Video element being previewed */
     mediaEl;
 
@@ -110,6 +113,55 @@ class VideoSeekPreview {
     }
 
     /**
+     * Covers the video with the filmstrip frame for the given time.
+     *
+     * @param {number} time - Time in seconds
+     * @return {boolean} true if a frame is showing
+     */
+    showFrame(time) {
+        const wasVisible = this.isVisible();
+
+        this.cancelPendingHide();
+
+        if (!this.drawFrame(time)) {
+            return false;
+        }
+
+        this.position();
+        this.el.classList.add(CLASS_IS_VISIBLE);
+
+        if (!wasVisible && this.onShow) {
+            this.onShow();
+        }
+
+        return true;
+    }
+
+    /**
+     * Holds the preview up until endScrub, even if an earlier seek finishes mid-drag.
+     *
+     * @return {void}
+     */
+    startScrub() {
+        this.isScrubbing = true;
+        this.cancelPendingHide();
+    }
+
+    /**
+     * Releases the preview. Call after seeking to the scrub target so the preview fades once
+     * that frame paints.
+     *
+     * @return {void}
+     */
+    endScrub() {
+        this.isScrubbing = false;
+
+        if (!this.mediaEl.seeking) {
+            this.handleSeeked();
+        }
+    }
+
+    /**
      * Starts the fade back to the video.
      *
      * @return {void}
@@ -150,26 +202,14 @@ class VideoSeekPreview {
     };
 
     /**
-     * Shows the filmstrip frame for the seek target, updating it on every seek during a drag.
+     * Shows the filmstrip frame for the seek target.
      *
      * @private
      * @return {void}
      */
     handleSeeking = () => {
-        const wasVisible = this.isVisible();
-
-        this.cancelPendingHide();
-
-        if (!this.drawFrame(this.mediaEl.currentTime)) {
+        if (!this.showFrame(this.mediaEl.currentTime)) {
             this.hide();
-            return;
-        }
-
-        this.position();
-        this.el.classList.add(CLASS_IS_VISIBLE);
-
-        if (!wasVisible && this.onShow) {
-            this.onShow();
         }
     };
 
@@ -181,7 +221,7 @@ class VideoSeekPreview {
      * @return {void}
      */
     handleSeeked = () => {
-        if (!this.isVisible()) {
+        if (!this.isVisible() || this.isScrubbing) {
             return;
         }
 

@@ -174,6 +174,74 @@ describe('SliderControl', () => {
             expect(document.removeEventListener).toHaveBeenCalledWith('touchmove', expect.any(Function));
         });
 
+        test('should call onScrubStart before the first update and onScrubEnd on release', () => {
+            const calls: string[] = [];
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onScrubEnd={() => calls.push('end')}
+                    onScrubStart={() => calls.push('start')}
+                    onUpdate={() => calls.push('update')}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
+
+            fireEvent.mouseDown(screen.getByRole('slider')!);
+            expect(calls).toEqual(['start', 'update']);
+
+            fireEvent.mouseUp(document);
+            expect(calls).toEqual(['start', 'update', 'end']);
+        });
+
+        test('should call onScrubStart on touchstart and onScrubEnd on touchend', () => {
+            const onScrubEnd = jest.fn();
+            const onScrubStart = jest.fn();
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onScrubEnd={onScrubEnd}
+                    onScrubStart={onScrubStart}
+                    step={1}
+                    title="Slider"
+                    value={0}
+                />,
+            );
+
+            fireEvent.touchStart(screen.getByRole('slider')!, {
+                touches: [{ ...getTouchEventDefaults(), pageX: 100 }],
+            });
+            expect(onScrubStart).toHaveBeenCalledTimes(1);
+            expect(onScrubEnd).not.toHaveBeenCalled();
+
+            fireEvent.touchEnd(document);
+            expect(onScrubEnd).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not call onScrubStart or onScrubEnd for keyboard updates', () => {
+            const onScrubEnd = jest.fn();
+            const onScrubStart = jest.fn();
+            render(
+                <SliderControl
+                    max={100}
+                    min={0}
+                    onScrubEnd={onScrubEnd}
+                    onScrubStart={onScrubStart}
+                    step={1}
+                    title="Slider"
+                    value={10}
+                />,
+            );
+
+            fireEvent.keyDown(screen.getByRole('slider')!, { key: 'ArrowRight' });
+
+            expect(onScrubStart).not.toHaveBeenCalled();
+            expect(onScrubEnd).not.toHaveBeenCalled();
+        });
+
         test('should handle document-level mousemove events and call onUpdate', () => {
             const onUpdate = jest.fn();
             render(

@@ -2263,6 +2263,30 @@ describe('lib/viewers/media/DashViewer', () => {
             });
         });
 
+        test('should only pass the scrub preview handlers when the seek preview is enabled', () => {
+            jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(false);
+            dash.renderUI();
+            expect(getProps(dash)).not.toHaveProperty('onScrub');
+
+            dash.controls.render.mockClear();
+            dash.isSeekPreviewEnabled.mockReturnValue(true);
+            dash.renderUI();
+            expect(getProps(dash)).toMatchObject({
+                onScrub: dash.handleScrub,
+                onScrubEnd: dash.handleScrubEnd,
+                onScrubStart: dash.handleScrubStart,
+            });
+        });
+
+        test('should show the scrub time and keep the pause icon while scrubbing', () => {
+            Object.defineProperty(dash.mediaEl, 'paused', { configurable: true, value: true });
+            dash.scrubTime = 42;
+            dash.shouldResumeAfterScrub = true;
+            dash.renderUI();
+
+            expect(getProps(dash)).toMatchObject({ currentTime: 42, isPlaying: true });
+        });
+
         test('should not enable annotations if video annotations are disabled', () => {
             dash.videoAnnotationsEnabled = false;
             dash.annotator = {};
@@ -2606,6 +2630,104 @@ describe('lib/viewers/media/DashViewer', () => {
                     dash.handleSeekPreviewHide();
 
                     expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+                });
+
+                test('should not start the delayed spinner while scrubbing', () => {
+                    dash.isScrubbing = true;
+                    dash.bufferingSpinnerEl.classList.add('bp-is-hidden');
+
+                    dash.handleSeekPreviewShow();
+                    jest.advanceTimersByTime(1000);
+
+                    expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+                    dash.isScrubbing = false;
+                });
+            });
+
+            describe('scrubbing', () => {
+                const setPaused = paused => {
+                    Object.defineProperty(dash.mediaEl, 'paused', { configurable: true, value: paused });
+                };
+
+                beforeEach(() => {
+                    jest.spyOn(dash.mediaEl, 'pause').mockImplementation();
+                    jest.spyOn(dash, 'handleTimeupdateFromMediaControls').mockImplementation();
+                    jest.spyOn(dash, 'play').mockResolvedValue();
+                    dash.seekPreview = {
+                        endScrub: jest.fn(),
+                        isVisible: jest.fn(() => true),
+                        showFrame: jest.fn(() => true),
+                        startScrub: jest.fn(),
+                    };
+                });
+
+                afterEach(() => {
+                    dash.seekPreview = undefined;
+                    jest.useRealTimers();
+                });
+
+                test('should pause a playing video and hold the preview when the drag starts', () => {
+                    setPaused(false);
+
+                    dash.handleScrubStart();
+
+                    expect(dash.isScrubbing).toBe(true);
+                    expect(dash.shouldResumeAfterScrub).toBe(true);
+                    expect(dash.mediaEl.pause).toHaveBeenCalled();
+                    expect(dash.seekPreview.startScrub).toHaveBeenCalled();
+                });
+
+                test('should not pause or resume a video that was already paused', () => {
+                    setPaused(true);
+
+                    dash.handleScrubStart();
+                    dash.handleScrubEnd(30);
+
+                    expect(dash.mediaEl.pause).not.toHaveBeenCalled();
+                    expect(dash.play).not.toHaveBeenCalled();
+                });
+
+                test('should show the dragged frame without seeking', () => {
+                    dash.handleScrub(30);
+
+                    expect(dash.seekPreview.showFrame).toHaveBeenCalledWith(30);
+                    expect(dash.scrubTime).toBe(30);
+                    expect(dash.renderUI).toHaveBeenCalled();
+                    expect(dash.handleTimeupdateFromMediaControls).not.toHaveBeenCalled();
+                });
+
+                test('should seek during the drag when there is no frame to show', () => {
+                    dash.seekPreview.showFrame.mockReturnValue(false);
+
+                    dash.handleScrub(30);
+
+                    expect(dash.scrubTime).toBeUndefined();
+                    expect(dash.handleTimeupdateFromMediaControls).toHaveBeenCalledWith(30);
+                });
+
+                test('should seek, release the preview, and resume playback when the drag ends', () => {
+                    setPaused(false);
+                    dash.handleScrubStart();
+                    dash.handleScrub(30);
+
+                    dash.handleScrubEnd(30);
+
+                    expect(dash.isScrubbing).toBe(false);
+                    expect(dash.scrubTime).toBeUndefined();
+                    expect(dash.handleTimeupdateFromMediaControls).toHaveBeenCalledWith(30);
+                    expect(dash.seekPreview.endScrub).toHaveBeenCalled();
+                    expect(dash.shouldResumeAfterScrub).toBe(false);
+                    expect(dash.play).toHaveBeenCalled();
+                });
+
+                test('should start the delayed spinner once the drag ends', () => {
+                    jest.useFakeTimers();
+                    dash.bufferingSpinnerEl.classList.add('bp-is-hidden');
+
+                    dash.handleScrubEnd(30);
+                    jest.advanceTimersByTime(1000);
+
+                    expect(dash.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
                 });
             });
         });

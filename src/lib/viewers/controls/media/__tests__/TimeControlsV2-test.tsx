@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import TimeControlsV2 from '../TimeControlsV2';
 import SliderControl from '../../slider/SliderControl';
@@ -44,6 +44,90 @@ describe('TimeControlsV2', () => {
 
             rerender(<TimeControlsV2 {...defaultProps} filmstripInterval={1} isBlueprintEnabled />);
             expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).toBeInTheDocument();
+        });
+    });
+
+    describe('scrub preview', () => {
+        const getSliderProps = () => (SliderControl as jest.Mock).mock.calls.at(-1)[0];
+        const hoverSlider = () => act(() => getSliderProps().onMouseOver());
+        const startScrub = (time: number) =>
+            act(() => {
+                getSliderProps().onScrubStart();
+                getSliderProps().onUpdate(time);
+            });
+
+        test('should seek on every update when onScrub is not passed', () => {
+            const onTimeChange = jest.fn();
+            render(<TimeControlsV2 onTimeChange={onTimeChange} />);
+
+            expect(getSliderProps().onScrubStart).toBeUndefined();
+            act(() => getSliderProps().onUpdate(10));
+
+            expect(onTimeChange).toHaveBeenCalledWith(10);
+        });
+
+        test('should preview the drag through onScrub and seek once through onScrubEnd', () => {
+            const onScrub = jest.fn();
+            const onScrubEnd = jest.fn();
+            const onScrubStart = jest.fn();
+            const onTimeChange = jest.fn();
+            render(
+                <TimeControlsV2
+                    onScrub={onScrub}
+                    onScrubEnd={onScrubEnd}
+                    onScrubStart={onScrubStart}
+                    onTimeChange={onTimeChange}
+                />,
+            );
+
+            startScrub(10);
+            act(() => getSliderProps().onUpdate(20));
+
+            expect(onScrubStart).toHaveBeenCalledTimes(1);
+            expect(onScrub).toHaveBeenNthCalledWith(1, 10);
+            expect(onScrub).toHaveBeenNthCalledWith(2, 20);
+            expect(onScrubEnd).not.toHaveBeenCalled();
+
+            act(() => getSliderProps().onScrubEnd());
+
+            expect(onScrubEnd).toHaveBeenCalledWith(20);
+            expect(onTimeChange).not.toHaveBeenCalled();
+        });
+
+        test('should seek right away for keyboard updates outside a drag', () => {
+            const onScrub = jest.fn();
+            const onTimeChange = jest.fn();
+            render(<TimeControlsV2 onScrub={onScrub} onScrubEnd={jest.fn()} onTimeChange={onTimeChange} />);
+
+            act(() => getSliderProps().onUpdate(15));
+
+            expect(onTimeChange).toHaveBeenCalledWith(15);
+            expect(onScrub).not.toHaveBeenCalled();
+        });
+
+        test('should hide the filmstrip popup while scrubbing and bring it back on hover after release', () => {
+            const { container } = render(
+                <TimeControlsV2 {...defaultProps} filmstripInterval={1} onScrub={jest.fn()} onScrubEnd={jest.fn()} />,
+            );
+            const filmstrip = container.querySelector('.bp-FilmstripV2');
+
+            hoverSlider();
+            expect(filmstrip).toHaveClass('bp-is-shown');
+
+            startScrub(10);
+            expect(filmstrip).not.toHaveClass('bp-is-shown');
+
+            act(() => getSliderProps().onScrubEnd());
+            expect(filmstrip).toHaveClass('bp-is-shown');
+        });
+
+        test('should keep the filmstrip popup while scrubbing when onScrub is not passed', () => {
+            const { container } = render(<TimeControlsV2 {...defaultProps} filmstripInterval={1} />);
+
+            hoverSlider();
+            act(() => getSliderProps().onUpdate(10));
+
+            expect(container.querySelector('.bp-FilmstripV2')).toHaveClass('bp-is-shown');
         });
     });
 
