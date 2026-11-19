@@ -20,6 +20,7 @@ import VideoControls from './VideoControls';
 import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import VideoBaseViewer from './VideoBaseViewer';
+import VideoSeekPreview from './VideoSeekPreview';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -29,6 +30,7 @@ const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
+const VIDEO_SEEK_PREVIEW_ENABLED = 'videoSeekPreview.enabled';
 
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
@@ -48,6 +50,9 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
+
+    /** @property {VideoSeekPreview|undefined} - Shows the filmstrip frame while a seek target downloads */
+    seekPreview;
 
     /** @property {string} - ID of the selected audio track */
     selectedAudioTrack;
@@ -129,6 +134,11 @@ class DashViewer extends VideoBaseViewer {
         // Stop polling for filmstrip
         if (this.filmstripStatus) {
             this.filmstripStatus.destroy();
+        }
+
+        if (this.seekPreview) {
+            this.seekPreview.destroy();
+            this.seekPreview = undefined;
         }
 
         // Release blob: URL allocated for the filmstrip
@@ -971,6 +981,7 @@ class DashViewer extends VideoBaseViewer {
                         return;
                     }
                     this.filmstripUrl = filmstripUrl;
+                    this.initSeekPreview(filmstripUrl, filmstripInterval);
                     if (useReactControls) {
                         this.renderUI();
                     } else {
@@ -988,6 +999,51 @@ class DashViewer extends VideoBaseViewer {
                     console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
                 });
         }
+    }
+
+    /**
+     * Whether to cover the video with the filmstrip frame while a seek target downloads.
+     * Overridden by Video360Viewer, which renders the video onto a sphere.
+     *
+     * @protected
+     * @return {boolean}
+     */
+    isSeekPreviewEnabled() {
+        return this.featureEnabled(VIDEO_SEEK_PREVIEW_ENABLED);
+    }
+
+    /**
+     * Sets up the seek preview from the loaded filmstrip
+     *
+     * @private
+     * @param {string} filmstripUrl - blob: URL for the filmstrip image
+     * @param {number} filmstripInterval - Seconds between filmstrip frames
+     * @return {void}
+     */
+    initSeekPreview(filmstripUrl, filmstripInterval) {
+        if (!this.isSeekPreviewEnabled() || !this.mediaEl || this.seekPreview) {
+            return;
+        }
+
+        this.seekPreview = new VideoSeekPreview({
+            mediaEl: this.mediaEl,
+            onShow: () => this.hideBufferingSpinner(),
+        });
+        this.seekPreview.setFilmstrip(filmstripUrl, filmstripInterval);
+    }
+
+    /**
+     * The seek preview stands in for the spinner while it covers the video.
+     *
+     * @override
+     * @return {void}
+     */
+    showBufferingSpinner() {
+        if (this.seekPreview && this.seekPreview.isVisible()) {
+            return;
+        }
+
+        super.showBufferingSpinner();
     }
 
     /**

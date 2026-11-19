@@ -2489,5 +2489,64 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.filmstripUrl).toBe(FILMSTRIP_BLOB);
             expect(dash.renderUI).toHaveBeenCalled();
         });
+
+        describe('seek preview', () => {
+            beforeEach(() => {
+                jest.spyOn(dash, 'createContentUrlV2').mockReturnValue(FILMSTRIP_URL);
+                jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
+                jest.spyOn(dash, 'useReactControls').mockReturnValue(true);
+                jest.spyOn(dash, 'renderUI').mockImplementation();
+                jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            });
+
+            test('should not create the seek preview when the feature is off', async () => {
+                dash.loadFilmStrip();
+                await flushPromises();
+
+                expect(dash.seekPreview).toBeUndefined();
+                expect(dash.mediaContainerEl.querySelector('.bp-media-seek-preview')).toBeNull();
+            });
+
+            test('should create the seek preview from the filmstrip when the feature is on', async () => {
+                jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                    feature => feature === 'videoSeekPreview.enabled',
+                );
+
+                dash.loadFilmStrip();
+                await flushPromises();
+
+                expect(dash.seekPreview.imageEl.src).toBe(FILMSTRIP_BLOB);
+                expect(dash.seekPreview.interval).toBe(INTERVAL);
+                expect(dash.mediaEl.nextElementSibling).toBe(dash.seekPreview.el);
+            });
+
+            test('should remove the seek preview on destroy', async () => {
+                jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                    feature => feature === 'videoSeekPreview.enabled',
+                );
+                dash.loadFilmStrip();
+                await flushPromises();
+                const { el } = dash.seekPreview;
+
+                dash.destroy();
+
+                expect(dash.seekPreview).toBeUndefined();
+                expect(el.isConnected).toBe(false);
+                dash = null;
+            });
+
+            test('should hide the buffering spinner while the seek preview is visible', () => {
+                dash.seekPreview = { isVisible: () => true };
+
+                dash.bufferingSpinnerEl.classList.add('bp-is-hidden');
+                dash.showBufferingSpinner();
+                expect(dash.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+
+                dash.seekPreview = { isVisible: () => false };
+                dash.showBufferingSpinner();
+                expect(dash.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
+                dash.seekPreview = undefined;
+            });
+        });
     });
 });

@@ -27,6 +27,36 @@
     }
 }
 
+// Shows instantly, then fades out to reveal the video once the real frame paints
+.bp-media-seek-preview {
+    pointer-events: none;
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    background-color: $black;
+    transition:
+        opacity 300ms ease-out,
+        visibility 0s 300ms;
+
+    &.bp-is-visible {
+        visibility: visible;
+        opacity: 1;
+        transition: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+.bp-media-seek-preview-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(0.5);
+}
+
 .bp-media-filmstrip-container {
     position: absolute;
     bottom: 60px;
