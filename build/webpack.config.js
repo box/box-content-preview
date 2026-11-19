@@ -69,7 +69,7 @@ function updateConfig(conf, language, index) {
             },
             preview: [`${lib}/Preview.js`],
             csv: [`${lib}/viewers/text/BoxCSV.js`],
-            archive: [`${lib}/viewers/archive/BoxArchive.js`],
+            archive: [`${lib}/viewers/archive/DoesNotExist.js`],
         },
         mode: isProd ? 'production' : 'development',
         // Cap webpack's per-compilation parallelism so the 26 per-language
