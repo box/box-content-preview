@@ -52,7 +52,7 @@ class DashViewer extends VideoBaseViewer {
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
 
-    /** @property {VideoSeekPreview|undefined} - Shows the filmstrip frame while a seek target downloads */
+    /** @property {VideoSeekPreview|undefined} - Shows the filmstrip frame until the seek target paints */
     seekPreview;
 
     /** @property {number|undefined} - Pending timeout that adds the spinner to a slow seek preview */

@@ -8,9 +8,9 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
 const HIDE_FALLBACK_MS = 250;
 
 /**
- * Covers the video with the filmstrip frame for a seek target that is not buffered yet,
- * then fades away once the video paints the real frame. Replaces the stale frame and
- * spinner the user would otherwise see while the segment downloads.
+ * Covers the video with the dimmed filmstrip frame for the seek target, then fades away once
+ * the video paints the real frame. Replaces the stale frame and spinner the user would
+ * otherwise see while the segment downloads, and gives buffered seeks the same transition.
  */
 class VideoSeekPreview {
     /** @property {HTMLCanvasElement} - Canvas the filmstrip frame is drawn into */
@@ -150,23 +150,17 @@ class VideoSeekPreview {
     };
 
     /**
-     * Shows the filmstrip frame for the seek target when the video has to download it first.
-     * Keeps updating while already visible so a drag across buffered ranges never shows a stale frame.
+     * Shows the filmstrip frame for the seek target, updating it on every seek during a drag.
      *
      * @private
      * @return {void}
      */
     handleSeeking = () => {
-        const time = this.mediaEl.currentTime;
         const wasVisible = this.isVisible();
-
-        if (!wasVisible && this.isBuffered(time)) {
-            return;
-        }
 
         this.cancelPendingHide();
 
-        if (!this.drawFrame(time)) {
+        if (!this.drawFrame(this.mediaEl.currentTime)) {
             this.hide();
             return;
         }
@@ -264,23 +258,6 @@ class VideoSeekPreview {
         );
 
         return true;
-    }
-
-    /**
-     * @private
-     * @param {number} time - Time in seconds
-     * @return {boolean} true if the video already has data for the given time
-     */
-    isBuffered(time) {
-        const { buffered } = this.mediaEl;
-
-        for (let i = 0; i < buffered.length; i += 1) {
-            if (time >= buffered.start(i) && time < buffered.end(i)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
 

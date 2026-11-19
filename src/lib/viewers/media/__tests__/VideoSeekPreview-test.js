@@ -4,25 +4,12 @@ import { CLASS_IS_VISIBLE } from '../../../constants';
 const FILMSTRIP_URL = 'blob:http://localhost/filmstrip';
 const INTERVAL = 2;
 
-function createTimeRanges(ranges) {
-    return {
-        length: ranges.length,
-        start: i => ranges[i][0],
-        end: i => ranges[i][1],
-    };
-}
-
 describe('lib/viewers/media/VideoSeekPreview', () => {
     let containerEl;
     let mediaEl;
     let onHide;
     let onShow;
     let preview;
-
-    const setVideoState = ({ buffered = [], currentTime = 0 } = {}) => {
-        Object.defineProperty(mediaEl, 'buffered', { configurable: true, value: createTimeRanges(buffered) });
-        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: currentTime, writable: true });
-    };
 
     const loadFilmstrip = ({ naturalHeight = 180, naturalWidth = 16000 } = {}) => {
         preview.setFilmstrip(FILMSTRIP_URL, INTERVAL);
@@ -41,7 +28,7 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
         mediaEl = containerEl.appendChild(document.createElement('video'));
         containerEl.appendChild(document.createElement('div')).className = 'spinner';
         document.body.appendChild(containerEl);
-        setVideoState({ buffered: [[0, 10]] });
+        Object.defineProperty(mediaEl, 'currentTime', { configurable: true, value: 0, writable: true });
 
         onHide = jest.fn();
         onShow = jest.fn();
@@ -74,12 +61,12 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             expect(onShow).not.toHaveBeenCalled();
         });
 
-        test('should not show when seeking within the buffered range', () => {
+        test('should show for buffered seek targets too', () => {
             loadFilmstrip();
 
             seek(5);
 
-            expect(preview.isVisible()).toBe(false);
+            expect(preview.isVisible()).toBe(true);
         });
 
         test('should draw the filmstrip frame for the target time and show it', () => {
@@ -115,7 +102,7 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             expect(preview.isVisible()).toBe(false);
         });
 
-        test('should keep updating the frame when seeking into the buffered range while visible', () => {
+        test('should keep updating the frame on each seek while visible', () => {
             loadFilmstrip();
             const context = preview.canvasEl.getContext('2d');
             jest.spyOn(context, 'drawImage');
