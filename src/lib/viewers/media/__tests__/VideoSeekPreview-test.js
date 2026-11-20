@@ -244,6 +244,35 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
         });
     });
 
+    describe('getFrameTime()', () => {
+        test.each`
+            time      | frameTime
+            ${0}      | ${0}
+            ${1.9}    | ${0}
+            ${2}      | ${2}
+            ${31.7}   | ${30}
+            ${(0.7 + 0.1) * 10} | ${8}
+        `('should return $frameTime for $time', ({ time, frameTime }) => {
+            preview.setFilmstrip(FILMSTRIP_URL, INTERVAL);
+
+            expect(preview.getFrameTime(time)).toBe(frameTime);
+        });
+
+        test('should return the time unchanged before the filmstrip is set', () => {
+            expect(preview.getFrameTime(31.7)).toBe(31.7);
+        });
+
+        test('should draw the same frame for its own frame time', () => {
+            loadFilmstrip();
+            const context = preview.canvasEl.getContext('2d');
+            jest.spyOn(context, 'drawImage');
+
+            preview.showFrame(preview.getFrameTime(31.7));
+
+            expect(context.drawImage).toHaveBeenCalledWith(preview.imageEl, 15 * 160, 0, 160, 90, 0, 0, 160, 90);
+        });
+    });
+
     describe('scrubbing', () => {
         const setSeeking = seeking => {
             Object.defineProperty(mediaEl, 'seeking', { configurable: true, value: seeking });

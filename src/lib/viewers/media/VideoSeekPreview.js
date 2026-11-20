@@ -4,6 +4,8 @@ const CLASS_SEEK_PREVIEW = 'bp-media-seek-preview';
 const CLASS_SEEK_PREVIEW_FRAME = 'bp-media-seek-preview-frame';
 const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
+// Keeps times that are exact multiples of the interval in their own frame despite float error
+const FRAME_TIME_EPSILON = 1e-6;
 // requestVideoFrameCallback may not fire for a paused video in every browser
 const HIDE_FALLBACK_MS = 250;
 
@@ -110,6 +112,21 @@ class VideoSeekPreview {
      */
     isVisible() {
         return this.el.classList.contains(CLASS_IS_VISIBLE);
+    }
+
+    /**
+     * The conversion samples one sprite frame at the start of each interval, so seeking here lands on
+     * the same picture the preview shows.
+     *
+     * @param {number} time - Time in seconds
+     * @return {number} Start time of the filmstrip frame that covers the given time
+     */
+    getFrameTime(time) {
+        if (!(this.interval > 0)) {
+            return time;
+        }
+
+        return this.getFrameNumber(time) * this.interval;
     }
 
     /**
@@ -253,6 +270,15 @@ class VideoSeekPreview {
     }
 
     /**
+     * @private
+     * @param {number} time - Time in seconds
+     * @return {number} Index of the filmstrip frame that covers the given time
+     */
+    getFrameNumber(time) {
+        return Math.floor(time / this.interval + FRAME_TIME_EPSILON);
+    }
+
+    /**
      * Draws the filmstrip frame for the given time. Uses the same sprite layout as FilmstripV2:
      * 100 frames per row, each 90px tall.
      *
@@ -267,7 +293,7 @@ class VideoSeekPreview {
 
         const { naturalHeight, naturalWidth } = this.imageEl;
         const frameWidth = Math.floor(naturalWidth / FILMSTRIP_FRAMES_PER_ROW);
-        const frameNumber = Math.floor(time / this.interval);
+        const frameNumber = this.getFrameNumber(time);
         const sourceX = (frameNumber % FILMSTRIP_FRAMES_PER_ROW) * frameWidth;
         const sourceY = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW) * FILMSTRIP_FRAME_HEIGHT;
 

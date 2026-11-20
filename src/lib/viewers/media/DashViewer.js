@@ -1113,16 +1113,21 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Seeks to where the scrubber was released and resumes playback if it was playing.
+     * Seeks to where the scrubber was released and resumes playback if it was playing. When the drag
+     * showed a filmstrip frame, the seek snaps to that frame's time so the fade lands on the same picture.
      *
      * @private
      * @param {number} time - Time in seconds
      * @return {void}
      */
     handleScrubEnd(time) {
+        const hasShownFrame = this.scrubTime !== undefined;
+
         this.isScrubbing = false;
         this.scrubTime = undefined;
-        this.handleTimeupdateFromMediaControls(time);
+        this.handleTimeupdateFromMediaControls(
+            this.seekPreview && hasShownFrame ? this.seekPreview.getFrameTime(time) : time,
+        );
 
         if (this.seekPreview) {
             this.seekPreview.endScrub();

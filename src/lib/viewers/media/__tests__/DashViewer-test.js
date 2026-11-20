@@ -2655,6 +2655,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     jest.spyOn(dash, 'play').mockResolvedValue();
                     dash.seekPreview = {
                         endScrub: jest.fn(),
+                        getFrameTime: jest.fn(time => Math.floor(time)),
                         isVisible: jest.fn(() => true),
                         showFrame: jest.fn(() => true),
                         startScrub: jest.fn(),
@@ -2718,6 +2719,24 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(dash.seekPreview.endScrub).toHaveBeenCalled();
                     expect(dash.shouldResumeAfterScrub).toBe(false);
                     expect(dash.play).toHaveBeenCalled();
+                });
+
+                test('should snap the seek to the shown filmstrip frame when the drag ends', () => {
+                    dash.handleScrub(30.7);
+                    dash.handleScrubEnd(30.7);
+
+                    expect(dash.seekPreview.getFrameTime).toHaveBeenCalledWith(30.7);
+                    expect(dash.handleTimeupdateFromMediaControls).toHaveBeenLastCalledWith(30);
+                });
+
+                test('should seek to the exact time when the drag showed no filmstrip frame', () => {
+                    dash.seekPreview.showFrame.mockReturnValue(false);
+
+                    dash.handleScrub(30.7);
+                    dash.handleScrubEnd(30.7);
+
+                    expect(dash.seekPreview.getFrameTime).not.toHaveBeenCalled();
+                    expect(dash.handleTimeupdateFromMediaControls).toHaveBeenLastCalledWith(30.7);
                 });
 
                 test('should start the delayed spinner once the drag ends', () => {
