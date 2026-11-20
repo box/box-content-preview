@@ -1,3 +1,8 @@
+## 3.142.0 (2026-11-20)
+
+* fix(comparison): close button returns to the current version (#1970) ([3958c6c](https://github.com/box/box-content-preview/commit/3958c6c)), closes [#1970](https://github.com/box/box-content-preview/issues/1970)
+* fix(video): keep poster until the seeked frame is decoded (#1971) ([fbbe357](https://github.com/box/box-content-preview/commit/fbbe357)), closes [#1971](https://github.com/box/box-content-preview/issues/1971)
+
 ## 3.141.0 (2026-11-19)
 
 * ci: remove Travis CI (#1961) ([b057893](https://github.com/box/box-content-preview/commit/b057893)), closes [#1961](https://github.com/box/box-content-preview/issues/1961)
