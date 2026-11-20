@@ -108,7 +108,6 @@ export default function ComparisonBanner({
     const isBadgeTruncated = Number(versionNumber) > MAX_BADGE_VERSION;
     const badgeLabel = isBadgeTruncated ? `${MAX_BADGE_VERSION}+` : versionNumber;
     const badgeFullLabel = replacePlaceholders(__('comparison_banner_version'), [versionNumber]);
-    // The menu and the close button are independent: onCloseComparison only controls the close button
     const showMenu = !!(onMakeCurrent || onDownload || onOpenFullPreview || onDelete);
     const showClose = !!onCloseComparison;
 

@@ -369,6 +369,31 @@ describe('lib/ComparisonBanner', () => {
             expect(container.querySelector('.bp-version-banner-divider')).toBeNull();
         });
 
+        const visibilityCases: Array<[string, string[], boolean, boolean, boolean]> = [
+            ['no handlers', [], false, false, false],
+            ['only onOpenFullPreview', ['onOpenFullPreview'], true, false, false],
+            ['only onCloseComparison', ['onCloseComparison'], false, true, false],
+            ['onCloseComparison and onOpenFullPreview', ['onCloseComparison', 'onOpenFullPreview'], true, true, true],
+            ['only onDownload', ['onDownload'], true, false, false],
+            ['only onMakeCurrent', ['onMakeCurrent'], true, false, false],
+            ['only onDelete', ['onDelete'], true, false, false],
+        ];
+
+        test.each(visibilityCases)(
+            'should render the menu, close button, and divider for %s',
+            (_name, handlers, hasMenu, hasClose, hasDivider) => {
+                const props = handlers.reduce((acc, handler) => ({ ...acc, [handler]: jest.fn() }), {});
+                const { container } = render(
+                    <ComparisonBanner file={file} isComparedPreview locale="en-US" {...props} />,
+                );
+
+                expect(container.querySelector('.bp-version-banner-details')).toBeInTheDocument();
+                expect(!!screen.queryByRole('button', { name: __('comparison_banner_actions') })).toBe(hasMenu);
+                expect(!!screen.queryByRole('button', { name: __('comparison_banner_close') })).toBe(hasClose);
+                expect(!!container.querySelector('.bp-version-banner-divider')).toBe(hasDivider);
+            },
+        );
+
         test('should use the on-dark button variant only when requested', () => {
             const { rerender } = render(
                 <ComparisonBanner file={file} isComparedPreview locale="en-US" onDownload={jest.fn()} />,
