@@ -139,6 +139,52 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             expect(preview.isVisible()).toBe(true);
         });
 
+        test('should not show for a short seek near the playhead', () => {
+            loadFilmstrip();
+            mediaEl.currentTime = 30;
+            mediaEl.dispatchEvent(new Event('timeupdate'));
+
+            seek(30.4);
+
+            expect(preview.isVisible()).toBe(false);
+            expect(onShow).not.toHaveBeenCalled();
+        });
+
+        test('should still show for a seek farther from the playhead', () => {
+            loadFilmstrip();
+            mediaEl.currentTime = 30;
+            mediaEl.dispatchEvent(new Event('timeupdate'));
+
+            seek(32);
+
+            expect(preview.isVisible()).toBe(true);
+        });
+
+        test('should not come back when the playhead is nudged after the fade starts', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+
+            seek(30);
+            mediaEl.dispatchEvent(new Event('timeupdate'));
+            mediaEl.dispatchEvent(new Event('seeked'));
+            jest.advanceTimersByTime(250);
+            seek(29.999);
+
+            expect(preview.isVisible()).toBe(false);
+            expect(onShow).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not track the playhead from timeupdates fired mid-seek', () => {
+            loadFilmstrip();
+            Object.defineProperty(mediaEl, 'seeking', { configurable: true, value: true });
+            mediaEl.currentTime = 30;
+            mediaEl.dispatchEvent(new Event('timeupdate'));
+
+            seek(30.4);
+
+            expect(preview.isVisible()).toBe(true);
+        });
+
         test('should only call onShow when the preview first covers the video', () => {
             loadFilmstrip();
 
@@ -365,7 +411,10 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             loadFilmstrip();
 
             preview.destroy();
+            mediaEl.dispatchEvent(new Event('timeupdate'));
             seek(30);
+
+            expect(preview.settledTime).toBeUndefined();
 
             expect(containerEl.contains(preview.el)).toBe(false);
             expect(onShow).not.toHaveBeenCalled();

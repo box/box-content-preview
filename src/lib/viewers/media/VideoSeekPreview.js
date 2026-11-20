@@ -6,9 +6,10 @@ const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
 // Keeps times that are exact multiples of the interval in their own frame despite float error
 const FRAME_TIME_EPSILON = 1e-6;
-// Shaka nudges the playhead back 1ms to flush the decoder after an unbuffered seek, which can cross
-// into the previous frame when the seek lands on a frame boundary
-const SEEK_NUDGE_TOLERANCE = 0.01;
+// Shaka makes its own short seeks: a 1ms nudge back to flush the decoder after an unbuffered seek, and
+// jumps over gaps up to its 0.5s smallGapLimit. Seeks this close to the playhead (which timeupdate
+// only reports every ~250ms) or to the frame already shown are adjustments, not user seeks.
+const MIN_PREVIEW_SEEK_DISTANCE = 1;
 // requestVideoFrameCallback may not fire for a paused video in every browser
 const HIDE_FALLBACK_MS = 250;
 
@@ -51,6 +52,9 @@ class VideoSeekPreview {
     /** @property {Function|undefined} - Called when the preview starts covering the video */
     onShow;
 
+    /** @property {number|undefined} - Last playhead position the video reported outside of a seek */
+    settledTime;
+
     /** @property {number|undefined} - Time of the frame currently drawn */
     shownTime;
 
@@ -79,6 +83,7 @@ class VideoSeekPreview {
 
         this.mediaEl.addEventListener('seeking', this.handleSeeking);
         this.mediaEl.addEventListener('seeked', this.handleSeeked);
+        this.mediaEl.addEventListener('timeupdate', this.handleTimeupdate);
     }
 
     /**
@@ -90,6 +95,7 @@ class VideoSeekPreview {
         this.cancelPendingHide();
         this.mediaEl.removeEventListener('seeking', this.handleSeeking);
         this.mediaEl.removeEventListener('seeked', this.handleSeeked);
+        this.mediaEl.removeEventListener('timeupdate', this.handleTimeupdate);
         this.el.remove();
 
         if (this.imageEl) {
@@ -233,14 +239,30 @@ class VideoSeekPreview {
      */
     handleSeeking = () => {
         const { currentTime } = this.mediaEl;
+        const isVisible = this.isVisible();
+        const isAdjustment =
+            Math.abs(currentTime - this.settledTime) < MIN_PREVIEW_SEEK_DISTANCE ||
+            (isVisible && Math.abs(currentTime - this.shownTime) < MIN_PREVIEW_SEEK_DISTANCE);
 
-        if (this.isVisible() && Math.abs(currentTime - this.shownTime) < SEEK_NUDGE_TOLERANCE) {
-            this.cancelPendingHide();
+        if (isAdjustment) {
+            if (isVisible) {
+                this.cancelPendingHide();
+            }
             return;
         }
 
         if (!this.showFrame(currentTime)) {
             this.hide();
+        }
+    };
+
+    /**
+     * @private
+     * @return {void}
+     */
+    handleTimeupdate = () => {
+        if (!this.mediaEl.seeking) {
+            this.settledTime = this.mediaEl.currentTime;
         }
     };
 
