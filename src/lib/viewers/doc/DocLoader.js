@@ -5,7 +5,7 @@ import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
-import { ORIGINAL_REP_NAME, STATUS_ERROR, STATUS_SUCCESS } from '../../constants';
+import { OCR_PDF_REP_NAME, ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
 
 // Order of the viewers matters. For example, a PDF file can be previewed by using the preferred optimized 'pdf' rep
@@ -28,7 +28,7 @@ const VIEWERS = [
     {
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
-        REP: 'ocr_pdf',
+        REP: OCR_PDF_REP_NAME,
         EXT: DOCUMENT_EXTENSIONS,
     },
     {
@@ -94,26 +94,17 @@ class DocLoader extends AssetLoader {
      */
     determineRepresentation(file, viewer) {
         let rep = super.determineRepresentation(file, viewer);
-        let status = RepStatus.getStatus(rep);
 
-        if (rep.representation === 'ocr_pdf' && status === STATUS_ERROR) {
-            rep = getRepresentation(file, 'pdf') || rep;
-            status = RepStatus.getStatus(rep);
+        // 'ocr_pdf' conversion can take minutes for large scans, so never block the preview on it
+        if (rep.representation === OCR_PDF_REP_NAME && RepStatus.getStatus(rep) !== STATUS_SUCCESS) {
+            rep =
+                getRepresentation(file, 'pdf') ||
+                (file.extension === 'pdf' && getRepresentation(file, ORIGINAL_REP_NAME)) ||
+                rep;
         }
 
-        // The searchable 'ocr_pdf' rep is generated on demand: requesting its info url is what kicks
-        // off the conversion, and RepStatus polls none/pending until it is ready. Keep it while it is
-        // still converting so that polling can trigger and await the conversion, rather than falling
-        // straight through to the non-searchable original below. Once it has errored, the block above
-        // has already tried 'pdf', so we allow the original fallback as usual.
-        const isOcrPdfConverting = rep.representation === 'ocr_pdf' && status !== STATUS_ERROR;
-
-        if (
-            file.extension === 'pdf' &&
-            rep.representation !== ORIGINAL_REP_NAME &&
-            status !== STATUS_SUCCESS &&
-            !isOcrPdfConverting
-        ) {
+        const status = RepStatus.getStatus(rep);
+        if (file.extension === 'pdf' && rep.representation !== ORIGINAL_REP_NAME && status !== STATUS_SUCCESS) {
             rep = getRepresentation(file, ORIGINAL_REP_NAME) || rep;
         }
 
