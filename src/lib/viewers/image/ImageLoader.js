@@ -31,7 +31,7 @@ const VIEWERS = [
         NAME: 'Image',
         CONSTRUCTOR: ImageViewer,
         REP: 'jpg',
-        EXT: ['jpeg', 'jpg', 'cr2', 'cr3', 'crw', 'dng', 'nef', 'raf', 'raw'],
+        EXT: ['jpeg', 'jpg', 'arw', 'cr2', 'cr3', 'crw', 'dng', 'nef', 'raf', 'raw'],
         ASSET: '1.jpg',
     },
     {
