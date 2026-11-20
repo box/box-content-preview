@@ -6,6 +6,9 @@ const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
 // Keeps times that are exact multiples of the interval in their own frame despite float error
 const FRAME_TIME_EPSILON = 1e-6;
+// Shaka nudges the playhead back 1ms to flush the decoder after an unbuffered seek, which can cross
+// into the previous frame when the seek lands on a frame boundary
+const SEEK_NUDGE_TOLERANCE = 0.01;
 // requestVideoFrameCallback may not fire for a paused video in every browser
 const HIDE_FALLBACK_MS = 250;
 
@@ -47,6 +50,9 @@ class VideoSeekPreview {
 
     /** @property {Function|undefined} - Called when the preview starts covering the video */
     onShow;
+
+    /** @property {number|undefined} - Time of the frame currently drawn */
+    shownTime;
 
     /**
      * [constructor]
@@ -144,6 +150,7 @@ class VideoSeekPreview {
             return false;
         }
 
+        this.shownTime = time;
         this.position();
         this.el.classList.add(CLASS_IS_VISIBLE);
 
@@ -225,7 +232,14 @@ class VideoSeekPreview {
      * @return {void}
      */
     handleSeeking = () => {
-        if (!this.showFrame(this.mediaEl.currentTime)) {
+        const { currentTime } = this.mediaEl;
+
+        if (this.isVisible() && Math.abs(currentTime - this.shownTime) < SEEK_NUDGE_TOLERANCE) {
+            this.cancelPendingHide();
+            return;
+        }
+
+        if (!this.showFrame(currentTime)) {
             this.hide();
         }
     };

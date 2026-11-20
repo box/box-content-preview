@@ -114,6 +114,31 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             expect(preview.isVisible()).toBe(true);
         });
 
+        test('should keep the shown frame when the playhead is nudged back across a frame boundary', () => {
+            loadFilmstrip();
+            const context = preview.canvasEl.getContext('2d');
+            jest.spyOn(context, 'drawImage');
+
+            seek(30);
+            seek(29.999);
+
+            expect(context.drawImage).toHaveBeenCalledTimes(1);
+            expect(context.drawImage).toHaveBeenLastCalledWith(preview.imageEl, 15 * 160, 0, 160, 90, 0, 0, 160, 90);
+            expect(preview.isVisible()).toBe(true);
+        });
+
+        test('should wait for the nudged seek before hiding', () => {
+            jest.useFakeTimers();
+            loadFilmstrip();
+
+            seek(30);
+            mediaEl.dispatchEvent(new Event('seeked'));
+            seek(29.999);
+            jest.advanceTimersByTime(250);
+
+            expect(preview.isVisible()).toBe(true);
+        });
+
         test('should only call onShow when the preview first covers the video', () => {
             loadFilmstrip();
 
