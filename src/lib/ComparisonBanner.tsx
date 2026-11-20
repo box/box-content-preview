@@ -129,8 +129,11 @@ export default function ComparisonBanner({
                     className="bp-version-banner-details"
                     role="status"
                 >
-                    {versionNumber && (
+                    {isComparedPreview && versionNumber && (
                         <VersionBadge fullLabel={badgeFullLabel} isTruncated={isBadgeTruncated} label={badgeLabel} />
+                    )}
+                    {!isComparedPreview && (
+                        <span className="bp-version-banner-current-badge">{__('comparison_banner_current_badge')}</span>
                     )}
                     {(timestamp || author) && (
                         <div className="bp-version-banner-info">
