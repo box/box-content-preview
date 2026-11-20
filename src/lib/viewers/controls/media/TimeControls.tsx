@@ -6,8 +6,9 @@ import Filmstrip from './Filmstrip';
 import SliderControl from '../slider';
 import './TimeControls.scss';
 import DurationLabels from './DurationLabels';
+import useScrubPreview, { ScrubPreviewProps } from './useScrubPreview';
 
-export type Props = {
+export type Props = ScrubPreviewProps & {
     aspectRatio?: number;
     bufferedRange?: TimeRanges;
     currentTime?: number;
@@ -36,8 +37,12 @@ export default function TimeControls({
     filmstripUrl,
     fps,
     mediaEl,
+    onScrub,
+    onScrubEnd,
+    onScrubStart,
     onTimeChange,
 }: Props): JSX.Element {
+    const { isScrubbing, sliderProps } = useScrubPreview({ onScrub, onScrubEnd, onScrubStart, onTimeChange });
     const [isSliderHovered, setIsSliderHovered] = React.useState(false);
     const [hoverPosition, setHoverPosition] = React.useState(0);
     const [hoverPositionMax, setHoverPositionMax] = React.useState(0);
@@ -59,9 +64,10 @@ export default function TimeControls({
             {!!filmstripInterval && (
                 <Filmstrip
                     aspectRatio={aspectRatio}
+                    hasFade={!!onScrub}
                     imageUrl={filmstripUrl}
                     interval={filmstripInterval}
-                    isShown={isSliderHovered}
+                    isShown={isSliderHovered && !isScrubbing}
                     position={hoverPosition}
                     positionMax={hoverPositionMax}
                     time={hoverTime}
@@ -78,7 +84,7 @@ export default function TimeControls({
                 onMouseOut={(): void => setIsSliderHovered(false)}
                 onMouseOver={(): void => setIsSliderHovered(true)}
                 onMove={handleMouseMove}
-                onUpdate={onTimeChange}
+                {...sliderProps}
                 step={fps ? 1 / fps : 5}
                 title={__('media_time_slider')}
                 track={`linear-gradient(to right, ${bdlBoxBlue} ${currentPercentage}%, ${white} ${currentPercentage}%, ${white} ${bufferedPercentage}%, ${bdlGray65} ${bufferedPercentage}%, ${bdlGray65} 100%)`}

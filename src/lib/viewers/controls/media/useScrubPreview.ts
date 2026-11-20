@@ -1,0 +1,64 @@
+import React from 'react';
+
+export type ScrubPreviewProps = {
+    onScrub?: (time: number) => void;
+    onScrubEnd?: (time: number) => void;
+    onScrubStart?: () => void;
+};
+
+type Options = ScrubPreviewProps & {
+    onTimeChange: (time: number) => void;
+};
+
+type ScrubPreview = {
+    isScrubbing: boolean;
+    sliderProps: {
+        onScrubEnd?: () => void;
+        onScrubStart?: () => void;
+        onUpdate: (time: number) => void;
+    };
+};
+
+/**
+ * When the host passes onScrub, a scrubber drag previews times through onScrub and only seeks once,
+ * through onScrubEnd, when the drag is released. Without onScrub every update seeks right away.
+ */
+export default function useScrubPreview({ onScrub, onScrubEnd, onScrubStart, onTimeChange }: Options): ScrubPreview {
+    const [isScrubbing, setIsScrubbing] = React.useState(false);
+    const isScrubbingRef = React.useRef(false);
+    const scrubTimeRef = React.useRef(0);
+
+    const handleScrubStart = React.useCallback((): void => {
+        isScrubbingRef.current = true;
+        setIsScrubbing(true);
+        onScrubStart?.();
+    }, [onScrubStart]);
+
+    const handleScrubEnd = React.useCallback((): void => {
+        if (!isScrubbingRef.current) return;
+
+        isScrubbingRef.current = false;
+        setIsScrubbing(false);
+        onScrubEnd?.(scrubTimeRef.current);
+    }, [onScrubEnd]);
+
+    const handleUpdate = React.useCallback(
+        (time: number): void => {
+            if (onScrub && isScrubbingRef.current) {
+                scrubTimeRef.current = time;
+                onScrub(time);
+                return;
+            }
+
+            onTimeChange(time);
+        },
+        [onScrub, onTimeChange],
+    );
+
+    return {
+        isScrubbing,
+        sliderProps: onScrub
+            ? { onScrubEnd: handleScrubEnd, onScrubStart: handleScrubStart, onUpdate: handleUpdate }
+            : { onUpdate: onTimeChange },
+    };
+}

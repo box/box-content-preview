@@ -9,6 +9,7 @@ const FILMSTRIP_FRAME_WIDTH = 160; // Default frame width for loading crawler
 
 export type Props = {
     aspectRatio?: number;
+    hasFade?: boolean;
     imageUrl?: string;
     interval?: number;
     isShown?: boolean;
@@ -19,6 +20,7 @@ export type Props = {
 
 export default function Filmstrip({
     aspectRatio = 0,
+    hasFade = false,
     imageUrl = '',
     interval = 1,
     isShown,
@@ -50,7 +52,7 @@ export default function Filmstrip({
 
     return (
         <div
-            className={classNames('bp-Filmstrip', { 'bp-is-shown': isShown })}
+            className={classNames('bp-Filmstrip', { 'bp-Filmstrip--fade': hasFade, 'bp-is-shown': isShown })}
             data-testid="bp-Filmstrip"
             style={{ left: `${filmstripLeft}px` }}
         >

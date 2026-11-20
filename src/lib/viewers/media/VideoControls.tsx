@@ -68,6 +68,9 @@ export default function VideoControls({
     onPlayPause,
     onQualityChange,
     onRateChange,
+    onScrub,
+    onScrubEnd,
+    onScrubStart,
     onSubtitleChange,
     onSubtitlesToggle,
     onTimeChange,
@@ -101,6 +104,9 @@ export default function VideoControls({
                     filmstripUrl={filmstripUrl}
                     fps={fps}
                     mediaEl={mediaEl}
+                    onScrub={onScrub}
+                    onScrubEnd={onScrubEnd}
+                    onScrubStart={onScrubStart}
                     onTimeChange={onTimeChange}
                 />
                 <div
