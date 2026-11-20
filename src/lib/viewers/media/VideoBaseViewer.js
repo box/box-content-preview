@@ -7,6 +7,7 @@ import {
     CLASS_DARK,
     CLASS_HIDDEN,
     CLASS_INVISIBLE,
+    CLASS_IS_TRANSPARENT,
     DISCOVERABILITY_ATTRIBUTE,
     VIDEO_FTUX_CURSOR_SEEN_KEY,
     CLASS_ANNOTATIONS_VIDEO_FTUX_CURSOR_SEEN,
@@ -36,6 +37,12 @@ const CLASS_PLAY_SEEK_OVERLAY = 'bp-VideoPlaySeekOverlay';
 const SMALL_VIDEO_WIDTH_THRESHOLD = 580;
 const SPINNER_HALF_SIZE = 40; // Half of the 80px spinner height (_mediaBase.scss and MediaLoadingIndicator.scss)
 const VIDEO_ANNOTATIONS_ENABLED = 'videoAnnotations.enabled';
+// How often to check whether the frame at a seeked position has loaded. Needed because a paused
+// video often fires no event when that frame becomes ready, which would leave the poster up.
+const SEEK_FRAME_POLL_MS = 250;
+// How long a seek must take before the buffering spinner shows. Most seeks finish sooner, and
+// showing the spinner right away would make it flash.
+const SEEK_SPINNER_DELAY_MS = 200;
 
 export const DISCOVERABILITY_STATES = [AnnotationState.DRAWING, AnnotationState.NONE, AnnotationState.REGION_TEMP];
 
@@ -58,8 +65,11 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.handleControlsHide = this.handleControlsHide.bind(this);
         this.handleControlsShow = this.handleControlsShow.bind(this);
         this.handlePlayRequest = this.handlePlayRequest.bind(this);
+        this.handleSeekFrameReady = this.handleSeekFrameReady.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.pointerHandler = this.pointerHandler.bind(this);
+        this.seekingHandler = this.seekingHandler.bind(this);
+        this.stopWaitingForSeekFrame = this.stopWaitingForSeekFrame.bind(this);
         this.waitingHandler = this.waitingHandler.bind(this);
         this.playingHandler = this.playingHandler.bind(this);
         this.pauseHandler = this.pauseHandler.bind(this);
@@ -103,6 +113,7 @@ class VideoBaseViewer extends MediaBaseViewer {
 
         this.isNarrowVideo = false;
         this.userRequestedPlay = false;
+        this.pendingSeekReveal = false;
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
         this.mediaEl.setAttribute('preload', 'auto');
@@ -173,6 +184,141 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * Whether a preload poster is currently mounted and has not started fading out.
+     *
+     * @private
+     * @return {boolean}
+     */
+    hasActivePreload() {
+        return Boolean(this.preloader?.wrapperEl && !this.preloader.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT));
+    }
+
+    /**
+     * Whether the frame at the current position is decoded and, while playing, whether
+     * playback can continue from it.
+     *
+     * @private
+     * @return {boolean}
+     */
+    isSeekFrameReady() {
+        if (!this.mediaEl) {
+            return false;
+        }
+        const requiredState = this.mediaEl.paused
+            ? HTMLMediaElement.HAVE_CURRENT_DATA
+            : HTMLMediaElement.HAVE_FUTURE_DATA;
+        return this.mediaEl.readyState >= requiredState;
+    }
+
+    /**
+     * Shows the buffering spinner in place of the play button.
+     *
+     * @private
+     * @return {void}
+     */
+    showSeekSpinner() {
+        this.showBufferingSpinner();
+        this.hidePlayButton();
+    }
+
+    /**
+     * Stops waiting for a seek to load its target frame.
+     *
+     * @private
+     * @return {void}
+     */
+    stopWaitingForSeekFrame() {
+        if (this.mediaEl) {
+            this.mediaEl.removeEventListener('loadeddata', this.handleSeekFrameReady);
+            this.mediaEl.removeEventListener('canplay', this.handleSeekFrameReady);
+            this.mediaEl.removeEventListener('error', this.stopWaitingForSeekFrame);
+        }
+        clearInterval(this.seekFramePollId);
+        this.seekFramePollId = undefined;
+        clearTimeout(this.seekSpinnerTimeoutId);
+        this.seekSpinnerTimeoutId = undefined;
+    }
+
+    /**
+     * Waits for a finished seek to load its target frame, showing the buffering spinner
+     * unless the poster still covers the video.
+     *
+     * @private
+     * @return {void}
+     */
+    waitForSeekFrame() {
+        if (!this.mediaEl || this.mediaEl.seeking) {
+            return;
+        }
+
+        if (this.isSeekFrameReady()) {
+            this.handleSeekFrameReady();
+            return;
+        }
+
+        if (!this.hasActivePreload()) {
+            this.showSeekSpinner();
+        }
+        this.mediaEl.addEventListener('loadeddata', this.handleSeekFrameReady);
+        this.mediaEl.addEventListener('canplay', this.handleSeekFrameReady);
+        this.mediaEl.addEventListener('error', this.stopWaitingForSeekFrame);
+        if (!this.seekFramePollId) {
+            this.seekFramePollId = setInterval(this.handleSeekFrameReady, SEEK_FRAME_POLL_MS);
+        }
+    }
+
+    /**
+     * Ends a seek once its target frame is ready: dismisses the poster after a user seek
+     * and hides the buffering spinner.
+     *
+     * @private
+     * @return {void}
+     */
+    handleSeekFrameReady() {
+        if (!this.mediaEl || this.mediaEl.seeking || !this.isSeekFrameReady()) {
+            return;
+        }
+
+        this.stopWaitingForSeekFrame();
+        if (this.pendingSeekReveal) {
+            this.dismissPreload();
+        }
+        this.hideBufferingSpinner();
+        if (this.mediaEl.paused) {
+            this.showPlayButton();
+        }
+    }
+
+    /**
+     * Swaps the poster's play overlay for a spinner before a user seek, so the video is
+     * never revealed before the target frame decodes.
+     *
+     * @private
+     * @return {void}
+     */
+    preparePreloadForSeek() {
+        if (!this.hasActivePreload()) {
+            this.dismissPreload();
+            return;
+        }
+
+        this.pendingSeekReveal = true;
+        this.preloader.showLoading();
+    }
+
+    /**
+     * Dismisses the poster after a user seek once the target frame is decoded, waiting if necessary.
+     *
+     * @private
+     * @return {void}
+     */
+    completeSeekPreloadDismiss() {
+        if (this.pendingSeekReveal) {
+            this.waitForSeekFrame();
+        }
+    }
+
+    /**
      * Dismisses the preload thumbnail if it is currently visible. Safe to call
      * multiple times — hidePreload() guards on wrapperEl internally.
      * Always reveals the video: the poster wrapper may already be gone after fade/cleanup
@@ -182,16 +328,66 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     dismissPreload() {
-        const hadPoster = Boolean(this.preloader?.wrapperEl);
+        this.pendingSeekReveal = false;
+        const hasActivePoster = this.hasActivePreload();
         this.preloader?.blockFuturePosterPaint?.();
-        if (hadPoster) {
+        if (hasActivePoster) {
             this.hidePreload();
         }
         this.mediaEl?.classList.remove(CLASS_INVISIBLE);
         // Avoid extra resize on no-op calls (e.g. play with no Instant Preview).
-        if (hadPoster) {
+        if (hasActivePoster) {
             this.resize();
         }
+    }
+
+    /**
+     * Reveals the frame at the new time for seeks after load (scrubber, skip, keyboard,
+     * timestamped comments) and non-zero start times, dismissing the poster once it is decoded.
+     *
+     * @override
+     * @param {number} time - Time in seconds
+     * @return {void}
+     */
+    setMediaTime(time) {
+        const revealsSeekFrame = (this.loaded || time > 0) && this.isValidTime(time);
+        if (revealsSeekFrame) {
+            this.preparePreloadForSeek();
+        }
+        super.setMediaTime(time);
+        if (revealsSeekFrame) {
+            this.completeSeekPreloadDismiss();
+        }
+    }
+
+    /**
+     * Shows the buffering spinner if a seek after the poster is gone takes noticeably long.
+     *
+     * @private
+     * @return {void}
+     */
+    seekingHandler() {
+        if (this.hasActivePreload() || this.seekSpinnerTimeoutId) {
+            return;
+        }
+
+        this.seekSpinnerTimeoutId = setTimeout(() => {
+            this.seekSpinnerTimeoutId = undefined;
+            if (this.mediaEl?.seeking || !this.isSeekFrameReady()) {
+                this.showSeekSpinner();
+            }
+        }, SEEK_SPINNER_DELAY_MS);
+    }
+
+    /**
+     * Keeps the buffering spinner (or the poster after a user seek) up until the seeked frame is ready.
+     *
+     * @override
+     * @return {void}
+     */
+    seekHandler() {
+        super.seekHandler();
+        this.waitForSeekFrame();
     }
 
     /**
@@ -421,10 +617,13 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.preloader?.blockFuturePosterPaint?.();
         this.preloader?.cleanupPreload?.();
 
+        this.stopWaitingForSeekFrame();
+
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
             this.mediaEl.removeEventListener('click', this.pointerHandler);
             this.mediaEl.removeEventListener('touchstart', this.pointerHandler);
+            this.mediaEl.removeEventListener('seeking', this.seekingHandler);
             this.mediaEl.removeEventListener('waiting', this.waitingHandler);
         }
 
@@ -557,6 +756,7 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     playingHandler() {
+        this.stopWaitingForSeekFrame();
         this.dismissPreload();
         this.hideBufferingSpinner();
         super.playingHandler();
@@ -571,6 +771,10 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     pauseHandler() {
         super.pauseHandler();
+        if (this.seekFramePollId) {
+            // handleSeekFrameReady() swaps the spinner back for the play button.
+            return;
+        }
         this.showPlayButton();
         this.hideLoadingIcon();
         this.hideBufferingSpinner();
@@ -641,6 +845,7 @@ class VideoBaseViewer extends MediaBaseViewer {
         }
 
         this.mediaEl.addEventListener('click', this.pointerHandler);
+        this.mediaEl.addEventListener('seeking', this.seekingHandler);
         this.mediaEl.addEventListener('waiting', this.waitingHandler);
 
         if (this.playButtonEl) {
@@ -1023,7 +1228,7 @@ class VideoBaseViewer extends MediaBaseViewer {
     handleCommentMarkerClick = marker => {
         if (this.mediaEl) {
             this.mediaEl.pause();
-            this.mediaEl.currentTime = marker.time;
+            this.setMediaTime(marker.time);
         }
         if (marker.type === 'annotation' && this.annotator) {
             this.annotator.emit('annotations_active_set', marker.id);
@@ -1039,9 +1244,14 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     handleScrollToAnnotation(event) {
+        const beforeTime = this.mediaEl?.currentTime;
         const data = event && event.id ? event.id : event;
         const defaultLocaton = event?.target?.location?.value;
         this.annotator.scrollToAnnotation(data, defaultLocaton);
+        if (this.mediaEl && (this.mediaEl.seeking || this.mediaEl.currentTime !== beforeTime)) {
+            this.preparePreloadForSeek();
+            this.completeSeekPreloadDismiss();
+        }
     }
 }
 

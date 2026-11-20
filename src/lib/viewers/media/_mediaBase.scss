@@ -278,7 +278,12 @@
     }
 
     &.bp-is-transparent {
+        pointer-events: none;
         opacity: 0;
+
+        .bp-video-preload-play-overlay--blueprint {
+            pointer-events: none;
+        }
     }
 
     .bp-preload {

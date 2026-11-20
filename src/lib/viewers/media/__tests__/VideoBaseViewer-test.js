@@ -8,7 +8,7 @@ import ControlsRoot from '../../controls';
 import MediaBaseViewer from '../MediaBaseViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import VideoPreloader from '../VideoPreloader';
-import { CLASS_INVISIBLE, CLASS_IS_TRANSPARENT } from '../../../constants';
+import { CLASS_HIDDEN, CLASS_INVISIBLE, CLASS_IS_TRANSPARENT } from '../../../constants';
 import * as fileUtil from '../../../file';
 
 let containerEl;
@@ -54,6 +54,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         videoBase.containerEl = containerEl;
         videoBase.rootEl = rootEl;
         videoBase.setup();
+        // build/jest/envWindow.js replaces `paused` with a writable property that has no value.
+        Object.defineProperty(videoBase.mediaEl, 'paused', { configurable: true, value: true });
     });
 
     afterEach(() => {
@@ -332,6 +334,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('mousemove', videoBase.mousemoveHandler);
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('click', videoBase.pointerHandler);
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('touchstart', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('seeking', videoBase.seekingHandler);
             expect(videoBase.mediaEl.removeEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
             expect(videoBase.playButtonEl.removeEventListener).toBeCalledWith('click', videoBase.handlePlayRequest);
         });
@@ -590,6 +593,353 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.preloader.sizeContainerToViewport).not.toHaveBeenCalled();
             expect(videoBase.applySharedMediaFrame).toHaveBeenCalledWith(600, 600);
         });
+
+        test('should not re-hide or re-resize when the poster is already fading out', () => {
+            const wrapperEl = document.createElement('div');
+            wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
+            videoBase.preloader = {
+                wrapperEl,
+                hidePreload: jest.fn(),
+                blockFuturePosterPaint: jest.fn(),
+            };
+            jest.spyOn(videoBase, 'resize').mockImplementation();
+
+            videoBase.dismissPreload();
+
+            expect(videoBase.preloader.blockFuturePosterPaint).toHaveBeenCalled();
+            expect(videoBase.preloader.hidePreload).not.toHaveBeenCalled();
+            expect(videoBase.resize).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('seeks from the controls', () => {
+        let mockPreloader;
+
+        beforeEach(() => {
+            mockPreloader = {
+                wrapperEl: document.createElement('div'),
+                showLoading: jest.fn(),
+                hidePreload: jest.fn(),
+                blockFuturePosterPaint: jest.fn(),
+            };
+            videoBase.preloader = mockPreloader;
+            videoBase.loaded = true;
+            Object.defineProperty(videoBase.mediaEl, 'duration', { configurable: true, value: 120 });
+            Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: 4 });
+            jest.spyOn(videoBase, 'resize').mockImplementation();
+        });
+
+        test.each`
+            name                 | seek
+            ${'a scrubber seek'} | ${() => videoBase.handleTimeupdateFromMediaControls(25)}
+            ${'a skip'}          | ${() => videoBase.quickSeek(5)}
+        `('should swap the poster for a spinner and dismiss it once the frame is ready for $name', ({ seek }) => {
+            seek();
+
+            expect(mockPreloader.showLoading).toHaveBeenCalledTimes(1);
+            expect(mockPreloader.hidePreload).toHaveBeenCalledTimes(1);
+            expect(videoBase.pendingSeekReveal).toBe(false);
+        });
+    });
+
+    describe('setMediaTime()', () => {
+        beforeEach(() => {
+            Object.defineProperty(videoBase.mediaEl, 'duration', { configurable: true, value: 120 });
+        });
+
+        test('should not show loading or dismiss preload during initial load at time 0', () => {
+            jest.spyOn(videoBase, 'preparePreloadForSeek').mockImplementation();
+            jest.spyOn(videoBase, 'completeSeekPreloadDismiss').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'setMediaTime').mockImplementation();
+            videoBase.loaded = false;
+
+            videoBase.setMediaTime(0);
+
+            expect(videoBase.preparePreloadForSeek).not.toHaveBeenCalled();
+            expect(videoBase.completeSeekPreloadDismiss).not.toHaveBeenCalled();
+            expect(MediaBaseViewer.prototype.setMediaTime).toHaveBeenCalledWith(0);
+        });
+
+        test('should show loading spinner when seeking to a non-zero start time during load', () => {
+            jest.spyOn(videoBase, 'preparePreloadForSeek').mockImplementation();
+            jest.spyOn(videoBase, 'completeSeekPreloadDismiss').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'setMediaTime').mockImplementation();
+            videoBase.loaded = false;
+
+            videoBase.setMediaTime(15);
+
+            expect(videoBase.preparePreloadForSeek).toHaveBeenCalled();
+            expect(MediaBaseViewer.prototype.setMediaTime).toHaveBeenCalledWith(15);
+            expect(videoBase.completeSeekPreloadDismiss).toHaveBeenCalled();
+        });
+
+        test('should show loading spinner on any valid setMediaTime call after initial load', () => {
+            jest.spyOn(videoBase, 'preparePreloadForSeek').mockImplementation();
+            jest.spyOn(videoBase, 'completeSeekPreloadDismiss').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'setMediaTime').mockImplementation();
+            videoBase.loaded = true;
+
+            videoBase.setMediaTime(0);
+
+            expect(videoBase.preparePreloadForSeek).toHaveBeenCalled();
+            expect(MediaBaseViewer.prototype.setMediaTime).toHaveBeenCalledWith(0);
+            expect(videoBase.completeSeekPreloadDismiss).toHaveBeenCalled();
+        });
+
+        test('should not touch preload when time is outside video duration', () => {
+            jest.spyOn(videoBase, 'preparePreloadForSeek').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'setMediaTime').mockImplementation();
+            videoBase.loaded = true;
+
+            videoBase.setMediaTime(200);
+
+            expect(videoBase.preparePreloadForSeek).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('seekHandler()', () => {
+        const setMediaState = ({ readyState, seeking = false }) => {
+            Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: seeking });
+            Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: readyState });
+        };
+
+        beforeEach(() => {
+            videoBase.preloader = {
+                wrapperEl: document.createElement('div'),
+                showLoading: jest.fn(),
+                hidePreload: jest.fn(),
+                blockFuturePosterPaint: jest.fn(),
+            };
+            jest.spyOn(videoBase, 'dismissPreload');
+            jest.spyOn(videoBase, 'resize').mockImplementation();
+            jest.spyOn(MediaBaseViewer.prototype, 'seekHandler').mockImplementation();
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test('should ignore seeks the user did not request, such as internal player seeks', () => {
+            videoBase.loaded = true;
+            Object.defineProperty(videoBase.mediaEl, 'currentTime', { configurable: true, value: 12, writable: true });
+            setMediaState({ readyState: 4 });
+
+            videoBase.seekHandler();
+
+            expect(videoBase.dismissPreload).not.toHaveBeenCalled();
+            expect(videoBase.preloader.hidePreload).not.toHaveBeenCalled();
+            expect(MediaBaseViewer.prototype.seekHandler).toHaveBeenCalled();
+        });
+
+        test('should dismiss the poster after a user seek once the frame is ready', () => {
+            videoBase.pendingSeekReveal = true;
+            setMediaState({ readyState: 2 });
+
+            videoBase.seekHandler();
+
+            expect(videoBase.preloader.hidePreload).toHaveBeenCalled();
+            expect(videoBase.pendingSeekReveal).toBe(false);
+        });
+
+        test('should wait for canplay when seeked fires before the frame is decoded', () => {
+            videoBase.pendingSeekReveal = true;
+            setMediaState({ readyState: 1 });
+
+            videoBase.seekHandler();
+            expect(videoBase.dismissPreload).not.toHaveBeenCalled();
+
+            setMediaState({ readyState: 3 });
+            videoBase.mediaEl.dispatchEvent(new Event('canplay'));
+
+            expect(videoBase.preloader.hidePreload).toHaveBeenCalled();
+        });
+
+        test('should poll readyState when no event announces the decoded frame', () => {
+            jest.useFakeTimers();
+            videoBase.pendingSeekReveal = true;
+            setMediaState({ readyState: 1 });
+
+            videoBase.seekHandler();
+            jest.advanceTimersByTime(250);
+            expect(videoBase.dismissPreload).not.toHaveBeenCalled();
+
+            setMediaState({ readyState: 2 });
+            jest.advanceTimersByTime(250);
+
+            expect(videoBase.preloader.hidePreload).toHaveBeenCalled();
+            expect(videoBase.seekFramePollId).toBeUndefined();
+        });
+
+        test('should stop waiting for the frame when destroyed', () => {
+            jest.useFakeTimers();
+            videoBase.pendingSeekReveal = true;
+            setMediaState({ readyState: 1 });
+            const { mediaEl } = videoBase;
+            jest.spyOn(mediaEl, 'removeEventListener');
+
+            videoBase.seekHandler();
+            videoBase.destroy();
+
+            expect(mediaEl.removeEventListener).toHaveBeenCalledWith('canplay', videoBase.handleSeekFrameReady);
+            expect(mediaEl.removeEventListener).toHaveBeenCalledWith('loadeddata', videoBase.handleSeekFrameReady);
+            expect(mediaEl.removeEventListener).toHaveBeenCalledWith('error', videoBase.stopWaitingForSeekFrame);
+            expect(jest.getTimerCount()).toBe(0);
+        });
+
+        test('should stop polling for the frame when the media errors', () => {
+            jest.useFakeTimers();
+            videoBase.pendingSeekReveal = true;
+            setMediaState({ readyState: 1 });
+
+            videoBase.seekHandler();
+            expect(jest.getTimerCount()).toBe(1);
+
+            videoBase.mediaEl.dispatchEvent(new Event('error'));
+
+            expect(jest.getTimerCount()).toBe(0);
+            expect(videoBase.dismissPreload).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('buffering spinner on seeks after the poster is gone', () => {
+        const setMediaState = ({ readyState, seeking = false, paused = true }) => {
+            Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: seeking });
+            Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: readyState });
+            Object.defineProperty(videoBase.mediaEl, 'paused', { configurable: true, value: paused });
+        };
+        const isSpinnerVisible = () => !videoBase.bufferingSpinnerEl.classList.contains(CLASS_HIDDEN);
+
+        beforeEach(() => {
+            jest.useFakeTimers();
+            videoBase.preloader = undefined;
+            jest.spyOn(MediaBaseViewer.prototype, 'seekHandler').mockImplementation(() => videoBase.hideLoadingIcon());
+            jest.spyOn(MediaBaseViewer.prototype, 'pauseHandler').mockImplementation();
+            jest.spyOn(videoBase, 'showPlayButton');
+            jest.spyOn(videoBase, 'hidePlayButton');
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test('should show the spinner for a slow paused seek and hide it once the frame is decoded', () => {
+            setMediaState({ readyState: 1, seeking: true });
+
+            videoBase.seekingHandler();
+            jest.advanceTimersByTime(200);
+            expect(isSpinnerVisible()).toBe(true);
+            expect(videoBase.hidePlayButton).toHaveBeenCalled();
+
+            setMediaState({ readyState: 1 });
+            videoBase.seekHandler();
+            expect(isSpinnerVisible()).toBe(true);
+
+            setMediaState({ readyState: 2 });
+            jest.advanceTimersByTime(250);
+
+            expect(isSpinnerVisible()).toBe(false);
+            expect(videoBase.showPlayButton).toHaveBeenCalled();
+            expect(jest.getTimerCount()).toBe(0);
+        });
+
+        test('should not flash the spinner when a seek lands in buffered media', () => {
+            setMediaState({ readyState: 1, seeking: true });
+
+            videoBase.seekingHandler();
+            setMediaState({ readyState: 2 });
+            videoBase.seekHandler();
+            jest.advanceTimersByTime(500);
+
+            expect(isSpinnerVisible()).toBe(false);
+            expect(jest.getTimerCount()).toBe(0);
+        });
+
+        test('should keep the spinner after seeked while playing until playback can continue', () => {
+            setMediaState({ readyState: 2, paused: false });
+            videoBase.waitingHandler();
+
+            videoBase.seekHandler();
+            expect(isSpinnerVisible()).toBe(true);
+
+            setMediaState({ readyState: 3, paused: false });
+            videoBase.mediaEl.dispatchEvent(new Event('canplay'));
+
+            expect(isSpinnerVisible()).toBe(false);
+            expect(videoBase.showPlayButton).not.toHaveBeenCalled();
+        });
+
+        test('should keep the spinner when paused while a seek is still loading', () => {
+            setMediaState({ readyState: 1 });
+            videoBase.seekHandler();
+
+            videoBase.pauseHandler();
+
+            expect(isSpinnerVisible()).toBe(true);
+        });
+
+        test('should leave seeks before playback to the poster spinner', () => {
+            videoBase.preloader = { wrapperEl: document.createElement('div') };
+            setMediaState({ readyState: 1, seeking: true });
+
+            videoBase.seekingHandler();
+            jest.advanceTimersByTime(200);
+            setMediaState({ readyState: 1 });
+            videoBase.seekHandler();
+
+            expect(isSpinnerVisible()).toBe(false);
+        });
+    });
+
+    describe('seeking before playback with a real poster', () => {
+        let preloader;
+
+        beforeEach(() => {
+            preloader = new VideoPreloader();
+            preloader.containerEl = videoBase.mediaContainerEl;
+            preloader.wrapperEl = videoBase.mediaContainerEl.appendChild(document.createElement('div'));
+            preloader.placeholderEl = preloader.wrapperEl.appendChild(document.createElement('div'));
+            videoBase.preloader = preloader;
+            videoBase.loaded = true;
+            videoBase.mediaEl.classList.add(CLASS_INVISIBLE);
+            jest.spyOn(videoBase, 'resize').mockImplementation();
+            Object.defineProperty(videoBase.mediaEl, 'duration', { configurable: true, value: 120 });
+        });
+
+        test('should keep the poster with a spinner until the seeked frame decodes, then reveal the video', () => {
+            jest.spyOn(MediaBaseViewer.prototype, 'setMediaTime').mockImplementation(() => {
+                Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: true });
+                Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: 1 });
+            });
+
+            videoBase.setMediaTime(30);
+
+            expect(preloader.placeholderEl.querySelector('.bp-media-buffering-spinner')).not.toBeNull();
+            expect(preloader.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT)).toBe(false);
+            expect(videoBase.mediaEl.classList.contains(CLASS_INVISIBLE)).toBe(true);
+
+            Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: false });
+            Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: 2 });
+            videoBase.seekHandler();
+
+            expect(preloader.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT)).toBe(true);
+            expect(videoBase.mediaEl.classList.contains(CLASS_INVISIBLE)).toBe(false);
+        });
+
+        test('should let playing dismiss the poster while a seek is still decoding', () => {
+            jest.useFakeTimers();
+            jest.spyOn(MediaBaseViewer.prototype, 'setMediaTime').mockImplementation(() => {
+                Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: true });
+            });
+            jest.spyOn(MediaBaseViewer.prototype, 'playingHandler').mockImplementation();
+
+            videoBase.setMediaTime(30);
+            videoBase.playingHandler();
+
+            expect(preloader.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT)).toBe(true);
+            expect(videoBase.pendingSeekReveal).toBe(false);
+            expect(jest.getTimerCount()).toBe(0);
+            jest.useRealTimers();
+        });
     });
 
     describe('playingHandler()', () => {
@@ -759,6 +1109,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('mousemove', videoBase.mousemoveHandler);
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('click', videoBase.pointerHandler);
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('touchstart', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.addEventListener).toBeCalledWith('seeking', videoBase.seekingHandler);
             expect(videoBase.mediaEl.addEventListener).toBeCalledWith('waiting', videoBase.waitingHandler);
             expect(videoBase.playButtonEl.addEventListener).toBeCalledWith('click', videoBase.handlePlayRequest);
         });
@@ -1703,6 +2054,27 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.annotator.scrollToAnnotation).toHaveBeenCalledWith('123', 5);
         });
+
+        test('should prepare preload for seek when scrolling to an annotation moves currentTime', () => {
+            jest.spyOn(videoBase, 'preparePreloadForSeek').mockImplementation();
+            jest.spyOn(videoBase, 'completeSeekPreloadDismiss').mockImplementation();
+            videoBase.annotator.scrollToAnnotation.mockImplementation(() => {
+                videoBase.mediaEl.currentTime = 15;
+            });
+
+            videoBase.handleScrollToAnnotation({ id: '123' });
+
+            expect(videoBase.preparePreloadForSeek).toHaveBeenCalled();
+            expect(videoBase.completeSeekPreloadDismiss).toHaveBeenCalled();
+        });
+
+        test('should not touch preload when scrolling to an annotation does not seek', () => {
+            jest.spyOn(videoBase, 'preparePreloadForSeek').mockImplementation();
+
+            videoBase.handleScrollToAnnotation({ id: 'missing' });
+
+            expect(videoBase.preparePreloadForSeek).not.toHaveBeenCalled();
+        });
     });
 
     describe('load()', () => {
@@ -2227,11 +2599,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
     describe('handleCommentMarkerClick', () => {
         beforeEach(() => {
-            videoBase.mediaEl = {
-                currentTime: 0,
-                pause: jest.fn(),
-                removeEventListener: jest.fn(),
-            };
+            jest.spyOn(videoBase.mediaEl, 'pause').mockImplementation();
             videoBase.annotator = {
                 emit: jest.fn(),
             };
@@ -2240,10 +2608,12 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         });
 
         test('should pause and seek video to marker time', () => {
+            jest.spyOn(videoBase, 'setMediaTime').mockImplementation();
+
             videoBase.handleCommentMarkerClick({ id: '1', time: 42, type: 'comment' });
 
             expect(videoBase.mediaEl.pause).toHaveBeenCalled();
-            expect(videoBase.mediaEl.currentTime).toBe(42);
+            expect(videoBase.setMediaTime).toHaveBeenCalledWith(42);
         });
 
         test('should emit comment_marker_select event', () => {
