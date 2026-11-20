@@ -1,0 +1,334 @@
+import { CLASS_IS_VISIBLE } from '../../constants';
+
+const CLASS_SEEK_PREVIEW = 'bp-media-seek-preview';
+const CLASS_SEEK_PREVIEW_DIMMED = 'bp-is-dimmed';
+const CLASS_SEEK_PREVIEW_IMMEDIATE = 'bp-is-immediate';
+const CLASS_SEEK_PREVIEW_FRAME = 'bp-media-seek-preview-frame';
+const CLASS_SEEK_PREVIEW_FRAME_BASE = 'bp-media-seek-preview-frame-base';
+const FILMSTRIP_FRAMES_PER_ROW = 100;
+const FILMSTRIP_FRAME_HEIGHT = 90;
+// Caps how long the overlay waits for the next painted frame after 'seeked'
+const HIDE_FALLBACK_MS = 100;
+// Brief delay before covering the video on a seek so disk-cached chunks resolve without flashing
+const SHOW_DELAY_MS = 80;
+
+/**
+ * Covers the video with the filmstrip frame for an unbuffered seek target, dims it while the segment
+ * downloads, brightens it once the target is buffered, and fades it away once the video paints the
+ * real frame. Replaces the stale frame and spinner the user would otherwise see. Buffered and fast
+ * cached seeks are left alone.
+ */
+class VideoSeekPreview {
+    /** @property {HTMLCanvasElement} - Unblurred copy of the frame that keeps the blurred frame's edges solid */
+    baseCanvasEl;
+
+    canvasEl;
+
+    dimFrameId;
+
+    el;
+
+    frameCallbackId;
+
+    hideFrameId;
+
+    hideTimeoutId;
+
+    imageEl;
+
+    /** @property {number} - Seconds between filmstrip frames */
+    interval = 0;
+
+    isImageLoaded = false;
+
+    /** @property {boolean} - Keeps the preview up while the user drags the scrubber */
+    isScrubbing = false;
+
+    mediaEl;
+
+    onHide;
+
+    onShow;
+
+    showTimeoutId;
+
+    /**
+     * [constructor]
+     *
+     * @param {Object} options
+     * @param {HTMLVideoElement} options.mediaEl - Video element to cover while seeking
+     * @param {Function} [options.onHide] - Called when the preview starts fading away
+     * @param {Function} [options.onShow] - Called when the preview starts covering the video
+     * @return {VideoSeekPreview} VideoSeekPreview instance
+     */
+    constructor({ mediaEl, onHide, onShow }) {
+        this.mediaEl = mediaEl;
+        this.onHide = onHide;
+        this.onShow = onShow;
+
+        this.el = document.createElement('div');
+        this.el.className = CLASS_SEEK_PREVIEW;
+        this.el.setAttribute('aria-hidden', 'true');
+        this.baseCanvasEl = this.el.appendChild(document.createElement('canvas'));
+        this.baseCanvasEl.className = `${CLASS_SEEK_PREVIEW_FRAME} ${CLASS_SEEK_PREVIEW_FRAME_BASE}`;
+        this.canvasEl = this.el.appendChild(document.createElement('canvas'));
+        this.canvasEl.className = CLASS_SEEK_PREVIEW_FRAME;
+
+        // Directly after the video so the spinner and controls still paint on top
+        this.mediaEl.insertAdjacentElement('afterend', this.el);
+
+        this.mediaEl.addEventListener('seeking', this.handleSeeking);
+        this.mediaEl.addEventListener('seeked', this.handleSeeked);
+        this.mediaEl.addEventListener('loadeddata', this.handleMediaReady);
+        this.mediaEl.addEventListener('canplay', this.handleMediaReady);
+    }
+
+    destroy() {
+        this.cancelPending();
+        this.cancelPendingDim();
+        this.mediaEl.removeEventListener('seeking', this.handleSeeking);
+        this.mediaEl.removeEventListener('seeked', this.handleSeeked);
+        this.mediaEl.removeEventListener('loadeddata', this.handleMediaReady);
+        this.mediaEl.removeEventListener('canplay', this.handleMediaReady);
+        this.el.remove();
+
+        if (this.imageEl) {
+            this.imageEl.removeEventListener('load', this.handleImageLoad);
+            this.imageEl = undefined;
+        }
+    }
+
+    /**
+     * @param {string} url - Filmstrip URL (blob: URL, since the rep needs auth headers)
+     * @param {number} interval - Seconds between filmstrip frames
+     */
+    setFilmstrip(url, interval) {
+        this.interval = interval;
+        this.isImageLoaded = false;
+        this.imageEl = new Image();
+        this.imageEl.addEventListener('load', this.handleImageLoad);
+        this.imageEl.src = url;
+    }
+
+    isVisible() {
+        return this.el.classList.contains(CLASS_IS_VISIBLE);
+    }
+
+    /**
+     * @param {number} time - Time in seconds
+     * @return {boolean} true if a frame is showing
+     */
+    showFrame(time) {
+        const wasVisible = this.isVisible();
+
+        this.cancelPending();
+
+        if (!this.drawFrame(time)) {
+            return false;
+        }
+
+        this.position();
+        this.el.classList.remove(CLASS_SEEK_PREVIEW_IMMEDIATE);
+        this.el.classList.add(CLASS_IS_VISIBLE);
+
+        if (!this.el.classList.contains(CLASS_SEEK_PREVIEW_DIMMED) && this.dimFrameId === undefined) {
+            // Dim on the next frame so it transitions from full brightness instead of snapping
+            this.dimFrameId = requestAnimationFrame(() => {
+                this.dimFrameId = undefined;
+                this.el.classList.add(CLASS_SEEK_PREVIEW_DIMMED);
+            });
+        }
+
+        if (!wasVisible && this.onShow) {
+            this.onShow();
+        }
+
+        return true;
+    }
+
+    // Stops seek completion from hiding the preview until endScrub
+    startScrub() {
+        this.isScrubbing = true;
+        this.cancelPending();
+    }
+
+    // Call after seeking to the scrub target so the preview fades once that frame paints
+    endScrub() {
+        this.isScrubbing = false;
+
+        if (!this.mediaEl.seeking) {
+            this.handleSeeked();
+        }
+    }
+
+    /**
+     * @param {Object} [options]
+     * @param {boolean} [options.immediate=false] - Skip the fade-out transition (e.g. when entering buffered video)
+     */
+    hide({ immediate = false } = {}) {
+        const wasVisible = this.isVisible();
+
+        this.cancelPending();
+        this.cancelPendingDim();
+        this.el.classList.toggle(CLASS_SEEK_PREVIEW_IMMEDIATE, immediate);
+        this.el.classList.remove(CLASS_IS_VISIBLE, CLASS_SEEK_PREVIEW_DIMMED);
+
+        if (wasVisible && this.onHide) {
+            this.onHide();
+        }
+    }
+
+    // Matches the overlay to the video's content box
+    position() {
+        const { clientHeight, clientLeft, clientTop, clientWidth, offsetLeft, offsetTop } = this.mediaEl;
+
+        Object.assign(this.el.style, {
+            height: `${clientHeight}px`,
+            left: `${offsetLeft + clientLeft}px`,
+            top: `${offsetTop + clientTop}px`,
+            width: `${clientWidth}px`,
+        });
+    }
+
+    handleImageLoad = () => {
+        this.isImageLoaded = true;
+    };
+
+    // Buffered targets hide the preview immediately. A visible preview switches frames at once;
+    // otherwise it waits SHOW_DELAY_MS.
+    handleSeeking = () => {
+        const time = this.mediaEl.currentTime;
+
+        this.cancelPending();
+
+        if (this.isTimeBuffered(time)) {
+            this.hide({ immediate: true });
+            return;
+        }
+
+        if (this.isVisible()) {
+            if (!this.showFrame(time)) {
+                this.hide();
+            }
+            return;
+        }
+
+        this.showTimeoutId = setTimeout(() => {
+            const { currentTime } = this.mediaEl;
+            if (!this.isTimeBuffered(currentTime)) {
+                this.showFrame(currentTime);
+            }
+        }, SHOW_DELAY_MS);
+    };
+
+    isTimeBuffered(time) {
+        const { buffered } = this.mediaEl;
+
+        for (let i = 0; i < buffered.length; i += 1) {
+            if (time >= buffered.start(i) && time < buffered.end(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    cancelPendingDim() {
+        if (this.dimFrameId !== undefined) {
+            cancelAnimationFrame(this.dimFrameId);
+            this.dimFrameId = undefined;
+        }
+    }
+
+    cancelPending() {
+        clearTimeout(this.showTimeoutId);
+        clearTimeout(this.hideTimeoutId);
+        cancelAnimationFrame(this.hideFrameId);
+
+        if (this.frameCallbackId !== undefined) {
+            this.mediaEl.cancelVideoFrameCallback?.(this.frameCallbackId);
+            this.frameCallbackId = undefined;
+        }
+    }
+
+    // Undims as soon as the target is buffered, even if 'seeked' has not fired yet
+    handleMediaReady = () => {
+        if (!this.isScrubbing && this.isTimeBuffered(this.mediaEl.currentTime)) {
+            this.undim();
+        }
+    };
+
+    undim() {
+        this.cancelPendingDim();
+        this.el.classList.remove(CLASS_SEEK_PREVIEW_DIMMED);
+    }
+
+    // 'seeked' means the frame is decoded, not necessarily painted, so wait for the next presented frame
+    handleSeeked = () => {
+        this.cancelPending();
+
+        if (!this.isVisible() || this.isScrubbing) {
+            return;
+        }
+
+        this.undim();
+
+        if (this.mediaEl.paused) {
+            this.hideFrameId = requestAnimationFrame(() => this.hide());
+        } else if (typeof this.mediaEl.requestVideoFrameCallback === 'function') {
+            this.frameCallbackId = this.mediaEl.requestVideoFrameCallback(() => this.hide());
+        }
+
+        this.hideTimeoutId = setTimeout(() => this.hide(), HIDE_FALLBACK_MS);
+    };
+
+    // Uses the same sprite layout as FilmstripV2
+    drawFrame(time) {
+        if (!this.isImageLoaded || !this.imageEl || !(this.interval > 0)) {
+            return false;
+        }
+
+        const { naturalHeight, naturalWidth } = this.imageEl;
+        const frameWidth = Math.floor(naturalWidth / FILMSTRIP_FRAMES_PER_ROW);
+        const frameNumber = Math.floor(time / this.interval);
+        const sourceX = (frameNumber % FILMSTRIP_FRAMES_PER_ROW) * frameWidth;
+        const sourceY = Math.floor(frameNumber / FILMSTRIP_FRAMES_PER_ROW) * FILMSTRIP_FRAME_HEIGHT;
+
+        if (!frameWidth || sourceY + FILMSTRIP_FRAME_HEIGHT > naturalHeight) {
+            return false;
+        }
+
+        const context = this.canvasEl.getContext('2d');
+        if (!context) {
+            return false;
+        }
+
+        [this.baseCanvasEl, this.canvasEl].forEach(canvasEl => {
+            if (canvasEl.width !== frameWidth || canvasEl.height !== FILMSTRIP_FRAME_HEIGHT) {
+                canvasEl.width = frameWidth;
+                canvasEl.height = FILMSTRIP_FRAME_HEIGHT;
+            }
+        });
+
+        context.drawImage(
+            this.imageEl,
+            sourceX,
+            sourceY,
+            frameWidth,
+            FILMSTRIP_FRAME_HEIGHT,
+            0,
+            0,
+            frameWidth,
+            FILMSTRIP_FRAME_HEIGHT,
+        );
+
+        const baseContext = this.baseCanvasEl.getContext('2d');
+        if (baseContext) {
+            baseContext.drawImage(this.canvasEl, 0, 0);
+        }
+
+        return true;
+    }
+}
+
+export default VideoSeekPreview;

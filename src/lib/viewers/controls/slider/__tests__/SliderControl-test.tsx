@@ -174,6 +174,50 @@ describe('SliderControl', () => {
             expect(document.removeEventListener).toHaveBeenCalledWith('touchmove', expect.any(Function));
         });
 
+        test('should call onScrubStart before the first update and onScrubEnd on release', () => {
+            const calls: string[] = [];
+            const push = (call: string) => () => calls.push(call);
+            render(
+                <SliderControl
+                    onScrubEnd={push('end')}
+                    onScrubStart={push('start')}
+                    onUpdate={push('update')}
+                    title="Slider"
+                    value={0}
+                />,
+            );
+
+            fireEvent.mouseDown(screen.getByRole('slider'));
+            expect(calls).toEqual(['start', 'update']);
+            expect(document.documentElement).not.toHaveClass('bp-is-slider-scrubbing');
+
+            fireEvent.mouseUp(document);
+            expect(calls).toEqual(['start', 'update', 'end']);
+        });
+
+        test.each(['touchEnd', 'touchCancel'] as const)('should end the touch drag on %s', eventName => {
+            const onScrubEnd = jest.fn();
+            const onScrubStart = jest.fn();
+            render(<SliderControl onScrubEnd={onScrubEnd} onScrubStart={onScrubStart} title="Slider" value={0} />);
+
+            fireEvent.touchStart(screen.getByRole('slider'), { touches: [{ ...getTouchEventDefaults(), pageX: 100 }] });
+            expect(onScrubStart).toHaveBeenCalledTimes(1);
+
+            fireEvent[eventName](document);
+            expect(onScrubEnd).toHaveBeenCalledTimes(1);
+        });
+
+        test('should not call onScrubStart or onScrubEnd for keyboard updates', () => {
+            const onScrubEnd = jest.fn();
+            const onScrubStart = jest.fn();
+            render(<SliderControl onScrubEnd={onScrubEnd} onScrubStart={onScrubStart} title="Slider" value={10} />);
+
+            fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowRight' });
+
+            expect(onScrubStart).not.toHaveBeenCalled();
+            expect(onScrubEnd).not.toHaveBeenCalled();
+        });
+
         test('should handle document-level mousemove events and call onUpdate', () => {
             const onUpdate = jest.fn();
             render(
@@ -360,6 +404,33 @@ describe('SliderControl', () => {
             expect(screen.getByTestId('bp-slider-control-track')).toHaveStyle({
                 backgroundImage: track,
             });
+        });
+    });
+
+    describe('scrubCursor', () => {
+        const isCursorLocked = () =>
+            document.documentElement.classList.contains('bp-is-slider-scrubbing') &&
+            document.documentElement.style.getPropertyValue('--bp-slider-scrub-cursor') === 'ew-resize';
+
+        test('should lock the document cursor while dragging and restore it on mouseup', () => {
+            render(<SliderControl scrubCursor="ew-resize" title="Slider" value={0} />);
+
+            fireEvent.mouseDown(screen.getByRole('slider'));
+            expect(isCursorLocked()).toBe(true);
+
+            fireEvent.mouseUp(document);
+            expect(isCursorLocked()).toBe(false);
+            expect(document.documentElement).not.toHaveClass('bp-is-slider-scrubbing');
+        });
+
+        test('should restore the document cursor if unmounted mid-drag', () => {
+            const { unmount } = render(<SliderControl scrubCursor="ew-resize" title="Slider" value={0} />);
+
+            fireEvent.mouseDown(screen.getByRole('slider'));
+            unmount();
+
+            expect(document.documentElement).not.toHaveClass('bp-is-slider-scrubbing');
+            expect(document.documentElement.style.getPropertyValue('--bp-slider-scrub-cursor')).toBe('');
         });
     });
 });
