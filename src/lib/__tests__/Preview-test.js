@@ -1730,6 +1730,7 @@ describe('lib/Preview', () => {
                     isOnDark: false,
                     locale: 'en-US',
                     menuContainer: containerEl,
+                    onCloseComparison: undefined,
                     onDelete: undefined,
                     onDownload: undefined,
                     onMakeCurrent: undefined,
@@ -1748,6 +1749,7 @@ describe('lib/Preview', () => {
                     isOnDark: false,
                     locale: 'en-US',
                     menuContainer: containerEl,
+                    onCloseComparison: undefined,
                     onDelete: undefined,
                     onDownload: undefined,
                     onMakeCurrent: undefined,
@@ -1806,6 +1808,7 @@ describe('lib/Preview', () => {
                     isOnDark: false,
                     locale: 'en-US',
                     menuContainer: containerEl,
+                    onCloseComparison: undefined,
                     onDelete: undefined,
                     onDownload: undefined,
                     onMakeCurrent: undefined,
@@ -1822,6 +1825,33 @@ describe('lib/Preview', () => {
                 expect(render).toHaveBeenCalledWith(
                     previousFileVersion,
                     expect.objectContaining({ onDownload: undefined }),
+                );
+            });
+
+            test('should pass the host close handler on the compared pane', () => {
+                const onCloseComparison = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.isComparedPreview = true;
+                preview.options.comparisonBanner = { ...preview.options.comparisonBanner, onCloseComparison };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    previousFileVersion,
+                    expect.objectContaining({ onCloseComparison }),
+                );
+            });
+
+            test('should not pass the host close handler on the current pane', () => {
+                const onCloseComparison = jest.fn();
+                preview.options.isComparing = true;
+                preview.options.comparisonBanner = { ...preview.options.comparisonBanner, onCloseComparison };
+
+                preview.updateComparisonBanner();
+
+                expect(render).toHaveBeenCalledWith(
+                    currentFileVersion,
+                    expect.objectContaining({ onCloseComparison: undefined }),
                 );
             });
 

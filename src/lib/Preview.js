@@ -1088,6 +1088,7 @@ class Preview extends EventEmitter {
         const {
             currentFileVersion,
             previousFileVersion,
+            onCloseComparison,
             onDelete,
             onDownload: onDownloadVersion,
             onMakeCurrent,
@@ -1105,6 +1106,7 @@ class Preview extends EventEmitter {
             isOnDark,
             locale: getProp(this.location, 'locale'),
             menuContainer: this.container,
+            onCloseComparison: isComparedPreview ? onCloseComparison : undefined,
             onDelete: isComparedPreview ? onDelete : undefined,
             onDownload: isComparedPreview ? onDownloadVersion : undefined,
             onMakeCurrent: isComparedPreview ? onMakeCurrent : undefined,
