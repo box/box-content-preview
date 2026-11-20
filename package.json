@@ -1,6 +1,6 @@
 {
     "name": "box-content-preview",
-    "version": "3.140.0",
+    "version": "3.141.0",
     "description": "Box Content Preview UI Element",
     "author": "Box (https://www.box.com/)",
     "license": "SEE LICENSE IN LICENSE",
@@ -73,7 +73,6 @@
         "@box/types": "^3.2.30",
         "@commitlint/cli": "^19.8.0",
         "@commitlint/config-conventional": "^19.8.0",
-        "@commitlint/travis-cli": "^19.8.0",
         "@tanstack/react-virtual": "^3.14.10",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "6.9.1",

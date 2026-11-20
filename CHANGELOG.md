@@ -1,3 +1,8 @@
+## 3.141.0 (2026-11-19)
+
+* ci: remove Travis CI (#1961) ([b057893](https://github.com/box/box-content-preview/commit/b057893)), closes [#1961](https://github.com/box/box-content-preview/issues/1961)
+* ci: require GitHub Actions CI Status in Mergify (#1960) ([54fdf16](https://github.com/box/box-content-preview/commit/54fdf16)), closes [#1960](https://github.com/box/box-content-preview/issues/1960)
+
 ## 3.140.0 (2026-11-18)
 
 * chore(build): Build one CDN locale when LANGUAGE is set (#1835) ([dd5d900](https://github.com/box/box-content-preview/commit/dd5d900)), closes [#1835](https://github.com/box/box-content-preview/issues/1835)

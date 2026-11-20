@@ -1160,7 +1160,7 @@
   resolved "https://registry.npmjs.org/@colordx/core/-/core-5.4.3.tgz"
   integrity sha512-kIxYSfA5T8HXjav55UaaH/o/cKivF6jCCGIb8eqtcsfI46wsvlSiT8jMDyrl779qLec3c2c2oHBZo4oAhvbjrQ==
 
-"@commitlint/cli@^19.8.0", "@commitlint/cli@^19.8.1":
+"@commitlint/cli@^19.8.0":
   version "19.8.1"
   resolved "https://registry.npmjs.org/@commitlint/cli/-/cli-19.8.1.tgz"
   integrity sha512-LXUdNIkspyxrlV6VDHWBmCZRtkEVRpBKxi2Gtw3J54cGWhLCTouVD/Q6ZSaSvd2YaDObWK8mDjrz3TIKtaQMAA==
@@ -1306,14 +1306,6 @@
   integrity sha512-Ph8IN1IOHPSDhURCSXBz44+CIu+60duFwRsg6HqaISFHQHbmBtxVw4ZrFNIYUzEP7WwrNPxa2/5qJ//NK1FGcw==
   dependencies:
     find-up "^7.0.0"
-
-"@commitlint/travis-cli@^19.8.0":
-  version "19.8.1"
-  resolved "https://registry.npmjs.org/@commitlint/travis-cli/-/travis-cli-19.8.1.tgz"
-  integrity sha512-pJgo/GKtfhPMYnq5/IHsqIpuKup7WW/uCCepzMAM/yYYqMY70L7GdooSKQ8NbP4UsMMQvHeAVvpsFUO+ndqG2A==
-  dependencies:
-    "@commitlint/cli" "^19.8.1"
-    tinyexec "^1.0.0"
 
 "@commitlint/types@^19.8.1":
   version "19.8.1"
