@@ -756,8 +756,8 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     playingHandler() {
-        // A playing event can arrive mid-seek. Wait for the seeked frame before revealing the video.
-        if (!this.mediaEl?.seeking) {
+        // A playing event can arrive mid-seek or before the seeked frame loads. Let the seek wait reveal the video.
+        if (!this.mediaEl?.seeking && !this.seekFramePollId) {
             this.stopWaitingForSeekFrame();
             this.dismissPreload();
             this.hideBufferingSpinner();
@@ -774,8 +774,8 @@ class VideoBaseViewer extends MediaBaseViewer {
      */
     pauseHandler() {
         super.pauseHandler();
-        if (this.seekFramePollId) {
-            // handleSeekFrameReady() swaps the spinner back for the play button.
+        if (this.seekFramePollId || this.mediaEl?.seeking) {
+            // Still seeking. handleSeekFrameReady() swaps the spinner back for the play button.
             return;
         }
         this.showPlayButton();
@@ -883,7 +883,8 @@ class VideoBaseViewer extends MediaBaseViewer {
     hideLoadingIcon() {
         super.hideLoadingIcon();
 
-        if (this.isBlueprintMediaControlsEnabled()) {
+        // Leave the spinner up mid-seek. handleSeekFrameReady() hides it once the frame is ready.
+        if (this.isBlueprintMediaControlsEnabled() && !this.mediaEl?.seeking) {
             this.hideBufferingSpinner();
         }
     }

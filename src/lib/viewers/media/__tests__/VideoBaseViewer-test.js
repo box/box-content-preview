@@ -983,9 +983,44 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             expect(videoBase.stopWaitingForSeekFrame).not.toHaveBeenCalled();
             expect(videoBase.dismissPreload).not.toHaveBeenCalled();
         });
+
+        test('should leave the poster to the seek wait when the seek has ended but its frame has not loaded', () => {
+            jest.useFakeTimers();
+            jest.spyOn(videoBase, 'handleRate').mockImplementation();
+            jest.spyOn(videoBase, 'dismissPreload').mockImplementation();
+            videoBase.mediaControls.showPauseIcon = jest.fn();
+            videoBase.pendingSeekReveal = true;
+            Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: false });
+            Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: 1 });
+            videoBase.waitForSeekFrame();
+
+            videoBase.playingHandler();
+
+            expect(videoBase.dismissPreload).not.toHaveBeenCalled();
+            expect(videoBase.seekFramePollId).toBeDefined();
+
+            Object.defineProperty(videoBase.mediaEl, 'readyState', { configurable: true, value: 4 });
+            jest.advanceTimersByTime(250);
+
+            expect(videoBase.dismissPreload).toHaveBeenCalled();
+            expect(videoBase.seekFramePollId).toBeUndefined();
+            jest.useRealTimers();
+        });
     });
 
     describe('pauseHandler()', () => {
+        test('should keep the spinner instead of the play button while still seeking', () => {
+            jest.spyOn(videoBase, 'showPlayButton');
+            jest.spyOn(videoBase, 'hideBufferingSpinner');
+            videoBase.loadUI(); // load media controls UI
+            Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: true });
+
+            videoBase.pauseHandler();
+
+            expect(videoBase.showPlayButton).not.toHaveBeenCalled();
+            expect(videoBase.hideBufferingSpinner).not.toHaveBeenCalled();
+        });
+
         test('should show the play button', () => {
             jest.spyOn(videoBase, 'showPlayButton');
             videoBase.loadUI(); // load media controls UI
@@ -1090,6 +1125,20 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 videoBase.hideLoadingIcon();
 
                 expect(videoBase.bufferingSpinnerEl).toHaveClass('bp-is-hidden');
+            });
+
+            test('should keep the buffering indicator through a playing event mid-seek', () => {
+                videoBase.loadUI(); // load media controls UI
+                videoBase.mediaControls.showPauseIcon = jest.fn();
+                jest.spyOn(videoBase, 'handleRate').mockImplementation();
+                jest.spyOn(videoBase, 'handleVolume').mockImplementation();
+                setPlaying(true);
+                videoBase.showLoadingIcon();
+                Object.defineProperty(videoBase.mediaEl, 'seeking', { configurable: true, value: true });
+
+                videoBase.playingHandler();
+
+                expect(videoBase.bufferingSpinnerEl).not.toHaveClass('bp-is-hidden');
             });
         });
 
