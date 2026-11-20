@@ -262,19 +262,32 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(videoPreloader.containerEl.style.height).toBe('');
         });
 
-        test('should add transparent class and setup cleanup listeners', () => {
+        test('should add transparent class and clean up after the fade', () => {
             videoPreloader.hidePreload();
 
             expect(videoPreloader.wrapperEl).toHaveClass(CLASS_IS_TRANSPARENT);
             expect(videoPreloader.unbindDOMListeners).toBeCalled();
 
-            // Trigger cleanup events
             videoPreloader.wrapperEl.dispatchEvent(new Event('transitionend'));
             expect(videoPreloader.cleanupPreload).toBeCalled();
+        });
 
-            videoPreloader.cleanupPreload.mockClear();
-            videoPreloader.wrapperEl.dispatchEvent(new Event('click'));
-            expect(videoPreloader.cleanupPreload).toBeCalled();
+        test('should move focus to the container when focus is inside the poster wrapper', () => {
+            const button = document.createElement('button');
+            videoPreloader.wrapperEl.appendChild(button);
+            containerEl.tabIndex = -1;
+            containerEl.appendChild(videoPreloader.wrapperEl);
+            button.focus();
+
+            videoPreloader.hidePreload();
+
+            expect(document.activeElement).toBe(containerEl);
+        });
+
+        test('should make the fading poster inert', () => {
+            videoPreloader.hidePreload();
+
+            expect(videoPreloader.wrapperEl.inert).toBe(true);
         });
     });
 
@@ -316,6 +329,14 @@ describe('lib/viewers/media/VideoPreloader', () => {
             expect(() => videoPreloader.showLoading()).not.toThrow();
         });
 
+        test('should no-op when the poster is already dismissing', () => {
+            videoPreloader.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
+
+            videoPreloader.showLoading();
+
+            expect(videoPreloader.placeholderEl.querySelector('.bp-media-buffering-spinner')).toBeNull();
+        });
+
         test('should hide the play overlay', () => {
             videoPreloader.showLoading();
 
@@ -343,6 +364,13 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             const spinner = videoPreloader.placeholderEl.querySelector('.bp-media-buffering-spinner');
             expect(spinner).not.toBeNull();
+        });
+
+        test('should not add duplicate spinner elements when showLoading is called repeatedly', () => {
+            videoPreloader.showLoading();
+            videoPreloader.showLoading();
+
+            expect(videoPreloader.placeholderEl.querySelectorAll('.bp-media-buffering-spinner')).toHaveLength(1);
         });
 
         test('should remove the click handler and reset cursor', () => {
@@ -423,6 +451,15 @@ describe('lib/viewers/media/VideoPreloader', () => {
             overlay.classList.add('bp-is-hidden');
             videoPreloader.showPlayOverlay();
             expect(overlay).not.toHaveClass('bp-is-hidden');
+        });
+
+        test('showPlayOverlay() should keep the overlay hidden while the loading spinner is shown', () => {
+            videoPreloader.placeholderEl = videoPreloader.wrapperEl.appendChild(document.createElement('div'));
+            videoPreloader.showLoading();
+
+            videoPreloader.showPlayOverlay();
+
+            expect(overlay).toHaveClass('bp-is-hidden');
         });
 
         test('should not throw when wrapperEl is undefined', () => {

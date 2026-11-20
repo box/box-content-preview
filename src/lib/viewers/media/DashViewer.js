@@ -875,6 +875,9 @@ class DashViewer extends VideoBaseViewer {
         this.loadTranscription();
         this.loadAlternateAudio();
         this.showPlayButton();
+        if (this.startTimeInSeconds > 0) {
+            this.setMediaTime(this.startTimeInSeconds);
+        }
 
         if (this.userRequestedPlay) {
             this.play();

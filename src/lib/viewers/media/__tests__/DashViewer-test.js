@@ -764,6 +764,40 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.emitFirstRenderMetric).toBeCalled();
         });
 
+        test.each`
+            startTimeInSeconds | expectedCalls
+            ${0}               | ${0}
+            ${30}              | ${1}
+        `(
+            'should seek to the start time before load only when it is $startTimeInSeconds > 0',
+            ({ startTimeInSeconds, expectedCalls }) => {
+                jest.spyOn(dash, 'isDestroyed').mockReturnValue(false);
+                jest.spyOn(dash, 'showMedia').mockImplementation();
+                jest.spyOn(dash, 'isAutoplayEnabled').mockReturnValue(false);
+                jest.spyOn(dash, 'resize').mockImplementation();
+                jest.spyOn(dash, 'handleVolume').mockImplementation();
+                jest.spyOn(dash, 'startBandwidthTracking').mockImplementation();
+                jest.spyOn(dash, 'showPlayButton').mockImplementation();
+                jest.spyOn(dash, 'calculateVideoDimensions').mockImplementation();
+                jest.spyOn(dash, 'loadSubtitles').mockImplementation();
+                jest.spyOn(dash, 'loadTranscription').mockImplementation();
+                jest.spyOn(dash, 'loadAlternateAudio').mockImplementation();
+                jest.spyOn(dash, 'loadFilmStrip').mockImplementation();
+                jest.spyOn(dash, 'loadUI').mockImplementation();
+                jest.spyOn(dash, 'setMediaTime').mockImplementation(() => {
+                    expect(dash.loaded).toBeFalsy();
+                });
+                dash.startTimeInSeconds = startTimeInSeconds;
+
+                dash.loadeddataHandler();
+
+                expect(dash.setMediaTime).toHaveBeenCalledTimes(expectedCalls);
+                if (expectedCalls) {
+                    expect(dash.setMediaTime).toHaveBeenCalledWith(startTimeInSeconds);
+                }
+            },
+        );
+
         describe('With react controls', () => {
             beforeEach(() => {
                 jest.spyOn(dash, 'calculateVideoDimensions').mockImplementation();
