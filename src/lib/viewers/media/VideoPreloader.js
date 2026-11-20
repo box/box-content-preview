@@ -271,6 +271,8 @@ class VideoPreloader extends EventEmitter {
         if (this.wrapperEl.contains(document.activeElement)) {
             this.containerEl?.focus();
         }
+        // Keep Tab from landing on the poster's controls while it fades out.
+        this.wrapperEl.inert = true;
 
         this.unbindDOMListeners();
         this.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);

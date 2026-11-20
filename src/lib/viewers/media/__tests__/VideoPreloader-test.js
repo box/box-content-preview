@@ -283,6 +283,12 @@ describe('lib/viewers/media/VideoPreloader', () => {
 
             expect(document.activeElement).toBe(containerEl);
         });
+
+        test('should make the fading poster inert', () => {
+            videoPreloader.hidePreload();
+
+            expect(videoPreloader.wrapperEl.inert).toBe(true);
+        });
     });
 
     describe('isVisible()', () => {

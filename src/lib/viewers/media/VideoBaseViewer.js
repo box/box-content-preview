@@ -756,9 +756,12 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     playingHandler() {
-        this.stopWaitingForSeekFrame();
-        this.dismissPreload();
-        this.hideBufferingSpinner();
+        // A playing event can arrive mid-seek. Wait for the seeked frame before revealing the video.
+        if (!this.mediaEl?.seeking) {
+            this.stopWaitingForSeekFrame();
+            this.dismissPreload();
+            this.hideBufferingSpinner();
+        }
         super.playingHandler();
         this.hidePlayButton();
     }
@@ -787,7 +790,8 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @return {void}
      */
     waitingHandler() {
-        if (!this.containerEl) return;
+        // Skip while seeking. seekingHandler() shows the spinner after a short delay so quick seeks don't flash it.
+        if (!this.containerEl || this.mediaEl?.seeking) return;
 
         this.showBufferingSpinner();
         this.hidePlayButton();
@@ -1226,14 +1230,19 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     handleCommentMarkerClick = marker => {
+        let { time } = marker;
         if (this.mediaEl) {
+            const { duration } = this.mediaEl;
+            if (Number.isFinite(duration)) {
+                time = Math.min(time, duration);
+            }
             this.mediaEl.pause();
-            this.setMediaTime(marker.time);
+            this.setMediaTime(time);
         }
         if (marker.type === 'annotation' && this.annotator) {
             this.annotator.emit('annotations_active_set', marker.id);
         }
-        this.emit('comment_marker_select', { id: marker.id, time: marker.time });
+        this.emit('comment_marker_select', { id: marker.id, time });
         this.renderUI();
     };
 
