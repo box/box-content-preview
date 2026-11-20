@@ -66,20 +66,56 @@ describe('lib/ComparisonBanner', () => {
             modified_by: { name: 'Emily Huang' },
         };
 
-        test('should render badge, timestamp, and author for the current pane', () => {
+        test('should render the Current badge, timestamp, and author for the current pane', () => {
             const { container } = render(<ComparisonBanner file={file} locale="en-US" />);
             const bannerEl = container.querySelector(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`) as HTMLElement;
             const statusEl = bannerEl.querySelector('[role="status"]') as HTMLElement;
 
             expect(statusEl).toHaveAttribute('aria-label', __('comparison_banner_current'));
             expect(bannerEl).not.toHaveClass(CLASS_BOX_PREVIEW_VERSION_BANNER_COMPARED);
-            expect(bannerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('12');
+            expect(bannerEl.querySelector('.bp-version-banner-current-badge')).toHaveTextContent(
+                __('comparison_banner_current_badge'),
+            );
             expect(bannerEl.querySelector('.bp-version-banner-time')).toHaveTextContent(/Aug/);
             expect(bannerEl.querySelector('.bp-version-banner-author')).toHaveTextContent('Emily Huang');
         });
 
-        test('should label the badge with the full version number', () => {
-            render(<ComparisonBanner file={file} locale="en-US" />);
+        test('should show a non-clickable Current badge instead of the version number on the current pane', () => {
+            const { container } = render(<ComparisonBanner file={file} locale="en-US" />);
+            const badgeEl = container.querySelector('.bp-version-banner-current-badge') as HTMLElement;
+
+            expect(badgeEl).toHaveTextContent('Current');
+            expect(badgeEl.tagName).toBe('SPAN');
+            expect(screen.queryByRole('button')).not.toBeInTheDocument();
+            expect(container.querySelector('.bp-version-banner-badge')).toBeNull();
+            expect(screen.queryByRole('img', { name: 'Version 12' })).not.toBeInTheDocument();
+        });
+
+        test('should show the Current badge for any version number on the current pane', () => {
+            const { container } = render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+
+            expect(container.querySelector('.bp-version-banner-current-badge')).toHaveTextContent('Current');
+            expect(container.querySelector('.bp-version-banner-badge')).toBeNull();
+        });
+
+        test('should keep the Current badge out of the tab order', async () => {
+            const user = userEvent.setup();
+            const { container } = render(<ComparisonBanner file={file} locale="en-US" />);
+
+            await user.tab();
+
+            expect(container.querySelector('.bp-version-banner-current-badge')).not.toHaveFocus();
+        });
+
+        test('should not show the Current badge on the compared pane', () => {
+            const { container } = render(<ComparisonBanner file={file} isComparedPreview locale="en-US" />);
+
+            expect(container.querySelector('.bp-version-banner-current-badge')).toBeNull();
+            expect(container.querySelector('.bp-version-banner-badge')).toHaveTextContent('12');
+        });
+
+        test('should label the compared pane badge with the full version number', () => {
+            render(<ComparisonBanner file={file} isComparedPreview locale="en-US" />);
 
             const badgeEl = screen.getByRole('img', { name: 'Version 12' });
 
@@ -89,7 +125,7 @@ describe('lib/ComparisonBanner', () => {
         });
 
         test('should show version numbers up to 999 as-is', () => {
-            render(<ComparisonBanner file={{ ...file, version_number: 999 }} locale="en-US" />);
+            render(<ComparisonBanner file={{ ...file, version_number: 999 }} isComparedPreview locale="en-US" />);
 
             const badgeEl = screen.getByRole('img', { name: 'Version 999' });
 
@@ -99,7 +135,7 @@ describe('lib/ComparisonBanner', () => {
 
         test('should truncate version numbers above 999 and keep the full number accessible', async () => {
             const user = userEvent.setup();
-            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} isComparedPreview locale="en-US" />);
 
             const badgeEl = screen.getByText('999+');
 
@@ -117,7 +153,7 @@ describe('lib/ComparisonBanner', () => {
 
         test('should show the full version number in a tooltip when the truncated badge is focused', async () => {
             const user = userEvent.setup();
-            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} locale="en-US" />);
+            render(<ComparisonBanner file={{ ...file, version_number: '1234' }} isComparedPreview locale="en-US" />);
 
             await user.tab();
 
@@ -127,7 +163,7 @@ describe('lib/ComparisonBanner', () => {
 
         test('should keep the badge out of the tab order when it is not truncated', async () => {
             const user = userEvent.setup();
-            render(<ComparisonBanner file={{ ...file, version_number: '999' }} locale="en-US" />);
+            render(<ComparisonBanner file={{ ...file, version_number: '999' }} isComparedPreview locale="en-US" />);
 
             await user.tab();
 
@@ -356,12 +392,12 @@ describe('lib/ComparisonBanner', () => {
             const root = new ComparisonBannerRoot(containerEl);
 
             act(() => {
-                root.render({ version_number: '1' });
+                root.render({ version_number: '1' }, { isComparedPreview: true });
             });
             expect(containerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('1');
 
             act(() => {
-                root.render({ version_number: '2' });
+                root.render({ version_number: '2' }, { isComparedPreview: true });
             });
             expect(containerEl.querySelectorAll(`.${CLASS_BOX_PREVIEW_VERSION_BANNER}`)).toHaveLength(1);
             expect(containerEl.querySelector('.bp-version-banner-badge')).toHaveTextContent('2');
