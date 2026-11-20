@@ -268,14 +268,17 @@ class VideoPreloader extends EventEmitter {
             this.containerEl.style.height = '';
         }
 
+        if (this.wrapperEl.contains(document.activeElement)) {
+            this.containerEl?.focus();
+        }
+        // Keep Tab from landing on the poster's controls while it fades out.
+        this.wrapperEl.inert = true;
+
         this.unbindDOMListeners();
         this.wrapperEl.classList.add(CLASS_IS_TRANSPARENT);
 
         // Cleanup preload DOM after fade out
         this.wrapperEl.addEventListener('transitionend', this.cleanupPreload);
-
-        // Cleanup preload DOM immediately if user interacts after the video is ready
-        this.wrapperEl.addEventListener('click', this.cleanupPreload);
     }
 
     /**
@@ -301,7 +304,7 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     showPlayOverlay() {
-        if (!this.wrapperEl) {
+        if (!this.wrapperEl || this.isShowingLoading()) {
             return;
         }
         const overlay = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_VIDEO_PRELOAD_PLAY_OVERLAY}`);
@@ -318,7 +321,7 @@ class VideoPreloader extends EventEmitter {
      * @return {void}
      */
     showLoading() {
-        if (!this.wrapperEl) {
+        if (!this.wrapperEl || this.wrapperEl.classList.contains(CLASS_IS_TRANSPARENT)) {
             return;
         }
 
@@ -337,16 +340,28 @@ class VideoPreloader extends EventEmitter {
         }
         this.wrapperEl.style.cursor = '';
 
-        if (this.placeholderEl && this.preloadOptions?.isBlueprintEnabled) {
-            if (!this.loadingRoot) {
-                this.loadingRoot = createRoot(this.placeholderEl.appendChild(document.createElement('div')));
-                this.loadingRoot.render(<MediaLoadingIndicator />);
-            }
-        } else if (this.placeholderEl) {
+        if (!this.placeholderEl || this.isShowingLoading()) {
+            return;
+        }
+
+        if (this.preloadOptions?.isBlueprintEnabled) {
+            this.loadingRoot = createRoot(this.placeholderEl.appendChild(document.createElement('div')));
+            this.loadingRoot.render(<MediaLoadingIndicator />);
+        } else {
             const spinner = document.createElement('div');
             spinner.className = 'bp-media-buffering-spinner';
             this.placeholderEl.appendChild(spinner);
         }
+    }
+
+    /**
+     * Whether showLoading() has replaced the play overlay with a spinner.
+     *
+     * @private
+     * @return {boolean}
+     */
+    isShowingLoading() {
+        return Boolean(this.loadingRoot || this.placeholderEl?.querySelector('.bp-media-buffering-spinner'));
     }
 
     /**
