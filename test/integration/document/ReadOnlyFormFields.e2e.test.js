@@ -112,12 +112,14 @@ describe('Read-only PDF form fields', () => {
         getField('multilineNoScroll').should($field => expect($field[0].scrollTop).to.equal(0));
     });
 
-    it('Should change pages with arrow keys while a field has focus', () => {
+    it('Should leave arrow keys to the caret and change pages with brackets while a field has focus', () => {
         showForm({ pdf: 'form-overflow.pdf', features: FORM_FIELDS_ON });
         cy.getByTestId('bp-PageControlsForm-button').as('currentPage').should('have.text', '1 / 3');
 
         getField('FieldA').focus().trigger('keydown', { key: 'ArrowRight' });
+        cy.get('@currentPage').should('have.text', '1 / 3');
 
+        getField('FieldA').trigger('keydown', { key: ']' });
         cy.get('@currentPage').should('have.text', '2 / 3');
     });
 

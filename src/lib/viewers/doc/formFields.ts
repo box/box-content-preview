@@ -5,6 +5,8 @@ const SCROLLING_OVERFLOW_VALUES = ['auto', 'scroll'];
 const TOGGLE_INPUT_TYPES = ['checkbox', 'radio'];
 const WHEEL_LINE_HEIGHT_PX = 16;
 
+export const ANNOTATION_POPUP_SELECTOR = '.ba-Layer--popup';
+
 export const FORM_FIELD_COPY_EVENTS = ['copy', 'cut', 'dragstart'];
 
 export const FORM_FIELD_SELECTOR = '.annotationLayer :is(input, select, textarea)';

@@ -4191,6 +4191,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(event.preventDefault).not.toBeCalled();
             });
 
+            test('should leave the wheel to an annotation popup that cannot scroll', () => {
+                const popupEl = document.createElement('div');
+                popupEl.className = 'ba-Layer--popup';
+                popupEl.innerHTML = '<button>Post</button>';
+                field.closest('.page').append(popupEl);
+                const event = createWheelEvent({ target: popupEl.querySelector('button') });
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
+            });
+
             test('should scroll the field horizontally when the wheel moves mostly sideways', () => {
                 Object.defineProperty(field, 'clientWidth', { configurable: true, value: 50 });
                 Object.defineProperty(field, 'scrollWidth', { configurable: true, value: 200 });

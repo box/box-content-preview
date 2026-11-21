@@ -4357,17 +4357,32 @@ describe('lib/Preview', () => {
             expect(stubs.decodeKeydown).not.toHaveBeenCalled();
         });
 
-        test('should handle hotkeys from a read-only PDF form field', () => {
-            const annotationLayer = document.createElement('div');
-            annotationLayer.className = 'annotationLayer';
-            const field = document.createElement('textarea');
-            field.readOnly = true;
-            annotationLayer.appendChild(field);
-            stubs.event.target = field;
-            stubs.decodeKeydown.mockReturnValue('ArrowRight');
+        describe('read-only PDF form field', () => {
+            beforeEach(() => {
+                const annotationLayer = document.createElement('div');
+                annotationLayer.className = 'annotationLayer';
+                const field = document.createElement('textarea');
+                field.readOnly = true;
+                annotationLayer.appendChild(field);
+                stubs.event.target = field;
+            });
 
-            preview.keydownHandler(stubs.event);
-            expect(stubs.navigateRight).toHaveBeenCalled();
+            test('should handle hotkeys from the field', () => {
+                stubs.event.key = 'ArrowDown';
+                stubs.decodeKeydown.mockReturnValue('ArrowDown');
+
+                preview.keydownHandler(stubs.event);
+                expect(stubs.decodeKeydown).toHaveBeenCalled();
+            });
+
+            test.each(['ArrowLeft', 'ArrowRight'])('should leave %s to move the caret in the field', key => {
+                stubs.event.key = key;
+
+                preview.keydownHandler(stubs.event);
+                expect(stubs.decodeKeydown).not.toHaveBeenCalled();
+                expect(stubs.navigateRight).not.toHaveBeenCalled();
+                expect(stubs.event.preventDefault).not.toHaveBeenCalled();
+            });
         });
 
         test('should do nothing if the target is a read-only input outside of a PDF', () => {

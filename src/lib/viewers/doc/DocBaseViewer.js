@@ -13,6 +13,7 @@ import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import { isNpmBuild } from '../../isNpmBuild';
 import limitMarkedContentNesting from './limitMarkedContentNesting';
 import {
+    ANNOTATION_POPUP_SELECTOR,
     FORM_FIELD_COPY_EVENTS,
     FORM_FIELD_SELECTOR,
     SCROLLABLE_FORM_FIELD_SELECTOR,
@@ -1952,7 +1953,8 @@ class DocBaseViewer extends BaseViewer {
      */
     formFieldWheelHandler(event) {
         const isZoomGesture = event.ctrlKey;
-        const pageEl = isZoomGesture ? null : event.target.closest?.('.page');
+        const isOverAnnotationPopup = !!event.target.closest?.(ANNOTATION_POPUP_SELECTOR);
+        const pageEl = isZoomGesture || isOverAnnotationPopup ? null : event.target.closest?.('.page');
         if (!pageEl) {
             return;
         }
