@@ -1748,6 +1748,43 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(setCurrentPage).toHaveBeenCalledWith(pageNumber);
                     expect(setCachePage).toHaveBeenCalledWith(pageNumber);
                 });
+
+                test('should select and cache the page when the representation is still converting and there is no pdf.js viewer', () => {
+                    const setCurrentPage = jest.fn();
+                    jest.spyOn(document, 'querySelector').mockReturnValue(null);
+                    docBase.pdfViewer = undefined;
+                    docBase.thumbnailsSidebar = { destroy: jest.fn(), setCurrentPage };
+                    docBase.preloader = { thumbnailsOpen: true };
+
+                    expect(() => docBase.setPage(2)).not.toThrow();
+
+                    expect(stubs.cachePage).toBeCalledWith(2);
+                    expect(setCurrentPage).toBeCalledWith(2);
+                });
+
+                test('should not do anything if there is no pdf.js viewer and the preloader has not opened the thumbnails', () => {
+                    const setCurrentPage = jest.fn();
+                    docBase.pdfViewer = undefined;
+                    docBase.thumbnailsSidebar = { destroy: jest.fn(), setCurrentPage };
+                    docBase.preloader = { thumbnailsOpen: false };
+
+                    expect(() => docBase.setPage(2)).not.toThrow();
+
+                    expect(stubs.cachePage).not.toBeCalled();
+                    expect(setCurrentPage).not.toBeCalled();
+                });
+
+                test('should not navigate pdf.js before it has loaded any pages', () => {
+                    docBase.pdfViewer = { currentPageNumber: 0, pagesCount: 0 };
+                    docBase.thumbnailsSidebar = { destroy: jest.fn(), setCurrentPage: jest.fn() };
+                    docBase.preloader = { thumbnailsOpen: true };
+                    jest.spyOn(document, 'querySelector').mockReturnValue(null);
+
+                    docBase.setPage(2);
+
+                    expect(docBase.pdfViewer.currentPageNumber).toBe(0);
+                    expect(stubs.cachePage).toBeCalledTimes(1);
+                });
             });
         });
 

@@ -909,14 +909,19 @@ class DocBaseViewer extends BaseViewer {
      */
     setPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        // if the preloader has opened the thumbnails and the pdf has not finished loading go to the doc first page
-        // for that thumbnail
-        if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
-            this.cachePage(parsedPageNumber);
-            const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
-            el.scrollIntoView({ behavior: 'instant', block: 'start' });
-            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
-        } else if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+        // pdf.js has no pages until the pdf has loaded, and no viewer at all while the representation is converting.
+        // A thumbnail selected before then is cached so pagesinit opens it.
+        if (!this.pdfViewer?.pagesCount) {
+            if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && parsedPageNumber >= 1) {
+                this.cachePage(parsedPageNumber);
+                const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
+                el?.scrollIntoView({ behavior: 'instant', block: 'start' });
+                this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
+            }
+            return;
+        }
+
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
