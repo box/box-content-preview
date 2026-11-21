@@ -88,4 +88,36 @@ describe('TimeControls', () => {
             backgroundImage: 'url(https://app.box.com)',
         });
     });
+
+    test('should hide the faded filmstrip while scrubbing and seek once on release', () => {
+        const onScrub = jest.fn();
+        const onScrubEnd = jest.fn();
+        const onTimeChange = jest.fn();
+        render(
+            <TimeControls
+                currentTime={0}
+                durationTime={10000}
+                filmstripInterval={1}
+                filmstripUrl="http://example.com/image.png"
+                onScrub={onScrub}
+                onScrubEnd={onScrubEnd}
+                onTimeChange={onTimeChange}
+            />,
+        );
+        const slider = screen.getByLabelText('Media Slider');
+        const filmstrip = screen.getByTestId('bp-Filmstrip');
+
+        fireEvent(slider, new MouseEventExtended('mouseover', mouseEventOptions));
+        expect(filmstrip).toHaveClass('bp-Filmstrip--fade');
+        expect(filmstrip).toHaveClass('bp-is-shown');
+
+        fireEvent(slider, new MouseEventExtended('mousedown', { ...mouseEventOptions, button: 0 }));
+        expect(filmstrip).not.toHaveClass('bp-is-shown');
+        expect(onScrub).toHaveBeenCalledWith(5000);
+
+        fireEvent.mouseUp(document);
+        expect(onScrubEnd).toHaveBeenCalledWith(5000);
+        expect(onTimeChange).not.toHaveBeenCalled();
+        expect(filmstrip).toHaveClass('bp-is-shown');
+    });
 });
