@@ -4,6 +4,7 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_PLACEHOLDER,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
+    CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
     PDFJS_CSS_UNITS,
@@ -83,6 +84,9 @@ class DocFirstPreloader extends EventEmitter {
 
     /** @property {boolean} - Preloader used webp */
     isPresentation = false;
+
+    /** @property {number} - Currently displayed page during preload */
+    currentPage = 1;
 
     /** @property {Object} - Configuration for staggered loading */
     config = {};
@@ -317,10 +321,13 @@ class DocFirstPreloader extends EventEmitter {
 
         const img = await this.loadImage(this.preloadedImages[pageIndex]);
         await this.setPreloadImageDimensions(blob, img);
-        this.addPreloadImageToPreloaderContainer(img, pageIndex);
+        const container = this.addPreloadImageToPreloaderContainer(img, pageIndex);
+        if (this.isPresentation && pageIndex !== this.currentPage) {
+            container.classList.add(CLASS_INVISIBLE);
+        }
 
-        this.emitFirstRender();
         this.updateThumbnailProgress(docBaseViewer);
+        this.emitFirstRender();
 
         return true;
     }
@@ -459,11 +466,74 @@ class DocFirstPreloader extends EventEmitter {
 
         this.preloadedImages[pageNum] = URL.createObjectURL(blob);
 
-        if (!this.isPresentation) {
-            const img = document.createElement('img');
-            img.src = this.preloadedImages[pageNum];
-            this.addPreloadImageToPreloaderContainer(img, pageNum);
+        const img = document.createElement('img');
+        img.src = this.preloadedImages[pageNum];
+        const container = this.addPreloadImageToPreloaderContainer(img, pageNum);
+        if (this.isPresentation) {
+            if (pageNum === this.currentPage) {
+                this.showPresentationSlide(pageNum);
+            } else {
+                container.classList.add(CLASS_INVISIBLE);
+            }
         }
+    }
+
+    /**
+     * Switches the visible preload page (hiding/showing slides for presentations,
+     * or scrolling the page into view for documents).
+     *
+     * @param {number} pageNumber - 1-indexed page number
+     * @return {boolean} Whether the target page element was already in the DOM
+     */
+    setCurrentPage(pageNumber) {
+        const parsedPageNumber = parseInt(pageNumber, 10);
+        if (!parsedPageNumber || parsedPageNumber < 1 || (this.numPages && parsedPageNumber > this.numPages)) {
+            return false;
+        }
+
+        this.currentPage = parsedPageNumber;
+
+        if (!this.preloadEl) {
+            return false;
+        }
+
+        if (this.isPresentation) {
+            return this.showPresentationSlide(parsedPageNumber);
+        }
+
+        const el = this.preloadEl.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
+        if (!el) {
+            return false;
+        }
+
+        el.scrollIntoView({ behavior: 'instant', block: 'start' });
+        return true;
+    }
+
+    /**
+     * Shows a single preloaded slide element and hides all others in presentation mode.
+     * Keeps the currently visible slide intact if the requested slide is not yet in the DOM.
+     *
+     * @private
+     * @param {number} pageNumber - 1-indexed slide number
+     * @return {boolean} Whether the target slide element exists
+     */
+    showPresentationSlide(pageNumber) {
+        if (!this.preloadEl) {
+            return false;
+        }
+
+        const targetEl = this.preloadEl.querySelector(`[data-preload-index="${pageNumber}"]`);
+        if (!targetEl) {
+            return false;
+        }
+
+        const slides = this.preloadEl.querySelectorAll('[data-preload-index]');
+        [].forEach.call(slides, slideEl => {
+            slideEl.classList.add(CLASS_INVISIBLE);
+        });
+        targetEl.classList.remove(CLASS_INVISIBLE);
+        return true;
     }
 
     /**
@@ -552,6 +622,7 @@ class DocFirstPreloader extends EventEmitter {
             docBaseViewer.emit(VIEWER_EVENT.thumbnailsOpen);
             docBaseViewer.initThumbnails();
             this.thumbnailsOpen = true;
+            docBaseViewer.renderUI?.();
         }
     }
 
@@ -574,6 +645,7 @@ class DocFirstPreloader extends EventEmitter {
         this.preloadEl = document.createElement('div');
         this.preloadEl.classList.add(CLASS_BOX_PREVIEW_PRELOAD);
         this.preloadedImages = {};
+        this.currentPage = 1;
     }
 
     /**
@@ -627,6 +699,7 @@ class DocFirstPreloader extends EventEmitter {
 
         // Clear staggered loading state
         this.secondBatchStarted = false;
+        this.currentPage = 1;
     };
 
     /**

@@ -1,7 +1,7 @@
 import DocFirstPreloader from '../DocFirstPreloader';
 import Api from '../../../api';
 import * as util from '../../../util';
-import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE } from '../../../constants';
+import { CLASS_BOX_PREVIEW_THUMBNAILS_OPEN, CLASS_BOX_PRELOAD_COMPLETE, CLASS_INVISIBLE } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
 jest.mock('../../../api');
@@ -536,6 +536,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             mockDocBaseViewer.rootEl = document.createElement('div');
             mockDocBaseViewer.shouldThumbnailsBeToggled = jest.fn();
             mockDocBaseViewer.initThumbnails = jest.fn();
+            mockDocBaseViewer.renderUI = jest.fn();
             mockDocBaseViewer.emit = jest.fn();
         });
 
@@ -549,6 +550,7 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(mockDocBaseViewer.rootEl.classList.contains(CLASS_BOX_PRELOAD_COMPLETE)).toBe(true);
             expect(mockDocBaseViewer.emit).toHaveBeenCalledWith(VIEWER_EVENT.thumbnailsOpen);
             expect(mockDocBaseViewer.initThumbnails).toHaveBeenCalled();
+            expect(mockDocBaseViewer.renderUI).toHaveBeenCalled();
             expect(preloader.thumbnailsOpen).toBe(true);
         });
 
@@ -1389,13 +1391,15 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(Object.keys(preloader.preloadedImages).length).toBe(3);
         });
 
-        it('should not add additional pages if it is for a presentation', () => {
+        it('should add hidden additional slide elements for presentations', () => {
             const data = [new Blob(), new Blob()];
             const addPreloadImageToPreloaderContainer = jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
             preloader.isPresentation = true;
             preloader.pdfData = { numPages: 3 };
             preloader.processAdditionalPages(data);
-            expect(addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
+            expect(addPreloadImageToPreloaderContainer).toHaveBeenCalledTimes(2);
+            expect(preloader.preloadEl.querySelector('[data-preload-index="2"]')).toHaveClass(CLASS_INVISIBLE);
+            expect(preloader.preloadEl.querySelector('[data-preload-index="3"]')).toHaveClass(CLASS_INVISIBLE);
         });
 
         it('should not add placeholders (placeholders are handled by finalizePreload)', () => {
@@ -1448,12 +1452,13 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
         });
 
-        it('should not add empty placeholders if this is a presentation', () => {
+        it('should only add loaded slides and not empty placeholders when this is a presentation', () => {
             const data = [new Blob(), new Blob()];
             preloader.isPresentation = true;
             preloader.pdfData = { numPages: 10 };
             preloader.processAdditionalPages(data);
-            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(1);
+            expect(preloader.preloadEl.querySelectorAll('div.bp-preload-placeholder').length).toBe(3);
+            expect(preloader.preloadEl.querySelectorAll('.loaded').length).toBe(3);
         });
 
         it('should trigger thumbnail rendering for each page when docBaseViewer is provided', () => {
@@ -1714,8 +1719,9 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             expect(preloader.preloadedImages[2]).toBeUndefined();
         });
 
-        it('should not add image element for presentations', () => {
+        it('should add hidden image element for presentations when page is not current', () => {
             preloader.isPresentation = true;
+            preloader.currentPage = 1;
             const mockBlob = new Blob(['test'], { type: 'image/webp' });
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url');
             jest.spyOn(preloader, 'addPreloadImageToPreloaderContainer');
@@ -1723,7 +1729,23 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
             preloader.addPageToPreload(2, mockBlob);
 
             expect(preloader.preloadedImages[2]).toBe('mock-url');
-            expect(preloader.addPreloadImageToPreloaderContainer).not.toHaveBeenCalled();
+            expect(preloader.addPreloadImageToPreloaderContainer).toHaveBeenCalled();
+            expect(preloader.preloadEl.querySelector('[data-preload-index="2"]')).toHaveClass(CLASS_INVISIBLE);
+        });
+
+        it('should reveal newly loaded slide for presentations when it matches currentPage', () => {
+            preloader.isPresentation = true;
+            const slide1 = preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 1);
+            preloader.preloadedImages = { 1: 'url-1' };
+            preloader.currentPage = 2;
+            const mockBlob = new Blob(['test'], { type: 'image/webp' });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('mock-url-2');
+
+            preloader.addPageToPreload(2, mockBlob);
+
+            const slide2 = preloader.preloadEl.querySelector('[data-preload-index="2"]');
+            expect(slide1).toHaveClass(CLASS_INVISIBLE);
+            expect(slide2).not.toHaveClass(CLASS_INVISIBLE);
         });
 
         it('should add image element for documents', () => {
@@ -1904,6 +1926,60 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
 
             expect(preloader.scheduleSecondBatch).not.toHaveBeenCalled();
             expect(preloader.finalizePreload).toHaveBeenCalled();
+        });
+    });
+
+    describe('setCurrentPage()', () => {
+        beforeEach(() => {
+            preloader.numPages = 5;
+            preloader.preloadEl = document.createElement('div');
+            jest.spyOn(preloader, 'pdfJsDocLoadComplete').mockReturnValue(false);
+        });
+
+        it('should toggle visibility between preloaded presentation slides', () => {
+            preloader.isPresentation = true;
+            const slide1 = preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 1);
+            const slide2 = preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 2);
+            slide2.classList.add(CLASS_INVISIBLE);
+
+            const result = preloader.setCurrentPage(2);
+
+            expect(result).toBe(true);
+            expect(preloader.currentPage).toBe(2);
+            expect(slide1).toHaveClass(CLASS_INVISIBLE);
+            expect(slide2).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        it('should keep the current slide visible when target presentation slide is not yet in DOM', () => {
+            preloader.isPresentation = true;
+            const slide1 = preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 1);
+
+            const result = preloader.setCurrentPage(4);
+
+            expect(result).toBe(false);
+            expect(preloader.currentPage).toBe(4);
+            expect(slide1).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        it('should scroll preloaded page into view for documents', () => {
+            preloader.isPresentation = false;
+            const page2 = preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 2);
+            page2.scrollIntoView = jest.fn();
+
+            const result = preloader.setCurrentPage(2);
+
+            expect(result).toBe(true);
+            expect(preloader.currentPage).toBe(2);
+            expect(page2.scrollIntoView).toHaveBeenCalledWith({ behavior: 'instant', block: 'start' });
+        });
+
+        it('should return false for out-of-range page numbers', () => {
+            preloader.isPresentation = true;
+            preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 1);
+
+            expect(preloader.setCurrentPage(0)).toBe(false);
+            expect(preloader.setCurrentPage(6)).toBe(false);
+            expect(preloader.currentPage).toBe(1);
         });
     });
 });

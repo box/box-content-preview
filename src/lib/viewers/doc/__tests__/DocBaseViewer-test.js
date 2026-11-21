@@ -1748,6 +1748,49 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(setCurrentPage).toHaveBeenCalledWith(pageNumber);
                     expect(setCachePage).toHaveBeenCalledWith(pageNumber);
                 });
+
+                test('should delegate to preloader.setCurrentPage and re-render controls when pdfViewer is not loaded yet', () => {
+                    docBase.pdfViewer = undefined;
+                    docBase.docFirstPagesEnabled = true;
+                    const renderUISpy = jest.spyOn(docBase, 'renderUI').mockImplementation();
+                    const sidebarSetCurrentPage = jest.fn();
+                    docBase.thumbnailsSidebar = { setCurrentPage: sidebarSetCurrentPage, destroy: jest.fn() };
+                    docBase.preloader = {
+                        numPages: 5,
+                        currentPage: 1,
+                        retrievedPagesCount: 3,
+                        setCurrentPage: jest.fn(() => {
+                            docBase.preloader.currentPage = 3;
+                            return true;
+                        }),
+                    };
+
+                    docBase.setPage(3);
+
+                    expect(docBase.preloader.setCurrentPage).toHaveBeenCalledWith(3);
+                    expect(stubs.cachePage).toHaveBeenCalledWith(3);
+                    expect(sidebarSetCurrentPage).toHaveBeenCalledWith(3);
+                    expect(renderUISpy).toHaveBeenCalled();
+                    expect(docBase.getCurrentPage()).toBe(3);
+                    expect(docBase.getPageCount()).toBe(5);
+                });
+
+                test('should ignore invalid page numbers when pdfViewer is not loaded yet', () => {
+                    docBase.pdfViewer = undefined;
+                    docBase.docFirstPagesEnabled = true;
+                    docBase.preloader = {
+                        numPages: 3,
+                        currentPage: 1,
+                        retrievedPagesCount: 3,
+                        setCurrentPage: jest.fn(),
+                    };
+
+                    docBase.setPage(0);
+                    docBase.setPage(4);
+
+                    expect(docBase.preloader.setCurrentPage).not.toHaveBeenCalled();
+                    expect(stubs.cachePage).not.toHaveBeenCalled();
+                });
             });
         });
 
@@ -3311,6 +3354,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.renderUI).toBeCalled();
             });
 
+            test('should reuse existing controls root when called again', () => {
+                const renderUISpy = jest.spyOn(docBase, 'renderUI').mockImplementation();
+
+                docBase.loadUI();
+                const firstControls = docBase.controls;
+                docBase.loadUI();
+
+                expect(docBase.controls).toBe(firstControls);
+                expect(renderUISpy).toHaveBeenCalledTimes(2);
+            });
+
             test.each`
                 features                                                | isBlueprintEnabled
                 ${{ blueprintMigrationControlsBar: { enabled: true } }} | ${true}
@@ -3480,6 +3534,36 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(getProps(docBase)).toMatchObject({
                     onGalleryToggle: isMobile ? undefined : docBase.galleryController.toggle,
+                });
+            });
+
+            test('should render page controls from preloader state and omit PDF-only actions when pdfViewer is not loaded', () => {
+                docBase.pdfViewer = undefined;
+                docBase.thumbnailsSidebar = { isOpen: false, destroy: jest.fn() };
+                docBase.preloader = {
+                    currentPage: 2,
+                    numPages: 6,
+                };
+                jest.spyOn(docBase.galleryController, 'canRender').mockReturnValue(true);
+
+                docBase.renderUI();
+
+                const props = getProps(docBase);
+                expect(props).toMatchObject({
+                    hasDrawing: false,
+                    hasHighlight: false,
+                    hasRegion: false,
+                    onFindBarToggle: undefined,
+                    onGalleryToggle: undefined,
+                    onPageChange: docBase.setPage,
+                    onPageSubmit: docBase.handlePageSubmit,
+                    onRotateLeft: undefined,
+                    onThumbnailsToggle: docBase.toggleThumbnails,
+                    onZoomIn: undefined,
+                    onZoomOut: undefined,
+                    pageCount: 6,
+                    pageNumber: 2,
+                    scale: undefined,
                 });
             });
 
@@ -4128,6 +4212,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.handleFullscreenEnter();
                 expect(resizeStub).toBeCalled();
                 expect(docBase.pdfViewer.currentScaleValue).toBe('page-fit');
+            });
+
+            test('should resize without throwing when pdfViewer is not loaded yet', () => {
+                docBase.pdfViewer = undefined;
+                const resizeStub = jest.spyOn(docBase, 'resize').mockImplementation();
+
+                expect(() => docBase.handleFullscreenEnter()).not.toThrow();
+                expect(resizeStub).toBeCalled();
             });
         });
 
@@ -4787,6 +4879,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.cacheThumbnailsToggledState).toBeCalledWith(isOpen);
             });
+
+            test('should emit metric with preloader page count when pdfViewer is not loaded yet', () => {
+                docBase.pdfViewer = undefined;
+                docBase.preloader = { numPages: 8 };
+                docBase.thumbnailsSidebar = thumbnailsSidebar;
+                thumbnailsSidebar.isOpen = true;
+
+                docBase.toggleThumbnails();
+
+                expect(docBase.emitMetric).toBeCalledWith({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.OPEN, data: 8 });
+            });
         });
 
         describe('emitMetric()', () => {
@@ -5405,6 +5508,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.fullscreenToggleEl = null;
 
                 expect(() => docBase.handleFullscreenExit()).not.toThrow();
+            });
+
+            test('should not throw when pdfViewer is not loaded yet', () => {
+                docBase.pdfViewer = undefined;
+
+                expect(() => docBase.handleFullscreenExit()).not.toThrow();
+                expect(docBase.resize).toHaveBeenCalled();
             });
         });
 

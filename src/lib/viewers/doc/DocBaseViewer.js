@@ -884,12 +884,36 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Returns the active page number from PDF.js when loaded, or from the preloader before PDF.js initializes.
+     *
+     * @protected
+     * @return {number} Current page number
+     */
+    getCurrentPage() {
+        if (this.pdfViewer && this.pdfViewer.pagesCount !== 0) {
+            return this.pdfViewer.currentPageNumber;
+        }
+
+        return this.preloader?.currentPage ?? this.pdfViewer?.currentPageNumber ?? 1;
+    }
+
+    /**
+     * Returns the total page count from PDF.js when loaded, or from the preloader before PDF.js initializes.
+     *
+     * @protected
+     * @return {number} Total page count
+     */
+    getPageCount() {
+        return this.pdfViewer?.pagesCount || this.preloader?.numPages || 0;
+    }
+
+    /**
      * Go to previous page
      *
      * @return {void}
      */
     previousPage() {
-        this.setPage(this.pdfViewer.currentPageNumber - 1);
+        this.setPage(this.getCurrentPage() - 1);
     }
 
     /**
@@ -898,7 +922,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     nextPage() {
-        this.setPage(this.pdfViewer.currentPageNumber + 1);
+        this.setPage(this.getCurrentPage() + 1);
     }
 
     /**
@@ -909,14 +933,36 @@ class DocBaseViewer extends BaseViewer {
      */
     setPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        // if the preloader has opened the thumbnails and the pdf has not finished loading go to the doc first page
-        // for that thumbnail
-        if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
+        const isPreloading = !this.pdfViewer || this.pdfViewer.pagesCount === 0;
+
+        if (isPreloading) {
+            const canNavigatePreload =
+                this.docFirstPagesEnabled &&
+                this.preloader &&
+                (this.preloader.retrievedPagesCount > 0 || this.preloader.thumbnailsOpen);
+            const hasLegacyPreloaderThumbnails = this.thumbnailsSidebar && this.preloader?.thumbnailsOpen;
+            if (
+                (!canNavigatePreload && !hasLegacyPreloaderThumbnails) ||
+                !parsedPageNumber ||
+                parsedPageNumber < 1 ||
+                (this.preloader?.numPages && parsedPageNumber > this.preloader.numPages)
+            ) {
+                return;
+            }
+
             this.cachePage(parsedPageNumber);
-            const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
-            el.scrollIntoView({ behavior: 'instant', block: 'start' });
-            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
-        } else if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+            if (typeof this.preloader.setCurrentPage === 'function') {
+                this.preloader.setCurrentPage(parsedPageNumber);
+            } else {
+                const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
+                el?.scrollIntoView({ behavior: 'instant', block: 'start' });
+            }
+            this.thumbnailsSidebar?.setCurrentPage(parsedPageNumber);
+            this.renderUI();
+            return;
+        }
+
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
@@ -1658,13 +1704,15 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
-        this.controls = new ControlsRoot({
-            containerEl: this.containerEl,
-            fileExtension: this.options.file.extension,
-            fileId: this.options.file.id,
-            isBlueprintEnabled: this.isBlueprintEnabled(),
-        });
-        this.annotationControlsFSM.subscribe(() => this.renderUI());
+        if (!this.controls) {
+            this.controls = new ControlsRoot({
+                containerEl: this.containerEl,
+                fileExtension: this.options.file.extension,
+                fileId: this.options.file.id,
+                isBlueprintEnabled: this.isBlueprintEnabled(),
+            });
+            this.annotationControlsFSM.subscribe(() => this.renderUI());
+        }
         this.renderUI();
     }
 
@@ -1688,18 +1736,25 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     renderUI() {
-        if (!this.controls) {
+        if (!this.controls || typeof this.controls.render !== 'function') {
             return;
         }
 
         const { enableThumbnailsSidebar, showAnnotationsDrawingCreate } = this.options;
-        const canAnnotate = this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
+        const isPdfReady = Boolean(this.pdfViewer && this.pdfViewer.pagesCount !== 0);
+        const canAnnotate = isPdfReady && this.areNewAnnotationsEnabled() && this.hasAnnotationCreatePermission();
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
         const isAnnotationsMode = this.currentAnnotatorViewMode === ANNOTATOR_VIEW_MODES.ANNOTATIONS;
-        const canRotate = this.featureEnabled('rotate.enabled');
-        const canGallery = !this.isMobile && this.galleryController.canRender(this.pdfViewer.pagesCount);
+        const canRotate = isPdfReady && this.featureEnabled('rotate.enabled');
+        const canGallery = !this.isMobile && isPdfReady && this.galleryController.canRender(this.pdfViewer.pagesCount);
         const isGalleryZoomActive = this.galleryController.isOpen && this.galleryController.isEnhancedGalleryEnabled;
         const Controls = this.featureEnabled(BLUEPRINT_MIGRATION_CONTROLS_BAR) ? DocControlsV2 : DocControls;
+        let onZoomIn;
+        let onZoomOut;
+        if (isPdfReady) {
+            onZoomIn = isGalleryZoomActive ? this.galleryController.zoomIn : this.zoomIn;
+            onZoomOut = isGalleryZoomActive ? this.galleryController.zoomOut : this.zoomOut;
+        }
 
         this.controls.render(
             <Controls
@@ -1718,18 +1773,20 @@ class DocBaseViewer extends BaseViewer {
                 onAnnotationColorChange={this.handleAnnotationColorChange}
                 onAnnotationModeClick={this.handleAnnotationControlsClick}
                 onAnnotationModeEscape={this.handleAnnotationControlsEscape}
-                onFindBarToggle={!this.isFindDisabled() ? this.toggleFindBar : undefined}
+                onFindBarToggle={isPdfReady && !this.isFindDisabled() ? this.toggleFindBar : undefined}
                 onFullscreenToggle={this.toggleFullscreen}
                 onGalleryToggle={canGallery ? this.galleryController.toggle : undefined}
                 onPageChange={this.setPage}
                 onPageSubmit={this.handlePageSubmit}
                 onRotateLeft={canRotate ? this.rotateLeft : undefined}
-                onThumbnailsToggle={enableThumbnailsSidebar ? this.toggleThumbnails : undefined}
-                onZoomIn={isGalleryZoomActive ? this.galleryController.zoomIn : this.zoomIn}
-                onZoomOut={isGalleryZoomActive ? this.galleryController.zoomOut : this.zoomOut}
-                pageCount={this.pdfViewer.pagesCount}
-                pageNumber={this.pdfViewer.currentPageNumber}
-                scale={isGalleryZoomActive ? this.galleryController.scale : this.pdfViewer.currentScale}
+                onThumbnailsToggle={
+                    enableThumbnailsSidebar && (isPdfReady || this.thumbnailsSidebar) ? this.toggleThumbnails : undefined
+                }
+                onZoomIn={onZoomIn}
+                onZoomOut={onZoomOut}
+                pageCount={this.getPageCount()}
+                pageNumber={this.getCurrentPage()}
+                scale={isGalleryZoomActive ? this.galleryController.scale : this.pdfViewer?.currentScale}
             />,
         );
     }
@@ -1849,7 +1906,7 @@ class DocBaseViewer extends BaseViewer {
             this.thumbnailsSidebar = new Sidebar(this.thumbnailsSidebarEl, this.pdfViewer, this.preloader);
 
             this.thumbnailsSidebar.init({
-                currentPage: this.pdfViewer?.currentPageNumber,
+                currentPage: this.getCurrentPage(),
                 isOpen: this.shouldThumbnailsBeToggled(),
                 onSelect: this.onThumbnailSelectHandler,
             });
@@ -1979,13 +2036,17 @@ class DocBaseViewer extends BaseViewer {
 
     /** @inheritDoc */
     handleFullscreenEnter() {
-        this.pdfViewer.currentScaleValue = 'page-fit';
+        if (this.pdfViewer) {
+            this.pdfViewer.currentScaleValue = 'page-fit';
+        }
         super.handleFullscreenEnter();
     }
 
     /** @inheritDoc */
     handleFullscreenExit() {
-        this.pdfViewer.currentScaleValue = 'auto';
+        if (this.pdfViewer) {
+            this.pdfViewer.currentScaleValue = 'auto';
+        }
         super.handleFullscreenExit();
 
         if (this.annotator && this.areNewAnnotationsEnabled() && this.options.enableAnnotationsDiscoverability) {
@@ -2326,7 +2387,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.thumbnailsSidebar.toggle();
 
-        const { pagesCount } = this.pdfViewer;
+        const pagesCount = this.getPageCount();
 
         this.cacheThumbnailsToggledState(this.thumbnailsSidebar.isOpen);
 

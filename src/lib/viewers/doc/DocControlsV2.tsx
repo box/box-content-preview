@@ -86,8 +86,6 @@ export default function DocControlsV2({
     const zoomProps = {
         maxScale,
         minScale,
-        onZoomIn,
-        onZoomOut,
         resinTargetZoomIn: isGalleryOpen ? 'galleryZoomIn' : undefined,
         resinTargetZoomOut: isGalleryOpen ? 'galleryZoomOut' : undefined,
         scale,
@@ -129,12 +127,14 @@ export default function DocControlsV2({
                 ),
                 id: 'page',
             },
-        (!isGalleryOpen || hasGalleryZoom) && {
-            control: <ZoomControlsV2 {...zoomProps} />,
-            id: 'zoom',
-            menu: !isGalleryOpen && <ZoomMenuItemsV2 {...zoomProps} />,
-            priority: isGalleryOpen ? undefined : PRIORITY.zoom,
-        },
+        (!isGalleryOpen || hasGalleryZoom) &&
+            onZoomIn &&
+            onZoomOut && {
+                control: <ZoomControlsV2 {...zoomProps} onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+                id: 'zoom',
+                menu: !isGalleryOpen && <ZoomMenuItemsV2 {...zoomProps} onZoomIn={onZoomIn} onZoomOut={onZoomOut} />,
+                priority: isGalleryOpen ? undefined : PRIORITY.zoom,
+            },
         !isGalleryOpen &&
             onFindBarToggle && {
                 control: <FindBarToggleV2 onFindBarToggle={onFindBarToggle} />,
