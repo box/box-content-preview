@@ -193,6 +193,18 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
             expect(preview.isVisible()).toBe(true);
         });
 
+        test('should ignore a late seeking event from an earlier drag position', () => {
+            loadFilmstrip();
+            setBuffered([[0, 20]]);
+            preview.startScrub();
+            mediaEl.currentTime = 10;
+            preview.showFrame(60);
+
+            mediaEl.dispatchEvent(new Event('seeking'));
+
+            expect(preview.isVisible()).toBe(true);
+        });
+
         test('should wait for the committed seek before hiding after the drag ends', () => {
             loadFilmstrip();
             preview.startScrub();

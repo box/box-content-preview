@@ -206,6 +206,11 @@ export default class VideoSeekPreview {
     // Buffered targets hide the preview immediately. A visible preview switches frames at once;
     // otherwise it waits SHOW_DELAY_MS.
     handleSeeking = (): void => {
+        // 'seeking' fires asynchronously, so during a drag it can report a position the scrubber has already left
+        if (this.isScrubbing) {
+            return;
+        }
+
         const time = this.mediaEl.currentTime;
 
         this.cancelPending();
