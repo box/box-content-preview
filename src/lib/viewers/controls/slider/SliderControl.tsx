@@ -115,7 +115,11 @@ export default function SliderControl({
     };
 
     React.useEffect(() => {
-        const handleDocumentMoveStop = (): void => {
+        const handleDocumentMoveStop = (event: Event): void => {
+            // Stops the browser's compatibility mouse events after a tap from starting a second scrub
+            if (event.type === 'touchend') {
+                event.preventDefault();
+            }
             setIsScrubbing(false);
             onScrubEnd();
         };

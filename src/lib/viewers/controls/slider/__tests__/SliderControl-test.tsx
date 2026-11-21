@@ -208,6 +208,14 @@ describe('SliderControl', () => {
             expect(onScrubEnd).toHaveBeenCalledTimes(1);
         });
 
+        test('should prevent compatibility mouse events from starting a second scrub after a tap', () => {
+            render(<SliderControl title="Slider" value={0} />);
+
+            fireEvent.touchStart(screen.getByRole('slider'), { touches: [{ ...getTouchEventDefaults(), pageX: 100 }] });
+
+            expect(fireEvent.touchEnd(document)).toBe(false);
+        });
+
         test('should not call onScrubStart or onScrubEnd for keyboard updates', async () => {
             const user = userEvent.setup();
             const onScrubEnd = jest.fn();

@@ -1005,6 +1005,8 @@ class DashViewer extends VideoBaseViewer {
 
             this.filmstripInterval = filmstripInterval;
             this.filmstripStatus = this.getRepStatus(filmstrip);
+            // The filmstrip is optional, so its pending conversion must not hold off the viewer load timeout
+            this.filmstripStatus.removeListener('conversionpending', this.resetLoadTimeout);
             this.filmstripUrl = null;
 
             this.filmstripPromise = this.filmstripStatus
@@ -1131,7 +1133,7 @@ class DashViewer extends VideoBaseViewer {
         clearTimeout(this.seekPreviewSpinnerTimeoutId);
 
         // Mid-seek, seekingHandler() already shows the spinner after its delay
-        if (!this.mediaEl.paused && !this.mediaEl.seeking && !this.isSeekFrameReady()) {
+        if (!this.mediaEl.seeking && !this.isSeekFrameReady()) {
             this.showBufferingSpinner();
         } else {
             this.hideBufferingSpinner();

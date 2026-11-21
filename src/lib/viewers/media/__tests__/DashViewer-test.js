@@ -1016,6 +1016,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({
                 getPromise: () => Promise.resolve(),
                 destroy: jest.fn(),
+                removeListener: jest.fn(),
             });
             jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue('blob:filmstrip');
             dash.loadFilmStrip();
@@ -1026,6 +1027,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({
                 getPromise: () => Promise.resolve(),
                 destroy: jest.fn(),
+                removeListener: jest.fn(),
             });
             jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue('blob:filmstrip');
             dash.loadFilmStrip();
@@ -1033,11 +1035,25 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.createUrl).toBeCalledTimes(1);
         });
 
+        test('should not let a pending filmstrip conversion hold off the viewer load timeout', () => {
+            const removeListener = jest.fn();
+            jest.spyOn(dash, 'getRepStatus').mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => new Promise(() => {}),
+                removeListener,
+            });
+
+            dash.loadFilmStrip();
+
+            expect(removeListener).toBeCalledWith('conversionpending', dash.resetLoadTimeout);
+        });
+
         test('should render the controls again after the filmstrip is ready', async () => {
             jest.spyOn(dash, 'getViewerOption').mockReturnValueOnce(true);
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
                 destroy: jest.fn(),
                 getPromise: () => Promise.resolve(),
+                removeListener: jest.fn(),
             });
 
             dash.options.file.representations.entries[1] = {
@@ -2516,6 +2532,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({
                 getPromise: () => Promise.resolve(),
                 destroy: jest.fn(),
+                removeListener: jest.fn(),
             });
             jest.spyOn(dash.mediaControls, 'initFilmstrip').mockImplementation();
         });
@@ -2684,7 +2701,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(isHidden()).toBe(true);
                 });
 
-                test('should cancel the delayed spinner on hide and only show it if playback stalls outside a seek', () => {
+                test('should cancel the delayed spinner on hide and only show it if the frame is still loading outside a seek', () => {
                     setMedia({ paused: false, readyState: HTMLMediaElement.HAVE_ENOUGH_DATA, seeking: false });
                     dash.handleSeekPreviewShow();
                     dash.seekPreview.isVisible.mockReturnValue(false);
@@ -2697,6 +2714,11 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(isHidden()).toBe(true);
 
                     setMedia({ seeking: false });
+                    dash.handleSeekPreviewHide();
+                    expect(isHidden()).toBe(false);
+
+                    dash.hideBufferingSpinner();
+                    setMedia({ paused: true });
                     dash.handleSeekPreviewHide();
                     expect(isHidden()).toBe(false);
                 });
