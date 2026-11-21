@@ -174,6 +174,21 @@ class ThumbnailsSidebar {
     }
 
     /**
+     * Sets the pdf.js viewer used to render page images. The doc first preloader can create the
+     * sidebar before the representation is ready, when there is no pdf.js viewer yet.
+     *
+     * @param {PDFViewer} pdfViewer - the PDFJS viewer
+     * @return {void}
+     */
+    setPdfViewer(pdfViewer) {
+        this.pdfViewer = pdfViewer;
+
+        if (this.thumbnail) {
+            this.thumbnail.pdfViewer = pdfViewer;
+        }
+    }
+
+    /**
      * Initializes the virtual scroller when thumbnail dimensions are available.
      * Used by init() and by renderNextThumbnailImage() when the scroller was not
      * inited earlier (e.g. PDF wasn't ready when init() ran).

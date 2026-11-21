@@ -168,6 +168,23 @@ describe('ThumbnailsSidebar', () => {
         });
     });
 
+    describe('setPdfViewer()', () => {
+        test('should set the pdf.js viewer on the sidebar and its thumbnail', () => {
+            thumbnailsSidebar = new ThumbnailsSidebar(anchorEl, undefined, { retrievedPagesCount: 8 });
+
+            thumbnailsSidebar.setPdfViewer(pdfViewer);
+
+            expect(thumbnailsSidebar.pdfViewer).toBe(pdfViewer);
+            expect(thumbnailsSidebar.thumbnail.pdfViewer).toBe(pdfViewer);
+        });
+
+        test('should not throw after the sidebar is destroyed', () => {
+            thumbnailsSidebar.destroy();
+
+            expect(() => thumbnailsSidebar.setPdfViewer(pdfViewer)).not.toThrow();
+        });
+    });
+
     describe('renderNextThumbnailImage()', () => {
         beforeEach(() => {
             stubs.requestThumbnailImage = jest.spyOn(thumbnailsSidebar, 'requestThumbnailImage').mockImplementation();
