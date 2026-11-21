@@ -96,6 +96,11 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const MS_IN_S = 1000; // ms in a sec
 const SUPPORT_URL = 'https://support.box.com';
 
+const CARET_KEYS = ['ArrowLeft', 'ArrowRight'];
+
+const isHotkeyFromReadOnlyPdfFormField = ({ key, target }) =>
+    !!target.readOnly && !!target.closest?.('.annotationLayer') && !CARET_KEYS.includes(key);
+
 // document.currentScript is this file only while it evaluates.
 let PREVIEW_LOCATION = {};
 if (!isNpmBuild()) {
@@ -2451,7 +2456,7 @@ class Preview extends EventEmitter {
         // Ignore key events when we are inside certain fields
         if (
             !target ||
-            KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1 ||
+            (KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1 && !isHotkeyFromReadOnlyPdfFormField(event)) ||
             (target.nodeName === 'DIV' && !!target.getAttribute('contenteditable'))
         ) {
             return;

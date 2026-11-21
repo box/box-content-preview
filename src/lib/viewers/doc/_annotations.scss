@@ -1,3 +1,10 @@
+// Lets drags that start on form fields draw annotations
+@mixin bp-annotations-inert-form-fields {
+    .annotationLayer :is(.textWidgetAnnotation, .choiceWidgetAnnotation, .buttonWidgetAnnotation:not(.pushButton)) {
+        pointer-events: none;
+    }
+}
+
 @mixin bp-annotations-create-base {
     // Reset cursor popup in explicit region mode
     .ba-PopupCursor {
@@ -7,6 +14,8 @@
     .annotationLayer {
         pointer-events: none;
     }
+
+    @include bp-annotations-inert-form-fields;
 }
 
 @mixin bp-annotations-disable-drawing-targets {

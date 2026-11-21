@@ -9895,10 +9895,10 @@ pathval@^1.1.1:
   resolved "https://registry.npmjs.org/pathval/-/pathval-1.1.1.tgz"
   integrity sha512-Dp6zGqpTdETdR63lehJYPeIOqpiNBNtc7BpWSLrOje7UaIsE5aY92r/AunQA7rsXvet3lrJ3JnZX29UPTKXyKQ==
 
-"pdfjs-dist@npm:@box/pdfjs-dist@6.4.299-box.3":
-  version "6.4.299-box.3"
-  resolved "https://registry.yarnpkg.com/@box/pdfjs-dist/-/pdfjs-dist-6.4.299-box.3.tgz#e568f75fe06a7737be9f854c00e6c1daa9c0e067"
-  integrity sha512-ec6FekQfBJ9/TmLtf+mU1YuyqFVdgyRdQsyJP0Im5naqSs1qVfsVkXdRvqQFjbxtuK9AnsJUcc642OCrXs1FeQ==
+"pdfjs-dist@npm:@box/pdfjs-dist@6.4.299-box.4":
+  version "6.4.299-box.4"
+  resolved "https://registry.yarnpkg.com/@box/pdfjs-dist/-/pdfjs-dist-6.4.299-box.4.tgz#f6afdbe22a9a262c3ee35e2191dd71db1fd6aab3"
+  integrity sha512-96+eaYUgPaWEpYjPdx7OO4ITxluwr+UjpfX5GANTJFeLszd5IuvKa8Iv/KMpP6R+JJ2Par11mxy1qSdC5uK0PA==
   optionalDependencies:
     "@napi-rs/canvas" "^1.0.10"
 

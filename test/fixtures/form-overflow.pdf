@@ -1,0 +1,88 @@
+%PDF-1.7
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R /AcroForm << /Fields [5 0 R] /DR << /Font << /Helv 6 0 R >> >> /DA (/Helv 12 Tf 0 g) >> >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 9 0 R 11 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 6 0 R >> >> /Annots [5 0 R 8 0 R] >>
+endobj
+4 0 obj
+<< /Length 251 >>
+stream
+BT /F1 18 Tf 72 740 Td (Page 1: overflowing field and a link) Tj ET
+BT /F1 12 Tf 72 700 Td (Field below overflows its box; the link is underlined further down.) Tj ET
+BT /F1 14 Tf 0 0 1 rg 72 440 Td (Open link.test) Tj ET
+0 0 1 RG 72 437 m 172 437 l S
+endstream
+endobj
+5 0 obj
+<< /Type /Annot /Subtype /Widget /FT /Tx /T (FieldA) /Ff 4096 /F 4 /P 3 0 R /Rect [72 540 372 640] /DA (/Helv 12 Tf 0 g) /MK << /BC [0 0 0] >> /V (Line 1: customer typed a long answer here\rLine 2: customer typed a long answer here\rLine 3: customer typed a long answer here\rLine 4: customer typed a long answer here\rLine 5: customer typed a long answer here\rLine 6: customer typed a long answer here\rLine 7: customer typed a long answer here\rLine 8: customer typed a long answer here\rLine 9: customer typed a long answer here\rLine 10: customer typed a long answer here\rLine 11: customer typed a long answer here\rLine 12: customer typed a long answer here\rLine 13: customer typed a long answer here\rLine 14: END OF TEXT) /AP << /N 7 0 R >> >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+7 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 300 100] /Resources << /Font << /Helv 6 0 R >> >> /Length 777 >>
+stream
+0 G 1 w 0.5 0.5 299 99 re S
+/Tx BMC q 1 1 298 98 re W n BT /Helv 12 Tf 0 g 2 86 Td 14 TL
+(Line 1: customer typed a long answer here) Tj
+T* (Line 2: customer typed a long answer here) Tj
+T* (Line 3: customer typed a long answer here) Tj
+T* (Line 4: customer typed a long answer here) Tj
+T* (Line 5: customer typed a long answer here) Tj
+T* (Line 6: customer typed a long answer here) Tj
+T* (Line 7: customer typed a long answer here) Tj
+T* (Line 8: customer typed a long answer here) Tj
+T* (Line 9: customer typed a long answer here) Tj
+T* (Line 10: customer typed a long answer here) Tj
+T* (Line 11: customer typed a long answer here) Tj
+T* (Line 12: customer typed a long answer here) Tj
+T* (Line 13: customer typed a long answer here) Tj
+T* (Line 14: END OF TEXT) Tj
+ET Q EMC
+endstream
+endobj
+8 0 obj
+<< /Type /Annot /Subtype /Link /Rect [70 432 176 456] /Border [0 0 0] /A << /S /URI /URI (http://link.test/clicked) >> >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 10 0 R /Resources << /Font << /F1 6 0 R >> >> >>
+endobj
+10 0 obj
+<< /Length 37 >>
+stream
+BT /F1 18 Tf 72 740 Td (Page 2) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 12 0 R /Resources << /Font << /F1 6 0 R >> >> >>
+endobj
+12 0 obj
+<< /Length 37 >>
+stream
+BT /F1 18 Tf 72 740 Td (Page 3) Tj ET
+endstream
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000009 00000 n 
+0000000146 00000 n 
+0000000216 00000 n 
+0000000364 00000 n 
+0000000666 00000 n 
+0000001435 00000 n 
+0000001532 00000 n 
+0000002451 00000 n 
+0000002588 00000 n 
+0000002715 00000 n 
+0000002803 00000 n 
+0000002931 00000 n 
+trailer
+<< /Size 13 /Root 1 0 R >>
+startxref
+3019
+%%EOF
