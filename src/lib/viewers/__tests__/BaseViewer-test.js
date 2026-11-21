@@ -1115,6 +1115,26 @@ describe('lib/viewers/BaseViewer', () => {
             const repStatus = base.getRepStatus(representation);
             expect(repStatus.representation).toBe(representation);
         });
+
+        test('should emit conversionpending once when the main representation is pending', () => {
+            jest.spyOn(base, 'emit');
+            const repStatus = base.getRepStatus();
+
+            repStatus.emit('conversionpending');
+            repStatus.emit('conversionpending');
+
+            expect(base.emit).toHaveBeenCalledTimes(1);
+            expect(base.emit).toHaveBeenCalledWith(VIEWER_EVENT.conversionPending);
+        });
+
+        test('should not emit conversionpending for a passed in representation', () => {
+            jest.spyOn(base, 'emit');
+            const repStatus = base.getRepStatus({ info: { url: 'someOtherUrl' } });
+
+            repStatus.emit('conversionpending');
+
+            expect(base.emit).not.toHaveBeenCalled();
+        });
     });
 
     describe('getLoadStatus()', () => {

@@ -968,6 +968,11 @@ class BaseViewer extends EventEmitter {
         // Don't time out while conversion is pending
         repStatus.addListener('conversionpending', this.resetLoadTimeout);
 
+        // Hosts only care about the main representation; secondary ones load after the viewer is visible
+        if (!representation) {
+            repStatus.once('conversionpending', () => this.emit(VIEWER_EVENT.conversionPending));
+        }
+
         this.repStatuses.push(repStatus);
         return repStatus;
     }
