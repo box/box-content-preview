@@ -20,15 +20,24 @@ import VideoControls from './VideoControls';
 import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import VideoBaseViewer from './VideoBaseViewer';
+import VideoSeekPreview from './VideoSeekPreview';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
+// Keeps recently watched video around so scrubbing back stays instant. Shaka's default is 30 sec;
+// 120 sec behind plus 60 sec ahead stays within browser SourceBuffer quotas at 1080p.
+const BUFFER_BEHIND = SEGMENT_SIZE * 24;
+// Fetch the next segments in parallel. Each segment request has high fixed latency, so fetching
+// them one after another makes playback stall again shortly after a seek.
+const SEGMENT_PREFETCH_LIMIT = 2;
 const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
+const VIDEO_SEEK_IMPROVEMENTS_ENABLED = 'videoSeekImprovements.enabled';
+const SEEK_PREVIEW_SPINNER_DELAY_MS = 1000;
 
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
@@ -48,6 +57,21 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {string} - URL for the filmstrip image */
     filmstripUrl;
+
+    /** @property {Promise|undefined} - Pending filmstrip load, set once loading starts */
+    filmstripPromise;
+
+    /** @property {VideoSeekPreview|undefined} - Shows the filmstrip frame until the seek target paints */
+    seekPreview;
+
+    /** @property {number|undefined} - Pending timeout that adds the spinner to a slow seek preview */
+    seekPreviewSpinnerTimeoutId;
+
+    /** @property {number|undefined} - Scrub time to show in the controls while the preview covers an unbuffered target */
+    scrubTime;
+
+    /** @property {boolean} - Whether playback resumes once the scrubber is released */
+    shouldResumeAfterScrub = false;
 
     /** @property {string} - ID of the selected audio track */
     selectedAudioTrack;
@@ -74,6 +98,9 @@ class DashViewer extends VideoBaseViewer {
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
         this.handleBuffering = this.handleBuffering.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
+        this.handleScrub = this.handleScrub.bind(this);
+        this.handleScrubEnd = this.handleScrubEnd.bind(this);
+        this.handleScrubStart = this.handleScrubStart.bind(this);
         this.handleSubtitle = this.handleSubtitle.bind(this);
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
@@ -131,6 +158,13 @@ class DashViewer extends VideoBaseViewer {
             this.filmstripStatus.destroy();
         }
 
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
+
+        if (this.seekPreview) {
+            this.seekPreview.destroy();
+            this.seekPreview = undefined;
+        }
+
         // Release blob: URL allocated for the filmstrip
         if (this.filmstripUrl && this.filmstripUrl.startsWith('blob:')) {
             URL.revokeObjectURL(this.filmstripUrl);
@@ -185,6 +219,9 @@ class DashViewer extends VideoBaseViewer {
                 this.loadDashPlayer();
                 this.handleAssetAndRepLoad();
                 this.resetLoadTimeout();
+                if (this.isSeekPreviewEnabled()) {
+                    this.loadFilmStrip();
+                }
             })
             .catch(this.handleAssetError);
     }
@@ -244,6 +281,10 @@ class DashViewer extends VideoBaseViewer {
                 enabled: false,
             },
             streaming: {
+                ...(this.isSeekPreviewEnabled() && {
+                    bufferBehind: BUFFER_BEHIND,
+                    segmentPrefetchLimit: SEGMENT_PREFETCH_LIMIT,
+                }),
                 bufferingGoal: MAX_BUFFER,
                 retryParameters: {
                     timeout: 0, // timeout in ms, after which we abort a request; 0 means never
@@ -948,7 +989,8 @@ class DashViewer extends VideoBaseViewer {
     };
 
     /**
-     * Loads the film strip
+     * Loads the film strip. With seek previews enabled it starts alongside the manifest so they are
+     * ready by the time the controls are. A no-op once started.
      *
      * @private
      * @return {void}
@@ -957,15 +999,17 @@ class DashViewer extends VideoBaseViewer {
         const filmstrip = getRepresentation(this.options.file, 'filmstrip');
         const filmstripInterval = filmstrip && filmstrip.metadata && filmstrip.metadata.interval;
 
-        if (filmstripInterval > 0) {
+        if (filmstripInterval > 0 && !this.filmstripPromise) {
             const useReactControls = this.useReactControls();
             const url = this.createContentUrlV2(filmstrip.content.url_template);
 
             this.filmstripInterval = filmstripInterval;
             this.filmstripStatus = this.getRepStatus(filmstrip);
+            // The filmstrip is optional, so its pending conversion must not hold off the viewer load timeout
+            this.filmstripStatus.removeListener('conversionpending', this.resetLoadTimeout);
             this.filmstripUrl = null;
 
-            this.filmstripStatus
+            this.filmstripPromise = this.filmstripStatus
                 .getPromise()
                 .then(() => this.fetchContentAsBlobUrl(url))
                 .then(filmstripUrl => {
@@ -974,6 +1018,7 @@ class DashViewer extends VideoBaseViewer {
                         return;
                     }
                     this.filmstripUrl = filmstripUrl;
+                    this.initSeekPreview(filmstripUrl, filmstripInterval);
                     if (useReactControls) {
                         this.renderUI();
                     } else {
@@ -990,6 +1035,139 @@ class DashViewer extends VideoBaseViewer {
                 .catch(err => {
                     console.warn('Filmstrip load failed', err); // eslint-disable-line no-console
                 });
+        }
+    }
+
+    /**
+     * Whether to enable the V2 player's seek improvements: the filmstrip overlay while a seek target
+     * downloads, scrubbing that previews the drag and seeks on release, and the larger seek buffer.
+     * Video360Viewer disables it because its video renders onto a sphere.
+     */
+    isSeekPreviewEnabled() {
+        return (
+            this.useReactControls() &&
+            this.isVideoControlsV2Enabled() &&
+            this.featureEnabled(VIDEO_SEEK_IMPROVEMENTS_ENABLED)
+        );
+    }
+
+    initSeekPreview(filmstripUrl, filmstripInterval) {
+        if (!this.isSeekPreviewEnabled() || !this.mediaEl) {
+            return;
+        }
+
+        this.seekPreview = new VideoSeekPreview({
+            mediaEl: this.mediaEl,
+            onHide: () => this.handleSeekPreviewHide(),
+            onShow: () => this.handleSeekPreviewShow(),
+        });
+        this.seekPreview.setFilmstrip(filmstripUrl, filmstripInterval);
+
+        // The filmstrip can finish loading mid-drag, after handleScrubStart() ran without a preview
+        if (this.isScrubbing) {
+            this.seekPreview.startScrub();
+        }
+    }
+
+    // Brings the spinner back on top if the segment is slow, so the user can tell it is still loading
+    handleSeekPreviewShow() {
+        this.hideBufferingSpinner();
+
+        if (!this.isScrubbing) {
+            this.startSeekPreviewSpinnerDelay();
+        }
+    }
+
+    // Calls super directly: the override suppresses the spinner while the preview is visible
+    startSeekPreviewSpinnerDelay() {
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
+        this.seekPreviewSpinnerTimeoutId = setTimeout(
+            () => super.showBufferingSpinner(),
+            SEEK_PREVIEW_SPINNER_DELAY_MS,
+        );
+    }
+
+    handleScrubStart() {
+        this.isScrubbing = true;
+        this.shouldResumeAfterScrub = !this.mediaEl.paused;
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
+        this.stopWaitingForSeekFrame();
+        this.hideBufferingSpinner();
+
+        if (this.shouldResumeAfterScrub) {
+            this.mediaEl.pause();
+        }
+
+        this.seekPreview?.startScrub();
+    }
+
+    // Seeks over buffered time; otherwise shows the filmstrip frame, falling back to seeking without one
+    handleScrub(time) {
+        if (this.seekPreview?.isTimeBuffered(time)) {
+            this.seekPreview.hide({ immediate: true });
+        } else if (this.seekPreview?.showFrame(time)) {
+            this.scrubTime = time;
+            this.renderUI();
+            return;
+        }
+
+        this.scrubTime = undefined;
+        this.handleTimeupdateFromMediaControls(time);
+    }
+
+    handleScrubEnd(time) {
+        this.isScrubbing = false;
+        this.scrubTime = undefined;
+        this.stopWaitingForSeekFrame();
+        this.handleTimeupdateFromMediaControls(time);
+
+        this.seekPreview?.endScrub();
+
+        if (this.seekPreview?.isVisible()) {
+            this.startSeekPreviewSpinnerDelay();
+        }
+
+        if (this.shouldResumeAfterScrub) {
+            this.shouldResumeAfterScrub = false;
+            this.play().catch(() => {});
+        }
+    }
+
+    // 'waiting' may have fired while the preview suppressed the spinner, so restore it if still stalled
+    handleSeekPreviewHide() {
+        clearTimeout(this.seekPreviewSpinnerTimeoutId);
+
+        // Mid-seek, seekingHandler() already shows the spinner after its delay
+        if (!this.mediaEl.seeking && !this.isSeekFrameReady()) {
+            this.showBufferingSpinner();
+        } else {
+            this.hideBufferingSpinner();
+        }
+    }
+
+    /**
+     * Suppresses the spinner during an active drag or while the seek preview covers the video.
+     *
+     * @override
+     */
+    showBufferingSpinner() {
+        if (this.isScrubbing || this.seekPreview?.isVisible()) {
+            return;
+        }
+
+        super.showBufferingSpinner();
+    }
+
+    /**
+     * Keeps a visible seek preview over the resized video.
+     *
+     * @override
+     */
+    resize() {
+        super.resize();
+
+        if (this.seekPreview?.isVisible()) {
+            this.seekPreview.position();
         }
     }
 
@@ -1351,7 +1529,7 @@ class DashViewer extends VideoBaseViewer {
             autoplay: this.isAutoplayEnabled(),
             bufferedRange: this.mediaEl.buffered,
             canChangeTimeFormat: this.featureEnabled('frameStep.enabled'),
-            currentTime: this.mediaEl.currentTime,
+            currentTime: this.scrubTime ?? this.mediaEl.currentTime,
             durationTime: this.mediaEl.duration,
             experiences: this.experiences,
             filmstripInterval: this.filmstripInterval,
@@ -1364,7 +1542,7 @@ class DashViewer extends VideoBaseViewer {
             isAutoGeneratedSubtitles: !!this.autoCaptionDisplayer,
             isHDSupported: this.hdVideoId !== -1,
             isNarrowVideo: this.isNarrowVideo,
-            isPlaying: !this.mediaEl.paused,
+            isPlaying: !this.mediaEl.paused || this.shouldResumeAfterScrub,
             mediaEl: this.mediaEl,
             movePlayback: this.movePlayback,
             onAnnotationColorChange: this.handleAnnotationColorChange,
@@ -1378,6 +1556,11 @@ class DashViewer extends VideoBaseViewer {
             onPlayPause: this.handlePlayRequest,
             onQualityChange: this.setQuality,
             onRateChange: this.setRate,
+            ...(this.isSeekPreviewEnabled() && {
+                onScrub: this.handleScrub,
+                onScrubEnd: this.handleScrubEnd,
+                onScrubStart: this.handleScrubStart,
+            }),
             onSubtitleChange: this.setSubtitle,
             onSubtitlesToggle: this.toggleSubtitles,
             onTimeChange: this.handleTimeupdateFromMediaControls,
