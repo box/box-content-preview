@@ -22,34 +22,46 @@ class VideoSeekPreview {
     /** @property {HTMLCanvasElement} - Unblurred copy of the frame that keeps the blurred frame's edges solid */
     baseCanvasEl;
 
+    /** @property {HTMLCanvasElement} - Blurred filmstrip frame drawn over the video */
     canvasEl;
 
+    /** @property {number|undefined} - Animation frame that dims a newly shown preview */
     dimFrameId;
 
+    /** @property {HTMLElement} - Overlay container placed directly after the video */
     el;
 
+    /** @property {number|undefined} - Video frame callback that hides the preview once the real frame paints */
     frameCallbackId;
 
+    /** @property {number|undefined} - Animation frame that hides the preview after a paused seek */
     hideFrameId;
 
+    /** @property {number|undefined} - Fallback timeout that hides the preview if no frame callback fires */
     hideTimeoutId;
 
+    /** @property {HTMLImageElement|undefined} - Filmstrip sprite sheet */
     imageEl;
 
     /** @property {number} - Seconds between filmstrip frames */
     interval = 0;
 
+    /** @property {boolean} - Whether the filmstrip has loaded and frames can be drawn */
     isImageLoaded = false;
 
     /** @property {boolean} - Keeps the preview up while the user drags the scrubber */
     isScrubbing = false;
 
+    /** @property {HTMLVideoElement} - Video element the preview covers */
     mediaEl;
 
+    /** @property {Function|undefined} - Called when the preview starts fading away */
     onHide;
 
+    /** @property {Function|undefined} - Called when the preview starts covering the video */
     onShow;
 
+    /** @property {number|undefined} - Delay before an unbuffered seek shows the preview */
     showTimeoutId;
 
     /**
