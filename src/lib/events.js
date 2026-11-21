@@ -1,5 +1,6 @@
 // Events emitted by Viewers
 export const VIEWER_EVENT = {
+    conversionPending: 'conversionpending', // The main representation is still being converted.
     default: 'viewerevent', // The default viewer event.
     download: 'download', // Begin downloading the file.
     error: 'error', // When an error occurs.
