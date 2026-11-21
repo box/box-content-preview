@@ -85,6 +85,15 @@ class PresentationViewer extends DocBaseViewer {
      * @return {void}
      */
     setPage(pageNum) {
+        // There are no pages to show or hide until pdf.js has loaded the document
+        if (!this.pdfViewer?.pagesCount) {
+            super.setPage(pageNum);
+            if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen) {
+                this.preloader.showPreloadedPage?.(parseInt(pageNum, 10));
+            }
+            return;
+        }
+
         this.checkOverflow();
 
         // Hide all pages
