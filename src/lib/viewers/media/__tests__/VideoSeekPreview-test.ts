@@ -1,30 +1,36 @@
 import VideoSeekPreview from '../VideoSeekPreview';
 
 describe('lib/viewers/media/VideoSeekPreview', () => {
-    let containerEl;
-    let frames;
-    let mediaEl;
-    let onHide;
-    let onShow;
-    let preview;
+    let containerEl: HTMLDivElement;
+    let frames: FrameRequestCallback[];
+    let mediaEl: HTMLVideoElement;
+    let onHide: jest.Mock;
+    let onShow: jest.Mock;
+    let preview: VideoSeekPreview;
 
-    const loadFilmstrip = () => {
+    const loadFilmstrip = (): void => {
         preview.setFilmstrip('blob:http://localhost/filmstrip', 2);
-        Object.defineProperty(preview.imageEl, 'naturalWidth', { configurable: true, value: 16000 });
-        Object.defineProperty(preview.imageEl, 'naturalHeight', { configurable: true, value: 180 });
-        preview.imageEl.dispatchEvent(new Event('load'));
+        const imageEl = preview.imageEl as HTMLImageElement;
+        Object.defineProperty(imageEl, 'naturalWidth', { configurable: true, value: 16000 });
+        Object.defineProperty(imageEl, 'naturalHeight', { configurable: true, value: 180 });
+        imageEl.dispatchEvent(new Event('load'));
     };
 
-    const setBuffered = ranges => {
+    const setBuffered = (ranges: [number, number][]): void => {
         Object.defineProperty(mediaEl, 'buffered', {
             configurable: true,
-            value: { end: i => ranges[i][1], length: ranges.length, start: i => ranges[i][0] },
+            value: {
+                end: (i: number) => ranges[i][1],
+                length: ranges.length,
+                start: (i: number) => ranges[i][0],
+            },
         });
     };
 
-    const setMediaProp = (name, value) => Object.defineProperty(mediaEl, name, { configurable: true, value });
+    const setMediaProp = (name: string, value: unknown): HTMLVideoElement =>
+        Object.defineProperty(mediaEl, name, { configurable: true, value });
 
-    const seek = (currentTime, { advance = true } = {}) => {
+    const seek = (currentTime: number, { advance = true } = {}): void => {
         mediaEl.currentTime = currentTime;
         mediaEl.dispatchEvent(new Event('seeking'));
         if (advance) {
@@ -32,7 +38,7 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
         }
     };
 
-    const flushFrames = () => frames.splice(0).forEach(cb => cb());
+    const flushFrames = (): void => frames.splice(0).forEach(cb => cb(0));
 
     beforeEach(() => {
         jest.useFakeTimers();
@@ -74,7 +80,7 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
 
         test('should draw the target frame from the sprite and call onShow once', () => {
             loadFilmstrip();
-            const context = preview.canvasEl.getContext('2d');
+            const context = preview.canvasEl.getContext('2d') as CanvasRenderingContext2D;
             jest.spyOn(context, 'drawImage');
 
             seek(30);
@@ -117,9 +123,9 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
 
     describe('seeked', () => {
         test('should undim and hide once the next video frame is presented', () => {
-            let presentFrame;
+            let presentFrame: () => void = () => {};
             mediaEl.requestVideoFrameCallback = jest.fn(callback => {
-                presentFrame = callback;
+                presentFrame = () => callback(0, {} as VideoFrameCallbackMetadata);
                 return 7;
             });
             loadFilmstrip();

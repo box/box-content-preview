@@ -12,68 +12,66 @@ const HIDE_FALLBACK_MS = 100;
 // Brief delay before covering the video on a seek so disk-cached chunks resolve without flashing
 const SHOW_DELAY_MS = 80;
 
+export type Options = {
+    /** Video element to cover while seeking */
+    mediaEl: HTMLVideoElement;
+    /** Called when the preview starts fading away */
+    onHide?: () => void;
+    /** Called when the preview starts covering the video */
+    onShow?: () => void;
+};
+
 /**
  * Covers the video with the filmstrip frame for an unbuffered seek target, dims it while the segment
  * downloads, brightens it once the target is buffered, and fades it away once the video paints the
  * real frame. Replaces the stale frame and spinner the user would otherwise see. Buffered and fast
  * cached seeks are left alone.
  */
-class VideoSeekPreview {
-    /** @property {HTMLCanvasElement} - Unblurred copy of the frame that keeps the blurred frame's edges solid */
-    baseCanvasEl;
+export default class VideoSeekPreview {
+    /** Unblurred copy of the frame that keeps the blurred frame's edges solid */
+    baseCanvasEl: HTMLCanvasElement;
 
-    /** @property {HTMLCanvasElement} - Blurred filmstrip frame drawn over the video */
-    canvasEl;
+    /** Blurred filmstrip frame drawn over the video */
+    canvasEl: HTMLCanvasElement;
 
-    /** @property {number|undefined} - Animation frame that dims a newly shown preview */
-    dimFrameId;
+    /** Animation frame that dims a newly shown preview */
+    dimFrameId?: number;
 
-    /** @property {HTMLElement} - Overlay container placed directly after the video */
-    el;
+    /** Overlay container placed directly after the video */
+    el: HTMLDivElement;
 
-    /** @property {number|undefined} - Video frame callback that hides the preview once the real frame paints */
-    frameCallbackId;
+    /** Video frame callback that hides the preview once the real frame paints */
+    frameCallbackId?: number;
 
-    /** @property {number|undefined} - Animation frame that hides the preview after a paused seek */
-    hideFrameId;
+    /** Animation frame that hides the preview after a paused seek */
+    hideFrameId?: number;
 
-    /** @property {number|undefined} - Fallback timeout that hides the preview if no frame callback fires */
-    hideTimeoutId;
+    /** Fallback timeout that hides the preview if no frame callback fires */
+    hideTimeoutId?: number;
 
-    /** @property {HTMLImageElement|undefined} - Filmstrip sprite sheet */
-    imageEl;
+    /** Filmstrip sprite sheet */
+    imageEl?: HTMLImageElement;
 
-    /** @property {number} - Seconds between filmstrip frames */
+    /** Seconds between filmstrip frames */
     interval = 0;
 
-    /** @property {boolean} - Whether the filmstrip has loaded and frames can be drawn */
+    /** Whether the filmstrip has loaded and frames can be drawn */
     isImageLoaded = false;
 
-    /** @property {boolean} - Keeps the preview up while the user drags the scrubber */
+    /** Keeps the preview up while the user drags the scrubber */
     isScrubbing = false;
 
-    /** @property {HTMLVideoElement} - Video element the preview covers */
-    mediaEl;
+    /** Video element the preview covers */
+    mediaEl: HTMLVideoElement;
 
-    /** @property {Function|undefined} - Called when the preview starts fading away */
-    onHide;
+    onHide?: () => void;
 
-    /** @property {Function|undefined} - Called when the preview starts covering the video */
-    onShow;
+    onShow?: () => void;
 
-    /** @property {number|undefined} - Delay before an unbuffered seek shows the preview */
-    showTimeoutId;
+    /** Delay before an unbuffered seek shows the preview */
+    showTimeoutId?: number;
 
-    /**
-     * [constructor]
-     *
-     * @param {Object} options
-     * @param {HTMLVideoElement} options.mediaEl - Video element to cover while seeking
-     * @param {Function} [options.onHide] - Called when the preview starts fading away
-     * @param {Function} [options.onShow] - Called when the preview starts covering the video
-     * @return {VideoSeekPreview} VideoSeekPreview instance
-     */
-    constructor({ mediaEl, onHide, onShow }) {
+    constructor({ mediaEl, onHide, onShow }: Options) {
         this.mediaEl = mediaEl;
         this.onHide = onHide;
         this.onShow = onShow;
@@ -95,7 +93,7 @@ class VideoSeekPreview {
         this.mediaEl.addEventListener('canplay', this.handleMediaReady);
     }
 
-    destroy() {
+    destroy(): void {
         this.cancelPending();
         this.cancelPendingDim();
         this.mediaEl.removeEventListener('seeking', this.handleSeeking);
@@ -111,10 +109,10 @@ class VideoSeekPreview {
     }
 
     /**
-     * @param {string} url - Filmstrip URL (blob: URL, since the rep needs auth headers)
-     * @param {number} interval - Seconds between filmstrip frames
+     * @param url - Filmstrip URL (blob: URL, since the rep needs auth headers)
+     * @param interval - Seconds between filmstrip frames
      */
-    setFilmstrip(url, interval) {
+    setFilmstrip(url: string, interval: number): void {
         this.interval = interval;
         this.isImageLoaded = false;
         this.imageEl = new Image();
@@ -122,15 +120,15 @@ class VideoSeekPreview {
         this.imageEl.src = url;
     }
 
-    isVisible() {
+    isVisible(): boolean {
         return this.el.classList.contains(CLASS_IS_VISIBLE);
     }
 
     /**
-     * @param {number} time - Time in seconds
-     * @return {boolean} true if a frame is showing
+     * @param time - Time in seconds
+     * @return true if a frame is showing
      */
-    showFrame(time) {
+    showFrame(time: number): boolean {
         const wasVisible = this.isVisible();
 
         this.cancelPending();
@@ -159,13 +157,13 @@ class VideoSeekPreview {
     }
 
     // Stops seek completion from hiding the preview until endScrub
-    startScrub() {
+    startScrub(): void {
         this.isScrubbing = true;
         this.cancelPending();
     }
 
     // Call after seeking to the scrub target so the preview fades once that frame paints
-    endScrub() {
+    endScrub(): void {
         this.isScrubbing = false;
 
         if (!this.mediaEl.seeking) {
@@ -174,10 +172,9 @@ class VideoSeekPreview {
     }
 
     /**
-     * @param {Object} [options]
-     * @param {boolean} [options.immediate=false] - Skip the fade-out transition (e.g. when entering buffered video)
+     * @param options.immediate - Skip the fade-out transition (e.g. when entering buffered video)
      */
-    hide({ immediate = false } = {}) {
+    hide({ immediate = false }: { immediate?: boolean } = {}): void {
         const wasVisible = this.isVisible();
 
         this.cancelPending();
@@ -191,7 +188,7 @@ class VideoSeekPreview {
     }
 
     // Matches the overlay to the video's content box
-    position() {
+    position(): void {
         const { clientHeight, clientLeft, clientTop, clientWidth, offsetLeft, offsetTop } = this.mediaEl;
 
         Object.assign(this.el.style, {
@@ -202,13 +199,13 @@ class VideoSeekPreview {
         });
     }
 
-    handleImageLoad = () => {
+    handleImageLoad = (): void => {
         this.isImageLoaded = true;
     };
 
     // Buffered targets hide the preview immediately. A visible preview switches frames at once;
     // otherwise it waits SHOW_DELAY_MS.
-    handleSeeking = () => {
+    handleSeeking = (): void => {
         const time = this.mediaEl.currentTime;
 
         this.cancelPending();
@@ -225,7 +222,7 @@ class VideoSeekPreview {
             return;
         }
 
-        this.showTimeoutId = setTimeout(() => {
+        this.showTimeoutId = window.setTimeout(() => {
             const { currentTime } = this.mediaEl;
             if (!this.isTimeBuffered(currentTime)) {
                 this.showFrame(currentTime);
@@ -233,7 +230,7 @@ class VideoSeekPreview {
         }, SHOW_DELAY_MS);
     };
 
-    isTimeBuffered(time) {
+    isTimeBuffered(time: number): boolean {
         const { buffered } = this.mediaEl;
 
         for (let i = 0; i < buffered.length; i += 1) {
@@ -245,17 +242,21 @@ class VideoSeekPreview {
         return false;
     }
 
-    cancelPendingDim() {
+    cancelPendingDim(): void {
         if (this.dimFrameId !== undefined) {
             cancelAnimationFrame(this.dimFrameId);
             this.dimFrameId = undefined;
         }
     }
 
-    cancelPending() {
-        clearTimeout(this.showTimeoutId);
-        clearTimeout(this.hideTimeoutId);
-        cancelAnimationFrame(this.hideFrameId);
+    cancelPending(): void {
+        window.clearTimeout(this.showTimeoutId);
+        window.clearTimeout(this.hideTimeoutId);
+
+        if (this.hideFrameId !== undefined) {
+            cancelAnimationFrame(this.hideFrameId);
+            this.hideFrameId = undefined;
+        }
 
         if (this.frameCallbackId !== undefined) {
             this.mediaEl.cancelVideoFrameCallback?.(this.frameCallbackId);
@@ -264,19 +265,19 @@ class VideoSeekPreview {
     }
 
     // Undims as soon as the target is buffered, even if 'seeked' has not fired yet
-    handleMediaReady = () => {
+    handleMediaReady = (): void => {
         if (!this.isScrubbing && this.isTimeBuffered(this.mediaEl.currentTime)) {
             this.undim();
         }
     };
 
-    undim() {
+    undim(): void {
         this.cancelPendingDim();
         this.el.classList.remove(CLASS_SEEK_PREVIEW_DIMMED);
     }
 
     // 'seeked' means the frame is decoded, not necessarily painted, so wait for the next presented frame
-    handleSeeked = () => {
+    handleSeeked = (): void => {
         this.cancelPending();
 
         if (!this.isVisible() || this.isScrubbing) {
@@ -291,11 +292,11 @@ class VideoSeekPreview {
             this.frameCallbackId = this.mediaEl.requestVideoFrameCallback(() => this.hide());
         }
 
-        this.hideTimeoutId = setTimeout(() => this.hide(), HIDE_FALLBACK_MS);
+        this.hideTimeoutId = window.setTimeout(() => this.hide(), HIDE_FALLBACK_MS);
     };
 
     // Uses the same sprite layout as FilmstripV2
-    drawFrame(time) {
+    drawFrame(time: number): boolean {
         if (!this.isImageLoaded || !this.imageEl || !(this.interval > 0)) {
             return false;
         }
@@ -342,5 +343,3 @@ class VideoSeekPreview {
         return true;
     }
 }
-
-export default VideoSeekPreview;
