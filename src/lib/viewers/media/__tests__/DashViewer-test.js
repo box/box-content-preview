@@ -2674,6 +2674,28 @@ describe('lib/viewers/media/DashViewer', () => {
                 dash = null;
             });
 
+            test('should hand an active drag to a seek preview created mid-drag', async () => {
+                jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(true);
+                dash.isScrubbing = true;
+
+                dash.loadFilmStrip();
+                await flushPromises();
+
+                expect(dash.seekPreview.isScrubbing).toBe(true);
+            });
+
+            test('should reposition only a visible seek preview on resize', () => {
+                jest.spyOn(VideoBaseViewer.prototype, 'resize').mockImplementation();
+                dash.seekPreview = { ...mockPreview(), position: jest.fn() };
+
+                dash.resize();
+                expect(dash.seekPreview.position).toHaveBeenCalledTimes(1);
+
+                dash.seekPreview.isVisible.mockReturnValue(false);
+                dash.resize();
+                expect(dash.seekPreview.position).toHaveBeenCalledTimes(1);
+            });
+
             describe('spinner', () => {
                 beforeEach(() => {
                     jest.useFakeTimers();

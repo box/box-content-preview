@@ -1062,6 +1062,11 @@ class DashViewer extends VideoBaseViewer {
             onShow: () => this.handleSeekPreviewShow(),
         });
         this.seekPreview.setFilmstrip(filmstripUrl, filmstripInterval);
+
+        // The filmstrip can finish loading mid-drag, after handleScrubStart() ran without a preview
+        if (this.isScrubbing) {
+            this.seekPreview.startScrub();
+        }
     }
 
     // Brings the spinner back on top if the segment is slow, so the user can tell it is still loading
@@ -1151,6 +1156,19 @@ class DashViewer extends VideoBaseViewer {
         }
 
         super.showBufferingSpinner();
+    }
+
+    /**
+     * Keeps a visible seek preview over the resized video.
+     *
+     * @override
+     */
+    resize() {
+        super.resize();
+
+        if (this.seekPreview?.isVisible()) {
+            this.seekPreview.position();
+        }
     }
 
     /**
