@@ -582,4 +582,120 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(scrollToAnnotationStub).toBeCalledWith(mockPartialAnnotation.id);
         });
     });
+
+    describe('preload slide navigation', () => {
+        beforeEach(() => {
+            jest.spyOn(presentation, 'featureEnabled').mockImplementation(
+                feature => feature === 'docFirstPages.enabled',
+            );
+            presentation.setup();
+            presentation.pdfViewer = undefined;
+            presentation.docFirstPagesEnabled = true;
+            presentation.preloader.isWebp = true;
+            presentation.preloader.isPresentation = true;
+            presentation.preloader.numPages = 4;
+            presentation.preloader.imageDimensions = { width: 100, height: 100 };
+            presentation.preloader.retrievedPagesCount = 2;
+            presentation.preloader.wrapperEl = document.createElement('div');
+            presentation.containerEl.appendChild(presentation.preloader.wrapperEl);
+            presentation.preloader.preloadEl = document.createElement('div');
+            presentation.preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 1);
+            const slide2 = presentation.preloader.addPreloadImageToPreloaderContainer(document.createElement('img'), 2);
+            slide2.classList.add(CLASS_INVISIBLE);
+        });
+
+        test('should load controls and bind wheel and touch listeners on WebP firstRender', () => {
+            const loadUISpy = jest.spyOn(presentation, 'loadUI').mockImplementation();
+            const bindSpy = jest.spyOn(presentation, 'bindPreloadDOMListeners');
+            const wrapperAddSpy = jest.spyOn(presentation.preloader.wrapperEl, 'addEventListener');
+            presentation.hasTouch = true;
+
+            presentation.handleFirstRender();
+
+            expect(loadUISpy).toHaveBeenCalled();
+            expect(bindSpy).toHaveBeenCalled();
+            expect(wrapperAddSpy).toHaveBeenCalledWith('wheel', presentation.throttledWheelHandler);
+            expect(wrapperAddSpy).toHaveBeenCalledWith('touchstart', presentation.mobileScrollHandler);
+            expect(wrapperAddSpy).toHaveBeenCalledWith('touchmove', presentation.mobileScrollHandler);
+            expect(wrapperAddSpy).toHaveBeenCalledWith('touchend', presentation.mobileScrollHandler);
+        });
+
+        test('should unbind preload listeners on hidePreload and destroy', () => {
+            const { wrapperEl } = presentation.preloader;
+            const wrapperRemoveSpy = jest.spyOn(wrapperEl, 'removeEventListener');
+            jest.spyOn(presentation.preloader, 'cleanupPreload').mockImplementation();
+
+            presentation.bindPreloadDOMListeners();
+            presentation.hidePreload();
+
+            expect(wrapperRemoveSpy).toHaveBeenCalledWith('wheel', presentation.throttledWheelHandler);
+            expect(presentation.preloadListenersWrapperEl).toBeNull();
+
+            presentation.bindPreloadDOMListeners();
+            presentation.destroy();
+            expect(wrapperRemoveSpy).toHaveBeenCalledTimes(2);
+            expect(presentation.preloadListenersWrapperEl).toBeNull();
+            presentation = null;
+        });
+
+        test('should navigate preloaded slides via nextPage, previousPage, setPage, and arrow keys before pdfViewer exists', () => {
+            const cacheSpy = jest.spyOn(presentation, 'cachePage').mockImplementation();
+            const renderUISpy = jest.spyOn(presentation, 'renderUI').mockImplementation();
+            const sidebarSetCurrentPage = jest.fn();
+            presentation.thumbnailsSidebar = { setCurrentPage: sidebarSetCurrentPage, destroy: jest.fn() };
+
+            expect(presentation.getCurrentPage()).toBe(1);
+            expect(presentation.getPageCount()).toBe(4);
+
+            presentation.nextPage();
+
+            expect(presentation.preloader.currentPage).toBe(2);
+            expect(presentation.getCurrentPage()).toBe(2);
+            expect(cacheSpy).toHaveBeenCalledWith(2);
+            expect(sidebarSetCurrentPage).toHaveBeenCalledWith(2);
+            expect(renderUISpy).toHaveBeenCalled();
+            expect(presentation.preloader.preloadEl.querySelector('[data-preload-index="1"]')).toHaveClass(
+                CLASS_INVISIBLE,
+            );
+            expect(presentation.preloader.preloadEl.querySelector('[data-preload-index="2"]')).not.toHaveClass(
+                CLASS_INVISIBLE,
+            );
+
+            expect(presentation.onKeydown('ArrowUp')).toBe(true);
+            expect(presentation.preloader.currentPage).toBe(1);
+        });
+
+        test('should return false without throwing from checkOverflow during preload when no PDF page exists', () => {
+            presentation.docEl.classList.add('overflow-x', 'overflow-y');
+
+            expect(presentation.checkOverflow()).toBe(false);
+            expect(presentation.docEl).not.toHaveClass('overflow-x');
+            expect(presentation.docEl).not.toHaveClass('overflow-y');
+        });
+
+        test('should hand off to the cached slide when pagesinitHandler runs after preload navigation', () => {
+            jest.spyOn(presentation, 'getCachedPage').mockReturnValue(2);
+            const setPageSpy = jest.spyOn(presentation, 'setPage');
+            const page1 = document.createElement('div');
+            page1.setAttribute('data-page-number', '1');
+            page1.className = 'page';
+            const page2 = document.createElement('div');
+            page2.setAttribute('data-page-number', '2');
+            page2.className = 'page';
+            presentation.docEl.querySelector('.pdfViewer').append(page1, page2);
+            presentation.pdfViewer = {
+                currentPageNumber: 1,
+                pagesCount: 2,
+                update: jest.fn(),
+                cleanup: jest.fn(),
+                setDocument: jest.fn(),
+            };
+
+            presentation.pagesinitHandler();
+
+            expect(setPageSpy).toHaveBeenCalledWith(2);
+            expect(page1).toHaveClass(CLASS_INVISIBLE);
+            expect(page2).not.toHaveClass(CLASS_INVISIBLE);
+        });
+    });
 });

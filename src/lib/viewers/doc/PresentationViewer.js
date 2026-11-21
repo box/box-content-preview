@@ -23,6 +23,9 @@ class PresentationViewer extends DocBaseViewer {
 
     docFirstPagesEnabled;
 
+    /** @property {HTMLElement|null} - Preload wrapper element with wheel/touch listeners */
+    preloadListenersWrapperEl = null;
+
     constructor(options) {
         super(options);
 
@@ -66,6 +69,11 @@ class PresentationViewer extends DocBaseViewer {
      */
     handleFirstRender() {
         this.emitFirstRenderMetric();
+
+        if (this.preloader?.isWebp) {
+            this.loadUI();
+            this.bindPreloadDOMListeners();
+        }
     }
 
     /**
@@ -73,8 +81,18 @@ class PresentationViewer extends DocBaseViewer {
      */
 
     destroy() {
+        this.unbindPreloadDOMListeners();
         super.destroy();
         this.preloader.removeAllListeners('preload');
+        this.preloader.removeAllListeners('firstRender');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    hidePreload() {
+        this.unbindPreloadDOMListeners();
+        super.hidePreload();
     }
 
     /**
@@ -85,6 +103,11 @@ class PresentationViewer extends DocBaseViewer {
      * @return {void}
      */
     setPage(pageNum) {
+        if (!this.pdfViewer || this.pdfViewer.pagesCount === 0) {
+            super.setPage(pageNum);
+            return;
+        }
+
         this.checkOverflow();
 
         // Hide all pages
@@ -97,7 +120,9 @@ class PresentationViewer extends DocBaseViewer {
 
         // Show page we are navigating to
         const pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
-        pageEl.classList.remove(CLASS_INVISIBLE);
+        if (pageEl) {
+            pageEl.classList.remove(CLASS_INVISIBLE);
+        }
 
         // Force page to be rendered - this is needed because the presentation
         // DOM layout can trick pdf.js into thinking that this page is not visible
@@ -136,7 +161,12 @@ class PresentationViewer extends DocBaseViewer {
     checkOverflow() {
         const doc = this.docEl;
         // Getting the page element to compare to the doc height/width
-        const page = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        const page = this.docEl.querySelector(`[data-page-number="${this.getCurrentPage()}"]`);
+        if (!page) {
+            doc.classList.remove('overflow-x');
+            doc.classList.remove('overflow-y');
+            return false;
+        }
         const hasXOverflow = page.clientWidth > doc.clientWidth;
         const hasYOverflow = page.clientHeight - PADDING_OFFSET > doc.clientHeight;
 
@@ -222,6 +252,49 @@ class PresentationViewer extends DocBaseViewer {
             this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
         }
+    }
+
+    /**
+     * Binds wheel and touch navigation listeners to the preload wrapper while WebP slides are shown.
+     *
+     * @return {void}
+     * @protected
+     */
+    bindPreloadDOMListeners() {
+        const wrapperEl = this.preloader?.wrapperEl;
+        if (!wrapperEl || this.preloadListenersWrapperEl === wrapperEl) {
+            return;
+        }
+
+        this.unbindPreloadDOMListeners();
+        this.preloadListenersWrapperEl = wrapperEl;
+        wrapperEl.addEventListener('wheel', this.throttledWheelHandler);
+        if (this.hasTouch) {
+            wrapperEl.addEventListener('touchstart', this.mobileScrollHandler);
+            wrapperEl.addEventListener('touchmove', this.mobileScrollHandler);
+            wrapperEl.addEventListener('touchend', this.mobileScrollHandler);
+        }
+    }
+
+    /**
+     * Unbinds wheel and touch navigation listeners from the preload wrapper.
+     *
+     * @return {void}
+     * @protected
+     */
+    unbindPreloadDOMListeners() {
+        const wrapperEl = this.preloadListenersWrapperEl;
+        if (!wrapperEl) {
+            return;
+        }
+
+        wrapperEl.removeEventListener('wheel', this.throttledWheelHandler);
+        if (this.hasTouch) {
+            wrapperEl.removeEventListener('touchstart', this.mobileScrollHandler);
+            wrapperEl.removeEventListener('touchmove', this.mobileScrollHandler);
+            wrapperEl.removeEventListener('touchend', this.mobileScrollHandler);
+        }
+        this.preloadListenersWrapperEl = null;
     }
 
     /**

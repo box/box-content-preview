@@ -506,5 +506,14 @@ describe('DocControlsV2', () => {
                 expect(screen.getByRole('button', { name: __('zoom_in') })).toBeInTheDocument();
             });
         });
+
+        test('should render page controls without zoom controls when onZoomIn and onZoomOut are omitted', () => {
+            getWrapper({ onZoomIn: undefined, onZoomOut: undefined });
+
+            expect(screen.getByRole('button', { name: __('previous_page') })).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: __('next_page') })).toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('zoom_in') })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: __('zoom_out') })).not.toBeInTheDocument();
+        });
     });
 });

@@ -371,7 +371,7 @@ class ThumbnailsSidebar {
         if (parsedPageNumber >= 1 && this.preloader?.thumbnailsOpen && !this.pdfViewer?.pagesCount) {
             this.currentPage = parsedPageNumber;
             this.applyCurrentPageSelection();
-        } else if (parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
+        } else if (this.pdfViewer && parsedPageNumber >= 1 && parsedPageNumber <= this.pdfViewer.pagesCount) {
             this.currentPage = parsedPageNumber;
             this.applyCurrentPageSelection();
             this.virtualScroller.scrollIntoView(parsedPageNumber - 1);

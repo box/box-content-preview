@@ -20,8 +20,10 @@ export type Props = AnnotationsControlsProps &
     PageControlsProps &
     Partial<RotateControlProps> &
     ThumbnailsToggleProps &
-    ZoomControlsProps & {
+    Omit<ZoomControlsProps, 'onZoomIn' | 'onZoomOut'> & {
         hasGalleryZoom?: boolean;
+        onZoomIn?: () => void;
+        onZoomOut?: () => void;
     };
 
 export default function DocControls({
@@ -74,7 +76,7 @@ export default function DocControls({
                         </ControlsBarGroup>
                     </>
                 )}
-                {(!isGalleryOpen || hasGalleryZoom) && (
+                {(!isGalleryOpen || hasGalleryZoom) && onZoomIn && onZoomOut && (
                     <ControlsBarGroup isDistinct>
                         <ZoomControls
                             maxScale={maxScale}
