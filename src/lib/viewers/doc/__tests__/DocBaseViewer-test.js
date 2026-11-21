@@ -3912,6 +3912,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.setPage).toBeCalledWith(START_PAGE_NUM);
             });
 
+            test('should open the page selected from a thumbnail before the pdf loaded instead of the start page', () => {
+                jest.spyOn(docBase, 'cachePage').mockImplementation();
+                jest.spyOn(document, 'querySelector').mockReturnValue(null);
+                docBase.startPageNum = 1;
+                docBase.pdfViewer = undefined;
+                docBase.preloader = { thumbnailsOpen: true };
+                docBase.thumbnailsSidebar = { destroy: jest.fn(), setCurrentPage: jest.fn() };
+
+                DocBaseViewer.prototype.setPage.call(docBase, 3);
+                docBase.pdfViewer = { currentScale: 1, pagesCount: 5 };
+                docBase.pagesinitHandler();
+
+                expect(stubs.setPage).toBeCalledWith(3);
+                expect(docBase.pageSelectedBeforeLoad).toBeUndefined();
+            });
+
             test('should set the current page and file length', () => {
                 docBase.pdfViewer = {
                     currentScale: 'unknown',

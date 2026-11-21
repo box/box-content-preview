@@ -168,6 +168,9 @@ class DocBaseViewer extends BaseViewer {
     /** @property {boolean} - Whether preloader images have been prefetched */
     preloaderImagesPrefetched = false;
 
+    /** @property {number} - Page selected from a thumbnail before pdf.js had any pages */
+    pageSelectedBeforeLoad;
+
     /**
      * @inheritdoc
      */
@@ -914,6 +917,7 @@ class DocBaseViewer extends BaseViewer {
         if (!this.pdfViewer?.pagesCount) {
             if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && parsedPageNumber >= 1) {
                 this.cachePage(parsedPageNumber);
+                this.pageSelectedBeforeLoad = parsedPageNumber;
                 const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
                 el?.scrollIntoView({ behavior: 'instant', block: 'start' });
                 this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
@@ -1811,8 +1815,9 @@ class DocBaseViewer extends BaseViewer {
 
         const { pagesCount, currentScale } = this.pdfViewer;
 
-        // Set page to the user-defined page, previously opened page, or first page
-        const startPage = this.startPageNum || this.getCachedPage();
+        // Set page to the page selected before the pdf loaded, the user-defined page, previously opened page, or first page
+        const startPage = this.pageSelectedBeforeLoad || this.startPageNum || this.getCachedPage();
+        this.pageSelectedBeforeLoad = undefined;
         this.setPage(startPage);
 
         // Make document scrollable after pages are set up so scrollbars don't mess with autoscaling
