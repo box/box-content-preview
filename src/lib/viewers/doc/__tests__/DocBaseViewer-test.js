@@ -5627,9 +5627,28 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 const renderNextThumbnailImage = jest.fn();
                 docBaseObj.thumbnailsSidebar = {
                     renderNextThumbnailImage,
+                    setPdfViewer: jest.fn(),
                 };
                 docBaseObj.initThumbnails();
                 expect(renderNextThumbnailImage).toHaveBeenCalled();
+            });
+
+            test('should give the pdf.js viewer to a sidebar the preloader created before the viewer existed', () => {
+                jest.spyOn(ThumbnailsSidebar.prototype, 'init').mockImplementation();
+                const { pdfViewer } = docBaseObj;
+                docBaseObj.pdfViewer = undefined;
+                docBaseObj.initThumbnails();
+
+                const renderNextThumbnailImage = jest
+                    .spyOn(docBaseObj.thumbnailsSidebar, 'renderNextThumbnailImage')
+                    .mockImplementation(() => {
+                        expect(docBaseObj.thumbnailsSidebar.pdfViewer).toBe(pdfViewer);
+                    });
+                docBaseObj.pdfViewer = pdfViewer;
+                docBaseObj.initThumbnails();
+
+                expect(renderNextThumbnailImage).toHaveBeenCalled();
+                expect(docBaseObj.thumbnailsSidebar.thumbnail.pdfViewer).toBe(pdfViewer);
             });
 
             test('should create a new ThumbnailSidebar if it is null and initialize it', () => {

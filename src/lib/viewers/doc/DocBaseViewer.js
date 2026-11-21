@@ -1855,6 +1855,7 @@ class DocBaseViewer extends BaseViewer {
             });
         } else {
             // if preloader has finished and the document has loaded start rendering the remaining thumbnails
+            this.thumbnailsSidebar.setPdfViewer(this.pdfViewer);
             this.thumbnailsSidebar.renderNextThumbnailImage();
         }
     }
