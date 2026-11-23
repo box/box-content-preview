@@ -1,13 +1,13 @@
 import { ClusterData, CommentMarker } from '../types';
-import { percent } from '../../utils';
+import { getPercent } from '../../utils';
 
 /** Max pixel distance between adjacent markers (sorted by time) for them to be grouped into a single cluster. */
 const CLUSTER_THRESHOLD_PX = 2;
 
 /** Converts a group of markers into a ClusterData object with computed positions and metadata. */
 function finalizeCluster(group: CommentMarker[], durationValue: number): ClusterData {
-    const leftPercent = percent(group[0].time, durationValue);
-    const rightPercent = percent(group[group.length - 1].time, durationValue);
+    const leftPercent = getPercent(group[0].time, durationValue);
+    const rightPercent = getPercent(group[group.length - 1].time, durationValue);
     const isSinglePoint = leftPercent === rightPercent;
 
     return {

@@ -21,6 +21,8 @@ import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import VideoBaseViewer from './VideoBaseViewer';
 import VideoSeekPreview from './VideoSeekPreview';
+import { isTimeBuffered } from '../controls/media/utils';
+import { clearPrefetchedSegments, prefetchSegmentsAt } from './DashSegmentPrefetcher';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -38,6 +40,8 @@ const DEFAULT_VIDEO_HEIGHT_PX = 480;
 const SHAKA_CODE_ERROR_RECOVERABLE = 1;
 const VIDEO_SEEK_IMPROVEMENTS_ENABLED = 'videoSeekImprovements.enabled';
 const SEEK_PREVIEW_SPINNER_DELAY_MS = 1000;
+// Debounce so a moving pointer prefetches only where it stops
+const PREFETCH_DELAY_MS = 100;
 
 class DashViewer extends VideoBaseViewer {
     /** @property {Object} - shakaExtern.TextDisplayer that displays auto-generated captions, if available */
@@ -66,6 +70,9 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {number|undefined} - Pending timeout that adds the spinner to a slow seek preview */
     seekPreviewSpinnerTimeoutId;
+
+    /** @property {number|undefined} - Pending hover or scrub prefetch */
+    prefetchTimeoutId;
 
     /** @property {number|undefined} - Scrub time to show in the controls while the preview covers an unbuffered target */
     scrubTime;
@@ -105,6 +112,7 @@ class DashViewer extends VideoBaseViewer {
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.requestFilter = this.requestFilter.bind(this);
         this.restartPlayback = this.restartPlayback.bind(this);
+        this.schedulePrefetchAt = this.schedulePrefetchAt.bind(this);
         this.setAudioTrack = this.setAudioTrack.bind(this);
         this.setQuality = this.setQuality.bind(this);
         this.setSubtitle = this.setSubtitle.bind(this);
@@ -159,6 +167,8 @@ class DashViewer extends VideoBaseViewer {
         }
 
         clearTimeout(this.seekPreviewSpinnerTimeoutId);
+        clearTimeout(this.prefetchTimeoutId);
+        clearPrefetchedSegments();
 
         if (this.seekPreview) {
             this.seekPreview.destroy();
@@ -1104,16 +1114,44 @@ class DashViewer extends VideoBaseViewer {
             this.seekPreview.hide({ immediate: true });
         } else if (this.seekPreview?.showFrame(time)) {
             this.scrubTime = time;
+            this.schedulePrefetchAt(time);
             this.renderUI();
             return;
         }
 
+        clearTimeout(this.prefetchTimeoutId);
         this.scrubTime = undefined;
         this.handleTimeupdateFromMediaControls(time);
     }
 
+    /**
+     * Prefetches the unbuffered segment at a time so a seek there starts sooner.
+     *
+     * @param {number|null} time - Time under the pointer, or null once it leaves the scrubber
+     * @return {void}
+     */
+    schedulePrefetchAt(time) {
+        // A drag keeps going when the pointer leaves the scrubber, so its prefetch should too
+        if (time === null && this.isScrubbing) {
+            return;
+        }
+
+        clearTimeout(this.prefetchTimeoutId);
+
+        if (time === null || !this.player) {
+            return;
+        }
+
+        this.prefetchTimeoutId = setTimeout(() => {
+            if (this.player && !isTimeBuffered(this.mediaEl.buffered, time)) {
+                prefetchSegmentsAt(this.player, time);
+            }
+        }, PREFETCH_DELAY_MS);
+    }
+
     handleScrubEnd(time) {
         this.isScrubbing = false;
+        clearTimeout(this.prefetchTimeoutId);
         this.scrubTime = undefined;
         this.stopWaitingForSeekFrame();
         this.handleTimeupdateFromMediaControls(time);
@@ -1554,6 +1592,7 @@ class DashViewer extends VideoBaseViewer {
             onQualityChange: this.setQuality,
             onRateChange: this.setRate,
             ...(this.isSeekPreviewEnabled() && {
+                onHoverTimeChange: this.schedulePrefetchAt,
                 onScrub: this.handleScrub,
                 onScrubEnd: this.handleScrubEnd,
                 onScrubStart: this.handleScrubStart,

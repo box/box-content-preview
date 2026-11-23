@@ -1,4 +1,5 @@
 import { CLASS_IS_VISIBLE } from '../../constants';
+import { isTimeBuffered } from '../controls/media/utils';
 
 const CLASS_SEEK_PREVIEW = 'bp-media-seek-preview';
 const CLASS_SEEK_PREVIEW_DIMMED = 'bp-is-dimmed';
@@ -236,15 +237,7 @@ export default class VideoSeekPreview {
     };
 
     isTimeBuffered(time: number): boolean {
-        const { buffered } = this.mediaEl;
-
-        for (let i = 0; i < buffered.length; i += 1) {
-            if (time >= buffered.start(i) && time < buffered.end(i)) {
-                return true;
-            }
-        }
-
-        return false;
+        return isTimeBuffered(this.mediaEl.buffered, time);
     }
 
     cancelPendingDim(): void {

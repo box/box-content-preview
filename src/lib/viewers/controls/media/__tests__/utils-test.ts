@@ -1,8 +1,9 @@
 import React from 'react';
 import {
     getBufferedTrackStops,
-    round,
-    percent,
+    getPercent,
+    isTimeBuffered,
+    roundToFourDecimals,
     stopActivationKeyPropagation,
     stopMenuTriggerKeyPropagation,
 } from '../utils';
@@ -39,35 +40,54 @@ describe('utils', () => {
         });
     });
 
-    describe('round', () => {
-        test('should round to 4 decimal places', () => {
-            expect(round(1.23456789)).toBe(1.2346);
-        });
+    describe('isTimeBuffered', () => {
+        const bufferedRange: TimeRanges = {
+            end: (index: number) => [10, 40][index],
+            length: 2,
+            start: (index: number) => [0, 20][index],
+        };
 
-        test('should not add unnecessary decimals', () => {
-            expect(round(5)).toBe(5);
-        });
-
-        test('should handle 0', () => {
-            expect(round(0)).toBe(0);
+        test.each([
+            [0, true],
+            [9.9, true],
+            [10, false],
+            [15, false],
+            [20, true],
+            [40, false],
+        ])('at %s should return %s', (time, expected) => {
+            expect(isTimeBuffered(bufferedRange, time)).toBe(expected);
         });
     });
 
-    describe('percent', () => {
+    describe('roundToFourDecimals', () => {
+        test('should round to 4 decimal places', () => {
+            expect(roundToFourDecimals(1.23456789)).toBe(1.2346);
+        });
+
+        test('should not add unnecessary decimals', () => {
+            expect(roundToFourDecimals(5)).toBe(5);
+        });
+
+        test('should handle 0', () => {
+            expect(roundToFourDecimals(0)).toBe(0);
+        });
+    });
+
+    describe('getPercent', () => {
         test('should calculate percentage correctly', () => {
-            expect(percent(10, 60)).toBeCloseTo(16.6667, 4);
+            expect(getPercent(10, 60)).toBeCloseTo(16.6667, 4);
         });
 
         test('should return 100 for equal values', () => {
-            expect(percent(60, 60)).toBe(100);
+            expect(getPercent(60, 60)).toBe(100);
         });
 
         test('should return 50 for half', () => {
-            expect(percent(30, 60)).toBe(50);
+            expect(getPercent(30, 60)).toBe(50);
         });
 
         test('should return 0 for zero numerator', () => {
-            expect(percent(0, 60)).toBe(0);
+            expect(getPercent(0, 60)).toBe(0);
         });
     });
 

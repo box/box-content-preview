@@ -116,6 +116,16 @@ describe('TimeControlsV2', () => {
             expect(onTimeChange).toHaveBeenCalledWith(15);
             expect(onScrub).not.toHaveBeenCalled();
         });
+
+        test('should report the hovered time and clear it when the pointer leaves', () => {
+            const onHoverTimeChange = jest.fn();
+            render(<TimeControlsV2 {...defaultProps} onHoverTimeChange={onHoverTimeChange} />);
+
+            act(() => getSliderProps().onMove(12, 100, 600));
+            act(() => getSliderProps().onMouseOut());
+
+            expect(onHoverTimeChange.mock.calls).toEqual([[12], [null]]);
+        });
     });
 
     describe('comment markers', () => {
