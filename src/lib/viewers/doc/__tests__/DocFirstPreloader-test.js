@@ -90,6 +90,41 @@ describe('/lib/viewers/doc/DocFirstPreloader', () => {
         });
     });
 
+    describe('showPreloadedPage()', () => {
+        let firstPageImage;
+
+        beforeEach(() => {
+            firstPageImage = document.createElement('img');
+            firstPageImage.src = 'blob:page-1';
+            preloader.preloadEl.appendChild(preloader.buildPreloaderImagePlaceHolder(firstPageImage));
+            preloader.preloadedImages = { 1: 'blob:page-1', 3: 'blob:page-3' };
+            preloader.isPresentation = true;
+        });
+
+        it('should show the preloaded image of the page in place of the first page', () => {
+            expect(preloader.showPreloadedPage(3)).toBe(true);
+            expect(firstPageImage.src).toBe('blob:page-3');
+        });
+
+        it('should keep the current image if the page was not preloaded', () => {
+            expect(preloader.showPreloadedPage(9)).toBe(false);
+            expect(firstPageImage.src).toBe('blob:page-1');
+        });
+
+        it('should not change documents, which show every preloaded page', () => {
+            preloader.isPresentation = false;
+
+            expect(preloader.showPreloadedPage(3)).toBe(false);
+            expect(firstPageImage.src).toBe('blob:page-1');
+        });
+
+        it('should do nothing once the preload has been cleaned up', () => {
+            preloader.preloadEl = undefined;
+
+            expect(preloader.showPreloadedPage(3)).toBe(false);
+        });
+    });
+
     describe('loadImage()', () => {
         it('should resolve with an image element when the image loads successfully', async () => {
             const mockSrc = 'mock-image-src';

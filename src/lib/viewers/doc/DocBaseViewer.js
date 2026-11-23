@@ -168,6 +168,9 @@ class DocBaseViewer extends BaseViewer {
     /** @property {boolean} - Whether preloader images have been prefetched */
     preloaderImagesPrefetched = false;
 
+    /** @property {number} - Page selected from a thumbnail before pdf.js had any pages */
+    pageSelectedBeforeLoad;
+
     /**
      * @inheritdoc
      */
@@ -909,14 +912,20 @@ class DocBaseViewer extends BaseViewer {
      */
     setPage(pageNumber) {
         const parsedPageNumber = parseInt(pageNumber, 10);
-        // if the preloader has opened the thumbnails and the pdf has not finished loading go to the doc first page
-        // for that thumbnail
-        if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && this.pdfViewer.pagesCount === 0) {
-            this.cachePage(parsedPageNumber);
-            const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
-            el.scrollIntoView({ behavior: 'instant', block: 'start' });
-            this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
-        } else if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
+        // pdf.js has no pages until the pdf has loaded, and no viewer at all while the representation is converting.
+        // A thumbnail selected before then is cached so pagesinit opens it.
+        if (!this.pdfViewer?.pagesCount) {
+            if (this.thumbnailsSidebar && this.preloader?.thumbnailsOpen && parsedPageNumber >= 1) {
+                this.cachePage(parsedPageNumber);
+                this.pageSelectedBeforeLoad = parsedPageNumber;
+                const el = document.querySelector(`[data-preload-index="${parsedPageNumber}"]`);
+                el?.scrollIntoView({ behavior: 'instant', block: 'start' });
+                this.thumbnailsSidebar.setCurrentPage(parsedPageNumber);
+            }
+            return;
+        }
+
+        if (!parsedPageNumber || parsedPageNumber < 1 || parsedPageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
@@ -1806,8 +1815,9 @@ class DocBaseViewer extends BaseViewer {
 
         const { pagesCount, currentScale } = this.pdfViewer;
 
-        // Set page to the user-defined page, previously opened page, or first page
-        const startPage = this.startPageNum || this.getCachedPage();
+        // Set page to the page selected before the pdf loaded, the user-defined page, previously opened page, or first page
+        const startPage = this.pageSelectedBeforeLoad || this.startPageNum || this.getCachedPage();
+        this.pageSelectedBeforeLoad = undefined;
         this.setPage(startPage);
 
         // Make document scrollable after pages are set up so scrollbars don't mess with autoscaling
@@ -1855,6 +1865,7 @@ class DocBaseViewer extends BaseViewer {
             });
         } else {
             // if preloader has finished and the document has loaded start rendering the remaining thumbnails
+            this.thumbnailsSidebar.setPdfViewer(this.pdfViewer);
             this.thumbnailsSidebar.renderNextThumbnailImage();
         }
     }

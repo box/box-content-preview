@@ -153,6 +153,24 @@ class DocFirstPreloader extends EventEmitter {
         return placeHolder;
     }
 
+    /**
+     * Shows the preloaded image of a page in place of the first page. A presentation preload only shows one
+     * page, so this is how a thumbnail selection shows up before pdf.js has loaded the document.
+     *
+     * @param {number} pageNum - Page number
+     * @return {boolean} Whether the page's preloaded image is now shown
+     */
+    showPreloadedPage(pageNum) {
+        const src = this.preloadedImages?.[pageNum];
+        const img = this.preloadEl?.querySelector(`.${CLASS_DOC_FIRST_IMAGE}`);
+        if (!this.isPresentation || !src || !img) {
+            return false;
+        }
+
+        img.src = src;
+        return true;
+    }
+
     async loadImage(src) {
         return new Promise((resolve, reject) => {
             const img = new Image();

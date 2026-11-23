@@ -136,6 +136,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         beforeEach(() => {
             jest.spyOn(presentation, 'checkOverflow').mockImplementation();
+            presentation.pdfViewer.pagesCount = 3;
 
             page1 = document.createElement('div');
             page1.setAttribute('data-page-number', '1');
@@ -176,6 +177,55 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             presentation.setPage(2);
 
             expect(page2).not.toHaveClass(CLASS_INVISIBLE);
+        });
+
+        test.each`
+            name                                      | pdfViewer
+            ${'the pdf.js viewer does not exist yet'} | ${undefined}
+            ${'pdf.js has not loaded any pages yet'}  | ${{ currentPageNumber: 0, pagesCount: 0 }}
+        `('should leave the pages alone and defer to the base viewer if $name', ({ pdfViewer }) => {
+            const baseSetPage = jest.spyOn(DocBaseViewer.prototype, 'setPage').mockImplementation();
+            presentation.pdfViewer = pdfViewer;
+
+            expect(() => presentation.setPage(2)).not.toThrow();
+
+            expect(presentation.checkOverflow).not.toBeCalled();
+            expect(baseSetPage).toBeCalledWith(2);
+            expect(page1).not.toHaveClass(CLASS_INVISIBLE);
+            expect(page3).not.toHaveClass(CLASS_INVISIBLE);
+            baseSetPage.mockRestore();
+        });
+
+        test('should show the preloaded slide when the preloader has opened the thumbnails', () => {
+            const baseSetPage = jest.spyOn(DocBaseViewer.prototype, 'setPage').mockImplementation();
+            presentation.pdfViewer = undefined;
+            presentation.thumbnailsSidebar = { destroy: jest.fn() };
+            presentation.preloader = {
+                removeAllListeners: jest.fn(),
+                showPreloadedPage: jest.fn(),
+                thumbnailsOpen: true,
+            };
+
+            presentation.setPage('3');
+
+            expect(presentation.preloader.showPreloadedPage).toBeCalledWith(3);
+            baseSetPage.mockRestore();
+        });
+
+        test('should not show a preloaded slide when the preloader has not opened the thumbnails', () => {
+            const baseSetPage = jest.spyOn(DocBaseViewer.prototype, 'setPage').mockImplementation();
+            presentation.pdfViewer = undefined;
+            presentation.thumbnailsSidebar = { destroy: jest.fn() };
+            presentation.preloader = {
+                removeAllListeners: jest.fn(),
+                showPreloadedPage: jest.fn(),
+                thumbnailsOpen: false,
+            };
+
+            presentation.setPage(3);
+
+            expect(presentation.preloader.showPreloadedPage).not.toBeCalled();
+            baseSetPage.mockRestore();
         });
     });
 

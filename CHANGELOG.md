@@ -1,3 +1,12 @@
+## 3.144.0 (2026-11-21)
+
+* fix(thumbnails): allow thumbnail navigation before the pdf loads (#1976) ([394d299](https://github.com/box/box-content-preview/commit/394d299)), closes [#1976](https://github.com/box/box-content-preview/issues/1976)
+* feat(viewers): emit conversionpending (PREVIEW-2579) (#1977) ([5102d86](https://github.com/box/box-content-preview/commit/5102d86)), closes [#1977](https://github.com/box/box-content-preview/issues/1977)
+
+## 3.143.0 (2026-11-21)
+
+* fix(thumbnails): render pages past doc first once pdf.js loads (#1975) ([d1d6df0](https://github.com/box/box-content-preview/commit/d1d6df0)), closes [#1975](https://github.com/box/box-content-preview/issues/1975)
+
 ## 3.142.0 (2026-11-20)
 
 * fix(comparison): close button returns to the current version (#1970) ([3958c6c](https://github.com/box/box-content-preview/commit/3958c6c)), closes [#1970](https://github.com/box/box-content-preview/issues/1970)
