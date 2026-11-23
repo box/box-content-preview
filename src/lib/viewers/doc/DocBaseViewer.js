@@ -349,6 +349,15 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
+        if (this.ocrSwapLoadingTask) {
+            try {
+                this.ocrSwapLoadingTask.destroy();
+            } catch (e) {
+                // Ignore these errors
+            }
+            this.ocrSwapLoadingTask = null;
+        }
+
         // Clean up and detach the PDF.js document so retained viewer instances
         // do not keep page views and document resources alive.
         if (this.pdfViewer) {
@@ -856,33 +865,42 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        const { representation } = this.options;
+        const { file, representation } = this.options;
         if (!representation || representation.representation === 'ocr_pdf') {
             return;
         }
 
-        const page = this.pdfViewer.currentPageNumber;
-        const scale = this.pdfViewer.currentScaleValue;
-        const rotation = this.rotationAngle;
-
-        const previousRepresentation = representation;
-        const previousPdfUrl = this.pdfUrl;
         const previousLoadingTask = this.pdfLoadingTask;
-
         const pdfUrl = this.createContentUrlV2(ocrPdfRep.content.url_template);
-        this.options.representation = ocrPdfRep;
-        this.pdfUrl = pdfUrl;
 
         const swapLoadingTask = this.pdfjsLib.getDocument(this.getPdfDocConfig(pdfUrl));
+        this.ocrSwapLoadingTask = swapLoadingTask;
 
         swapLoadingTask.promise
             .then(doc => {
+                if (EXTENSIONS_WITH_OPERATION_LIMIT.includes(file.extension)) {
+                    return checkPdfOperationLimit(doc).then(hasTooManyOperations => {
+                        if (hasTooManyOperations) {
+                            throw new Error(MAX_OPERATIONS_ERROR_MESSAGE);
+                        }
+                        return doc;
+                    });
+                }
+                return doc;
+            })
+            .then(doc => {
+                this.ocrSwapLoadingTask = null;
+
                 if (this.isDestroyed()) {
                     swapLoadingTask.destroy();
                     return;
                 }
 
                 limitMarkedContentNesting(doc);
+
+                const page = this.pdfViewer.currentPageNumber;
+                const scale = this.pdfViewer.currentScaleValue;
+                const rotation = this.rotationAngle;
 
                 const restoreViewState = () => {
                     this.pdfEventBus.off('pagesinit', restoreViewState);
@@ -894,6 +912,8 @@ class DocBaseViewer extends BaseViewer {
                 };
                 this.pdfEventBus.on('pagesinit', restoreViewState);
 
+                this.options.representation = ocrPdfRep;
+                this.pdfUrl = pdfUrl;
                 this.pdfLoadingTask = swapLoadingTask;
                 this.pdfLinkService.setDocument(doc, pdfUrl);
                 this.pdfViewer.setDocument(doc);
@@ -908,9 +928,7 @@ class DocBaseViewer extends BaseViewer {
                 }
             })
             .catch(() => {
-                this.options.representation = previousRepresentation;
-                this.pdfUrl = previousPdfUrl;
-                this.pdfLoadingTask = previousLoadingTask;
+                this.ocrSwapLoadingTask = null;
                 swapLoadingTask.destroy();
             });
     }

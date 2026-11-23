@@ -452,6 +452,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfLoadingTask.destroy).toBeCalled();
             });
 
+            test('should cancel a pending ocr_pdf swap loading task', () => {
+                docBase.ocrSwapLoadingTask = {
+                    destroy: jest.fn(),
+                };
+                const { ocrSwapLoadingTask } = docBase;
+
+                docBase.destroy();
+
+                expect(ocrSwapLoadingTask.destroy).toBeCalled();
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
             test('should clean up the viewer', () => {
                 docBase.pdfViewer = {
                     cleanup: jest.fn(),
@@ -1679,6 +1691,93 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(swapLoadingTask.destroy).toBeCalled();
                 expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+            });
+
+            test('should keep the fallback representation active while the ocr_pdf loads', () => {
+                const previousRep = docBase.options.representation;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(docBase.ocrSwapLoadingTask).toBe(swapLoadingTask);
+            });
+
+            test('should capture the view state when the document attaches, not when the swap starts', async () => {
+                const doc = { getPage: jest.fn() };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+
+                docBase.pdfViewer.currentPageNumber = 7;
+                docBase.pdfViewer.currentScaleValue = '2';
+                docBase.rotationAngle = 180;
+
+                resolveDoc(doc);
+                await flush();
+
+                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(
+                    ([event]) => event === 'pagesinit',
+                );
+                restoreViewState();
+
+                expect(docBase.rotationAngle).toBe(180);
+                expect(docBase.pdfViewer.pagesRotation).toBe(180);
+                expect(docBase.pdfViewer.currentScaleValue).toBe('2');
+                expect(docBase.setPage).toBeCalledWith(7);
+            });
+
+            test('should clear the pending swap task on success', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn() });
+                await flush();
+
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
+            test('should clear the pending swap task on failure', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                rejectDoc(new Error('load failed'));
+                await flush();
+
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
+            test('should keep the fallback and not swap when the ocr_pdf exceeds the operation limit', async () => {
+                docBase.options.file = { id: '0', extension: 'xlsx' };
+                const previousRep = docBase.options.representation;
+                const doc = {
+                    numPages: 1,
+                    getPage: jest.fn().mockResolvedValue({
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320001) }),
+                    }),
+                };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
+            test('should swap in an ocr_pdf within the operation limit for a limited extension', async () => {
+                docBase.options.file = { id: '0', extension: 'xlsx' };
+                const doc = {
+                    numPages: 1,
+                    getPage: jest.fn().mockResolvedValue({
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(10) }),
+                    }),
+                };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.pdfViewer.setDocument).toBeCalledWith(doc);
+                expect(docBase.options.representation).toBe(ocrPdfRep);
             });
         });
 
