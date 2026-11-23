@@ -247,6 +247,46 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.swapInFullImage).toHaveBeenCalledWith(fullImage);
         });
 
+        test('should revoke the image rep if destroyed while waiting for the viewer to load', async () => {
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            jest.spyOn(image, 'fetchDecodedImage')
+                .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
+                .mockResolvedValueOnce({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            jest.spyOn(image, 'whenLoaded').mockReturnValue(new Promise(() => {}));
+            jest.spyOn(image, 'swapInFullImage');
+
+            await image.load();
+            resolveRep();
+            await flushPromises();
+            image.destroy();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2048');
+            expect(image.swapInFullImage).not.toHaveBeenCalled();
+        });
+
+        test('should revoke the image rep if destroyed before it finishes decoding', async () => {
+            let resolveFullImage;
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            jest.spyOn(image, 'fetchDecodedImage')
+                .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
+                .mockReturnValueOnce(
+                    new Promise(resolve => {
+                        resolveFullImage = resolve;
+                    }),
+                );
+            jest.spyOn(image, 'whenLoaded');
+
+            await image.load();
+            resolveRep();
+            await flushPromises();
+            image.destroy();
+            resolveFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            await flushPromises();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2048');
+            expect(image.whenLoaded).not.toHaveBeenCalled();
+        });
+
         test('should show the loading indicator and wait for the image rep when the 320 is unavailable', async () => {
             jest.spyOn(image, 'fetchDecodedImage').mockRejectedValue(new Error('not an image'));
             jest.spyOn(image, 'loadContent').mockResolvedValue();

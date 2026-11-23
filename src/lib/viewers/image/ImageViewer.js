@@ -71,6 +71,10 @@ class ImageViewer extends ImageBaseViewer {
             this.placeholderEl.remove();
             this.placeholderEl = null;
         }
+        if (this.pendingFullImageUrl) {
+            URL.revokeObjectURL(this.pendingFullImageUrl);
+            this.pendingFullImageUrl = null;
+        }
 
         if (this.isDiscoverabilityEnabled()) {
             this.removeListener('zoom', this.handleZoomEvent);
@@ -207,8 +211,16 @@ class ImageViewer extends ImageBaseViewer {
                     super.handleAssetAndRepLoad();
 
                     repReady
-                        .then(() => Promise.all([this.fetchDecodedImage(contentUrl), this.whenLoaded()]))
-                        .then(([fullImage]) => this.swapInFullImage(fullImage))
+                        .then(() => this.fetchDecodedImage(contentUrl))
+                        .then(fullImage => {
+                            if (this.isDestroyed()) {
+                                URL.revokeObjectURL(fullImage.blobUrl);
+                                return undefined;
+                            }
+                            // destroy() removes the load listener, so it revokes this if the wait never ends.
+                            this.pendingFullImageUrl = fullImage.blobUrl;
+                            return this.whenLoaded().then(() => this.swapInFullImage(fullImage));
+                        })
                         .catch(err => {
                             // The placeholder stays on screen.
                             console.warn('Image rep failed to load after the placeholder', err); // eslint-disable-line no-console
@@ -271,6 +283,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     swapInFullImage({ blobUrl, height, width }) {
+        this.pendingFullImageUrl = null;
         if (this.isDestroyed()) {
             URL.revokeObjectURL(blobUrl);
             return;
