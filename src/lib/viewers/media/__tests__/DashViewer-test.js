@@ -201,6 +201,21 @@ describe('lib/viewers/media/DashViewer', () => {
                 .catch(() => {});
         });
 
+        test('should not start loading the filmstrip with the manifest, even with seek previews enabled', async () => {
+            jest.spyOn(dash, 'loadAssets').mockResolvedValue();
+            jest.spyOn(dash, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(dash, 'loadDashPlayer').mockImplementation();
+            jest.spyOn(dash, 'handleAssetAndRepLoad').mockImplementation();
+            jest.spyOn(dash, 'resetLoadTimeout').mockImplementation();
+            jest.spyOn(dash, 'loadFilmStrip').mockImplementation();
+            jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(true);
+
+            await dash.load();
+
+            expect(dash.loadDashPlayer).toBeCalled();
+            expect(dash.loadFilmStrip).not.toBeCalled();
+        });
+
         test('should not emit VIEWER_EVENT.load when representation is PRELOAD_REP_NAME (JPG-only)', () => {
             dash.options.representation = { representation: PRELOAD_REP_NAME };
             jest.spyOn(dash, 'showPreload').mockImplementation();
@@ -283,6 +298,23 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('isSeekPreviewEnabled()', () => {
+        test.each([
+            [true, true, true, true],
+            [false, true, true, false],
+            [true, false, true, false],
+            [true, true, false, false],
+        ])('with React controls %s, V2 controls %s, and the flag %s should return %s', (react, v2, flag, expected) => {
+            jest.spyOn(dash, 'useReactControls').mockReturnValue(react);
+            jest.spyOn(dash, 'isVideoControlsV2Enabled').mockReturnValue(v2);
+            jest.spyOn(dash, 'featureEnabled').mockImplementation(
+                feature => flag && feature === 'videoSeekImprovements.enabled',
+            );
+
+            expect(dash.isSeekPreviewEnabled()).toBe(expected);
+        });
+    });
+
     describe('loadDashPlayer()', () => {
         test('should create a new shaka player', () => {
             dash.mediaUrl = 'url';
@@ -296,6 +328,20 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadDashPlayer();
 
             expect(stubs.mockPlayer).not.toBeNull();
+        });
+
+        test.each([
+            [true, { bufferBehind: 60, segmentPrefetchLimit: 2 }],
+            [false, { bufferBehind: undefined, segmentPrefetchLimit: undefined }],
+        ])('should set the seek buffer settings only when seek improvements are %s', (enabled, streaming) => {
+            jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(enabled);
+            jest.spyOn(shaka, 'Player').mockReturnValue(dash.player);
+            stubs.mockPlayer.expects('configure').withArgs(sinon.match({ streaming: sinon.match(streaming) }));
+            stubs.mockPlayer.expects('load').returns(new Promise(() => {}));
+
+            dash.loadDashPlayer();
+
+            stubs.mockPlayer.verify();
         });
 
         test('should invoke startLoadTimer()', () => {
@@ -967,10 +1013,36 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({
                 getPromise: () => Promise.resolve(),
                 destroy: jest.fn(),
+                removeListener: jest.fn(),
             });
             jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue('blob:filmstrip');
             dash.loadFilmStrip();
             expect(stubs.createUrl).toBeCalled();
+        });
+
+        test('should only start loading the film strip once', () => {
+            jest.spyOn(dash, 'getRepStatus').mockReturnValue({
+                getPromise: () => Promise.resolve(),
+                destroy: jest.fn(),
+                removeListener: jest.fn(),
+            });
+            jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue('blob:filmstrip');
+            dash.loadFilmStrip();
+            dash.loadFilmStrip();
+            expect(stubs.createUrl).toBeCalledTimes(1);
+        });
+
+        test('should not let a pending filmstrip conversion hold off the viewer load timeout', () => {
+            const removeListener = jest.fn();
+            jest.spyOn(dash, 'getRepStatus').mockReturnValue({
+                destroy: jest.fn(),
+                getPromise: () => new Promise(() => {}),
+                removeListener,
+            });
+
+            dash.loadFilmStrip();
+
+            expect(removeListener).toBeCalledWith('conversionpending', dash.resetLoadTimeout);
         });
 
         test('should render the controls again after the filmstrip is ready', async () => {
@@ -978,6 +1050,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'getRepStatus').mockReturnValueOnce({
                 destroy: jest.fn(),
                 getPromise: () => Promise.resolve(),
+                removeListener: jest.fn(),
             });
 
             dash.options.file.representations.entries[1] = {
@@ -2297,6 +2370,30 @@ describe('lib/viewers/media/DashViewer', () => {
             });
         });
 
+        test('should only pass the scrub preview handlers when the seek preview is enabled', () => {
+            jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(false);
+            dash.renderUI();
+            expect(getProps(dash)).not.toHaveProperty('onScrub');
+
+            dash.controls.render.mockClear();
+            dash.isSeekPreviewEnabled.mockReturnValue(true);
+            dash.renderUI();
+            expect(getProps(dash)).toMatchObject({
+                onScrub: dash.handleScrub,
+                onScrubEnd: dash.handleScrubEnd,
+                onScrubStart: dash.handleScrubStart,
+            });
+        });
+
+        test('should show the scrub time and keep the pause icon while scrubbing', () => {
+            Object.defineProperty(dash.mediaEl, 'paused', { configurable: true, value: true });
+            dash.scrubTime = 42;
+            dash.shouldResumeAfterScrub = true;
+            dash.renderUI();
+
+            expect(getProps(dash)).toMatchObject({ currentTime: 42, isPlaying: true });
+        });
+
         test('should not enable annotations if video annotations are disabled', () => {
             dash.videoAnnotationsEnabled = false;
             dash.annotator = {};
@@ -2432,6 +2529,7 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({
                 getPromise: () => Promise.resolve(),
                 destroy: jest.fn(),
+                removeListener: jest.fn(),
             });
             jest.spyOn(dash.mediaControls, 'initFilmstrip').mockImplementation();
         });
@@ -2522,6 +2620,195 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.fetchContentAsBlobUrl).toHaveBeenCalledWith(FILMSTRIP_URL);
             expect(dash.filmstripUrl).toBe(FILMSTRIP_BLOB);
             expect(dash.renderUI).toHaveBeenCalled();
+        });
+
+        describe('seek preview', () => {
+            const isHidden = () => dash.bufferingSpinnerEl.classList.contains('bp-is-hidden');
+            const setMedia = props =>
+                Object.entries(props).forEach(([name, value]) =>
+                    Object.defineProperty(dash.mediaEl, name, { configurable: true, value }),
+                );
+            const mockPreview = () => ({
+                destroy: jest.fn(),
+                endScrub: jest.fn(),
+                hide: jest.fn(),
+                isTimeBuffered: jest.fn(() => false),
+                isVisible: jest.fn(() => true),
+                showFrame: jest.fn(() => true),
+                startScrub: jest.fn(),
+            });
+
+            beforeEach(() => {
+                jest.spyOn(dash, 'createContentUrlV2').mockReturnValue(FILMSTRIP_URL);
+                jest.spyOn(dash, 'fetchContentAsBlobUrl').mockResolvedValue(FILMSTRIP_BLOB);
+                jest.spyOn(dash, 'useReactControls').mockReturnValue(true);
+                jest.spyOn(dash, 'renderUI').mockImplementation();
+                jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            });
+
+            afterEach(() => {
+                jest.useRealTimers();
+            });
+
+            test('should not create the seek preview when the feature is off', async () => {
+                dash.loadFilmStrip();
+                await flushPromises();
+
+                expect(dash.seekPreview).toBeUndefined();
+            });
+
+            test('should create the seek preview from the filmstrip and remove it on destroy', async () => {
+                jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(true);
+                dash.loadFilmStrip();
+                await flushPromises();
+                const { el } = dash.seekPreview;
+
+                expect(dash.seekPreview.interval).toBe(INTERVAL);
+                expect(dash.mediaEl.nextElementSibling).toBe(el);
+
+                dash.destroy();
+                expect(el.isConnected).toBe(false);
+                dash = null;
+            });
+
+            test('should hand an active drag to a seek preview created mid-drag', async () => {
+                jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(true);
+                dash.isScrubbing = true;
+
+                dash.loadFilmStrip();
+                await flushPromises();
+
+                expect(dash.seekPreview.isScrubbing).toBe(true);
+            });
+
+            test('should reposition only a visible seek preview on resize', () => {
+                jest.spyOn(VideoBaseViewer.prototype, 'resize').mockImplementation();
+                dash.seekPreview = { ...mockPreview(), position: jest.fn() };
+
+                dash.resize();
+                expect(dash.seekPreview.position).toHaveBeenCalledTimes(1);
+
+                dash.seekPreview.isVisible.mockReturnValue(false);
+                dash.resize();
+                expect(dash.seekPreview.position).toHaveBeenCalledTimes(1);
+            });
+
+            describe('spinner', () => {
+                beforeEach(() => {
+                    jest.useFakeTimers();
+                    dash.seekPreview = mockPreview();
+                });
+
+                test('should suppress the spinner while the preview is visible and bring it back if the segment is slow', () => {
+                    dash.bufferingSpinnerEl.classList.remove('bp-is-hidden');
+
+                    dash.handleSeekPreviewShow();
+                    dash.showBufferingSpinner();
+                    jest.advanceTimersByTime(999);
+                    expect(isHidden()).toBe(true);
+
+                    jest.advanceTimersByTime(1);
+                    expect(isHidden()).toBe(false);
+                });
+
+                test('should not start the delayed spinner while scrubbing', () => {
+                    dash.isScrubbing = true;
+
+                    dash.handleSeekPreviewShow();
+                    jest.advanceTimersByTime(1000);
+
+                    expect(isHidden()).toBe(true);
+                });
+
+                test('should cancel the delayed spinner on hide and only show it if the frame is still loading outside a seek', () => {
+                    setMedia({ paused: false, readyState: HTMLMediaElement.HAVE_ENOUGH_DATA, seeking: false });
+                    dash.handleSeekPreviewShow();
+                    dash.seekPreview.isVisible.mockReturnValue(false);
+                    dash.handleSeekPreviewHide();
+                    jest.advanceTimersByTime(1000);
+                    expect(isHidden()).toBe(true);
+
+                    setMedia({ readyState: HTMLMediaElement.HAVE_METADATA, seeking: true });
+                    dash.handleSeekPreviewHide();
+                    expect(isHidden()).toBe(true);
+
+                    setMedia({ seeking: false });
+                    dash.handleSeekPreviewHide();
+                    expect(isHidden()).toBe(false);
+
+                    dash.hideBufferingSpinner();
+                    setMedia({ paused: true });
+                    dash.handleSeekPreviewHide();
+                    expect(isHidden()).toBe(false);
+                });
+            });
+
+            describe('scrubbing', () => {
+                beforeEach(() => {
+                    jest.spyOn(dash.mediaEl, 'pause').mockImplementation();
+                    jest.spyOn(dash, 'handleTimeupdateFromMediaControls').mockImplementation();
+                    jest.spyOn(dash, 'play').mockResolvedValue();
+                    dash.seekPreview = mockPreview();
+                });
+
+                test('should pause for the drag, preview frames without seeking, then seek and resume on release', () => {
+                    setMedia({ paused: false });
+
+                    dash.handleScrubStart();
+                    expect(dash.mediaEl.pause).toHaveBeenCalled();
+                    expect(dash.seekPreview.startScrub).toHaveBeenCalled();
+
+                    dash.handleScrub(30);
+                    expect(dash.seekPreview.showFrame).toHaveBeenCalledWith(30);
+                    expect(dash.scrubTime).toBe(30);
+                    expect(dash.handleTimeupdateFromMediaControls).not.toHaveBeenCalled();
+
+                    dash.handleScrubEnd(30);
+                    expect(dash.isScrubbing).toBe(false);
+                    expect(dash.scrubTime).toBeUndefined();
+                    expect(dash.handleTimeupdateFromMediaControls).toHaveBeenCalledWith(30);
+                    expect(dash.seekPreview.endScrub).toHaveBeenCalled();
+                    expect(dash.seekPreviewSpinnerTimeoutId).toBeDefined();
+                    expect(dash.play).toHaveBeenCalled();
+                });
+
+                test('should not pause or resume a video that was already paused', () => {
+                    setMedia({ paused: true });
+
+                    dash.handleScrubStart();
+                    dash.handleScrubEnd(30);
+
+                    expect(dash.mediaEl.pause).not.toHaveBeenCalled();
+                    expect(dash.play).not.toHaveBeenCalled();
+                });
+
+                test('should seek during the drag when the target is buffered or has no frame', () => {
+                    dash.seekPreview.isTimeBuffered.mockReturnValueOnce(true);
+                    dash.handleScrub(30);
+                    expect(dash.seekPreview.hide).toHaveBeenCalledWith({ immediate: true });
+
+                    dash.seekPreview.showFrame.mockReturnValueOnce(false);
+                    dash.handleScrub(40);
+
+                    expect(dash.handleTimeupdateFromMediaControls.mock.calls).toEqual([[30], [40]]);
+                    expect(dash.scrubTime).toBeUndefined();
+                });
+
+                test('should suppress the spinner during the drag and cancel the seek spinner timer on release', () => {
+                    jest.useFakeTimers();
+                    dash.seekPreview.isVisible.mockReturnValue(false);
+                    dash.bufferingSpinnerEl.classList.remove('bp-is-hidden');
+
+                    dash.handleScrubStart();
+                    expect(isHidden()).toBe(true);
+
+                    setMedia({ seeking: true });
+                    dash.seekingHandler();
+                    dash.handleScrubEnd(30);
+                    jest.advanceTimersByTime(1000);
+                    expect(isHidden()).toBe(true);
+                });
+            });
         });
     });
 });

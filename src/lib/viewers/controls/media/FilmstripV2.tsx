@@ -14,6 +14,7 @@ const FILMSTRIP_DISPLAY_SCALE = FILMSTRIP_DISPLAY_HEIGHT / FILMSTRIP_SOURCE_FRAM
 export type Props = {
     aspectRatio?: number;
     fps?: number;
+    hasFade?: boolean;
     imageUrl?: string;
     interval?: number;
     isBlueprintEnabled?: boolean;
@@ -26,6 +27,7 @@ export type Props = {
 export default function FilmstripV2({
     aspectRatio = 0,
     fps,
+    hasFade = false,
     imageUrl = '',
     interval = 1,
     isBlueprintEnabled = false,
@@ -64,7 +66,7 @@ export default function FilmstripV2({
 
     return (
         <div
-            className={classNames('bp-FilmstripV2', { 'bp-is-shown': isShown })}
+            className={classNames('bp-FilmstripV2', { 'bp-FilmstripV2--fade': hasFade, 'bp-is-shown': isShown })}
             data-testid="bp-FilmstripV2"
             style={{ left: `${filmstripLeft}px` }}
         >

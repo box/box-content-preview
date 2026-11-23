@@ -53,6 +53,11 @@ class Video360Viewer extends DashViewer {
     }
 
     /** @inheritdoc */
+    isSeekPreviewEnabled() {
+        return false;
+    }
+
+    /** @inheritdoc */
     isVideoControlsV2Enabled() {
         return (
             this.useReactControls() &&
