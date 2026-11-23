@@ -121,10 +121,11 @@ class ImageViewer extends ImageBaseViewer {
         super.load();
 
         const { representation, viewer } = this.options;
-        const contentUrl = this.createContentUrlV2(representation.content.url_template, viewer.ASSET);
+        const template = representation.content.url_template;
 
         this.bindDOMListeners();
 
+        const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
         if (
             this.featureEnabled('imageConversionPlaceholder.enabled') &&
             CONVERTING_STATES.includes(representation.status?.state)
