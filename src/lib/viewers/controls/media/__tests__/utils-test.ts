@@ -1,7 +1,44 @@
 import React from 'react';
-import { round, percent, stopActivationKeyPropagation, stopMenuTriggerKeyPropagation } from '../utils';
+import {
+    getBufferedTrackStops,
+    round,
+    percent,
+    stopActivationKeyPropagation,
+    stopMenuTriggerKeyPropagation,
+} from '../utils';
 
 describe('utils', () => {
+    describe('getBufferedTrackStops', () => {
+        const createRanges = (ranges: Array<[number, number]>): TimeRanges => ({
+            end: (index: number) => ranges[index][1],
+            length: ranges.length,
+            start: (index: number) => ranges[index][0],
+        });
+        const options = { bufferedColor: 'b', durationTime: 100, fromPercentage: 0, unplayedColor: 'u' };
+
+        test('should paint each buffered range from the starting percentage', () => {
+            const bufferedRange = createRanges([
+                [0, 10],
+                [20, 40],
+                [50, 60],
+            ]);
+
+            expect(getBufferedTrackStops({ ...options, bufferedRange })).toBe(
+                'u 0%, b 0%, b 10%, u 10%, u 20%, b 20%, b 40%, u 40%, u 50%, b 50%, b 60%, u 60%, u 100%',
+            );
+            expect(getBufferedTrackStops({ ...options, bufferedRange, fromPercentage: 30 })).toBe(
+                'u 30%, b 30%, b 40%, u 40%, u 50%, b 50%, b 60%, u 60%, u 100%',
+            );
+        });
+
+        test('should paint only unplayed without ranges or duration', () => {
+            expect(getBufferedTrackStops(options)).toBe('u 100%');
+            expect(getBufferedTrackStops({ ...options, bufferedRange: createRanges([[0, 10]]), durationTime: 0 })).toBe(
+                'u 100%',
+            );
+        });
+    });
+
     describe('round', () => {
         test('should round to 4 decimal places', () => {
             expect(round(1.23456789)).toBe(1.2346);
