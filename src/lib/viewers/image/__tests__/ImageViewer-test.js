@@ -234,7 +234,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             jest.spyOn(image, 'fetchDecodedImage')
                 .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
                 .mockResolvedValueOnce(fullImage);
-            jest.spyOn(image, 'whenLoaded').mockResolvedValue();
+            jest.spyOn(image, 'waitForViewerLoad').mockResolvedValue();
             jest.spyOn(image, 'swapInFullImage').mockImplementation();
 
             await image.load();
@@ -252,7 +252,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             jest.spyOn(image, 'fetchDecodedImage')
                 .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
                 .mockResolvedValueOnce({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
-            jest.spyOn(image, 'whenLoaded').mockReturnValue(new Promise(() => {}));
+            jest.spyOn(image, 'waitForViewerLoad').mockReturnValue(new Promise(() => {}));
             jest.spyOn(image, 'swapInFullImage');
 
             await image.load();
@@ -274,7 +274,7 @@ describe('lib/viewers/image/ImageViewer', () => {
                         resolveFullImage = resolve;
                     }),
                 );
-            jest.spyOn(image, 'whenLoaded');
+            jest.spyOn(image, 'waitForViewerLoad');
 
             await image.load();
             resolveRep();
@@ -284,7 +284,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             await flushPromises();
 
             expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2048');
-            expect(image.whenLoaded).not.toHaveBeenCalled();
+            expect(image.waitForViewerLoad).not.toHaveBeenCalled();
         });
 
         test('should show the loading indicator and wait for the image rep when the 320 is unavailable', async () => {
@@ -302,6 +302,28 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.loadContent).toHaveBeenCalledWith(repTemplate);
             expect(image.displaySizeCap).toBeUndefined();
+        });
+    });
+
+    describe('waitForViewerLoad()', () => {
+        test('should resolve immediately if the viewer has loaded', async () => {
+            image.loaded = true;
+
+            await expect(image.waitForViewerLoad()).resolves.toBeUndefined();
+        });
+
+        test('should resolve once the viewer emits load', async () => {
+            let isResolved = false;
+            image.waitForViewerLoad().then(() => {
+                isResolved = true;
+            });
+            await Promise.resolve();
+            expect(isResolved).toBe(false);
+
+            image.emit(VIEWER_EVENT.load);
+            await Promise.resolve();
+
+            expect(isResolved).toBe(true);
         });
     });
 

@@ -219,7 +219,7 @@ class ImageViewer extends ImageBaseViewer {
                             }
                             // destroy() removes the load listener, so it revokes this if the wait never ends.
                             this.pendingFullImageUrl = fullImage.blobUrl;
-                            return this.whenLoaded().then(() => this.swapInFullImage(fullImage));
+                            return this.waitForViewerLoad().then(() => this.swapInFullImage(fullImage));
                         })
                         .catch(err => {
                             // The placeholder stays on screen.
@@ -261,12 +261,14 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Resolves once the viewer has loaded, so a swap never races finishLoading.
+     * Resolves once the viewer has emitted load, immediately if it already has. finishLoading sets
+     * the original size and zoom asynchronously, so swapping in the image rep before then would let
+     * it overwrite the image rep's size with the placeholder's.
      *
      * @return {Promise}
      */
-    whenLoaded() {
-        if (this.loaded) {
+    waitForViewerLoad() {
+        if (this.isLoaded()) {
             return Promise.resolve();
         }
         return new Promise(resolve => {
