@@ -201,22 +201,19 @@ describe('lib/viewers/media/DashViewer', () => {
                 .catch(() => {});
         });
 
-        test('should start loading the filmstrip with the manifest only when seek previews are enabled', async () => {
+        test('should not start loading the filmstrip with the manifest, even with seek previews enabled', async () => {
             jest.spyOn(dash, 'loadAssets').mockResolvedValue();
             jest.spyOn(dash, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
             jest.spyOn(dash, 'loadDashPlayer').mockImplementation();
             jest.spyOn(dash, 'handleAssetAndRepLoad').mockImplementation();
             jest.spyOn(dash, 'resetLoadTimeout').mockImplementation();
             jest.spyOn(dash, 'loadFilmStrip').mockImplementation();
-            const isEnabled = jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(false);
+            jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(true);
 
             await dash.load();
+
             expect(dash.loadDashPlayer).toBeCalled();
             expect(dash.loadFilmStrip).not.toBeCalled();
-
-            isEnabled.mockReturnValue(true);
-            await dash.load();
-            expect(dash.loadFilmStrip).toBeCalled();
         });
 
         test('should not emit VIEWER_EVENT.load when representation is PRELOAD_REP_NAME (JPG-only)', () => {
@@ -334,7 +331,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         test.each([
-            [true, { bufferBehind: 120, segmentPrefetchLimit: 2 }],
+            [true, { bufferBehind: 60, segmentPrefetchLimit: 2 }],
             [false, { bufferBehind: undefined, segmentPrefetchLimit: undefined }],
         ])('should set the seek buffer settings only when seek improvements are %s', (enabled, streaming) => {
             jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(enabled);

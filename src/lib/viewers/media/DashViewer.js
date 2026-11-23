@@ -27,8 +27,8 @@ const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 // Keeps recently watched video around so scrubbing back stays instant. Shaka's default is 30 sec;
-// 120 sec behind plus 60 sec ahead stays within browser SourceBuffer quotas at 1080p.
-const BUFFER_BEHIND = SEGMENT_SIZE * 24;
+// 60 sec behind plus 60 sec ahead keeps high-bitrate HD within browser SourceBuffer quotas.
+const BUFFER_BEHIND = SEGMENT_SIZE * 12;
 // Fetch the next segments in parallel. Each segment request has high fixed latency, so fetching
 // them one after another makes playback stall again shortly after a seek.
 const SEGMENT_PREFETCH_LIMIT = 2;
@@ -219,9 +219,6 @@ class DashViewer extends VideoBaseViewer {
                 this.loadDashPlayer();
                 this.handleAssetAndRepLoad();
                 this.resetLoadTimeout();
-                if (this.isSeekPreviewEnabled()) {
-                    this.loadFilmStrip();
-                }
             })
             .catch(this.handleAssetError);
     }
@@ -989,8 +986,8 @@ class DashViewer extends VideoBaseViewer {
     };
 
     /**
-     * Loads the film strip. With seek previews enabled it starts alongside the manifest so they are
-     * ready by the time the controls are. A no-op once started.
+     * Loads the film strip once the first frame has loaded, so it doesn't compete with the first
+     * segments. A no-op once started.
      *
      * @private
      * @return {void}
