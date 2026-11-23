@@ -8,15 +8,25 @@ const { RequestType } = shaka.net.NetworkingEngine;
 
 type Player = Parameters<typeof prefetchSegmentsAt>[0];
 type Request = { retryParameters: { maxAttempts: number }; uris: string[] };
-type Reference = { getEndByte: () => number | null; getStartByte: () => number; getUris: () => string[] };
+type Reference = {
+    getEndByte: () => number | null;
+    getStartByte: () => number;
+    getUris: () => string[];
+    timestampOffset: number;
+};
 
 const createReference = (uri: string, { startByte = 0, endByte = null as number | null } = {}): Reference => ({
     getEndByte: () => endByte,
     getStartByte: () => startByte,
     getUris: () => [uri],
+    timestampOffset: -10,
 });
 
 const createStream = (references: Reference[]) => ({
+    codecs: 'avc1.64001f',
+    id: 1,
+    mimeType: 'video/mp4',
+    type: 'video',
     segmentIndex: {
         find: (time: number) => (references[Math.floor(time / 5)] ? Math.floor(time / 5) : null),
         get: (position: number) => references[position],
@@ -212,6 +222,20 @@ describe('lib/viewers/media/DashSegmentPrefetcher', () => {
 
         prefetchSegmentsAt(player, 20);
         expect(abortPrefetch).toHaveBeenCalled();
+    });
+
+    test('should pass the downloaded video segment to onVideoSegmentLoaded', async () => {
+        const onVideoSegmentLoaded = jest.fn();
+
+        prefetchSegmentsAt(player, 2, onVideoSegmentLoaded);
+        await flushPromises();
+
+        expect(onVideoSegmentLoaded).toHaveBeenCalledTimes(1);
+        expect(onVideoSegmentLoaded).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 1 }),
+            expect.any(ArrayBuffer),
+            -10,
+        );
     });
 
     test('should keep the marker of a segment re-requested after its evicted prefetch is aborted', async () => {

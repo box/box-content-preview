@@ -20,6 +20,7 @@ import VideoControls from './VideoControls';
 import VideoControlsV2 from './VideoControlsV2';
 import VideoGuidesOverlay from '../controls/media/VideoGuidesOverlay';
 import VideoBaseViewer from './VideoBaseViewer';
+import PrefetchedFrameVideo from './PrefetchedFrameVideo';
 import VideoSeekPreview from './VideoSeekPreview';
 import { isTimeBuffered } from '../controls/media/utils';
 import { clearPrefetchedSegments, prefetchSegmentsAt } from './DashSegmentPrefetcher';
@@ -73,6 +74,9 @@ class DashViewer extends VideoBaseViewer {
 
     /** @property {number|undefined} - Pending hover or scrub prefetch */
     prefetchTimeoutId;
+
+    /** @property {PrefetchedFrameVideo|undefined} - Hidden video that shows real frames from prefetched segments */
+    frameVideo;
 
     /** @property {number|undefined} - Scrub time to show in the controls while the preview covers an unbuffered target */
     scrubTime;
@@ -169,6 +173,11 @@ class DashViewer extends VideoBaseViewer {
         clearTimeout(this.seekPreviewSpinnerTimeoutId);
         clearTimeout(this.prefetchTimeoutId);
         clearPrefetchedSegments();
+
+        if (this.frameVideo) {
+            this.frameVideo.destroy();
+            this.frameVideo = undefined;
+        }
 
         if (this.seekPreview) {
             this.seekPreview.destroy();
@@ -303,6 +312,13 @@ class DashViewer extends VideoBaseViewer {
             },
         });
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
+
+        if (this.isSeekPreviewEnabled() && PrefetchedFrameVideo.isSupported()) {
+            this.frameVideo = new PrefetchedFrameVideo({
+                networkingEngine: this.player.getNetworkingEngine(),
+                onFrameReady: () => this.seekPreview?.redraw(),
+            });
+        }
 
         this.startLoadTimer();
         this.player.load(this.mediaUrl, this.startTimeInSeconds).catch(this.shakaErrorHandler);
@@ -1064,6 +1080,7 @@ class DashViewer extends VideoBaseViewer {
         }
 
         this.seekPreview = new VideoSeekPreview({
+            getFrame: time => this.frameVideo?.getFrame(time),
             mediaEl: this.mediaEl,
             onHide: () => this.handleSeekPreviewHide(),
             onShow: () => this.handleSeekPreviewShow(),
@@ -1144,7 +1161,8 @@ class DashViewer extends VideoBaseViewer {
 
         this.prefetchTimeoutId = setTimeout(() => {
             if (this.player && !isTimeBuffered(this.mediaEl.buffered, time)) {
-                prefetchSegmentsAt(this.player, time);
+                this.frameVideo?.prepareFrame(time);
+                prefetchSegmentsAt(this.player, time, this.frameVideo?.addSegment);
             }
         }, PREFETCH_DELAY_MS);
     }
