@@ -11,14 +11,20 @@ import {
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
+    STATUS_NONE,
+    STATUS_PENDING,
 } from '../../constants';
-import { LOAD_METRIC, FIRST_RENDER_METRIC } from '../../events';
+import { LOAD_METRIC, FIRST_RENDER_METRIC, VIEWER_EVENT } from '../../events';
 import Timer from '../../Timer';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
+const PLACEHOLDER_DISPLAY_SIZE = 920;
+const PLACEHOLDER_FADE_MS = 500;
+const PLACEHOLDER_REP = 'jpg_320x320';
+const CONVERTING_STATES = [STATUS_NONE, STATUS_PENDING];
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
@@ -59,6 +65,9 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
+        clearTimeout(this.placeholderFadeTimer);
+        this.placeholderEl?.remove();
+
         if (this.isDiscoverabilityEnabled()) {
             this.removeListener('zoom', this.handleZoomEvent);
         }
@@ -112,29 +121,191 @@ class ImageViewer extends ImageBaseViewer {
         super.load();
 
         const { representation, viewer } = this.options;
-        const template = representation.content.url_template;
+        const contentUrl = this.createContentUrlV2(representation.content.url_template, viewer.ASSET);
 
         this.bindDOMListeners();
 
-        const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
+        if (
+            this.featureEnabled('imageConversionPlaceholder.enabled') &&
+            CONVERTING_STATES.includes(representation.status?.state)
+        ) {
+            return this.loadWithPlaceholder(contentUrl);
+        }
+
         return this.getRepStatus()
             .getPromise()
-            .then(() => {
-                this.startLoadTimer();
-                return this.fetchContentAsBlobUrl(contentUrl);
-            })
-            .then(blobUrl => {
-                if (this.isDestroyed()) {
-                    URL.revokeObjectURL(blobUrl);
-                    return;
-                }
-                this.imageEl.src = blobUrl;
-                if (this.imageEl.complete) {
-                    this.finishLoading();
-                }
-                super.handleAssetAndRepLoad();
-            })
+            .then(() => this.loadContent(contentUrl))
             .catch(this.handleAssetError);
+    }
+
+    /**
+     * Fetches the image rep and renders it.
+     *
+     * @param {string} contentUrl - Content URL of the image rep
+     * @return {Promise}
+     */
+    loadContent(contentUrl) {
+        this.startLoadTimer();
+        return this.fetchContentAsBlobUrl(contentUrl).then(blobUrl => {
+            if (this.isDestroyed()) {
+                URL.revokeObjectURL(blobUrl);
+                return;
+            }
+            this.imageEl.src = blobUrl;
+            if (this.imageEl.complete) {
+                this.finishLoading();
+            }
+            super.handleAssetAndRepLoad();
+        });
+    }
+
+    /**
+     * Shows the 320 thumbnail while the image rep converts, zoomed to PLACEHOLDER_DISPLAY_SIZE,
+     * then swaps in the image rep once it is ready. Falls back to waiting for the image rep, with
+     * the host's loading indicator, when the 320 is not available either.
+     *
+     * @param {string} contentUrl - Content URL of the image rep
+     * @return {Promise}
+     */
+    loadWithPlaceholder(contentUrl) {
+        const { representation } = this.options;
+        const placeholderTemplate = representation.content.url_template.replace(
+            /representations\/[^/]+/,
+            `representations/${PLACEHOLDER_REP}`,
+        );
+        const placeholderUrl = this.createContentUrlV2(placeholderTemplate);
+
+        // Passing the representation keeps conversionpending from reaching the host, which would
+        // show its loading indicator over the placeholder.
+        const repReady = this.getRepStatus(representation).getPromise();
+        let isRepReady = false;
+        repReady.then(
+            () => {
+                isRepReady = true;
+            },
+            () => undefined,
+        );
+
+        return this.fetchDecodedImage(placeholderUrl)
+            .then(
+                placeholder => {
+                    if (this.isDestroyed()) {
+                        URL.revokeObjectURL(placeholder.blobUrl);
+                        return;
+                    }
+                    this.displaySizeCap = PLACEHOLDER_DISPLAY_SIZE;
+                    this.startLoadTimer();
+                    this.imageEl.src = placeholder.blobUrl;
+                    if (this.imageEl.complete) {
+                        this.finishLoading();
+                    }
+                    super.handleAssetAndRepLoad();
+
+                    repReady
+                        .then(() => Promise.all([this.fetchDecodedImage(contentUrl), this.whenLoaded()]))
+                        .then(([fullImage]) => this.swapInFullImage(fullImage))
+                        .catch(err => {
+                            // The placeholder stays on screen.
+                            console.warn('Image rep failed to load after the placeholder', err); // eslint-disable-line no-console
+                        });
+                },
+                () => {
+                    if (!isRepReady) {
+                        this.emit(VIEWER_EVENT.conversionPending);
+                    }
+                    return repReady.then(() => this.loadContent(contentUrl));
+                },
+            )
+            .catch(this.handleAssetError);
+    }
+
+    /**
+     * Fetches an image and decodes it. Rejects when the response is not an image, for example
+     * when the rep has not been generated.
+     *
+     * @param {string} url - Content URL
+     * @return {Promise<Object>} blobUrl, width and height of the decoded image
+     */
+    fetchDecodedImage(url) {
+        return this.fetchContentAsBlobUrl(url).then(blobUrl => {
+            const decoder = new Image();
+            decoder.src = blobUrl;
+            return decoder
+                .decode()
+                .catch(() => undefined)
+                .then(() => {
+                    if (!decoder.naturalWidth) {
+                        URL.revokeObjectURL(blobUrl);
+                        throw new Error('Response is not a decodable image');
+                    }
+                    return { blobUrl, height: decoder.naturalHeight, width: decoder.naturalWidth };
+                });
+        });
+    }
+
+    /**
+     * Resolves once the viewer has loaded, so a swap never races finishLoading.
+     *
+     * @return {Promise}
+     */
+    whenLoaded() {
+        if (this.loaded) {
+            return Promise.resolve();
+        }
+        return new Promise(resolve => {
+            this.once(VIEWER_EVENT.load, resolve);
+        });
+    }
+
+    /**
+     * Swaps the image rep into the img element at the size the placeholder is shown at, including
+     * any zoom applied in the meantime, and recomputes the zoom scale against the image rep. A copy
+     * of the placeholder fades out on top so the image sharpens in place.
+     *
+     * @param {Object} fullImage - blobUrl, width and height of the decoded image rep
+     * @return {void}
+     */
+    swapInFullImage({ blobUrl, height, width }) {
+        if (this.isDestroyed()) {
+            URL.revokeObjectURL(blobUrl);
+            return;
+        }
+        const { imageEl } = this;
+        const placeholderSrc = imageEl.src;
+
+        const placeholderEl = document.createElement('img');
+        placeholderEl.src = placeholderSrc;
+        placeholderEl.alt = '';
+        placeholderEl.setAttribute('aria-hidden', 'true');
+        Object.assign(placeholderEl.style, {
+            height: imageEl.style.height,
+            left: imageEl.style.left,
+            pointerEvents: 'none',
+            top: imageEl.style.top,
+            transform: imageEl.style.transform,
+            transition: `opacity ${PLACEHOLDER_FADE_MS}ms ease-in-out`,
+            width: imageEl.style.width,
+        });
+        imageEl.after(placeholderEl);
+        this.placeholderEl = placeholderEl;
+
+        // Keep the new source from re-running the load sequence, which would reset the zoom.
+        imageEl.removeEventListener('load', this.finishLoading);
+        imageEl.src = blobUrl;
+        imageEl.setAttribute('originalWidth', width);
+        imageEl.setAttribute('originalHeight', height);
+        this.setScale(parseFloat(imageEl.style.width) || undefined, parseFloat(imageEl.style.height) || undefined);
+
+        // eslint-disable-next-line no-unused-expressions
+        placeholderEl.offsetWidth;
+        placeholderEl.style.opacity = '0';
+
+        this.placeholderFadeTimer = setTimeout(() => {
+            placeholderEl.remove();
+            this.placeholderEl = null;
+            URL.revokeObjectURL(placeholderSrc);
+            imageEl.addEventListener('load', this.finishLoading);
+        }, PLACEHOLDER_FADE_MS);
     }
 
     /**
@@ -366,9 +537,23 @@ class ImageViewer extends ImageBaseViewer {
 
             const viewport = this.getViewportDimensions();
 
-            // If the image is overflowing the viewport, figure out by how much
-            // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
-            if (width > viewport.width || height > viewport.height) {
+            // A converting image fits its longest side to displaySizeCap, zooming the placeholder up
+            // and the image rep down to it, within the viewport.
+            if (this.displaySizeCap) {
+                const ratio = Math.min(
+                    viewport.width / width,
+                    viewport.height / height,
+                    this.displaySizeCap / Math.max(width, height),
+                );
+                if (modifyWidthInsteadOfHeight) {
+                    newWidth = width * ratio;
+                } else {
+                    newHeight = height * ratio;
+                }
+
+                // If the image is overflowing the viewport, figure out by how much
+                // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
+            } else if (width > viewport.width || height > viewport.height) {
                 const ratio = Math.min(viewport.width / width, viewport.height / height);
                 if (modifyWidthInsteadOfHeight) {
                     newWidth = width * ratio;
