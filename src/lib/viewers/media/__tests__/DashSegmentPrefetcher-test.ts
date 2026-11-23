@@ -160,7 +160,7 @@ describe('lib/viewers/media/DashSegmentPrefetcher', () => {
         reportProgress(20, 1024, 2048);
 
         expect(onHeadersReceived).toHaveBeenCalledWith({ 'content-type': 'video/mp4' });
-        expect(onProgress).toHaveBeenCalledWith(20, 1024, 2048);
+        expect(onProgress).toHaveBeenCalledWith(20, 0, 2048);
     });
 
     test('should abort the prefetch the player waits on without fetching again', async () => {
@@ -197,6 +197,21 @@ describe('lib/viewers/media/DashSegmentPrefetcher', () => {
         prefetchSegmentsAt(player, 6);
 
         expect(networkingEngine.request).toHaveBeenCalledTimes(2);
+    });
+
+    test('should abort the oldest unclaimed prefetch once the cache is full', () => {
+        const abortPrefetch = jest.fn(() => Promise.resolve());
+        shaka.net.HttpFetchPlugin.parse.mockImplementationOnce(() =>
+            createOperation(new Promise(() => {}), abortPrefetch),
+        );
+        const references = [0, 1, 2, 3, 4].map(i => createReference(`https://box.test/video/${i}.m4s`));
+        player.getManifest = () => ({ variants: [{ audio: null, id: 7, video: createStream(references) }] });
+
+        [0, 5, 10, 15].forEach(time => prefetchSegmentsAt(player, time));
+        expect(abortPrefetch).not.toHaveBeenCalled();
+
+        prefetchSegmentsAt(player, 20);
+        expect(abortPrefetch).toHaveBeenCalled();
     });
 
     test('should not prefetch a segment twice', () => {

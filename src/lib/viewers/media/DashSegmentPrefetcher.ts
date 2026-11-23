@@ -14,7 +14,7 @@ type ShakaRequest = { uris: string[] };
 type ShakaResponse = { data: ArrayBuffer; fromCache?: boolean; originalRequest?: ShakaRequest; uri: string };
 type AbortableOperation = { abort: () => Promise<void>; promise: Promise<ShakaResponse> };
 type HeadersCallback = (headers: Record<string, string>) => void;
-type ProgressCallback = (...args: unknown[]) => void;
+type ProgressCallback = (timeElapsedMs: number, bytesLoaded: number, bytesRemaining: number) => void;
 type SchemePlugin = (
     uri: string,
     request: ShakaRequest,
@@ -69,9 +69,17 @@ const prefetchedUris = new Set<string>();
 const prefetchRequests = new WeakSet<ShakaRequest>();
 let isCachingFetchPluginRegistered = false;
 
-function evictOldest(collection: Map<string, unknown> | Set<string>): void {
-    while (collection.size > MAX_PREFETCHED_SEGMENTS) {
-        collection.delete(collection.keys().next().value as string);
+function evictOldestUris(): void {
+    while (prefetchedUris.size > MAX_PREFETCHED_SEGMENTS) {
+        prefetchedUris.delete(prefetchedUris.values().next().value as string);
+    }
+}
+
+function evictOldestPrefetches(): void {
+    while (prefetches.size > MAX_PREFETCHED_SEGMENTS) {
+        const [uri, prefetch] = prefetches.entries().next().value as [string, Prefetch];
+        prefetches.delete(uri);
+        prefetch.operation.abort();
     }
 }
 
@@ -123,9 +131,10 @@ const cachingFetchPlugin: SchemePlugin = (uri, request, requestType, onProgress,
         uri,
         request,
         requestType,
-        (...args) => {
-            onProgress(...args);
-            prefetch.waitingRequest?.onProgress(...args);
+        (timeElapsedMs, bytesLoaded, bytesRemaining) => {
+            onProgress(timeElapsedMs, bytesLoaded, bytesRemaining);
+            // Zero bytes keeps the waiting request's timeouts alive without a second bandwidth sample
+            prefetch.waitingRequest?.onProgress(timeElapsedMs, 0, bytesRemaining);
         },
         headers => {
             onHeadersReceived(headers);
@@ -135,7 +144,7 @@ const cachingFetchPlugin: SchemePlugin = (uri, request, requestType, onProgress,
         ...rest,
     );
     prefetches.set(uri, prefetch);
-    evictOldest(prefetches);
+    evictOldestPrefetches();
     prefetch.operation.promise.catch(() => {
         if (prefetches.get(uri) === prefetch) {
             prefetches.delete(uri);
@@ -195,7 +204,7 @@ export function prefetchSegmentsAt(player: ShakaPlayer, time: number): void {
             return;
         }
         prefetchedUris.add(uri);
-        evictOldest(prefetchedUris);
+        evictOldestUris();
 
         const request = shaka.net.NetworkingEngine.makeRequest(uris, PREFETCH_RETRY_PARAMETERS);
         prefetchRequests.add(request);
