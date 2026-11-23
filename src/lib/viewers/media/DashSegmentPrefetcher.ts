@@ -15,13 +15,14 @@ type ShakaResponse = { data: ArrayBuffer; fromCache?: boolean; originalRequest?:
 type AbortableOperation = { abort: () => Promise<void>; promise: Promise<ShakaResponse> };
 type HeadersCallback = (headers: Record<string, string>) => void;
 type ProgressCallback = (timeElapsedMs: number, bytesLoaded: number, bytesRemaining: number) => void;
+type SchemePluginConfig = { minBytesForProgressEvents?: number };
 type SchemePlugin = (
     uri: string,
     request: ShakaRequest,
     requestType: number,
     onProgress: ProgressCallback,
     onHeadersReceived: HeadersCallback,
-    ...rest: unknown[]
+    config: SchemePluginConfig,
 ) => AbortableOperation;
 type Prefetch = {
     headers?: Record<string, string>;
@@ -63,15 +64,18 @@ declare const shaka: {
 
 /** Keyed by the URI the scheme plugin receives, after request filters */
 const prefetches = new Map<string, Prefetch>();
-/** Manifest URIs already prefetched, so returning to a segment doesn't refetch it */
-const prefetchedUris = new Set<string>();
+/**
+ * Manifest URIs already prefetched, so returning to a segment doesn't refetch it. Each maps to its request,
+ * so a replaced request's failure doesn't clear the marker of the request that replaced it.
+ */
+const prefetchedUris = new Map<string, ShakaRequest>();
 // Shaka passes the request object it was given through to the scheme plugin
 const prefetchRequests = new WeakSet<ShakaRequest>();
 let isCachingFetchPluginRegistered = false;
 
 function evictOldestUris(): void {
     while (prefetchedUris.size > MAX_PREFETCHED_SEGMENTS) {
-        prefetchedUris.delete(prefetchedUris.values().next().value as string);
+        prefetchedUris.delete(prefetchedUris.keys().next().value as string);
     }
 }
 
@@ -87,9 +91,16 @@ function evictOldestPrefetches(): void {
  * Serves a prefetched segment once to the player's next request for its URI, falling back to a real
  * fetch if the prefetch fails. fromCache keeps Shaka from counting it toward bandwidth.
  */
-const cachingFetchPlugin: SchemePlugin = (uri, request, requestType, onProgress, onHeadersReceived, ...rest) => {
+function cachingFetchPlugin(
+    uri: string,
+    request: ShakaRequest,
+    requestType: number,
+    onProgress: ProgressCallback,
+    onHeadersReceived: HeadersCallback,
+    config: SchemePluginConfig,
+): AbortableOperation {
     const fetchSegment = (): AbortableOperation =>
-        shaka.net.HttpFetchPlugin.parse(uri, request, requestType, onProgress, onHeadersReceived, ...rest);
+        shaka.net.HttpFetchPlugin.parse(uri, request, requestType, onProgress, onHeadersReceived, config);
     const isSegment = requestType === shaka.net.NetworkingEngine.RequestType.SEGMENT;
     const prefetched = isSegment && !prefetchRequests.has(request) ? prefetches.get(uri) : undefined;
 
@@ -141,7 +152,7 @@ const cachingFetchPlugin: SchemePlugin = (uri, request, requestType, onProgress,
             prefetch.headers = headers;
             prefetch.waitingRequest?.onHeadersReceived(headers);
         },
-        ...rest,
+        config,
     );
     prefetches.set(uri, prefetch);
     evictOldestPrefetches();
@@ -152,7 +163,7 @@ const cachingFetchPlugin: SchemePlugin = (uri, request, requestType, onProgress,
     });
 
     return prefetch.operation;
-};
+}
 
 function registerCachingFetchPlugin(): void {
     if (isCachingFetchPluginRegistered) {
@@ -203,14 +214,16 @@ export function prefetchSegmentsAt(player: ShakaPlayer, time: number): void {
         if (prefetchedUris.has(uri)) {
             return;
         }
-        prefetchedUris.add(uri);
-        evictOldestUris();
-
         const request = shaka.net.NetworkingEngine.makeRequest(uris, PREFETCH_RETRY_PARAMETERS);
         prefetchRequests.add(request);
-        networkingEngine
-            .request(shaka.net.NetworkingEngine.RequestType.SEGMENT, request)
-            .promise.catch(() => prefetchedUris.delete(uri));
+        prefetchedUris.set(uri, request);
+        evictOldestUris();
+
+        networkingEngine.request(shaka.net.NetworkingEngine.RequestType.SEGMENT, request).promise.catch(() => {
+            if (prefetchedUris.get(uri) === request) {
+                prefetchedUris.delete(uri);
+            }
+        });
     });
 }
 

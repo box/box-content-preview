@@ -214,6 +214,32 @@ describe('lib/viewers/media/DashSegmentPrefetcher', () => {
         expect(abortPrefetch).toHaveBeenCalled();
     });
 
+    test('should keep the marker of a segment re-requested after its evicted prefetch is aborted', async () => {
+        shaka.net.HttpFetchPlugin.parse.mockImplementation(() => {
+            let rejectPrefetch: (error: Error) => void = () => {};
+            const promise = new Promise((resolve, reject) => {
+                rejectPrefetch = reject;
+            });
+            return createOperation(promise, () => {
+                rejectPrefetch(new Error('aborted'));
+                return Promise.resolve();
+            });
+        });
+        const audioUri = 'https://box.test/audio/0.m4s';
+        const longAudio = createStream([createReference(audioUri)]);
+        longAudio.segmentIndex.find = () => 0;
+        const video = createStream([0, 1, 2, 3, 4].map(i => createReference(`https://box.test/video/${i}.m4s`)));
+        player.getManifest = () => ({ variants: [{ audio: longAudio, id: 7, video }] });
+
+        // The fifth video segment evicts the audio marker and its prefetch, then the audio is requested again
+        [0, 5, 10, 15, 20].forEach(time => prefetchSegmentsAt(player, time));
+        await flushPromises();
+        prefetchSegmentsAt(player, 20);
+
+        const requests = networkingEngine.request.mock.calls as [number, Request][];
+        expect(requests.filter(([, { uris }]) => uris[0] === audioUri)).toHaveLength(2);
+    });
+
     test('should not prefetch a segment twice', () => {
         prefetchSegmentsAt(player, 6);
         prefetchSegmentsAt(player, 7);
