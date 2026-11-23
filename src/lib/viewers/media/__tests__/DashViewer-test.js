@@ -3,6 +3,7 @@ import { setImmediate as flushImmediate } from 'timers';
 import noop from 'lodash/noop';
 import Api from '../../../api';
 import DashViewer from '../DashViewer';
+import PrefetchedFrameVideo from '../PrefetchedFrameVideo';
 import { clearPrefetchedSegments, prefetchSegmentsAt } from '../DashSegmentPrefetcher';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
@@ -11,6 +12,7 @@ import Timer from '../../../Timer';
 import { MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
 
+jest.mock('../PrefetchedFrameVideo');
 jest.mock('../DashSegmentPrefetcher');
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -157,6 +159,17 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(stubs.removeStats).toBeCalled();
 
             // Ensures that afterEach() cleanup doesn't trigger destroy() again
+            dash = null;
+        });
+
+        test('should destroy the frame video', () => {
+            const frameVideo = { destroy: jest.fn() };
+            dash.frameVideo = frameVideo;
+
+            dash.destroy();
+
+            expect(frameVideo.destroy).toHaveBeenCalled();
+            expect(dash.frameVideo).toBeUndefined();
             dash = null;
         });
 
@@ -345,6 +358,39 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.loadDashPlayer();
 
             stubs.mockPlayer.verify();
+        });
+
+        test.each([
+            [true, true, 1],
+            [true, false, 0],
+            [false, true, 0],
+        ])(
+            'should create the frame video when seek improvements are %s and MediaSource support is %s',
+            (enabled, supported, instances) => {
+                jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(enabled);
+                PrefetchedFrameVideo.isSupported.mockReturnValue(supported);
+                jest.spyOn(shaka, 'Player').mockReturnValue(dash.player);
+                stubs.mockPlayer.expects('load').returns(new Promise(() => {}));
+
+                dash.loadDashPlayer();
+
+                expect(PrefetchedFrameVideo).toHaveBeenCalledTimes(instances);
+            },
+        );
+
+        test('should redraw the seek preview once a real frame may be ready', () => {
+            jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(true);
+            PrefetchedFrameVideo.isSupported.mockReturnValue(true);
+            jest.spyOn(shaka, 'Player').mockReturnValue(dash.player);
+            stubs.mockPlayer.expects('load').returns(new Promise(() => {}));
+            dash.seekPreview = { destroy: jest.fn(), redraw: jest.fn() };
+
+            dash.loadDashPlayer();
+            const [[{ networkingEngine, onFrameReady }]] = PrefetchedFrameVideo.mock.calls;
+            onFrameReady();
+
+            expect(networkingEngine).toBe(stubs.networkEngine);
+            expect(dash.seekPreview.redraw).toHaveBeenCalled();
         });
 
         test('should invoke startLoadTimer()', () => {
@@ -2821,7 +2867,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     dash.handleScrub(30);
                     jest.advanceTimersByTime(100);
 
-                    expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30);
+                    expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30, undefined);
                 });
 
                 test('should cancel a pending prefetch on release', () => {
@@ -2859,7 +2905,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     dash.schedulePrefetchAt(null);
                     jest.advanceTimersByTime(100);
 
-                    expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30);
+                    expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30, undefined);
                 });
             });
         });
@@ -2891,7 +2937,17 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(prefetchSegmentsAt).not.toHaveBeenCalled();
 
             jest.advanceTimersByTime(1);
-            expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30);
+            expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30, undefined);
+        });
+
+        test('should hand prefetched video segments to the frame video and prepare its frame', () => {
+            dash.frameVideo = { addSegment: jest.fn(), destroy: jest.fn(), prepareFrame: jest.fn() };
+
+            dash.schedulePrefetchAt(30);
+            jest.advanceTimersByTime(100);
+
+            expect(dash.frameVideo.prepareFrame).toHaveBeenCalledWith(30);
+            expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30, dash.frameVideo.addSegment);
         });
 
         test('should only prefetch where the pointer stops', () => {

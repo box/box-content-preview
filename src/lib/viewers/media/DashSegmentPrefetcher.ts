@@ -1,3 +1,5 @@
+import type { VideoStream } from './PrefetchedFrameVideo';
+
 const MAX_PREFETCHED_SEGMENTS = 4;
 // A failed prefetch isn't retried; the player fetches the segment itself on seek
 const PREFETCH_RETRY_PARAMETERS = {
@@ -33,8 +35,10 @@ type SegmentReference = {
     getEndByte: () => number | null;
     getStartByte: () => number;
     getUris: () => string[];
+    /** Offset the player applies to the segment's media timestamps to place it on the timeline */
+    timestampOffset: number;
 };
-type Stream = {
+type Stream = VideoStream & {
     segmentIndex: {
         find: (time: number) => number | null;
         get: (position: number) => SegmentReference | null;
@@ -189,8 +193,16 @@ function getActiveVariant(player: ShakaPlayer): Variant | undefined {
     return activeTrack && manifest ? manifest.variants.find(variant => variant.id === activeTrack.id) : undefined;
 }
 
-/** Starts downloading the active variant's video and audio segments that contain a time. */
-export function prefetchSegmentsAt(player: ShakaPlayer, time: number): void {
+/**
+ * Starts downloading the active variant's video and audio segments that contain a time.
+ *
+ * @param onVideoSegmentLoaded - Receives the video segment's bytes and timestamp offset once downloaded
+ */
+export function prefetchSegmentsAt(
+    player: ShakaPlayer,
+    time: number,
+    onVideoSegmentLoaded?: (stream: VideoStream, data: BufferSource, timestampOffset: number) => void,
+): void {
     const networkingEngine = player.getNetworkingEngine();
     const variant = getActiveVariant(player);
     if (!networkingEngine || !variant) {
@@ -219,11 +231,18 @@ export function prefetchSegmentsAt(player: ShakaPlayer, time: number): void {
         prefetchedUris.set(uri, request);
         evictOldestUris();
 
-        networkingEngine.request(shaka.net.NetworkingEngine.RequestType.SEGMENT, request).promise.catch(() => {
-            if (prefetchedUris.get(uri) === request) {
-                prefetchedUris.delete(uri);
-            }
-        });
+        networkingEngine.request(shaka.net.NetworkingEngine.RequestType.SEGMENT, request).promise.then(
+            response => {
+                if (stream && stream === variant.video) {
+                    onVideoSegmentLoaded?.(stream, response.data, reference.timestampOffset);
+                }
+            },
+            () => {
+                if (prefetchedUris.get(uri) === request) {
+                    prefetchedUris.delete(uri);
+                }
+            },
+        );
     });
 }
 

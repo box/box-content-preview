@@ -89,6 +89,15 @@
             transition: none;
         }
     }
+
+    // Real video frames are full resolution, so they aren't softened
+    .bp-is-sharp & {
+        filter: brightness(1);
+    }
+
+    .bp-is-sharp.bp-is-dimmed & {
+        filter: brightness(0.9);
+    }
 }
 
 .bp-media-filmstrip-container {

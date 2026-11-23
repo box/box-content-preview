@@ -243,4 +243,50 @@ describe('lib/viewers/media/VideoSeekPreview', () => {
         expect(containerEl.contains(preview.el)).toBe(false);
         expect(onShow).not.toHaveBeenCalled();
     });
+
+    describe('real frames', () => {
+        const createFrame = (): HTMLCanvasElement =>
+            Object.assign(document.createElement('canvas'), { height: 720, width: 1280 });
+        const isSharp = (): boolean => preview.el.classList.contains('bp-is-sharp');
+        const createPreview = (getFrame: (time: number) => HTMLCanvasElement | undefined): void => {
+            preview.destroy();
+            preview = new VideoSeekPreview({ getFrame, mediaEl, onHide, onShow });
+        };
+
+        test('should draw the real frame unblurred, and the filmstrip where none is ready', () => {
+            const frame = createFrame();
+            createPreview(time => (time === 30 ? frame : undefined));
+
+            expect(preview.showFrame(30)).toBe(true);
+            expect(isSharp()).toBe(true);
+            expect(preview.canvasEl.width).toBe(1280);
+
+            loadFilmstrip();
+            expect(preview.showFrame(10)).toBe(true);
+            expect(isSharp()).toBe(false);
+            expect(preview.canvasEl.height).toBe(90);
+        });
+
+        test('should redraw the visible frame once its real frame is ready', () => {
+            let frame: HTMLCanvasElement | undefined;
+            createPreview(() => frame);
+            loadFilmstrip();
+            preview.showFrame(30);
+
+            frame = createFrame();
+            preview.redraw();
+
+            expect(isSharp()).toBe(true);
+            expect(preview.canvasEl.width).toBe(1280);
+        });
+
+        test('should not redraw while hidden', () => {
+            const getFrame = jest.fn();
+            createPreview(getFrame);
+
+            preview.redraw();
+
+            expect(getFrame).not.toHaveBeenCalled();
+        });
+    });
 });

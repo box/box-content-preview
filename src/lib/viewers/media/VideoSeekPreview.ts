@@ -4,6 +4,7 @@ import { isTimeBuffered } from '../controls/media/utils';
 const CLASS_SEEK_PREVIEW = 'bp-media-seek-preview';
 const CLASS_SEEK_PREVIEW_DIMMED = 'bp-is-dimmed';
 const CLASS_SEEK_PREVIEW_IMMEDIATE = 'bp-is-immediate';
+const CLASS_SEEK_PREVIEW_SHARP = 'bp-is-sharp';
 const CLASS_SEEK_PREVIEW_FRAME = 'bp-media-seek-preview-frame';
 const CLASS_SEEK_PREVIEW_FRAME_BASE = 'bp-media-seek-preview-frame-base';
 const FILMSTRIP_FRAMES_PER_ROW = 100;
@@ -14,6 +15,8 @@ const HIDE_FALLBACK_MS = 100;
 const SHOW_DELAY_MS = 80;
 
 export type Options = {
+    /** Full-resolution frame at a time, if one is available; the filmstrip is used otherwise */
+    getFrame?: (time: number) => HTMLCanvasElement | undefined;
     /** Video element to cover while seeking */
     mediaEl: HTMLVideoElement;
     /** Called when the preview starts fading away */
@@ -40,6 +43,11 @@ export default class VideoSeekPreview {
 
     /** Overlay container placed directly after the video */
     el: HTMLDivElement;
+
+    /** Time of the frame currently drawn */
+    frameTime?: number;
+
+    getFrame?: (time: number) => HTMLCanvasElement | undefined;
 
     /** Video frame callback that hides the preview once the real frame paints */
     frameCallbackId?: number;
@@ -72,7 +80,8 @@ export default class VideoSeekPreview {
     /** Delay before an unbuffered seek shows the preview */
     showTimeoutId?: number;
 
-    constructor({ mediaEl, onHide, onShow }: Options) {
+    constructor({ getFrame, mediaEl, onHide, onShow }: Options) {
+        this.getFrame = getFrame;
         this.mediaEl = mediaEl;
         this.onHide = onHide;
         this.onShow = onShow;
@@ -137,6 +146,7 @@ export default class VideoSeekPreview {
         if (!this.drawFrame(time)) {
             return false;
         }
+        this.frameTime = time;
 
         this.position();
         this.el.classList.remove(CLASS_SEEK_PREVIEW_IMMEDIATE);
@@ -155,6 +165,13 @@ export default class VideoSeekPreview {
         }
 
         return true;
+    }
+
+    // Redraws the visible frame, e.g. once the real frame for it is ready
+    redraw(): void {
+        if (this.isVisible() && this.frameTime !== undefined) {
+            this.drawFrame(this.frameTime);
+        }
     }
 
     // Stops seek completion from hiding the preview until endScrub
@@ -293,8 +310,19 @@ export default class VideoSeekPreview {
         this.hideTimeoutId = window.setTimeout(() => this.hide(), HIDE_FALLBACK_MS);
     };
 
-    // Uses the same sprite layout as FilmstripV2
     drawFrame(time: number): boolean {
+        const frame = this.getFrame?.(time);
+        this.el.classList.toggle(CLASS_SEEK_PREVIEW_SHARP, !!frame);
+
+        if (frame) {
+            return this.drawToCanvases(frame, 0, 0, frame.width, frame.height);
+        }
+
+        return this.drawFilmstripFrame(time);
+    }
+
+    // Uses the same sprite layout as FilmstripV2
+    drawFilmstripFrame(time: number): boolean {
         if (!this.isImageLoaded || !this.imageEl || !(this.interval > 0)) {
             return false;
         }
@@ -309,29 +337,29 @@ export default class VideoSeekPreview {
             return false;
         }
 
+        return this.drawToCanvases(this.imageEl, sourceX, sourceY, frameWidth, FILMSTRIP_FRAME_HEIGHT);
+    }
+
+    drawToCanvases(
+        source: CanvasImageSource,
+        sourceX: number,
+        sourceY: number,
+        width: number,
+        height: number,
+    ): boolean {
         const context = this.canvasEl.getContext('2d');
         if (!context) {
             return false;
         }
 
         [this.baseCanvasEl, this.canvasEl].forEach(canvasEl => {
-            if (canvasEl.width !== frameWidth || canvasEl.height !== FILMSTRIP_FRAME_HEIGHT) {
-                canvasEl.width = frameWidth;
-                canvasEl.height = FILMSTRIP_FRAME_HEIGHT;
+            if (canvasEl.width !== width || canvasEl.height !== height) {
+                canvasEl.width = width;
+                canvasEl.height = height;
             }
         });
 
-        context.drawImage(
-            this.imageEl,
-            sourceX,
-            sourceY,
-            frameWidth,
-            FILMSTRIP_FRAME_HEIGHT,
-            0,
-            0,
-            frameWidth,
-            FILMSTRIP_FRAME_HEIGHT,
-        );
+        context.drawImage(source, sourceX, sourceY, width, height, 0, 0, width, height);
 
         const baseContext = this.baseCanvasEl.getContext('2d');
         if (baseContext) {
