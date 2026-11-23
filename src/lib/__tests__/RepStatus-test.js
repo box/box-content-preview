@@ -73,6 +73,32 @@ describe('lib/RepStatus', () => {
         });
     });
 
+    describe('getStateFromInfo()', () => {
+        test('should return undefined when there is no info', () => {
+            expect(RepStatus.getStateFromInfo(undefined)).toBeUndefined();
+        });
+
+        test('should return the state from the status object', () => {
+            expect(RepStatus.getStateFromInfo({ status: { state: 'success' } })).toBe('success');
+        });
+
+        test('should return undefined when the status object has no state', () => {
+            expect(RepStatus.getStateFromInfo({ status: {} })).toBeUndefined();
+        });
+
+        test('should return undefined when the status object is null', () => {
+            expect(RepStatus.getStateFromInfo({ status: null })).toBeUndefined();
+        });
+
+        test('should fall back to temp_status when status is not an object', () => {
+            expect(RepStatus.getStateFromInfo({ temp_status: { state: 'pending' } })).toBe('pending');
+        });
+
+        test('should return undefined when neither status nor temp_status carry a state', () => {
+            expect(RepStatus.getStateFromInfo({})).toBeUndefined();
+        });
+    });
+
     describe('constructor()', () => {
         const infoUrl = 'someUrl';
 
@@ -92,6 +118,18 @@ describe('lib/RepStatus', () => {
             expect(typeof repStatus.logger).toBe('object');
             expect(repStatus.infoUrl).toBe(infoUrl);
             expect(repStatus.promise).toBeInstanceOf(Promise);
+            expect(repStatus.enableConvertTimer).toBe(true);
+        });
+
+        test('should disable the convert timer when told to', () => {
+            repStatus = new RepStatus({
+                api: {},
+                representation: rep,
+                logger: {},
+                enableConvertTimer: false,
+            });
+
+            expect(repStatus.enableConvertTimer).toBe(false);
         });
 
         test('should use appendAuthParamsV2 and set Authorization headers', () => {
@@ -119,6 +157,11 @@ describe('lib/RepStatus', () => {
         test('should clear the status timeout', () => {
             sandbox.mock(window).expects('clearTimeout');
             repStatus.destroy();
+        });
+
+        test('should mark the instance destroyed', () => {
+            repStatus.destroy();
+            expect(repStatus.destroyed).toBe(true);
         });
     });
 
@@ -171,6 +214,14 @@ describe('lib/RepStatus', () => {
             expect(repStatus.api.get).not.toBeCalled();
         });
 
+        test('should return a resolved promise without fetching if destroyed', () => {
+            jest.spyOn(repStatus.api, 'get');
+
+            repStatus.destroyed = true;
+            expect(repStatus.updateStatus()).toBeInstanceOf(Promise);
+            expect(repStatus.api.get).not.toBeCalled();
+        });
+
         test('should start a convert time Timer', () => {
             jest.spyOn(repStatus.api, 'get').mockResolvedValue({
                 info: {},
@@ -186,6 +237,43 @@ describe('lib/RepStatus', () => {
             });
         });
 
+        test('should not start a convert time Timer when the timer is disabled', () => {
+            repStatus.enableConvertTimer = false;
+            jest.spyOn(repStatus.api, 'get').mockResolvedValue({
+                info: {},
+                status: {
+                    state,
+                },
+            });
+
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+
+            return repStatus.updateStatus().then(() => {
+                expect(Timer.get(tag).start).toBeUndefined();
+            });
+        });
+
+        test('should not process a response that arrives after it is destroyed', () => {
+            jest.spyOn(repStatus.api, 'get').mockImplementation(() => {
+                repStatus.destroyed = true;
+                return Promise.resolve({ info: {}, status: { state } });
+            });
+
+            return repStatus.updateStatus().then(() => {
+                expect(repStatus.handleResponse).not.toBeCalled();
+            });
+        });
+
+        test('should reject when the info response has no status state', () => {
+            jest.spyOn(repStatus.api, 'get').mockResolvedValue({ info: {} });
+            jest.spyOn(repStatus, 'reject').mockImplementation();
+
+            return repStatus.updateStatus().then(() => {
+                expect(repStatus.reject).toBeCalled();
+                expect(repStatus.handleResponse).not.toBeCalled();
+            });
+        });
+
         test('should reject the status promise when the info request fails instead of hanging', () => {
             jest.spyOn(repStatus.api, 'get').mockRejectedValue(new Error('Not Found'));
             jest.spyOn(repStatus, 'reject').mockImplementation();
@@ -193,6 +281,18 @@ describe('lib/RepStatus', () => {
             return repStatus.updateStatus().then(() => {
                 expect(repStatus.reject).toBeCalled();
                 expect(repStatus.handleResponse).not.toBeCalled();
+            });
+        });
+
+        test('should not reject a failed info request after it is destroyed', () => {
+            jest.spyOn(repStatus.api, 'get').mockImplementation(() => {
+                repStatus.destroyed = true;
+                return Promise.reject(new Error('Not Found'));
+            });
+            jest.spyOn(repStatus, 'reject').mockImplementation();
+
+            return repStatus.updateStatus().then(() => {
+                expect(repStatus.reject).not.toBeCalled();
             });
         });
     });
@@ -358,6 +458,17 @@ describe('lib/RepStatus', () => {
 
             // Elapsed will not exist if stop isn't called
             expect(Timer.get(tag).elapsed).toBeDefined();
+        });
+
+        test('should not stop a convert time Timer on success when the timer is disabled', () => {
+            repStatus.enableConvertTimer = false;
+            repStatus.representation.status.state = STATUS_SUCCESS;
+            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+            Timer.start(tag);
+            repStatus.handleResponse();
+
+            // Elapsed will exist only if stop is called
+            expect(Timer.get(tag).elapsed).toBeUndefined();
         });
     });
 

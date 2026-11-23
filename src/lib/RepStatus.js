@@ -38,6 +38,25 @@ class RepStatus extends EventEmitter {
     }
 
     /**
+     * Reads the status state out of a representation info response, tolerating a malformed payload
+     *
+     * @private
+     * @param {Object} info - representation info response
+     * @return {string|undefined} status state, or undefined when the payload has none
+     */
+    static getStateFromInfo(info) {
+        if (!info) {
+            return undefined;
+        }
+
+        if (typeof info.status === 'object') {
+            return info.status ? info.status.state : undefined;
+        }
+
+        return info.temp_status ? info.temp_status.state : undefined;
+    }
+
+    /**
      * [constructor]
      *
      * @param {Object} options - Options object for representation status
@@ -50,13 +69,23 @@ class RepStatus extends EventEmitter {
      * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ api, representation, token, sharedLink, sharedLinkPassword, logger, fileId }) {
+    constructor({
+        api,
+        representation,
+        token,
+        sharedLink,
+        sharedLinkPassword,
+        logger,
+        fileId,
+        enableConvertTimer = true,
+    }) {
         super();
 
         this.api = api;
         this.representation = representation;
         this.logger = logger;
         this.fileId = fileId;
+        this.enableConvertTimer = enableConvertTimer;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
@@ -75,6 +104,7 @@ class RepStatus extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        this.destroyed = true;
         clearTimeout(this.statusTimeout);
     }
 
@@ -85,27 +115,41 @@ class RepStatus extends EventEmitter {
      * @return {Promise} Promise to update status
      */
     updateStatus() {
-        if (!this.infoUrl) {
+        if (!this.infoUrl || this.destroyed) {
             return Promise.resolve();
         }
 
-        const tag = Timer.createTag(this.fileId, LOAD_METRIC.convertTime);
-        Timer.start(tag);
+        if (this.enableConvertTimer) {
+            Timer.start(Timer.createTag(this.fileId, LOAD_METRIC.convertTime));
+        }
 
         const options = this.headers ? { headers: this.headers } : {};
         return this.api.get(this.infoUrl, options).then(
             info => {
+                if (this.destroyed) {
+                    return;
+                }
+
                 clearTimeout(this.statusTimeout);
+
+                const state = RepStatus.getStateFromInfo(info);
+                if (!state) {
+                    this.reject(
+                        new PreviewError(ERROR_CODE.CONVERSION_GENERIC, __('error_refresh'), {
+                            representation: this.representation,
+                        }),
+                    );
+                    return;
+                }
 
                 if (info.metadata) {
                     this.representation.metadata = info.metadata;
                 }
 
-                const status = typeof info.status === 'object' ? info.status.state : info.temp_status.state;
                 if (typeof this.representation.status === 'object') {
-                    this.representation.status.state = status;
+                    this.representation.status.state = state;
                 } else {
-                    this.representation.temp_status.state = status;
+                    this.representation.temp_status.state = state;
                 }
 
                 this.handleResponse();
@@ -113,6 +157,10 @@ class RepStatus extends EventEmitter {
             // Reject instead of hanging if the info request itself fails (e.g. the representation
             // endpoint returns a 4xx/5xx), so the viewer can surface an error rather than spin forever.
             () => {
+                if (this.destroyed) {
+                    return;
+                }
+
                 clearTimeout(this.statusTimeout);
                 const error = new PreviewError(ERROR_CODE.CONVERSION_GENERIC, __('error_refresh'), {
                     representation: this.representation,
@@ -167,7 +215,9 @@ class RepStatus extends EventEmitter {
 
             case STATUS_SUCCESS:
             case STATUS_VIEWABLE:
-                Timer.stop(convertTag);
+                if (this.enableConvertTimer) {
+                    Timer.stop(convertTag);
+                }
                 this.resolve();
                 break;
 

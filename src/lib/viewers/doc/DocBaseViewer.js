@@ -10,6 +10,7 @@ import DocFindBar from './DocFindBar';
 import { DocFindBarV2Root } from './DocFindBarV2';
 import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
+import getOcrFallbackRepresentation from './getOcrFallbackRepresentation';
 import { isNpmBuild } from '../../isNpmBuild';
 import limitMarkedContentNesting from './limitMarkedContentNesting';
 import PageTracker from '../../PageTracker';
@@ -37,12 +38,11 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
-    ORIGINAL_REP_NAME,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
-    STATUS_ERROR,
-    STATUS_SUCCESS,
+    STATUS_NONE,
+    STATUS_PENDING,
 } from '../../constants';
 import {
     createAssetUrlCreator,
@@ -805,19 +805,114 @@ class DocBaseViewer extends BaseViewer {
             return null;
         }
 
-        const pdfRep = getRepresentation(file, 'pdf');
-        if (pdfRep && RepStatus.getStatus(pdfRep) === STATUS_SUCCESS) {
-            return pdfRep;
+        return getOcrFallbackRepresentation(file);
+    }
+
+    /**
+     * Warms the on-demand 'ocr_pdf' rep in the background and swaps it in once it is ready.
+     *
+     * @return {void}
+     */
+    requestOcrPdfConversion() {
+        if (this.isDestroyed()) {
+            return;
         }
 
-        // pdf.js can only render the original bytes directly when the file itself is a PDF. For other
-        // document types the original is e.g. a raw .docx, so keep awaiting the on-demand 'pdf' conversion
-        // (unless it has already errored) rather than handing an unrenderable original to pdf.js.
-        if (file.extension === 'pdf') {
-            return getRepresentation(file, ORIGINAL_REP_NAME);
+        const { file, representation } = this.options;
+        if (representation && representation.representation === 'ocr_pdf') {
+            return;
         }
 
-        return pdfRep && RepStatus.getStatus(pdfRep) !== STATUS_ERROR ? pdfRep : null;
+        if (!file || !file.representations) {
+            return;
+        }
+
+        const ocrPdfRep = getRepresentation(file, 'ocr_pdf');
+        if (!ocrPdfRep) {
+            return;
+        }
+
+        const status = RepStatus.getStatus(ocrPdfRep);
+        if (status !== STATUS_NONE && status !== STATUS_PENDING) {
+            return;
+        }
+
+        const ocrPdfRepStatus = this.getRepStatus(ocrPdfRep);
+        ocrPdfRepStatus.removeListener('conversionpending', this.resetLoadTimeout);
+        ocrPdfRepStatus
+            .getPromise()
+            .then(() => this.swapToOcrPdf(ocrPdfRep))
+            .catch(() => {});
+    }
+
+    /**
+     * Swaps the live pdf.js document for the 'ocr_pdf' rep in place, preserving page, zoom and rotation.
+     *
+     * @param {Object} ocrPdfRep - The ready 'ocr_pdf' representation
+     * @return {void}
+     */
+    swapToOcrPdf(ocrPdfRep) {
+        if (this.isDestroyed() || !this.pdfViewer || !this.pdfEventBus) {
+            return;
+        }
+
+        const { representation } = this.options;
+        if (!representation || representation.representation === 'ocr_pdf') {
+            return;
+        }
+
+        const page = this.pdfViewer.currentPageNumber;
+        const scale = this.pdfViewer.currentScaleValue;
+        const rotation = this.rotationAngle;
+
+        const previousRepresentation = representation;
+        const previousPdfUrl = this.pdfUrl;
+        const previousLoadingTask = this.pdfLoadingTask;
+
+        const pdfUrl = this.createContentUrlV2(ocrPdfRep.content.url_template);
+        this.options.representation = ocrPdfRep;
+        this.pdfUrl = pdfUrl;
+
+        const swapLoadingTask = this.pdfjsLib.getDocument(this.getPdfDocConfig(pdfUrl));
+
+        swapLoadingTask.promise
+            .then(doc => {
+                if (this.isDestroyed()) {
+                    swapLoadingTask.destroy();
+                    return;
+                }
+
+                limitMarkedContentNesting(doc);
+
+                const restoreViewState = () => {
+                    this.pdfEventBus.off('pagesinit', restoreViewState);
+                    this.rotationAngle = rotation;
+                    this.pdfViewer.pagesRotation = rotation;
+                    this.pdfViewer.currentScaleValue = scale;
+                    this.setPage(page);
+                    this.setupPageIds();
+                };
+                this.pdfEventBus.on('pagesinit', restoreViewState);
+
+                this.pdfLoadingTask = swapLoadingTask;
+                this.pdfLinkService.setDocument(doc, pdfUrl);
+                this.pdfViewer.setDocument(doc);
+                this.doc = doc;
+
+                if (previousLoadingTask) {
+                    try {
+                        previousLoadingTask.destroy();
+                    } catch (e) {
+                        // Ignore these errors
+                    }
+                }
+            })
+            .catch(() => {
+                this.options.representation = previousRepresentation;
+                this.pdfUrl = previousPdfUrl;
+                this.pdfLoadingTask = previousLoadingTask;
+                swapLoadingTask.destroy();
+            });
     }
 
     handleFindBarClose() {
@@ -1192,54 +1287,9 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer = this.initPdfViewer();
         this.pdfLinkService.setViewer(this.pdfViewer);
 
-        const { file, location } = this.options;
-        const { size, watermark_info: watermarkInfo } = file;
-        const assetUrlCreator = createAssetUrlCreator(location);
+        const { file } = this.options;
 
-        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
-        // not applicable to Box's use case and disabling causes performance issues
-        const disableCreateObjectURL = false;
-
-        // Disable font faces on IOS 10.3.X
-        const disableFontFace = Browser.hasFontIssue() || this.getViewerOption('disableFontFace');
-
-        // Disable range requests for files smaller than minimum range request size
-        const isRangeSupported = size >= (this.getViewerOption('rangeMinSize') || RANGE_REQUEST_MINIMUM_SIZE);
-        const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
-        const disableRange = isWatermarked || !isRangeSupported;
-
-        // Use larger chunk sizes because we assume that en-US users have better connections to Box's servers
-        const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
-        const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
-
-        // Disable streaming by default unless it is explicitly enabled via options
-        const disableStream = this.getViewerOption('disableStream') !== false;
-
-        // Load PDF from representation URL and set as document for pdf.js. Cache task for destruction
-        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
-        const cMapUrl = useNpmPdfjs ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
-        const pdfDocConfig = {
-            cMapPacked: true,
-            cMapUrl,
-            disableCreateObjectURL,
-            disableFontFace,
-            disableRange,
-            disableStream,
-            rangeChunkSize,
-            url: pdfUrl,
-        };
-
-        if (useNpmPdfjs) {
-            pdfDocConfig.iccUrl = assetUrlCreator('iccs/');
-            pdfDocConfig.standardFontDataUrl = assetUrlCreator('standard_fonts/');
-            pdfDocConfig.wasmUrl = assetUrlCreator('wasm/');
-        } else {
-            pdfDocConfig.isEvalSupported = false;
-        }
-
-        pdfDocConfig.httpHeaders = this.appendAuthHeader();
-
-        this.pdfLoadingTask = this.pdfjsLib.getDocument(pdfDocConfig);
+        this.pdfLoadingTask = this.pdfjsLib.getDocument(this.getPdfDocConfig(pdfUrl));
 
         if (this.pageTracker) {
             this.addListener('preview_event_report', this.handlePreviewEventReport);
@@ -1317,6 +1367,63 @@ class DocBaseViewer extends BaseViewer {
                 }
                 this.handleDownloadError(error, pdfUrl);
             });
+    }
+
+    /**
+     * Builds the pdf.js getDocument config for a representation content url.
+     *
+     * @protected
+     * @param {string} pdfUrl - content url of the representation to load
+     * @return {Object} pdf.js document config
+     */
+    getPdfDocConfig(pdfUrl) {
+        const { file, location } = this.options;
+        const { size, watermark_info: watermarkInfo } = file;
+        const assetUrlCreator = createAssetUrlCreator(location);
+
+        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
+        // not applicable to Box's use case and disabling causes performance issues
+        const disableCreateObjectURL = false;
+
+        // Disable font faces on IOS 10.3.X
+        const disableFontFace = Browser.hasFontIssue() || this.getViewerOption('disableFontFace');
+
+        // Disable range requests for files smaller than minimum range request size
+        const isRangeSupported = size >= (this.getViewerOption('rangeMinSize') || RANGE_REQUEST_MINIMUM_SIZE);
+        const isWatermarked = watermarkInfo && watermarkInfo.is_watermarked;
+        const disableRange = isWatermarked || !isRangeSupported;
+
+        // Use larger chunk sizes because we assume that en-US users have better connections to Box's servers
+        const rangeChunkSizeDefault = location.locale === 'en-US' ? RANGE_CHUNK_SIZE_US : RANGE_CHUNK_SIZE_NON_US;
+        const rangeChunkSize = this.getViewerOption('rangeChunkSize') || rangeChunkSizeDefault;
+
+        // Disable streaming by default unless it is explicitly enabled via options
+        const disableStream = this.getViewerOption('disableStream') !== false;
+
+        const useNpmPdfjs = this.featureEnabled('useNpmPdfjs');
+        const cMapUrl = useNpmPdfjs ? assetUrlCreator('cmaps/') : assetUrlCreator(CMAP);
+        const pdfDocConfig = {
+            cMapPacked: true,
+            cMapUrl,
+            disableCreateObjectURL,
+            disableFontFace,
+            disableRange,
+            disableStream,
+            rangeChunkSize,
+            url: pdfUrl,
+        };
+
+        if (useNpmPdfjs) {
+            pdfDocConfig.iccUrl = assetUrlCreator('iccs/');
+            pdfDocConfig.standardFontDataUrl = assetUrlCreator('standard_fonts/');
+            pdfDocConfig.wasmUrl = assetUrlCreator('wasm/');
+        } else {
+            pdfDocConfig.isEvalSupported = false;
+        }
+
+        pdfDocConfig.httpHeaders = this.appendAuthHeader();
+
+        return pdfDocConfig;
     }
 
     /**
@@ -1667,6 +1774,11 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
+        if (this.controls) {
+            this.renderUI();
+            return;
+        }
+
         this.controls = new ControlsRoot({
             containerEl: this.containerEl,
             fileExtension: this.options.file.extension,
@@ -1841,6 +1953,8 @@ class DocBaseViewer extends BaseViewer {
 
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
+
+            this.requestOcrPdfConversion();
         }
     }
 

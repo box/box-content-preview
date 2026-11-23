@@ -963,6 +963,7 @@ class BaseViewer extends EventEmitter {
             sharedLinkPassword,
             fileId: file.id,
             logger: representation ? null : logger, // Do not log to main preview status if rep is passed in
+            enableConvertTimer: !representation,
         });
 
         // Don't time out while conversion is pending

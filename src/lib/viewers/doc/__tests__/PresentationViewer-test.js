@@ -47,6 +47,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         presentation.controls = {
             add: jest.fn(),
+            render: jest.fn(),
         };
 
         createRoot.mockReturnValue({

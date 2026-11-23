@@ -1116,6 +1116,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(repStatus.representation).toBe(representation);
         });
 
+        test('should enable the convert timer for the main representation', () => {
+            const repStatus = base.getRepStatus();
+            expect(repStatus.enableConvertTimer).toBe(true);
+        });
+
+        test('should disable the convert timer for a passed in representation', () => {
+            const repStatus = base.getRepStatus({ info: { url: 'someOtherUrl' } });
+            expect(repStatus.enableConvertTimer).toBe(false);
+        });
+
         test('should emit conversionpending once when the main representation is pending', () => {
             jest.spyOn(base, 'emit');
             const repStatus = base.getRepStatus();
