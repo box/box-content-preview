@@ -88,6 +88,7 @@ export default function VideoControlsV2({
     onAudioTrackChange,
     onAutoplayChange,
     onGuideChange,
+    onHoverTimeChange,
     onMuteChange,
     onPlayPause,
     onPlayNextChange,
@@ -195,6 +196,7 @@ export default function VideoControlsV2({
                     fps={fps}
                     isBlueprintEnabled={isBlueprintEnabled}
                     onCommentMarkerClick={onCommentMarkerClick}
+                    onHoverTimeChange={onHoverTimeChange}
                     onScrub={onScrub}
                     onScrubEnd={onScrubEnd}
                     onScrubStart={onScrubStart}

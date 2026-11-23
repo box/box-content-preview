@@ -3,12 +3,15 @@ import { setImmediate as flushImmediate } from 'timers';
 import noop from 'lodash/noop';
 import Api from '../../../api';
 import DashViewer from '../DashViewer';
+import { clearPrefetchedSegments, prefetchSegmentsAt } from '../DashSegmentPrefetcher';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import PreviewError from '../../../PreviewError';
 import Timer from '../../../Timer';
 import { MEDIA_STATIC_ASSETS_VERSION, PRELOAD_REP_NAME } from '../../../constants';
 import { VIEWER_EVENT } from '../../../events';
+
+jest.mock('../DashSegmentPrefetcher');
 
 // eslint-disable-next-line import/no-dynamic-require
 const shaka = require(`../../../../third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/shaka-player.compiled.js`);
@@ -2374,11 +2377,13 @@ describe('lib/viewers/media/DashViewer', () => {
             jest.spyOn(dash, 'isSeekPreviewEnabled').mockReturnValue(false);
             dash.renderUI();
             expect(getProps(dash)).not.toHaveProperty('onScrub');
+            expect(getProps(dash)).not.toHaveProperty('onHoverTimeChange');
 
             dash.controls.render.mockClear();
             dash.isSeekPreviewEnabled.mockReturnValue(true);
             dash.renderUI();
             expect(getProps(dash)).toMatchObject({
+                onHoverTimeChange: dash.schedulePrefetchAt,
                 onScrub: dash.handleScrub,
                 onScrubEnd: dash.handleScrubEnd,
                 onScrubStart: dash.handleScrubStart,
@@ -2808,7 +2813,115 @@ describe('lib/viewers/media/DashViewer', () => {
                     jest.advanceTimersByTime(1000);
                     expect(isHidden()).toBe(true);
                 });
+
+                test('should prefetch the segment under a drag that rests on an unbuffered frame', () => {
+                    jest.useFakeTimers();
+                    Object.defineProperty(dash.mediaEl, 'buffered', { configurable: true, value: { length: 0 } });
+
+                    dash.handleScrub(30);
+                    jest.advanceTimersByTime(100);
+
+                    expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30);
+                });
+
+                test('should cancel a pending prefetch on release', () => {
+                    jest.useFakeTimers();
+
+                    dash.handleScrub(30);
+                    dash.handleScrubEnd(30);
+                    jest.advanceTimersByTime(100);
+
+                    expect(prefetchSegmentsAt).not.toHaveBeenCalled();
+                });
+
+                test('should cancel a pending prefetch when the drag moves onto buffered time or a missing frame', () => {
+                    jest.useFakeTimers();
+
+                    dash.handleScrub(30);
+                    dash.seekPreview.isTimeBuffered.mockReturnValueOnce(true);
+                    dash.handleScrub(10);
+                    jest.advanceTimersByTime(100);
+
+                    dash.handleScrub(30);
+                    dash.seekPreview.showFrame.mockReturnValueOnce(false);
+                    dash.handleScrub(40);
+                    jest.advanceTimersByTime(100);
+
+                    expect(prefetchSegmentsAt).not.toHaveBeenCalled();
+                });
+
+                test('should keep the drag prefetch when the pointer leaves the scrubber', () => {
+                    jest.useFakeTimers();
+                    Object.defineProperty(dash.mediaEl, 'buffered', { configurable: true, value: { length: 0 } });
+
+                    dash.handleScrubStart();
+                    dash.handleScrub(30);
+                    dash.schedulePrefetchAt(null);
+                    jest.advanceTimersByTime(100);
+
+                    expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30);
+                });
             });
+        });
+    });
+
+    describe('schedulePrefetchAt()', () => {
+        const setBuffered = ranges =>
+            Object.defineProperty(dash.mediaEl, 'buffered', {
+                configurable: true,
+                value: {
+                    end: i => ranges[i][1],
+                    length: ranges.length,
+                    start: i => ranges[i][0],
+                },
+            });
+
+        beforeEach(() => {
+            jest.useFakeTimers();
+            setBuffered([[0, 20]]);
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test('should prefetch the segment under a pointer that rests over unbuffered time', () => {
+            dash.schedulePrefetchAt(30);
+            jest.advanceTimersByTime(99);
+            expect(prefetchSegmentsAt).not.toHaveBeenCalled();
+
+            jest.advanceTimersByTime(1);
+            expect(prefetchSegmentsAt).toHaveBeenCalledWith(dash.player, 30);
+        });
+
+        test('should only prefetch where the pointer stops', () => {
+            dash.schedulePrefetchAt(30);
+            jest.advanceTimersByTime(50);
+            dash.schedulePrefetchAt(40);
+            jest.advanceTimersByTime(100);
+
+            expect(prefetchSegmentsAt.mock.calls).toEqual([[dash.player, 40]]);
+        });
+
+        test('should not prefetch buffered time or after the pointer leaves', () => {
+            dash.schedulePrefetchAt(10);
+            jest.advanceTimersByTime(100);
+
+            dash.schedulePrefetchAt(30);
+            dash.schedulePrefetchAt(null);
+            jest.advanceTimersByTime(100);
+
+            expect(prefetchSegmentsAt).not.toHaveBeenCalled();
+        });
+
+        test('should cancel a pending prefetch and clear prefetched segments on destroy', () => {
+            dash.schedulePrefetchAt(30);
+            dash.destroy();
+            jest.advanceTimersByTime(100);
+
+            expect(prefetchSegmentsAt).not.toHaveBeenCalled();
+            expect(clearPrefetchedSegments).toHaveBeenCalled();
+            dash = null;
         });
     });
 });

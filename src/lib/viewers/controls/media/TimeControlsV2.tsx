@@ -6,7 +6,7 @@ import FilmstripV2 from './FilmstripV2';
 import { buildClusters, CommentMarker, MarkerCluster, MarkerTick, useDismissableMarkerSelection } from './markers';
 import SliderControl from '../slider';
 import useScrubPreview, { ScrubPreviewProps } from './useScrubPreview';
-import { getBufferedTrackStops, percent } from './utils';
+import { getBufferedTrackStops, getPercent } from './utils';
 import './TimeControlsV2.scss';
 
 const TRACK_COLORS = {
@@ -25,6 +25,7 @@ export type Props = ScrubPreviewProps & {
     fps?: number;
     isBlueprintEnabled?: boolean;
     onCommentMarkerClick?: (marker: CommentMarker) => void;
+    onHoverTimeChange?: (time: number | null) => void;
     onTimeChange: (volume: number) => void;
 };
 
@@ -39,6 +40,7 @@ export default function TimeControlsV2({
     fps,
     isBlueprintEnabled = false,
     onCommentMarkerClick,
+    onHoverTimeChange,
     onScrub,
     onScrubEnd,
     onScrubStart,
@@ -67,7 +69,7 @@ export default function TimeControlsV2({
     );
     const currentValue = isFinite(currentTime) ? currentTime : 0;
     const durationValue = isFinite(durationTime) ? durationTime : 0;
-    const currentPercentage = percent(currentValue, durationValue);
+    const currentPercentage = getPercent(currentValue, durationValue);
     const { buffered: bufferedColor, unplayed: unplayedColor } =
         TRACK_COLORS[isBlueprintEnabled ? 'blueprint' : 'legacy'];
     let track: string;
@@ -82,7 +84,7 @@ export default function TimeControlsV2({
         track = `linear-gradient(to right, ${GrayWhite} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${unplayedColor} calc(${currentPercentage}% + 2.5px), ${bufferedStops})`;
     } else {
         const bufferedAmount = bufferedRange && bufferedRange.length ? bufferedRange.end(bufferedRange.length - 1) : 0;
-        const bufferedPercentage = percent(bufferedAmount, durationValue);
+        const bufferedPercentage = getPercent(bufferedAmount, durationValue);
         track = `linear-gradient(to right, ${GrayWhite} calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% - 2.5px), transparent calc(${currentPercentage}% + 2.5px), ${bufferedColor} calc(${currentPercentage}% + 2.5px), ${bufferedColor} ${bufferedPercentage}%, ${unplayedColor} ${bufferedPercentage}%, ${unplayedColor} 100%)`;
     }
 
@@ -139,6 +141,12 @@ export default function TimeControlsV2({
         setHoverPosition(newPosition);
         setHoverPositionMax(width);
         setHoverTime(newTime);
+        onHoverTimeChange?.(newTime);
+    };
+
+    const handleMouseOut = (): void => {
+        setIsSliderHovered(false);
+        onHoverTimeChange?.(null);
     };
 
     return (
@@ -173,7 +181,7 @@ export default function TimeControlsV2({
                     min={0}
                     onBlur={noop}
                     onFocus={noop}
-                    onMouseOut={(): void => setIsSliderHovered(false)}
+                    onMouseOut={handleMouseOut}
                     onMouseOver={(): void => setIsSliderHovered(true)}
                     onMove={handleMouseMove}
                     onScrubEnd={handleScrubEnd}

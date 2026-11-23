@@ -1,12 +1,12 @@
 import type React from 'react';
 import { decodeKeydown } from '../../../util';
 
-export const round = (value: number): number => {
+export const roundToFourDecimals = (value: number): number => {
     return +value.toFixed(4);
 };
 
-export const percent = (value1: number, value2: number): number => {
-    return round((value1 / value2) * 100);
+export const getPercent = (value1: number, value2: number): number => {
+    return roundToFourDecimals((value1 / value2) * 100);
 };
 
 type BufferedTrackStopsOptions = {
@@ -31,8 +31,8 @@ export const getBufferedTrackStops = ({
     const stops: string[] = [];
 
     for (let i = 0; bufferedRange && durationTime > 0 && i < bufferedRange.length; i += 1) {
-        const start = Math.max(percent(bufferedRange.start(i), durationTime), fromPercentage);
-        const end = Math.min(percent(bufferedRange.end(i), durationTime), 100);
+        const start = Math.max(getPercent(bufferedRange.start(i), durationTime), fromPercentage);
+        const end = Math.min(getPercent(bufferedRange.end(i), durationTime), 100);
 
         if (end > start) {
             stops.push(
@@ -45,6 +45,16 @@ export const getBufferedTrackStops = ({
     }
 
     return [...stops, `${unplayedColor} 100%`].join(', ');
+};
+
+export const isTimeBuffered = (bufferedRange: TimeRanges, time: number): boolean => {
+    for (let i = 0; i < bufferedRange.length; i += 1) {
+        if (time >= bufferedRange.start(i) && time < bufferedRange.end(i)) {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 // Activation keys must not reach the viewer's keydown handler, which toggles playback on Space.
