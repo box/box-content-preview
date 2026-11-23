@@ -53,6 +53,8 @@ export default class PrefetchedFrameVideo {
 
     mediaSource = new MediaSource();
 
+    mediaSourceUrl: string;
+
     networkingEngine: NetworkingEngine;
 
     onFrameReady: () => void;
@@ -73,25 +75,27 @@ export default class PrefetchedFrameVideo {
         this.networkingEngine = networkingEngine;
         this.onFrameReady = onFrameReady;
 
-        const url = URL.createObjectURL(this.mediaSource);
+        this.mediaSourceUrl = URL.createObjectURL(this.mediaSource);
         this.sourceOpen = new Promise(resolve => {
             this.mediaSource.addEventListener(
                 'sourceopen',
                 () => {
-                    URL.revokeObjectURL(url);
+                    URL.revokeObjectURL(this.mediaSourceUrl);
                     resolve();
                 },
                 { once: true },
             );
         });
         this.videoEl.muted = true;
-        this.videoEl.src = url;
+        this.videoEl.src = this.mediaSourceUrl;
         this.videoEl.addEventListener('seeked', this.handleSeeked);
 
         networkingEngine.registerResponseFilter(this.storeVideoInitSegment);
     }
 
     destroy(): void {
+        // sourceopen never fires if the video is released first, so its revoke can't be relied on
+        URL.revokeObjectURL(this.mediaSourceUrl);
         this.networkingEngine.unregisterResponseFilter(this.storeVideoInitSegment);
         this.videoEl.removeEventListener('seeked', this.handleSeeked);
         this.videoEl.removeAttribute('src');
@@ -130,14 +134,16 @@ export default class PrefetchedFrameVideo {
     handleSeeked = (): void => {
         const { videoHeight, videoWidth } = this.videoEl;
         const context = this.frameCanvas.getContext('2d');
-        if (!context || !videoWidth || !videoHeight) {
+        // A newer seek has started, so this frame is stale or blank
+        const isStale = this.videoEl.seeking || this.videoEl.readyState < HTMLMediaElement.HAVE_CURRENT_DATA;
+        if (isStale || !context || !videoWidth || !videoHeight) {
             return;
         }
 
         this.frameCanvas.width = videoWidth;
         this.frameCanvas.height = videoHeight;
         context.drawImage(this.videoEl, 0, 0);
-        this.frameTime = this.seekTime;
+        this.frameTime = this.videoEl.currentTime;
         this.onFrameReady();
     };
 

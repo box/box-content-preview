@@ -107,6 +107,8 @@ describe('lib/viewers/media/PrefetchedFrameVideo', () => {
     });
 
     const finishSeek = (): void => {
+        setVideoProp('readyState', HTMLMediaElement.HAVE_CURRENT_DATA);
+        setVideoProp('seeking', false);
         setVideoProp('videoWidth', 1280);
         setVideoProp('videoHeight', 720);
         frameVideo.videoEl.dispatchEvent(new Event('seeked'));
@@ -165,6 +167,21 @@ describe('lib/viewers/media/PrefetchedFrameVideo', () => {
         expect(frameVideo.getFrame(12.2)).toBe(frameVideo.frameCanvas);
     });
 
+    test('should not capture a frame when a newer seek has already started', () => {
+        setVideoProp('buffered', { end: () => 15, length: 1, start: () => 10 });
+        frameVideo.getFrame(10.5);
+        finishSeek();
+        onFrameReady.mockClear();
+
+        frameVideo.getFrame(14);
+        setVideoProp('seeking', true);
+        frameVideo.videoEl.dispatchEvent(new Event('seeked'));
+
+        expect(onFrameReady).not.toHaveBeenCalled();
+        expect(frameVideo.frameTime).toBe(10.5);
+        expect(frameVideo.getFrame(14)).toBeUndefined();
+    });
+
     test('should not seek again when the browser rounds currentTime', () => {
         setVideoProp('buffered', { end: () => 15, length: 1, start: () => 10 });
         frameVideo.getFrame(12.3456789);
@@ -176,9 +193,11 @@ describe('lib/viewers/media/PrefetchedFrameVideo', () => {
     });
 
     test('should release the video and filter on destroy', () => {
+        (URL.revokeObjectURL as jest.Mock).mockClear();
         frameVideo.destroy();
         frameVideo.videoEl.dispatchEvent(new Event('seeked'));
 
+        expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:frames');
         expect(networkingEngine.unregisterResponseFilter).toHaveBeenCalledWith(frameVideo.storeVideoInitSegment);
         expect(frameVideo.videoEl.hasAttribute('src')).toBe(false);
         expect(onFrameReady).not.toHaveBeenCalled();
