@@ -66,7 +66,11 @@ class ImageViewer extends ImageBaseViewer {
      */
     destroy() {
         clearTimeout(this.placeholderFadeTimer);
-        this.placeholderEl?.remove();
+        if (this.placeholderEl) {
+            URL.revokeObjectURL(this.placeholderEl.src);
+            this.placeholderEl.remove();
+            this.placeholderEl = null;
+        }
 
         if (this.isDiscoverabilityEnabled()) {
             this.removeListener('zoom', this.handleZoomEvent);

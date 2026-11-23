@@ -305,6 +305,16 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:320');
         });
 
+        test('should revoke the 320 and remove its copy if destroyed during the fade', () => {
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            const placeholderEl = image.imageEl.nextElementSibling;
+
+            image.destroy();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:320');
+            expect(placeholderEl.isConnected).toBe(false);
+        });
+
         test('should revoke the image rep if destroyed first', () => {
             jest.spyOn(image, 'isDestroyed').mockReturnValue(true);
 
