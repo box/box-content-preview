@@ -11,12 +11,10 @@ type Options = ScrubPreviewProps & {
 };
 
 type ScrubPreview = {
+    handleScrubEnd?: () => void;
+    handleScrubStart?: () => void;
+    handleUpdate: (time: number) => void;
     isScrubbing: boolean;
-    sliderProps: {
-        onScrubEnd?: () => void;
-        onScrubStart?: () => void;
-        onUpdate: (time: number) => void;
-    };
 };
 
 /**
@@ -57,10 +55,7 @@ export default function useScrubPreview({ onScrub, onScrubEnd, onScrubStart, onT
         [onScrub, onTimeChange],
     );
 
-    return {
-        isScrubbing,
-        sliderProps: onScrub
-            ? { onScrubEnd: handleScrubEnd, onScrubStart: handleScrubStart, onUpdate: handleUpdate }
-            : { onUpdate: onTimeChange },
-    };
+    return onScrub
+        ? { handleScrubEnd, handleScrubStart, handleUpdate, isScrubbing }
+        : { handleUpdate: onTimeChange, isScrubbing };
 }

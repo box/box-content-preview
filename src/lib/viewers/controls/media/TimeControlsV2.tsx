@@ -44,7 +44,12 @@ export default function TimeControlsV2({
     onScrubStart,
     onTimeChange,
 }: Props): JSX.Element {
-    const { isScrubbing, sliderProps } = useScrubPreview({ onScrub, onScrubEnd, onScrubStart, onTimeChange });
+    const { handleScrubEnd, handleScrubStart, handleUpdate, isScrubbing } = useScrubPreview({
+        onScrub,
+        onScrubEnd,
+        onScrubStart,
+        onTimeChange,
+    });
     const [isSliderHovered, setIsSliderHovered] = React.useState(false);
     const [hoverPosition, setHoverPosition] = React.useState(0);
     const [hoverPositionMax, setHoverPositionMax] = React.useState(0);
@@ -171,7 +176,9 @@ export default function TimeControlsV2({
                     onMouseOut={(): void => setIsSliderHovered(false)}
                     onMouseOver={(): void => setIsSliderHovered(true)}
                     onMove={handleMouseMove}
-                    {...sliderProps}
+                    onScrubEnd={handleScrubEnd}
+                    onScrubStart={handleScrubStart}
+                    onUpdate={handleUpdate}
                     scrubCursor={onScrub ? 'ew-resize' : undefined}
                     step={fps ? 1 / fps : 5}
                     title={__('media_time_slider')}
