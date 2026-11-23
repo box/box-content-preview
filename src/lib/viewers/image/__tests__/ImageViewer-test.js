@@ -11,7 +11,7 @@ import {
     CLASS_ANNOTATIONS_IMAGE_FTUX_CURSOR_SEEN,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
 } from '../../../constants';
-import { FIRST_RENDER_METRIC, LOAD_METRIC } from '../../../events';
+import { FIRST_RENDER_METRIC, LOAD_METRIC, VIEWER_EVENT } from '../../../events';
 import Timer from '../../../Timer';
 
 jest.mock('../../controls/controls-root');
@@ -169,6 +169,221 @@ describe('lib/viewers/image/ImageViewer', () => {
                 expect(URL.revokeObjectURL).toHaveBeenCalledWith(blobUrl);
                 expect(image.imageEl.src).not.toBe(blobUrl);
             });
+        });
+    });
+
+    describe('load() while the image rep converts', () => {
+        const repTemplate = 'https://dl.example.com/representations/jpg_2048x2048/content/{+asset_path}';
+        const placeholderUrl = 'https://dl.example.com/representations/jpg_320x320/content/{+asset_path}';
+        const flushPromises = () =>
+            new Promise(resolve => {
+                setTimeout(resolve, 0);
+            });
+        let resolveRep;
+
+        beforeEach(() => {
+            // BaseViewer.setup is stubbed, so the load timeout would otherwise fire on the next tick.
+            image.loadTimeout = 60000;
+            image.options.representation = { content: { url_template: repTemplate }, status: { state: 'pending' } };
+            jest.spyOn(image, 'featureEnabled').mockImplementation(
+                feature => feature === 'imageConversionPlaceholder.enabled',
+            );
+            jest.spyOn(image, 'createContentUrlV2').mockImplementation(template => template);
+            jest.spyOn(image, 'getRepStatus').mockReturnValue({
+                getPromise: () =>
+                    new Promise(resolve => {
+                        resolveRep = resolve;
+                    }),
+            });
+            jest.spyOn(image, 'emit');
+        });
+
+        test('should wait for the image rep as before when the feature is off', () => {
+            image.featureEnabled.mockReturnValue(false);
+            jest.spyOn(image, 'fetchDecodedImage');
+
+            image.load();
+
+            expect(image.getRepStatus).toHaveBeenCalledWith();
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+        });
+
+        test.each(['success', 'error'])('should wait for the image rep as before when its state is %s', state => {
+            image.options.representation.status.state = state;
+            jest.spyOn(image, 'fetchDecodedImage');
+
+            image.load();
+
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+        });
+
+        test('should show the 320 without telling the host the rep is converting', async () => {
+            jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue({ blobUrl: 'blob:320', height: 240, width: 320 });
+
+            await image.load();
+
+            expect(image.fetchDecodedImage).toHaveBeenCalledWith(placeholderUrl);
+            expect(image.getRepStatus).toHaveBeenCalledWith(image.options.representation);
+            expect(image.imageEl.src).toBe('blob:320');
+            expect(image.displaySizeCap).toBe(920);
+            expect(image.emit).not.toHaveBeenCalledWith(VIEWER_EVENT.conversionPending);
+        });
+
+        test('should swap in the image rep once it is ready', async () => {
+            const fullImage = { blobUrl: 'blob:2048', height: 1536, width: 2048 };
+            jest.spyOn(image, 'fetchDecodedImage')
+                .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
+                .mockResolvedValueOnce(fullImage);
+            jest.spyOn(image, 'waitForViewerLoad').mockResolvedValue();
+            jest.spyOn(image, 'swapInFullImage').mockImplementation();
+
+            await image.load();
+            expect(image.swapInFullImage).not.toHaveBeenCalled();
+
+            resolveRep();
+            await flushPromises();
+
+            expect(image.fetchDecodedImage).toHaveBeenLastCalledWith(repTemplate);
+            expect(image.swapInFullImage).toHaveBeenCalledWith(fullImage);
+        });
+
+        test('should revoke the image rep if destroyed while waiting for the viewer to load', async () => {
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            jest.spyOn(image, 'fetchDecodedImage')
+                .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
+                .mockResolvedValueOnce({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            jest.spyOn(image, 'waitForViewerLoad').mockReturnValue(new Promise(() => {}));
+            jest.spyOn(image, 'swapInFullImage');
+
+            await image.load();
+            resolveRep();
+            await flushPromises();
+            image.destroy();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2048');
+            expect(image.swapInFullImage).not.toHaveBeenCalled();
+        });
+
+        test('should revoke the image rep if destroyed before it finishes decoding', async () => {
+            let resolveFullImage;
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            jest.spyOn(image, 'fetchDecodedImage')
+                .mockResolvedValueOnce({ blobUrl: 'blob:320', height: 240, width: 320 })
+                .mockReturnValueOnce(
+                    new Promise(resolve => {
+                        resolveFullImage = resolve;
+                    }),
+                );
+            jest.spyOn(image, 'waitForViewerLoad');
+
+            await image.load();
+            resolveRep();
+            await flushPromises();
+            image.destroy();
+            resolveFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            await flushPromises();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2048');
+            expect(image.waitForViewerLoad).not.toHaveBeenCalled();
+        });
+
+        test('should show the loading indicator and wait for the image rep when the 320 is unavailable', async () => {
+            jest.spyOn(image, 'fetchDecodedImage').mockRejectedValue(new Error('not an image'));
+            jest.spyOn(image, 'loadContent').mockResolvedValue();
+
+            const loading = image.load();
+            await flushPromises();
+
+            expect(image.emit).toHaveBeenCalledWith(VIEWER_EVENT.conversionPending);
+            expect(image.loadContent).not.toHaveBeenCalled();
+
+            resolveRep();
+            await loading;
+
+            expect(image.loadContent).toHaveBeenCalledWith(repTemplate);
+            expect(image.displaySizeCap).toBeUndefined();
+        });
+    });
+
+    describe('waitForViewerLoad()', () => {
+        test('should resolve immediately if the viewer has loaded', async () => {
+            image.loaded = true;
+
+            await expect(image.waitForViewerLoad()).resolves.toBeUndefined();
+        });
+
+        test('should resolve once the viewer emits load', async () => {
+            let isResolved = false;
+            image.waitForViewerLoad().then(() => {
+                isResolved = true;
+            });
+            await Promise.resolve();
+            expect(isResolved).toBe(false);
+
+            image.emit(VIEWER_EVENT.load);
+            await Promise.resolve();
+
+            expect(isResolved).toBe(true);
+        });
+    });
+
+    describe('swapInFullImage()', () => {
+        beforeEach(() => {
+            jest.useFakeTimers();
+            jest.spyOn(image, 'renderUI').mockImplementation();
+            jest.spyOn(URL, 'revokeObjectURL').mockImplementation();
+            image.imageEl.src = 'blob:320';
+            image.imageEl.style.width = '920px';
+            image.imageEl.setAttribute('originalWidth', 320);
+            image.imageEl.setAttribute('originalHeight', 240);
+        });
+
+        afterEach(() => {
+            jest.useRealTimers();
+        });
+
+        test('should keep the displayed size and rescale against the image rep', () => {
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+
+            expect(image.imageEl.src).toBe('blob:2048');
+            expect(image.imageEl.style.width).toBe('920px');
+            expect(image.imageEl.getAttribute('originalWidth')).toBe('2048');
+            expect(image.imageEl.getAttribute('originalHeight')).toBe('1536');
+            expect(image.scale).toBeCloseTo(920 / 2048);
+        });
+
+        test('should fade out a copy of the 320 on top, then remove it', () => {
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+
+            const placeholderEl = image.imageEl.nextElementSibling;
+            expect(placeholderEl.src).toBe('blob:320');
+            expect(placeholderEl.getAttribute('aria-hidden')).toBe('true');
+            expect(placeholderEl.style.width).toBe('920px');
+            expect(placeholderEl.style.opacity).toBe('0');
+
+            jest.runAllTimers();
+
+            expect(placeholderEl.isConnected).toBe(false);
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:320');
+        });
+
+        test('should revoke the 320 and remove its copy if destroyed during the fade', () => {
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            const placeholderEl = image.imageEl.nextElementSibling;
+
+            image.destroy();
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:320');
+            expect(placeholderEl.isConnected).toBe(false);
+        });
+
+        test('should revoke the image rep if destroyed first', () => {
+            jest.spyOn(image, 'isDestroyed').mockReturnValue(true);
+
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+
+            expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2048');
+            expect(image.imageEl.src).toBe('blob:320');
         });
     });
 
@@ -354,6 +569,21 @@ describe('lib/viewers/image/ImageViewer', () => {
             Object.defineProperty(image.imageEl, 'offsetWidth', clientWidth);
             Object.defineProperty(image.wrapperEl, 'clientHeight', { value: 50, writable: true });
             Object.defineProperty(image.wrapperEl, 'clientWidth', { value: 50, writable: true });
+        });
+
+        test.each`
+            viewport | expected
+            ${2000}  | ${920}
+            ${500}   | ${500}
+        `('should fit a converting image to $expected px in a $viewport px viewport', ({ viewport, expected }) => {
+            jest.spyOn(image, 'getViewportDimensions').mockReturnValue({ height: viewport, width: viewport });
+            image.displaySizeCap = 920;
+            image.imageEl.setAttribute('originalWidth', 320);
+            image.imageEl.setAttribute('originalHeight', 240);
+
+            image.zoom();
+
+            expect(getValue(image.imageEl.style.width)).toBe(expected);
         });
 
         test('should zoom in by modifying width', () => {
