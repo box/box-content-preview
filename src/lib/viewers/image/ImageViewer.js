@@ -137,8 +137,10 @@ class ImageViewer extends ImageBaseViewer {
 
         const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
         const state = representation.status?.state;
+        // An SVG with only a viewBox decodes to a zero size, which the placeholder swap cannot use.
+        const isSvg = this.options.file.extension === 'svg';
         if (
-            (this.featureEnabled('imageProgressiveLoad.enabled') && state !== STATUS_ERROR) ||
+            (this.featureEnabled('imageProgressiveLoad.enabled') && state !== STATUS_ERROR && !isSvg) ||
             (this.featureEnabled('imageConversionPlaceholder.enabled') && CONVERTING_STATES.includes(state))
         ) {
             return this.loadWithPlaceholder(contentUrl);

@@ -451,7 +451,21 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.displaySizeCap).toBeUndefined();
         });
 
-        test('should show the host placeholder, then swap in the original', async () => {
+        test('should load an SVG the normal way, ignoring the host placeholder', async () => {
+            image.options.file.extension = 'svg';
+            image.options.viewers = { Image: { placeholder: { fileId: '1', url: 'blob:host' } } };
+
+            await image.load();
+
+            expect(image.getRepStatus).toHaveBeenCalledWith();
+            expect(global.fetch).not.toHaveBeenCalled();
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+            expect(image.loadContent).toHaveBeenCalledWith(originalTemplate);
+            expect(image.displaySizeCap).toBeUndefined();
+        });
+
+        test('should show the host placeholder for a GIF, then swap in the original', async () => {
+            image.options.file.extension = 'gif';
             image.options.viewers = { Image: { placeholder: { fileId: '1', url: 'blob:host' } } };
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:copy');
             jest.spyOn(image, 'decodeBlobUrl').mockResolvedValue({ blobUrl: 'blob:copy', height: 240, width: 320 });
