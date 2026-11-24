@@ -62,11 +62,11 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: brightness(1) blur(4px);
+    filter: brightness(1) blur(6px);
     transition: filter 150ms ease-out;
 
     .bp-is-dimmed & {
-        filter: brightness(0.9) blur(4px);
+        filter: brightness(0.75) blur(6px);
         transition: filter 150ms ease-in-out;
     }
 
@@ -79,7 +79,7 @@
         filter: brightness(1);
 
         .bp-is-dimmed & {
-            filter: brightness(0.9);
+            filter: brightness(0.75) blur(6px);
         }
     }
 
@@ -96,7 +96,7 @@
     }
 
     .bp-is-sharp.bp-is-dimmed & {
-        filter: brightness(0.9);
+        filter: brightness(0.75);
     }
 }
 
