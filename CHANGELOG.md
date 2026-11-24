@@ -1,3 +1,13 @@
+## 3.146.0 (2026-11-24)
+
+* feat(video): prefetch unbuffered segments under the scrubber pointer (#1981) ([5491380](https://github.com/box/box-content-preview/commit/5491380)), closes [#1981](https://github.com/box/box-content-preview/issues/1981)
+* feat(video): show real frames from prefetched segments in the seek preview (#1982) ([88030df](https://github.com/box/box-content-preview/commit/88030df)), closes [#1982](https://github.com/box/box-content-preview/issues/1982)
+
+## 3.145.0 (2026-11-23)
+
+* feat(image): show the 320 while the 2048 converts (#1980) ([64d13f7](https://github.com/box/box-content-preview/commit/64d13f7)), closes [#1980](https://github.com/box/box-content-preview/issues/1980)
+* feat(video): add filmstrip seek preview and seek-on-release scrubbing (#1973) ([ab8df26](https://github.com/box/box-content-preview/commit/ab8df26)), closes [#1973](https://github.com/box/box-content-preview/issues/1973)
+
 ## 3.144.0 (2026-11-21)
 
 * fix(thumbnails): allow thumbnail navigation before the pdf loads (#1976) ([394d299](https://github.com/box/box-content-preview/commit/394d299)), closes [#1976](https://github.com/box/box-content-preview/issues/1976)

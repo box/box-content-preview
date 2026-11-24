@@ -407,6 +407,14 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         );
     });
 
+    describe('isSeekPreviewEnabled()', () => {
+        test('should stay off even when the feature is on', () => {
+            jest.spyOn(viewer, 'featureEnabled').mockReturnValue(true);
+
+            expect(viewer.isSeekPreviewEnabled()).toBe(false);
+        });
+    });
+
     describe('getVideoControlsV2Props()', () => {
         test('should pass the VR toggle state and handler to the v2 controls', () => {
             viewer.isVrShown = true;

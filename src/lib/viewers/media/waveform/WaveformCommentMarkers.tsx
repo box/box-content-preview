@@ -8,7 +8,7 @@ import {
     MarkerAvatarStack,
     useDismissableMarkerSelection,
 } from '../../controls/media/markers';
-import { percent } from '../../controls/media/utils';
+import { getPercent } from '../../controls/media/utils';
 import { WAVEFORM_ZOOM_MIN } from './constants';
 import { WaveformViewport } from './types';
 import './WaveformCommentMarkers.scss';
@@ -37,7 +37,7 @@ function markerLeftPercent(time: number, durationSec: number, viewport?: Wavefor
     const mapped = hasMappedWindow(viewport);
     const origin = mapped ? viewport.startSec : 0;
     const span = mapped ? viewport.endSec - viewport.startSec : durationSec;
-    return percent(time - origin, span);
+    return getPercent(time - origin, span);
 }
 
 /** Width is unknown until layout. Still place badges, and stack exact same timestamps. */
@@ -53,8 +53,8 @@ function clustersByExactTime(markers: CommentMarker[], durationSec: number): Clu
         }
     });
     return groups.map(group => {
-        const leftPercent = percent(group[0].time, durationSec);
-        const rightPercent = percent(group[group.length - 1].time, durationSec);
+        const leftPercent = getPercent(group[0].time, durationSec);
+        const rightPercent = getPercent(group[group.length - 1].time, durationSec);
         return {
             id: group.map(m => m.id).join('|'),
             isSinglePoint: leftPercent === rightPercent,

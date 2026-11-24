@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import TimeControlsV2 from '../TimeControlsV2';
 import SliderControl from '../../slider/SliderControl';
@@ -40,10 +40,91 @@ describe('TimeControlsV2', () => {
     describe('filmstrip', () => {
         test('should pass isBlueprintEnabled to the filmstrip', () => {
             const { rerender } = render(<TimeControlsV2 {...defaultProps} filmstripInterval={1} />);
-            expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).not.toBeInTheDocument();
+            expect(
+                screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]'),
+            ).not.toBeInTheDocument();
 
             rerender(<TimeControlsV2 {...defaultProps} filmstripInterval={1} isBlueprintEnabled />);
             expect(screen.getByTestId('bp-FilmstripV2-time').querySelector('[data-typography]')).toBeInTheDocument();
+        });
+    });
+
+    describe('scrub preview', () => {
+        const getSliderProps = () => (SliderControl as jest.Mock).mock.calls.at(-1)[0];
+        const startScrub = (time: number) =>
+            act(() => {
+                getSliderProps().onScrubStart();
+                getSliderProps().onUpdate(time);
+            });
+
+        test('should seek on every update and keep the plain filmstrip when onScrub is not passed', () => {
+            const onTimeChange = jest.fn();
+            const { container } = render(
+                <TimeControlsV2 {...defaultProps} filmstripInterval={1} onTimeChange={onTimeChange} />,
+            );
+            const filmstrip = container.querySelector('.bp-FilmstripV2');
+
+            act(() => getSliderProps().onMouseOver());
+            act(() => getSliderProps().onUpdate(10));
+
+            expect(onTimeChange).toHaveBeenCalledWith(10);
+            expect(filmstrip).toHaveClass('bp-is-shown');
+            expect(filmstrip).not.toHaveClass('bp-FilmstripV2--fade');
+            expect(getSliderProps().onScrubStart).toBeUndefined();
+            expect(getSliderProps().scrubCursor).toBeUndefined();
+        });
+
+        test('should preview the drag through onScrub, hide the filmstrip, and seek once on release', () => {
+            const onScrub = jest.fn();
+            const onScrubEnd = jest.fn();
+            const onScrubStart = jest.fn();
+            const onTimeChange = jest.fn();
+            const { container } = render(
+                <TimeControlsV2
+                    {...defaultProps}
+                    filmstripInterval={1}
+                    onScrub={onScrub}
+                    onScrubEnd={onScrubEnd}
+                    onScrubStart={onScrubStart}
+                    onTimeChange={onTimeChange}
+                />,
+            );
+            const filmstrip = container.querySelector('.bp-FilmstripV2');
+            expect(filmstrip).toHaveClass('bp-FilmstripV2--fade');
+            expect(getSliderProps().scrubCursor).toBe('ew-resize');
+
+            act(() => getSliderProps().onMouseOver());
+            startScrub(10);
+            startScrub(20);
+            expect(onScrubStart).toHaveBeenCalledTimes(1);
+            expect(onScrub.mock.calls).toEqual([[10], [20]]);
+            expect(filmstrip).not.toHaveClass('bp-is-shown');
+
+            act(() => getSliderProps().onScrubEnd());
+            expect(onScrubEnd).toHaveBeenCalledWith(20);
+            expect(onTimeChange).not.toHaveBeenCalled();
+            expect(filmstrip).toHaveClass('bp-is-shown');
+        });
+
+        test('should seek right away for keyboard updates outside a drag', () => {
+            const onScrub = jest.fn();
+            const onTimeChange = jest.fn();
+            render(<TimeControlsV2 onScrub={onScrub} onScrubEnd={jest.fn()} onTimeChange={onTimeChange} />);
+
+            act(() => getSliderProps().onUpdate(15));
+
+            expect(onTimeChange).toHaveBeenCalledWith(15);
+            expect(onScrub).not.toHaveBeenCalled();
+        });
+
+        test('should report the hovered time and clear it when the pointer leaves', () => {
+            const onHoverTimeChange = jest.fn();
+            render(<TimeControlsV2 {...defaultProps} onHoverTimeChange={onHoverTimeChange} />);
+
+            act(() => getSliderProps().onMove(12, 100, 600));
+            act(() => getSliderProps().onMouseOut());
+
+            expect(onHoverTimeChange.mock.calls).toEqual([[12], [null]]);
         });
     });
 
@@ -225,6 +306,33 @@ describe('TimeControlsV2', () => {
             const trackProp = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
             expect(trackProp).toContain('rgb(127, 127, 127)');
             expect(trackProp).toContain('rgb(85, 85, 85)');
+        });
+
+        test('should leave gaps between buffered ranges unbuffered only when onScrub is passed', () => {
+            const bufferedRange = {
+                end: (index: number) => [6, 42][index],
+                length: 2,
+                start: (index: number) => [0, 30][index],
+            } as unknown as TimeRanges;
+            const { rerender } = render(
+                <TimeControlsV2 {...defaultProps} bufferedRange={bufferedRange} currentTime={3} durationTime={60} />,
+            );
+            const legacyTrack = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
+            expect(legacyTrack).toContain('rgb(127, 127, 127) 70%, rgb(85, 85, 85) 70%');
+            expect(legacyTrack).not.toContain('rgb(85, 85, 85) 50%');
+
+            rerender(
+                <TimeControlsV2
+                    {...defaultProps}
+                    bufferedRange={bufferedRange}
+                    currentTime={3}
+                    durationTime={60}
+                    onScrub={jest.fn()}
+                />,
+            );
+            const multiRangeTrack = (SliderControl as jest.Mock).mock.calls.at(-1)[0].track as string;
+            expect(multiRangeTrack).toContain('rgb(127, 127, 127) 10%, rgb(85, 85, 85) 10%, rgb(85, 85, 85) 50%');
+            expect(multiRangeTrack).toContain('rgb(127, 127, 127) 50%, rgb(127, 127, 127) 70%, rgb(85, 85, 85) 70%');
         });
 
         test('should use Blueprint gray tokens for buffered and unplayed when isBlueprintEnabled', () => {

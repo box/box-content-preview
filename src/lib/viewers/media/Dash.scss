@@ -27,6 +27,79 @@
     }
 }
 
+.bp-media-seek-preview {
+    pointer-events: none;
+    position: absolute;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    background-color: $black;
+    transition:
+        opacity 50ms ease-out,
+        visibility 0s 50ms;
+
+    &.bp-is-visible,
+    &.bp-is-immediate {
+        transition: none;
+    }
+
+    &.bp-is-visible {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+// Filmstrip frames are 90px tall, so soften them rather than show upscaling artifacts
+.bp-media-seek-preview-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: brightness(1) blur(4px);
+    transition: filter 150ms ease-out;
+
+    .bp-is-dimmed & {
+        filter: brightness(0.9) blur(4px);
+        transition: filter 150ms ease-in-out;
+    }
+
+    .bp-is-immediate & {
+        transition: none;
+    }
+
+    // Unblurred copy underneath, so the blurred frame's edges don't fade into the black background
+    &.bp-media-seek-preview-frame-base {
+        filter: brightness(1);
+
+        .bp-is-dimmed & {
+            filter: brightness(0.9);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &,
+        .bp-is-dimmed & {
+            transition: none;
+        }
+    }
+
+    // Real video frames are full resolution, so they aren't softened
+    .bp-is-sharp & {
+        filter: brightness(1);
+    }
+
+    .bp-is-sharp.bp-is-dimmed & {
+        filter: brightness(0.9);
+    }
+}
+
 .bp-media-filmstrip-container {
     position: absolute;
     bottom: 60px;
