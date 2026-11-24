@@ -11,6 +11,7 @@ import {
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
+    STATUS_ERROR,
     STATUS_NONE,
     STATUS_PENDING,
 } from '../../constants';
@@ -135,10 +136,10 @@ class ImageViewer extends ImageBaseViewer {
         this.bindDOMListeners();
 
         const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
+        const state = representation.status?.state;
         if (
-            this.featureEnabled('imageProgressiveLoad.enabled') ||
-            (this.featureEnabled('imageConversionPlaceholder.enabled') &&
-                CONVERTING_STATES.includes(representation.status?.state))
+            (this.featureEnabled('imageProgressiveLoad.enabled') && state !== STATUS_ERROR) ||
+            (this.featureEnabled('imageConversionPlaceholder.enabled') && CONVERTING_STATES.includes(state))
         ) {
             return this.loadWithPlaceholder(contentUrl);
         }

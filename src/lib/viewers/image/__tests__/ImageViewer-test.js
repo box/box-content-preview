@@ -228,6 +228,22 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.imageEl.src).toBe('blob:320');
         });
 
+        test('should show the rep error without a placeholder when imageProgressiveLoad is on', async () => {
+            const error = new Error('conversion failed');
+            image.options.representation.status.state = 'error';
+            image.featureEnabled.mockImplementation(feature => feature === 'imageProgressiveLoad.enabled');
+            image.getRepStatus.mockReturnValue({ getPromise: () => Promise.reject(error) });
+            jest.spyOn(image, 'fetchDecodedImage');
+            jest.spyOn(image, 'handleAssetError').mockImplementation();
+
+            await image.load();
+
+            expect(image.getRepStatus).toHaveBeenCalledWith();
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+            expect(image.emit).not.toHaveBeenCalledWith(VIEWER_EVENT.conversionPending);
+            expect(image.handleAssetError).toHaveBeenCalledWith(error);
+        });
+
         test('should show the 320 without telling the host the rep is converting', async () => {
             jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue({ blobUrl: 'blob:320', height: 240, width: 320 });
 
