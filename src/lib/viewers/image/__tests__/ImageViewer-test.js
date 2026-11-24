@@ -208,8 +208,18 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.fetchDecodedImage).not.toHaveBeenCalled();
         });
 
-        test('should show the 320 first when the image rep is already ready', async () => {
+        test.each(['success', 'error'])('should wait for the image rep as before when its state is %s', state => {
+            image.options.representation.status.state = state;
+            jest.spyOn(image, 'fetchDecodedImage');
+
+            image.load();
+
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+        });
+
+        test('should show the 320 first when the image rep is ready and imageProgressiveLoad is on', async () => {
             image.options.representation.status.state = 'success';
+            image.featureEnabled.mockImplementation(feature => feature === 'imageProgressiveLoad.enabled');
             jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue({ blobUrl: 'blob:320', height: 240, width: 320 });
 
             await image.load();
@@ -315,6 +325,9 @@ describe('lib/viewers/image/ImageViewer', () => {
             originalFetch = global.fetch;
             global.fetch = jest.fn().mockResolvedValue({ blob: () => Promise.resolve(new Blob(['img'])), ok: true });
             jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:copy');
+            jest.spyOn(image, 'featureEnabled').mockImplementation(
+                feature => feature === 'imageProgressiveLoad.enabled',
+            );
             jest.spyOn(image, 'decodeBlobUrl').mockResolvedValue(decoded);
             jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue({ blobUrl: 'blob:320', height: 240, width: 320 });
         });
@@ -347,6 +360,16 @@ describe('lib/viewers/image/ImageViewer', () => {
         ])('should fetch the 320 when %s', async (_, placeholder, fileOptions) => {
             image.options.viewers = { Image: { placeholder } };
             image.options.fileOptions = fileOptions;
+
+            await image.getPlaceholderImage(placeholderUrl);
+
+            expect(global.fetch).not.toHaveBeenCalled();
+            expect(image.fetchDecodedImage).toHaveBeenCalledWith(placeholderUrl);
+        });
+
+        test('should fetch the 320 when imageProgressiveLoad is off', async () => {
+            image.featureEnabled.mockReturnValue(false);
+            image.options.viewers = { Image: { placeholder: { fileId: '1', url: 'blob:host' } } };
 
             await image.getPlaceholderImage(placeholderUrl);
 

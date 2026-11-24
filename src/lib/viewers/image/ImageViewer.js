@@ -11,6 +11,8 @@ import {
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
+    STATUS_NONE,
+    STATUS_PENDING,
 } from '../../constants';
 import { LOAD_METRIC, FIRST_RENDER_METRIC, VIEWER_EVENT } from '../../events';
 import Timer from '../../Timer';
@@ -22,6 +24,7 @@ const IMAGE_ZOOM_SCALE = 1.2;
 const PLACEHOLDER_DISPLAY_SIZE = 920;
 const PLACEHOLDER_FADE_MS = 500;
 const PLACEHOLDER_REP = 'jpg_320x320';
+const CONVERTING_STATES = [STATUS_NONE, STATUS_PENDING];
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
@@ -131,7 +134,11 @@ class ImageViewer extends ImageBaseViewer {
         this.bindDOMListeners();
 
         const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
-        if (this.featureEnabled('imageConversionPlaceholder.enabled')) {
+        if (
+            this.featureEnabled('imageProgressiveLoad.enabled') ||
+            (this.featureEnabled('imageConversionPlaceholder.enabled') &&
+                CONVERTING_STATES.includes(representation.status?.state))
+        ) {
             return this.loadWithPlaceholder(contentUrl);
         }
 
@@ -163,9 +170,9 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Shows the 320 thumbnail first, zoomed to PLACEHOLDER_DISPLAY_SIZE, then swaps in the image
-     * rep once it is ready. Falls back to waiting for the image rep, with
-     * the host's loading indicator, when the 320 is not available either.
+     * Shows the 320 thumbnail, zoomed to PLACEHOLDER_DISPLAY_SIZE, then swaps in the image rep
+     * once it is ready. Falls back to waiting for the image rep, with the host's loading
+     * indicator, when the 320 is not available either.
      *
      * @param {string} contentUrl - Content URL of the image rep
      * @return {Promise}
@@ -262,15 +269,15 @@ class ImageViewer extends ImageBaseViewer {
 
     /**
      * Gets the placeholder shown before the image rep. Uses the image the host passed in the
-     * placeholder viewer option, such as a thumbnail it already loaded, when it is for the file
-     * being previewed, and fetches the 320 otherwise.
+     * placeholder viewer option, such as a thumbnail it already loaded, when imageProgressiveLoad
+     * is on and it is for the file being previewed, and fetches the 320 otherwise.
      *
      * @param {string} placeholderUrl - Content URL of the 320
      * @return {Promise<Object>} blobUrl, width and height of the decoded placeholder
      */
     getPlaceholderImage(placeholderUrl) {
         const hostPlaceholder = this.getViewerOption('placeholder');
-        if (!this.isHostPlaceholderForFile(hostPlaceholder)) {
+        if (!this.featureEnabled('imageProgressiveLoad.enabled') || !this.isHostPlaceholderForFile(hostPlaceholder)) {
             return this.fetchDecodedImage(placeholderUrl);
         }
 
