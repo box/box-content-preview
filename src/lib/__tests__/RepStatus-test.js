@@ -245,11 +245,10 @@ describe('lib/RepStatus', () => {
                     state,
                 },
             });
-
-            const tag = Timer.createTag(fileId, LOAD_METRIC.convertTime);
+            jest.spyOn(Timer, 'start');
 
             return repStatus.updateStatus().then(() => {
-                expect(Timer.get(tag).start).toBeUndefined();
+                expect(Timer.start).not.toBeCalled();
             });
         });
 

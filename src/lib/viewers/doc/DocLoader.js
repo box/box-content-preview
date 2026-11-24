@@ -6,7 +6,7 @@ import PresentationViewer from './PresentationViewer';
 import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
 import getOcrFallbackRepresentation from './getOcrFallbackRepresentation';
-import { ORIGINAL_REP_NAME, STATUS_SUCCESS, STATUS_VIEWABLE } from '../../constants';
+import { ORIGINAL_REP_NAME, STATUS_ERROR, STATUS_SUCCESS, STATUS_VIEWABLE } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
 
 const isRepReady = rep => {
@@ -103,6 +103,10 @@ class DocLoader extends AssetLoader {
 
         if (rep.representation === 'ocr_pdf' && !isRepReady(rep)) {
             rep = getOcrFallbackRepresentation(file) || rep;
+        }
+
+        if (rep.representation === 'ocr_pdf' && RepStatus.getStatus(rep) === STATUS_ERROR) {
+            rep = getRepresentation(file, 'pdf') || rep;
         }
 
         if (file.extension === 'pdf' && rep.representation !== ORIGINAL_REP_NAME && !isRepReady(rep)) {

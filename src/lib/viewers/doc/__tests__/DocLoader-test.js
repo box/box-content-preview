@@ -86,6 +86,26 @@ describe('lib/viewers/doc/DocLoader', () => {
             expect(determinedRep.representation).toBe('pdf');
         });
 
+        test('should surface the failed pdf rep when both the ocr_pdf and pdf reps have failed', () => {
+            const pdfRep = { representation: 'pdf', status: { state: 'error', code: 'error_password_protected' } };
+            file.representations.entries = [{ representation: 'ocr_pdf', status: { state: 'error' } }, pdfRep];
+            viewer.REP = 'ocr_pdf';
+
+            const determinedRep = DocLoader.determineRepresentation(file, viewer);
+            expect(determinedRep).toBe(pdfRep);
+        });
+
+        test('should keep the converting ocr_pdf rep when the pdf rep has failed', () => {
+            file.representations.entries = [
+                { representation: 'ocr_pdf', status: { state: 'pending' } },
+                { representation: 'pdf', status: { state: 'error' } },
+            ];
+            viewer.REP = 'ocr_pdf';
+
+            const determinedRep = DocLoader.determineRepresentation(file, viewer);
+            expect(determinedRep.representation).toBe('ocr_pdf');
+        });
+
         test.each(['pending', 'none'])(
             'should use the ready pdf rep while the ocr_pdf rep is still converting (%s)',
             state => {

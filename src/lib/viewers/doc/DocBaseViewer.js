@@ -823,7 +823,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     requestOcrPdfConversion() {
-        if (this.isDestroyed()) {
+        if (this.isDestroyed() || getProp(this.options, 'viewer.REP') !== 'ocr_pdf') {
             return;
         }
 
@@ -898,27 +898,12 @@ class DocBaseViewer extends BaseViewer {
 
                 limitMarkedContentNesting(doc);
 
-                const page = this.pdfViewer.currentPageNumber;
-                const scale = this.pdfViewer.currentScaleValue;
-                const rotation = this.rotationAngle;
-                const location = this.pdfViewer._location;
-
-                const restoreViewState = () => {
-                    this.pdfEventBus.off('pagesinit', restoreViewState);
-                    this.rotationAngle = rotation;
-                    this.pdfViewer.pagesRotation = rotation;
-                    this.pdfViewer.currentScaleValue = scale;
-                    this.setPage(page);
-                    if (location) {
-                        this.pdfViewer.scrollPageIntoView({
-                            pageNumber: location.pageNumber,
-                            destArray: [null, { name: 'XYZ' }, location.left, location.top, null],
-                            allowNegativeOffset: true,
-                        });
-                    }
-                    this.setupPageIds();
+                this.pendingSwapViewState = {
+                    page: this.pdfViewer.currentPageNumber,
+                    scale: this.pdfViewer.currentScaleValue,
+                    rotation: this.rotationAngle,
+                    location: this.pdfViewer._location,
                 };
-                this.pdfEventBus.on('pagesinit', restoreViewState);
 
                 this.options.representation = ocrPdfRep;
                 this.pdfUrl = pdfUrl;
@@ -939,6 +924,27 @@ class DocBaseViewer extends BaseViewer {
                 this.ocrSwapLoadingTask = null;
                 swapLoadingTask.destroy();
             });
+    }
+
+    /**
+     * Restores the view captured before the 'ocr_pdf' swap once pdf.js has re-initialized the pages.
+     *
+     * @param {Object} viewState - The page, scale, rotation and pdf.js location captured before the swap
+     * @return {void}
+     */
+    restoreSwapViewState({ page, scale, rotation, location }) {
+        this.rotationAngle = rotation;
+        this.pdfViewer.pagesRotation = rotation;
+        this.pdfViewer.currentScaleValue = scale;
+        this.setPage(page);
+        if (location) {
+            this.pdfViewer.scrollPageIntoView({
+                pageNumber: location.pageNumber,
+                destArray: [null, { name: 'XYZ' }, location.left, location.top, null],
+                allowNegativeOffset: true,
+            });
+        }
+        this.setupPageIds();
     }
 
     handleFindBarClose() {
@@ -1948,6 +1954,13 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     pagesinitHandler() {
+        if (this.pendingSwapViewState) {
+            const viewState = this.pendingSwapViewState;
+            this.pendingSwapViewState = null;
+            this.restoreSwapViewState(viewState);
+            return;
+        }
+
         this.pdfViewer.currentScaleValue = 'auto';
         this.loadUI();
 

@@ -1486,10 +1486,26 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             beforeEach(() => {
                 docBase.options.representation = { representation: 'pdf' };
+                docBase.options.viewer = { NAME: 'Document', REP: 'ocr_pdf' };
             });
 
             test('should do nothing when destroyed', () => {
                 jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
+
+                docBase.requestOcrPdfConversion();
+
+                expect(getRepStatusStub).not.toBeCalled();
+            });
+
+            test.each([
+                ['Presentation', 'pdf'],
+                ['AutoCAD', 'pdf'],
+                ['SinglePage', 'pdf'],
+                ['Document', 'pdf'],
+            ])('should do nothing for a viewer that was not chosen for ocr_pdf (%s, %s)', (NAME, REP) => {
+                docBase.options.viewer = { NAME, REP };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
                 const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
 
                 docBase.requestOcrPdfConversion();
@@ -1632,7 +1648,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfViewer.setDocument).toBeCalledWith(doc);
                 expect(docBase.doc).toBe(doc);
                 expect(docBase.pdfLoadingTask).toBe(swapLoadingTask);
-                expect(docBase.pdfEventBus.on).toBeCalledWith('pagesinit', expect.any(Function));
+                expect(docBase.pendingSwapViewState).toEqual({
+                    page: 3,
+                    scale: '1.5',
+                    rotation: 90,
+                    location: undefined,
+                });
             });
 
             test('should destroy the previous loading task after the swap', async () => {
@@ -1656,15 +1677,49 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 // pdf.js resets scale on pagesinit; the restore handler puts it back
                 docBase.pdfViewer.currentScaleValue = 'auto';
                 docBase.rotationAngle = 0;
-                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(([event]) => event === 'pagesinit');
-                restoreViewState();
+                docBase.pagesinitHandler();
 
-                expect(docBase.pdfEventBus.off).toBeCalledWith('pagesinit', restoreViewState);
+                expect(docBase.pendingSwapViewState).toBeNull();
                 expect(docBase.rotationAngle).toBe(90);
                 expect(docBase.pdfViewer.pagesRotation).toBe(90);
                 expect(docBase.pdfViewer.currentScaleValue).toBe('1.5');
                 expect(docBase.setPage).toBeCalledWith(3);
                 expect(docBase.setupPageIds).toBeCalled();
+            });
+
+            test('should not re-run the first-load page setup when the swapped pages re-init', async () => {
+                const loadUIStub = jest.spyOn(docBase, 'loadUI').mockImplementation();
+                const requestOcrPdfConversionStub = jest.spyOn(docBase, 'requestOcrPdfConversion').mockImplementation();
+                const emitStub = jest.spyOn(docBase, 'emit').mockImplementation();
+                docBase.loaded = true;
+                docBase.startPageNum = 1;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn() });
+                await flush();
+
+                docBase.pagesinitHandler();
+
+                expect(loadUIStub).not.toBeCalled();
+                expect(requestOcrPdfConversionStub).not.toBeCalled();
+                expect(emitStub).not.toBeCalled();
+                expect(docBase.setPage).toBeCalledTimes(1);
+                expect(docBase.setPage).toBeCalledWith(3);
+            });
+
+            test('should run the regular page setup on a pagesinit after the swap has been restored', async () => {
+                const loadUIStub = jest.spyOn(docBase, 'loadUI').mockImplementation();
+                docBase.loaded = true;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn() });
+                await flush();
+
+                docBase.pagesinitHandler();
+                expect(loadUIStub).not.toBeCalled();
+
+                docBase.pagesinitHandler();
+                expect(loadUIStub).toBeCalledTimes(1);
             });
 
             test('should restore the exact scroll offset within the page when pages re-init', async () => {
@@ -1675,8 +1730,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 await flush();
 
                 docBase.pdfViewer._location = { pageNumber: 1, left: 0, top: 792 };
-                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(([event]) => event === 'pagesinit');
-                restoreViewState();
+                docBase.pagesinitHandler();
 
                 expect(docBase.setPage).toBeCalledWith(3);
                 expect(docBase.pdfViewer.scrollPageIntoView).toBeCalledWith({
@@ -1694,8 +1748,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 resolveDoc({ getPage: jest.fn() });
                 await flush();
 
-                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(([event]) => event === 'pagesinit');
-                restoreViewState();
+                docBase.pagesinitHandler();
 
                 expect(docBase.setPage).toBeCalledWith(3);
                 expect(docBase.pdfViewer.scrollPageIntoView).not.toBeCalled();
@@ -1750,10 +1803,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 resolveDoc(doc);
                 await flush();
 
-                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(
-                    ([event]) => event === 'pagesinit',
-                );
-                restoreViewState();
+                docBase.pagesinitHandler();
 
                 expect(docBase.rotationAngle).toBe(180);
                 expect(docBase.pdfViewer.pagesRotation).toBe(180);
