@@ -370,10 +370,29 @@ class ImageViewer extends ImageBaseViewer {
 
         // Keep the new source from re-running the load sequence, which would reset the zoom.
         imageEl.removeEventListener('load', this.finishLoading);
+        const { clientHeight: placeholderHeight, clientWidth: placeholderWidth } = imageEl;
         imageEl.src = blobUrl;
         imageEl.setAttribute('originalWidth', width);
         imageEl.setAttribute('originalHeight', height);
         this.setScale(parseFloat(imageEl.style.width) || undefined, parseFloat(imageEl.style.height) || undefined);
+
+        // Only one of width and height is set, so an image rep with a different aspect ratio
+        // renders at a different size than the placeholder. Re-center it then.
+        if (this.featureEnabled('imageProgressiveLoad.enabled')) {
+            imageEl
+                .decode()
+                .catch(() => undefined)
+                .then(() => {
+                    if (
+                        this.isDestroyed() ||
+                        (imageEl.clientWidth === placeholderWidth && imageEl.clientHeight === placeholderHeight)
+                    ) {
+                        return;
+                    }
+                    this.adjustImageZoomPadding();
+                    this.updatePannability();
+                });
+        }
 
         // eslint-disable-next-line no-unused-expressions
         placeholderEl.offsetWidth;

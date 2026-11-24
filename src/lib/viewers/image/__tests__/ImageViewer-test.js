@@ -486,10 +486,74 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.imageEl.style.width = '920px';
             image.imageEl.setAttribute('originalWidth', 320);
             image.imageEl.setAttribute('originalHeight', 240);
+            image.imageEl.decode = jest.fn().mockResolvedValue();
+            jest.spyOn(image, 'featureEnabled').mockImplementation(
+                feature => feature === 'imageProgressiveLoad.enabled',
+            );
         });
 
         afterEach(() => {
             jest.useRealTimers();
+        });
+
+        const flushMicrotasks = async () => {
+            for (let i = 0; i < 5; i += 1) {
+                await Promise.resolve(); // eslint-disable-line no-await-in-loop
+            }
+        };
+
+        const mockRenderedHeight = heightBySrc => {
+            Object.defineProperty(image.imageEl, 'clientWidth', { configurable: true, value: 920 });
+            Object.defineProperty(image.imageEl, 'clientHeight', {
+                configurable: true,
+                get: () => heightBySrc[image.imageEl.src],
+            });
+        };
+
+        test('should re-center the image rep when it renders at a different size', async () => {
+            mockRenderedHeight({ 'blob:320': 690, 'blob:2048': 518 });
+            jest.spyOn(image, 'adjustImageZoomPadding').mockImplementation();
+            jest.spyOn(image, 'updatePannability').mockImplementation();
+
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1152, width: 2048 });
+            await flushMicrotasks();
+
+            expect(image.imageEl.decode).toHaveBeenCalled();
+            expect(image.adjustImageZoomPadding).toHaveBeenCalled();
+            expect(image.updatePannability).toHaveBeenCalled();
+        });
+
+        test('should keep the position when the image rep renders at the same size', async () => {
+            mockRenderedHeight({ 'blob:320': 690, 'blob:2048': 690 });
+            jest.spyOn(image, 'adjustImageZoomPadding').mockImplementation();
+
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1536, width: 2048 });
+            await flushMicrotasks();
+
+            expect(image.adjustImageZoomPadding).not.toHaveBeenCalled();
+        });
+
+        test('should not re-center when imageProgressiveLoad is off', async () => {
+            image.featureEnabled.mockReturnValue(false);
+            mockRenderedHeight({ 'blob:320': 690, 'blob:2048': 518 });
+            jest.spyOn(image, 'adjustImageZoomPadding').mockImplementation();
+
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1152, width: 2048 });
+            await flushMicrotasks();
+
+            expect(image.imageEl.decode).not.toHaveBeenCalled();
+            expect(image.adjustImageZoomPadding).not.toHaveBeenCalled();
+        });
+
+        test('should not re-center if destroyed before the image rep decodes', async () => {
+            mockRenderedHeight({ 'blob:320': 690, 'blob:2048': 518 });
+            jest.spyOn(image, 'adjustImageZoomPadding').mockImplementation();
+
+            image.swapInFullImage({ blobUrl: 'blob:2048', height: 1152, width: 2048 });
+            image.destroy();
+            await flushMicrotasks();
+
+            expect(image.adjustImageZoomPadding).not.toHaveBeenCalled();
         });
 
         test('should keep the displayed size and rescale against the image rep', () => {
