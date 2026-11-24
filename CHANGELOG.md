@@ -1,3 +1,7 @@
+## 3.147.0 (2026-11-24)
+
+* fix(video): strengthen seek preview dim and blur (#1983) ([d31adf8](https://github.com/box/box-content-preview/commit/d31adf8)), closes [#1983](https://github.com/box/box-content-preview/issues/1983)
+
 ## 3.146.0 (2026-11-24)
 
 * feat(video): prefetch unbuffered segments under the scrubber pointer (#1981) ([5491380](https://github.com/box/box-content-preview/commit/5491380)), closes [#1981](https://github.com/box/box-content-preview/issues/1981)
