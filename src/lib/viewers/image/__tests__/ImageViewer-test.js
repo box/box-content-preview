@@ -388,6 +388,71 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.fetchDecodedImage).toHaveBeenCalledWith(placeholderUrl);
         });
+
+        test('should reject when the host placeholder fails and the rep has no 320', async () => {
+            image.options.viewers = { Image: { placeholder: { fileId: '1', url: 'blob:revoked' } } };
+            global.fetch.mockRejectedValue(new TypeError('Failed to fetch'));
+
+            await expect(image.getPlaceholderImage(null)).rejects.toThrow('Representation has no 320');
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('load() for the ORIGINAL rep', () => {
+        const originalTemplate = 'https://api.box.com/2.0/files/1/content?preview=true';
+        const fullImage = { blobUrl: 'blob:original', height: 600, width: 800 };
+        let originalFetch;
+
+        beforeEach(() => {
+            originalFetch = global.fetch;
+            global.fetch = jest.fn().mockResolvedValue({ blob: () => Promise.resolve(new Blob(['img'])), ok: true });
+            image.loadTimeout = 60000;
+            image.options.representation = {
+                content: { url_template: originalTemplate },
+                status: { state: 'success' },
+            };
+            jest.spyOn(image, 'featureEnabled').mockImplementation(
+                feature => feature === 'imageProgressiveLoad.enabled',
+            );
+            jest.spyOn(image, 'createContentUrlV2').mockImplementation(template => template);
+            jest.spyOn(image, 'getRepStatus').mockReturnValue({ getPromise: () => Promise.resolve() });
+            jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue(fullImage);
+            jest.spyOn(image, 'loadContent').mockResolvedValue();
+            jest.spyOn(image, 'emit');
+        });
+
+        afterEach(() => {
+            global.fetch = originalFetch;
+        });
+
+        test('should load the original once, without a placeholder, when the host passes none', async () => {
+            await image.load();
+
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+            expect(image.loadContent).toHaveBeenCalledTimes(1);
+            expect(image.loadContent).toHaveBeenCalledWith(originalTemplate);
+            expect(image.emit).not.toHaveBeenCalledWith(VIEWER_EVENT.conversionPending);
+            expect(image.displaySizeCap).toBeUndefined();
+        });
+
+        test('should show the host placeholder, then swap in the original', async () => {
+            image.options.viewers = { Image: { placeholder: { fileId: '1', url: 'blob:host' } } };
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:copy');
+            jest.spyOn(image, 'decodeBlobUrl').mockResolvedValue({ blobUrl: 'blob:copy', height: 240, width: 320 });
+            jest.spyOn(image, 'waitForViewerLoad').mockResolvedValue();
+            jest.spyOn(image, 'swapInFullImage').mockImplementation();
+
+            await image.load();
+            await new Promise(resolve => {
+                setTimeout(resolve, 0);
+            });
+
+            expect(global.fetch).toHaveBeenCalledWith('blob:host');
+            expect(image.fetchDecodedImage).toHaveBeenCalledTimes(1);
+            expect(image.fetchDecodedImage).toHaveBeenCalledWith(originalTemplate);
+            expect(image.swapInFullImage).toHaveBeenCalledWith(fullImage);
+            expect(image.loadContent).not.toHaveBeenCalled();
+        });
     });
 
     describe('waitForViewerLoad()', () => {

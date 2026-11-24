@@ -25,6 +25,7 @@ const PLACEHOLDER_DISPLAY_SIZE = 920;
 const PLACEHOLDER_FADE_MS = 500;
 const PLACEHOLDER_REP = 'jpg_320x320';
 const CONVERTING_STATES = [STATUS_NONE, STATUS_PENDING];
+const REP_PATH_PATTERN = /representations\/[^/]+/;
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
@@ -179,11 +180,11 @@ class ImageViewer extends ImageBaseViewer {
      */
     loadWithPlaceholder(contentUrl) {
         const { representation } = this.options;
-        const placeholderTemplate = representation.content.url_template.replace(
-            /representations\/[^/]+/,
-            `representations/${PLACEHOLDER_REP}`,
-        );
-        const placeholderUrl = this.createContentUrlV2(placeholderTemplate);
+        const repTemplate = representation.content.url_template;
+        // The ORIGINAL rep (SVG, GIF) downloads the file itself, so it has no 320 to switch to.
+        const placeholderUrl = REP_PATH_PATTERN.test(repTemplate)
+            ? this.createContentUrlV2(repTemplate.replace(REP_PATH_PATTERN, `representations/${PLACEHOLDER_REP}`))
+            : null;
 
         // Passing the representation keeps conversionpending from reaching the host, which would
         // show its loading indicator over the placeholder.
@@ -272,13 +273,17 @@ class ImageViewer extends ImageBaseViewer {
      * placeholder viewer option, such as a thumbnail it already loaded, when imageProgressiveLoad
      * is on and it is for the file being previewed, and fetches the 320 otherwise.
      *
-     * @param {string} placeholderUrl - Content URL of the 320
+     * @param {string|null} placeholderUrl - Content URL of the 320, or null when the rep has none
      * @return {Promise<Object>} blobUrl, width and height of the decoded placeholder
      */
     getPlaceholderImage(placeholderUrl) {
+        const fetchRepPlaceholder = () =>
+            placeholderUrl
+                ? this.fetchDecodedImage(placeholderUrl)
+                : Promise.reject(new Error('Representation has no 320'));
         const hostPlaceholder = this.getViewerOption('placeholder');
         if (!this.featureEnabled('imageProgressiveLoad.enabled') || !this.isHostPlaceholderForFile(hostPlaceholder)) {
-            return this.fetchDecodedImage(placeholderUrl);
+            return fetchRepPlaceholder();
         }
 
         // The host owns its URL and may revoke it, so decode a copy that this viewer can revoke.
@@ -290,7 +295,7 @@ class ImageViewer extends ImageBaseViewer {
                 return response.blob();
             })
             .then(blob => this.decodeBlobUrl(URL.createObjectURL(blob)))
-            .catch(() => this.fetchDecodedImage(placeholderUrl));
+            .catch(fetchRepPlaceholder);
     }
 
     /**
