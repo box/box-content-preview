@@ -901,6 +901,7 @@ class DocBaseViewer extends BaseViewer {
                 const page = this.pdfViewer.currentPageNumber;
                 const scale = this.pdfViewer.currentScaleValue;
                 const rotation = this.rotationAngle;
+                const location = this.pdfViewer._location;
 
                 const restoreViewState = () => {
                     this.pdfEventBus.off('pagesinit', restoreViewState);
@@ -908,6 +909,13 @@ class DocBaseViewer extends BaseViewer {
                     this.pdfViewer.pagesRotation = rotation;
                     this.pdfViewer.currentScaleValue = scale;
                     this.setPage(page);
+                    if (location) {
+                        this.pdfViewer.scrollPageIntoView({
+                            pageNumber: location.pageNumber,
+                            destArray: [null, { name: 'XYZ' }, location.left, location.top, null],
+                            allowNegativeOffset: true,
+                        });
+                    }
                     this.setupPageIds();
                 };
                 this.pdfEventBus.on('pagesinit', restoreViewState);

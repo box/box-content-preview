@@ -1583,6 +1583,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer = {
                     currentPageNumber: 3,
                     currentScaleValue: '1.5',
+                    scrollPageIntoView: jest.fn(),
                     setDocument: jest.fn(),
                 };
                 docBase.pdfLinkService = { setDocument: jest.fn() };
@@ -1664,6 +1665,40 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfViewer.currentScaleValue).toBe('1.5');
                 expect(docBase.setPage).toBeCalledWith(3);
                 expect(docBase.setupPageIds).toBeCalled();
+            });
+
+            test('should restore the exact scroll offset within the page when pages re-init', async () => {
+                docBase.pdfViewer._location = { pageNumber: 2, left: 12.5, top: 640.25 };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn() });
+                await flush();
+
+                docBase.pdfViewer._location = { pageNumber: 1, left: 0, top: 792 };
+                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(([event]) => event === 'pagesinit');
+                restoreViewState();
+
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.pdfViewer.scrollPageIntoView).toBeCalledWith({
+                    pageNumber: 2,
+                    destArray: [null, { name: 'XYZ' }, 12.5, 640.25, null],
+                    allowNegativeOffset: true,
+                });
+                expect(docBase.setPage.mock.invocationCallOrder[0]).toBeLessThan(
+                    docBase.pdfViewer.scrollPageIntoView.mock.invocationCallOrder[0],
+                );
+            });
+
+            test('should only restore the page when pdf.js has no scroll location yet', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn() });
+                await flush();
+
+                const [, restoreViewState] = docBase.pdfEventBus.on.mock.calls.find(([event]) => event === 'pagesinit');
+                restoreViewState();
+
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.pdfViewer.scrollPageIntoView).not.toBeCalled();
             });
 
             test('should revert to the previous representation when the swap fails', async () => {
