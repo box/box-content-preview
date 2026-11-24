@@ -11,8 +11,6 @@ import {
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
-    STATUS_NONE,
-    STATUS_PENDING,
 } from '../../constants';
 import { LOAD_METRIC, FIRST_RENDER_METRIC, VIEWER_EVENT } from '../../events';
 import Timer from '../../Timer';
@@ -24,7 +22,6 @@ const IMAGE_ZOOM_SCALE = 1.2;
 const PLACEHOLDER_DISPLAY_SIZE = 920;
 const PLACEHOLDER_FADE_MS = 500;
 const PLACEHOLDER_REP = 'jpg_320x320';
-const CONVERTING_STATES = [STATUS_NONE, STATUS_PENDING];
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
@@ -134,10 +131,7 @@ class ImageViewer extends ImageBaseViewer {
         this.bindDOMListeners();
 
         const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
-        if (
-            this.featureEnabled('imageConversionPlaceholder.enabled') &&
-            CONVERTING_STATES.includes(representation.status?.state)
-        ) {
+        if (this.featureEnabled('imageConversionPlaceholder.enabled')) {
             return this.loadWithPlaceholder(contentUrl);
         }
 
@@ -169,8 +163,8 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Shows the 320 thumbnail while the image rep converts, zoomed to PLACEHOLDER_DISPLAY_SIZE,
-     * then swaps in the image rep once it is ready. Falls back to waiting for the image rep, with
+     * Shows the 320 thumbnail first, zoomed to PLACEHOLDER_DISPLAY_SIZE, then swaps in the image
+     * rep once it is ready. Falls back to waiting for the image rep, with
      * the host's loading indicator, when the 320 is not available either.
      *
      * @param {string} contentUrl - Content URL of the image rep
@@ -195,7 +189,7 @@ class ImageViewer extends ImageBaseViewer {
             () => undefined,
         );
 
-        return this.fetchDecodedImage(placeholderUrl)
+        return this.getPlaceholderImage(placeholderUrl)
             .then(
                 placeholder => {
                     if (this.isDestroyed()) {
@@ -244,20 +238,73 @@ class ImageViewer extends ImageBaseViewer {
      * @return {Promise<Object>} blobUrl, width and height of the decoded image
      */
     fetchDecodedImage(url) {
-        return this.fetchContentAsBlobUrl(url).then(blobUrl => {
-            const decoder = new Image();
-            decoder.src = blobUrl;
-            return decoder
-                .decode()
-                .catch(() => undefined)
-                .then(() => {
-                    if (!decoder.naturalWidth) {
-                        URL.revokeObjectURL(blobUrl);
-                        throw new Error('Response is not a decodable image');
-                    }
-                    return { blobUrl, height: decoder.naturalHeight, width: decoder.naturalWidth };
-                });
-        });
+        return this.fetchContentAsBlobUrl(url).then(blobUrl => this.decodeBlobUrl(blobUrl));
+    }
+
+    /**
+     * Whether the placeholder viewer option is for the file and version being previewed. Without
+     * a version, it is taken to be the current version's, so it is only used when no other
+     * version was requested.
+     *
+     * @param {Object} [hostPlaceholder] - fileId, optional fileVersionId, and url
+     * @return {boolean}
+     */
+    isHostPlaceholderForFile(hostPlaceholder) {
+        const fileId = getProp(this.options, 'file.id');
+        if (!hostPlaceholder?.url || !fileId || String(hostPlaceholder.fileId) !== String(fileId)) {
+            return false;
+        }
+        if (hostPlaceholder.fileVersionId) {
+            return String(hostPlaceholder.fileVersionId) === String(getProp(this.options, 'file.file_version.id'));
+        }
+        return !getProp(this.options, ['fileOptions', fileId, 'fileVersionId']);
+    }
+
+    /**
+     * Gets the placeholder shown before the image rep. Uses the image the host passed in the
+     * placeholder viewer option, such as a thumbnail it already loaded, when it is for the file
+     * being previewed, and fetches the 320 otherwise.
+     *
+     * @param {string} placeholderUrl - Content URL of the 320
+     * @return {Promise<Object>} blobUrl, width and height of the decoded placeholder
+     */
+    getPlaceholderImage(placeholderUrl) {
+        const hostPlaceholder = this.getViewerOption('placeholder');
+        if (!this.isHostPlaceholderForFile(hostPlaceholder)) {
+            return this.fetchDecodedImage(placeholderUrl);
+        }
+
+        // The host owns its URL and may revoke it, so decode a copy that this viewer can revoke.
+        return fetch(hostPlaceholder.url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Host placeholder fetch failed: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then(blob => this.decodeBlobUrl(URL.createObjectURL(blob)))
+            .catch(() => this.fetchDecodedImage(placeholderUrl));
+    }
+
+    /**
+     * Decodes an image blob URL. Rejects, and revokes the URL, when it is not an image.
+     *
+     * @param {string} blobUrl - Blob URL of the image
+     * @return {Promise<Object>} blobUrl, width and height of the decoded image
+     */
+    decodeBlobUrl(blobUrl) {
+        const decoder = new Image();
+        decoder.src = blobUrl;
+        return decoder
+            .decode()
+            .catch(() => undefined)
+            .then(() => {
+                if (!decoder.naturalWidth) {
+                    URL.revokeObjectURL(blobUrl);
+                    throw new Error('Response is not a decodable image');
+                }
+                return { blobUrl, height: decoder.naturalHeight, width: decoder.naturalWidth };
+            });
     }
 
     /**

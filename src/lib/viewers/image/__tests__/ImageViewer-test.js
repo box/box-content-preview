@@ -208,13 +208,14 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.fetchDecodedImage).not.toHaveBeenCalled();
         });
 
-        test.each(['success', 'error'])('should wait for the image rep as before when its state is %s', state => {
-            image.options.representation.status.state = state;
-            jest.spyOn(image, 'fetchDecodedImage');
+        test('should show the 320 first when the image rep is already ready', async () => {
+            image.options.representation.status.state = 'success';
+            jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue({ blobUrl: 'blob:320', height: 240, width: 320 });
 
-            image.load();
+            await image.load();
 
-            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+            expect(image.fetchDecodedImage).toHaveBeenCalledWith(placeholderUrl);
+            expect(image.imageEl.src).toBe('blob:320');
         });
 
         test('should show the 320 without telling the host the rep is converting', async () => {
@@ -302,6 +303,67 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.loadContent).toHaveBeenCalledWith(repTemplate);
             expect(image.displaySizeCap).toBeUndefined();
+        });
+    });
+
+    describe('getPlaceholderImage()', () => {
+        const placeholderUrl = 'https://dl.example.com/representations/jpg_320x320/content/';
+        const decoded = { blobUrl: 'blob:copy', height: 768, width: 1024 };
+        let originalFetch;
+
+        beforeEach(() => {
+            originalFetch = global.fetch;
+            global.fetch = jest.fn().mockResolvedValue({ blob: () => Promise.resolve(new Blob(['img'])), ok: true });
+            jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:copy');
+            jest.spyOn(image, 'decodeBlobUrl').mockResolvedValue(decoded);
+            jest.spyOn(image, 'fetchDecodedImage').mockResolvedValue({ blobUrl: 'blob:320', height: 240, width: 320 });
+        });
+
+        afterEach(() => {
+            global.fetch = originalFetch;
+        });
+
+        test.each([
+            ['the previewed version', { fileId: '1', fileVersionId: 1, url: 'blob:host' }],
+            ['the file, with no version, while previewing the current version', { fileId: 1, url: 'blob:host' }],
+        ])('should decode a copy of the host placeholder for %s', async (_, placeholder) => {
+            image.options.viewers = { Image: { placeholder } };
+
+            await expect(image.getPlaceholderImage(placeholderUrl)).resolves.toBe(decoded);
+            expect(global.fetch).toHaveBeenCalledWith('blob:host');
+            expect(image.decodeBlobUrl).toHaveBeenCalledWith('blob:copy');
+            expect(image.fetchDecodedImage).not.toHaveBeenCalled();
+        });
+
+        test.each([
+            ['there is no host placeholder', undefined, undefined],
+            ['the host placeholder is for another file', { fileId: '2', url: 'blob:host' }, undefined],
+            [
+                'the host placeholder is for another version',
+                { fileId: '1', fileVersionId: '2', url: 'blob:host' },
+                undefined,
+            ],
+            ['another version is requested', { fileId: '1', url: 'blob:host' }, { 1: { fileVersionId: '3' } }],
+        ])('should fetch the 320 when %s', async (_, placeholder, fileOptions) => {
+            image.options.viewers = { Image: { placeholder } };
+            image.options.fileOptions = fileOptions;
+
+            await image.getPlaceholderImage(placeholderUrl);
+
+            expect(global.fetch).not.toHaveBeenCalled();
+            expect(image.fetchDecodedImage).toHaveBeenCalledWith(placeholderUrl);
+        });
+
+        test.each([
+            ['cannot be read', () => Promise.reject(new TypeError('Failed to fetch'))],
+            ['returns an error status', () => Promise.resolve({ ok: false, status: 404 })],
+        ])('should fetch the 320 when the host placeholder %s', async (_, fetchResult) => {
+            image.options.viewers = { Image: { placeholder: { fileId: '1', url: 'blob:revoked' } } };
+            global.fetch.mockImplementation(fetchResult);
+
+            await image.getPlaceholderImage(placeholderUrl);
+
+            expect(image.fetchDecodedImage).toHaveBeenCalledWith(placeholderUrl);
         });
     });
 
