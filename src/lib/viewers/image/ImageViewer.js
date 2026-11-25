@@ -11,6 +11,7 @@ import {
     CLASS_INVISIBLE,
     DISCOVERABILITY_ATTRIBUTE,
     IMAGE_FTUX_CURSOR_SEEN_KEY,
+    STATUS_ERROR,
     STATUS_NONE,
     STATUS_PENDING,
 } from '../../constants';
@@ -25,6 +26,7 @@ const PLACEHOLDER_DISPLAY_SIZE = 920;
 const PLACEHOLDER_FADE_MS = 500;
 const PLACEHOLDER_REP = 'jpg_320x320';
 const CONVERTING_STATES = [STATUS_NONE, STATUS_PENDING];
+const REP_PATH_PATTERN = /representations\/[^/]+/;
 
 class ImageViewer extends ImageBaseViewer {
     /** @inheritdoc */
@@ -134,9 +136,12 @@ class ImageViewer extends ImageBaseViewer {
         this.bindDOMListeners();
 
         const contentUrl = this.createContentUrlV2(template, viewer.ASSET);
+        const state = representation.status?.state;
+        // An SVG with only a viewBox decodes to a zero size, which the placeholder swap cannot use.
+        const isSvg = this.options.file.extension === 'svg';
         if (
-            this.featureEnabled('imageConversionPlaceholder.enabled') &&
-            CONVERTING_STATES.includes(representation.status?.state)
+            (this.featureEnabled('imageProgressiveLoad.enabled') && state !== STATUS_ERROR && !isSvg) ||
+            (this.featureEnabled('imageConversionPlaceholder.enabled') && CONVERTING_STATES.includes(state))
         ) {
             return this.loadWithPlaceholder(contentUrl);
         }
@@ -169,20 +174,20 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Shows the 320 thumbnail while the image rep converts, zoomed to PLACEHOLDER_DISPLAY_SIZE,
-     * then swaps in the image rep once it is ready. Falls back to waiting for the image rep, with
-     * the host's loading indicator, when the 320 is not available either.
+     * Shows the 320 thumbnail, zoomed to PLACEHOLDER_DISPLAY_SIZE, then swaps in the image rep
+     * once it is ready. Falls back to waiting for the image rep, with the host's loading
+     * indicator, when the 320 is not available either.
      *
      * @param {string} contentUrl - Content URL of the image rep
      * @return {Promise}
      */
     loadWithPlaceholder(contentUrl) {
         const { representation } = this.options;
-        const placeholderTemplate = representation.content.url_template.replace(
-            /representations\/[^/]+/,
-            `representations/${PLACEHOLDER_REP}`,
-        );
-        const placeholderUrl = this.createContentUrlV2(placeholderTemplate);
+        const repTemplate = representation.content.url_template;
+        // The ORIGINAL rep (SVG, GIF) downloads the file itself, so it has no 320 to switch to.
+        const placeholderUrl = REP_PATH_PATTERN.test(repTemplate)
+            ? this.createContentUrlV2(repTemplate.replace(REP_PATH_PATTERN, `representations/${PLACEHOLDER_REP}`))
+            : null;
 
         // Passing the representation keeps conversionpending from reaching the host, which would
         // show its loading indicator over the placeholder.
@@ -195,7 +200,7 @@ class ImageViewer extends ImageBaseViewer {
             () => undefined,
         );
 
-        return this.fetchDecodedImage(placeholderUrl)
+        return this.getPlaceholderImage(placeholderUrl)
             .then(
                 placeholder => {
                     if (this.isDestroyed()) {
@@ -244,20 +249,77 @@ class ImageViewer extends ImageBaseViewer {
      * @return {Promise<Object>} blobUrl, width and height of the decoded image
      */
     fetchDecodedImage(url) {
-        return this.fetchContentAsBlobUrl(url).then(blobUrl => {
-            const decoder = new Image();
-            decoder.src = blobUrl;
-            return decoder
-                .decode()
-                .catch(() => undefined)
-                .then(() => {
-                    if (!decoder.naturalWidth) {
-                        URL.revokeObjectURL(blobUrl);
-                        throw new Error('Response is not a decodable image');
-                    }
-                    return { blobUrl, height: decoder.naturalHeight, width: decoder.naturalWidth };
-                });
-        });
+        return this.fetchContentAsBlobUrl(url).then(blobUrl => this.decodeBlobUrl(blobUrl));
+    }
+
+    /**
+     * Whether the placeholder viewer option is for the file and version being previewed. Without
+     * a version, it is taken to be the current version's, so it is only used when no other
+     * version was requested.
+     *
+     * @param {Object} [hostPlaceholder] - fileId, optional fileVersionId, and url
+     * @return {boolean}
+     */
+    isHostPlaceholderForFile(hostPlaceholder) {
+        const fileId = getProp(this.options, 'file.id');
+        if (!hostPlaceholder?.url || !fileId || String(hostPlaceholder.fileId) !== String(fileId)) {
+            return false;
+        }
+        if (hostPlaceholder.fileVersionId) {
+            return String(hostPlaceholder.fileVersionId) === String(getProp(this.options, 'file.file_version.id'));
+        }
+        return !getProp(this.options, ['fileOptions', fileId, 'fileVersionId']);
+    }
+
+    /**
+     * Gets the placeholder shown before the image rep. Uses the image the host passed in the
+     * placeholder viewer option, such as a thumbnail it already loaded, when imageProgressiveLoad
+     * is on and it is for the file being previewed, and fetches the 320 otherwise.
+     *
+     * @param {string|null} placeholderUrl - Content URL of the 320, or null when the rep has none
+     * @return {Promise<Object>} blobUrl, width and height of the decoded placeholder
+     */
+    getPlaceholderImage(placeholderUrl) {
+        const fetchRepPlaceholder = () =>
+            placeholderUrl
+                ? this.fetchDecodedImage(placeholderUrl)
+                : Promise.reject(new Error('Representation has no 320'));
+        const hostPlaceholder = this.getViewerOption('placeholder');
+        if (!this.featureEnabled('imageProgressiveLoad.enabled') || !this.isHostPlaceholderForFile(hostPlaceholder)) {
+            return fetchRepPlaceholder();
+        }
+
+        // The host owns its URL and may revoke it, so decode a copy that this viewer can revoke.
+        return fetch(hostPlaceholder.url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Host placeholder fetch failed: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then(blob => this.decodeBlobUrl(URL.createObjectURL(blob)))
+            .catch(fetchRepPlaceholder);
+    }
+
+    /**
+     * Decodes an image blob URL. Rejects, and revokes the URL, when it is not an image.
+     *
+     * @param {string} blobUrl - Blob URL of the image
+     * @return {Promise<Object>} blobUrl, width and height of the decoded image
+     */
+    decodeBlobUrl(blobUrl) {
+        const decoder = new Image();
+        decoder.src = blobUrl;
+        return decoder
+            .decode()
+            .catch(() => undefined)
+            .then(() => {
+                if (!decoder.naturalWidth) {
+                    URL.revokeObjectURL(blobUrl);
+                    throw new Error('Response is not a decodable image');
+                }
+                return { blobUrl, height: decoder.naturalHeight, width: decoder.naturalWidth };
+            });
     }
 
     /**
@@ -311,10 +373,29 @@ class ImageViewer extends ImageBaseViewer {
 
         // Keep the new source from re-running the load sequence, which would reset the zoom.
         imageEl.removeEventListener('load', this.finishLoading);
+        const { clientHeight: placeholderHeight, clientWidth: placeholderWidth } = imageEl;
         imageEl.src = blobUrl;
         imageEl.setAttribute('originalWidth', width);
         imageEl.setAttribute('originalHeight', height);
         this.setScale(parseFloat(imageEl.style.width) || undefined, parseFloat(imageEl.style.height) || undefined);
+
+        // Only one of width and height is set, so an image rep with a different aspect ratio
+        // renders at a different size than the placeholder. Re-center it then.
+        if (this.featureEnabled('imageProgressiveLoad.enabled')) {
+            imageEl
+                .decode()
+                .catch(() => undefined)
+                .then(() => {
+                    if (
+                        this.isDestroyed() ||
+                        (imageEl.clientWidth === placeholderWidth && imageEl.clientHeight === placeholderHeight)
+                    ) {
+                        return;
+                    }
+                    this.adjustImageZoomPadding();
+                    this.updatePannability();
+                });
+        }
 
         // eslint-disable-next-line no-unused-expressions
         placeholderEl.offsetWidth;
