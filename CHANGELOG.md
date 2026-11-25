@@ -1,3 +1,7 @@
+## 3.148.0 (2026-11-25)
+
+* feat(image): show the 320 first on every open behind imageProgressiveLoad (#1984) ([f1c23f0](https://github.com/box/box-content-preview/commit/f1c23f0)), closes [#1984](https://github.com/box/box-content-preview/issues/1984)
+
 ## 3.147.0 (2026-11-24)
 
 * fix(video): strengthen seek preview dim and blur (#1983) ([d31adf8](https://github.com/box/box-content-preview/commit/d31adf8)), closes [#1983](https://github.com/box/box-content-preview/issues/1983)
