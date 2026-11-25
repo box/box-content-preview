@@ -37,11 +37,14 @@ import {
     CLASS_IS_SCROLLABLE,
     DISCOVERABILITY_ATTRIBUTE,
     DOCUMENT_FTUX_CURSOR_SEEN_KEY,
+    OCR_PDF_REP_NAME,
     ORIGINAL_REP_NAME,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
     PRELOAD_PAGED_REP_NAME,
     STATUS_ERROR,
+    STATUS_NONE,
+    STATUS_PENDING,
     STATUS_SUCCESS,
 } from '../../constants';
 import {
@@ -740,7 +743,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleAssetError(err) {
-        const isOcrRepError = getProp(err, 'details.representation.representation') === 'ocr_pdf';
+        const isOcrRepError = getProp(err, 'details.representation.representation') === OCR_PDF_REP_NAME;
 
         if (isOcrRepError && this.attemptRepFallback()) {
             return;
@@ -801,7 +804,7 @@ class DocBaseViewer extends BaseViewer {
     getRepFallback() {
         const { file, representation } = this.options;
 
-        if (!representation || representation.representation !== 'ocr_pdf') {
+        if (!representation || representation.representation !== OCR_PDF_REP_NAME) {
             return null;
         }
 
@@ -1841,7 +1844,30 @@ class DocBaseViewer extends BaseViewer {
 
             // Add page IDs to each page after page structure is available
             this.setupPageIds();
+            this.requestOcrPdfConversion();
         }
+    }
+
+    /**
+     * Kicks off the on-demand 'ocr_pdf' conversion in the background once the document has loaded, so a
+     * later view of the file can load the searchable rep.
+     */
+    requestOcrPdfConversion() {
+        const { file, representation } = this.options;
+        const entries = getProp(file, 'representations.entries', []);
+        const ocrPdfRep = entries.find(entry => entry.representation === OCR_PDF_REP_NAME);
+
+        if (
+            !ocrPdfRep ||
+            getProp(representation, 'representation') === OCR_PDF_REP_NAME ||
+            ![STATUS_NONE, STATUS_PENDING].includes(RepStatus.getStatus(ocrPdfRep))
+        ) {
+            return;
+        }
+
+        const repStatus = this.getRepStatus(ocrPdfRep);
+        repStatus.removeListener('conversionpending', this.resetLoadTimeout);
+        repStatus.getPromise().catch(() => {});
     }
 
     /**
