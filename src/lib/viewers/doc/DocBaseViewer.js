@@ -12,6 +12,19 @@ import GalleryController from '../gallery/GalleryController';
 import { GALLERY_MAX_SCALE, GALLERY_MIN_SCALE } from '../gallery/constants';
 import { isNpmBuild } from '../../isNpmBuild';
 import limitMarkedContentNesting from './limitMarkedContentNesting';
+import {
+    ANNOTATION_POPUP_SELECTOR,
+    FORM_FIELD_COPY_EVENTS,
+    FORM_FIELD_SELECTOR,
+    SCROLLABLE_FORM_FIELD_SELECTOR,
+    applyFieldBorders,
+    canScrollAlong,
+    getWheelDeltaPx,
+    isPointInRect,
+    isWithinScrollableElement,
+    lockFormField,
+    preventFormFieldDefault,
+} from './formFields';
 import PageTracker from '../../PageTracker';
 import Popup from '../../Popup';
 import PreviewError from '../../PreviewError';
@@ -73,6 +86,7 @@ import { getFeatureConfig, isFeatureEnabled } from '../../featureChecking';
 
 const DOC_FIRST_PAGES_ENABLED = 'docFirstPages.enabled';
 const ENABLE_PDFJS_FORK = 'enablePdfjsFork';
+const ENABLE_READ_ONLY_FORM_FIELDS = 'enableReadOnlyFormFields';
 
 export const DISCOVERABILITY_STATES = [
     AnnotationState.HIGHLIGHT_TEMP,
@@ -178,6 +192,7 @@ class DocBaseViewer extends BaseViewer {
         super(options);
 
         // Bind context for callbacks
+        this.annotationlayerrenderedHandler = this.annotationlayerrenderedHandler.bind(this);
         this.applyCursorFtux = this.applyCursorFtux.bind(this);
         this.emitMetric = this.emitMetric.bind(this);
         this.handleAdvancedInsightsReport = this.handleAdvancedInsightsReport.bind(this);
@@ -188,6 +203,7 @@ class DocBaseViewer extends BaseViewer {
         this.handleAnnotationControlsEscape = this.handleAnnotationControlsEscape.bind(this);
         this.handleAnnotationCreateEvent = this.handleAnnotationCreateEvent.bind(this);
         this.handleAnnotationCreatorChangeEvent = this.handleAnnotationCreatorChangeEvent.bind(this);
+        this.formFieldWheelHandler = this.formFieldWheelHandler.bind(this);
         this.handleDocElKeydown = this.handleDocElKeydown.bind(this);
         this.handleGalleryZoomGesture = this.handleGalleryZoomGesture.bind(this);
         this.handlePageSubmit = this.handlePageSubmit.bind(this);
@@ -1177,6 +1193,10 @@ class DocBaseViewer extends BaseViewer {
         this.pdfEventBus.on('pagerendered', this.pagerenderedHandler);
         this.pdfEventBus.on('pagesinit', this.pagesinitHandler);
 
+        if (this.isReadOnlyFormFieldsEnabled()) {
+            this.pdfEventBus.on('annotationlayerrendered', this.annotationlayerrenderedHandler);
+        }
+
         this.pdfLinkService = new this.pdfjsViewer.PDFLinkService({
             eventBus: this.pdfEventBus,
             externalLinkRel: 'noopener noreferrer nofollow', // Prevent referrer hijacking
@@ -1351,8 +1371,12 @@ class DocBaseViewer extends BaseViewer {
             this.viewerEl.classList.add('pdfViewer--viewOnly');
         }
 
+        const annotationMode = this.isReadOnlyFormFieldsEnabled()
+            ? PDFAnnotationMode.ENABLE_FORMS
+            : PDFAnnotationMode.ENABLE;
+
         return new PdfViewerClass({
-            annotationMode: PDFAnnotationMode.ENABLE, // Show annotations, but not forms
+            annotationMode,
             container: this.docEl,
             eventBus: this.pdfEventBus,
             findController: this.pdfFindController,
@@ -1517,6 +1541,20 @@ class DocBaseViewer extends BaseViewer {
         this.pdfjsLib.GlobalWorkerOptions.workerSrc = assetUrlCreator(WORKER);
         // Vendored upstream pdf.js has no setter, so enablePdfjsFork has no effect there
         this.pdfjsLib.setBoxChangesEnabled?.(this.featureEnabled(ENABLE_PDFJS_FORK));
+    }
+
+    /**
+     * Requires the npm pdf.js fork, which batches the text layer `aria-owns` updates each form control adds.
+     *
+     * @return {boolean}
+     * @private
+     */
+    isReadOnlyFormFieldsEnabled() {
+        return (
+            this.featureEnabled(ENABLE_READ_ONLY_FORM_FIELDS) &&
+            this.featureEnabled('useNpmPdfjs') &&
+            this.featureEnabled(ENABLE_PDFJS_FORK)
+        );
     }
 
     /**
@@ -1757,6 +1795,18 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.addEventListener('keydown', this.handleDocElKeydown);
         this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
+        if (this.isReadOnlyFormFieldsEnabled()) {
+            // Blocks typing into fields pdf.js has attached but not yet locked
+            this.docEl.addEventListener('beforeinput', preventFormFieldDefault);
+            this.docEl.addEventListener('wheel', this.formFieldWheelHandler, { passive: false });
+
+            if (!checkPermission(this.options.file, PERMISSION_DOWNLOAD)) {
+                FORM_FIELD_COPY_EVENTS.forEach(eventName =>
+                    this.docEl.addEventListener(eventName, preventFormFieldDefault),
+                );
+            }
+        }
+
         if (this.hasTouch) {
             const searchParams = new URLSearchParams(window.location.search);
             const disableNativePinchToZoom = searchParams.has('disableNativePinchToZoom');
@@ -1790,6 +1840,11 @@ class DocBaseViewer extends BaseViewer {
         if (this.docEl) {
             this.docEl.removeEventListener('keydown', this.handleDocElKeydown);
             this.docEl.removeEventListener('scroll', this.throttledScrollHandler);
+            this.docEl.removeEventListener('beforeinput', preventFormFieldDefault);
+            this.docEl.removeEventListener('wheel', this.formFieldWheelHandler);
+            FORM_FIELD_COPY_EVENTS.forEach(eventName =>
+                this.docEl.removeEventListener(eventName, preventFormFieldDefault),
+            );
 
             if (this.hasTouch) {
                 this.docEl.removeEventListener('touchstart', this.pinchToZoomStartHandler);
@@ -1879,6 +1934,59 @@ class DocBaseViewer extends BaseViewer {
     onThumbnailSelectHandler(pageNum) {
         this.emitMetric({ name: USER_DOCUMENT_THUMBNAIL_EVENTS.NAVIGATE, data: pageNum });
         this.setPage(pageNum);
+    }
+
+    /**
+     * Locks the page's form fields and draws their PDF border colors.
+     *
+     * @private
+     * @param {Object} event - event whose source is the pdf.js page view
+     * @return {Promise<void>}
+     */
+    async annotationlayerrenderedHandler({ error, source }) {
+        const pageEl = source?.div;
+        if (!pageEl) {
+            return;
+        }
+
+        pageEl.querySelectorAll(FORM_FIELD_SELECTOR).forEach(lockFormField);
+        if (!error) {
+            applyFieldBorders(pageEl, await this.pdfViewer?.pdfDocument?.getFieldObjects());
+        }
+    }
+
+    /**
+     * Scrolls the form field under the pointer when the wheel event targets another element above it.
+     *
+     * @private
+     * @param {WheelEvent} event
+     * @return {void}
+     */
+    formFieldWheelHandler(event) {
+        const isZoomGesture = event.ctrlKey;
+        const isOverAnnotationPopup = !!event.target.closest?.(ANNOTATION_POPUP_SELECTOR);
+        const pageEl = isZoomGesture || isOverAnnotationPopup ? null : event.target.closest?.('.page');
+        if (!pageEl) {
+            return;
+        }
+
+        const { clientX, clientY } = event;
+        const isFieldUnderLayer = el =>
+            el !== event.target && isPointInRect(clientX, clientY, el.getBoundingClientRect());
+        const field = [...pageEl.querySelectorAll(SCROLLABLE_FORM_FIELD_SELECTOR)].find(isFieldUnderLayer);
+        if (!field) {
+            return;
+        }
+
+        const { deltaX, deltaY } = getWheelDeltaPx(event, field);
+        const isVertical = Math.abs(deltaY) >= Math.abs(deltaX);
+        const axis = isVertical ? 'y' : 'x';
+        const delta = isVertical ? deltaY : deltaX;
+
+        if (!isWithinScrollableElement(event.target, pageEl, axis, delta) && canScrollAlong(field, axis, delta)) {
+            event.preventDefault();
+            field.scrollBy(isVertical ? 0 : delta, isVertical ? delta : 0);
+        }
     }
 
     /**

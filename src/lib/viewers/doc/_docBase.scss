@@ -345,6 +345,19 @@ $thumbnail-list-margin: 15px; // Keep in sync with THUMBNAIL_MARGIN in Thumbnail
                     user-select: none;
                 }
             }
+
+            .annotationLayer :is(input, textarea) {
+                cursor: default;
+                user-select: none;
+            }
+        }
+
+        // Drops the fillable-field tint and hover border; nested under .pdfViewer to outrank the npm
+        // pdf.js CSS, which the build also scopes to .bp-doc and loads later
+        .annotationLayer {
+            --annotation-unfocused-field-background: none;
+            --annotation-unfocused-field-filter: none;
+            --input-hover-border-color: transparent;
         }
     }
 
@@ -394,6 +407,29 @@ $thumbnail-list-margin: 15px; // Keep in sync with THUMBNAIL_MARGIN in Thumbnail
         // layer into the stack explicitly: above .textLayer (1) and the region-creation overlay
         // (auto), below the region/highlight/drawing layers (3) and popups (4).
         z-index: 2;
+
+        // Restores the pdf.js field box over box-annotations' `.ba` input and textarea styles
+        .textWidgetAnnotation :is(input, textarea) {
+            width: 100%;
+            padding: revert;
+            border: 2px solid var(--input-unfocused-border-color);
+            border-radius: revert;
+            box-shadow: none;
+            transition: none;
+
+            &:hover {
+                box-shadow: none;
+            }
+
+            &:focus {
+                border: 2px solid var(--input-focus-border-color);
+                outline: var(--input-focus-outline);
+            }
+        }
+
+        :is(input, select, textarea)[disabled] {
+            cursor: default;
+        }
 
         h1,
         h2,
@@ -447,6 +483,8 @@ $thumbnail-list-margin: 15px; // Keep in sync with THUMBNAIL_MARGIN in Thumbnail
 
 .bp-content {
     &.bp-annotations-discoverable {
+        @include bp-annotations-inert-form-fields;
+
         // Hide cursor popup in default mode
         .ba-PopupCursor {
             display: none;

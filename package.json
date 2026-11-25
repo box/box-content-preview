@@ -40,7 +40,7 @@
         "access": "public"
     },
     "dependencies": {
-        "pdfjs-dist": "npm:@box/pdfjs-dist@6.4.299-box.3",
+        "pdfjs-dist": "npm:@box/pdfjs-dist@6.4.299-box.4",
         "wavesurfer.js": "7.12.11"
     },
     "peerDependencies": {

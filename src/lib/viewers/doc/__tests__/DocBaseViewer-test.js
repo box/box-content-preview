@@ -68,6 +68,7 @@ const SCROLL_END_TIMEOUT = 500;
 const NPM_PDFJS_MAX_CANVAS_SIZE = 2 ** 25;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PAGES_UNIT_NAME = 'pages';
+const READ_ONLY_FORM_FIELDS_FLAGS = ['enableReadOnlyFormFields', 'useNpmPdfjs', 'enablePdfjsFork'];
 
 const sandbox = sinon.createSandbox();
 let docBase;
@@ -1331,7 +1332,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should fall back to the original rep when no pdf rep exists', () => {
                 const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
                 docBase.options.representation = { representation: 'ocr_pdf' };
-                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }, originalRep]);
+                docBase.options.file = makeFile([
+                    { representation: 'ocr_pdf', status: { state: 'none' } },
+                    originalRep,
+                ]);
 
                 expect(docBase.getRepFallback()).toBe(originalRep);
             });
@@ -2239,6 +2243,38 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     expect(stubs.pdfEventBus.on).toBeCalledWith('pagechanging', docBase.pagechangingHandler);
                     expect(stubs.pdfEventBus.on).toBeCalledWith('pagerendered', docBase.pagerenderedHandler);
                     expect(stubs.pdfEventBus.on).toBeCalledWith('pagesinit', docBase.pagesinitHandler);
+                });
+            });
+
+            describe('enableReadOnlyFormFields', () => {
+                beforeEach(() => {
+                    docBase.pdfjsLib.AnnotationMode = { DISABLE: 0, ENABLE: 1, ENABLE_FORMS: 2 };
+                });
+
+                test('should render annotations without forms when read-only form fields are disabled', async () => {
+                    jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                    await docBase.initViewer('');
+
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ annotationMode: 1 }));
+                    expect(stubs.pdfEventBus.on).not.toBeCalledWith(
+                        'annotationlayerrendered',
+                        docBase.annotationlayerrenderedHandler,
+                    );
+                });
+
+                test('should render forms and listen for annotation layer renders when read-only form fields are enabled', async () => {
+                    jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag =>
+                        READ_ONLY_FORM_FIELDS_FLAGS.includes(flag),
+                    );
+
+                    await docBase.initViewer('');
+
+                    expect(stubs.pdfViewerClass).toBeCalledWith(expect.objectContaining({ annotationMode: 2 }));
+                    expect(stubs.pdfEventBus.on).toBeCalledWith(
+                        'annotationlayerrendered',
+                        docBase.annotationlayerrenderedHandler,
+                    );
                 });
             });
 
@@ -3194,6 +3230,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             );
         });
 
+        describe('isReadOnlyFormFieldsEnabled()', () => {
+            test.each`
+                enabledFlags                                                      | expected
+                ${['enableReadOnlyFormFields', 'useNpmPdfjs', 'enablePdfjsFork']} | ${true}
+                ${['enableReadOnlyFormFields', 'useNpmPdfjs']}                    | ${false}
+                ${['enableReadOnlyFormFields', 'enablePdfjsFork']}                | ${false}
+                ${['enableReadOnlyFormFields']}                                   | ${false}
+                ${['useNpmPdfjs', 'enablePdfjsFork']}                             | ${false}
+            `('should return $expected when only $enabledFlags are on', ({ enabledFlags, expected }) => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => enabledFlags.includes(flag));
+
+                expect(docBase.isReadOnlyFormFieldsEnabled()).toBe(expected);
+            });
+        });
+
         describe('initPrint()', () => {
             test('should add print checkmark', () => {
                 docBase.initPrint();
@@ -3719,6 +3770,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 });
             });
 
+            test('should add the form field listeners when read-only form fields are enabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(feature =>
+                    READ_ONLY_FORM_FIELDS_FLAGS.includes(feature),
+                );
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).toBeCalledWith('beforeinput', expect.any(Function));
+                expect(stubs.addEventListener).toBeCalledWith('wheel', docBase.formFieldWheelHandler, {
+                    passive: false,
+                });
+            });
+
+            test('should not add the form field listeners when read-only form fields are disabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+                docBase.bindDOMListeners();
+
+                expect(stubs.addEventListener).not.toBeCalledWith('beforeinput', expect.any(Function));
+                expect(stubs.addEventListener).not.toBeCalledWith(
+                    'wheel',
+                    docBase.formFieldWheelHandler,
+                    expect.anything(),
+                );
+            });
+
             test('should not add wheel listener when pinchToZoom.enabled feature flag is false', () => {
                 jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
                 docBase.bindDOMListeners();
@@ -3808,6 +3883,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(stubs.removeEventListener).toBeCalledWith('keydown', docBase.handleDocElKeydown);
                 expect(stubs.removeEventListener).toBeCalledWith('scroll', docBase.throttledScrollHandler);
+                expect(stubs.removeEventListener).toBeCalledWith('wheel', docBase.formFieldWheelHandler);
+                ['beforeinput', 'copy', 'cut', 'dragstart'].forEach(eventName => {
+                    expect(stubs.removeEventListener).toBeCalledWith(eventName, expect.any(Function));
+                });
             });
 
             test('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -3958,6 +4037,274 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.pageTrackerInit = jest.spyOn(docBase.pageTracker, 'init');
                 docBase.pagesinitHandler();
                 expect(stubs.pageTrackerInit).toBeCalled();
+            });
+        });
+
+        describe('annotationlayerrenderedHandler()', () => {
+            let pageEl;
+            let annotationLayerEl;
+
+            const getField = selector => annotationLayerEl.querySelector(selector);
+            const renderLayer = () => docBase.annotationlayerrenderedHandler({ source: { div: pageEl } });
+
+            beforeEach(() => {
+                pageEl = document.createElement('div');
+                pageEl.innerHTML = `
+                    <div class="annotationLayer">
+                        <section class="textWidgetAnnotation"><textarea class="multiline"></textarea></section>
+                        <section class="textWidgetAnnotation"><input class="pdfReadOnly" type="text" disabled /></section>
+                        <section class="buttonWidgetAnnotation checkBox"><input type="checkbox" /></section>
+                        <section class="buttonWidgetAnnotation radioButton"><input type="radio" /></section>
+                        <section class="choiceWidgetAnnotation"><select></select></section>
+                    </div>
+                `;
+                annotationLayerEl = pageEl.querySelector('.annotationLayer');
+            });
+
+            test('should make text fields read-only but enabled so their content can scroll', () => {
+                renderLayer();
+
+                [getField('textarea'), getField('input.pdfReadOnly')].forEach(field => {
+                    expect(field.readOnly).toBe(true);
+                    expect(field.disabled).toBe(false);
+                });
+            });
+
+            test('should disable checkboxes, radio buttons, and selects', () => {
+                renderLayer();
+
+                ['input[type="checkbox"]', 'input[type="radio"]', 'select'].forEach(selector => {
+                    expect(getField(selector).disabled).toBe(true);
+                });
+            });
+
+            test('should border fields using the document field objects', async () => {
+                annotationLayerEl.querySelector('section').dataset.annotationId = '12R';
+                docBase.pdfViewer = {
+                    pdfDocument: {
+                        getFieldObjects: jest
+                            .fn()
+                            .mockResolvedValue(
+                                new Map([['notes', [{ id: '12R', strokeColor: new Uint8ClampedArray([0, 0, 0]) }]]]),
+                            ),
+                    },
+                };
+
+                await renderLayer();
+
+                expect(annotationLayerEl.querySelector('section').style.borderColor).toBe('rgb(0, 0, 0)');
+            });
+
+            test('should lock fields but skip borders when pdf.js reports a render error', async () => {
+                const getFieldObjects = jest.fn();
+                docBase.pdfViewer = { pdfDocument: { getFieldObjects } };
+
+                await docBase.annotationlayerrenderedHandler({
+                    error: new Error('render failed'),
+                    source: { div: pageEl },
+                });
+
+                expect(getField('textarea').readOnly).toBe(true);
+                expect(getFieldObjects).not.toBeCalled();
+            });
+
+            test('should resolve without reading field objects when the event has no page element', async () => {
+                const getFieldObjects = jest.fn();
+                docBase.pdfViewer = { pdfDocument: { getFieldObjects } };
+
+                await expect(docBase.annotationlayerrenderedHandler({})).resolves.toBeUndefined();
+                expect(getFieldObjects).not.toBeCalled();
+            });
+        });
+
+        describe('read-only form field event blocking', () => {
+            let field;
+
+            const dispatchCancelableEvent = (target, eventName) => {
+                const event = new Event(eventName, { bubbles: true, cancelable: true });
+                target.dispatchEvent(event);
+                return event;
+            };
+
+            beforeEach(() => {
+                docBase.docEl.innerHTML =
+                    '<div class="page"><div class="annotationLayer"><textarea></textarea></div></div>';
+                field = docBase.docEl.querySelector('textarea');
+                docBase.options.file = {};
+                stubs.checkPermission = jest.spyOn(file, 'checkPermission').mockReturnValue(true);
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag =>
+                    READ_ONLY_FORM_FIELDS_FLAGS.includes(flag),
+                );
+            });
+
+            afterEach(() => {
+                docBase.unbindDOMListeners();
+            });
+
+            test('should block typing into fields before they are locked', () => {
+                docBase.bindDOMListeners();
+
+                expect(dispatchCancelableEvent(field, 'beforeinput').defaultPrevented).toBe(true);
+            });
+
+            test('should allow copying field text if the user can download', () => {
+                docBase.bindDOMListeners();
+
+                expect(dispatchCancelableEvent(field, 'copy').defaultPrevented).toBe(false);
+            });
+
+            test.each(['copy', 'cut', 'dragstart'])(
+                'should block %s from fields if the user cannot download',
+                eventName => {
+                    stubs.checkPermission.mockReturnValue(false);
+                    docBase.bindDOMListeners();
+
+                    expect(stubs.checkPermission).toBeCalledWith(docBase.options.file, PERMISSION_DOWNLOAD);
+                    expect(dispatchCancelableEvent(field, eventName).defaultPrevented).toBe(true);
+                },
+            );
+
+            test('should leave events outside the annotation layer alone', () => {
+                stubs.checkPermission.mockReturnValue(false);
+                docBase.bindDOMListeners();
+
+                const pageEl = docBase.docEl.querySelector('.page');
+                expect(dispatchCancelableEvent(pageEl, 'beforeinput').defaultPrevented).toBe(false);
+                expect(dispatchCancelableEvent(pageEl, 'copy').defaultPrevented).toBe(false);
+            });
+
+            test('should stop blocking once listeners are unbound', () => {
+                stubs.checkPermission.mockReturnValue(false);
+                docBase.bindDOMListeners();
+                docBase.unbindDOMListeners();
+
+                expect(dispatchCancelableEvent(field, 'beforeinput').defaultPrevented).toBe(false);
+                expect(dispatchCancelableEvent(field, 'copy').defaultPrevented).toBe(false);
+            });
+        });
+
+        describe('formFieldWheelHandler()', () => {
+            let field;
+            let regionLayerEl;
+
+            const setScrollState = ({ scrollTop = 0, clientHeight = 50, scrollHeight = 200 } = {}) => {
+                field.scrollTop = scrollTop;
+                Object.defineProperty(field, 'clientHeight', { configurable: true, value: clientHeight });
+                Object.defineProperty(field, 'scrollHeight', { configurable: true, value: scrollHeight });
+            };
+            const createWheelEvent = overrides => ({
+                clientX: 50,
+                clientY: 50,
+                ctrlKey: false,
+                deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+                deltaX: 0,
+                deltaY: 30,
+                preventDefault: jest.fn(),
+                target: regionLayerEl,
+                ...overrides,
+            });
+
+            beforeEach(() => {
+                const pageEl = document.createElement('div');
+                pageEl.className = 'page';
+                pageEl.innerHTML = `
+                    <div class="annotationLayer"><section class="textWidgetAnnotation"><textarea></textarea></section></div>
+                    <div class="ba-Layer--region"></div>
+                `;
+                field = pageEl.querySelector('textarea');
+                field.scrollBy = jest.fn();
+                jest.spyOn(field, 'getBoundingClientRect').mockReturnValue({
+                    bottom: 100,
+                    left: 0,
+                    right: 100,
+                    top: 0,
+                });
+                regionLayerEl = pageEl.querySelector('.ba-Layer--region');
+                setScrollState();
+            });
+
+            test('should scroll the field under the pointer when another layer receives the wheel', () => {
+                const event = createWheelEvent();
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).toBeCalledWith(0, 30);
+                expect(event.preventDefault).toBeCalled();
+            });
+
+            test('should leave the wheel to a scrollable popup above the field', () => {
+                const replyEl = document.createElement('div');
+                replyEl.style.overflowY = 'auto';
+                Object.defineProperty(replyEl, 'clientHeight', { configurable: true, value: 50 });
+                Object.defineProperty(replyEl, 'scrollHeight', { configurable: true, value: 300 });
+                field.closest('.page').append(replyEl);
+                const event = createWheelEvent({ target: replyEl });
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
+            });
+
+            test('should leave the wheel to an annotation popup that cannot scroll', () => {
+                const popupEl = document.createElement('div');
+                popupEl.className = 'ba-Layer--popup';
+                popupEl.innerHTML = '<button>Post</button>';
+                field.closest('.page').append(popupEl);
+                const event = createWheelEvent({ target: popupEl.querySelector('button') });
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
+            });
+
+            test('should scroll the field horizontally when the wheel moves mostly sideways', () => {
+                Object.defineProperty(field, 'clientWidth', { configurable: true, value: 50 });
+                Object.defineProperty(field, 'scrollWidth', { configurable: true, value: 200 });
+                docBase.formFieldWheelHandler(createWheelEvent({ deltaX: 30, deltaY: 5 }));
+
+                expect(field.scrollBy).toBeCalledWith(30, 0);
+            });
+
+            test('should let the page scroll when only the minor wheel axis can scroll the field', () => {
+                Object.defineProperty(field, 'clientWidth', { configurable: true, value: 50 });
+                Object.defineProperty(field, 'scrollWidth', { configurable: true, value: 200 });
+                setScrollState({ scrollTop: 150 });
+                const event = createWheelEvent({ deltaX: 5, deltaY: 30 });
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
+            });
+
+            test('should let the page scroll once the field reaches its end', () => {
+                setScrollState({ scrollTop: 150 });
+                const event = createWheelEvent();
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
+            });
+
+            test('should let the page scroll when the field does not scroll on that axis', () => {
+                field.style.overflowY = 'hidden';
+                const event = createWheelEvent();
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
+            });
+
+            test.each`
+                scenario                                   | getOverrides
+                ${'the field receives the wheel itself'}   | ${() => ({ target: field })}
+                ${'the pointer is outside the field'}      | ${() => ({ clientX: 150 })}
+                ${'the wheel is a pinch-to-zoom gesture'}  | ${() => ({ ctrlKey: true })}
+                ${'the wheel happens outside of any page'} | ${() => ({ target: document.createElement('div') })}
+            `('should leave the wheel alone when $scenario', ({ getOverrides }) => {
+                const event = createWheelEvent(getOverrides());
+                docBase.formFieldWheelHandler(event);
+
+                expect(field.scrollBy).not.toBeCalled();
+                expect(event.preventDefault).not.toBeCalled();
             });
         });
 
