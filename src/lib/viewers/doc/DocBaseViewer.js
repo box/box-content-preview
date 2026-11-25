@@ -851,7 +851,11 @@ class DocBaseViewer extends BaseViewer {
         ocrPdfRepStatus
             .getPromise()
             .then(() => this.swapToOcrPdf(ocrPdfRep))
-            .catch(() => {});
+            .catch(err => {
+                if (!this.isDestroyed()) {
+                    console.warn('ocr_pdf conversion failed, keeping the fallback representation', err); // eslint-disable-line no-console
+                }
+            });
     }
 
     /**
@@ -870,7 +874,6 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        const previousLoadingTask = this.pdfLoadingTask;
         const pdfUrl = this.createContentUrlV2(ocrPdfRep.content.url_template);
 
         const swapLoadingTask = this.pdfjsLib.getDocument(this.getPdfDocConfig(pdfUrl));
@@ -889,14 +892,19 @@ class DocBaseViewer extends BaseViewer {
                 return doc;
             })
             .then(doc => {
-                this.ocrSwapLoadingTask = null;
-
                 if (this.isDestroyed()) {
                     swapLoadingTask.destroy();
                     return;
                 }
 
                 limitMarkedContentNesting(doc);
+
+                const fallbackState = {
+                    doc: this.doc,
+                    pdfLoadingTask: this.pdfLoadingTask,
+                    pdfUrl: this.pdfUrl,
+                    representation: this.options.representation,
+                };
 
                 this.pendingSwapViewState = {
                     page: this.pdfViewer.currentPageNumber,
@@ -905,25 +913,56 @@ class DocBaseViewer extends BaseViewer {
                     location: this.pdfViewer._location,
                 };
 
-                this.options.representation = ocrPdfRep;
-                this.pdfUrl = pdfUrl;
-                this.pdfLoadingTask = swapLoadingTask;
-                this.pdfLinkService.setDocument(doc, pdfUrl);
-                this.pdfViewer.setDocument(doc);
+                try {
+                    this.options.representation = ocrPdfRep;
+                    this.pdfUrl = pdfUrl;
+                    this.pdfLoadingTask = swapLoadingTask;
+                    this.pdfLinkService.setDocument(doc, pdfUrl);
+                    this.pdfViewer.setDocument(doc);
+                } catch (err) {
+                    this.restoreFallbackDocument(fallbackState);
+                    throw err;
+                }
+
                 this.doc = doc;
 
-                if (previousLoadingTask) {
+                if (fallbackState.pdfLoadingTask) {
                     try {
-                        previousLoadingTask.destroy();
+                        fallbackState.pdfLoadingTask.destroy();
                     } catch (e) {
                         // Ignore these errors
                     }
                 }
             })
-            .catch(() => {
-                this.ocrSwapLoadingTask = null;
+            .catch(err => {
                 swapLoadingTask.destroy();
+                if (!this.isDestroyed()) {
+                    console.warn('ocr_pdf failed to load, keeping the fallback representation', err); // eslint-disable-line no-console
+                }
+            })
+            .finally(() => {
+                this.ocrSwapLoadingTask = null;
             });
+    }
+
+    /**
+     * Puts the fallback document back after attaching the 'ocr_pdf' document failed part way. Keeps the
+     * captured view state so the re-attached fallback opens where the user was.
+     *
+     * @param {Object} fallbackState - The document, loading task, url and representation before the swap
+     * @return {void}
+     */
+    restoreFallbackDocument({ doc, pdfLoadingTask, pdfUrl, representation }) {
+        this.options.representation = representation;
+        this.pdfUrl = pdfUrl;
+        this.pdfLoadingTask = pdfLoadingTask;
+
+        try {
+            this.pdfLinkService.setDocument(doc, pdfUrl);
+            this.pdfViewer.setDocument(doc);
+        } catch (e) {
+            this.pendingSwapViewState = null;
+        }
     }
 
     /**

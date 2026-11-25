@@ -1487,6 +1487,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             beforeEach(() => {
                 docBase.options.representation = { representation: 'pdf' };
                 docBase.options.viewer = { NAME: 'Document', REP: 'ocr_pdf' };
+                stubs.consoleWarn = jest.spyOn(console, 'warn').mockImplementation();
             });
 
             test('should do nothing when destroyed', () => {
@@ -1578,6 +1579,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 await flush();
 
                 expect(swapStub).not.toBeCalled();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should not warn when the conversion fails after the viewer is destroyed', async () => {
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'pending' } }]);
+                let rejectConversion;
+                const repStatus = {
+                    getPromise: jest.fn(
+                        () =>
+                            new Promise((resolve, reject) => {
+                                rejectConversion = reject;
+                            }),
+                    ),
+                    removeListener: jest.fn(),
+                };
+                jest.spyOn(docBase, 'getRepStatus').mockReturnValue(repStatus);
+
+                docBase.requestOcrPdfConversion();
+                jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                rejectConversion(new Error('conversion failed'));
+                await flush();
+
+                expect(stubs.consoleWarn).not.toBeCalled();
             });
         });
 
@@ -1617,6 +1641,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 jest.spyOn(docBase, 'getPdfDocConfig').mockReturnValue({ url: 'ocr-url' });
                 jest.spyOn(docBase, 'setPage').mockImplementation();
                 jest.spyOn(docBase, 'setupPageIds').mockImplementation();
+                stubs.consoleWarn = jest.spyOn(console, 'warn').mockImplementation();
             });
 
             test('should do nothing when there is no pdfViewer', () => {
@@ -1767,6 +1792,59 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfLoadingTask).toBe(previousTask);
                 expect(swapLoadingTask.destroy).toBeCalled();
                 expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should not warn when the swap is cancelled because the viewer was destroyed', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                rejectDoc(new Error('Loading aborted'));
+                await flush();
+
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(stubs.consoleWarn).not.toBeCalled();
+            });
+
+            test('should put the fallback document back when attaching the ocr_pdf document throws', async () => {
+                const fallbackDoc = { getPage: jest.fn() };
+                const doc = { getPage: jest.fn() };
+                const previousRep = docBase.options.representation;
+                const previousTask = docBase.pdfLoadingTask;
+                docBase.doc = fallbackDoc;
+                docBase.pdfViewer.setDocument.mockImplementationOnce(() => {
+                    throw new Error('attach failed');
+                });
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(docBase.pdfLoadingTask).toBe(previousTask);
+                expect(docBase.doc).toBe(fallbackDoc);
+                expect(docBase.pdfLinkService.setDocument).toHaveBeenLastCalledWith(fallbackDoc, 'previous-url');
+                expect(docBase.pdfViewer.setDocument).toHaveBeenLastCalledWith(fallbackDoc);
+                expect(docBase.pendingSwapViewState).toEqual(expect.objectContaining({ page: 3, scale: '1.5' }));
+                expect(previousTask.destroy).not.toBeCalled();
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should drop the captured view state when the fallback document cannot be re-attached', async () => {
+                docBase.doc = { getPage: jest.fn() };
+                docBase.pdfViewer.setDocument.mockImplementation(() => {
+                    throw new Error('attach failed');
+                });
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn() });
+                await flush();
+
+                expect(docBase.pendingSwapViewState).toBeNull();
+                expect(docBase.options.representation).toEqual({ representation: 'pdf' });
+                expect(swapLoadingTask.destroy).toBeCalled();
             });
 
             test('should discard the loaded document if destroyed mid-load', async () => {
