@@ -71,6 +71,22 @@ $comparison-compared-stage: var(--bp-gray-10);
     background-color: var(--bp-white-opacity-70);
 }
 
+// Non-clickable "Current" pill on the current pane: 32px tall, 12px side padding, 20px radius, 15px bold label
+.bp-version-banner-current-badge {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    height: var(--bp-size-080);
+    padding: 0 var(--bp-space-030);
+    border-radius: var(--bp-radius-10);
+    font-size: var(--bp-font-size-05);
+    font-weight: var(--bp-font-weight-bold);
+    line-height: var(--bp-font-line-height-04);
+    color: var(--bp-gray-black);
+    white-space: nowrap;
+    background-color: var(--bp-gray-10);
+}
+
 .bp-version-banner-info {
     display: flex;
     flex-direction: column;
@@ -129,6 +145,11 @@ $comparison-compared-stage: var(--bp-gray-10);
 
     .bp-version-banner-divider {
         background-color: var(--bp-white-opacity-30);
+    }
+
+    .bp-version-banner-current-badge {
+        color: var(--bp-white-opacity-80);
+        background-color: var(--bp-white-opacity-16);
     }
 
     .bp-version-banner--compared .bp-version-banner-badge {
