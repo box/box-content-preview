@@ -1,3 +1,7 @@
+## 3.149.0 (2026-11-26)
+
+* chore(i18n): update translations (#1985) ([45403b6](https://github.com/box/box-content-preview/commit/45403b6)), closes [#1985](https://github.com/box/box-content-preview/issues/1985)
+
 ## 3.148.0 (2026-11-25)
 
 * feat(image): show the 320 first on every open behind imageProgressiveLoad (#1984) ([f1c23f0](https://github.com/box/box-content-preview/commit/f1c23f0)), closes [#1984](https://github.com/box/box-content-preview/issues/1984)
