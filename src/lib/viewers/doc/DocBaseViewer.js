@@ -880,6 +880,7 @@ class DocBaseViewer extends BaseViewer {
         this.ocrSwapLoadingTask = swapLoadingTask;
 
         swapLoadingTask.promise
+            .then(doc => doc.getPage(1).then(() => doc))
             .then(doc => {
                 if (EXTENSIONS_WITH_OPERATION_LIMIT.includes(file.extension)) {
                     return checkPdfOperationLimit(doc).then(hasTooManyOperations => {
