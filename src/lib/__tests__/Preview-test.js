@@ -2578,6 +2578,35 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).not.toHaveBeenCalled();
         });
 
+        test.each`
+            watermarkSource
+            ${'is_watermark_inherited'}
+            ${'is_watermarked_by_access_policy'}
+        `(
+            'should trigger the matching watermark error when a video file has no playable reps and is blocked by $watermarkSource',
+            ({ watermarkSource }) => {
+                stubs.file.extension = 'mp4';
+                stubs.file.representations.entries = [{ representation: PRELOAD_REP_NAME }];
+                stubs.file.watermark_info = {
+                    is_watermarked: true,
+                    [watermarkSource]: true,
+                };
+                stubs.getCachedFile.mockReturnValue(null);
+                stubs.isWatermarked.mockReturnValue(true);
+
+                preview.handleFileInfoResponse(stubs.file);
+
+                expect(stubs.triggerError).toHaveBeenCalledWith(expect.any(PreviewError));
+                expect(stubs.triggerError.mock.calls[0][0].code).toBe(ERROR_CODE.UNSUPPORTED_FILE_TYPE);
+                const expectedMessage =
+                    watermarkSource === 'is_watermark_inherited' ? 'error_parent_watermarked' : 'error_policy_watermarked';
+                expect(stubs.triggerError.mock.calls[0][0].message).toBe(
+                    __(expectedMessage),
+                );
+                expect(stubs.loadViewer).not.toHaveBeenCalled();
+            },
+        );
+
         test('should not trigger account error when video file has pending dash rep', () => {
             stubs.loadViewer.mockImplementation(() => {});
             stubs.file.extension = 'mp4';
@@ -2866,6 +2895,25 @@ describe('lib/Preview', () => {
             stubs.checkPermission.mockReturnValue(false);
             expect(() => preview.loadViewer()).toThrowError(PreviewError);
         });
+
+        test.each`
+            watermarkSource
+            ${'is_watermark_inherited'}
+            ${'is_watermarked_by_access_policy'}
+        `(
+            'should throw the matching watermark error when preview permission is blocked by $watermarkSource',
+            ({ watermarkSource }) => {
+                stubs.checkPermission.mockReturnValue(false);
+                preview.file.watermark_info = {
+                    is_preview_blocked_by_watermark: true,
+                    [watermarkSource]: true,
+                };
+                const expectedMessage =
+                    watermarkSource === 'is_watermark_inherited' ? 'error_parent_watermarked' : 'error_policy_watermarked';
+
+                expect(() => preview.loadViewer()).toThrow(__(expectedMessage));
+            },
+        );
 
         test('should throw an unsupported error if there is no loader for general file types', () => {
             stubs.getLoader.mockReturnValue(undefined);

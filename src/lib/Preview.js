@@ -1427,6 +1427,22 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Throws error message depending on watermarking source
+     *
+     * @private
+     * @param {Object} file - File object
+     * @return {void}
+     */
+    throwPreviewBlockedByWatermarkError(file) {
+        if (file.watermark_info.is_watermark_inherited) {
+            throw new PreviewError(ERROR_CODE.UNSUPPORTED_FILE_TYPE, __('error_parent_watermarked'));
+        }
+        if (file.watermark_info.is_watermarked_by_access_policy) {
+            throw new PreviewError(ERROR_CODE.UNSUPPORTED_FILE_TYPE, __('error_policy_watermarked'));
+        }
+    }
+
+    /**
      * Loads the preview from server response.
      *
      * @private
@@ -1477,6 +1493,9 @@ class Preview extends EventEmitter {
             // account (HD video is paid). Instant Preview may have mounted a jpg-only viewer from
             // cache; throw error_account instead of waiting forever on an empty player.
             if (this.isVideoFileByExtension() && !this.hasPlayableVideoReps(file)) {
+                if (isFileWatermarked) {
+                   this.throwPreviewBlockedByWatermarkError(file); 
+                }
                 throw new PreviewError(ERROR_CODE.ACCOUNT, __('error_account'));
             }
 
@@ -1554,6 +1573,9 @@ class Preview extends EventEmitter {
 
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
+            if (this.file.watermark_info.is_preview_blocked_by_watermark) {
+                this.throwPreviewBlockedByWatermarkError(this.file);
+            }
             throw new PreviewError(ERROR_CODE.PERMISSIONS_PREVIEW, __('error_permissions'));
         }
 
