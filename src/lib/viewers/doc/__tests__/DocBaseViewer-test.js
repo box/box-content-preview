@@ -452,6 +452,18 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.pdfLoadingTask.destroy).toBeCalled();
             });
 
+            test('should cancel a pending ocr_pdf swap loading task', () => {
+                docBase.ocrSwapLoadingTask = {
+                    destroy: jest.fn(),
+                };
+                const { ocrSwapLoadingTask } = docBase;
+
+                docBase.destroy();
+
+                expect(ocrSwapLoadingTask.destroy).toBeCalled();
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
             test('should clean up the viewer', () => {
                 docBase.pdfViewer = {
                     cleanup: jest.fn(),
@@ -1331,7 +1343,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             test('should fall back to the original rep when no pdf rep exists', () => {
                 const originalRep = { representation: 'ORIGINAL', status: { state: 'success' } };
                 docBase.options.representation = { representation: 'ocr_pdf' };
-                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }, originalRep]);
+                docBase.options.file = makeFile([
+                    { representation: 'ocr_pdf', status: { state: 'none' } },
+                    originalRep,
+                ]);
 
                 expect(docBase.getRepFallback()).toBe(originalRep);
             });
@@ -1459,6 +1474,509 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.hasAttemptedRepFallback).toBeFalsy();
                 expect(docBase.hasRetriedContentDownload).toBe(true);
                 expect(loadStub).toBeCalled();
+            });
+        });
+
+        describe('requestOcrPdfConversion()', () => {
+            const flush = () =>
+                new Promise(resolve => {
+                    setTimeout(resolve, 0);
+                });
+            const makeFile = entries => ({ id: '0', extension: 'docx', representations: { entries } });
+
+            beforeEach(() => {
+                docBase.options.representation = { representation: 'pdf' };
+                docBase.options.viewer = { NAME: 'Document', REP: 'ocr_pdf' };
+                stubs.consoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+            });
+
+            test('should do nothing when destroyed', () => {
+                jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
+
+                docBase.requestOcrPdfConversion();
+
+                expect(getRepStatusStub).not.toBeCalled();
+            });
+
+            test.each([
+                ['Presentation', 'pdf'],
+                ['AutoCAD', 'pdf'],
+                ['SinglePage', 'pdf'],
+                ['Document', 'pdf'],
+            ])('should do nothing for a viewer that was not chosen for ocr_pdf (%s, %s)', (NAME, REP) => {
+                docBase.options.viewer = { NAME, REP };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
+                const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
+
+                docBase.requestOcrPdfConversion();
+
+                expect(getRepStatusStub).not.toBeCalled();
+            });
+
+            test('should do nothing when the current representation is ocr_pdf', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'none' } }]);
+                const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
+
+                docBase.requestOcrPdfConversion();
+
+                expect(getRepStatusStub).not.toBeCalled();
+            });
+
+            test('should do nothing when the file has no ocr_pdf rep', () => {
+                docBase.options.file = makeFile([{ representation: 'pdf', status: { state: 'success' } }]);
+                const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
+
+                docBase.requestOcrPdfConversion();
+
+                expect(getRepStatusStub).not.toBeCalled();
+            });
+
+            test.each(['success', 'viewable', 'error'])(
+                'should do nothing when the ocr_pdf rep is already resolved (%s)',
+                state => {
+                    docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state } }]);
+                    const getRepStatusStub = jest.spyOn(docBase, 'getRepStatus');
+
+                    docBase.requestOcrPdfConversion();
+
+                    expect(getRepStatusStub).not.toBeCalled();
+                },
+            );
+
+            test.each(['none', 'pending'])(
+                'should warm the ocr_pdf rep and swap it in once ready (%s)',
+                async state => {
+                    const ocrPdfRep = { representation: 'ocr_pdf', status: { state } };
+                    docBase.options.file = makeFile([ocrPdfRep]);
+                    const repStatus = {
+                        getPromise: jest.fn().mockResolvedValue(),
+                        removeListener: jest.fn(),
+                    };
+                    jest.spyOn(docBase, 'getRepStatus').mockReturnValue(repStatus);
+                    const swapStub = jest.spyOn(docBase, 'swapToOcrPdf').mockImplementation();
+
+                    docBase.requestOcrPdfConversion();
+                    await flush();
+
+                    expect(docBase.getRepStatus).toBeCalledWith(ocrPdfRep, {
+                        backoff: { factor: 1.5, maxIntervalMs: 10000, maxWaitMs: 600000 },
+                    });
+                    expect(repStatus.removeListener).toBeCalledWith('conversionpending', docBase.resetLoadTimeout);
+                    expect(swapStub).toBeCalledWith(ocrPdfRep);
+                },
+            );
+
+            test('should not swap when the conversion fails', async () => {
+                const ocrPdfRep = { representation: 'ocr_pdf', status: { state: 'pending' } };
+                docBase.options.file = makeFile([ocrPdfRep]);
+                const repStatus = {
+                    getPromise: jest.fn().mockRejectedValue(new Error('conversion failed')),
+                    removeListener: jest.fn(),
+                };
+                jest.spyOn(docBase, 'getRepStatus').mockReturnValue(repStatus);
+                const swapStub = jest.spyOn(docBase, 'swapToOcrPdf').mockImplementation();
+
+                docBase.requestOcrPdfConversion();
+                await flush();
+
+                expect(swapStub).not.toBeCalled();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should not warn when the conversion fails after the viewer is destroyed', async () => {
+                docBase.options.file = makeFile([{ representation: 'ocr_pdf', status: { state: 'pending' } }]);
+                let rejectConversion;
+                const repStatus = {
+                    getPromise: jest.fn(
+                        () =>
+                            new Promise((resolve, reject) => {
+                                rejectConversion = reject;
+                            }),
+                    ),
+                    removeListener: jest.fn(),
+                };
+                jest.spyOn(docBase, 'getRepStatus').mockReturnValue(repStatus);
+
+                docBase.requestOcrPdfConversion();
+                jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                rejectConversion(new Error('conversion failed'));
+                await flush();
+
+                expect(stubs.consoleWarn).not.toBeCalled();
+            });
+        });
+
+        describe('swapToOcrPdf()', () => {
+            const flush = () =>
+                new Promise(resolve => {
+                    setTimeout(resolve, 0);
+                });
+            let ocrPdfRep;
+            let swapLoadingTask;
+            let resolveDoc;
+            let rejectDoc;
+
+            beforeEach(() => {
+                ocrPdfRep = { representation: 'ocr_pdf', content: { url_template: 'ocr-template' } };
+                docBase.options.representation = { representation: 'pdf' };
+                docBase.rotationAngle = 90;
+                docBase.pdfEventBus = { off: jest.fn(), on: jest.fn() };
+                docBase.pdfViewer = {
+                    currentPageNumber: 3,
+                    currentScaleValue: '1.5',
+                    scrollPageIntoView: jest.fn(),
+                    setDocument: jest.fn(),
+                };
+                docBase.pdfLinkService = { setDocument: jest.fn() };
+                docBase.pdfUrl = 'previous-url';
+                docBase.pdfLoadingTask = { destroy: jest.fn() };
+                swapLoadingTask = {
+                    destroy: jest.fn(),
+                    promise: new Promise((resolve, reject) => {
+                        resolveDoc = resolve;
+                        rejectDoc = reject;
+                    }),
+                };
+                docBase.pdfjsLib = { getDocument: jest.fn(() => swapLoadingTask) };
+                jest.spyOn(docBase, 'createContentUrlV2').mockReturnValue('ocr-url');
+                jest.spyOn(docBase, 'getPdfDocConfig').mockReturnValue({ url: 'ocr-url' });
+                jest.spyOn(docBase, 'setPage').mockImplementation();
+                jest.spyOn(docBase, 'setupPageIds').mockImplementation();
+                stubs.consoleWarn = jest.spyOn(console, 'warn').mockImplementation();
+            });
+
+            test('should do nothing when there is no pdfViewer', () => {
+                docBase.pdfViewer = null;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+
+                expect(docBase.pdfjsLib.getDocument).not.toBeCalled();
+            });
+
+            test('should do nothing when the current representation is already ocr_pdf', () => {
+                docBase.options.representation = { representation: 'ocr_pdf' };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+
+                expect(docBase.pdfjsLib.getDocument).not.toBeCalled();
+            });
+
+            test('should attach the ocr_pdf document to the live viewer', async () => {
+                const doc = { getPage: jest.fn().mockResolvedValue({}) };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.options.representation).toBe(ocrPdfRep);
+                expect(docBase.pdfUrl).toBe('ocr-url');
+                expect(docBase.pdfLinkService.setDocument).toBeCalledWith(doc, 'ocr-url');
+                expect(docBase.pdfViewer.setDocument).toBeCalledWith(doc);
+                expect(docBase.doc).toBe(doc);
+                expect(docBase.pdfLoadingTask).toBe(swapLoadingTask);
+                expect(docBase.pendingSwapViewState).toEqual({
+                    page: 3,
+                    scale: '1.5',
+                    rotation: 90,
+                    location: undefined,
+                });
+            });
+
+            test('should destroy the previous loading task after the swap', async () => {
+                const doc = { getPage: jest.fn().mockResolvedValue({}) };
+                const previousTask = docBase.pdfLoadingTask;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(previousTask.destroy).toBeCalled();
+            });
+
+            test('should restore page, scale and rotation when pages re-init', async () => {
+                const doc = { getPage: jest.fn().mockResolvedValue({}) };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                // pdf.js resets scale on pagesinit; the restore handler puts it back
+                docBase.pdfViewer.currentScaleValue = 'auto';
+                docBase.rotationAngle = 0;
+                docBase.pagesinitHandler();
+
+                expect(docBase.pendingSwapViewState).toBeNull();
+                expect(docBase.rotationAngle).toBe(90);
+                expect(docBase.pdfViewer.pagesRotation).toBe(90);
+                expect(docBase.pdfViewer.currentScaleValue).toBe('1.5');
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.setupPageIds).toBeCalled();
+            });
+
+            test('should not re-run the first-load page setup when the swapped pages re-init', async () => {
+                const loadUIStub = jest.spyOn(docBase, 'loadUI').mockImplementation();
+                const requestOcrPdfConversionStub = jest.spyOn(docBase, 'requestOcrPdfConversion').mockImplementation();
+                const emitStub = jest.spyOn(docBase, 'emit').mockImplementation();
+                docBase.loaded = true;
+                docBase.startPageNum = 1;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn().mockResolvedValue({}) });
+                await flush();
+
+                docBase.pagesinitHandler();
+
+                expect(loadUIStub).not.toBeCalled();
+                expect(requestOcrPdfConversionStub).not.toBeCalled();
+                expect(emitStub).not.toBeCalled();
+                expect(docBase.setPage).toBeCalledTimes(1);
+                expect(docBase.setPage).toBeCalledWith(3);
+            });
+
+            test('should run the regular page setup on a pagesinit after the swap has been restored', async () => {
+                const loadUIStub = jest.spyOn(docBase, 'loadUI').mockImplementation();
+                docBase.loaded = true;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn().mockResolvedValue({}) });
+                await flush();
+
+                docBase.pagesinitHandler();
+                expect(loadUIStub).not.toBeCalled();
+
+                docBase.pagesinitHandler();
+                expect(loadUIStub).toBeCalledTimes(1);
+            });
+
+            test('should restore the exact scroll offset within the page when pages re-init', async () => {
+                docBase.pdfViewer._location = { pageNumber: 2, left: 12.5, top: 640.25 };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn().mockResolvedValue({}) });
+                await flush();
+
+                docBase.pdfViewer._location = { pageNumber: 1, left: 0, top: 792 };
+                docBase.pagesinitHandler();
+
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.pdfViewer.scrollPageIntoView).toBeCalledWith({
+                    pageNumber: 2,
+                    destArray: [null, { name: 'XYZ' }, 12.5, 640.25, null],
+                    allowNegativeOffset: true,
+                });
+                expect(docBase.setPage.mock.invocationCallOrder[0]).toBeLessThan(
+                    docBase.pdfViewer.scrollPageIntoView.mock.invocationCallOrder[0],
+                );
+            });
+
+            test('should only restore the page when pdf.js has no scroll location yet', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn().mockResolvedValue({}) });
+                await flush();
+
+                docBase.pagesinitHandler();
+
+                expect(docBase.setPage).toBeCalledWith(3);
+                expect(docBase.pdfViewer.scrollPageIntoView).not.toBeCalled();
+            });
+
+            test('should revert to the previous representation when the swap fails', async () => {
+                const previousRep = docBase.options.representation;
+                const previousTask = docBase.pdfLoadingTask;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                rejectDoc(new Error('load failed'));
+                await flush();
+
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(docBase.pdfLoadingTask).toBe(previousTask);
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should keep the fallback when the first ocr_pdf page fails to load', async () => {
+                const previousRep = docBase.options.representation;
+                const previousTask = docBase.pdfLoadingTask;
+                const doc = { getPage: jest.fn().mockRejectedValue(new Error('page failed')) };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(doc.getPage).toBeCalledWith(1);
+                expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+                expect(docBase.pdfLinkService.setDocument).not.toBeCalled();
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(docBase.pdfLoadingTask).toBe(previousTask);
+                expect(previousTask.destroy).not.toBeCalled();
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should load the first ocr_pdf page before attaching the document', async () => {
+                const getPage = jest.fn().mockResolvedValue({});
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage });
+                await flush();
+
+                expect(getPage).toBeCalledWith(1);
+                expect(getPage.mock.invocationCallOrder[0]).toBeLessThan(
+                    docBase.pdfViewer.setDocument.mock.invocationCallOrder[0],
+                );
+            });
+
+            test('should not warn when the swap is cancelled because the viewer was destroyed', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                rejectDoc(new Error('Loading aborted'));
+                await flush();
+
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(stubs.consoleWarn).not.toBeCalled();
+            });
+
+            test('should put the fallback document back when attaching the ocr_pdf document throws', async () => {
+                const fallbackDoc = { getPage: jest.fn().mockResolvedValue({}) };
+                const doc = { getPage: jest.fn().mockResolvedValue({}) };
+                const previousRep = docBase.options.representation;
+                const previousTask = docBase.pdfLoadingTask;
+                docBase.doc = fallbackDoc;
+                docBase.pdfViewer.setDocument.mockImplementationOnce(() => {
+                    throw new Error('attach failed');
+                });
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(docBase.pdfLoadingTask).toBe(previousTask);
+                expect(docBase.doc).toBe(fallbackDoc);
+                expect(docBase.pdfLinkService.setDocument).toHaveBeenLastCalledWith(fallbackDoc, 'previous-url');
+                expect(docBase.pdfViewer.setDocument).toHaveBeenLastCalledWith(fallbackDoc);
+                expect(docBase.pendingSwapViewState).toEqual(expect.objectContaining({ page: 3, scale: '1.5' }));
+                expect(previousTask.destroy).not.toBeCalled();
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+                expect(stubs.consoleWarn).toBeCalledWith(expect.stringContaining('ocr_pdf'), expect.any(Error));
+            });
+
+            test('should drop the captured view state when the fallback document cannot be re-attached', async () => {
+                docBase.doc = { getPage: jest.fn().mockResolvedValue({}) };
+                docBase.pdfViewer.setDocument.mockImplementation(() => {
+                    throw new Error('attach failed');
+                });
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn().mockResolvedValue({}) });
+                await flush();
+
+                expect(docBase.pendingSwapViewState).toBeNull();
+                expect(docBase.options.representation).toEqual({ representation: 'pdf' });
+                expect(swapLoadingTask.destroy).toBeCalled();
+            });
+
+            test('should discard the loaded document if destroyed mid-load', async () => {
+                const doc = { getPage: jest.fn().mockResolvedValue({}) };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                jest.spyOn(docBase, 'isDestroyed').mockReturnValue(true);
+                resolveDoc(doc);
+                await flush();
+
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+            });
+
+            test('should keep the fallback representation active while the ocr_pdf loads', () => {
+                const previousRep = docBase.options.representation;
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(docBase.ocrSwapLoadingTask).toBe(swapLoadingTask);
+            });
+
+            test('should capture the view state when the document attaches, not when the swap starts', async () => {
+                const doc = { getPage: jest.fn().mockResolvedValue({}) };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+
+                docBase.pdfViewer.currentPageNumber = 7;
+                docBase.pdfViewer.currentScaleValue = '2';
+                docBase.rotationAngle = 180;
+
+                resolveDoc(doc);
+                await flush();
+
+                docBase.pagesinitHandler();
+
+                expect(docBase.rotationAngle).toBe(180);
+                expect(docBase.pdfViewer.pagesRotation).toBe(180);
+                expect(docBase.pdfViewer.currentScaleValue).toBe('2');
+                expect(docBase.setPage).toBeCalledWith(7);
+            });
+
+            test('should clear the pending swap task on success', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc({ getPage: jest.fn().mockResolvedValue({}) });
+                await flush();
+
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
+            test('should clear the pending swap task on failure', async () => {
+                docBase.swapToOcrPdf(ocrPdfRep);
+                rejectDoc(new Error('load failed'));
+                await flush();
+
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
+            test('should keep the fallback and not swap when the ocr_pdf exceeds the operation limit', async () => {
+                docBase.options.file = { id: '0', extension: 'xlsx' };
+                const previousRep = docBase.options.representation;
+                const doc = {
+                    numPages: 1,
+                    getPage: jest.fn().mockResolvedValue({
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(320001) }),
+                    }),
+                };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.pdfViewer.setDocument).not.toBeCalled();
+                expect(docBase.options.representation).toBe(previousRep);
+                expect(docBase.pdfUrl).toBe('previous-url');
+                expect(swapLoadingTask.destroy).toBeCalled();
+                expect(docBase.ocrSwapLoadingTask).toBeNull();
+            });
+
+            test('should swap in an ocr_pdf within the operation limit for a limited extension', async () => {
+                docBase.options.file = { id: '0', extension: 'xlsx' };
+                const doc = {
+                    numPages: 1,
+                    getPage: jest.fn().mockResolvedValue({
+                        getOperatorList: jest.fn().mockResolvedValue({ fnArray: new Array(10) }),
+                    }),
+                };
+
+                docBase.swapToOcrPdf(ocrPdfRep);
+                resolveDoc(doc);
+                await flush();
+
+                expect(docBase.pdfViewer.setDocument).toBeCalledWith(doc);
+                expect(docBase.options.representation).toBe(ocrPdfRep);
             });
         });
 
@@ -2965,6 +3483,44 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        describe('getPdfDocConfig()', () => {
+            beforeEach(() => {
+                docBase.options.file = { size: 1000000, watermark_info: {} };
+                docBase.options.location = { locale: 'en-US' };
+                jest.spyOn(docBase, 'getViewerOption').mockImplementation();
+                jest.spyOn(docBase, 'appendAuthHeader').mockReturnValue({ Authorization: 'Bearer token' });
+            });
+
+            test('should build a config carrying the url and auth headers', () => {
+                const config = docBase.getPdfDocConfig('pdf-url');
+
+                expect(config.url).toBe('pdf-url');
+                expect(config.httpHeaders).toEqual({ Authorization: 'Bearer token' });
+            });
+
+            test('should disable range requests for watermarked files', () => {
+                docBase.options.file.watermark_info = { is_watermarked: true };
+
+                expect(docBase.getPdfDocConfig('pdf-url').disableRange).toBe(true);
+            });
+
+            test('should add npm-specific asset urls when useNpmPdfjs is enabled', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockImplementation(flag => flag === 'useNpmPdfjs');
+
+                const config = docBase.getPdfDocConfig('pdf-url');
+
+                expect(config.wasmUrl).toBeDefined();
+                expect(config.standardFontDataUrl).toBeDefined();
+                expect(config.isEvalSupported).toBeUndefined();
+            });
+
+            test('should disable eval for the legacy build', () => {
+                jest.spyOn(docBase, 'featureEnabled').mockReturnValue(false);
+
+                expect(docBase.getPdfDocConfig('pdf-url').isEvalSupported).toBe(false);
+            });
+        });
+
         describe('resize()', () => {
             const resizeFunc = BaseViewer.prototype.resize;
 
@@ -3346,6 +3902,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
                 expect(docBase.controls).toBeInstanceOf(ControlsRoot);
                 expect(docBase.renderUI).toBeCalled();
+            });
+
+            test('should re-render without recreating the controls when already loaded', () => {
+                jest.spyOn(docBase, 'renderUI').mockImplementation();
+                const subscribeSpy = jest.spyOn(docBase.annotationControlsFSM, 'subscribe');
+
+                docBase.loadUI();
+                const { controls } = docBase;
+                subscribeSpy.mockClear();
+
+                docBase.loadUI();
+
+                expect(docBase.controls).toBe(controls);
+                expect(subscribeSpy).not.toBeCalled();
+                expect(docBase.renderUI).toBeCalledTimes(2);
             });
 
             test.each`
@@ -3869,6 +4440,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 stubs.getCachedPage = jest.spyOn(docBase, 'getCachedPage').mockImplementation();
                 stubs.emit = jest.spyOn(docBase, 'emit').mockImplementation();
                 stubs.setupPages = jest.spyOn(docBase, 'setupPageIds').mockImplementation();
+                stubs.requestOcrPdfConversion = jest.spyOn(docBase, 'requestOcrPdfConversion').mockImplementation();
+            });
+
+            test('should request the ocr_pdf conversion on first load only', () => {
+                docBase.pdfViewer = {
+                    currentScale: 'unknown',
+                    pagesCount: 3,
+                };
+                docBase.loaded = false;
+
+                docBase.pagesinitHandler();
+                expect(stubs.requestOcrPdfConversion).toBeCalledTimes(1);
+
+                docBase.pagesinitHandler();
+                expect(stubs.requestOcrPdfConversion).toBeCalledTimes(1);
             });
 
             test('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {

@@ -1116,6 +1116,32 @@ describe('lib/viewers/BaseViewer', () => {
             expect(repStatus.representation).toBe(representation);
         });
 
+        test('should enable the convert timer for the main representation', () => {
+            const repStatus = base.getRepStatus();
+            expect(repStatus.enableConvertTimer).toBe(true);
+        });
+
+        test('should disable the convert timer for a passed in secondary representation', () => {
+            const repStatus = base.getRepStatus({ info: { url: 'someOtherUrl' } });
+            expect(repStatus.enableConvertTimer).toBe(false);
+        });
+
+        test('should enable the convert timer when the main representation is passed in', () => {
+            const repStatus = base.getRepStatus(base.options.representation);
+            expect(repStatus.enableConvertTimer).toBe(true);
+        });
+
+        test('should poll without a backoff by default', () => {
+            const repStatus = base.getRepStatus({ info: { url: 'someOtherUrl' } });
+            expect(repStatus.backoff).toBeNull();
+        });
+
+        test('should pass the poll backoff through to the rep status', () => {
+            const backoff = { maxIntervalMs: 30000, maxWaitMs: 600000 };
+            const repStatus = base.getRepStatus({ info: { url: 'someOtherUrl' } }, { backoff });
+            expect(repStatus.backoff).toBe(backoff);
+        });
+
         test('should emit conversionpending once when the main representation is pending', () => {
             jest.spyOn(base, 'emit');
             const repStatus = base.getRepStatus();

@@ -951,9 +951,11 @@ class BaseViewer extends EventEmitter {
      * Instantiates and returns RepStatus
      *
      * @param {Object} [representation] - Optional representation
+     * @param {Object} [options] - Optional RepStatus options
+     * @param {Object} [options.backoff] - Poll backoff, see RepStatus
      * @return {RepStatus} Instance of RepStatus
      */
-    getRepStatus(representation) {
+    getRepStatus(representation, { backoff } = {}) {
         const { token, sharedLink, sharedLinkPassword, logger, file } = this.options;
         const repStatus = new RepStatus({
             api: this.api,
@@ -963,6 +965,8 @@ class BaseViewer extends EventEmitter {
             sharedLinkPassword,
             fileId: file.id,
             logger: representation ? null : logger, // Do not log to main preview status if rep is passed in
+            enableConvertTimer: !representation || representation === this.options.representation,
+            backoff,
         });
 
         // Don't time out while conversion is pending
