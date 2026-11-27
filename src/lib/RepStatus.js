@@ -67,6 +67,10 @@ class RepStatus extends EventEmitter {
      * @param {string} options.sharedLinkPassword - Shared link password
      * @param {string} options.fileId - File ID
      * @param {Object} [options.logger] - Optional logger instance
+     * @param {boolean} [options.enableConvertTimer] - Whether to time the conversion for the load metrics
+     * @param {Object} [options.backoff] - Multiplies the pending poll interval by factor (default 2) up to
+     * maxIntervalMs and rejects once polling would run past maxWaitMs. Polls every STATUS_UPDATE_INTERVAL_MS
+     * indefinitely without it.
      * @return {RepStatus} RepStatus instance
      */
     constructor({
@@ -78,6 +82,7 @@ class RepStatus extends EventEmitter {
         logger,
         fileId,
         enableConvertTimer = true,
+        backoff = null,
     }) {
         super();
 
@@ -86,6 +91,8 @@ class RepStatus extends EventEmitter {
         this.logger = logger;
         this.fileId = fileId;
         this.enableConvertTimer = enableConvertTimer;
+        this.backoff = backoff;
+        this.pollIntervalMs = STATUS_UPDATE_INTERVAL_MS;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
@@ -230,20 +237,46 @@ class RepStatus extends EventEmitter {
 
                 this.emit('conversionpending');
 
-                // Check status again after delay or
-                // If status is none, request immediately since conversion
-                // won't kick off until representation is requested
-                this.statusTimeout = setTimeout(
-                    () => {
-                        this.updateStatus();
-                    },
-                    status === STATUS_NONE ? 0 : STATUS_UPDATE_INTERVAL_MS,
-                );
+                this.scheduleNextPoll(status);
                 break;
 
             default:
             // no-op
         }
+    }
+
+    /**
+     * Schedules the next status check. A 'none' status is checked immediately, since the conversion won't
+     * kick off until the representation is requested.
+     *
+     * @private
+     * @param {string} status - Current representation status
+     * @return {void}
+     */
+    scheduleNextPoll(status) {
+        const delay = status === STATUS_NONE ? 0 : this.pollIntervalMs;
+
+        if (this.backoff) {
+            const { factor = 2, maxIntervalMs, maxWaitMs } = this.backoff;
+
+            this.pollStartTime = this.pollStartTime ?? Date.now();
+            if (Date.now() - this.pollStartTime + delay > maxWaitMs) {
+                this.reject(
+                    new PreviewError(ERROR_CODE.CONVERSION_TRY_AGAIN_LATER, __('error_try_again_later'), {
+                        representation: this.representation,
+                    }),
+                );
+                return;
+            }
+
+            if (status !== STATUS_NONE) {
+                this.pollIntervalMs = Math.min(Math.round(delay * factor), maxIntervalMs);
+            }
+        }
+
+        this.statusTimeout = setTimeout(() => {
+            this.updateStatus();
+        }, delay);
     }
 
     /**

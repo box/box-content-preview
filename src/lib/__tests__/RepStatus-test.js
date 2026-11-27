@@ -2,7 +2,7 @@
 import * as util from '../util';
 import Api from '../api';
 import RepStatus from '../RepStatus';
-import { LOAD_METRIC } from '../events';
+import { ERROR_CODE, LOAD_METRIC } from '../events';
 import Timer from '../Timer';
 import { STATUS_SUCCESS } from '../constants';
 
@@ -447,6 +447,78 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
             clock.tick(1);
             clock.restore();
+        });
+
+        describe('polling backoff', () => {
+            const getPollDelays = setTimeoutStub => setTimeoutStub.mock.calls.map(([, delay]) => delay);
+            let stubs;
+
+            beforeEach(() => {
+                stubs = {};
+                repStatus.logger = false;
+                stubs.setTimeout = jest.spyOn(global, 'setTimeout').mockImplementation(() => 1);
+                stubs.now = jest.spyOn(Date, 'now').mockReturnValue(0);
+            });
+
+            test('should poll a pending status at a fixed interval without a backoff', () => {
+                repStatus.representation.status.state = 'pending';
+
+                repStatus.handleResponse();
+                repStatus.handleResponse();
+                repStatus.handleResponse();
+
+                expect(getPollDelays(stubs.setTimeout)).toEqual([2000, 2000, 2000]);
+            });
+
+            test('should grow the pending poll interval by the backoff factor up to the maximum', () => {
+                repStatus.backoff = { factor: 1.5, maxIntervalMs: 10000, maxWaitMs: 600000 };
+                repStatus.representation.status.state = 'pending';
+
+                for (let i = 0; i < 6; i += 1) {
+                    repStatus.handleResponse();
+                }
+
+                expect(getPollDelays(stubs.setTimeout)).toEqual([2000, 3000, 4500, 6750, 10000, 10000]);
+            });
+
+            test('should double the pending poll interval when the backoff has no factor', () => {
+                repStatus.backoff = { maxIntervalMs: 30000, maxWaitMs: 600000 };
+                repStatus.representation.status.state = 'pending';
+
+                for (let i = 0; i < 6; i += 1) {
+                    repStatus.handleResponse();
+                }
+
+                expect(getPollDelays(stubs.setTimeout)).toEqual([2000, 4000, 8000, 16000, 30000, 30000]);
+            });
+
+            test('should poll a none status immediately without growing the backoff interval', () => {
+                repStatus.backoff = { maxIntervalMs: 30000, maxWaitMs: 600000 };
+
+                repStatus.representation.status.state = 'none';
+                repStatus.handleResponse();
+                repStatus.representation.status.state = 'pending';
+                repStatus.handleResponse();
+
+                expect(getPollDelays(stubs.setTimeout)).toEqual([0, 2000]);
+            });
+
+            test('should stop polling and reject once the next poll would pass the hard limit', () => {
+                repStatus.backoff = { maxIntervalMs: 30000, maxWaitMs: 60000 };
+                repStatus.representation.status.state = 'pending';
+                const rejectStub = jest.spyOn(repStatus, 'reject').mockImplementation();
+
+                repStatus.handleResponse();
+                expect(rejectStub).not.toBeCalled();
+
+                stubs.now.mockReturnValue(58000);
+                repStatus.handleResponse();
+
+                expect(getPollDelays(stubs.setTimeout)).toEqual([2000]);
+                expect(rejectStub).toBeCalledWith(
+                    expect.objectContaining({ code: ERROR_CODE.CONVERSION_TRY_AGAIN_LATER }),
+                );
+            });
         });
 
         test('should stop a convert time Timer on success converting', () => {

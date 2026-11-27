@@ -123,6 +123,7 @@ const MAX_OPERATIONS = 320000; // Block PDFs with more than 320,000 drawing oper
 const MAX_OPERATION_PAGES = 5; // Check only the first 5 pages
 const MAX_OPERATIONS_ERROR_MESSAGE = 'Too many drawing operations';
 const EXTENSIONS_WITH_OPERATION_LIMIT = ['dwg', 'numbers', 'xlsx'];
+const OCR_PDF_POLL_BACKOFF = { factor: 1.5, maxIntervalMs: 10000, maxWaitMs: 10 * 60 * 1000 };
 
 /** Resolves true when the first maxPages pages exceed operationLimit drawing operations. */
 export function checkPdfOperationLimit(doc, maxPages = MAX_OPERATION_PAGES, operationLimit = MAX_OPERATIONS) {
@@ -846,14 +847,14 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        const ocrPdfRepStatus = this.getRepStatus(ocrPdfRep);
+        const ocrPdfRepStatus = this.getRepStatus(ocrPdfRep, { backoff: OCR_PDF_POLL_BACKOFF });
         ocrPdfRepStatus.removeListener('conversionpending', this.resetLoadTimeout);
         ocrPdfRepStatus
             .getPromise()
             .then(() => this.swapToOcrPdf(ocrPdfRep))
             .catch(err => {
                 if (!this.isDestroyed()) {
-                    console.warn('ocr_pdf conversion failed, keeping the fallback representation', err); // eslint-disable-line no-console
+                    console.warn('ocr_pdf conversion did not complete, keeping the fallback representation', err); // eslint-disable-line no-console
                 }
             });
     }

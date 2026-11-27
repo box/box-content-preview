@@ -1560,6 +1560,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     docBase.requestOcrPdfConversion();
                     await flush();
 
+                    expect(docBase.getRepStatus).toBeCalledWith(ocrPdfRep, {
+                        backoff: { factor: 1.5, maxIntervalMs: 10000, maxWaitMs: 600000 },
+                    });
                     expect(repStatus.removeListener).toBeCalledWith('conversionpending', docBase.resetLoadTimeout);
                     expect(swapStub).toBeCalledWith(ocrPdfRep);
                 },
